@@ -4906,5 +4906,20 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "recipientsTypeConfidentialSepa": "保密 SEPA",
+  "recipientsConfidentialSepaSubtitle": "付款会以您的账户名显示为自我转账",
+  "recipientsFrPayeeActivatingTitle": "正在激活收件人",
+  "recipientsFrPayeeActivatingDescription": "正在为保密 SEPA 激活您的收件人。这可能需要几分钟。",
+  "recipientsFrPayeeNotActivatedTitle": "收件人尚未激活保密 SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "此收件人尚未激活保密 SEPA。我们正在激活中。这可能需要几分钟。您可以改用即时和常规 SEPA。",
+  "recipientsFrPayeeActivatedTitle": "收件人已激活",
+  "recipientsFrPayeeActivatedDescription": "您的收件人现已激活保密 SEPA。",
+  "recipientsFrPayeeUseRegularSepaInstead": "改用即时和常规 SEPA",
+  "recipientsConfidentialSepaNotActivatedError": "请为此 SEPA 收件人激活保密付款选项。",
+  "withdrawPaymentDescriptionTooShort": "付款说明必须至少包含 5 个字符",
+  "recipientsVirtualIbanIntro": "创建保密 SEPA 收件人前，请先激活您的个人虚拟 IBAN。",
+  "recipientsVirtualIbanNameConfirmation": "我确认这是我的法定姓名。",
+  "recipientsVirtualIbanActivate": "激活保密 SEPA",
+  "recipientsVirtualIbanActivating": "正在创建您的虚拟 IBAN。这可能需要几分钟。"
 }

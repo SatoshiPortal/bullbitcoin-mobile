@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_payment_option.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_view_model.freezed.dart';
@@ -28,11 +30,19 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? debitcard,
     bool? isOwner,
     String? bankAccount,
+    @Default(SepaVirtualPayeeStatus.absent)
+    SepaVirtualPayeeStatus virtualPayeeStatus,
+    @Default({SepaPaymentOption.regular}) Set<SepaPaymentOption> paymentOptions,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
   String get jurisdictionCode => type.jurisdictionCode;
   String get currencyCode => type.currencyCode;
+  bool get isVirtualPayeeActive => virtualPayeeStatus.isActive;
+  bool get hasVirtualPayee => virtualPayeeStatus.exists;
+  bool get supportsRegularSepa =>
+      paymentOptions.contains(SepaPaymentOption.regular) ||
+      paymentOptions.contains(SepaPaymentOption.largeValue);
 
   String? get displayName {
     if (isCorporate == true &&
@@ -69,6 +79,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         return null;
 
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         if (name != null && name!.isNotEmpty) return name!;
         if (firstname != null && lastname != null) {
           return '$firstname $lastname';

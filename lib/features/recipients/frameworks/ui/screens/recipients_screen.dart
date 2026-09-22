@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_t
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
@@ -33,10 +34,18 @@ class RecipientsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RecipientsBloc>(
-      create: (context) =>
-          locator<RecipientsBloc>(param1: filter, param2: onRecipientSelected)
-            ..add(const RecipientsEvent.started()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RecipientsBloc>(
+          create: (context) => locator<RecipientsBloc>(
+            param1: filter,
+            param2: onRecipientSelected,
+          )..add(const RecipientsEvent.started()),
+        ),
+        BlocProvider<VirtualIbanOnboardingCubit>(
+          create: (_) => locator<VirtualIbanOnboardingCubit>(),
+        ),
+      ],
       child: _RecipientsScreenContent(
         isHookRunning: isHookRunning,
         onRecipientAddedHookError: onRecipientAddedHookError,

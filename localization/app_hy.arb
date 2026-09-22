@@ -3588,5 +3588,20 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
+  "recipientsConfidentialSepaSubtitle": "Վճարումները հայտնվում են որպես ինքնափոխանցում՝ ձեր հաշվի անունով",
+  "recipientsFrPayeeActivatingTitle": "Ստացողի ակտիվացում",
+  "recipientsFrPayeeActivatingDescription": "Ձեր ստացողն ակտիվացվում է Գաղտնի SEPA-ի համար։ Սա կարող է տևել մի քանի րոպե։",
+  "recipientsFrPayeeNotActivatedTitle": "Ստացողը ակտիվացված չէ Գաղտնի SEPA-ի համար",
+  "recipientsFrPayeeNotActivatedDescription": "Այս ստացողը դեռ ակտիվացված չէ Գաղտնի SEPA-ի համար։ Մենք այն այժմ ակտիվացնում ենք։ Սա կարող է տևել մի քանի րոպե։ Փոխարենը կարող եք օգտագործել Ակնթարթային և սովորական SEPA։",
+  "recipientsFrPayeeActivatedTitle": "Ստացողն ակտիվացված է",
+  "recipientsFrPayeeActivatedDescription": "Ձեր ստացողն այժմ ակտիվ է Գաղտնի SEPA-ի համար։",
+  "recipientsFrPayeeUseRegularSepaInstead": "Փոխարենը օգտագործեք Ակնթարթային և սովորական SEPA",
+  "recipientsConfidentialSepaNotActivatedError": "Խնդրում ենք ակտիվացնել գաղտնի վճարման տարբերակը այս SEPA ստացողի համար։",
+  "withdrawPaymentDescriptionTooShort": "Վճարման նկարագրությունը պետք է լինի առնվազն 5 նիշ",
+  "recipientsVirtualIbanIntro": "Գաղտնի SEPA ստացող ստեղծելուց առաջ ակտիվացրեք ձեր անձնական վիրտուալ IBAN-ը։",
+  "recipientsVirtualIbanNameConfirmation": "Հաստատում եմ, որ սա իմ իրավական անունն է։",
+  "recipientsVirtualIbanActivate": "Ակտիվացնել գաղտնի SEPA-ն",
+  "recipientsVirtualIbanActivating": "Ձեր վիրտուալ IBAN-ը ստեղծվում է։ Դա կարող է տևել մի քանի րոպե։"
 }

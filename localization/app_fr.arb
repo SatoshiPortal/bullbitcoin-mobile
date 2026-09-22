@@ -4952,5 +4952,20 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "recipientsTypeConfidentialSepa": "SEPA Confidentiel",
+  "recipientsConfidentialSepaSubtitle": "Les paiements apparaissent comme un auto-transfert avec le nom de votre compte",
+  "recipientsFrPayeeActivatingTitle": "Activation du destinataire",
+  "recipientsFrPayeeActivatingDescription": "Votre destinataire est en cours d'activation pour le SEPA Confidentiel. Cela peut prendre quelques minutes.",
+  "recipientsFrPayeeNotActivatedTitle": "Destinataire non activé pour le SEPA Confidentiel",
+  "recipientsFrPayeeNotActivatedDescription": "Ce destinataire n'est pas encore activé pour le SEPA Confidentiel. Nous l'activons actuellement. Cela peut prendre quelques minutes. Vous pouvez utiliser le SEPA Instantané et Standard à la place.",
+  "recipientsFrPayeeActivatedTitle": "Destinataire activé",
+  "recipientsFrPayeeActivatedDescription": "Votre destinataire est désormais actif pour le SEPA Confidentiel.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Utiliser le SEPA Instantané et Standard à la place",
+  "recipientsConfidentialSepaNotActivatedError": "Veuillez activer l'option de paiement confidentiel pour ce destinataire SEPA.",
+  "withdrawPaymentDescriptionTooShort": "La description du paiement doit comporter au moins 5 caractères",
+  "recipientsVirtualIbanIntro": "Activez votre IBAN virtuel personnel avant de créer un destinataire SEPA confidentiel.",
+  "recipientsVirtualIbanNameConfirmation": "Je confirme qu'il s'agit de mon nom légal.",
+  "recipientsVirtualIbanActivate": "Activer le SEPA confidentiel",
+  "recipientsVirtualIbanActivating": "Création de votre IBAN virtuel. Cela peut prendre quelques minutes."
 }

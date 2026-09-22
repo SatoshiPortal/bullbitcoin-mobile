@@ -12212,5 +12212,20 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "recipientsTypeConfidentialSepa": "SEPA Confidencial",
+  "recipientsConfidentialSepaSubtitle": "Os pagamentos aparecem como uma transferência própria com o nome da sua conta",
+  "recipientsFrPayeeActivatingTitle": "Ativando destinatário",
+  "recipientsFrPayeeActivatingDescription": "Seu destinatário está sendo ativado para o SEPA Confidencial. Isso pode levar alguns minutos.",
+  "recipientsFrPayeeNotActivatedTitle": "Destinatário não ativado para o SEPA Confidencial",
+  "recipientsFrPayeeNotActivatedDescription": "Este destinatário ainda não está ativado para o SEPA Confidencial. Estamos ativando agora. Isso pode levar alguns minutos. Enquanto isso, você pode usar o SEPA Instantâneo e Regular.",
+  "recipientsFrPayeeActivatedTitle": "Destinatário ativado",
+  "recipientsFrPayeeActivatedDescription": "Seu destinatário agora está ativo para o SEPA Confidencial.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Usar o SEPA Instantâneo e Regular no lugar",
+  "recipientsConfidentialSepaNotActivatedError": "Ative a opção de pagamento confidencial para este destinatário SEPA.",
+  "withdrawPaymentDescriptionTooShort": "A descrição do pagamento deve ter pelo menos 5 caracteres",
+  "recipientsVirtualIbanIntro": "Ative seu IBAN virtual pessoal antes de criar um destinatário SEPA confidencial.",
+  "recipientsVirtualIbanNameConfirmation": "Confirmo que este é meu nome legal.",
+  "recipientsVirtualIbanActivate": "Ativar SEPA confidencial",
+  "recipientsVirtualIbanActivating": "Criando seu IBAN virtual. Isso pode levar alguns minutos."
 }

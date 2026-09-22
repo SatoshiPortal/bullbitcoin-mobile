@@ -4912,5 +4912,20 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",
+  "recipientsConfidentialSepaSubtitle": "Выплаты отображаются как перевод себе с именем вашего счёта",
+  "recipientsFrPayeeActivatingTitle": "Активация получателя",
+  "recipientsFrPayeeActivatingDescription": "Ваш получатель активируется для Конфиденциального SEPA. Это может занять несколько минут.",
+  "recipientsFrPayeeNotActivatedTitle": "Получатель не активирован для Конфиденциального SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "Этот получатель ещё не активирован для Конфиденциального SEPA. Сейчас мы его активируем. Это может занять несколько минут. Пока вы можете использовать Мгновенный и обычный SEPA.",
+  "recipientsFrPayeeActivatedTitle": "Получатель активирован",
+  "recipientsFrPayeeActivatedDescription": "Ваш получатель теперь активен для Конфиденциального SEPA.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Использовать Мгновенный и обычный SEPA вместо этого",
+  "recipientsConfidentialSepaNotActivatedError": "Пожалуйста, активируйте опцию конфиденциального платежа для этого получателя SEPA.",
+  "withdrawPaymentDescriptionTooShort": "Описание платежа должно содержать не менее 5 символов",
+  "recipientsVirtualIbanIntro": "Активируйте личный виртуальный IBAN перед созданием конфиденциального получателя SEPA.",
+  "recipientsVirtualIbanNameConfirmation": "Я подтверждаю, что это моё официальное имя.",
+  "recipientsVirtualIbanActivate": "Активировать конфиденциальный SEPA",
+  "recipientsVirtualIbanActivating": "Создаём ваш виртуальный IBAN. Это может занять несколько минут."
 }

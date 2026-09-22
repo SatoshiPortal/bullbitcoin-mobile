@@ -12390,5 +12390,20 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
+  "recipientsConfidentialSepaSubtitle": "भुगतान आपके खाते के नाम के साथ स्व-स्थानांतरण के रूप में दिखाई देते हैं",
+  "recipientsFrPayeeActivatingTitle": "प्राप्तकर्ता सक्रिय किया जा रहा है",
+  "recipientsFrPayeeActivatingDescription": "आपके प्राप्तकर्ता को गोपनीय SEPA के लिए सक्रिय किया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsFrPayeeNotActivatedTitle": "प्राप्तकर्ता गोपनीय SEPA के लिए सक्रिय नहीं है",
+  "recipientsFrPayeeNotActivatedDescription": "यह प्राप्तकर्ता अभी तक गोपनीय SEPA के लिए सक्रिय नहीं है। हम इसे अभी सक्रिय कर रहे हैं। इसमें कुछ मिनट लग सकते हैं। इसके बजाय आप इंस्टेंट और रेगुलर SEPA का उपयोग कर सकते हैं।",
+  "recipientsFrPayeeActivatedTitle": "प्राप्तकर्ता सक्रिय हो गया",
+  "recipientsFrPayeeActivatedDescription": "आपका प्राप्तकर्ता अब गोपनीय SEPA के लिए सक्रिय है।",
+  "recipientsFrPayeeUseRegularSepaInstead": "इसके बजाय इंस्टेंट और रेगुलर SEPA का उपयोग करें",
+  "recipientsConfidentialSepaNotActivatedError": "कृपया इस SEPA प्राप्तकर्ता के लिए गोपनीय भुगतान विकल्प सक्रिय करें।",
+  "withdrawPaymentDescriptionTooShort": "भुगतान विवरण कम से कम 5 अक्षरों का होना चाहिए",
+  "recipientsVirtualIbanIntro": "गोपनीय SEPA प्राप्तकर्ता बनाने से पहले अपना व्यक्तिगत वर्चुअल IBAN सक्रिय करें।",
+  "recipientsVirtualIbanNameConfirmation": "मैं पुष्टि करता हूँ कि यह मेरा कानूनी नाम है।",
+  "recipientsVirtualIbanActivate": "गोपनीय SEPA सक्रिय करें",
+  "recipientsVirtualIbanActivating": "आपका वर्चुअल IBAN बनाया जा रहा है। इसमें कुछ मिनट लग सकते हैं।"
 }

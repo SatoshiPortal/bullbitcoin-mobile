@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -95,43 +96,45 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     }
     emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
 
-    try {
-      final recipient = event.recipient;
-
-      final order = await _createWithdrawOrderUsecase.execute(
-        fiatAmount: recipientInputState.amount.amount,
-        recipientId: recipient.id,
-        recipientType: recipient.type,
-      );
-      emit(
-        recipientInputState.toConfirmationState(
-          recipient: recipient,
-          order: order,
-        ),
-      );
-    } on WithdrawError catch (e) {
-      emit(
-        event.isNew
-            ? recipientInputState.copyWith(newRecipientError: e)
-            : recipientInputState.copyWith(selectedRecipientError: e),
-      );
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      final error = WithdrawError.unexpected(message: '$e');
-      emit(
-        event.isNew
-            ? recipientInputState.copyWith(newRecipientError: error)
-            : recipientInputState.copyWith(selectedRecipientError: error),
-      );
-    } finally {
-      // Reset the isCreatingWithdrawOrder flag if any error occured
-      if (state is WithdrawRecipientInputState) {
+    final recipient = event.recipient;
+    final paymentDescription = event.paymentDescription?.trim();
+    final orderInputState = recipientInputState.copyWith(
+      paymentDescription: paymentDescription,
+    );
+    final result = await _createWithdrawOrderUsecase.execute(
+      fiatAmount: orderInputState.amount.amount,
+      recipientId: recipient.id,
+      recipientType: recipient.type,
+      paymentDescription: paymentDescription,
+    );
+    switch (result) {
+      case Ok(:final value):
         emit(
-          (state as WithdrawRecipientInputState).copyWith(
-            isCreatingWithdrawOrder: false,
+          orderInputState.toConfirmationState(
+            recipient: recipient,
+            order: value,
           ),
         );
-      }
+      case Err(:final failure):
+        emit(
+          event.isNew
+              ? orderInputState.copyWith(
+                  newRecipientError: failure,
+                  selectedRecipient: recipient,
+                )
+              : orderInputState.copyWith(
+                  selectedRecipientError: failure,
+                  selectedRecipient: recipient,
+                ),
+        );
+    }
+    // Reset the flag when the failure kept us on recipient selection.
+    if (state is WithdrawRecipientInputState) {
+      emit(
+        (state as WithdrawRecipientInputState).copyWith(
+          isCreatingWithdrawOrder: false,
+        ),
+      );
     }
   }
 
@@ -193,22 +196,22 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     }
     emit(confirmationState.copyWith(isConfirmingWithdrawal: true, error: null));
 
-    try {
-      final order = await _confirmWithdrawUsecase.execute(
-        orderId: confirmationState.order.orderId,
+    final result = await _confirmWithdrawUsecase.execute(
+      orderId: confirmationState.order.orderId,
+    );
+    switch (result) {
+      case Ok(:final value):
+        emit(confirmationState.toSuccessState(order: value));
+      case Err(:final failure):
+        emit(confirmationState.copyWith(error: failure));
+    }
+    // Reset the flag when the failure kept us on confirmation.
+    if (state is WithdrawConfirmationState) {
+      emit(
+        (state as WithdrawConfirmationState).copyWith(
+          isConfirmingWithdrawal: false,
+        ),
       );
-      emit(confirmationState.toSuccessState(order: order));
-    } on WithdrawError catch (e) {
-      emit(confirmationState.copyWith(error: e));
-    } finally {
-      // Reset the isConfirmingWithdraw flag if any error occured
-      if (state is WithdrawConfirmationState) {
-        emit(
-          (state as WithdrawConfirmationState).copyWith(
-            isConfirmingWithdrawal: false,
-          ),
-        );
-      }
     }
   }
 }

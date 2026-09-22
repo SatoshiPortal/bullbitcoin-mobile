@@ -10201,5 +10201,20 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "recipientsTypeConfidentialSepa": "Поверителен SEPA",
+  "recipientsConfidentialSepaSubtitle": "Плащанията се показват като прехвърляне към себе си с името на профила ви",
+  "recipientsFrPayeeActivatingTitle": "Активиране на получателя",
+  "recipientsFrPayeeActivatingDescription": "Вашият получател се активира за Поверителен SEPA. Това може да отнеме няколко минути.",
+  "recipientsFrPayeeNotActivatedTitle": "Получателят не е активиран за Поверителен SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "Този получател все още не е активиран за Поверителен SEPA. Активираме го в момента. Това може да отнеме няколко минути. Междувременно можете да използвате Незабавен и стандартен SEPA.",
+  "recipientsFrPayeeActivatedTitle": "Получателят е активиран",
+  "recipientsFrPayeeActivatedDescription": "Вашият получател вече е активен за Поверителен SEPA.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Използвайте Незабавен и стандартен SEPA вместо това",
+  "recipientsConfidentialSepaNotActivatedError": "Моля, активирайте опцията за поверително плащане за този получател по SEPA.",
+  "withdrawPaymentDescriptionTooShort": "Описанието на плащането трябва да е поне 5 знака",
+  "recipientsVirtualIbanIntro": "Активирайте личния си виртуален IBAN, преди да създадете поверителен SEPA получател.",
+  "recipientsVirtualIbanNameConfirmation": "Потвърждавам, че това е законното ми име.",
+  "recipientsVirtualIbanActivate": "Активиране на поверителен SEPA",
+  "recipientsVirtualIbanActivating": "Създаваме вашия виртуален IBAN. Това може да отнеме няколко минути."
 }

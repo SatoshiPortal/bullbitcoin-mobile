@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
+import 'package:bb_mobile/features/recipients/data/models/recipient_details_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_model.freezed.dart';
@@ -21,7 +21,12 @@ sealed class RecipientModel with _$RecipientModel {
   }) = _RecipientModel;
 
   factory RecipientModel.fromJson(Map<String, dynamic> json) {
-    final details = RecipientDetailsModel.fromJson(json);
+    final normalizedJson = Map<String, dynamic>.of(json);
+    if (normalizedJson['recipientTypeFiat'] == null &&
+        normalizedJson['recipientType'] == 'OUT_SEPA') {
+      normalizedJson['recipientTypeFiat'] = 'SEPA_EUR';
+    }
+    final details = RecipientDetailsModel.fromJson(normalizedJson);
 
     return RecipientModel(
       recipientId: json['recipientId'] as String,

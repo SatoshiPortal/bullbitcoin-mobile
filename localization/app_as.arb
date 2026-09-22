@@ -9336,5 +9336,20 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
+  "recipientsConfidentialSepaSubtitle": "পেআউটবোৰ আপোনাৰ একাউণ্টৰ নামেৰে নিজলৈ স্থানান্তৰ হিচাপে দেখা যায়",
+  "recipientsFrPayeeActivatingTitle": "প্ৰাপক সক্ৰিয় কৰি থকা হৈছে",
+  "recipientsFrPayeeActivatingDescription": "আপোনাৰ প্ৰাপকক গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰি থকা হৈছে। ইয়াত কেইমিনিটমান সময় লাগিব পাৰে।",
+  "recipientsFrPayeeNotActivatedTitle": "প্ৰাপক গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰা হোৱা নাই",
+  "recipientsFrPayeeNotActivatedDescription": "এই প্ৰাপকক এতিয়াও গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰা হোৱা নাই। আমি এতিয়া ইয়াক সক্ৰিয় কৰি আছোঁ। ইয়াত কেইমিনিটমান সময় লাগিব পাৰে। ইয়াৰ পৰিৱৰ্তে আপুনি তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰিব পাৰে।",
+  "recipientsFrPayeeActivatedTitle": "প্ৰাপক সক্ৰিয় কৰা হৈছে",
+  "recipientsFrPayeeActivatedDescription": "আপোনাৰ প্ৰাপক এতিয়া গোপনীয় SEPA-ৰ বাবে সক্ৰিয় হৈছে।",
+  "recipientsFrPayeeUseRegularSepaInstead": "ইয়াৰ পৰিৱৰ্তে তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰক",
+  "recipientsConfidentialSepaNotActivatedError": "অনুগ্ৰহ কৰি এই SEPA প্ৰাপকৰ বাবে গোপনীয় পেমেণ্ট বিকল্পটো সক্ৰিয় কৰক।",
+  "withdrawPaymentDescriptionTooShort": "পেমেণ্টৰ বিৱৰণ কমেও ৫টা আখৰৰ হ’ব লাগিব",
+  "recipientsVirtualIbanIntro": "গোপনীয় SEPA প্ৰাপক সৃষ্টি কৰাৰ আগতে আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN সক্ৰিয় কৰক।",
+  "recipientsVirtualIbanNameConfirmation": "মই নিশ্চিত কৰোঁ যে এইটো মোৰ আইনী নাম।",
+  "recipientsVirtualIbanActivate": "গোপনীয় SEPA সক্ৰিয় কৰক",
+  "recipientsVirtualIbanActivating": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।"
 }

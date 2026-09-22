@@ -12200,5 +12200,20 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "recipientsTypeConfidentialSepa": "SEPA محرمانه",
+  "recipientsConfidentialSepaSubtitle": "پرداخت‌ها به‌صورت انتقال به خود با نام حساب شما نمایش داده می‌شوند",
+  "recipientsFrPayeeActivatingTitle": "در حال فعال‌سازی گیرنده",
+  "recipientsFrPayeeActivatingDescription": "گیرنده شما در حال فعال‌سازی برای SEPA محرمانه است. این کار ممکن است چند دقیقه طول بکشد.",
+  "recipientsFrPayeeNotActivatedTitle": "گیرنده برای SEPA محرمانه فعال نشده است",
+  "recipientsFrPayeeNotActivatedDescription": "این گیرنده هنوز برای SEPA محرمانه فعال نشده است. اکنون در حال فعال‌سازی آن هستیم. این کار ممکن است چند دقیقه طول بکشد. در عوض می‌توانید از SEPA فوری و عادی استفاده کنید.",
+  "recipientsFrPayeeActivatedTitle": "گیرنده فعال شد",
+  "recipientsFrPayeeActivatedDescription": "گیرنده شما اکنون برای SEPA محرمانه فعال است.",
+  "recipientsFrPayeeUseRegularSepaInstead": "به‌جای آن از SEPA فوری و عادی استفاده کنید",
+  "recipientsConfidentialSepaNotActivatedError": "لطفاً گزینه پرداخت محرمانه را برای این گیرنده SEPA فعال کنید.",
+  "withdrawPaymentDescriptionTooShort": "توضیحات پرداخت باید حداقل ۵ نویسه باشد",
+  "recipientsVirtualIbanIntro": "پیش از ایجاد گیرنده SEPA محرمانه، IBAN مجازی شخصی خود را فعال کنید.",
+  "recipientsVirtualIbanNameConfirmation": "تأیید می‌کنم که این نام قانونی من است.",
+  "recipientsVirtualIbanActivate": "فعال‌سازی SEPA محرمانه",
+  "recipientsVirtualIbanActivating": "IBAN مجازی شما در حال ایجاد است. ممکن است چند دقیقه طول بکشد."
 }

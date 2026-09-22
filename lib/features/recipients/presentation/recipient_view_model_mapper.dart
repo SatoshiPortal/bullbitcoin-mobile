@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 
 extension RecipientViewModelMapper on RecipientDto {
@@ -26,6 +27,13 @@ extension RecipientViewModelMapper on RecipientDto {
       debitcard: details.debitcard,
       isOwner: isOwner,
       bankAccount: details.bankAccount ?? details.claveUniform,
+      virtualPayeeStatus: details.virtualPayeeStatus,
+      paymentOptions: details.paymentOptions,
     );
   }
+}
+
+extension RecipientDomainViewModelMapper on Recipient {
+  RecipientViewModel toViewModel() =>
+      RecipientDto.fromDomain(this).toViewModel();
 }

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,12 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     final recipient = context.select(
       (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
           ? (bloc.state as WithdrawConfirmationState).recipient
+          : null,
+    );
+
+    final paymentDescription = context.select(
+      (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
+          ? (bloc.state as WithdrawConfirmationState).paymentDescription
           : null,
     );
 
@@ -68,6 +75,18 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                     title: context.loc.withdrawConfirmRecipientName,
                     value: recipient?.displayName,
                   ),
+                  if (recipient?.type
+                      case RecipientType.sepaEur ||
+                          RecipientType.confidentialSepaEur) ...[
+                    const _Divider(),
+                    _DetailRow(
+                      title: context.loc.payRecipientType,
+                      value:
+                          recipient?.type == RecipientType.confidentialSepaEur
+                          ? context.loc.recipientsTypeConfidentialSepa
+                          : context.loc.recipientsTypeSepa,
+                    ),
+                  ],
                   const _Divider(),
                   _DetailRow(
                     title: _getRecipientInfoLabel(context, recipient),
@@ -83,6 +102,14 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                             order.payoutCurrency,
                           ),
                   ),
+                  if (paymentDescription != null &&
+                      paymentDescription.isNotEmpty) ...[
+                    const _Divider(),
+                    _DetailRow(
+                      title: context.loc.payPaymentDescription,
+                      value: paymentDescription,
+                    ),
+                  ],
                   const Spacer(),
                   _ConfirmButton(
                     onConfirmPressed: () {
@@ -115,6 +142,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return context.loc.withdrawConfirmAccount;
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return context.loc.withdrawConfirmIban;
       case RecipientType.speiClabeMxn:
         return context.loc.withdrawConfirmClabe;
@@ -150,6 +178,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;
@@ -241,7 +270,9 @@ class _ConfirmButton extends StatelessWidget {
       children: [
         if (withdrawError != null) ...[
           Text(
-            context.loc.withdrawConfirmError(withdrawError.toString()),
+            context.loc.withdrawConfirmError(
+              withdrawError.toTranslated(context),
+            ),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
