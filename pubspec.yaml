@@ -84,6 +84,10 @@ dependencies:
   # transitive dependency; declared here because we now import it directly.
   unorm_dart: ^0.3.2
   bip85_entropy: ^1.0.2
+  nostr:
+    git:
+      url: https://github.com/ethicnology/dart-nostr
+      ref: c01551b18a7e5d234eb30c6e24e945021382ca4f
   # 2.2.0 is a floor, not a convenience: below it the encoder emitted
   # `amount=1e-8` for sub-100-sat amounts (invalid BIP21) and the decoder
   # rewrote the payjoin fragment separator `-` into the legacy `+` while
@@ -167,6 +171,11 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.29.0
   melos: ^7.8.1
+
+# The selected Nostr key library requests 0.3.1, whose code matches 0.3.0
+# but requires PointyCastle 4. Keep Ben's BIP32/BIP85 PointyCastle 3 stack.
+dependency_overrides:
+  bip340: 0.3.0
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

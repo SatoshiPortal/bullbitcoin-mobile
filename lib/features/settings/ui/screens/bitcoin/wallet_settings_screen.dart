@@ -10,7 +10,7 @@ class WalletSettingsScreen extends StatelessWidget {
     final items = settingsItemsOf(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsWalletSettingsTitle)),
+      appBar: AppBar(title: Text(context.loc.settingsWalletAndBitcoinTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -18,7 +18,10 @@ class WalletSettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 for (final id in walletSettingsItemOrder)
-                  items.byId(id).buildTile(context),
+                  for (final item in items.inSection(
+                    SettingsItemSection.wallet,
+                  ))
+                    if (item.id == id) item.buildTile(context),
                 for (final item in items.inSection(SettingsItemSection.wallet))
                   if (!walletSettingsItemOrder.contains(item.id))
                     item.buildTile(context),

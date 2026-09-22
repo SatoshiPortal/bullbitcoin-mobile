@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
@@ -22,6 +24,7 @@ part 'wizard_state.dart';
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
   WizardBloc({required this._savePending, required this._markComplete})
     : super(const WizardState()) {
+    on<_WizardDataBackupPicked>(_onDataBackupPicked);
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
@@ -77,12 +80,42 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     );
   }
 
+  Future<void> _onDataBackupPicked(
+    _WizardDataBackupPicked event,
+    Emitter<WizardState> emit,
+  ) async {
+    if (state.saving) return;
+    final choices = state.choices.copyWith(
+      dataBackupEnabled: ConsentValue(event.enabled),
+    );
+    emit(state.copyWith(saving: true, failure: null));
+    switch (await _savePending.execute(choices)) {
+      case Err(:final failure):
+        emit(state.copyWith(saving: false, failure: failure));
+      case Ok():
+        emit(
+          state.copyWith(
+            saving: false,
+            choices: state.choices.copyWith(
+              dataBackupEnabled: ConsentValue(event.enabled),
+            ),
+          ),
+        );
+    }
+  }
+
   Future<void> _onCompleted(
     _WizardCompleted event,
     Emitter<WizardState> emit,
   ) async {
-    await _savePending.execute(state.choices);
-    await _markComplete.execute();
-    emit(state.copyWith(finished: true));
+    if (state.saving) return;
+    emit(state.copyWith(saving: true, failure: null));
+    switch (await _savePending.execute(state.choices)) {
+      case Err(:final failure):
+        emit(state.copyWith(saving: false, failure: failure));
+      case Ok():
+        await _markComplete.execute();
+        emit(state.copyWith(saving: false, finished: true));
+    }
   }
 }

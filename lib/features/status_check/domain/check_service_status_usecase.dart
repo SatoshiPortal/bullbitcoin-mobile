@@ -20,10 +20,12 @@ import 'package:meta/meta.dart';
 class CheckServiceStatusUsecase {
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
+  final Uri _backupServerOrigin;
 
   CheckServiceStatusUsecase({
     required this._checkAllServiceStatusUsecase,
     required this._getWalletsUsecase,
+    required this._backupServerOrigin,
   });
 
   @useResult
@@ -46,6 +48,7 @@ class CheckServiceStatusUsecase {
 
       final serviceStatus = await _checkAllServiceStatusUsecase.execute(
         network: defaultWallet.network,
+        backupServerOrigin: _backupServerOrigin,
         initialStatus: initialStatus,
         onUpdate: onUpdate,
       );

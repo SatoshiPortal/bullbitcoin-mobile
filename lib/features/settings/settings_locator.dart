@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_registration_options_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/signing_key_account_session.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_policy_usecase.dart';
@@ -174,11 +175,21 @@ class SettingsLocator {
             locator<SetPayjoinExpireAfterSecUsecase>(),
       ),
     );
+    locator.registerFactory<SyncUsedSigningKeyAccountsUsecase>(
+      () => SyncUsedSigningKeyAccountsUsecase(
+        labels: locator(),
+        accounts: locator(),
+        usages: locator(),
+        getWallets: locator(),
+      ),
+    );
     locator.registerFactory<SigningKeyExportCubit>(() {
       final accountSession = SigningKeyAccountSession(locator());
       return SigningKeyExportCubit(
         exportSigningKeyUsecase: ExportSigningKeyUsecase(
           accountSession,
+          labelsFacade: locator(),
+          syncUsedAccounts: locator(),
           getDefaultSeedUsecase: locator(),
           getSettingsUsecase: locator(),
         ),

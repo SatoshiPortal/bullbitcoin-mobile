@@ -65,6 +65,12 @@ final class _TestBip48AccountRepository implements Bip48AccountRepository {
 
   _TestBip48AccountRepository({this.events, this.commitFailuresRemaining = 0});
 
+  @override
+  Future<Result<Set<int>, Bip48AccountAllocationFailure>> reservedAccounts({
+    required String seedFingerprint,
+    required int coinType,
+  }) async => Ok(Set.of(reserved));
+
   int get _next {
     var account = 0;
     while (reserved.contains(account) || claims.containsKey(account)) {

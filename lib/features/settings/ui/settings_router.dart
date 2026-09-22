@@ -1,3 +1,7 @@
+import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_group_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -23,6 +27,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
@@ -46,7 +51,7 @@ import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:bb_mobile/features/status_check/public/service_status.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -61,16 +66,41 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static GoRoute route({
+    void Function(BuildContext)? onRegisterDescriptor,
     WalletDetailsActionsBuilder? walletDetailsActionsBuilder,
     WalletDeletionGuard? walletDeletionGuard,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+      create: (_) => locator<ServiceStatusCubit>(),
       child: const AllSettingsScreen(),
     ),
     routes: [
+      GoRoute(
+        name: SettingsRoute.dataExport.name,
+        path: SettingsRoute.dataExport.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsDataExportTitle,
+          section: SettingsItemSection.dataExport,
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.tools.name,
+        path: SettingsRoute.tools.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsToolsTitle,
+          section: SettingsItemSection.tools,
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.helpAndInfo.name,
+        path: SettingsRoute.helpAndInfo.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsHelpAndInfoTitle,
+          section: SettingsItemSection.help,
+        ),
+      ),
       GoRoute(
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,
@@ -164,7 +194,11 @@ class SettingsRouter {
         path: SettingsRoute.signingKeyExport.path,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<SigningKeyExportCubit>()..load(),
-          child: const SigningKeyExportScreen(),
+          child: SigningKeyExportScreen(
+            onRegisterDescriptor: onRegisterDescriptor == null
+                ? null
+                : () => onRegisterDescriptor(context),
+          ),
         ),
       ),
       GoRoute(
@@ -208,8 +242,16 @@ class SettingsRouter {
           TestWalletBackupRouter.route,
         ],
       ),
-      // A wallet is always reached from its own screen (wallet home → gear),
-      // never from a list, so these carry the shared prefix themselves.
+      GoRoute(
+        path: SettingsRoute.walletDetailsWalletList.path,
+        name: SettingsRoute.walletDetailsWalletList.name,
+        builder: (context, state) => BlocBuilder<WalletBloc, WalletState>(
+          builder: (context, state) => WalletsListScreen(
+            wallets: state.wallets,
+            isLoading: state.status == WalletStatus.loading,
+          ),
+        ),
+      ),
       GoRoute(
         path: SettingsRoute.walletDetailsSelectedWallet.path,
         name: SettingsRoute.walletDetailsSelectedWallet.name,

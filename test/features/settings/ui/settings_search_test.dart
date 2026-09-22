@@ -81,26 +81,36 @@ void main() {
     test('places wallet import under the Wallet section', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.backup).title, 'Backup');
+      expect(
+        items.byId(SettingsItemId.backup).title,
+        'Wallet Recovery (money backup)',
+      );
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet and Bitcoin → Hardware wallet',
       );
-      expect(backupSettingsDataItemOrder, [
+      for (final id in [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
-      ]);
+      ]) {
+        final item = items.byId(id);
+        expect(item.section, SettingsItemSection.dataExport);
+        expect(item.path, ['Settings', 'Data export', item.title]);
+      }
       expect(walletSettingsItemOrder, [
-        SettingsItemId.payjoin,
-        SettingsItemId.autoswap,
+        SettingsItemId.wallets,
+        SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
-        SettingsItemId.broadcastTransaction,
+        SettingsItemId.autoswap,
+        SettingsItemId.payjoin,
+        SettingsItemId.extension,
+        SettingsItemId.seedViewer,
       ]);
     });
 
@@ -109,29 +119,52 @@ void main() {
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
-        SettingsItemId.appSettings,
         SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
-        SettingsItemId.btcMap,
-        SettingsItemId.termsOfService,
+        SettingsItemId.appSettings,
+        SettingsItemId.dataExport,
+        SettingsItemId.tools,
+        SettingsItemId.helpAndInfo,
         SettingsItemId.servicesStatus,
-        SettingsItemId.logs,
       ]);
       expect(rootItems.map((item) => item.title), [
-        'App',
-        'Backup',
-        'Wallet',
+        'Wallet Recovery (money backup)',
+        'Wallet and Bitcoin',
         'Exchange',
-        'Map',
-        'Terms of Service',
+        'App and device',
+        'Data export',
+        'Tools',
+        'Help and info',
         'Service Status',
-        'Logs',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
     });
+
+    test(
+      'signer export is searchable under BullVault and absent from Wallet entries',
+      () {
+        final items = _englishItems(isSuperuser: true);
+        final signer = items.byId(SettingsItemId.signingKeyExport);
+        expect(
+          items.inSection(SettingsItemSection.wallet),
+          isNot(contains(signer)),
+        );
+        expect(
+          items.inSection(SettingsItemSection.tools),
+          isNot(contains(signer)),
+        );
+        expect(signer.path, [
+          'Settings',
+          'Wallet and Bitcoin',
+          'BullVault (multisig)',
+          signer.title,
+        ]);
+        expect(searchSettings(items, signer.title).first, signer);
+      },
+    );
 
     test('groups developer controls at the bottom of App Settings', () {
       final ids = _englishItems(
@@ -206,18 +239,23 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Backup → Transaction History',
+        'Settings → Data export → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Backup ← Transaction History',
+        'Settings ← Data export ← Transaction History',
       );
     });
 
     test('omits inaccessible superuser settings', () {
       final items = _englishItems();
 
-      expect(searchSettings(items, 'dev mode'), isEmpty);
+      // The existing substring matcher can also match an accessible mode under
+      // the new App and device breadcrumb; the guarded control stays absent.
+      expect(
+        searchSettings(items, 'dev mode').map((item) => item.id),
+        isNot(contains(SettingsItemId.devMode)),
+      );
       expect(searchSettings(items, 'seed viewer'), isEmpty);
       expect(searchSettings(items, 'testnet user credentials'), isEmpty);
     });

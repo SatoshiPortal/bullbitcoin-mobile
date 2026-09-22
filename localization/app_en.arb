@@ -721,10 +721,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -9226,17 +9222,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Import watch-only",
   "@importWalletImportWatchOnly": {
@@ -14534,10 +14522,6 @@
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
   },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
   "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
   "@settingsSearchBroadcastTransactionKeywords": {
     "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
@@ -16165,10 +16149,6 @@
   "@bullVaultRestoreEntry": {
     "description": "Settings entry for restoring a BullVault"
   },
-  "bullVaultRestoreTitle": "Restore BullVault",
-  "@bullVaultRestoreTitle": {
-    "description": "Title of the BullVault restore screen"
-  },
   "bullVaultRestoreDescription": "Use a BullVault recovery package when possible. A compatible descriptor can be used as a fallback.",
   "@bullVaultRestoreDescription": {
     "description": "Explains BullVault restore choices"
@@ -16531,5 +16511,917 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "backupSettingsHeroBackUpTitle": "Back up your wallet",
+  "@backupSettingsHeroBackUpTitle": {},
+  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
+  "@backupSettingsHeroBackUpBody": {},
+  "backupSettingsStartBackupAction": "START BACKUP",
+  "@backupSettingsStartBackupAction": {},
+  "backupHealthReminderTitle": "Can you still recover your wallet?",
+  "@backupHealthReminderTitle": {},
+  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
+  "@backupHealthRecoverbullOnlyBody": {},
+  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
+  "@backupHealthAddPhysicalBackupAction": {},
+  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
+  "@backupSettingsEncryptedVaultSettings": {
+    "description": "Button text for encrypted vault configuration"
+  },
+  "backupSettingsTestedOn": "Tested {date}",
+  "@backupSettingsTestedOn": {
+    "description": "Status showing when a recovery method was last tested.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupReminderLargeBalanceTitle": "YOUR ENCRYPTED VAULT IS YOUR ONLY BACKUP",
+  "@backupReminderLargeBalanceTitle": {
+    "description": "Title for the one-time large-balance physical backup warning"
+  },
+  "backupReminderLargeBalanceBody": "Your encrypted vault is tested, but recovery still depends on the backup server being available. Add and test a physical backup for independent recovery.",
+  "@backupReminderLargeBalanceBody": {
+    "description": "Risk explanation for relying only on an encrypted vault at a large balance"
+  },
+  "backupReminderAddPhysical": "ADD A PHYSICAL BACKUP",
+  "@backupReminderAddPhysical": {
+    "description": "Action to create and test a physical wallet backup"
+  },
+  "backupReminderDismissRisk": "DISMISS WARNING — I UNDERSTAND THE RISKS",
+  "@backupReminderDismissRisk": {
+    "description": "Permanent dismissal for the one-time large-balance warning"
+  },
+  "backupReminderAddPhysicalTitle": "ADD A PHYSICAL BACKUP",
+  "@backupReminderAddPhysicalTitle": {
+    "description": "Title for the periodic physical backup recommendation"
+  },
+  "backupReminderAddPhysicalBody": "Your tested encrypted vault still depends on the backup server. Add and test a physical backup so you can recover without it.",
+  "@backupReminderAddPhysicalBody": {
+    "description": "Explanation for the periodic physical backup recommendation"
+  },
+  "backupReminderLater180Days": "REMIND ME IN 180 DAYS",
+  "@backupReminderLater180Days": {
+    "description": "Action to snooze the add-physical-backup reminder for 180 days"
+  },
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS",
+  "@backupReminderLater365Days": {
+    "description": "Action to snooze the physical-backup test reminder for 365 days"
+  },
+  "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
+  "@backupReminderLater366Days": {
+    "description": "Action to snooze the encrypted-vault test reminder for 366 days"
+  },
+  "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
+  "@backupReminderTestPhysicalTitle": {
+    "description": "Title for the annual physical backup test reminder"
+  },
+  "backupReminderTestPhysicalBody": "Your last successful physical backup test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestPhysicalBody": {
+    "description": "Explanation for the annual physical backup test reminder"
+  },
+  "backupReminderTestPhysical": "TEST PHYSICAL BACKUP",
+  "@backupReminderTestPhysical": {
+    "description": "Action to test a physical wallet backup"
+  },
+  "backupReminderTestVaultTitle": "TEST YOUR ENCRYPTED VAULT",
+  "@backupReminderTestVaultTitle": {
+    "description": "Title for the annual encrypted vault test reminder"
+  },
+  "backupReminderTestVaultBody": "Your last successful encrypted vault test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestVaultBody": {
+    "description": "Explanation for the annual encrypted vault test reminder"
+  },
+  "backupReminderTestVault": "TEST ENCRYPTED VAULT",
+  "@backupReminderTestVault": {
+    "description": "Action to test the encrypted vault"
+  },
+  "backupReminderDismissForever": "Dismiss backup reminders forever",
+  "@backupReminderDismissForever": {
+    "description": "Wallet Recovery setting that suppresses every backup reminder on this device"
+  },
+  "backupReminderDismissForeverConfirmTitle": "Dismiss all backup reminders?",
+  "@backupReminderDismissForeverConfirmTitle": {
+    "description": "Confirmation title before permanently suppressing backup reminders"
+  },
+  "backupReminderDismissForeverConfirmBody": "The app will not show backup warnings or test reminders on this device until you turn them back on in Wallet Recovery.",
+  "@backupReminderDismissForeverConfirmBody": {
+    "description": "Confirmation explanation for permanently suppressing backup reminders"
+  },
+  "backupReminderDismissForeverConfirm": "Dismiss forever",
+  "@backupReminderDismissForeverConfirm": {
+    "description": "Confirmation action that permanently suppresses backup reminders"
+  },
+  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
+  "@backupWalletEncryptedVaultUsesTorTag": {
+    "description": "Tag on the encrypted wallet backup option disclosing its Tor connection."
+  },
+  "settingsNostrKeysTitle": "Nostr keys",
+  "@settingsNostrKeysTitle": {},
+  "settingsNostrKeysEmpty": "No Nostr keys have been created yet.",
+  "@settingsNostrKeysEmpty": {},
+  "settingsNostrKeysCreate": "Create Nostr key",
+  "@settingsNostrKeysCreate": {},
+  "settingsNostrKeysCreated": "Nostr key created",
+  "@settingsNostrKeysCreated": {},
+  "settingsNostrKeysFailure": "Nostr key action failed. Try again.",
+  "@settingsNostrKeysFailure": {},
+  "settingsNostrKeysName": "Name",
+  "@settingsNostrKeysName": {},
+  "settingsNostrKeysNameHint": "e.g. personal identity",
+  "@settingsNostrKeysNameHint": {},
+  "settingsNostrKeysNameRequiredError": "Enter a name for this key.",
+  "@settingsNostrKeysNameRequiredError": {},
+  "settingsNostrKeysNameTooLongError": "Name must be 80 characters or fewer.",
+  "@settingsNostrKeysNameTooLongError": {},
+  "settingsNostrKeysDescription": "Description",
+  "@settingsNostrKeysDescription": {},
+  "settingsNostrKeysDescriptionHint": "Optional note about how you use this key",
+  "@settingsNostrKeysDescriptionHint": {},
+  "settingsNostrKeysDescriptionTooLongError": "Description must be 200 characters or fewer.",
+  "@settingsNostrKeysDescriptionTooLongError": {},
+  "settingsNostrKeysInvalidCharactersError": "Remove line breaks or control characters.",
+  "@settingsNostrKeysInvalidCharactersError": {},
+  "settingsNostrKeysSave": "Save",
+  "@settingsNostrKeysSave": {},
+  "settingsNostrKeysDetailTitle": "Nostr key",
+  "@settingsNostrKeysDetailTitle": {},
+  "settingsNostrKeysDerivationPath": "Derivation path",
+  "@settingsNostrKeysDerivationPath": {},
+  "settingsNostrKeysNpub": "npub",
+  "@settingsNostrKeysNpub": {},
+  "settingsNostrKeysShowNpub": "Show npub",
+  "@settingsNostrKeysShowNpub": {},
+  "settingsNostrKeysShowPrivate": "Show nsec",
+  "@settingsNostrKeysShowPrivate": {},
+  "settingsNostrKeysShowSystemKeys": "Show system keys",
+  "@settingsNostrKeysShowSystemKeys": {},
+  "settingsNostrKeysHideSystemKeys": "Hide system keys",
+  "@settingsNostrKeysHideSystemKeys": {},
+  "settingsNostrKeysSystemKeysWarningTitle": "System keys",
+  "@settingsNostrKeysSystemKeysWarningTitle": {},
+  "settingsNostrKeysSystemKeysWarningMessage": "These keys are managed by the app for troubleshooting and recovery. They are not your identities. Do not use or share them.",
+  "@settingsNostrKeysSystemKeysWarningMessage": {},
+  "settingsNostrKeysSystemNpubWarningTitle": "System key npub",
+  "@settingsNostrKeysSystemNpubWarningTitle": {},
+  "settingsNostrKeysSystemNpubWarningMessage": "Viewing this public key is only for troubleshooting. Do not use or share it as an identity.",
+  "@settingsNostrKeysSystemNpubWarningMessage": {},
+  "settingsNostrKeysUserNsecWarningTitle": "Show your nsec",
+  "@settingsNostrKeysUserNsecWarningTitle": {},
+  "settingsNostrKeysUserNsecWarningMessage": "Your nsec is the private key for this identity. Anyone who has it controls the identity. DO NOT SHARE WITH ANYONE.",
+  "@settingsNostrKeysUserNsecWarningMessage": {},
+  "settingsNostrKeysWarningUnderstand": "I understand",
+  "@settingsNostrKeysWarningUnderstand": {},
+  "settingsNostrKeysSystemNsecWarningTitle": "Show system nsec",
+  "@settingsNostrKeysSystemNsecWarningTitle": {},
+  "settingsNostrKeysSystemNsecWarningMessage": "This nsec is for debugging and advanced usage only. Anyone with it can control this system identity. Do not share it with anyone.",
+  "@settingsNostrKeysSystemNsecWarningMessage": {},
+  "settingsNostrKeysArtifactIdentity": "Backup artifact key",
+  "@settingsNostrKeysArtifactIdentity": {},
+  "settingsNostrKeysServerIdentity": "Backup server key",
+  "@settingsNostrKeysServerIdentity": {},
+  "settingsNostrKeysBackupChain": "Derive the Data Recovery Words first, then derive this key from those words.",
+  "@settingsNostrKeysBackupChain": {},
+  "bullVaultImportCosigner": "Import cosigner key",
+  "@bullVaultImportCosigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarningTitle": "Are you sure?",
+  "@bullVaultCosignerWarningTitle": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarning": "Doing this will make funds available for spending by this wallet. Only do this if you want to permanently remove funds from the vault. This is acceptable if you are the beneficiary of an inheritance key, or if the other cosign devices are not available.",
+  "@bullVaultCosignerWarning": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarningClarification": "The vault’s required signatures and timelocks still apply. Importing a key does not move funds; you must separately review and approve a transaction.",
+  "@bullVaultCosignerWarningClarification": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerContinue": "Continue to key import",
+  "@bullVaultCosignerContinue": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerStored": "The matching seed will be saved securely on this device. Its passphrase is never saved; enter it again when signing.",
+  "@bullVaultCosignerStored": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerMismatch": "These words and passphrase do not match a cosigner in this vault. Nothing was imported.",
+  "@bullVaultCosignerMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultVerifyDescriptor": "Verify your saved copy",
+  "@bullVaultVerifyDescriptor": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorVerified": "Saved copy verified",
+  "@bullVaultDescriptorVerified": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorMismatch": "This descriptor does not match this vault. Check that you selected the correct vault and generation.",
+  "@bullVaultDescriptorMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorImportHint": "Paste the descriptor or import the saved recovery file.",
+  "@bullVaultDescriptorImportHint": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultImportFile": "Import file",
+  "@bullVaultImportFile": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
+  "@bullVaultDescriptorActionHelp": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultRecoverEntry": "Recover BullVault",
+  "@bullVaultRecoverEntry": {
+    "description": "Settings entry for restoring a BullVault"
+  },
+  "bullVaultUseBullAsSigner": "Use BULL as signer",
+  "@bullVaultUseBullAsSigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCreatePracticeEntry": "Create practice BullVault",
+  "@bullVaultCreatePracticeEntry": {
+    "description": "Secondary BullVault menu entry that starts creation with the practice timeline preselected."
+  },
+  "bullVaultIdentifier": "Vault ID: {id}",
+  "@bullVaultIdentifier": {
+    "description": "Labels the short prefix of a vault wallet identifier on a vault card. Not a master key fingerprint.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultCreatedDate": "Created: {date}",
+  "@bullVaultCreatedDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultExpiryDate": "First recovery: {date}",
+  "@bullVaultExpiryDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultViewPolicy": "View policy",
+  "@bullVaultViewPolicy": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultViewKeys": "View keys",
+  "@bullVaultViewKeys": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultBackupRecovery": "Backup & recovery",
+  "@bullVaultBackupRecovery": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultRegisterVault": "Register vault on another device",
+  "@bullVaultRegisterVault": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyMobile": "Mobile key",
+  "@bullVaultKeyMobile": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultKeyInheritance": "Inheritance key",
+  "@bullVaultKeyInheritance": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultKeyOnDevice": "On this device",
+  "@bullVaultKeyOnDevice": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyExternal": "External key",
+  "@bullVaultKeyExternal": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyPassphraseRequired": "Passphrase required — not currently verified",
+  "@bullVaultKeyPassphraseRequired": {
+    "description": "BullVault settings and recovery"
+  },
+  "walletPolicyEarlierOptions": "Earlier options remain available. Dates do not move funds automatically.",
+  "@walletPolicyEarlierOptions": {
+    "description": "Reminder beneath alternative spending options, without claiming current chain or key availability."
+  },
+  "dataBackupWordsTitle": "Data Recovery Words",
+  "@dataBackupWordsTitle": {
+    "description": "Data Backup words display"
+  },
+  "dataBackupWordsExplanation": "These 12 words allow anyone to discover and decrypt your Data Backup. They DO NOT allow you to recover your wallet funds. They are NOT your wallet seed. They are automatically generated from your wallet seed, they don't need to be backed up separately unless you want to give access to data backups to someone else, for example in an inheritance situation.",
+  "@dataBackupWordsExplanation": {
+    "description": "Data Backup words display"
+  },
+  "dataBackupWordsUnavailable": "The matching wallet seed is unavailable. Data Recovery Words cannot be shown.",
+  "@dataBackupWordsUnavailable": {
+    "description": "Data Backup words display"
+  },
+  "dataBackupNetworkFailure": "Could not connect to the backup server. Try again.",
+  "@dataBackupNetworkFailure": {
+    "description": "Data Backup status"
+  },
+  "dataBackupMissing": "No Data Backup was found on the server.",
+  "@dataBackupMissing": {
+    "description": "Data Backup status"
+  },
+  "dataBackupRecoveryIncomplete": "Data recovery is incomplete. Automatic backup is paused until recovery is completed.",
+  "@dataBackupRecoveryIncomplete": {
+    "description": "Data Backup status"
+  },
+  "dataBackupRetryAt": "The backup server is busy. Try again after {time}.",
+  "@dataBackupRetryAt": {
+    "description": "Data Backup status",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dataBackupTitle": "Data Backup",
+  "@dataBackupTitle": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupDescriptor": "Descriptor backup",
+  "@vaultBackupDescriptor": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupCheckAgain": "Check again",
+  "@vaultBackupCheckAgain": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupEnableGuidance": "Turn on Data Backup to automatically save this vault’s recovery package.",
+  "@vaultBackupEnableGuidance": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupNostr": "Nostr",
+  "@vaultBackupNostr": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupBitcoin": "Bitcoin",
+  "@vaultBackupBitcoin": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupBip138": "BIP138",
+  "@vaultBackupBip138": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupComingSoon": "Coming soon",
+  "@vaultBackupComingSoon": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupActions": "Backup actions",
+  "@vaultBackupActions": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupViewDescriptor": "View descriptor",
+  "@vaultBackupViewDescriptor": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupExportDescriptor": "Export recovery package",
+  "@vaultBackupExportDescriptor": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupLastTestedTitle": "Last tested",
+  "@vaultBackupLastTestedTitle": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupChecking": "Checking…",
+  "@vaultBackupChecking": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupEnable": "Turn on Data Backup",
+  "@vaultBackupEnable": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultRecoveryDescriptorEntry": "Descriptor or recovery file",
+  "@vaultRecoveryDescriptorEntry": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecoverWithWords": "Recover with Data Recovery Words",
+  "@dataBackupRecoverWithWords": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceLocal": "Contents on this device",
+  "@dataBackupSourceLocal": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceServer": "Contents fetched from the backup server",
+  "@dataBackupSourceServer": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceFile": "Contents from the backup file",
+  "@dataBackupSourceFile": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupPublicContentsExplanation": "This backup contains public wallet details and settings. It does not contain wallet seeds or private keys. Recovering it does not give this device permission to sign.",
+  "@dataBackupPublicContentsExplanation": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupWallets": "Wallets",
+  "@dataBackupWallets": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupInspect": "Inspect backup",
+  "@dataBackupInspect": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecover": "Recover this backup",
+  "@dataBackupRecover": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecoveryComplete": "Data recovery completed.",
+  "@dataBackupRecoveryComplete": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupWalletNotRecovered": "Wallet not recovered",
+  "@dataBackupWalletNotRecovered": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupChangeWords": "Enter different words",
+  "@dataBackupChangeWords": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "vaultRecoverySearch": "Search for vaults",
+  "@vaultRecoverySearch": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryDescription": "Searches the Data Backup server for vaults saved with this wallet.",
+  "@vaultRecoveryDescription": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryWordsHelp": "Enter the 12 Data Recovery Words to recover the vaults in that backup. This does not restore wallet seed words or apply other wallet settings.",
+  "@vaultRecoveryWordsHelp": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNoCredential": "This device cannot access the wallet’s Data Recovery Words. Use a recovery file, descriptor, or enter Data Recovery Words.",
+  "@vaultRecoveryNoCredential": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryManualTitle": "Other ways to recover",
+  "@vaultRecoveryManualTitle": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNone": "No BullVaults were found in this backup.",
+  "@vaultRecoveryNone": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryIncomplete": "Some vaults could not be recovered. Data Backup remains paused.",
+  "@vaultRecoveryIncomplete": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryComplete": "Vaults recovered",
+  "@vaultRecoveryComplete": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryOpenVault": "Open vault",
+  "@vaultRecoveryOpenVault": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNoSpendDisclosure": "Recovering a vault does not supply its signing keys. Open the vault to inspect its keys or add a matching cosigner.",
+  "@vaultRecoveryNoSpendDisclosure": {
+    "description": "BullVault discovery and recovery"
+  },
+  "dataBackupSourceFingerprint": "Source seed fingerprint",
+  "@dataBackupSourceFingerprint": {
+    "description": "Fingerprint of the seed whose public inventory is in this backup"
+  },
+  "dataBackupChanged": "The wallet or backup changed. Inspect the backup again before continuing.",
+  "@dataBackupChanged": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupInvalid": "This backup could not be verified. Its contents have not been accepted.",
+  "@dataBackupInvalid": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUnsupported": "This backup uses a format this app does not support. Update the app before trying again.",
+  "@dataBackupUnsupported": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupTooLarge": "This backup exceeds the supported size.",
+  "@dataBackupTooLarge": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConflict": "The server holds a different backup. Inspect it before choosing to recover it or replace it with this device's data.",
+  "@dataBackupConflict": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConfirmationRequired": "Confirm this action before continuing.",
+  "@dataBackupConfirmationRequired": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleteRequiresDisabled": "Turn off automatic Data Backup before deleting the server backup.",
+  "@dataBackupDeleteRequiresDisabled": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConsentTitle": "Enable automatic Data Backup?",
+  "@dataBackupConsentTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConsentBody": "Encrypted public wallet details, BullVault data, labels and settings will be sent to the Bull Bitcoin backup server. Your wallet seed and private keys are not included. You can turn this off at any time. Data Backup does not replace your wallet recovery backup.",
+  "@dataBackupConsentBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupEnable": "Enable Data Backup",
+  "@dataBackupEnable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupAutomatic": "Automatic Data Backup",
+  "@dataBackupAutomatic": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUndecided": "Automatic backup has not been set up.",
+  "@dataBackupUndecided": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupOff": "Automatic backup is off.",
+  "@dataBackupOff": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupPending": "Waiting to back up the latest data.",
+  "@dataBackupPending": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupInProgress": "Backing up data…",
+  "@dataBackupInProgress": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupSucceeded": "Backup succeeded.",
+  "@dataBackupSucceeded": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupLastSuccess": "Last successful server backup",
+  "@dataBackupLastSuccess": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupNow": "Back up now",
+  "@dataBackupNow": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFinishRecovery": "Finish data recovery",
+  "@dataBackupFinishRecovery": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleted": "The server backup was deleted. Automatic Data Backup remains off.",
+  "@dataBackupDeleted": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDelete": "Delete server backup",
+  "@dataBackupDelete": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleteBody": "Delete the encrypted Data Backup from the server? Local wallets, data and files remain on this device. Automatic Data Backup will remain off.",
+  "@dataBackupDeleteBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupContentsTitle": "Backup contents",
+  "@dataBackupContentsTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupCheckServer": "Check server backup",
+  "@dataBackupCheckServer": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFilesTitle": "Backup files",
+  "@dataBackupFilesTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReadableWarning": "Export a readable backup?",
+  "@dataBackupReadableWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReadableBody": "Anyone with this file can read your public wallet details, labels and settings. It contains no wallet seeds or private keys, but it can reveal your financial activity. Store and share it carefully. Editing it invalidates its signature.",
+  "@dataBackupReadableBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileExported": "Backup file exported.",
+  "@dataBackupFileExported": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupExportEncrypted": "Export encrypted backup file",
+  "@dataBackupExportEncrypted": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupExportReadable": "Export readable JSON backup",
+  "@dataBackupExportReadable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupImportFile": "Import backup file",
+  "@dataBackupImportFile": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUseFile": "Use this file",
+  "@dataBackupUseFile": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUseServer": "Use the server backup",
+  "@dataBackupUseServer": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileApplyWarning": "Recover the selected copy? This applies its public wallet details, labels and settings to this device. Choosing the file while automatic Data Backup is on also replaces the server copy after recovery succeeds. It does not recover wallet seeds or grant signing access.",
+  "@dataBackupFileApplyWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileComparison": "Inspect the file and server copy, then choose which one to recover. No data is applied until you confirm your choice.",
+  "@dataBackupFileComparison": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileAutomaticOn": "Automatic Data Backup is on.",
+  "@dataBackupFileAutomaticOn": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileAutomaticOff": "Automatic Data Backup is off. Recovering this file changes this device only.",
+  "@dataBackupFileAutomaticOff": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileServerUnavailable": "The server copy could not be checked. You can choose the file. If automatic backup is on, publication stays paused until recovery and reconciliation are completed.",
+  "@dataBackupFileServerUnavailable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileSame": "The file and server contain the same data.",
+  "@dataBackupFileSame": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileDifferent": "The file and server contain different data.",
+  "@dataBackupFileDifferent": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileCreated": "File created",
+  "@dataBackupFileCreated": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReplace": "Replace server backup",
+  "@dataBackupReplace": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReplaceBody": "Replace the server copy you just inspected with this device’s current data? Recover any data you need from the server first.",
+  "@dataBackupReplaceBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupWordsApplyWarning": "Recover public wallet details, BullVault data, labels and settings from this backup? This changes the data on this device. It does not restore wallet seeds or grant signing access.",
+  "@dataBackupWordsApplyWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupWordsRecoveryHelp": "Enter the 12 Data Recovery Words to inspect a Data Backup. You will review and confirm before its wallets, labels or settings are applied.",
+  "@dataBackupWordsRecoveryHelp": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsAppAndDeviceTitle": "App and device",
+  "@settingsAppAndDeviceTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsToolsTitle": "Tools",
+  "@settingsToolsTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "@settingsSearchToolsKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchDataBackupKeywords": "data backup|metadata|labels|server backup|data recovery words",
+  "@settingsSearchDataBackupKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "wizardDataBackupDecline": "No, keep automatic backup off",
+  "@wizardDataBackupDecline": {
+    "description": "Data Backup consent in the setup wizard"
+  },
+  "wizardDataBackupRequired": "Choose whether to enable automatic Data Backup before continuing.",
+  "@wizardDataBackupRequired": {
+    "description": "Data Backup consent in the setup wizard"
+  },
+  "wizardDataBackupSaveFailed": "Your backup choice could not be saved. Please try again.",
+  "@wizardDataBackupSaveFailed": {
+    "description": "Data Backup consent in the setup wizard"
+  },
+  "dataBackupRestoreCheckTitle": "Check for Data Backups?",
+  "@dataBackupRestoreCheckTitle": {
+    "description": "Optional check after physical wallet recovery"
+  },
+  "dataBackupRestoreCheckBody": "Your wallet has been recovered. Check for its saved labels, settings, keys and vaults? You can review the backup before applying it. A complete recovery also enables automatic Data Backup.",
+  "@dataBackupRestoreCheckBody": {
+    "description": "Optional check after physical wallet recovery"
+  },
+  "dataBackupSettingUp": "Setting up Data Backup…",
+  "@dataBackupSettingUp": {
+    "description": "Data Backup home setup status"
+  },
+  "dataBackupSetupFailed": "Data Backup setup could not finish.",
+  "@dataBackupSetupFailed": {
+    "description": "Data Backup home setup status"
+  },
+  "dataBackupNotRecorded": "Not recorded",
+  "@dataBackupNotRecorded": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupNoEntries": "No entries",
+  "@dataBackupNoEntries": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupWalletReference": "Wallet reference",
+  "@dataBackupWalletReference": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupDefaultWallet": "Default wallet",
+  "@dataBackupDefaultWallet": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupHiddenWallet": "Hidden wallet",
+  "@dataBackupHiddenWallet": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupBirthday": "Wallet birthday",
+  "@dataBackupBirthday": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupRecordedSigner": "Signer recorded in this copy",
+  "@dataBackupRecordedSigner": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupDescriptorPath": "Descriptor path",
+  "@dataBackupDescriptorPath": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusActive": "Active",
+  "@dataBackupStatusActive": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusInactive": "Inactive",
+  "@dataBackupStatusInactive": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusRevoked": "Revoked",
+  "@dataBackupStatusRevoked": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusMigrating": "Migrating",
+  "@dataBackupStatusMigrating": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusCancelled": "Cancelled",
+  "@dataBackupStatusCancelled": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupUpdatedAt": "Updated at",
+  "@dataBackupUpdatedAt": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupLabelInput": "Input",
+  "@dataBackupLabelInput": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupLabelOutput": "Output",
+  "@dataBackupLabelOutput": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupHideAmounts": "Hide amounts",
+  "@dataBackupHideAmounts": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupSecondsValue": "{seconds} seconds",
+  "@dataBackupSecondsValue": {
+    "description": "Read-only Data Backup inventory detail",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dataBackupSourceDevice": "On the source device",
+  "@dataBackupSourceDevice": {
+    "description": "Public signer facts recorded in the selected backup copy"
+  },
+  "dataBackupMasterFingerprint": "Master fingerprint",
+  "@dataBackupMasterFingerprint": {
+    "description": "Public signer facts recorded in the selected backup copy"
+  },
+  "dataBackupTimeout": "The backup operation timed out. Please try again.",
+  "@dataBackupTimeout": {
+    "description": "Shown when a Data Backup action exceeds its deadline."
+  },
+  "dataBackupPreparingFile": "Preparing backup file…",
+  "@dataBackupPreparingFile": {
+    "description": "Progress while preparing an exported backup or inspecting a selected backup file."
+  },
+  "importWalletHardwareTitle": "Hardware wallet",
+  "@importWalletHardwareTitle": {
+    "description": "Settings entry and import page for hardware and watch-only wallets"
+  },
+  "importWalletSeedTitle": "Import seed",
+  "@importWalletSeedTitle": {
+    "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "bullVaultMenuTitle": "BullVault (multisig)",
+  "@bullVaultMenuTitle": {
+    "description": "BullVault menu title and Settings entry"
+  },
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "bullVaultRestoreMobilePassphraseAction": "Use mobile passphrase",
+  "@bullVaultRestoreMobilePassphraseAction": {
+    "description": "After recovering a vault, verify the existing passphrase for its mobile key"
+  },
+  "bullVaultRestoreMobilePassphraseFailure": "Could not restore mobile access. You can still continue with this vault.",
+  "@bullVaultRestoreMobilePassphraseFailure": {
+    "description": "The optional mobile-access attempt failed after the vault was successfully restored"
+  },
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file. BULL will use its original backup path and the wallet seeds on this device to find the matching key, then check that it opens the file. No backup PIN or server connection is needed. This does not test your PIN or server recovery.",
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. It may belong to another wallet, or the file may be damaged. No key has been revealed. Try another copy or use the server.",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyPathUnavailable": "This backup’s original key-derivation path is missing or unsupported. BULL cannot safely guess it. Try another saved copy, or use the server if it still has the matching record.",
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeySeedUnavailable": "The wallet seed needed to derive this key is not available. Unlock the matching wallet and try again, or use this file and its backup PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "statusCheckDataBackupServer": "Data Backup Server",
+  "@statusCheckDataBackupServer": {
+    "description": "Service Status row for the wallet data backup server"
+  },
+  "bullVaultExperimentalWarningTitle": "Experimental feature",
+  "@bullVaultExperimentalWarningTitle": {
+    "description": "Title of the warning shown each time BullVault is opened from Settings."
+  },
+  "bullVaultExperimentalWarningMessage": "BullVault is experimental. Do not use it for real funds.",
+  "@bullVaultExperimentalWarningMessage": {
+    "description": "Warning requiring explicit acknowledgement before entering the experimental BullVault feature."
+  },
+  "signingKeyUsedTitle": "Keys already used",
+  "@signingKeyUsedTitle": {},
+  "signingKeyUsedNoDescription": "No description",
+  "@signingKeyUsedNoDescription": {},
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsedSign": {},
+  "bullVaultRegisterExternalEntry": "Register an external multisig",
+  "@bullVaultRegisterExternalEntry": {},
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  },
+  "walletsListTitle": "Wallet details",
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  },
+  "settingsDataExportTitle": "Data export",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
+  }
 }

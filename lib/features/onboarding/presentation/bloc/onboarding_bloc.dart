@@ -75,9 +75,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     switch (await _recoverOnboardingWalletUsecase.execute(
       mnemonicWords: event.mnemonic.words,
     )) {
-      case Ok():
+      case Ok(:final value):
         emit(
-          state.copyWith(onboardingStepStatus: OnboardingStepStatus.success),
+          state.copyWith(
+            onboardingStepStatus: OnboardingStepStatus.success,
+            initialWalletLabels: value,
+          ),
         );
       case Err(:final failure):
         emit(

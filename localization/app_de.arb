@@ -613,7 +613,6 @@
   },
   "broadcastSignedTxCameraButton": "Kamera",
   "importQrDeviceJadeName": "Blockstream Jade",
-  "importWalletImportMnemonic": "Mnemonik importieren",
   "bip85NextMnemonic": "Nächster Mnemonic",
   "transactionDetailLabelAmountReceived": "Erhaltener Betrag",
   "receivePaymentReceived": "Zahlung erhalten!",
@@ -656,7 +655,6 @@
   "sellSelectNetwork": "Netzwerk auswählen",
   "sellSendPaymentOrderNumber": "Bestellnummer",
   "dcaConfirmPaymentMethod": "Zahlungsmethode",
-  "walletSettingsImportWalletTitle": "Wallet importieren",
   "backupWalletErrorGoogleDriveConnection": "Nicht mit Google Drive verbunden.",
   "payEnterInvoice": "Rechnung",
   "broadcastSignedTxPasteHint": "PSBT oder Transaktions-HEX einfügen.",
@@ -1545,7 +1543,6 @@
   "swapConfirmTitle": "Bestätigen",
   "testBackupGoogleDrivePrivacyPart1": "Diese Informationen",
   "connectHardwareWalletKeystone": "Keystone",
-  "importWalletTitle": "Neue Wallet hinzufügen",
   "mempoolSettingsDefaultServer": "Standard-Server",
   "sendPasteAddressOrInvoice": "Zahlungs- oder Rechnungsadresse einfügen",
   "swapToLabel": "An",
@@ -4868,7 +4865,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin-Karte|Händlerkarte|Bitcoin ausgeben",
   "settingsSearchTermsOfServiceKeywords": "Allgemeine Geschäftsbedingungen|AGB|Rechtliches|Nutzungsvereinbarung",
   "settingsSearchServicesStatusKeywords": "Dienststatus|Systemstatus|Online|Störung",
-  "settingsSearchImportWalletKeywords": "Wallet hinzufügen|Wallet wiederherstellen|Mnemonic importieren|Watch-only-Wallet|Hardware-Wallet",
   "settingsSearchBroadcastTransactionKeywords": "Signierte Transaktion senden|Transaktion übertragen|Rohtransaktion|Transaktions-Hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin-Privatsphäre|Gemeinsame Transaktion|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|Automatischer Swap|Automatische Übertragung|Sofortiges Wallet-Guthaben",
@@ -4898,5 +4894,8 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "walletsListTitle": "Wallet-Details",
+  "walletsListNoWalletsMessage": "Keine Wallet gefunden."
 }

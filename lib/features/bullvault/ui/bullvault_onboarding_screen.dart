@@ -116,8 +116,9 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
     BullVaultOnboardingStep.mobilePassphrase => _MobilePassphrase(state: state),
     BullVaultOnboardingStep.review => _Review(state: state),
     BullVaultOnboardingStep.recoveryPackage => BullVaultRecoveryPackageStep(
-      exported: state.recoveryPackageExported,
+      descriptor: state.result!.policy.descriptor,
       confirmed: state.recoveryPackageConfirmed,
+      onImport: context.read<BullVaultOnboardingCubit>().importRecoveryPackage,
       onSave: () => _shareRecoveryPackage(context, state),
       onConfirm: context
           .read<BullVaultOnboardingCubit>()
@@ -1172,9 +1173,6 @@ Future<void> _shareRecoveryPackage(
     context,
     content: state.recoveryPackageContent!,
     policyId: state.result!.policy.id,
-    onExported: context
-        .read<BullVaultOnboardingCubit>()
-        .markRecoveryPackageExported,
   );
 }
 

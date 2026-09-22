@@ -1,21 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:bb_mobile/features/status_check/public/service_status.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AllSettingsScreen extends StatefulWidget {
   const AllSettingsScreen({super.key});
@@ -108,12 +103,8 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   mainAxisAlignment: .spaceEvenly,
                   children: [
                     InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.githubSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
+                      onTap: () =>
+                          items.byId(SettingsItemId.github).open(context),
                       child: Column(
                         mainAxisSize: .min,
                         children: [
@@ -137,19 +128,8 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                       ),
                     ),
                     InkWell(
-                      onTap: () {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.goNamed(ExchangeSupportChatFacade.routeName);
-                        }
-                      },
+                      onTap: () =>
+                          items.byId(SettingsItemId.supportChat).open(context),
                       child: Column(
                         mainAxisSize: .min,
                         children: [

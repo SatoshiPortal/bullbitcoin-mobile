@@ -125,7 +125,6 @@
   "mempoolCustomServerBottomSheetDescription": "Anna mukautetun mempool-palvelimesi URL-osoite. Palvelin vahvistetaan ennen tallennusta.",
   "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
   "mempoolSettingsUseForFeeEstimationDescription": "Kun käytössä, tätä palvelinta käytetään maksuarviointiin. Kun pois käytöstä, käytetään sen sijaan Bull Bitcoinin mempool-palvelinta.",
-  "walletSettingsImportWalletTitle": "Tuo lompakko",
   "bitcoinSettingsBroadcastTransactionTitle": "Lähetä transaktio",
   "bitcoinSettingsTestnetModeTitle": "Testnet-tila",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministiset entropiat",
@@ -2735,9 +2734,7 @@
   "jadeStep13": "Bull-lompakko pyytää sinua skannaamaan Jadessa näkyvän QR-koodin. Skannaa se.",
   "jadeStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "jadeStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
-  "importWalletTitle": "Lisää uusi lompakko",
   "importWalletConnectHardware": "Yhdistä laitteistolompakko",
-  "importWalletImportMnemonic": "Tuo siemenlause",
   "importWalletImportWatchOnly": "Tuo watch-only",
   "importWalletSectionGeneric": "Yleiset lompakot",
   "importWalletSectionHardware": "Laitteistolompakot",
@@ -4881,7 +4878,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoin-kartta|kauppiaskartta|bitcoinia hyväksyvät paikat",
   "settingsSearchTermsOfServiceKeywords": "käyttöehdot|oikeudelliset tiedot|käyttäjäsopimus|TOS",
   "settingsSearchServicesStatusKeywords": "palveluiden tila|järjestelmän tila|verkossa|käyttökatko",
-  "settingsSearchImportWalletKeywords": "lisää lompakko|palauta lompakko|tuo muistisana|vain katseltava lompakko|laitteistolompakko",
   "settingsSearchBroadcastTransactionKeywords": "lähetä allekirjoitettu tapahtuma|julkaise tapahtuma|raaka tapahtuma|tapahtuman hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin-yksityisyys|yhteistyötapahtuma|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "automaattinen vaihto|automaattinen swap|automaattinen siirto|pikakäyttölompakon saldo|Autoswap",
@@ -4912,5 +4908,8 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "bitcoinSettingsWalletsTitle": "Lompakot",
+  "walletsListTitle": "Lompakon tiedot",
+  "walletsListNoWalletsMessage": "Lompakoita ei löytynyt"
 }

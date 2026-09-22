@@ -940,7 +940,6 @@
   "mempoolErrorSaveServerFailed": "სერვერის შენახვა ვერ მოხერხდა",
   "mempoolErrorLoadFailed": "Mempool სერვერის მონაცემების ჩატვირთვა ვერ მოხერხდა",
   "mempoolErrorDeleteFailed": "მორგებული სერვერის წაშლა ვერ მოხერხდა",
-  "walletSettingsImportWalletTitle": "საფულის იმპორტი",
   "bitcoinSettingsBroadcastTransactionTitle": "ტრანზაქციის ტრანსლაცია",
   "bitcoinSettingsTestnetModeTitle": "Testnet რეჟიმი",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 დეტერმინისტული ენტროპიები",
@@ -2824,9 +2823,7 @@
   "jadeStep13": "Bull Bitcoin საფულე გთხოვთ, დაასკანეროთ QR კოდი Jade-ზე. დაასკანერეთ ის.",
   "jadeStep14": "ტრანზაქცია იმპორტირდება Bull Bitcoin საფულეში.",
   "jadeStep15": "ის ახლა მზადაა ტრანსლაციისთვის! როგორც კი დააჭირებთ ტრანსლაციას, ტრანზაქცია გამოქვეყნდება Bitcoin ქსელში და თანხა გაიგზავნება.",
-  "importWalletTitle": "ახალი საფულის დამატება",
   "importWalletConnectHardware": "აპარატული საფულის დაკავშირება",
-  "importWalletImportMnemonic": "მნემონიკის იმპორტი",
   "importWalletImportWatchOnly": "მხოლოდ-სათვალთვალო საფულის იმპორტი",
   "importWalletSectionGeneric": "ჩვეულებრივი საფულეები",
   "importWalletSectionHardware": "აპარატული საფულეები",
@@ -3711,7 +3708,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|ბიტკოინის რუკა|მოვაჭრეების რუკა|ბიტკოინის დახარჯვის ადგილები",
   "settingsSearchTermsOfServiceKeywords": "წესები და პირობები|იურიდიული ინფორმაცია|მომხმარებლის შეთანხმება|TOS",
   "settingsSearchServicesStatusKeywords": "სერვისის მდგომარეობა|სისტემის სტატუსი|ონლაინ|სერვისის შეფერხება",
-  "settingsSearchImportWalletKeywords": "საფულის დამატება|საფულის აღდგენა|მნემონიკური ფრაზის იმპორტი|მხოლოდ სანახავი საფულე|აპარატული საფულე",
   "settingsSearchBroadcastTransactionKeywords": "ხელმოწერილი ტრანზაქციის გავრცელება|ტრანზაქციის გაგზავნა|დაუმუშავებელი ტრანზაქცია|ტრანზაქციის თექვსმეტობითი კოდი|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin-ის კონფიდენციალურობა|ერთობლივი ტრანზაქცია|P2EP",
   "settingsSearchAutoswapKeywords": "ავტომატური სვოპი|ავტომატური გაცვლა|ავტომატური გადარიცხვა|მყისიერი საფულის ბალანსი",
@@ -3742,5 +3738,8 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "bitcoinSettingsWalletsTitle": "საფულეები",
+  "walletsListTitle": "საფულის დეტალები",
+  "walletsListNoWalletsMessage": "საფულეები ვერ მოიძებნა"
 }

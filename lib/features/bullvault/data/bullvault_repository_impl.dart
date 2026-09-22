@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
@@ -9,17 +13,90 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.da
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:file_picker/file_picker.dart';
 
 final class BullVaultRepositoryImpl implements BullVaultRepository {
   final BullVaultMetadataDatasource _datasource;
   final BullVaultRecordMapper _recordMapper;
   final BullVaultRecoveryPackageCodec _recoveryPackageCodec;
+  final FilePicker? _filePicker;
 
   BullVaultRepositoryImpl(
     this._datasource,
     this._recordMapper,
-    this._recoveryPackageCodec,
-  );
+    this._recoveryPackageCodec, {
+    this._filePicker,
+  });
+
+  @override
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() async {
+    try {
+      final selected = await (_filePicker ?? FilePicker.platform).pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['json', 'txt'],
+        withData: false,
+        withReadStream: true,
+      );
+      if (selected == null || selected.files.isEmpty) return const Ok(null);
+      if (selected.files.length != 1) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final file = selected.files.single;
+      if (file.size > BullVaultRecoveryPackage.maximumFileBytes) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final Stream<List<int>> source;
+      if (file.readStream != null) {
+        source = file.readStream!;
+      } else if (file.path != null) {
+        source = File(file.path!).openRead();
+      } else if (file.bytes != null) {
+        source = Stream.value(file.bytes!);
+      } else {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in source) {
+        if (bytes.length + chunk.length >
+            BullVaultRecoveryPackage.maximumFileBytes) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        bytes.add(chunk);
+      }
+      return Ok(utf8.decode(bytes.takeBytes()));
+    } on Exception {
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+  }
+
+  @override
+  Stream<void> get changes => _datasource.changes;
+
+  @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getVisible(
+    Network network,
+  ) async => (await getAll()).map((records) {
+    final visible =
+        records
+            .where(
+              (record) =>
+                  record.recoveryPackage.policy.network.isTestnet ==
+                      network.isTestnet &&
+                  record.status != BullVaultLifecycleStatus.cancelled,
+            )
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return List.unmodifiable(visible);
+  });
+
+  @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() =>
+      _transaction(
+        () async => Ok(
+          (await _datasource.loadAll()).map(_recordMapper.toEntity).toList(),
+        ),
+        failure: const BullVaultInvalidRecoveryFailure(),
+      );
 
   @override
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
@@ -94,6 +171,24 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     final model = await _datasource.load(walletId);
     if (model == null) return const Ok(null);
     return Ok(_recordMapper.toEntity(model));
+  });
+
+  @override
+  Future<Result<DateTime, BullVaultFailure>> recordBackupTest({
+    required BullVaultRecord expected,
+    required BullVaultBackupTestKind kind,
+    required DateTime testedAt,
+  }) => _transaction(() async {
+    final date = await _datasource.recordBackupTest(
+      walletId: expected.walletId,
+      expectedRecoveryPackage: _recordMapper.toModel(expected).recoveryPackage,
+      server: switch (kind) {
+        BullVaultBackupTestKind.descriptor => false,
+        BullVaultBackupTestKind.server => true,
+      },
+      testedAt: testedAt,
+    );
+    return date == null ? const Err(BullVaultBackupStatusFailure()) : Ok(date);
   });
 
   @override
@@ -204,8 +299,33 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     if (record.status != BullVaultLifecycleStatus.active) {
       return const Err(BullVaultInvalidRecoveryFailure());
     }
+    BullVaultRecord? predecessorToLink;
+    final predecessorId = record.previousVaultId;
+    if (predecessorId != null) {
+      final row = await _datasource.load(predecessorId);
+      final previous = row == null ? null : _recordMapper.toEntity(row);
+      if (previous?.status == BullVaultLifecycleStatus.migrating &&
+          previous?.successorWalletId == null) {
+        if (previous!.lineageId != record.lineageId ||
+            previous.vaultGeneration >= record.vaultGeneration ||
+            previous.mobileAccount != record.mobileAccount ||
+            !previous.recoveryPackage.policy.hasSameSignerConfigurationAs(
+              record.recoveryPackage.policy,
+            )) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        predecessorToLink = previous;
+      }
+    }
     final saved = await _save(record);
     if (saved case Err()) return saved;
+    if (predecessorToLink != null) {
+      await _datasource.save(
+        _recordMapper.toModel(
+          predecessorToLink.copyWith(successorWalletId: record.walletId),
+        ),
+      );
+    }
     await _datasource.setWalletHidden(record.walletId, false);
     return const Ok(null);
   }, failure: const BullVaultInvalidRecoveryFailure());

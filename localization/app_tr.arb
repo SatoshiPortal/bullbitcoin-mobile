@@ -1864,10 +1864,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Import Mnemonik",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "Sonraki Mnemonik",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -1998,10 +1994,6 @@
   "sellSendPaymentAdvanced": "Gelişmiş Ayarlar",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Import Wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google Drive'a bağlanmak için başarısız oldu",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4892,10 +4884,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "Yeni bir cüzdan ekleyin",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "Varsayılan Server Server",
   "@mempoolSettingsDefaultServer": {
@@ -12197,7 +12185,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin haritası|satıcı haritası|bitcoin harcanabilen yerler",
   "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",
   "settingsSearchServicesStatusKeywords": "hizmet durumu|sistem durumu|çevrimiçi|kesinti",
-  "settingsSearchImportWalletKeywords": "cüzdan ekle|cüzdanı kurtar|anımsatıcı ifadeyi içe aktar|sadece izleme cüzdanı|donanım cüzdanı",
   "settingsSearchBroadcastTransactionKeywords": "imzalı işlemi yayınla|işlemi gönder|ham işlem|işlem hex kodu|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin gizliliği|ortak işlem|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "otomatik takas|otomatik swap|otomatik aktarım|anlık cüzdan bakiyesi|Autoswap",
@@ -12228,5 +12215,8 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "bitcoinSettingsWalletsTitle": "Cüzdanlar",
+  "walletsListTitle": "Cüzdan detayları",
+  "walletsListNoWalletsMessage": "Hiçbir cüzdan bulunamadı"
 }

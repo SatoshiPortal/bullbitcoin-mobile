@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
@@ -5,9 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class BullVaultRestoreCubit extends Cubit<BullVaultRestoreState> {
   final RestoreBullVaultUsecase _restoreUsecase;
+  final PickBullVaultRecoveryFileUsecase _pickRecoveryFile;
 
-  BullVaultRestoreCubit(this._restoreUsecase)
+  BullVaultRestoreCubit(this._restoreUsecase, this._pickRecoveryFile)
     : super(const BullVaultRestoreState());
+
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() =>
+      _pickRecoveryFile.execute();
 
   Future<void> restore({
     required BullVaultRestoreInputKind kind,

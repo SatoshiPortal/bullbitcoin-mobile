@@ -748,7 +748,6 @@
   "mempoolErrorSaveServerFailed": "Չհաջողվեց պահպանել սերվերը",
   "mempoolErrorLoadFailed": "Չհաջողվեց բեռնել mempool սերվերի տվյալները",
   "mempoolErrorDeleteFailed": "Չհաջողվեց ջնջել հատուկ սերվերը",
-  "walletSettingsImportWalletTitle": "Ներմուծել դրամապանակ",
   "bitcoinSettingsBroadcastTransactionTitle": "Հեռարձակել գործարքը",
   "bitcoinSettingsTestnetModeTitle": "Testnet ռեժիմ",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 դետերմինիստական էնտրոպիաներ",
@@ -2671,9 +2670,7 @@
   "jadeStep13": "Bull Bitcoin դրամապանակը ձեզանից կխնդրի սկանավորել Jade-ի վրայի QR կոդը։ Սկանավորեք այն։",
   "jadeStep14": "Գործարքը կներմուծվի Bull Bitcoin դրամապանակում։",
   "jadeStep15": "Այն այժմ պատրաստ է հեռարձակման! Հենց որ սեղմեք հեռարձակել, գործարքը կհրապարակվի Bitcoin ցանցում, և միջոցները կուղարկվեն։",
-  "importWalletTitle": "Ավելացնել նոր դրամապանակ",
   "importWalletConnectHardware": "Միացնել apparatային դրամապանակ",
-  "importWalletImportMnemonic": "Ներմուծել մնեմոնիկ",
   "importWalletImportWatchOnly": "Ներմուծել միայն-դիտում",
   "importWalletSectionGeneric": "Ընդհանուր դրամապանակներ",
   "importWalletSectionHardware": "Apparatային դրամապանակներ",
@@ -3564,7 +3561,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|բիթքոյնի քարտեզ|վաճառողների քարտեզ|բիթքոյն ծախսելու վայրեր",
   "settingsSearchTermsOfServiceKeywords": "պայմաններ և դրույթներ|իրավական տեղեկություն|օգտագործողի համաձայնագիր|TOS",
   "settingsSearchServicesStatusKeywords": "ծառայության վիճակ|համակարգի կարգավիճակ|առցանց|ծառայության խափանում",
-  "settingsSearchImportWalletKeywords": "ավելացնել դրամապանակ|վերականգնել դրամապանակը|ներմուծել մնեմոնիկը|միայն դիտման դրամապանակ|սարքային դրամապանակ",
   "settingsSearchBroadcastTransactionKeywords": "հեռարձակել ստորագրված գործարքը|ուղարկել գործարքը|հում գործարք|գործարքի տասնվեցական կոդ|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin գաղտնիություն|համատեղ գործարք|P2EP",
   "settingsSearchAutoswapKeywords": "ավտոմատ սվոփ|ավտոմատ փոխանակում|ավտոմատ փոխանցում|ակնթարթային դրամապանակի մնացորդ",
@@ -3595,5 +3591,8 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "bitcoinSettingsWalletsTitle": "Դրամապանակներ",
+  "walletsListTitle": "Դրամապանակի մանրամասներ",
+  "walletsListNoWalletsMessage": "Դրամապանակներ չեն գտնվել"
 }

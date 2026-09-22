@@ -73,3 +73,15 @@ final class VaultRateLimitedFailure extends RecoverBullFailure {
 final class RecoverBullUnexpectedFailure extends RecoverBullFailure {
   const RecoverBullUnexpectedFailure([super.logMessage]);
 }
+
+final class VaultKeyPathUnavailableFailure extends RecoverBullFailure {
+  const VaultKeyPathUnavailableFailure();
+}
+
+final class VaultSeedUnavailableFailure extends RecoverBullFailure {
+  const VaultSeedUnavailableFailure();
+}
+
+final class VaultLocalKeyMismatchFailure extends RecoverBullFailure {
+  const VaultLocalKeyMismatchFailure();
+}

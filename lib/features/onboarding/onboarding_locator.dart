@@ -34,6 +34,7 @@ class OnboardingLocator {
 
     locator.registerFactory<RecoverOnboardingWalletUsecase>(
       () => RecoverOnboardingWalletUsecase(
+        getWallets: locator(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
         completePhysicalBackupVerificationUsecase:
             locator<CompletePhysicalBackupVerificationUsecase>(),

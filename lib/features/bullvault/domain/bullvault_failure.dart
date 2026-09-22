@@ -32,6 +32,10 @@ final class BullVaultBackupStatusFailure extends BullVaultFailure {
   const BullVaultBackupStatusFailure([super.logMessage]);
 }
 
+final class BullVaultBackupMismatchFailure extends BullVaultFailure {
+  const BullVaultBackupMismatchFailure();
+}
+
 final class BullVaultRenewalFailure extends BullVaultFailure {
   const BullVaultRenewalFailure([super.logMessage]);
 }
@@ -42,4 +46,12 @@ final class BullVaultRenewalHasFundsFailure extends BullVaultFailure {
 
 final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
   const BullVaultInvalidRecoveryFailure([super.logMessage]);
+}
+
+final class BullVaultCosignerMismatchFailure extends BullVaultFailure {
+  const BullVaultCosignerMismatchFailure();
+}
+
+final class BullVaultCosignerImportFailure extends BullVaultFailure {
+  const BullVaultCosignerImportFailure();
 }

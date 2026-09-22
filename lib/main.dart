@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'dart:async';
 import 'dart:io' show InternetAddress, Platform;
 
@@ -15,6 +16,7 @@ import 'package:bb_mobile/core/utils/report.dart';
 
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
@@ -95,6 +97,15 @@ void resumePayjoinsOnAppResume(
   }
 }
 
+@visibleForTesting
+Widget buildBackupSettingsScope(BuildContext context, Widget child) {
+  final started = context.watch<AppStartupBloc>().state is AppStartupSuccess;
+  final hasDefaultWallet = context.select<WalletBloc, bool>(
+    (bloc) => bloc.state.wallets.any((wallet) => wallet.isDefault),
+  );
+  return BackupSettingsScope(ready: started && hasDefaultWallet, child: child);
+}
+
 class Bull {
   static final _diagnosticRuntime = DiagnosticRuntimeContext();
   static Future<void> init({String? payjoinDatabasePath}) async {
@@ -115,7 +126,10 @@ class Bull {
     await initLocator(payjoinDatabasePath: payjoinDatabasePath);
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    if (await locator<ApplyPendingWizardChoicesUsecase>().execute()
+        case Err()) {
+      throw Exception('Could not apply setup choices');
+    }
     final settings = locator<SettingsRepository>();
     _diagnosticRuntime.setTorLoader(
       () => _loadTorContext(settings, locator<bull_tor.Tor>()),
@@ -463,7 +477,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
+                      final app = buildBackupSettingsScope(
+                        context,
+                        AppStartupWidget(app: child!),
+                      );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
                       // banner, so this is how testers tell beta from production.

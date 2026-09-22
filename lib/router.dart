@@ -1,4 +1,11 @@
+import 'package:bb_mobile/seed_recovery_completion.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
+import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'dart:io';
+
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -8,6 +15,7 @@ import 'package:bb_mobile/features/announcements/presentation/announcements_cubi
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
@@ -43,7 +51,6 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -63,6 +70,18 @@ class AppRouter {
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
+    redirect: (context, state) {
+      final isBullVault =
+          state.uri.path == '/bullvault' ||
+          state.uri.path.startsWith('/bullvault/') ||
+          state.uri.path ==
+              '${SettingsRoute.settings.path}/${SettingsRoute.signingKeyExport.path}';
+      if (isBullVault &&
+          context.read<SettingsCubit>().state.isSuperuser != true) {
+        return SettingsRoute.settings.path;
+      }
+      return null;
+    },
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
@@ -162,13 +181,20 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
-            featureWarningsBuilder: (context, wallets) =>
+            featureWarningsBuilder: (context, wallets) => Column(
+              children: [
+                BackupReminderHomeContribution(wallets: wallets),
+                const DataBackupSetupBanner(),
                 BullVaultHomeContribution(wallets: wallets),
+              ],
+            ),
           ),
           ...ExchangeRouter.routes,
         ],
       ),
-      OnboardingRouter.route,
+      OnboardingRouter.route(
+        onPhysicalRestore: offerDataBackupAfterPhysicalRestore,
+      ),
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute(
         featureSliverBuilder: (context, wallet) => wallet.isBitcoin
@@ -186,6 +212,8 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        onRegisterDescriptor: (context) =>
+            context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
         walletDetailsActionsBuilder: (context, wallet) => [
           BullVaultWalletSettingsContribution(wallet: wallet),
         ],
@@ -215,7 +243,26 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      ...BullVaultRouter.routes,
+      ...BullVaultRouter.routes(
+        registerExternalRouteName: ImportWatchOnlyWalletRoutes.import.name,
+      ),
+      ...BackupSettingsRouter.recoveryRoutes(
+        onVaultsRecovered: (result) {
+          if (result.complete) {
+            unawaited(
+              _recordRecoveredVaults(result.wallets.walletReferences.values),
+            );
+          }
+        },
+        onDataRecovered: (snapshot, result) {
+          if (!result.complete) return;
+          final ids = snapshot.vaults
+              .map((vault) => result.wallets.walletReferences[vault.reference])
+              .whereType<String>();
+          unawaited(_recordRecoveredVaults(ids));
+        },
+      ),
+      KeychainManifestRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
@@ -226,10 +273,27 @@ class AppRouter {
       MempoolSettingsRoute.route,
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
+      RecoverBullRouter.localKeyRoute,
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static Future<void> _recordRecoveredVaults(Iterable<String> ids) async {
+    for (final id in ids) {
+      try {
+        final wallet = await locator<GetWalletUsecase>().execute(id);
+        final context = rootNavigatorKey.currentContext;
+        if (wallet == null || context == null || !context.mounted) continue;
+        locator<BullVaultRecoveryNoticeCubit>().record(
+          walletId: wallet.id,
+          label: wallet.displayLabel(context),
+        );
+      } on GetWalletException {
+        // Do not announce a vault whose target record cannot be read.
+      }
+    }
+  }
 }

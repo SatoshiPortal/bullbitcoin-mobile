@@ -16,6 +16,10 @@ class FrozenWalletUtxoDatasource {
     : _db = db; // ignore: prefer_initializing_formals
   // Named `db` (not `_db`) so callers read `db:`; the field stays private.
 
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes =>
+      _db.tableUpdates(TableUpdateQuery.onTable(_db.frozenUtxos)).map((_) {});
+
   /// Upserts a freeze row per outpoint, attributed to [walletId] (the wallet
   /// origin). All-or-nothing via a single batch.
   Future<void> freezeOutpoints({

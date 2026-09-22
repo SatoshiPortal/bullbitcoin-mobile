@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -18,10 +19,12 @@ class WizardLocator {
     locator.registerLazySingleton<WizardRepository>(
       () => WizardRepositoryImpl(locator<WizardLocalDatasource>()),
     );
+    locator.registerFactory(() => WizardFacade(locator()));
     locator.registerFactory<ApplyPendingWizardChoicesUsecase>(
       () => ApplyPendingWizardChoicesUsecase(
         wizardRepository: locator<WizardRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        walletBackup: locator(),
       ),
     );
   }

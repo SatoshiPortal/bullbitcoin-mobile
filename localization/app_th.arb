@@ -1872,10 +1872,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "นําเข้า Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "ถัดไป Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -2006,10 +2002,6 @@
   "sellSendPaymentAdvanced": "การตั้งค่าขั้นสูง",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "รหัส",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "เชื่อมต่อกับ Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4916,10 +4908,6 @@
   "connectHardwareWalletKeystone": "แจ็ค",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "เพิ่มกระเป๋าสตางค์ใหม่",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "เพิ่มเซิร์ฟเวอร์",
   "@mempoolSettingsDefaultServer": {
@@ -12201,7 +12189,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|แผนที่บิตคอยน์|แผนที่ร้านค้า|สถานที่ใช้บิตคอยน์",
   "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
   "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
-  "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
   "settingsSearchBroadcastTransactionKeywords": "เผยแพร่ธุรกรรมที่ลงนามแล้ว|ส่งธุรกรรม|ธุรกรรมดิบ|เลขฐานสิบหกของธุรกรรม|PSBT",
   "settingsSearchPayjoinKeywords": "ความเป็นส่วนตัวของ Payjoin|ธุรกรรมร่วมกัน|P2EP",
   "settingsSearchAutoswapKeywords": "สวอปอัตโนมัติ|แลกเปลี่ยนอัตโนมัติ|โอนอัตโนมัติ|ยอดคงเหลือกระเป๋าทันที",
@@ -12232,5 +12219,8 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "bitcoinSettingsWalletsTitle": "กระเป๋าสตางค์",
+  "walletsListTitle": "รายละเอียด",
+  "walletsListNoWalletsMessage": "ไม่มีกระเป๋าเงิน"
 }

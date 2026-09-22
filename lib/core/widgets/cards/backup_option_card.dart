@@ -9,6 +9,7 @@ class BackupOptionCard extends StatelessWidget {
   final String title;
   final String description;
   final String? tag;
+  final List<String> additionalTags;
   final VoidCallback onTap;
 
   const BackupOptionCard({
@@ -17,6 +18,7 @@ class BackupOptionCard extends StatelessWidget {
     required this.title,
     required this.description,
     this.tag,
+    this.additionalTags = const [],
     required this.onTap,
   });
 
@@ -60,7 +62,16 @@ class BackupOptionCard extends StatelessWidget {
                           maxLines: 3,
                         ),
                         const Gap(10),
-                        if (tag != null) OptionsTag(text: tag!),
+                        if (tag != null || additionalTags.isNotEmpty)
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              if (tag != null) OptionsTag(text: tag!),
+                              for (final tag in additionalTags)
+                                OptionsTag(text: tag),
+                            ],
+                          ),
                       ],
                     ),
                   ),

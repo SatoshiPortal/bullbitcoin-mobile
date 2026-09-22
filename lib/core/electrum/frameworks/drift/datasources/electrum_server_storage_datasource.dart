@@ -9,6 +9,11 @@ class ElectrumServerStorageDatasource {
 
   const ElectrumServerStorageDatasource({required this._sqlite});
 
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.electrumServers))
+      .map((_) {});
+
   Future<void> store(ElectrumServerModel server) async {
     try {
       final row = server.toSqlite();

@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_detail_fields.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
 import 'package:flutter/material.dart';
 
 class WalletSignerDetails extends StatelessWidget {
@@ -16,9 +16,22 @@ class WalletSignerDetails extends StatelessWidget {
   final void Function(WalletSigner signer, SignerDeviceEntity? signerDevice)?
   onSignerDeviceChanged;
 
+  final Widget Function(BuildContext, WalletSigner)? signerSummaryBuilder;
+  final Widget Function(BuildContext, WalletDescriptorKey)? accountKeyBuilder;
+
   const WalletSignerDetails({
     super.key,
     required this.signers,
+    this.isUpdatingSignerDevice = false,
+    this.onSignerDeviceChanged,
+  }) : signerSummaryBuilder = null,
+       accountKeyBuilder = null;
+
+  const WalletSignerDetails.inspection({
+    super.key,
+    required this.signers,
+    required this.signerSummaryBuilder,
+    required this.accountKeyBuilder,
     this.isUpdatingSignerDevice = false,
     this.onSignerDeviceChanged,
   });
@@ -28,19 +41,36 @@ class WalletSignerDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        BBText(
-          context.loc.walletDetailsSignersLabel,
-          style: context.font.titleLarge,
-        ),
-        const Gap(18),
-        for (final (index, signer) in signers.indexed) ...[
-          _SignerDetails(
-            index: index,
-            signer: signer,
-            isUpdatingSignerDevice: isUpdatingSignerDevice,
-            onSignerDeviceChanged: onSignerDeviceChanged,
+        if (signerSummaryBuilder == null) ...[
+          BBText(
+            context.loc.walletDetailsSignersLabel,
+            style: context.font.titleLarge,
           ),
-          if (index != signers.length - 1) const Gap(28),
+          const Gap(18),
+        ],
+        for (final (index, signer) in signers.indexed) ...[
+          if (signerSummaryBuilder != null)
+            BullBorderedTile(
+              backgroundColor: context.appColors.surface,
+              padding: const EdgeInsets.all(16),
+              child: _SignerDetails(
+                index: index,
+                signer: signer,
+                isUpdatingSignerDevice: isUpdatingSignerDevice,
+                onSignerDeviceChanged: onSignerDeviceChanged,
+                summary: signerSummaryBuilder!(context, signer),
+                accountKeyBuilder: accountKeyBuilder,
+              ),
+            )
+          else
+            _SignerDetails(
+              index: index,
+              signer: signer,
+              isUpdatingSignerDevice: isUpdatingSignerDevice,
+              onSignerDeviceChanged: onSignerDeviceChanged,
+            ),
+          if (index != signers.length - 1)
+            Gap(signerSummaryBuilder == null ? 28 : 24),
         ],
       ],
     );
@@ -54,11 +84,16 @@ class _SignerDetails extends StatelessWidget {
   final void Function(WalletSigner signer, SignerDeviceEntity? signerDevice)?
   onSignerDeviceChanged;
 
+  final Widget? summary;
+  final Widget Function(BuildContext, WalletDescriptorKey)? accountKeyBuilder;
+
   const _SignerDetails({
     required this.index,
     required this.signer,
     required this.isUpdatingSignerDevice,
     required this.onSignerDeviceChanged,
+    this.summary,
+    this.accountKeyBuilder,
   });
 
   @override
@@ -71,12 +106,21 @@ class _SignerDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        BBText(
-          label,
-          style: context.font.titleMedium?.copyWith(fontWeight: .w600),
-        ),
+        if (summary != null)
+          summary!
+        else
+          BBText(
+            label,
+            style: context.font.titleMedium?.copyWith(fontWeight: .w600),
+          ),
         const Gap(12),
-        if (signer.signer == SignerEntity.local ||
+        if (summary != null && signer.signer == SignerEntity.local) ...[
+          if (signer.signerDevice case final device?)
+            WalletDetailInfoField(
+              label: context.loc.walletDetailsSignerDeviceLabel,
+              value: device.displayName,
+            ),
+        ] else if (signer.signer == SignerEntity.local ||
             onSignerDeviceChanged == null)
           WalletDetailInfoField(
             label: context.loc.walletDetailsSignerLabel,
@@ -113,10 +157,13 @@ class _SignerDetails extends StatelessWidget {
           ],
           if (key.xpub.isNotEmpty) ...[
             const Gap(18),
-            WalletDetailCopyField(
-              label: context.loc.importWatchOnlyExtendedPublicKey,
-              value: key.xpub,
-            ),
+            if (accountKeyBuilder != null)
+              accountKeyBuilder!(context, key)
+            else
+              WalletDetailCopyField(
+                label: context.loc.importWatchOnlyExtendedPublicKey,
+                value: key.xpub,
+              ),
           ],
         ],
       ],

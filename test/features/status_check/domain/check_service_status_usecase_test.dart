@@ -19,6 +19,7 @@ void main() {
   late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockCheckAllServiceStatusUsecase checkAllServiceStatusUsecase;
   late CheckServiceStatusUsecase usecase;
+  final origin = Uri.parse('https://configured-backup.test');
 
   setUpAll(() {
     registerFallbackValue(Network.bitcoinMainnet);
@@ -30,6 +31,7 @@ void main() {
     usecase = CheckServiceStatusUsecase(
       checkAllServiceStatusUsecase: checkAllServiceStatusUsecase,
       getWalletsUsecase: getWalletsUsecase,
+      backupServerOrigin: origin,
     );
   });
 
@@ -104,6 +106,7 @@ void main() {
       when(
         () => checkAllServiceStatusUsecase.execute(
           network: any(named: 'network'),
+          backupServerOrigin: origin,
         ),
       ).thenThrow(Exception('unexpected internal failure'));
 
@@ -127,6 +130,7 @@ void main() {
       when(
         () => checkAllServiceStatusUsecase.execute(
           network: any(named: 'network'),
+          backupServerOrigin: origin,
         ),
       ).thenThrow(NoWalletsFoundException('unexpected: no wallets found'));
 
@@ -148,6 +152,7 @@ void main() {
       when(
         () => checkAllServiceStatusUsecase.execute(
           network: any(named: 'network'),
+          backupServerOrigin: origin,
         ),
       ).thenAnswer((_) async => status);
 

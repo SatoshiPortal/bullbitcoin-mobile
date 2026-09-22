@@ -7,6 +7,10 @@ import 'package:flutter/widgets.dart';
 /// `logMessage`.
 extension RecoverBullFailureL10n on RecoverBullFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    VaultKeyPathUnavailableFailure() =>
+      context.loc.recoverbullKeyPathUnavailable,
+    VaultSeedUnavailableFailure() => context.loc.recoverbullKeySeedUnavailable,
+    VaultLocalKeyMismatchFailure() => context.loc.recoverbullKeyLocalMismatch,
     SelectVaultFailure() => context.loc.recoverbullErrorSelectVault,
     PasswordNotSetFailure() => context.loc.recoverbullErrorPasswordNotSet,
     VaultNotSetFailure() => context.loc.recoverbullErrorVaultNotSet,

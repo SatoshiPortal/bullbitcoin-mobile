@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
@@ -33,23 +35,32 @@ class WizardRepositoryImpl implements WizardRepository {
       _datasource.writeCompletedVersion(kCurrentWizardVersion);
 
   @override
-  Future<void> savePending(WizardChoices choices) async {
-    await clearPending();
-    if (choices.touched.isEmpty) return;
-    await _datasource.writePendingVersion(kCurrentWizardVersion);
-    if (choices.touched.contains(WizardField.language)) {
-      await _datasource.writePendingLanguage(choices.language.name);
-    }
-    if (choices.touched.contains(WizardField.themeMode)) {
-      await _datasource.writePendingThemeMode(choices.themeMode.name);
-    }
-    if (choices.touched.contains(WizardField.defaultCurrency)) {
-      await _datasource.writePendingCurrency(choices.defaultCurrency);
-    }
-    final consent = choices.reportingConsent;
-    if (choices.touched.contains(WizardField.reportingConsent) &&
-        consent != null) {
-      await _datasource.writePendingErrorReporting(consent);
+  Future<Result<void, WizardFailure>> savePending(WizardChoices choices) async {
+    try {
+      await clearPending();
+      if (choices.touched.isEmpty) return const Ok(null);
+      await _datasource.writePendingVersion(kCurrentWizardVersion);
+      if (choices.touched.contains(WizardField.dataBackupEnabled) &&
+          choices.dataBackupEnabled != null) {
+        await _datasource.writePendingDataBackup(choices.dataBackupEnabled!);
+      }
+      if (choices.touched.contains(WizardField.language)) {
+        await _datasource.writePendingLanguage(choices.language.name);
+      }
+      if (choices.touched.contains(WizardField.themeMode)) {
+        await _datasource.writePendingThemeMode(choices.themeMode.name);
+      }
+      if (choices.touched.contains(WizardField.defaultCurrency)) {
+        await _datasource.writePendingCurrency(choices.defaultCurrency);
+      }
+      final consent = choices.reportingConsent;
+      if (choices.touched.contains(WizardField.reportingConsent) &&
+          consent != null) {
+        await _datasource.writePendingErrorReporting(consent);
+      }
+      return const Ok(null);
+    } on Exception {
+      return const Err(WizardSaveFailure());
     }
   }
 
@@ -59,11 +70,13 @@ class WizardRepositoryImpl implements WizardRepository {
   /// must not leak into the new one).
   @override
   Future<WizardChoices?> readPending() async {
+    final dataBackup = await _datasource.readPendingDataBackup();
     final languageName = await _datasource.readPendingLanguage();
     final themeName = await _datasource.readPendingThemeMode();
     final currency = await _datasource.readPendingCurrency();
     final errorReporting = await _datasource.readPendingErrorReporting();
-    if (languageName == null &&
+    if (dataBackup == null &&
+        languageName == null &&
         themeName == null &&
         currency == null &&
         errorReporting == null) {
@@ -75,6 +88,7 @@ class WizardRepositoryImpl implements WizardRepository {
       return null;
     }
     final touched = <WizardField>{};
+    if (dataBackup != null) touched.add(WizardField.dataBackupEnabled);
     if (languageName != null) touched.add(WizardField.language);
     if (themeName != null) touched.add(WizardField.themeMode);
     if (currency != null) touched.add(WizardField.defaultCurrency);
@@ -88,10 +102,12 @@ class WizardRepositoryImpl implements WizardRepository {
           : AppThemeMode.fromName(themeName),
       defaultCurrency: currency ?? 'USD',
       reportingConsent: errorReporting,
+      dataBackupEnabled: dataBackup,
       touched: touched,
     );
   }
 
   @override
-  Future<void> clearPending() => _datasource.clearAllPending();
+  Future<void> clearPending({bool keepDataBackupChoice = false}) =>
+      _datasource.clearAllPending(keepDataBackupChoice: keepDataBackupChoice);
 }

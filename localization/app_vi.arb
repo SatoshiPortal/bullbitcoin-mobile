@@ -748,7 +748,6 @@
   "mempoolErrorSaveServerFailed": "Không thể lưu máy chủ",
   "mempoolErrorLoadFailed": "Không thể tải dữ liệu máy chủ mempool",
   "mempoolErrorDeleteFailed": "Không thể xóa máy chủ tùy chỉnh",
-  "walletSettingsImportWalletTitle": "Nhập ví",
   "bitcoinSettingsBroadcastTransactionTitle": "Phát giao dịch",
   "bitcoinSettingsTestnetModeTitle": "Chế độ Testnet",
   "bitcoinSettingsBip85EntropiesTitle": "Entropy tất định BIP85",
@@ -2671,9 +2670,7 @@
   "jadeStep13": "Ví Bull Bitcoin sẽ yêu cầu bạn quét mã QR trên Jade. Hãy quét nó.",
   "jadeStep14": "Giao dịch sẽ được nhập vào ví Bull Bitcoin.",
   "jadeStep15": "Giao dịch giờ đã sẵn sàng để phát! Ngay khi bạn nhấn phát, giao dịch sẽ được công bố trên mạng Bitcoin và tiền sẽ được gửi đi.",
-  "importWalletTitle": "Thêm một ví mới",
   "importWalletConnectHardware": "Kết nối ví phần cứng",
-  "importWalletImportMnemonic": "Nhập Mnemonic",
   "importWalletImportWatchOnly": "Nhập ví chỉ xem",
   "importWalletSectionGeneric": "Ví thông dụng",
   "importWalletSectionHardware": "Ví phần cứng",
@@ -3564,7 +3561,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|bản đồ bitcoin|bản đồ cửa hàng|nơi chi tiêu bitcoin",
   "settingsSearchTermsOfServiceKeywords": "điều khoản và điều kiện|pháp lý|thỏa thuận người dùng|TOS",
   "settingsSearchServicesStatusKeywords": "tình trạng dịch vụ|trạng thái hệ thống|trực tuyến|gián đoạn dịch vụ",
-  "settingsSearchImportWalletKeywords": "thêm ví|khôi phục ví|nhập cụm từ ghi nhớ|ví chỉ xem|ví phần cứng",
   "settingsSearchBroadcastTransactionKeywords": "phát giao dịch đã ký|đẩy giao dịch|giao dịch thô|mã hex giao dịch|PSBT",
   "settingsSearchPayjoinKeywords": "quyền riêng tư Payjoin|giao dịch cộng tác|P2EP",
   "settingsSearchAutoswapKeywords": "hoán đổi tự động|trao đổi tự động|chuyển tự động|số dư ví tức thời",
@@ -3595,5 +3591,8 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "bitcoinSettingsWalletsTitle": "Ví",
+  "walletsListTitle": "Chi tiết ví",
+  "walletsListNoWalletsMessage": "Không tìm thấy ví nào"
 }

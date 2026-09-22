@@ -1845,10 +1845,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Mnemonic আমদানি",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "transactionFilterAll": "সব",
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
@@ -1971,10 +1967,6 @@
   "sellSendPaymentAdvanced": "উন্নত সেটিংস",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "ওয়ালেট আমদানি করুন",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "গুগল ড্রাইভে সংযোগ স্থাপন করতে ব্যর্থ হয়েছে",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4770,10 +4762,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "- একটি নতুন ওয়ালেট যোগ করুন",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "ডিফল্ট সার্ভার",
   "@mempoolSettingsDefaultServer": {
@@ -12407,7 +12395,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|বিটকয়েন মানচিত্র|ব্যবসায়ীর মানচিত্র|বিটকয়েন খরচ করার জায়গা",
   "settingsSearchTermsOfServiceKeywords": "শর্তাবলী|আইনি|ব্যবহারকারী চুক্তি|TOS",
   "settingsSearchServicesStatusKeywords": "সেবার স্বাস্থ্য|সিস্টেমের অবস্থা|অনলাইন|সেবা বন্ধ",
-  "settingsSearchImportWalletKeywords": "ওয়ালেট যোগ করুন|ওয়ালেট পুনরুদ্ধার|Mnemonic আমদানি|Watch-only ওয়ালেট|হার্ডওয়্যার ওয়ালেট",
   "settingsSearchBroadcastTransactionKeywords": "স্বাক্ষরিত লেনদেন ব্রডকাস্ট|লেনদেন পাঠান|কাঁচা লেনদেন|লেনদেন hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin গোপনীয়তা|সহযোগী লেনদেন|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|স্বয়ংক্রিয় swap|স্বয়ংক্রিয় transfer|তাৎক্ষণিক ওয়ালেট ব্যালেন্স",
@@ -12438,5 +12425,8 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "bitcoinSettingsWalletsTitle": "ওয়ালেটসমূহ",
+  "walletsListTitle": "ওয়ালেট বিবরণ",
+  "walletsListNoWalletsMessage": "কোনো ওয়ালেট পাওয়া যায়নি"
 }

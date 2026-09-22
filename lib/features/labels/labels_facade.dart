@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
@@ -6,11 +7,15 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/get_backup_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/watch_label_changes_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 
 export 'package:bb_mobile/features/labels/label.dart';
+export 'package:bb_mobile/features/labels/domain/label_entity.dart'
+    show LabelEntity;
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';
 export 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
@@ -25,24 +30,34 @@ export 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 
 /// Public contract of the labels feature.
 ///
-/// **Reads are best-effort**: labels are non-critical metadata that enrich
+/// Ordinary reads are best-effort: labels are non-critical metadata that enrich
 /// addresses/transactions, so a lookup failure degrades to an empty result
 /// (logged at the boundary) rather than aborting the caller's flow. **Writes
 /// return [Result]** so the caller can decide what a persistence failure means
 /// for its own flow. The facade itself never throws and never surfaces a raw
 /// reason — callers translate a [LabelFailure] via its presentation extension.
+/// [fetchAllForBackup] also rejects corrupt rows instead of omitting them.
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
+  final GetBackupLabelsUsecase _getBackupLabels;
+  final WatchLabelChangesUsecase _watchChanges;
 
   LabelsFacade({
     required this._fetchLabelByReferenceUsecase,
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+    required this._getBackupLabels,
+    required this._watchChanges,
   });
+
+  Future<Result<List<LabelEntity>, LabelFailure>> fetchAllForBackup() =>
+      _getBackupLabels.execute();
+
+  Stream<void> watchChanges() => _watchChanges.execute();
 
   Future<List<Label>> fetchByReference(String reference) async {
     final result = await _fetchLabelByReferenceUsecase.execute(reference);

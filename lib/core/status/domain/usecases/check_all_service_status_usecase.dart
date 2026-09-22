@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
@@ -46,6 +47,7 @@ class CheckAllServiceStatusUsecase {
 
   Future<AllServicesStatus> execute({
     required Network network,
+    Uri? backupServerOrigin,
     AllServicesStatus initialStatus = const AllServicesStatus(),
     void Function(AllServicesStatus status)? onUpdate,
   }) async {
@@ -122,6 +124,11 @@ class CheckAllServiceStatusUsecase {
           _checkRecoverbullConnection(),
           (status, result) => status.copyWith(recoverbull: result),
           serviceName: 'Recoverbull',
+        ),
+        publish(
+          _checkBackupServer(backupServerOrigin),
+          (status, result) => status.copyWith(backupServer: result),
+          serviceName: 'Data Backup Server',
         ),
       ]);
 
@@ -316,6 +323,53 @@ class CheckAllServiceStatusUsecase {
         _ => ServiceStatus.offline,
       },
     );
+  }
+
+  Future<ServiceStatusInfo> _checkBackupServer(Uri? origin) async {
+    final status = ServiceStatusInfo(
+      status: ServiceStatus.unknown,
+      name: 'Data Backup Server',
+      lastChecked: DateTime.now(),
+    );
+    if (origin == null) return status;
+    final client = HttpClient();
+    try {
+      final reachable = await _probeBackupServer(
+        client,
+        origin,
+      ).timeout(const Duration(seconds: 10), onTimeout: () => false);
+      return status.copyWith(
+        status: reachable ? ServiceStatus.online : ServiceStatus.offline,
+      );
+    } on Exception {
+      return status.copyWith(status: ServiceStatus.offline);
+    } finally {
+      client.close(force: true);
+    }
+  }
+
+  Future<bool> _probeBackupServer(HttpClient client, Uri origin) async {
+    // Deliberately invalid and anonymous: proves the API answers without fetching a backup.
+    final request = await client.postUrl(
+      origin.resolve('/api/v1/wallet-backups/fetch'),
+    );
+    request.followRedirects = false;
+    request.headers.contentType = ContentType.json;
+    request.write('{}');
+    final response = await request.close();
+    if (response.statusCode != HttpStatus.badRequest ||
+        response.headers.contentType?.mimeType != 'application/json') {
+      return false;
+    }
+    final bytes = <int>[];
+    await for (final chunk in response) {
+      if (bytes.length + chunk.length > 4096) return false;
+      bytes.addAll(chunk);
+    }
+    return switch (jsonDecode(utf8.decode(bytes))) {
+      {'code': 'BackupInvalidRequest', 'status': 'ERROR'} => true,
+      _ => false,
+    };
   }
 
   AllServicesStatus _createUnknownStatus(DateTime now) {

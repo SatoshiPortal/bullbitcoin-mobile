@@ -90,6 +90,13 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo recoverbull,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Data Backup Server',
+      ),
+    )
+    ServiceStatusInfo backupServer,
     @Default(null) DateTime? lastChecked,
   }) = _AllServicesStatus;
 
@@ -104,7 +111,8 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       pricer.isOnline &&
       mempool.isOnline &&
       (tor.isOnline || tor.isUnknown) &&
-      (recoverbull.isOnline || recoverbull.isUnknown);
+      (recoverbull.isOnline || recoverbull.isUnknown) &&
+      backupServer.isOnline;
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }

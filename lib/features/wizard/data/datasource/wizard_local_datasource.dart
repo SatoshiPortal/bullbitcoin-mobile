@@ -23,10 +23,13 @@ abstract class WizardLocalDatasource {
   Future<bool?> readPendingErrorReporting();
   Future<void> writePendingErrorReporting(bool enabled);
 
-  Future<void> clearAllPending();
+  Future<bool?> readPendingDataBackup();
+  Future<void> writePendingDataBackup(bool enabled);
+  Future<void> clearAllPending({bool keepDataBackupChoice = false});
 }
 
 class WizardLocalDatasourceImpl implements WizardLocalDatasource {
+  static const _pendingDataBackupKey = 'wizard_pending_data_backup';
   static const _versionKey = 'wizard_completed_version';
   static const _pendingVersionKey = 'wizard_pending_version';
   static const _pendingLanguageKey = 'wizard_pending_language';
@@ -55,7 +58,9 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingVersion(int version) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_pendingVersionKey, version);
+    if (!await prefs.setInt(_pendingVersionKey, version)) {
+      throw Exception('Could not stage setup version');
+    }
   }
 
   @override
@@ -107,9 +112,26 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   }
 
   @override
-  Future<void> clearAllPending() async {
+  Future<bool?> readPendingDataBackup() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_pendingVersionKey);
+    return prefs.getBool(_pendingDataBackupKey);
+  }
+
+  @override
+  Future<void> writePendingDataBackup(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!await prefs.setBool(_pendingDataBackupKey, enabled)) {
+      throw Exception('Could not stage backup choice');
+    }
+  }
+
+  @override
+  Future<void> clearAllPending({bool keepDataBackupChoice = false}) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!keepDataBackupChoice) {
+      await prefs.remove(_pendingVersionKey);
+      await prefs.remove(_pendingDataBackupKey);
+    }
     await prefs.remove(_pendingLanguageKey);
     await prefs.remove(_pendingThemeKey);
     await prefs.remove(_pendingCurrencyKey);

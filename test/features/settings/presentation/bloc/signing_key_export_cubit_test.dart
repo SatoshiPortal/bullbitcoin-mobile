@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
@@ -33,15 +34,83 @@ void main() {
 
   tearDown(() => cubit.close());
 
+  test(
+    'account edits and a second mark cannot replace an in-flight mark',
+    () async {
+      when(
+        () => exportSigningKey.execute(
+          account: null,
+          markUsed: false,
+          description: null,
+        ),
+      ).thenAnswer(
+        (_) async => const Ok((
+          account: 0,
+          descriptorKey: 'key-0',
+          isReserved: false,
+          markedAccount: null,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+        )),
+      );
+      final pending = Completer<void>();
+      when(
+        () => exportSigningKey.execute(
+          account: 0,
+          markUsed: true,
+          description: 'Family vault',
+        ),
+      ).thenAnswer((_) async {
+        await pending.future;
+        return const Ok((
+          account: 1,
+          descriptorKey: 'key-1',
+          isReserved: false,
+          markedAccount: 0,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+        ));
+      });
+      await cubit.load();
+      final marking = cubit.markAccountUsed('Family vault');
+      await cubit.selectAccount(7);
+      await cubit.markAccountUsed('Another vault');
+      pending.complete();
+      await marking;
+      expect(cubit.state.account, 1);
+      expect(cubit.state.markedAccount, 0);
+      verify(
+        () => exportSigningKey.execute(
+          account: 0,
+          markUsed: true,
+          description: 'Family vault',
+        ),
+      ).called(1);
+      verifyNever(
+        () => exportSigningKey.execute(
+          account: 7,
+          markUsed: false,
+          description: null,
+        ),
+      );
+    },
+  );
+
   test('loads the signing key', () async {
     when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
+      () => exportSigningKey.execute(
+        account: null,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer(
       (_) async => const Ok((
         account: 0,
         descriptorKey: 'signing-key',
         isReserved: false,
         markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
       )),
     );
 
@@ -54,13 +123,19 @@ void main() {
 
   test('exports an explicitly selected account', () async {
     when(
-      () => exportSigningKey.execute(account: 7, markUsed: false),
+      () => exportSigningKey.execute(
+        account: 7,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer(
       (_) async => const Ok((
         account: 7,
         descriptorKey: 'signing-key-7',
         isReserved: false,
         markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
       )),
     );
 
@@ -73,17 +148,27 @@ void main() {
   test('clears the previous key while a different account loads', () async {
     final delayed = Completer<void>();
     when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
+      () => exportSigningKey.execute(
+        account: null,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer(
       (_) async => const Ok((
         account: 0,
         descriptorKey: 'signing-key-0',
         isReserved: false,
         markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
       )),
     );
     when(
-      () => exportSigningKey.execute(account: 1, markUsed: false),
+      () => exportSigningKey.execute(
+        account: 1,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer((_) async {
       await delayed.future;
       return const Ok((
@@ -91,6 +176,8 @@ void main() {
         descriptorKey: 'signing-key-1',
         isReserved: false,
         markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
       ));
     });
 
@@ -102,8 +189,14 @@ void main() {
     expect(cubit.state.isLoading, isTrue);
     expect(cubit.state.descriptorKey, isEmpty);
 
-    await cubit.markAccountUsed();
-    verifyNever(() => exportSigningKey.execute(account: 1, markUsed: true));
+    await cubit.markAccountUsed('Family vault');
+    verifyNever(
+      () => exportSigningKey.execute(
+        account: 1,
+        markUsed: true,
+        description: 'Family vault',
+      ),
+    );
 
     delayed.complete();
     await selection;
@@ -115,7 +208,11 @@ void main() {
     () async {
       final accountOne = Completer<void>();
       when(
-        () => exportSigningKey.execute(account: 1, markUsed: false),
+        () => exportSigningKey.execute(
+          account: 1,
+          markUsed: false,
+          description: null,
+        ),
       ).thenAnswer((_) async {
         await accountOne.future;
         return const Ok((
@@ -123,16 +220,24 @@ void main() {
           descriptorKey: 'signing-key-1',
           isReserved: false,
           markedAccount: null,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
         ));
       });
       when(
-        () => exportSigningKey.execute(account: 0, markUsed: false),
+        () => exportSigningKey.execute(
+          account: 0,
+          markUsed: false,
+          description: null,
+        ),
       ).thenAnswer(
         (_) async => const Ok((
           account: 0,
           descriptorKey: 'signing-key-0',
           isReserved: false,
           markedAccount: null,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
         )),
       );
 
@@ -151,28 +256,40 @@ void main() {
     'marks the selected account and advances to the next suggestion',
     () async {
       when(
-        () => exportSigningKey.execute(account: null, markUsed: false),
+        () => exportSigningKey.execute(
+          account: null,
+          markUsed: false,
+          description: null,
+        ),
       ).thenAnswer(
         (_) async => const Ok((
           account: 0,
           descriptorKey: 'signing-key-0',
           isReserved: false,
           markedAccount: null,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
         )),
       );
       when(
-        () => exportSigningKey.execute(account: 0, markUsed: true),
+        () => exportSigningKey.execute(
+          account: 0,
+          markUsed: true,
+          description: 'Family vault',
+        ),
       ).thenAnswer(
         (_) async => const Ok((
           account: 1,
           descriptorKey: 'signing-key-1',
           isReserved: false,
           markedAccount: 0,
+          descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
         )),
       );
 
       await cubit.load();
-      await cubit.markAccountUsed();
+      await cubit.markAccountUsed('Family vault');
 
       expect(cubit.state.account, 1);
       expect(cubit.state.markedAccount, 0);
@@ -182,13 +299,19 @@ void main() {
 
   test('exports a reserved selection with its warning state', () async {
     when(
-      () => exportSigningKey.execute(account: 7, markUsed: false),
+      () => exportSigningKey.execute(
+        account: 7,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer(
       (_) async => const Ok((
         account: 7,
         descriptorKey: 'signing-key-7',
         isReserved: true,
         markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
       )),
     );
 
@@ -201,7 +324,11 @@ void main() {
 
   test('holds a typed failure when export fails', () async {
     when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
+      () => exportSigningKey.execute(
+        account: null,
+        markUsed: false,
+        description: null,
+      ),
     ).thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
 
     await cubit.load();
