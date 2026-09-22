@@ -45,7 +45,6 @@
   "pinCodeSettingsLabel": "PIN-koodi",
   "languageSettingsLabel": "Kieli",
   "backupSettingsLabel": "Lompakon varmuuskopio",
-  "electrumServerSettingsLabel": "Electrum-palvelin (Bitcoin-solmu)",
   "fiatCurrencySettingsLabel": "Fiat-valuutta",
   "languageSettingsScreenTitle": "Kieli",
   "settingsExchangeSettingsTitle": "Pörssin asetukset",
@@ -752,18 +751,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin luontiaika",
   "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
   "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
-  "walletTypeWatchOnly": "Vain katselu",
-  "walletTypeWatchSigner": "Watch-Signer",
-  "walletTypeBitcoinNetwork": "Bitcoin-verkko",
-  "walletTypeLiquidLightningNetwork": "Liquid- ja Lightning-verkko",
-  "walletNetworkBitcoin": "Bitcoin-verkko",
-  "walletNetworkBitcoinTestnet": "Bitcoin-testnet",
-  "walletNetworkLiquid": "Liquid-verkko",
-  "walletNetworkLiquidTestnet": "Liquid-testnet",
-  "walletAddressTypeConfidentialSegwit": "Luottamuksellinen Segwit",
-  "walletAddressTypeNativeSegwit": "Natiivi Segwit",
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "walletAddressTypeLegacy": "Perinteinen",
   "walletBalanceUnconfirmedIncoming": "Käynnissä",
   "walletButtonReceive": "Vastaanota",
   "walletButtonSend": "Lähetä",
@@ -3166,7 +3153,6 @@
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
   "electrumEmptyFieldError": "Tämä kenttä ei voi olla tyhjä",
-  "electrumBitcoinSslInfo": "Jos protokollaa ei ole määritetty, ssl käytetään oletuksena.",
   "electrumLiquidSslInfo": "Protokollaa ei tule määrittää, SSL otetaan käyttöön automaattisesti.",
   "electrumAddServer": "Lisää palvelin",
   "electrumEnableSsl": "Ota SSL käyttöön",
@@ -3574,23 +3560,6 @@
   "withdrawOwnershipQuestion": "Kenen tili tämä on?",
   "withdrawOwnershipMyAccount": "Tämä on minun tilini",
   "withdrawOwnershipOtherAccount": "Tämä on jonkun toisen tili",
-  "walletAutoTransferBlockedTitle": "Automaattinen siirto estetty",
-  "walletAutoTransferBlockedMessage": "Yritetään siirtää {amount} BTC. Nykyinen kulu olisi {currentFee}% siirtosummasta ja maksukynnys on asetettu arvoon {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "Estä",
-  "walletAutoTransferAllowButton": "Salli",
   "navigationTabWallet": "Lompakko",
   "navigationTabExchange": "Pörssi",
   "buyUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
@@ -4894,5 +4863,11 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "walletLoadFailed": "Lompakoitasi ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "walletWarningElectrumBitcoinDown": "Bitcoin-palvelin ei ole käytettävissä",
+  "walletWarningElectrumLiquidDown": "Liquid-palvelin ei ole käytettävissä",
+  "walletWarningElectrumBothDown": "Bitcoin- ja Liquid-palvelimet eivät ole käytettävissä",
+  "walletWarningElectrumAction": "Määritä palvelinasetukset napauttamalla",
+  "walletLoadFailedRetryHint": "Päivitä vetämällä alaspäin ja yritä uudelleen"
 }

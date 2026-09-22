@@ -255,16 +255,35 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> loadWalletWithRatesAndFees() async {
+    final List<Wallet> wallets;
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        wallets = value;
+      case Err(:final failure):
+        log.warning('Failed to load the wallets: ${failure.logMessage}');
+        emit(
+          state.copyWith(
+            failure: SendUnexpectedFailure('wallets: ${failure.runtimeType}'),
+          ),
+        );
+        return;
+    }
+
+    emit(
+      state.copyWith(wallets: wallets.where((w) => !w.isWatchOnly).toList()),
+    );
+
     try {
-      final wallets = await _getWalletsUsecase.execute();
-      emit(
-        state.copyWith(wallets: wallets.where((w) => !w.isWatchOnly).toList()),
-      );
       await getCurrencies();
       await getExchangeRate();
       await loadFees();
     } catch (e) {
-      log.warning('Failed to load wallet rates and fees', error: e);
+      log.warning('Failed to load rates and fees', error: e);
+      // The raw reason stays in logMessage on purpose: issue #2632 settled
+      // that diagnostics live there while the UI renders the generic
+      // `oopsSomethingWentWrong` for this variant. Both halves are pinned by
+      // test/security_audit/issue_2632_test.dart — do not "sanitize" this to
+      // runtimeType without revisiting that decision.
       emit(state.copyWith(failure: SendUnexpectedFailure(e.toString())));
     }
   }
@@ -2331,7 +2350,14 @@ class SendCubit extends Cubit<SendState>
           );
           if (value.localStatus.isTerminal) {
             unawaited(
-              _getWalletUsecase.execute(state.selectedWallet!.id, sync: true),
+              _getWalletUsecase
+                  .execute(state.selectedWallet!.id, sync: true)
+                  .catchError((Object e) {
+                    // Fire-and-forget refresh: without this the throw becomes
+                    // an unhandled zone error, matching the sibling syncs.
+                    log.warning('Failed to sync wallet after transfer: $e');
+                    return null;
+                  }),
             );
           }
         case Err(:final failure):

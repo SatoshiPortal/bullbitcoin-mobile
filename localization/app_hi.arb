@@ -678,10 +678,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Nested SegWit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "डीसीए, लिमिट ऑर्डर और ऑटो-बॉय",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -758,10 +754,6 @@
   "buyDocumentUpload": "दस्तावेज़ अपलोड करें",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Confidential SegWit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "स्थानांतरण {action} पुनः प्रयास करें",
   "@transactionDetailRetryTransfer": {
@@ -2439,10 +2431,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "सुरक्षित कनेक्शन स्थापित करना।",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3338,10 +3326,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Bitcoin नेटवर्क",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "उन्नत विकल्प",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3433,10 +3417,6 @@
   "allSeedViewSecurityWarningMessage": "बीज वाक्यांशों को प्रदर्शित करना एक सुरक्षा जोखिम है। जो कोई भी आपके बीज वाक्यांश को देखता है, वह आपके फंड तक पहुंच सकता है। सुनिश्चित करें कि आप एक निजी स्थान पर हैं और कोई भी आपकी स्क्रीन नहीं देख सकता है।।",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "अधिक वाल्ट देखें",
   "@recoverbullSeeMoreVaults": {
@@ -4398,10 +4378,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Legacy",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "फाउंडेशन पासपोर्ट",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4805,10 +4781,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "यदि कोई प्रोटोकॉल निर्दिष्ट नहीं है, तो ssl डिफ़ॉल्ट रूप से इस्तेमाल किया जाएगा।।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "लेनदेन",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -5145,10 +5117,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum सर्वर (Bitcoin नोड)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "लाइटनिंग एड्रेस",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5193,10 +5161,6 @@
   "gotItButton": "यह",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "Liquid और Lightning नेटवर्क",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "शुल्क प्राथमिकता",
   "@sendFeePriority": {
@@ -5370,21 +5334,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "अधिक जानकारी के लिए getbull.com पर जाएं।।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC को ट्रांसफर करने का प्रयास करें। वर्तमान शुल्क {currentFee} है हस्तांतरण राशि का% और शुल्क सीमा {thresholdFee}% पर सेट की गई है",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "अपने Krux पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
   "@kruxStep11": {
@@ -5747,10 +5696,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Watch-Only",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "डिक्रिप्ट वॉल्ट",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -6002,10 +5947,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "कस्टम सर्वर  को हटाने में विफल",
   "@electrumDeleteFailedError": {
@@ -7075,10 +7016,6 @@
   "bip329LabelsTitle": "BIP329 लेबल",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "अनुमति",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "Bitcoin Wallet",
   "@autoswapSelectWalletRequired": {
@@ -8552,10 +8489,6 @@
   "logSettingsErrorLoadingMessage": "लॉग लोड करने में त्रुटि: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "Liquid नेटवर्क",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "मैक्स",
   "@swapMaxButton": {
@@ -10346,10 +10279,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "ऑटो ट्रांसफर ब्लॉक",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "ब्लॉकस्ट्रीम जेड निर्देश",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -10377,10 +10306,6 @@
   "passportStep9": "अपने पासपोर्ट पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin नेटवर्क",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "क्या आप इस सर्वर को हटाना चाहते हैं?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10690,10 +10615,6 @@
   "payInstitutionCodeHint": "संस्था कोड दर्ज करें",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Native SegWit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "चालान खोलें",
   "@payOpenInvoice": {
@@ -11215,10 +11136,6 @@
   "autoswapSelectWallet": "बिटकॉइन वॉलेट चुनें",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "ब्लॉक",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Google ड्राइव से वॉल्ट चुनने में विफल रहा",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12390,5 +12307,11 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin सर्वर उपलब्ध नहीं है",
+  "walletWarningElectrumLiquidDown": "Liquid सर्वर उपलब्ध नहीं है",
+  "walletWarningElectrumBothDown": "Bitcoin और Liquid सर्वर उपलब्ध नहीं हैं",
+  "walletWarningElectrumAction": "सर्वर सेटिंग्स कॉन्फ़िगर करने के लिए टैप करें",
+  "walletLoadFailedRetryHint": "रीफ़्रेश करने के लिए नीचे खींचें और फिर से प्रयास करें"
 }

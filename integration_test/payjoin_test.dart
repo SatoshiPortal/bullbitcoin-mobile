@@ -1,5 +1,7 @@
 import 'dart:io' show Directory, Platform;
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -84,7 +86,12 @@ Future<void> main({bool isInitialized = false}) async {
     );
     await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
     await Future<void>.delayed(const Duration(seconds: 3));
-    await walletRepository.getWallets(sync: true);
+    // Fail fast: a funding sync that failed would otherwise surface as a
+    // confusing balance assertion further down.
+    expect(
+      await walletRepository.getWallets(sync: true),
+      isA<Ok<List<Wallet>, WalletFailure>>(),
+    );
   }
 
   const aliceDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
@@ -201,14 +208,23 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     setUp(() async {
-      await walletRepository.getWallets(sync: true);
+      // Fail fast: a funding sync that failed would otherwise surface as a
+      // confusing balance assertion further down.
+      expect(
+        await walletRepository.getWallets(sync: true),
+        isA<Ok<List<Wallet>, WalletFailure>>(),
+      );
     });
 
     test(
       'funded testnet wallets complete a Payjoin',
       () async {
-        receiverWallet = (await walletRepository.getWallet(receiverWallet.id))!;
-        senderWallet = (await walletRepository.getWallet(senderWallet.id))!;
+        receiverWallet = _wallet(
+          await walletRepository.getWallet(receiverWallet.id),
+        );
+        senderWallet = _wallet(
+          await walletRepository.getWallet(senderWallet.id),
+        );
         expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
         expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
 
@@ -311,3 +327,10 @@ Future<void> main({bool isInitialized = false}) async {
     );
   }, skip: hasFixtures ? null : fixtureSkip);
 }
+
+/// The repository returns a `Result` now; a wallet that cannot be read back
+/// mid-test is a broken fixture, not a case under test.
+Wallet _wallet(Result<Wallet, WalletFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected a wallet, got $failure'),
+};

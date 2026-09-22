@@ -240,10 +240,6 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
-  "electrumServerSettingsLabel": "Electrum server (Bitcoin node)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "fiatCurrencySettingsLabel": "Fiat currency",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
@@ -2756,54 +2752,6 @@
   "globalDefaultLiquidWalletLabel": "Instant payments",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  },
-  "walletTypeWatchOnly": "Sirf Dekhne Wala",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin network",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
-  "walletTypeLiquidLightningNetwork": "Liquid aur Lightning network",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
-  },
-  "walletNetworkBitcoin": "Bitcoin Network",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
-  },
-  "walletNetworkLiquid": "Liquid Network",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
-  },
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
-  },
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
-  },
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
-  },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
-  "walletAddressTypeLegacy": "Legacy",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
   },
   "walletBalanceUnconfirmedIncoming": "Chal Raha Hai",
   "@walletBalanceUnconfirmedIncoming": {
@@ -9331,10 +9279,6 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "Agar koi protocol specify nahi kiya, toh ssl default se use hoga.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "electrumLiquidSslInfo": "Koi protocol specify nahi karna chahiye, SSL automatically use hoga.",
   "@electrumLiquidSslInfo": {
     "description": "Info text for Liquid server protocol"
@@ -10377,33 +10321,6 @@
   "withdrawOwnershipOtherAccount": "Ye kisi aur ka account hai",
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
-  },
-  "walletAutoTransferBlockedTitle": "Auto Transfer Block Hua",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC transfer karne ki koshish ho rahi hai. Current fee transfer amount ka {currentFee}% hai aur fee threshold {thresholdFee}% set hai",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
-  "walletAutoTransferAllowButton": "Allow",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
@@ -12588,5 +12505,11 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "walletLoadFailed": "Aapke wallet load nahi ho sake. Apna connection check karein aur dobara koshish karein.",
+  "walletWarningElectrumBitcoinDown": "Bitcoin server uplabdh nahi hai",
+  "walletWarningElectrumLiquidDown": "Liquid server uplabdh nahi hai",
+  "walletWarningElectrumBothDown": "Bitcoin aur Liquid server uplabdh nahi hain",
+  "walletWarningElectrumAction": "Server settings configure karne ke liye tap karein",
+  "walletLoadFailedRetryHint": "Refresh karne ke liye neeche kheenchein aur dobara koshish karein"
 }

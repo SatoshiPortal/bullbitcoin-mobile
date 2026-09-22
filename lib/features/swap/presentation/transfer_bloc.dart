@@ -53,6 +53,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:dio/dio.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
 part 'transfer_event.dart';
 part 'transfer_state.dart';
 
@@ -170,7 +171,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     try {
       final settings = await _getSettingsUsecase.execute();
       final (
-        wallets,
+        walletsResult,
         liquidNetworkFees,
         bitcoinNetworkFees,
         exchangeRate,
@@ -182,6 +183,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           currencyCode: settings.currencyCode,
         ),
       ).wait;
+      final wallets = switch (walletsResult) {
+        Ok(:final value) => value,
+        // TODO(#1895): swap already has SwapFailure, but this method still
+        // throws rather than returning or emitting one. Map WalletFailure into
+        // SwapFailure when it is converted.
+        Err(:final failure) => throw WalletFailureException(failure),
+      };
       final liquidWallets = wallets
           .where(
             (wallet) =>

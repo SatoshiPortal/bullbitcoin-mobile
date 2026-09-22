@@ -1,24 +1,14 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:meta/meta.dart';
 
 class CheckWalletSyncingUsecase {
   final WalletRepository _walletRepository;
 
   CheckWalletSyncingUsecase({required this._walletRepository});
 
-  bool execute({String? walletId}) {
-    try {
-      final isWalletSyncing = _walletRepository.isWalletSyncing(
-        walletId: walletId,
-      );
-
-      return isWalletSyncing;
-    } catch (e) {
-      throw CheckAnyWalletSyncingException('$e');
-    }
-  }
-}
-
-class CheckAnyWalletSyncingException extends BullException {
-  CheckAnyWalletSyncingException(super.message);
+  @useResult
+  Result<bool, WalletFailure> execute({String? walletId}) =>
+      _walletRepository.isWalletSyncing(walletId: walletId);
 }

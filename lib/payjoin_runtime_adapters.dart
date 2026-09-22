@@ -88,7 +88,8 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
 
   @override
   Future<void> refreshWallet(String walletId) async {
-    await _wallets.getWallet(walletId, sync: true);
+    // Refresh only: the caller wants the side-effecting sync, not the wallet.
+    final _ = await _wallets.getWallet(walletId, sync: true);
   }
 }
 

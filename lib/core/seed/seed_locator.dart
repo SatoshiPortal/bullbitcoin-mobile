@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
@@ -22,7 +23,10 @@ class SeedLocator {
 
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<SeedRepository>(
-      () => SeedRepository(source: locator<SeedDatasource>()),
+      () => SeedRepository(
+        source: locator<SeedDatasource>(),
+        storeType: locator<SeedStoreTypeDatasource>(),
+      ),
     );
   }
 

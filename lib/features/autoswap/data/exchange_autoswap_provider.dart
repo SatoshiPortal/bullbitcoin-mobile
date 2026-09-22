@@ -47,9 +47,15 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
     try {
       final environment = (await _settingsRepository.fetch()).environment;
-      final wallets = await _walletRepository.getWallets(
-        environment: environment,
-      );
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(environment: environment)) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          return Err(
+            AutoswapProviderFailure('wallets: ${failure.runtimeType}'),
+          );
+      }
       final liquidWallet = wallets
           .where((wallet) => wallet.isDefault && wallet.isLiquid)
           .firstOrNull;

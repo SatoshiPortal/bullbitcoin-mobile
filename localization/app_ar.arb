@@ -646,10 +646,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, Limit orders and Auto-buy",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -726,10 +722,6 @@
   "buyDocumentUpload": "أعلى الوثائق",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "Retry Transfer {action}",
   "@transactionDetailRetryTransfer": {
@@ -2273,10 +2265,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "شاهدْ سيغنر",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "إقامة إتصال آمن...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3124,10 +3112,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "شبكة بيتكوين",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "الخيارات المتقدمة",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3215,10 +3199,6 @@
   "allSeedViewSecurityWarningMessage": "التلاعب بعبارات البذور هو خطر أمني أي شخص يرى كلماتك البذرة يمكنه الدخول إلى أموالك تأكد من أنك في مكان خاص ولا أحد يستطيع رؤية شاشتك.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "See more vaults",
   "@recoverbullSeeMoreVaults": {
@@ -4131,10 +4111,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Legacy",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "المؤسسة",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4500,10 +4476,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "وإذا لم يُحدد أي بروتوكول، سيُستخدم السائل بالتقصير.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "المعاملات",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4816,10 +4788,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "خادم الإلكرام (عميد بيتكوين)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "Enter Lightning Address",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -4864,10 +4832,6 @@
   "gotItButton": "حصلت عليه",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "شبكة السائل والبرق",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "الأولوية",
   "@sendFeePriority": {
@@ -5017,21 +4981,6 @@
   "receiveRequestInboundLiquidity": "طلب الحصول على القدرة",
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
-  },
-  "walletAutoTransferBlockedMessage": "محاولة نقل {amount} BTC. الرسم الحالي هو {currentFee} في المائة من مبلغ التحويل، وتحدد عتبة الرسوم بنسبة {thresholdFee} في المائة",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "اضغط على الأزرار لتوقيع الصفقة على كروز.",
   "@kruxStep11": {
@@ -5370,10 +5319,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "شاهد فقط",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "الخزنة المشفرة",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5599,10 +5544,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "Failed to delete custom server",
   "@electrumDeleteFailedError": {
@@ -6594,10 +6535,6 @@
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "الاستحقاق",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "اختيار محفظة بيتكوين",
   "@autoswapSelectWalletRequired": {
@@ -7981,10 +7918,6 @@
   "logSettingsErrorLoadingMessage": "سجلات تحميل الأخطاء: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "شبكة السائل",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -9643,10 +9576,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Instructions",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -9670,10 +9599,6 @@
   "passportStep9": "اضغط على الأزرار لتوقيع الصفقة على جواز سفرك.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "شبكة بيتكوين",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "هل أنت متأكد أنك تريد حذف هذا الخادم؟\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -9974,10 +9899,6 @@
   "payInstitutionCodeHint": "رمز المؤسسة",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "فاتورة مفتوحة",
   "@payOpenInvoice": {
@@ -10467,10 +10388,6 @@
   "autoswapSelectWallet": "اختيار محفظة بيتكوين",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12203,5 +12120,11 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "walletLoadFailed": "تعذّر تحميل محافظك. تحقق من اتصالك وحاول مرة أخرى.",
+  "walletWarningElectrumBitcoinDown": "خادم Bitcoin غير متاح",
+  "walletWarningElectrumLiquidDown": "خادم Liquid غير متاح",
+  "walletWarningElectrumBothDown": "خادما Bitcoin وLiquid غير متاحين",
+  "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم",
+  "walletLoadFailedRetryHint": "اسحب للأسفل للتحديث وحاول مرة أخرى"
 }

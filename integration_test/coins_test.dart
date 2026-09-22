@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -161,7 +163,12 @@ Future<void> main({bool isInitialized = false}) async {
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
         );
-        await walletRepository.getWallets(sync: true);
+        // Fail fast: a funding sync that failed would otherwise surface as a
+        // confusing balance assertion further down.
+        expect(
+          await walletRepository.getWallets(sync: true),
+          isA<Ok<List<Wallet>, WalletFailure>>(),
+        );
       });
 
       // Restore the shared app environment so this group can't leave the

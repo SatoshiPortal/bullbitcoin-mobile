@@ -249,7 +249,7 @@ void main() {
     getWallets = _MockGetWalletsUsecase();
     when(
       () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => [_testWallet(origin: 'default-btc')]);
+    ).thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
     getSettings = _MockGetSettingsUsecase();
     getAvailableCurrencies = _MockGetAvailableCurrenciesUsecase();
     convertSatsToCurrency = _MockConvertSatsToCurrencyAmountUsecase();
@@ -921,9 +921,8 @@ void main() {
     test('payjoin gates read the bitcoin wallet balance, not the funded '
         'liquid wallet the flow was entered with', () async {
       when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
-        (_) async => [
-          _testWallet(origin: 'default-btc', balanceSat: BigInt.zero),
-        ],
+        (_) async =>
+            Ok([_testWallet(origin: 'default-btc', balanceSat: BigInt.zero)]),
       );
       final liquidWallet = _testWallet(
         origin: 'liquid-w',

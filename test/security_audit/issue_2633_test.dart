@@ -17,8 +17,12 @@ void main() {
       final importXpub = source.substring(
         source.indexOf('importWatchOnlyXpub'),
       );
-      expect(importDescriptor, contains('getWallets()'));
-      expect(importXpub, contains('getWallets()'));
+      // The duplicate check reads every wallet before inserting. It calls the
+      // repository-internal reader rather than the public `getWallets()`,
+      // which now returns a Result and is the try/catch boundary (#1895) —
+      // the security property asserted here is the check, not the name.
+      expect(importDescriptor, contains('_readWallets()'));
+      expect(importXpub, contains('_readWallets()'));
       expect(source, contains('WalletAlreadyExistsException'));
       expect(
         File(

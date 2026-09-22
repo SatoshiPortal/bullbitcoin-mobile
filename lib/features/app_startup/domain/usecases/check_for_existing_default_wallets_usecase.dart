@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
@@ -20,23 +23,34 @@ class CheckForExistingDefaultWalletsUsecase {
     final environment = settings.environment;
 
     List<Wallet> defaultWallets;
-    try {
-      defaultWallets = await _walletRepository.getWallets(
-        onlyDefaults: true,
-        environment: environment,
-      );
-    } catch (e) {
-      if (e.toString().contains('UpdateOnDifferentStatus')) {
-        log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
+    switch (await _walletRepository.getWallets(
+      onlyDefaults: true,
+      environment: environment,
+    )) {
+      case Ok(:final value):
+        defaultWallets = value;
+      // LWK disagrees with its own stored status: drop its database and retry
+      // once. Keyed on the failure type now, not on matching the words
+      // "UpdateOnDifferentStatus" in an exception string.
+      case Err(failure: WalletLwkStatusConflictFailure()):
+        log.fine('LWK status conflict, deleting lwkDb');
         await _walletRepository.deleteLwkDb();
         log.fine('Deleted LwkDb, retrying getWallets');
-        defaultWallets = await _walletRepository.getWallets(
+        switch (await _walletRepository.getWallets(
           onlyDefaults: true,
           environment: environment,
-        );
-      } else {
-        rethrow;
-      }
+        )) {
+          case Ok(:final value):
+            defaultWallets = value;
+          // TODO(#1895): app_startup has no failure family yet. Map WalletFailure into
+          // it instead of throwing once it does.
+          case Err(:final failure):
+            throw WalletFailureException(failure);
+        }
+      // TODO(#1895): app_startup has no failure family yet. Map WalletFailure into
+      // it instead of throwing once it does.
+      case Err(:final failure):
+        throw WalletFailureException(failure);
     }
 
     if (defaultWallets.isEmpty) {
@@ -71,10 +85,15 @@ class CheckForExistingDefaultWalletsUsecase {
           scriptType: ScriptType.bip84,
           isDefault: true,
         );
-        defaultWallets = await _walletRepository.getWallets(
+        defaultWallets = switch (await _walletRepository.getWallets(
           onlyDefaults: true,
           environment: environment,
-        );
+        )) {
+          Ok(:final value) => value,
+          // TODO(#1895): app_startup has no failure family yet. Map WalletFailure into
+          // it instead of throwing once it does.
+          Err(:final failure) => throw WalletFailureException(failure),
+        };
       } catch (e, stackTrace) {
         log.severe(
           message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',

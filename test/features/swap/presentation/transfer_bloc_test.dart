@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -1207,7 +1208,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1238,7 +1239,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1268,12 +1269,12 @@ void main() {
       () => getPendingOrders.execute(),
     ).thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute()).thenAnswer(
-      (_) async => [
+      (_) async => Ok<List<Wallet>, WalletFailure>([
         _liquidWallet(id: 'default-liquid', isDefault: true),
         _liquidWallet(),
         _destinationWallet(id: 'default-bitcoin', isDefault: true),
         _destinationWallet(),
-      ],
+      ]),
     );
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
@@ -1306,7 +1307,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1375,7 +1376,7 @@ void main() {
       ).thenAnswer((_) async => Ok([expired]));
       when(
         () => getWallets.execute(),
-      ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+      ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
       when(
         () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
       ).thenAnswer((_) async => _feeOptions());

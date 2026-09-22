@@ -83,7 +83,6 @@
   "pinCodeSettingsLabel": "Code PIN",
   "languageSettingsLabel": "Langue",
   "backupSettingsLabel": "Sauvegarde du portefeuille",
-  "electrumServerSettingsLabel": "Serveur Electrum (nœud Bitcoin)",
   "fiatCurrencySettingsLabel": "Devise fiduciaire",
   "languageSettingsScreenTitle": "Langue",
   "settingsExchangeSettingsTitle": "Paramètres d'échange",
@@ -790,18 +789,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Heure de création Payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
   "globalDefaultLiquidWalletLabel": "Paiements instantanés",
-  "walletTypeWatchOnly": "Lecture seule",
-  "walletTypeWatchSigner": "Lecture-Signataire",
-  "walletTypeBitcoinNetwork": "Réseau Bitcoin",
-  "walletTypeLiquidLightningNetwork": "Réseau Liquid et Lightning",
-  "walletNetworkBitcoin": "Réseau Bitcoin",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "walletNetworkLiquid": "Réseau Liquid",
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "walletAddressTypeConfidentialSegwit": "Segwit confidentiel",
-  "walletAddressTypeNativeSegwit": "Segwit natif",
-  "walletAddressTypeNestedSegwit": "Segwit imbriqué",
-  "walletAddressTypeLegacy": "Hérité",
   "walletBalanceUnconfirmedIncoming": "En cours",
   "walletButtonReceive": "Recevoir",
   "walletButtonSend": "Envoyer",
@@ -3221,7 +3208,6 @@
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
   "electrumEmptyFieldError": "Ce champ ne peut pas être vide",
-  "electrumBitcoinSslInfo": "Si aucun protocole n'est spécifié, SSL sera utilisé par défaut.",
   "electrumLiquidSslInfo": "Aucun protocole ne doit être spécifié, SSL sera utilisé automatiquement.",
   "electrumAddServer": "Ajouter un serveur",
   "electrumEnableSsl": "Activer SSL",
@@ -3626,23 +3612,6 @@
   "withdrawOwnershipQuestion": "À qui appartient ce compte ?",
   "withdrawOwnershipMyAccount": "C'est mon compte",
   "withdrawOwnershipOtherAccount": "C'est le compte de quelqu'un d'autre",
-  "walletAutoTransferBlockedTitle": "Transfert automatique bloqué",
-  "walletAutoTransferBlockedMessage": "Tentative de transfert de {amount} BTC. Les frais actuels sont de {currentFee}% du montant du transfert et le seuil de frais est fixé à {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "Bloquer",
-  "walletAutoTransferAllowButton": "Autoriser",
   "navigationTabWallet": "Portefeuille",
   "navigationTabExchange": "Échange",
   "buyUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
@@ -4952,5 +4921,11 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "walletLoadFailed": "Vos portefeuilles n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "walletWarningElectrumBitcoinDown": "Serveur Bitcoin indisponible",
+  "walletWarningElectrumLiquidDown": "Serveur Liquid indisponible",
+  "walletWarningElectrumBothDown": "Serveurs Bitcoin et Liquid indisponibles",
+  "walletWarningElectrumAction": "Appuyez pour configurer vos paramètres de serveur",
+  "walletLoadFailedRetryHint": "Tirez vers le bas pour actualiser et réessayer"
 }

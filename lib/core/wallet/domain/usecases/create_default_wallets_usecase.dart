@@ -6,6 +6,9 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
@@ -35,10 +38,18 @@ class CreateDefaultWalletsUsecase {
           ? Network.liquidMainnet
           : Network.liquidTestnet;
 
-      final existing = await _wallet.getWallets(
+      final existing = switch (await _wallet.getWallets(
         onlyDefaults: true,
         environment: environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        // Intentional, not pending work: onboarding is the only consumer and
+        // it deliberately catches this throw in its own use-cases, mapping it
+        // to OnboardingFailure — see the doc on OnboardingFailure itself. That
+        // is rule 11's "feature use-case wrapping a shared core" boundary, so
+        // this signature is not waiting on anything.
+        Err(:final failure) => throw WalletFailureException(failure),
+      };
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
       if (hasBitcoin && hasLiquid) return existing;
@@ -78,7 +89,19 @@ class CreateDefaultWalletsUsecase {
       } catch (_) {
         for (final wallet in created) {
           try {
-            await _wallet.deleteWallet(walletId: wallet.id);
+            // Rollback must not mask the original creation failure, but it
+            // still has to report: the repository returns a Result now, so
+            // discarding it would silence this log for every repository-level
+            // failure and leave a half-created wallet set unexplained.
+            if (await _wallet.deleteWallet(walletId: wallet.id) case Err(
+              :final failure,
+            )) {
+              log.severe(
+                message: 'CreateDefaultWalletsUsecase: rollback failed',
+                error: failure.runtimeType,
+                trace: StackTrace.current,
+              );
+            }
           } catch (e, stackTrace) {
             log.severe(
               message: 'CreateDefaultWalletsUsecase: rollback failed',

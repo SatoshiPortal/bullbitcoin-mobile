@@ -5,6 +5,9 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+
 /// Derives and persists the swap master key from the default bitcoin wallet's
 /// seed so it exists before any swap needs it. Run when wallets become ready
 /// (on `WalletStarted`), which fires on every wallet-ready path: app startup,
@@ -28,11 +31,16 @@ class EnsureSwapMasterKeyUsecase {
 
   Future<void> execute() async {
     final settings = await _settingsRepository.fetch();
-    final wallets = await _walletRepository.getWallets(
+    final wallets = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
       environment: settings.environment,
-    );
+    )) {
+      Ok(:final value) => value,
+      // TODO(#1895): core/swaps has no failure family yet. Map WalletFailure into
+      // it instead of throwing once it does.
+      Err(:final failure) => throw WalletFailureException(failure),
+    };
     if (wallets.isEmpty) {
       return;
     }

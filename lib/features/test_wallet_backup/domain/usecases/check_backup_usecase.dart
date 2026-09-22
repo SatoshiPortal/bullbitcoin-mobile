@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+
 class CheckBackupUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
@@ -13,10 +16,15 @@ class CheckBackupUsecase {
   Future<bool> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
-      final defaultWallets = await _walletRepository.getWallets(
+      final defaultWallets = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        // TODO(#1895): test_wallet_backup has no failure family yet. Map
+        // WalletFailure into it instead of throwing once it does.
+        Err(:final failure) => throw WalletFailureException(failure),
+      };
       if (defaultWallets.isEmpty) {
         return false; // No default wallets found, so also no backup possible
       }

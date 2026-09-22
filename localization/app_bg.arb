@@ -749,10 +749,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Вложен SegWit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "payPaymentPending": "Плащането е в процес на обработка.",
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
@@ -813,10 +809,6 @@
   "buyDocumentUpload": "Качване на документи",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Конфиденциален SegWit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "Повтори прехвърлянето {action}",
   "@transactionDetailRetryTransfer": {
@@ -2094,10 +2086,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Подписващ за наблюдение",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "transactionError": "Грешка - {error}",
   "@transactionError": {
     "description": "Error message displayed when transaction loading fails",
@@ -2766,10 +2754,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Биткойн мрежа",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "autoswapWarningCardSubtitle": "Ще се задейства размяна, ако балансът ви в Instant Payments надвиши 0.02 BTC.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2837,10 +2821,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "Въведете адрес",
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin тестнет",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "Вижте още сейфове",
   "@recoverbullSeeMoreVaults": {
@@ -3533,10 +3513,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Класически",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4084,10 +4060,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "electrumServerSettingsLabel": "Electrum сървър (биткойн възел)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "Въведете Lightning адрес",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -4120,10 +4092,6 @@
   "gotItButton": "Разбрах",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "Liquid и Lightning мрежи",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "Приоритет на таксата",
   "@sendFeePriority": {
@@ -4522,10 +4490,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Само за наблюдение",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "Дешифрирайте сейфа",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -4719,10 +4683,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "Liquid тестнет",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "receiveBoltzSwapFee": "Такса за размяна Boltz",
   "@receiveBoltzSwapFee": {
@@ -6620,10 +6580,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "walletNetworkLiquid": "Liquid мрежа",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
-  },
   "swapMaxButton": "МАКС",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
@@ -8007,10 +7963,6 @@
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
-  "walletTypeBitcoinNetwork": "Биткойн мрежа",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
   "importMnemonicSelectType": "Изберете тип портфейл за импортиране",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8262,10 +8214,6 @@
   "payInstitutionCodeHint": "Въведете код на институцията",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Нативен SegWit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "Отвори фактура",
   "@payOpenInvoice": {
@@ -9764,7 +9712,6 @@
   "electrumMainnet": "Основна мрежа",
   "electrumTestnet": "Тестова мрежа",
   "electrumEmptyFieldError": "Това поле не може да бъде празно",
-  "electrumBitcoinSslInfo": "Ако не е зададен протокол, по подразбиране ще се използва SSL.",
   "electrumLiquidSslInfo": "Не трябва да се задава протокол, SSL ще се използва автоматично.",
   "electrumAddServer": "Добави сървър",
   "electrumEnableSsl": "Активирай SSL",
@@ -10000,10 +9947,6 @@
   "withdrawOwnershipQuestion": "На кого принадлежи тази сметка?",
   "withdrawOwnershipMyAccount": "Това е моята сметка",
   "withdrawOwnershipOtherAccount": "Това е сметка на друго лице",
-  "walletAutoTransferBlockedTitle": "Автоматичното прехвърляне е блокирано",
-  "walletAutoTransferBlockedMessage": "Опит за прехвърляне на {amount} BTC. Текущата такса е {currentFee}% от сумата за прехвърляне, а прагът за таксата е зададен на {thresholdFee}%",
-  "walletAutoTransferBlockButton": "Блокирай",
-  "walletAutoTransferAllowButton": "Разреши",
   "navigationTabWallet": "Портфейл",
   "navigationTabExchange": "Борса",
   "buyUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
@@ -10201,5 +10144,11 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "walletWarningElectrumBitcoinDown": "Сървърът Bitcoin е недостъпен",
+  "walletWarningElectrumLiquidDown": "Сървърът Liquid е недостъпен",
+  "walletWarningElectrumBothDown": "Сървърите Bitcoin и Liquid са недостъпни",
+  "walletWarningElectrumAction": "Докоснете, за да настроите сървъра",
+  "walletLoadFailedRetryHint": "Плъзнете надолу, за да обновите и опитайте отново"
 }

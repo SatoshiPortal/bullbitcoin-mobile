@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
@@ -36,10 +37,19 @@ class UpdateLatestEncryptedVaultTestUsecase {
       final decodedFingerprint = hex.encode(decodedRoot.fingerprint);
 
       final settings = await _settingsRepository.fetch();
-      final availableWallets = await _walletRepository.getWallets(
+      final List<Wallet> availableWallets;
+      switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          availableWallets = value;
+        case Err(:final failure):
+          log.warning('updateLatestEncryptedVault: ${failure.logMessage}');
+          return const Err(
+            RecoverBullUnexpectedCoreFailure('Backup restoration failed'),
+          );
+      }
 
       for (final wallet in availableWallets) {
         if (wallet.masterFingerprint == decodedFingerprint) {

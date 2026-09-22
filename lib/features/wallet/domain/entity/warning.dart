@@ -1,11 +1,18 @@
+/// Which electrum servers are failing to sync.
+///
+/// The bloc used to build an English sentence here ("Bitcoin & Liquid electrum
+/// server failure") and the UI rendered it verbatim, so the warning was
+/// untranslated in every locale. The reason is a type now; the wording belongs
+/// to the presentation layer (#1895).
+enum ElectrumServerDown { bitcoin, liquid, both }
+
 class WalletWarning {
-  final String title;
-  final String description;
+  final ElectrumServerDown reason;
   final WalletWarningAction action;
   final WarningType type;
-  WalletWarning({
-    required this.title,
-    required this.description,
+
+  const WalletWarning({
+    required this.reason,
     required this.action,
     required this.type,
   });

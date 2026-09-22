@@ -678,10 +678,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, Limit emirleri ve Auto-buy",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -754,10 +750,6 @@
   "buyConfirmYouReceive": "You receive you receive you receive you receive you receive you receive",
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
-  },
-  "walletAddressTypeConfidentialSegwit": "Gizlilik Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "Retry Transfer {action}",
   "@transactionDetailRetryTransfer": {
@@ -2431,10 +2423,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "Güvenli bağlantı kurmak...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3326,10 +3314,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Bitcoin Network",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "Gelişmiş Seçenekler",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3421,10 +3405,6 @@
   "allSeedViewSecurityWarningMessage": "Tohum ifadelerini görüntülemek bir güvenlik riskidir. Tohum cümlenizi gören herkes fonlarınıza erişebilir. Özel bir yerde olduğundan emin olun ve hiç kimse ekranınızı göremeyebilir.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "Daha fazla ton gör",
   "@recoverbullSeeMoreVaults": {
@@ -4378,10 +4358,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Mirası",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "Vakıf Pasaportu",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4785,10 +4761,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "Hiçbir protokol belirtilmemişse, ssl varsayılan olarak kullanılacaktır.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "İşlemler",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -5121,10 +5093,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum sunucusu (Bitcoin node)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "Lightning Address",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5169,10 +5137,6 @@
   "gotItButton": "Got it Got it",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "Sıvı ve Lightning ağ",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "Ücret Önceliği",
   "@sendFeePriority": {
@@ -5342,21 +5306,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Daha fazla bilgi için kurtarmabull.com ziyaret edin.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC'yi transfer etmeye çalışmak. Mevcut ücret {currentFee}% transfer miktarı ve ücret eşiği% {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Krux'inizde işlemi imzalamak için düğmeleri tıklayın.",
   "@kruxStep11": {
@@ -5719,10 +5668,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Watch-Only",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "Decryptob",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5974,10 +5919,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "Sıvı Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
   "@electrumDeleteFailedError": {
@@ -7025,10 +6966,6 @@
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "İzin",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "Bir Bitcoin cüzdanı seçin *",
   "@autoswapSelectWalletRequired": {
@@ -8477,10 +8414,6 @@
   "logSettingsErrorLoadingMessage": "Hata yükleme logları: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "Sıvı Ağ Ağı",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -10258,10 +10191,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Talimatlar",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -10289,10 +10218,6 @@
   "passportStep9": "Pasaportunuzda işlemi imzalamak için düğmeleri tıklayın.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin network",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "Bu sunucuyu silmek istediğinizden emin misiniz?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10585,10 +10510,6 @@
   "payInstitutionCodeHint": "Kurum kodu girin",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Yerli Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "Açık fatura",
   "@payOpenInvoice": {
@@ -11106,10 +11027,6 @@
   "autoswapSelectWallet": "Bir Bitcoin cüzdanı seçin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive'dan uzaklaşmak için başarısız oldu",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12200,5 +12117,11 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "walletWarningElectrumBitcoinDown": "Bitcoin sunucusu kullanılamıyor",
+  "walletWarningElectrumLiquidDown": "Liquid sunucusu kullanılamıyor",
+  "walletWarningElectrumBothDown": "Bitcoin ve Liquid sunucuları kullanılamıyor",
+  "walletWarningElectrumAction": "Sunucu ayarlarınızı yapılandırmak için dokunun",
+  "walletLoadFailedRetryHint": "Yenilemek için aşağı çekin ve tekrar deneyin"
 }
