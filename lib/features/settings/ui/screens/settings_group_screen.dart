@@ -1,30 +1,26 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:flutter/material.dart';
 
 class SettingsGroupScreen extends StatelessWidget {
-  final bool _help;
-  const SettingsGroupScreen.tools({super.key}) : _help = false;
-  const SettingsGroupScreen.help({super.key}) : _help = true;
+  final String title;
+  final SettingsItemSection section;
+
+  const SettingsGroupScreen({
+    super.key,
+    required this.title,
+    required this.section,
+  });
 
   @override
   Widget build(BuildContext context) {
     final items = settingsItemsOf(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _help
-              ? context.loc.settingsHelpAndInfoTitle
-              : context.loc.settingsToolsTitle,
-        ),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           children: [
-            for (final item in items.inSection(
-              _help ? SettingsItemSection.help : SettingsItemSection.tools,
-            ))
+            for (final item in items.inSection(section))
               item.buildTile(context),
           ],
         ),

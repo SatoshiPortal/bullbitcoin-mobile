@@ -1,6 +1,7 @@
 enum SettingsRoute {
   settings('/settings'),
   search('search'),
+  dataExport('data-export'),
   tools('tools'),
   helpAndInfo('help-and-info'),
   dataBackup('/data-backup'),

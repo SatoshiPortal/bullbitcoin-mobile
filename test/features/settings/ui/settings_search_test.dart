@@ -98,8 +98,8 @@ void main() {
         SettingsItemId.transactionHistory,
       ]) {
         final item = items.byId(id);
-        expect(item.section, SettingsItemSection.tools);
-        expect(item.path, ['Settings', 'Tools', item.title]);
+        expect(item.section, SettingsItemSection.dataExport);
+        expect(item.path, ['Settings', 'Data export', item.title]);
       }
       expect(walletSettingsItemOrder, [
         SettingsItemId.wallets,
@@ -123,6 +123,7 @@ void main() {
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
         SettingsItemId.appSettings,
+        SettingsItemId.dataExport,
         SettingsItemId.tools,
         SettingsItemId.helpAndInfo,
         SettingsItemId.servicesStatus,
@@ -132,6 +133,7 @@ void main() {
         'Wallet and Bitcoin',
         'Exchange',
         'App and device',
+        'Data export',
         'Tools',
         'Help and info',
         'Service Status',
@@ -237,11 +239,11 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Tools → Transaction History',
+        'Settings → Data export → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Tools ← Transaction History',
+        'Settings ← Data export ← Transaction History',
       );
     });
 

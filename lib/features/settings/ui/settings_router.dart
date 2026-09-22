@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_group_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -76,14 +78,28 @@ class SettingsRouter {
     ),
     routes: [
       GoRoute(
+        name: SettingsRoute.dataExport.name,
+        path: SettingsRoute.dataExport.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsDataExportTitle,
+          section: SettingsItemSection.dataExport,
+        ),
+      ),
+      GoRoute(
         name: SettingsRoute.tools.name,
         path: SettingsRoute.tools.path,
-        builder: (_, _) => const SettingsGroupScreen.tools(),
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsToolsTitle,
+          section: SettingsItemSection.tools,
+        ),
       ),
       GoRoute(
         name: SettingsRoute.helpAndInfo.name,
         path: SettingsRoute.helpAndInfo.path,
-        builder: (_, _) => const SettingsGroupScreen.help(),
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsHelpAndInfoTitle,
+          section: SettingsItemSection.help,
+        ),
       ),
       GoRoute(
         name: SettingsRoute.search.name,

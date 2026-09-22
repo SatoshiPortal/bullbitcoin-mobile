@@ -30,6 +30,7 @@ enum SettingsItemId {
   exchange,
   backup,
   dataBackup,
+  dataExport,
   tools,
   helpAndInfo,
   supportChat,
@@ -66,7 +67,16 @@ enum SettingsItemId {
   extension,
 }
 
-enum SettingsItemSection { root, backup, wallet, bullvault, app, tools, help }
+enum SettingsItemSection {
+  root,
+  backup,
+  wallet,
+  bullvault,
+  app,
+  dataExport,
+  tools,
+  help,
+}
 
 const walletSettingsItemOrder = [
   SettingsItemId.wallets,
@@ -171,6 +181,7 @@ List<SettingsItem> buildSettingsItems({
   final backupSection = localization.walletRecoverySettingsTitle;
   final walletSection = localization.settingsWalletAndBitcoinTitle;
   final appSection = localization.settingsAppAndDeviceTitle;
+  final dataExportSection = localization.settingsDataExportTitle;
   final toolsSection = localization.settingsToolsTitle;
   final helpSection = localization.settingsHelpAndInfoTitle;
   final exchangeSection = localization.settingsExchangeTitle;
@@ -187,6 +198,11 @@ List<SettingsItem> buildSettingsItems({
           title,
         ],
         SettingsItemSection.app => [rootSection, appSection, title],
+        SettingsItemSection.dataExport => [
+          rootSection,
+          dataExportSection,
+          title,
+        ],
         SettingsItemSection.tools => [rootSection, toolsSection, title],
         SettingsItemSection.help => [rootSection, helpSection, title],
       };
@@ -217,6 +233,15 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchDataBackupKeywords,
         [english.dataBackupTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.dataExport,
+      section: SettingsItemSection.root,
+      title: dataExportSection,
+      path: path(SettingsItemSection.root, dataExportSection),
+      icon: Icons.file_download_outlined,
+      open: (context) => context.pushNamed(SettingsRoute.dataExport.name),
+      keywords: [english.settingsDataExportTitle],
     ),
     SettingsItem(
       id: SettingsItemId.tools,
@@ -338,10 +363,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.labels,
-      section: SettingsItemSection.tools,
+      section: SettingsItemSection.dataExport,
       title: localization.backupSettingsLabelsButton,
       path: path(
-        SettingsItemSection.tools,
+        SettingsItemSection.dataExport,
         localization.backupSettingsLabelsButton,
       ),
       icon: Icons.sell,
@@ -354,10 +379,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.transactionHistory,
-      section: SettingsItemSection.tools,
+      section: SettingsItemSection.dataExport,
       title: localization.transactionHistoryTitle,
       path: path(
-        SettingsItemSection.tools,
+        SettingsItemSection.dataExport,
         localization.transactionHistoryTitle,
       ),
       icon: Icons.file_download,
@@ -795,6 +820,7 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.walletSettings,
       SettingsItemId.exchange,
       SettingsItemId.appSettings,
+      SettingsItemId.dataExport,
       SettingsItemId.tools,
       SettingsItemId.helpAndInfo,
       SettingsItemId.servicesStatus,

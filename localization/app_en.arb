@@ -17419,5 +17419,9 @@
   "walletsListNoWalletsMessage": "No wallets found",
   "@walletsListNoWalletsMessage": {
     "description": "Empty wallet list in Settings"
+  },
+  "settingsDataExportTitle": "Data export",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
   }
 }

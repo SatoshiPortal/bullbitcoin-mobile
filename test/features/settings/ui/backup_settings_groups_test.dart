@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final localization = AppLocalizationsEn();
   test(
-    'root Settings keeps the five groups and direct recovery and status entries',
+    'root Settings keeps the groups and direct recovery and status entries',
     () {
       final items = buildSettingsItems(localization: localization);
       expect(
@@ -15,6 +15,7 @@ void main() {
           'walletSettings',
           'exchange',
           'appSettings',
+          'dataExport',
           'tools',
           'helpAndInfo',
           'servicesStatus',
