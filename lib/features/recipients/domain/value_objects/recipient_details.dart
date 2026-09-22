@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_payment_option.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -186,6 +188,9 @@ class SepaEurDetails extends RecipientDetails {
   final String? lastname;
   @override
   final String? corporateName;
+  final SepaVirtualPayeeStatus virtualPayeeStatus;
+  final Set<SepaPaymentOption> paymentOptions;
+  final bool isConfidential;
 
   const SepaEurDetails._({
     super.label,
@@ -196,6 +201,9 @@ class SepaEurDetails extends RecipientDetails {
     this.firstname,
     this.lastname,
     this.corporateName,
+    this.virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    this.paymentOptions = const {SepaPaymentOption.regular},
+    this.isConfidential = false,
   });
 
   factory SepaEurDetails.create({
@@ -207,6 +215,9 @@ class SepaEurDetails extends RecipientDetails {
     String? firstname,
     String? lastname,
     String? corporateName,
+    SepaVirtualPayeeStatus virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    Set<SepaPaymentOption> paymentOptions = const {SepaPaymentOption.regular},
+    bool isConfidential = false,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
@@ -235,11 +246,39 @@ class SepaEurDetails extends RecipientDetails {
       firstname: firstname?.trim(),
       lastname: lastname?.trim(),
       corporateName: corporateName?.trim(),
+      virtualPayeeStatus: virtualPayeeStatus,
+      paymentOptions: Set.unmodifiable(paymentOptions),
+      isConfidential: isConfidential,
     );
   }
 
+  SepaEurDetails asConfidential() => SepaEurDetails._(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    iban: iban,
+    isCorporate: isCorporate,
+    firstname: firstname,
+    lastname: lastname,
+    corporateName: corporateName,
+    virtualPayeeStatus: virtualPayeeStatus,
+    paymentOptions: paymentOptions,
+    isConfidential: true,
+  );
+
+  bool get isVirtualPayeeActive => virtualPayeeStatus.isActive;
+  bool get isVirtualPayeeProcessing => virtualPayeeStatus.isProcessing;
+  bool get hasVirtualPayee => virtualPayeeStatus.exists;
+  bool get supportsRegularSepa =>
+      paymentOptions.contains(SepaPaymentOption.regular) ||
+      paymentOptions.contains(SepaPaymentOption.largeValue);
+  bool get supportsConfidentialSepa =>
+      paymentOptions.contains(SepaPaymentOption.confidential);
+
   @override
-  RecipientType get type => RecipientType.sepaEur;
+  RecipientType get type => isConfidential
+      ? RecipientType.confidentialSepaEur
+      : RecipientType.sepaEur;
 }
 
 // ── SPEI (MXN)

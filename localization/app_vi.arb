@@ -3588,5 +3588,20 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "recipientsTypeConfidentialSepa": "SEPA Bảo mật",
+  "recipientsConfidentialSepaSubtitle": "Các khoản chi trả hiển thị dưới dạng tự chuyển khoản với tên tài khoản của bạn",
+  "recipientsFrPayeeActivatingTitle": "Đang kích hoạt người nhận",
+  "recipientsFrPayeeActivatingDescription": "Người nhận của bạn đang được kích hoạt cho SEPA Bảo mật. Quá trình này có thể mất vài phút.",
+  "recipientsFrPayeeNotActivatedTitle": "Người nhận chưa được kích hoạt cho SEPA Bảo mật",
+  "recipientsFrPayeeNotActivatedDescription": "Người nhận này chưa được kích hoạt cho SEPA Bảo mật. Chúng tôi đang kích hoạt ngay bây giờ. Quá trình này có thể mất vài phút. Trong thời gian chờ, bạn có thể sử dụng SEPA Tức thì và Thông thường.",
+  "recipientsFrPayeeActivatedTitle": "Đã kích hoạt người nhận",
+  "recipientsFrPayeeActivatedDescription": "Người nhận của bạn hiện đã được kích hoạt cho SEPA Bảo mật.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Sử dụng SEPA Tức thì và Thông thường thay thế",
+  "recipientsConfidentialSepaNotActivatedError": "Vui lòng kích hoạt tùy chọn thanh toán bảo mật cho người nhận SEPA này.",
+  "withdrawPaymentDescriptionTooShort": "Mô tả thanh toán phải có ít nhất 5 ký tự",
+  "recipientsVirtualIbanIntro": "Kích hoạt IBAN ảo cá nhân trước khi tạo người nhận SEPA bảo mật.",
+  "recipientsVirtualIbanNameConfirmation": "Tôi xác nhận đây là tên pháp lý của mình.",
+  "recipientsVirtualIbanActivate": "Kích hoạt SEPA bảo mật",
+  "recipientsVirtualIbanActivating": "Đang tạo IBAN ảo của bạn. Quá trình này có thể mất vài phút."
 }

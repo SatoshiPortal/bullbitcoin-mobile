@@ -3,6 +3,10 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_dat
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -99,6 +103,65 @@ void main() {
       stubOrders([orderJsonFixture(orderId: 'good-1')]);
 
       expect(await repository.getOrderByTxId('txid-absent'), isNull);
+    });
+  });
+
+  group('confidential SEPA activation errors', () {
+    test('preserves the pay datasource exception for the usecase', () async {
+      when(
+        () => api.createPayOrder(
+          apiKey: 'key',
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          paymentProcessor: SepaPaymentProcessor.confidential,
+          usePayjoin: false,
+        ),
+      ).thenThrow(const ConfidentialSepaNotActivatedApiException());
+
+      expect(
+        repository.placePayOrder(
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<ConfidentialSepaNotActivatedException>()),
+      );
+    });
+
+    test('preserves the withdrawal datasource activation exception', () async {
+      when(
+        () => api.createWithdrawalOrder(
+          apiKey: 'key',
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+      ).thenThrow(const ConfidentialSepaNotActivatedApiException());
+
+      expect(
+        repository.placeWithdrawalOrder(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<ConfidentialSepaNotActivatedException>()),
+      );
+    });
+
+    test('preserves an unauthenticated withdrawal error', () async {
+      when(
+        () => apiKeys.get(isTestnet: any(named: 'isTestnet')),
+      ).thenAnswer((_) async => null);
+
+      expect(
+        repository.placeWithdrawalOrder(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+        ),
+        throwsA(isA<UnauthenticatedWithdrawError>()),
+      );
     });
   });
 }

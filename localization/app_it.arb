@@ -4906,5 +4906,20 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "recipientsTypeConfidentialSepa": "SEPA Riservato",
+  "recipientsConfidentialSepaSubtitle": "I pagamenti appaiono come un trasferimento a te stesso con il nome del tuo conto",
+  "recipientsFrPayeeActivatingTitle": "Attivazione del destinatario",
+  "recipientsFrPayeeActivatingDescription": "Il tuo destinatario è in fase di attivazione per SEPA Riservato. L'operazione può richiedere alcuni minuti.",
+  "recipientsFrPayeeNotActivatedTitle": "Destinatario non attivato per SEPA Riservato",
+  "recipientsFrPayeeNotActivatedDescription": "Questo destinatario non è ancora attivato per SEPA Riservato. Lo stiamo attivando ora. L'operazione può richiedere alcuni minuti. Nel frattempo puoi usare SEPA Istantaneo e Ordinario.",
+  "recipientsFrPayeeActivatedTitle": "Destinatario attivato",
+  "recipientsFrPayeeActivatedDescription": "Il tuo destinatario è ora attivo per SEPA Riservato.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Usa invece SEPA Istantaneo e Ordinario",
+  "recipientsConfidentialSepaNotActivatedError": "Attiva l'opzione di pagamento riservato per questo destinatario SEPA.",
+  "withdrawPaymentDescriptionTooShort": "La descrizione del pagamento deve contenere almeno 5 caratteri",
+  "recipientsVirtualIbanIntro": "Attiva il tuo IBAN virtuale personale prima di creare un destinatario SEPA riservato.",
+  "recipientsVirtualIbanNameConfirmation": "Confermo che questo è il mio nome legale.",
+  "recipientsVirtualIbanActivate": "Attiva SEPA riservato",
+  "recipientsVirtualIbanActivating": "Creazione del tuo IBAN virtuale. Potrebbero essere necessari alcuni minuti."
 }

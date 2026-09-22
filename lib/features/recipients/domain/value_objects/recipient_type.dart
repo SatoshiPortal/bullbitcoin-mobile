@@ -8,6 +8,7 @@ enum RecipientType {
   bankTransferCad('BANK_TRANSFER_CAD'),
   // EUROPE
   sepaEur('SEPA_EUR'),
+  confidentialSepaEur('SEPA_EUR_CONFIDENTIAL'),
   // MEXICO
   speiClabeMxn('SPEI_CLABE_MXN'),
   speiSmsMxn('SPEI_SMS_MXN'),
@@ -39,6 +40,7 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CA';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return 'EU';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:
@@ -64,6 +66,7 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CAD';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return 'EUR';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:
@@ -82,6 +85,17 @@ enum RecipientType {
         return 'COP';
     }
   }
+
+  bool get supportsPaymentDescription => switch (this) {
+    RecipientType.interacEmailCad ||
+    RecipientType.bankTransferCad ||
+    RecipientType.sepaEur ||
+    RecipientType.confidentialSepaEur ||
+    RecipientType.sinpeIbanUsd ||
+    RecipientType.sinpeIbanCrc ||
+    RecipientType.sinpeMovilCrc => true,
+    _ => false,
+  };
 
   static Set<RecipientType> typesForCurrency(String currencyCode) {
     return RecipientType.values

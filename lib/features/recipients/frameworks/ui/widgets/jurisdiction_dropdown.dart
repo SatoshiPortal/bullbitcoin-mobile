@@ -10,20 +10,21 @@ class JurisdictionsDropdown extends StatelessWidget {
     required this.selectedJurisdiction,
     required this.onChanged,
     this.includeAllOption = false,
+    this.creationOnly = false,
   });
 
   final String? selectedJurisdiction;
   final void Function(String?) onChanged;
   final bool includeAllOption;
+  final bool creationOnly;
 
   @override
   Widget build(BuildContext context) {
-    final filters = context.select(
-      (RecipientsBloc bloc) => bloc.state.allowedRecipientFilters,
+    final jurisdictions = context.select(
+      (RecipientsBloc bloc) => creationOnly
+          ? bloc.state.availableCreationJurisdictions
+          : bloc.state.availableJurisdictions,
     );
-    final jurisdictions = filters.types
-        .map((type) => type.jurisdictionCode)
-        .toSet();
 
     return Material(
       elevation: 4,

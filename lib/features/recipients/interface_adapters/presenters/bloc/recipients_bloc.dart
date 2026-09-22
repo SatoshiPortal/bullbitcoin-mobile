@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/recipients/application/usecases/add_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/check_confidential_sepa_eligibility_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
@@ -26,6 +27,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientFilterCriteria? allowedRecipientFilters,
     this._onRecipientSelectedHook,
     required this._getExchangeUserSummaryUsecase,
+    required this._checkConfidentialSepaEligibilityUsecase,
     required this._addRecipientUsecase,
     required this._getRecipientsUsecase,
     required this._checkSinpeUsecase,
@@ -65,6 +67,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final CheckConfidentialSepaEligibilityUsecase
+  _checkConfidentialSepaEligibilityUsecase;
 
   Future<void> _onStarted(
     RecipientsStarted event,
@@ -74,13 +78,18 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     if (jurisdictions.length == 1) {
       emit(state.copyWith(jurisdictionFilter: jurisdictions.first));
     }
-    await _loadFirstPage(emit, clearList: true);
-
     String preferredJurisdictionCode = 'CA'; // Default to Canada
+    var canUseConfidentialSepa = false;
+    String? confidentialSepaOwnerName;
     try {
       log.info('Loading exchange user summary');
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final preferredCurrency = summary.currency;
+      canUseConfidentialSepa = _checkConfidentialSepaEligibilityUsecase.execute(
+        summary,
+      );
+      confidentialSepaOwnerName =
+          '${summary.profile.firstName} ${summary.profile.lastName}'.trim();
 
       // Set default jurisdiction based on user summary
       switch (preferredCurrency) {
@@ -107,8 +116,15 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       );
       // We don't emit an error state here since we have a default value
     } finally {
-      emit(state.copyWith(preferredJurisdiction: preferredJurisdictionCode));
+      emit(
+        state.copyWith(
+          preferredJurisdiction: preferredJurisdictionCode,
+          canUseConfidentialSepa: canUseConfidentialSepa,
+          confidentialSepaOwnerName: confidentialSepaOwnerName,
+        ),
+      );
     }
+    await _loadFirstPage(emit, clearList: true);
   }
 
   Future<void> _onMoreLoaded(
@@ -118,6 +134,9 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     if (state.isLoadingRecipients || !state.hasMoreRecipientsToLoad) {
       return;
     }
+
+    final recipientTypes = _effectiveTypes(state);
+    if (recipientTypes.isEmpty) return;
 
     final generation = _loadGeneration;
     emit(
@@ -129,7 +148,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         GetRecipientsParams(
           page: state.loadedPages + 1,
           pageSize: pageSize,
-          recipientTypes: _effectiveTypes(state),
+          recipientTypes: recipientTypes,
           isOwner: state.allowedRecipientFilters.isOwner,
           search: state.searchQuery,
         ),
@@ -197,6 +216,19 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     required bool clearList,
   }) async {
     final generation = ++_loadGeneration;
+    final recipientTypes = _effectiveTypes(state);
+    if (recipientTypes.isEmpty) {
+      emit(
+        state.copyWith(
+          isLoadingRecipients: false,
+          failedToLoadRecipients: null,
+          recipients: const [],
+          totalRecipients: 0,
+          loadedPages: 1,
+        ),
+      );
+      return;
+    }
     emit(
       state.copyWith(
         isLoadingRecipients: true,
@@ -209,7 +241,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       final result = await _getRecipientsUsecase.execute(
         GetRecipientsParams(
           pageSize: pageSize,
-          recipientTypes: _effectiveTypes(state),
+          recipientTypes: recipientTypes,
           isOwner: state.allowedRecipientFilters.isOwner,
           search: state.searchQuery,
         ),
@@ -239,7 +271,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   List<RecipientType> _effectiveTypes(RecipientsState state) {
     final allowed = state.allowedRecipientFilters.types;
     final jurisdiction = state.jurisdictionFilter;
-    if (jurisdiction == null) return allowed;
+    if (jurisdiction == null) return allowed.toList();
     return allowed
         .where((type) => type.jurisdictionCode == jurisdiction)
         .toList();
@@ -269,13 +301,19 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
     try {
-      log.info('Trying to add recipient: ${event.recipient}');
+      log.info('Trying to add a ${event.recipient.type} recipient');
       final result = await _addRecipientUsecase.execute(
         AddRecipientParams(recipientDetails: event.recipient.toDto()),
       );
       log.fine(
         'Successfully added recipient with ID: ${result.recipient.recipientId}',
       );
+      if (result.activationFailure case final failure?) {
+        log.info(
+          'Recipient was saved but confidential SEPA activation is pending: '
+          '${failure.logMessage}',
+        );
+      }
       final addedRecipient = result.recipient.toViewModel();
 
       // Call the selection hook for the newly added recipient
@@ -305,11 +343,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       ),
     );
     try {
-      log.info('Checking SINPE for phone number: ${event.phoneNumber}');
+      log.info('Checking a SINPE phone number');
       final result = await _checkSinpeUsecase.execute(
         CheckSinpeParams(phoneNumber: event.phoneNumber),
       );
-      log.fine('SINPE check result: $result');
+      log.fine('SINPE phone number check completed');
       emit(state.copyWith(sinpeOwnerName: result.ownerName));
     } catch (e) {
       emit(
@@ -334,7 +372,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       ),
     );
     try {
-      log.info('Searching CAD billers with query: ${event.query}');
+      log.info('Searching CAD billers');
       final result = await _listCadBillersUsecase.execute(
         ListCadBillersParams(searchTerm: event.query),
       );
@@ -380,7 +418,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     emit(state.copyWith(failedToSelectRecipient: null));
     try {
-      log.info('Recipient selected: ${event.recipient}');
+      log.info('A ${event.recipient.type} recipient was selected');
       if (_onRecipientSelectedHook != null) {
         await _onRecipientSelectedHook(event.recipient, isNew: false);
       }

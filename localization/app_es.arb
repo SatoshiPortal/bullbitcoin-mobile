@@ -4903,5 +4903,20 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "recipientsTypeConfidentialSepa": "SEPA Confidencial",
+  "recipientsConfidentialSepaSubtitle": "Los pagos aparecen como una autotransferencia con el nombre de tu cuenta",
+  "recipientsFrPayeeActivatingTitle": "Activando destinatario",
+  "recipientsFrPayeeActivatingDescription": "Tu destinatario se está activando para SEPA Confidencial. Esto puede tardar unos minutos.",
+  "recipientsFrPayeeNotActivatedTitle": "Destinatario no activado para SEPA Confidencial",
+  "recipientsFrPayeeNotActivatedDescription": "Este destinatario aún no está activado para SEPA Confidencial. Lo estamos activando ahora. Esto puede tardar unos minutos. Mientras tanto, puedes usar SEPA Instantáneo y Normal.",
+  "recipientsFrPayeeActivatedTitle": "Destinatario activado",
+  "recipientsFrPayeeActivatedDescription": "Tu destinatario ya está activo para SEPA Confidencial.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Usar SEPA Instantáneo y Normal en su lugar",
+  "recipientsConfidentialSepaNotActivatedError": "Activa la opción de pago confidencial para este destinatario SEPA.",
+  "withdrawPaymentDescriptionTooShort": "La descripción del pago debe tener al menos 5 caracteres",
+  "recipientsVirtualIbanIntro": "Activa tu IBAN virtual personal antes de crear un destinatario SEPA confidencial.",
+  "recipientsVirtualIbanNameConfirmation": "Confirmo que este es mi nombre legal.",
+  "recipientsVirtualIbanActivate": "Activar SEPA confidencial",
+  "recipientsVirtualIbanActivating": "Estamos creando tu IBAN virtual. Esto puede tardar unos minutos."
 }

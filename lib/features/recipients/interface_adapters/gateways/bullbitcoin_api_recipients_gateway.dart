@@ -1,12 +1,12 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
+import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/data/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_model.dart';
+import 'package:bb_mobile/features/recipients/data/models/recipient_model.dart';
 import 'package:dio/dio.dart';
 
 class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
@@ -70,7 +70,10 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   }) async {
     final filters = <String, dynamic>{
       if (recipientTypes != null && recipientTypes.isNotEmpty)
-        'recipientTypeFiat': recipientTypes.map((t) => t.value).toList(),
+        'recipientTypeFiat': recipientTypes
+            .map(_recipientTypeToApi)
+            .toSet()
+            .toList(),
       'isOwner': ?isOwner,
       if (search != null && search.isNotEmpty) 'search': search,
     };
@@ -121,7 +124,6 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
           // doesn't support yet, which without does would cause the user not
           // to see any recipients at all.
           try {
-            log.info('Parsing recipient: $e');
             return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
           } catch (err, stackTrace) {
             log.severe(
@@ -134,8 +136,50 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         })
         .whereType<Recipient>()
         .toList();
-    return (recipients: recipients, totalRecipients: totalElements);
+
+    final expanded = <Recipient>[];
+    final confidentialRequested =
+        recipientTypes?.contains(RecipientType.confidentialSepaEur) ?? false;
+    for (final r in recipients) {
+      final sepa = r.details;
+      if (r.type != RecipientType.sepaEur || sepa is! SepaEurDetails) {
+        expanded.add(r);
+        continue;
+      }
+      if (sepa.supportsRegularSepa) expanded.add(r);
+      if (sepa.supportsConfidentialSepa ||
+          (confidentialRequested && _canActivateVirtualPayee(sepa))) {
+        expanded.add(_confidentialTwin(r));
+      }
+    }
+
+    final filtered = recipientTypes == null
+        ? expanded
+        : expanded.where((rr) => recipientTypes.contains(rr.type)).toList();
+
+    return (recipients: filtered, totalRecipients: totalElements);
   }
+
+  Recipient _confidentialTwin(Recipient r) => Recipient.create(
+    recipientId: r.recipientId,
+    userId: r.userId,
+    userNbr: r.userNbr,
+    isArchived: r.isArchived,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+    details: (r.details as SepaEurDetails).asConfidential(),
+  );
+
+  bool _canActivateVirtualPayee(SepaEurDetails details) =>
+      details.isOwner == true &&
+      !details.isCorporate &&
+      details.firstname?.isNotEmpty == true &&
+      details.lastname?.isNotEmpty == true;
+
+  String _recipientTypeToApi(RecipientType type) => switch (type) {
+    RecipientType.confidentialSepaEur => RecipientType.sepaEur.value,
+    _ => type.value,
+  };
 
   @override
   Future<String> checkSinpe({

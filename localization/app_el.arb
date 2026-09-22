@@ -12200,5 +12200,20 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
+  "recipientsConfidentialSepaSubtitle": "Οι πληρωμές εμφανίζονται ως αυτομεταφορά με το όνομα του λογαριασμού σας",
+  "recipientsFrPayeeActivatingTitle": "Ενεργοποίηση παραλήπτη",
+  "recipientsFrPayeeActivatingDescription": "Ο παραλήπτης σας ενεργοποιείται για το Εμπιστευτικό SEPA. Αυτό μπορεί να διαρκέσει μερικά λεπτά.",
+  "recipientsFrPayeeNotActivatedTitle": "Ο παραλήπτης δεν έχει ενεργοποιηθεί για το Εμπιστευτικό SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "Αυτός ο παραλήπτης δεν έχει ενεργοποιηθεί ακόμη για το Εμπιστευτικό SEPA. Τον ενεργοποιούμε τώρα. Αυτό μπορεί να διαρκέσει μερικά λεπτά. Μπορείτε να χρησιμοποιήσετε το Άμεσο και Κανονικό SEPA αντ' αυτού.",
+  "recipientsFrPayeeActivatedTitle": "Ο παραλήπτης ενεργοποιήθηκε",
+  "recipientsFrPayeeActivatedDescription": "Ο παραλήπτης σας είναι πλέον ενεργός για το Εμπιστευτικό SEPA.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Χρησιμοποιήστε το Άμεσο και Κανονικό SEPA αντ' αυτού",
+  "recipientsConfidentialSepaNotActivatedError": "Ενεργοποιήστε την επιλογή εμπιστευτικής πληρωμής για αυτόν τον παραλήπτη SEPA.",
+  "withdrawPaymentDescriptionTooShort": "Η περιγραφή πληρωμής πρέπει να έχει τουλάχιστον 5 χαρακτήρες",
+  "recipientsVirtualIbanIntro": "Ενεργοποιήστε το προσωπικό εικονικό IBAN πριν δημιουργήσετε έναν εμπιστευτικό παραλήπτη SEPA.",
+  "recipientsVirtualIbanNameConfirmation": "Επιβεβαιώνω ότι αυτό είναι το νόμιμο όνομά μου.",
+  "recipientsVirtualIbanActivate": "Ενεργοποίηση εμπιστευτικού SEPA",
+  "recipientsVirtualIbanActivating": "Δημιουργείται το εικονικό IBAN σας. Αυτό μπορεί να διαρκέσει λίγα λεπτά."
 }

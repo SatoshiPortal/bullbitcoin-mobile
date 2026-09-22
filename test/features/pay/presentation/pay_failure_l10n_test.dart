@@ -30,6 +30,7 @@ final _everyFailure = <PayFailure>[
   ),
   const PayFeeBelowRelayFloorFailure(_rawReason),
   const PayFeesUnavailableFailure(_rawReason),
+  const PayConfidentialSepaNotActivatedFailure(_rawReason),
   const PayUnexpectedFailure(_rawReason),
 ];
 

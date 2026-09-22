@@ -4903,5 +4903,20 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "recipientsTypeConfidentialSepa": "Конфіденційний SEPA",
+  "recipientsConfidentialSepaSubtitle": "Виплати відображаються як переказ собі з назвою вашого рахунку",
+  "recipientsFrPayeeActivatingTitle": "Активація одержувача",
+  "recipientsFrPayeeActivatingDescription": "Вашого одержувача активують для Конфіденційного SEPA. Це може зайняти кілька хвилин.",
+  "recipientsFrPayeeNotActivatedTitle": "Одержувача не активовано для Конфіденційного SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "Цього одержувача ще не активовано для Конфіденційного SEPA. Ми активуємо його зараз. Це може зайняти кілька хвилин. Тим часом ви можете скористатися Миттєвим і звичайним SEPA.",
+  "recipientsFrPayeeActivatedTitle": "Одержувача активовано",
+  "recipientsFrPayeeActivatedDescription": "Ваш одержувач тепер активний для Конфіденційного SEPA.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Скористатися Миттєвим і звичайним SEPA замість цього",
+  "recipientsConfidentialSepaNotActivatedError": "Будь ласка, активуйте опцію конфіденційного платежу для цього одержувача SEPA.",
+  "withdrawPaymentDescriptionTooShort": "Опис платежу має містити щонайменше 5 символів",
+  "recipientsVirtualIbanIntro": "Активуйте особистий віртуальний IBAN перед створенням конфіденційного одержувача SEPA.",
+  "recipientsVirtualIbanNameConfirmation": "Я підтверджую, що це моє офіційне ім'я.",
+  "recipientsVirtualIbanActivate": "Активувати конфіденційний SEPA",
+  "recipientsVirtualIbanActivating": "Створюємо ваш віртуальний IBAN. Це може тривати кілька хвилин."
 }

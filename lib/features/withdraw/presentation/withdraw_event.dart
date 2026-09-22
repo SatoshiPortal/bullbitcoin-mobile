@@ -6,6 +6,7 @@ sealed class WithdrawEvent with _$WithdrawEvent {
   const factory WithdrawEvent.recipientSelected(
     RecipientViewModel recipient, {
     required bool isNew,
+    String? paymentDescription,
   }) = WithdrawRecipientSelected;
   const factory WithdrawEvent.amountInputContinuePressed({
     required String amountInput,

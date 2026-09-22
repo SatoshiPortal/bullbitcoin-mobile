@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 abstract class ExchangeOrderRepository {
@@ -27,11 +28,14 @@ abstract class ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
+    String? paymentDescription,
     bool isETransfer = false,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);

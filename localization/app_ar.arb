@@ -12203,5 +12203,20 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "recipientsTypeConfidentialSepa": "SEPA السري",
+  "recipientsConfidentialSepaSubtitle": "تظهر المدفوعات كتحويل ذاتي باسم حسابك",
+  "recipientsFrPayeeActivatingTitle": "جارٍ تفعيل المستلم",
+  "recipientsFrPayeeActivatingDescription": "جارٍ تفعيل المستلم الخاص بك لخدمة SEPA السري. قد يستغرق ذلك بضع دقائق.",
+  "recipientsFrPayeeNotActivatedTitle": "المستلم غير مُفعَّل لخدمة SEPA السري",
+  "recipientsFrPayeeNotActivatedDescription": "لم يتم بعد تفعيل هذا المستلم لخدمة SEPA السري. نقوم بتفعيله الآن. قد يستغرق ذلك بضع دقائق. يمكنك استخدام SEPA الفوري والعادي بدلاً من ذلك.",
+  "recipientsFrPayeeActivatedTitle": "تم تفعيل المستلم",
+  "recipientsFrPayeeActivatedDescription": "أصبح المستلم الخاص بك الآن مُفعَّلاً لخدمة SEPA السري.",
+  "recipientsFrPayeeUseRegularSepaInstead": "استخدم SEPA الفوري والعادي بدلاً من ذلك",
+  "recipientsConfidentialSepaNotActivatedError": "يرجى تفعيل خيار الدفع السري لهذا المستلم عبر SEPA.",
+  "withdrawPaymentDescriptionTooShort": "يجب ألا يقل وصف الدفع عن 5 أحرف",
+  "recipientsVirtualIbanIntro": "فعّل رقم IBAN الافتراضي الشخصي قبل إنشاء مستلم SEPA سري.",
+  "recipientsVirtualIbanNameConfirmation": "أؤكد أن هذا هو اسمي القانوني.",
+  "recipientsVirtualIbanActivate": "تفعيل SEPA السري",
+  "recipientsVirtualIbanActivating": "جارٍ إنشاء رقم IBAN الافتراضي. قد يستغرق ذلك بضع دقائق."
 }

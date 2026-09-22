@@ -12200,5 +12200,20 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "recipientsTypeConfidentialSepa": "Důvěrný SEPA",
+  "recipientsConfidentialSepaSubtitle": "Platby se zobrazí jako vlastní převod s názvem vašeho účtu",
+  "recipientsFrPayeeActivatingTitle": "Aktivace příjemce",
+  "recipientsFrPayeeActivatingDescription": "Váš příjemce se aktivuje pro Důvěrný SEPA. Může to trvat několik minut.",
+  "recipientsFrPayeeNotActivatedTitle": "Příjemce není aktivován pro Důvěrný SEPA",
+  "recipientsFrPayeeNotActivatedDescription": "Tento příjemce zatím není aktivován pro Důvěrný SEPA. Právě jej aktivujeme. Může to trvat několik minut. Mezitím můžete použít Okamžitý a běžný SEPA.",
+  "recipientsFrPayeeActivatedTitle": "Příjemce aktivován",
+  "recipientsFrPayeeActivatedDescription": "Váš příjemce je nyní aktivní pro Důvěrný SEPA.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Použít místo toho Okamžitý a běžný SEPA",
+  "recipientsConfidentialSepaNotActivatedError": "Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA.",
+  "withdrawPaymentDescriptionTooShort": "Popis platby musí mít alespoň 5 znaků",
+  "recipientsVirtualIbanIntro": "Před vytvořením důvěrného příjemce SEPA aktivujte svůj osobní virtuální IBAN.",
+  "recipientsVirtualIbanNameConfirmation": "Potvrzuji, že toto je mé zákonné jméno.",
+  "recipientsVirtualIbanActivate": "Aktivovat důvěrný SEPA",
+  "recipientsVirtualIbanActivating": "Vytváříme váš virtuální IBAN. Může to trvat několik minut."
 }

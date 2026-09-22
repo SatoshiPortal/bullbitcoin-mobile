@@ -3735,5 +3735,20 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",
+  "recipientsConfidentialSepaSubtitle": "გადახდები გამოჩნდება როგორც საკუთარ თავზე გადარიცხვა თქვენი ანგარიშის სახელით",
+  "recipientsFrPayeeActivatingTitle": "მიმღების გააქტიურება",
+  "recipientsFrPayeeActivatingDescription": "თქვენი მიმღები აქტიურდება კონფიდენციალური SEPA-სთვის. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
+  "recipientsFrPayeeNotActivatedTitle": "მიმღები არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის",
+  "recipientsFrPayeeNotActivatedDescription": "ეს მიმღები ჯერ არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის. ჩვენ ვააქტიურებთ მას ახლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს. სანაცვლოდ შეგიძლიათ გამოიყენოთ მყისიერი და ჩვეულებრივი SEPA.",
+  "recipientsFrPayeeActivatedTitle": "მიმღები გააქტიურდა",
+  "recipientsFrPayeeActivatedDescription": "თქვენი მიმღები ახლა აქტიურია კონფიდენციალური SEPA-სთვის.",
+  "recipientsFrPayeeUseRegularSepaInstead": "სანაცვლოდ გამოიყენეთ მყისიერი და ჩვეულებრივი SEPA",
+  "recipientsConfidentialSepaNotActivatedError": "გთხოვთ, გაააქტიუროთ კონფიდენციალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის.",
+  "withdrawPaymentDescriptionTooShort": "გადახდის აღწერა უნდა შეიცავდეს მინიმუმ 5 სიმბოლოს",
+  "recipientsVirtualIbanIntro": "კონფიდენციალური SEPA მიმღების შექმნამდე გაააქტიურეთ თქვენი პირადი ვირტუალური IBAN.",
+  "recipientsVirtualIbanNameConfirmation": "ვადასტურებ, რომ ეს ჩემი იურიდიული სახელია.",
+  "recipientsVirtualIbanActivate": "კონფიდენციალური SEPA-ს გააქტიურება",
+  "recipientsVirtualIbanActivating": "თქვენი ვირტუალური IBAN იქმნება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს."
 }

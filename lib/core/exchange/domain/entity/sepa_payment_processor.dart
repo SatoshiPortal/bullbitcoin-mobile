@@ -1,0 +1,1 @@
+enum SepaPaymentProcessor { regular, confidential }

@@ -11,9 +11,11 @@ sealed class WithdrawState with _$WithdrawState {
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
+    String? paymentDescription,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? newRecipientError,
-    WithdrawError? selectedRecipientError,
+    WithdrawFailure? newRecipientError,
+    WithdrawFailure? selectedRecipientError,
+    RecipientViewModel? selectedRecipient,
   }) = WithdrawRecipientInputState;
   /*onst factory WithdrawState.descriptionInput({
     required UserSummary userSummary,
@@ -21,116 +23,95 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatAmount fiatOrderAmount,
     required FiatCurrency fiatCurrency,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
+    WithdrawFailure? error,
   }) = WithdrawDescriptionInputState;*/
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
     required RecipientViewModel recipient,
-    //required String description,
+    String? paymentDescription,
     required WithdrawOrder order,
     @Default(false) bool isConfirmingWithdrawal,
-    WithdrawError? error,
+    WithdrawFailure? error,
   }) = WithdrawConfirmationState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
   const WithdrawState._();
 
-  FiatCurrency get currency {
-    return when(
-      initial: (_) => FiatCurrency.cad,
-      amountInput: (userSummary) => userSummary.currency != null
+  FiatCurrency get currency => switch (this) {
+    WithdrawInitialState() => FiatCurrency.cad,
+    WithdrawAmountInputState(:final userSummary) =>
+      userSummary.currency != null
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,
-      recipientInput: (_, _, currency, _, _, _) => currency,
-      confirmation: (_, _, currency, _, _, _, _) => currency,
-      success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
-    );
-  }
+    WithdrawRecipientInputState(:final currency) => currency,
+    WithdrawConfirmationState(:final currency) => currency,
+    WithdrawSuccessState(:final order) => FiatCurrency.fromCode(
+      order.payoutCurrency,
+    ),
+  };
 
-  WithdrawAmountInputState? get cleanAmountInputState {
-    return whenOrNull(
-      amountInput: (userSummary) =>
-          WithdrawAmountInputState(userSummary: userSummary),
-      recipientInput:
-          (
-            userSummary,
-            amount,
-            currency,
-            isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
-    );
-  }
+  WithdrawAmountInputState? get cleanAmountInputState => switch (this) {
+    WithdrawAmountInputState(:final userSummary) => WithdrawAmountInputState(
+      userSummary: userSummary,
+    ),
+    WithdrawRecipientInputState(:final userSummary) => WithdrawAmountInputState(
+      userSummary: userSummary,
+    ),
+    WithdrawConfirmationState(:final userSummary) => WithdrawAmountInputState(
+      userSummary: userSummary,
+    ),
+    _ => null,
+  };
 
-  WithdrawRecipientInputState? get cleanRecipientInputState {
-    return whenOrNull(
-      recipientInput:
-          (
-            userSummary,
-            amount,
-            currency,
-            isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
-          ) => WithdrawRecipientInputState(
-            userSummary: userSummary,
-            amount: amount,
-            currency: currency,
-            isCreatingWithdrawOrder: false,
-            newRecipientError: null,
-            selectedRecipientError: null,
-          ),
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawRecipientInputState(
-            userSummary: userSummary,
-            amount: amount,
-            currency: currency,
-          ),
-    );
-  }
+  WithdrawRecipientInputState? get cleanRecipientInputState => switch (this) {
+    WithdrawRecipientInputState(
+      :final userSummary,
+      :final amount,
+      :final currency,
+      :final paymentDescription,
+    ) =>
+      WithdrawRecipientInputState(
+        userSummary: userSummary,
+        amount: amount,
+        currency: currency,
+        paymentDescription: paymentDescription,
+      ),
+    WithdrawConfirmationState(
+      :final userSummary,
+      :final amount,
+      :final currency,
+      :final paymentDescription,
+    ) =>
+      WithdrawRecipientInputState(
+        userSummary: userSummary,
+        amount: amount,
+        currency: currency,
+        paymentDescription: paymentDescription,
+      ),
+    _ => null,
+  };
 
-  WithdrawConfirmationState? get cleanConfirmationState {
-    return whenOrNull(
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawConfirmationState(
-            userSummary: userSummary,
-            amount: amount,
-            currency: currency,
-            recipient: recipient,
-            order: order,
-            error: null,
-          ),
-    );
-  }
+  WithdrawConfirmationState? get cleanConfirmationState => switch (this) {
+    WithdrawConfirmationState(
+      :final userSummary,
+      :final amount,
+      :final currency,
+      :final recipient,
+      :final paymentDescription,
+      :final order,
+    ) =>
+      WithdrawConfirmationState(
+        userSummary: userSummary,
+        amount: amount,
+        currency: currency,
+        recipient: recipient,
+        paymentDescription: paymentDescription,
+        order: order,
+      ),
+    _ => null,
+  };
 }
 
 extension WithdrawInitialStateX on WithdrawInitialState {
@@ -164,6 +145,7 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
       amount: amount,
       currency: currency,
       recipient: recipient,
+      paymentDescription: paymentDescription,
       order: order,
     );
   }

@@ -4894,5 +4894,20 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA",
+  "recipientsConfidentialSepaSubtitle": "Maksut näkyvät siirtona itselle tilisi nimellä",
+  "recipientsFrPayeeActivatingTitle": "Vastaanottajaa aktivoidaan",
+  "recipientsFrPayeeActivatingDescription": "Vastaanottajaasi aktivoidaan Luottamuksellista SEPAa varten. Tämä voi kestää muutaman minuutin.",
+  "recipientsFrPayeeNotActivatedTitle": "Vastaanottajaa ei ole aktivoitu Luottamuksellista SEPAa varten",
+  "recipientsFrPayeeNotActivatedDescription": "Tätä vastaanottajaa ei ole vielä aktivoitu Luottamuksellista SEPAa varten. Aktivoimme sitä parhaillaan. Tämä voi kestää muutaman minuutin. Voit käyttää sen sijaan Pika- ja tavallista SEPAa.",
+  "recipientsFrPayeeActivatedTitle": "Vastaanottaja aktivoitu",
+  "recipientsFrPayeeActivatedDescription": "Vastaanottajasi on nyt aktiivinen Luottamuksellista SEPAa varten.",
+  "recipientsFrPayeeUseRegularSepaInstead": "Käytä sen sijaan Pika- ja tavallista SEPAa",
+  "recipientsConfidentialSepaNotActivatedError": "Aktivoi luottamuksellinen maksuvaihtoehto tälle SEPA-vastaanottajalle.",
+  "withdrawPaymentDescriptionTooShort": "Maksun kuvauksen on oltava vähintään 5 merkkiä",
+  "recipientsVirtualIbanIntro": "Aktivoi henkilökohtainen virtuaalinen IBAN ennen luottamuksellisen SEPA-vastaanottajan luomista.",
+  "recipientsVirtualIbanNameConfirmation": "Vahvistan, että tämä on virallinen nimeni.",
+  "recipientsVirtualIbanActivate": "Aktivoi luottamuksellinen SEPA",
+  "recipientsVirtualIbanActivating": "Virtuaalista IBAN-numeroasi luodaan. Tämä voi kestää muutaman minuutin."
 }
