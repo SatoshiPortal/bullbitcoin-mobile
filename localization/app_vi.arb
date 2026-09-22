@@ -3479,6 +3479,7 @@
   "walletWarningElectrumLiquidDown": "Máy chủ Liquid không khả dụng",
   "walletWarningElectrumBothDown": "Máy chủ Bitcoin và Liquid không khả dụng",
   "walletWarningElectrumAction": "Chạm để định cấu hình cài đặt máy chủ",
+  "walletLoadFailedRetryHint": "Kéo xuống để làm mới và thử lại",
   "transactionDetailLoadError": "Không thể tải chi tiết giao dịch.",
   "transactionPayjoinBroadcastFailed": "Không thể phát sóng giao dịch gốc. Vui lòng thử lại.",
   "transactionPayjoinOriginalUnavailable": "Giao dịch gốc không còn khả dụng để phát sóng.",
@@ -3618,5 +3619,6 @@
   "receiveErrorAddressUnavailable": "Không thể tạo địa chỉ nhận. Vui lòng thử lại.",
   "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại.",
   "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
-  "exchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại."
+  "exchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
+  "walletBalancesMayBeStale": "Không thể cập nhật số dư của bạn và số dư có thể chưa chính xác."
 }

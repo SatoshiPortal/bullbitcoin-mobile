@@ -56,7 +56,7 @@ void main() {
     );
     when(
       () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => spMnemonicSeed());
+    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
     when(
       () => repository.createFromMnemonic(
         network: any(named: 'network'),
@@ -128,7 +128,7 @@ void main() {
     test('throws when the default seed is not mnemonic-backed', () async {
       when(
         () => getDefaultSeedUsecase.execute(),
-      ).thenAnswer((_) async => _bytesSeed());
+      ).thenAnswer((_) async => Ok(_bytesSeed()));
 
       await expectLater(usecase.execute(), throwsA(isA<StateError>()));
     });
@@ -200,7 +200,7 @@ void main() {
       when(() => repository.teardownInProgress).thenAnswer((_) => tearingDown);
       when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async {
         tearingDown = true;
-        return spMnemonicSeed();
+        return Ok(spMnemonicSeed());
       });
 
       final result = await usecase.execute();

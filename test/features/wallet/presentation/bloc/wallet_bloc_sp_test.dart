@@ -21,6 +21,9 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -134,13 +137,15 @@ WalletBloc _makeBloc({
   if (useDefaultGetWallets) {
     when(
       () => getWallets!.execute(sync: any(named: 'sync')),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => const Ok(<Wallet>[]));
   }
   when(
     () => checkWalletSyncing.execute(walletId: any(named: 'walletId')),
-  ).thenReturn(false);
-  when(() => checkWalletSyncing.execute()).thenReturn(false);
-  when(() => checkLegacySeedStorage.execute()).thenAnswer((_) async => false);
+  ).thenReturn(const Ok(false));
+  when(() => checkWalletSyncing.execute()).thenReturn(const Ok(false));
+  when(
+    () => checkLegacySeedStorage.execute(),
+  ).thenAnswer((_) async => const Ok(false));
 
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
   when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
@@ -149,10 +154,14 @@ WalletBloc _makeBloc({
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: checkWalletSyncing,
     checkBackupNeededUsecase: _MockCheckBackupNeeded(),
-    watchStartedWalletSyncsUsecase: watchStarted,
-    watchFinishedWalletSyncsUsecase: watchFinished,
-    watchElectrumSyncResultsUsecase: watchElectrum,
-    syncCoordinator: syncCoordinator,
+    // The real wrappers over the same mocks, so assertions on the
+    // coordinator and watchers still hold.
+    watchWalletSyncEventsUsecase: WatchWalletSyncEventsUsecase(
+      watchStarted: watchStarted,
+      watchFinished: watchFinished,
+      watchElectrum: watchElectrum,
+    ),
+    syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator),
     getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),
     deleteWalletUsecase: _MockDeleteWallet(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),
@@ -494,7 +503,7 @@ void main() {
         final refreshSp = _MockRefreshSpWalletForWallet();
         final checkSetup = _MockCheckSpWalletSetupForWallet();
         final getWallets = _MockGetWalletsUsecase();
-        final walletsLoaded = Completer<List<Wallet>>();
+        final walletsLoaded = Completer<Result<List<Wallet>, WalletFailure>>();
 
         when(
           () => getWallets.execute(sync: any(named: 'sync')),
@@ -523,7 +532,7 @@ void main() {
         await balanced;
         expect(bloc.state.spBalanceSat, 9876);
 
-        walletsLoaded.complete(<Wallet>[]);
+        walletsLoaded.complete(const Ok(<Wallet>[]));
         await pumpEventQueue(times: 100);
         await bloc.close();
       },

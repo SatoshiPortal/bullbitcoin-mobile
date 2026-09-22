@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 
 /// Orchestrates SP wallet creation for the setup flow: gate on superuser +
 /// dev mode, block a double setup, clear any stale revoked state, then create
@@ -52,7 +53,14 @@ class CreateSpWalletUsecase {
         return const Err(SpRequiresDevMode());
       }
 
-      final seed = await _getDefaultSeedUsecase.execute();
+      // Same fixed text as the catch below: the seed path never logs a reason.
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute()) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(SpUnexpected('SP wallet create failed'));
+      }
       final mnemonic = spMnemonicFromSeed(seed);
 
       final bool hasSentinel;

@@ -11674,6 +11674,7 @@
   "walletWarningElectrumLiquidDown": "Ο διακομιστής Liquid δεν είναι διαθέσιμος",
   "walletWarningElectrumBothDown": "Οι διακομιστές Bitcoin και Liquid δεν είναι διαθέσιμοι",
   "walletWarningElectrumAction": "Πατήστε για να ρυθμίσετε τον διακομιστή",
+  "walletLoadFailedRetryHint": "Τραβήξτε προς τα κάτω για ανανέωση και δοκιμάστε ξανά",
   "transactionDetailLoadError": "Δεν ήταν δυνατή η φόρτωση των λεπτομερειών της συναλλαγής.",
   "transactionPayjoinBroadcastFailed": "Δεν ήταν δυνατή η μετάδοση της αρχικής συναλλαγής. Παρακαλώ δοκιμάστε ξανά.",
   "transactionPayjoinOriginalUnavailable": "Η αρχική συναλλαγή δεν είναι πλέον διαθέσιμη για μετάδοση.",
@@ -11813,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης. Δοκιμάστε ξανά.",
   "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
-  "exchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά."
+  "exchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "walletBalancesMayBeStale": "Δεν ήταν δυνατή η ενημέρωση των υπολοίπων σας και ενδέχεται να μην είναι ενημερωμένα."
 }

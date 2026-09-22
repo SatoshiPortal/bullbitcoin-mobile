@@ -9045,6 +9045,7 @@
   "walletWarningElectrumLiquidDown": "Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
   "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
   "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
+  "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক",
   "transactionDetailLoadError": "লেনদেনৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল।",
   "transactionPayjoinBroadcastFailed": "মূল লেনদেনটো সম্প্ৰচাৰ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটো আৰু সম্প্ৰচাৰৰ বাবে উপলব্ধ নহয়।",
@@ -9184,5 +9185,6 @@
   "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletBalancesMayBeStale": "আপোনাৰ বেলেঞ্চ আপডেট কৰিব পৰা নগ'ল আৰু সেয়া পুৰণি হ'ব পাৰে।"
 }

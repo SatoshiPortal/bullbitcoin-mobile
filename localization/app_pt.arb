@@ -4722,6 +4722,7 @@
   "walletWarningElectrumLiquidDown": "Servidor Liquid indisponível",
   "walletWarningElectrumBothDown": "Servidores Bitcoin e Liquid indisponíveis",
   "walletWarningElectrumAction": "Toque para configurar as definições do servidor",
+  "walletLoadFailedRetryHint": "Puxe para baixo para atualizar e tente novamente",
   "transactionDetailLoadError": "Não foi possível carregar os detalhes da transação.",
   "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
   "transactionPayjoinOriginalUnavailable": "A transação original já não está disponível para transmissão.",
@@ -4861,5 +4862,6 @@
   "receiveErrorAddressUnavailable": "Não foi possível preparar um endereço de receção. Tente novamente.",
   "receiveErrorBroadcastOriginal": "Não foi possível transmitir a transação. Verifique a sua ligação à Internet e tente novamente.",
   "fundExchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
-  "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente."
+  "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
+  "walletBalancesMayBeStale": "Não foi possível atualizar os seus saldos e podem estar desatualizados."
 }

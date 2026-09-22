@@ -4686,6 +4686,7 @@
   "walletWarningElectrumLiquidDown": "Liquid 服务器不可用",
   "walletWarningElectrumBothDown": "Bitcoin 和 Liquid 服务器不可用",
   "walletWarningElectrumAction": "点按以配置服务器设置",
+  "walletLoadFailedRetryHint": "下拉刷新后重试",
   "transactionDetailLoadError": "无法加载交易详情。",
   "transactionPayjoinBroadcastFailed": "无法广播原始交易。请重试。",
   "transactionPayjoinOriginalUnavailable": "原始交易已无法广播。",
@@ -4825,5 +4826,6 @@
   "receiveErrorAddressUnavailable": "无法准备接收地址。请重试。",
   "receiveErrorBroadcastOriginal": "我们无法广播该交易。请检查您的网络连接并重试。",
   "fundExchangeErrorNetwork": "请检查您的网络连接后重试。",
-  "exchangeErrorNetwork": "请检查您的网络连接后重试。"
+  "exchangeErrorNetwork": "请检查您的网络连接后重试。",
+  "walletBalancesMayBeStale": "无法更新您的余额，余额可能不是最新的。"
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
@@ -28,8 +29,19 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     >
   >
   execute() async {
+    final Seed defaultSeed;
+    switch (await _getDefaultSeedUsecase.execute()) {
+      case Ok(:final value):
+        defaultSeed = value;
+      case Err(:final failure):
+        log.warning('bip85 derivations: ${failure.logMessage}');
+        // The seed layer's vocabulary stops here.
+        return Err(
+          Bip85UnexpectedFailure('default seed: ${failure.runtimeType}'),
+        );
+    }
+
     try {
-      final defaultSeed = await _getDefaultSeedUsecase.execute();
       final xprvBase58 = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         Network.bitcoinMainnet,
@@ -64,7 +76,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
         error: e,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      // Only the runtime type: this block wraps xprv derivation, so an
+      // exception message here can carry key material, and `logMessage` is
+      // reachable from presentation (#1895).
+      return Err(Bip85UnexpectedFailure('derivation: ${e.runtimeType}'));
     }
   }
 }

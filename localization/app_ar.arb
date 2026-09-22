@@ -11677,6 +11677,7 @@
   "walletWarningElectrumLiquidDown": "خادم Liquid غير متاح",
   "walletWarningElectrumBothDown": "خادما Bitcoin وLiquid غير متاحين",
   "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم",
+  "walletLoadFailedRetryHint": "اسحب للأسفل للتحديث وحاول مرة أخرى",
   "transactionDetailLoadError": "تعذر تحميل تفاصيل المعاملة.",
   "transactionPayjoinBroadcastFailed": "تعذر بث المعاملة الأصلية. يرجى المحاولة مرة أخرى.",
   "transactionPayjoinOriginalUnavailable": "لم تعد المعاملة الأصلية متاحة للبث.",
@@ -11816,5 +11817,6 @@
   "receiveErrorAddressUnavailable": "لم نتمكن من تجهيز عنوان استلام. حاول مرة أخرى.",
   "receiveErrorBroadcastOriginal": "لم نتمكن من بث المعاملة. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
-  "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى."
+  "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة."
 }

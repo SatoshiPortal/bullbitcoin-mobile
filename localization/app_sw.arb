@@ -3491,6 +3491,7 @@
   "walletWarningElectrumLiquidDown": "Seva ya Liquid haipatikani",
   "walletWarningElectrumBothDown": "Seva za Bitcoin na Liquid hazipatikani",
   "walletWarningElectrumAction": "Gusa ili kusanidi mipangilio ya seva",
+  "walletLoadFailedRetryHint": "Buruta chini ili kuonyesha upya na ujaribu tena",
   "transactionDetailLoadError": "Maelezo ya muamala hayakuweza kupakiwa.",
   "transactionPayjoinBroadcastFailed": "Muamala asili haukuweza kutangazwa. Tafadhali jaribu tena.",
   "transactionPayjoinOriginalUnavailable": "Muamala asili haupatikani tena kwa kutangazwa.",
@@ -3630,5 +3631,6 @@
   "receiveErrorAddressUnavailable": "Haikuwezekana kutayarisha anwani ya kupokea. Tafadhali jaribu tena.",
   "receiveErrorBroadcastOriginal": "Hatukuweza kutangaza muamala. Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "fundExchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
-  "exchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena."
+  "exchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
+  "walletBalancesMayBeStale": "Salio lako halikuweza kusasishwa na huenda si la sasa."
 }

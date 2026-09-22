@@ -3479,6 +3479,7 @@
   "walletWarningElectrumLiquidDown": "Liquid սերվերն անհասանելի է",
   "walletWarningElectrumBothDown": "Bitcoin և Liquid սերվերներն անհասանելի են",
   "walletWarningElectrumAction": "Հպեք՝ սերվերի կարգավորումները փոխելու համար",
+  "walletLoadFailedRetryHint": "Քաշեք ներքև՝ թարմացնելու և կրկին փորձելու համար",
   "transactionDetailLoadError": "Չհաջողվեց բեռնել գործարքի մանրամասները։",
   "transactionPayjoinBroadcastFailed": "Չհաջողվեց հեռարձակել սկզբնական գործարքը։ Խնդրում ենք փորձել կրկին։",
   "transactionPayjoinOriginalUnavailable": "Սկզբնական գործարքն այլևս հասանելի չէ հեռարձակման համար։",
@@ -3618,5 +3619,6 @@
   "receiveErrorAddressUnavailable": "Չհաջողվեց պատրաստել ստացման հասցե։ Փորձեք կրկին։",
   "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
-  "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
+  "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
+  "walletBalancesMayBeStale": "Ձեր մնացորդները չհաջողվեց թարմացնել, և դրանք կարող են հնացած լինել։"
 }

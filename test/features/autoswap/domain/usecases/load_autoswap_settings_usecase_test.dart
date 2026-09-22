@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -75,10 +76,10 @@ void main() {
       when(
         () => wallets.getWallets(environment: any(named: 'environment')),
       ).thenAnswer(
-        (_) async => [
+        (_) async => Ok<List<Wallet>, WalletFailure>([
           FakeWallet(id: 'btc', isLiquid: false, isDefault: true),
           FakeWallet(id: 'lbtc', isLiquid: true, isDefault: true),
-        ],
+        ]),
       );
 
       final result = await usecase.execute();
@@ -99,10 +100,10 @@ void main() {
         when(
           () => wallets.getWallets(environment: any(named: 'environment')),
         ).thenAnswer(
-          (_) async => [
+          (_) async => Ok<List<Wallet>, WalletFailure>([
             FakeWallet(id: 'other', isLiquid: false, isDefault: false),
             FakeWallet(id: 'default-btc', isLiquid: false, isDefault: true),
-          ],
+          ]),
         );
 
         final result = await usecase.execute();

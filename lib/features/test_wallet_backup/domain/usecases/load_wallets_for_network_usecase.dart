@@ -25,11 +25,20 @@ class LoadWalletsForNetworkUsecase {
   Future<Result<List<Wallet>, TestWalletBackupFailure>> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
-      final wallets = await _walletRepository.getWallets(
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(
         onlyDefaults: false,
         onlyBitcoin: true,
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          wallets = value;
+        // The wallet repository already logged the raw reason.
+        case Err(:final failure):
+          return Err(
+            TestWalletBackupWalletsUnavailableFailure(failure.logMessage),
+          );
+      }
       if (wallets.isEmpty) return const Err(TestWalletBackupNoWalletsFailure());
       return Ok(wallets);
     } on Object catch (e, st) {

@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 
 class RecreateSpWalletUsecase {
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
@@ -44,7 +45,14 @@ class RecreateSpWalletUsecase {
     // throws a StateError (a programmer bug, never caught) per
     // spMnemonicFromSeed.
     try {
-      final seed = await _getDefaultSeedUsecase.execute();
+      // Same fixed text as the catch below: the seed path never logs a reason.
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute()) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(SpUnexpected('SP wallet recreate failed'));
+      }
       final mnemonic = spMnemonicFromSeed(seed);
 
       // Read before the teardown bracket, so a failed read aborts with nothing

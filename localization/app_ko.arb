@@ -11674,6 +11674,7 @@
   "walletWarningElectrumLiquidDown": "Liquid 서버를 사용할 수 없음",
   "walletWarningElectrumBothDown": "Bitcoin 및 Liquid 서버를 사용할 수 없음",
   "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요",
+  "walletLoadFailedRetryHint": "아래로 당겨 새로 고친 후 다시 시도하세요",
   "transactionDetailLoadError": "거래 세부 정보를 불러올 수 없습니다.",
   "transactionPayjoinBroadcastFailed": "원본 거래를 브로드캐스트할 수 없습니다. 다시 시도해 주세요.",
   "transactionPayjoinOriginalUnavailable": "원본 거래를 더 이상 브로드캐스트할 수 없습니다.",
@@ -11813,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
   "receiveErrorBroadcastOriginal": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
-  "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요."
+  "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다."
 }

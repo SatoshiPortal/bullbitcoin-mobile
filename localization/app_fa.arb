@@ -11674,6 +11674,7 @@
   "walletWarningElectrumLiquidDown": "سرور Liquid در دسترس نیست",
   "walletWarningElectrumBothDown": "سرورهای Bitcoin و Liquid در دسترس نیستند",
   "walletWarningElectrumAction": "برای پیکربندی تنظیمات سرور ضربه بزنید",
+  "walletLoadFailedRetryHint": "برای به‌روزرسانی به پایین بکشید و دوباره تلاش کنید",
   "transactionDetailLoadError": "جزئیات تراکنش بارگذاری نشد.",
   "transactionPayjoinBroadcastFailed": "تراکنش اصلی منتشر نشد. لطفاً دوباره تلاش کنید.",
   "transactionPayjoinOriginalUnavailable": "تراکنش اصلی دیگر برای انتشار در دسترس نیست.",
@@ -11813,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "آدرس دریافت آماده نشد. لطفاً دوباره تلاش کنید.",
   "receiveErrorBroadcastOriginal": "نتوانستیم تراکنش را ارسال کنیم. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "fundExchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
-  "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید."
+  "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
+  "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند."
 }

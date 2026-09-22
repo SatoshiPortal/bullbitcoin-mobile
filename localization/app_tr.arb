@@ -11674,6 +11674,7 @@
   "walletWarningElectrumLiquidDown": "Liquid sunucusu kullanılamıyor",
   "walletWarningElectrumBothDown": "Bitcoin ve Liquid sunucuları kullanılamıyor",
   "walletWarningElectrumAction": "Sunucu ayarlarınızı yapılandırmak için dokunun",
+  "walletLoadFailedRetryHint": "Yenilemek için aşağı çekin ve tekrar deneyin",
   "transactionDetailLoadError": "İşlem ayrıntıları yüklenemedi.",
   "transactionPayjoinBroadcastFailed": "Orijinal işlem yayınlanamadı. Lütfen tekrar deneyin.",
   "transactionPayjoinOriginalUnavailable": "Orijinal işlem artık yayınlanmak üzere mevcut değil.",
@@ -11813,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "Alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
   "receiveErrorBroadcastOriginal": "İşlemi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "fundExchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
-  "exchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin."
+  "exchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "walletBalancesMayBeStale": "Bakiyeleriniz güncellenemedi ve güncel olmayabilir."
 }

@@ -11861,6 +11861,7 @@
   "walletWarningElectrumLiquidDown": "Liquid सर्वर उपलब्ध नहीं है",
   "walletWarningElectrumBothDown": "Bitcoin और Liquid सर्वर उपलब्ध नहीं हैं",
   "walletWarningElectrumAction": "सर्वर सेटिंग्स कॉन्फ़िगर करने के लिए टैप करें",
+  "walletLoadFailedRetryHint": "रीफ़्रेश करने के लिए नीचे खींचें और फिर से प्रयास करें",
   "transactionDetailLoadError": "लेन-देन का विवरण लोड नहीं हो सका।",
   "transactionPayjoinBroadcastFailed": "मूल लेन-देन प्रसारित नहीं किया जा सका। कृपया पुनः प्रयास करें।",
   "transactionPayjoinOriginalUnavailable": "मूल लेन-देन अब प्रसारण के लिए उपलब्ध नहीं है।",
@@ -12000,5 +12001,6 @@
   "receiveErrorAddressUnavailable": "प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
   "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।",
   "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
-  "exchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।"
+  "exchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "walletBalancesMayBeStale": "आपके बैलेंस अपडेट नहीं हो सके और वे पुराने हो सकते हैं।"
 }

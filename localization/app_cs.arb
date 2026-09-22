@@ -11674,6 +11674,7 @@
   "walletWarningElectrumLiquidDown": "Server Liquid není dostupný",
   "walletWarningElectrumBothDown": "Servery Bitcoin a Liquid nejsou dostupné",
   "walletWarningElectrumAction": "Klepnutím nastavíte server",
+  "walletLoadFailedRetryHint": "Přetažením dolů obnovte a zkuste to znovu",
   "transactionDetailLoadError": "Podrobnosti transakce se nepodařilo načíst.",
   "transactionPayjoinBroadcastFailed": "Původní transakci se nepodařilo odeslat. Zkuste to prosím znovu.",
   "transactionPayjoinOriginalUnavailable": "Původní transakce již není k dispozici k odeslání.",
@@ -11813,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "Nepodařilo se připravit přijímací adresu. Zkuste to prosím znovu.",
   "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
-  "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu."
+  "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální."
 }

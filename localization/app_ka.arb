@@ -3602,6 +3602,7 @@
   "walletWarningElectrumLiquidDown": "Liquid სერვერი მიუწვდომელია",
   "walletWarningElectrumBothDown": "Bitcoin და Liquid სერვერები მიუწვდომელია",
   "walletWarningElectrumAction": "შეეხეთ სერვერის პარამეტრების გასაწყობად",
+  "walletLoadFailedRetryHint": "ჩამოწიეთ განახლებისთვის და სცადეთ ხელახლა",
   "transactionDetailLoadError": "ტრანზაქციის დეტალების ჩატვირთვა ვერ მოხერხდა.",
   "transactionPayjoinBroadcastFailed": "საწყისი ტრანზაქციის გავრცელება ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "transactionPayjoinOriginalUnavailable": "საწყისი ტრანზაქცია აღარ არის ხელმისაწვდომი გასავრცელებლად.",
@@ -3741,5 +3742,6 @@
   "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
   "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
-  "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
+  "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
+  "walletBalancesMayBeStale": "თქვენი ნაშთების განახლება ვერ მოხერხდა და ისინი შეიძლება მოძველებული იყოს."
 }

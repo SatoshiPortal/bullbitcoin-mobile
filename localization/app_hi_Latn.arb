@@ -12056,6 +12056,7 @@
   "walletWarningElectrumLiquidDown": "Liquid server uplabdh nahi hai",
   "walletWarningElectrumBothDown": "Bitcoin aur Liquid server uplabdh nahi hain",
   "walletWarningElectrumAction": "Server settings configure karne ke liye tap karein",
+  "walletLoadFailedRetryHint": "Refresh karne ke liye neeche kheenchein aur dobara koshish karein",
   "transactionDetailLoadError": "Transaction ki details load nahin ho sakin.",
   "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
   "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
@@ -12195,5 +12196,6 @@
   "receiveErrorAddressUnavailable": "Prapti pata taiyar nahin kiya ja saka. Kripya phir se prayas karein.",
   "receiveErrorBroadcastOriginal": "Hum lenden prasarit nahin kar sake. Apna internet connection janchein aur phir se prayas karein.",
   "fundExchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
-  "exchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein."
+  "exchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
+  "walletBalancesMayBeStale": "Aapke balance update nahin ho sake aur ve purane ho sakte hain."
 }

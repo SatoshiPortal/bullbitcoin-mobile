@@ -4674,6 +4674,7 @@
   "walletWarningElectrumLiquidDown": "Liquid-palvelin ei ole käytettävissä",
   "walletWarningElectrumBothDown": "Bitcoin- ja Liquid-palvelimet eivät ole käytettävissä",
   "walletWarningElectrumAction": "Määritä palvelinasetukset napauttamalla",
+  "walletLoadFailedRetryHint": "Päivitä vetämällä alaspäin ja yritä uudelleen",
   "transactionDetailLoadError": "Tapahtuman tietoja ei voitu ladata.",
   "transactionPayjoinBroadcastFailed": "Alkuperäistä tapahtumaa ei voitu lähettää. Yritä uudelleen.",
   "transactionPayjoinOriginalUnavailable": "Alkuperäinen tapahtuma ei ole enää lähetettävissä.",
@@ -4813,5 +4814,6 @@
   "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
   "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen.",
   "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
-  "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen."
+  "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
+  "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita."
 }

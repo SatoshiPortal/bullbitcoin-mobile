@@ -4737,6 +4737,7 @@
   "walletWarningElectrumLiquidDown": "Liquid-Server nicht verfügbar",
   "walletWarningElectrumBothDown": "Bitcoin- und Liquid-Server nicht verfügbar",
   "walletWarningElectrumAction": "Tippen Sie, um Ihre Servereinstellungen zu konfigurieren",
+  "walletLoadFailedRetryHint": "Zum Aktualisieren nach unten ziehen und erneut versuchen",
   "transactionPayjoinBroadcastFailed": "Die ursprüngliche Transaktion konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
   "transactionPayjoinOriginalUnavailable": "Die ursprüngliche Transaktion steht nicht mehr zum Senden zur Verfügung.",
   "transactionLabelLimitReached": "Sie können höchstens 10 Labels haben.",
@@ -4862,5 +4863,6 @@
   "receiveErrorAddressUnavailable": "Es konnte keine Empfangsadresse erstellt werden. Bitte versuche es erneut.",
   "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut.",
   "fundExchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut.",
-  "exchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut."
+  "exchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut.",
+  "walletBalancesMayBeStale": "Ihre Guthaben konnten nicht aktualisiert werden und sind möglicherweise nicht aktuell."
 }

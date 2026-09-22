@@ -11678,6 +11678,7 @@
   "walletWarningElectrumLiquidDown": "เซิร์ฟเวอร์ Liquid ไม่พร้อมใช้งาน",
   "walletWarningElectrumBothDown": "เซิร์ฟเวอร์ Bitcoin และ Liquid ไม่พร้อมใช้งาน",
   "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์",
+  "walletLoadFailedRetryHint": "ดึงลงเพื่อรีเฟรชแล้วลองอีกครั้ง",
   "transactionDetailLoadError": "ไม่สามารถโหลดรายละเอียดธุรกรรมได้",
   "transactionPayjoinBroadcastFailed": "ไม่สามารถเผยแพร่ธุรกรรมต้นฉบับได้ โปรดลองอีกครั้ง",
   "transactionPayjoinOriginalUnavailable": "ธุรกรรมต้นฉบับไม่สามารถเผยแพร่ได้อีกต่อไป",
@@ -11817,5 +11818,6 @@
   "receiveErrorAddressUnavailable": "ไม่สามารถเตรียมที่อยู่รับได้ โปรดลองอีกครั้ง",
   "receiveErrorBroadcastOriginal": "เราไม่สามารถกระจายธุรกรรมได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "fundExchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
-  "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง"
+  "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "walletBalancesMayBeStale": "ไม่สามารถอัปเดตยอดคงเหลือของคุณได้ และยอดอาจไม่เป็นปัจจุบัน"
 }

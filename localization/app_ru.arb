@@ -4692,6 +4692,7 @@
   "walletWarningElectrumLiquidDown": "Сервер Liquid недоступен",
   "walletWarningElectrumBothDown": "Серверы Bitcoin и Liquid недоступны",
   "walletWarningElectrumAction": "Нажмите, чтобы настроить параметры сервера",
+  "walletLoadFailedRetryHint": "Потяните вниз, чтобы обновить и повторить попытку",
   "transactionDetailLoadError": "Не удалось загрузить детали транзакции.",
   "transactionPayjoinBroadcastFailed": "Не удалось отправить исходную транзакцию. Пожалуйста, попробуйте снова.",
   "transactionPayjoinOriginalUnavailable": "Исходная транзакция больше недоступна для отправки.",
@@ -4831,5 +4832,6 @@
   "receiveErrorAddressUnavailable": "Не удалось подготовить адрес для получения. Попробуйте ещё раз.",
   "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз.",
   "fundExchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
-  "exchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз."
+  "exchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
+  "walletBalancesMayBeStale": "Не удалось обновить балансы, они могут быть неактуальными."
 }
