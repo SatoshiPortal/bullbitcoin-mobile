@@ -12126,5 +12126,6 @@
   "walletWarningElectrumBitcoinDown": "เซิร์ฟเวอร์ Bitcoin ไม่พร้อมใช้งาน",
   "walletWarningElectrumLiquidDown": "เซิร์ฟเวอร์ Liquid ไม่พร้อมใช้งาน",
   "walletWarningElectrumBothDown": "เซิร์ฟเวอร์ Bitcoin และ Liquid ไม่พร้อมใช้งาน",
-  "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์"
+  "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์",
+  "walletLoadFailedRetryHint": "ดึงลงเพื่อรีเฟรชแล้วลองอีกครั้ง"
 }

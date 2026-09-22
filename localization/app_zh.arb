@@ -4880,5 +4880,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin 服务器不可用",
   "walletWarningElectrumLiquidDown": "Liquid 服务器不可用",
   "walletWarningElectrumBothDown": "Bitcoin 和 Liquid 服务器不可用",
-  "walletWarningElectrumAction": "点按以配置服务器设置"
+  "walletWarningElectrumAction": "点按以配置服务器设置",
+  "walletLoadFailedRetryHint": "下拉刷新后重试"
 }

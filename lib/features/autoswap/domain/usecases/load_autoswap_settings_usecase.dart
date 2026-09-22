@@ -34,9 +34,19 @@ class LoadAutoswapSettingsUsecase {
       final appSettings = await _getSettingsUsecase.execute();
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
 
-      final wallets = await _walletRepository.getWallets(
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(
         environment: appSettings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          return Err(
+            AutoswapSettingsUnavailableFailure(
+              'wallets: ${failure.runtimeType}',
+            ),
+          );
+      }
       final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
       final defaultBitcoinWallet = bitcoinWallets
           .where((w) => w.isDefault)

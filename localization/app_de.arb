@@ -4918,5 +4918,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin-Server nicht verfügbar",
   "walletWarningElectrumLiquidDown": "Liquid-Server nicht verfügbar",
   "walletWarningElectrumBothDown": "Bitcoin- und Liquid-Server nicht verfügbar",
-  "walletWarningElectrumAction": "Tippen Sie, um Ihre Servereinstellungen zu konfigurieren"
+  "walletWarningElectrumAction": "Tippen Sie, um Ihre Servereinstellungen zu konfigurieren",
+  "walletLoadFailedRetryHint": "Zum Aktualisieren nach unten ziehen und erneut versuchen"
 }

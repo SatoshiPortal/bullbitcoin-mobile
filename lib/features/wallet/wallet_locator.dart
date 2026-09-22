@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -12,8 +12,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecase/get_external_tor_proxy_status_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -42,22 +44,27 @@ class WalletLocator {
         locator<Tor>(),
       ),
     );
+    locator.registerFactory<SyncWalletsUsecase>(
+      () => SyncWalletsUsecase(locator<SyncCoordinator>()),
+    );
+    locator.registerFactory<WatchWalletSyncEventsUsecase>(
+      () => WatchWalletSyncEventsUsecase(
+        watchStarted: locator<WatchStartedWalletSyncsUsecase>(),
+        watchFinished: locator<WatchFinishedWalletSyncsUsecase>(),
+        watchElectrum: locator<WatchElectrumSyncResultsUsecase>(),
+      ),
+    );
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
-        watchStartedWalletSyncsUsecase:
-            locator<WatchStartedWalletSyncsUsecase>(),
-        watchFinishedWalletSyncsUsecase:
-            locator<WatchFinishedWalletSyncsUsecase>(),
-        watchElectrumSyncResultsUsecase:
-            locator<WatchElectrumSyncResultsUsecase>(),
-        syncCoordinator: locator<SyncCoordinator>(),
+        watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
+        syncWalletsUsecase: locator<SyncWalletsUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
-        seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
+        seedRepository: locator<SeedRepository>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),

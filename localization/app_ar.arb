@@ -12125,5 +12125,6 @@
   "walletWarningElectrumBitcoinDown": "خادم Bitcoin غير متاح",
   "walletWarningElectrumLiquidDown": "خادم Liquid غير متاح",
   "walletWarningElectrumBothDown": "خادما Bitcoin وLiquid غير متاحين",
-  "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم"
+  "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم",
+  "walletLoadFailedRetryHint": "اسحب للأسفل للتحديث وحاول مرة أخرى"
 }

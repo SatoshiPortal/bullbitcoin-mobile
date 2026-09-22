@@ -3722,5 +3722,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin სერვერი მიუწვდომელია",
   "walletWarningElectrumLiquidDown": "Liquid სერვერი მიუწვდომელია",
   "walletWarningElectrumBothDown": "Bitcoin და Liquid სერვერები მიუწვდომელია",
-  "walletWarningElectrumAction": "შეეხეთ სერვერის პარამეტრების გასაწყობად"
+  "walletWarningElectrumAction": "შეეხეთ სერვერის პარამეტრების გასაწყობად",
+  "walletLoadFailedRetryHint": "ჩამოწიეთ განახლებისთვის და სცადეთ ხელახლა"
 }

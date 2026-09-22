@@ -12312,5 +12312,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin सर्वर उपलब्ध नहीं है",
   "walletWarningElectrumLiquidDown": "Liquid सर्वर उपलब्ध नहीं है",
   "walletWarningElectrumBothDown": "Bitcoin और Liquid सर्वर उपलब्ध नहीं हैं",
-  "walletWarningElectrumAction": "सर्वर सेटिंग्स कॉन्फ़िगर करने के लिए टैप करें"
+  "walletWarningElectrumAction": "सर्वर सेटिंग्स कॉन्फ़िगर करने के लिए टैप करें",
+  "walletLoadFailedRetryHint": "रीफ़्रेश करने के लिए नीचे खींचें और फिर से प्रयास करें"
 }

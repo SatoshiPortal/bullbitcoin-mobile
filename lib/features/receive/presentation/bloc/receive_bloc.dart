@@ -38,6 +38,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
 part 'receive_bloc.freezed.dart';
 part 'receive_event.dart';
 part 'receive_state.dart';
@@ -236,7 +237,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           : null;
       Wallet? wallet = presetWallet ?? state.wallet;
       if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
+        final wallets = switch (await _getWalletsUsecase.execute(
+          onlyBitcoin: true,
+        )) {
+          Ok(:final value) => value,
+          // TODO(#1895): receive already has ReceiveFailure, but this method still
+          // throws rather than returning or emitting one. Map WalletFailure into
+          // ReceiveFailure when it is converted.
+          Err(:final failure) => throw WalletFailureException(failure),
+        };
         emit(state.copyWith(wallets: wallets));
         wallet = wallets.firstWhere(
           (w) => w.isDefault,
@@ -443,10 +452,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       //  than on the bitcoin network.
       Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
       if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(
+        final wallets = switch (await _getWalletsUsecase.execute(
           onlyLiquid: true,
           onlyDefaults: true,
-        );
+        )) {
+          Ok(:final value) => value,
+          // TODO(#1895): receive already has ReceiveFailure, but this method still
+          // throws rather than returning or emitting one. Map WalletFailure into
+          // ReceiveFailure when it is converted.
+          Err(:final failure) => throw WalletFailureException(failure),
+        };
         wallet = wallets.first;
       }
       emit(state.copyWith(wallet: wallet));
@@ -516,10 +531,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // preselected wallet survives tab switches).
       Wallet? wallet = _wallet != null && _wallet.isLiquid ? _wallet : null;
       if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(
+        final wallets = switch (await _getWalletsUsecase.execute(
           onlyLiquid: true,
           onlyDefaults: true,
-        );
+        )) {
+          Ok(:final value) => value,
+          // TODO(#1895): receive already has ReceiveFailure, but this method still
+          // throws rather than returning or emitting one. Map WalletFailure into
+          // ReceiveFailure when it is converted.
+          Err(:final failure) => throw WalletFailureException(failure),
+        };
         wallet = wallets.first;
       }
       emit(state.copyWith(wallet: wallet));
@@ -1104,7 +1125,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
     if (orderSwap.localStatus == OrderSwapLocalStatus.completed) {
-      await _getWalletsUsecase.execute(sync: true);
+      // Fire a sync so balances catch up; the result is not needed here.
+      final _ = await _getWalletsUsecase.execute(sync: true);
     }
   }
 

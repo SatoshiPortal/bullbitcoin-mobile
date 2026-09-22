@@ -3575,5 +3575,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin սերվերն անհասանելի է",
   "walletWarningElectrumLiquidDown": "Liquid սերվերն անհասանելի է",
   "walletWarningElectrumBothDown": "Bitcoin և Liquid սերվերներն անհասանելի են",
-  "walletWarningElectrumAction": "Հպեք՝ սերվերի կարգավորումները փոխելու համար"
+  "walletWarningElectrumAction": "Հպեք՝ սերվերի կարգավորումները փոխելու համար",
+  "walletLoadFailedRetryHint": "Քաշեք ներքև՝ թարմացնելու և կրկին փորձելու համար"
 }

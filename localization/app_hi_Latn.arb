@@ -12510,5 +12510,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin server uplabdh nahi hai",
   "walletWarningElectrumLiquidDown": "Liquid server uplabdh nahi hai",
   "walletWarningElectrumBothDown": "Bitcoin aur Liquid server uplabdh nahi hain",
-  "walletWarningElectrumAction": "Server settings configure karne ke liye tap karein"
+  "walletWarningElectrumAction": "Server settings configure karne ke liye tap karein",
+  "walletLoadFailedRetryHint": "Refresh karne ke liye neeche kheenchein aur dobara koshish karein"
 }

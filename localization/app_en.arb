@@ -14620,5 +14620,9 @@
   "walletWarningElectrumAction": "Tap to configure your server settings",
   "@walletWarningElectrumAction": {
     "description": "Wallet home warning description pointing at electrum server settings (#1895)."
+  },
+  "walletLoadFailedRetryHint": "Pull down to refresh and try again",
+  "@walletLoadFailedRetryHint": {
+    "description": "Description under the wallet-home load-failure card for local read failures, where the electrum server settings are not the remedy (#1895)."
   }
 }

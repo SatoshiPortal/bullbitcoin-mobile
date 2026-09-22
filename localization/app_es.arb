@@ -4877,5 +4877,6 @@
   "walletWarningElectrumBitcoinDown": "Servidor Bitcoin no disponible",
   "walletWarningElectrumLiquidDown": "Servidor Liquid no disponible",
   "walletWarningElectrumBothDown": "Servidores Bitcoin y Liquid no disponibles",
-  "walletWarningElectrumAction": "Toque para configurar los ajustes del servidor"
+  "walletWarningElectrumAction": "Toque para configurar los ajustes del servidor",
+  "walletLoadFailedRetryHint": "Deslice hacia abajo para actualizar e inténtelo de nuevo"
 }

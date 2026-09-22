@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
@@ -33,7 +34,9 @@ void main() {
     test(
       'returns Ok on successful delete when no wallet uses the seed',
       () async {
-        when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => Ok([]));
         when(
           () => seedRepository.delete(fingerprint),
         ).thenAnswer((_) async => const Ok(null));
@@ -51,7 +54,7 @@ void main() {
         when(() => wallet.masterFingerprint).thenReturn(fingerprint);
         when(
           () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => [wallet]);
+        ).thenAnswer((_) async => Ok([wallet]));
 
         final result = await usecase.execute(fingerprint);
 
@@ -65,7 +68,9 @@ void main() {
     test(
       'returns SeedDeleteFailure on repository error — no raw leak',
       () async {
-        when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => Ok([]));
         when(() => seedRepository.delete(fingerprint)).thenAnswer(
           (_) async => const Err(SeedDeleteFailure('raw storage error')),
         );
@@ -92,5 +97,24 @@ void main() {
         verifyNever(() => seedRepository.delete(any()));
       },
     );
+
+    test('refuses to delete when the wallet list cannot be read', () async {
+      // The seed is key material: if we cannot prove no wallet still uses it,
+      // deleting is unrecoverable. An unreadable list must refuse, never fall
+      // through to "no wallet uses it".
+      when(() => walletRepository.getWallets()).thenAnswer(
+        (_) async => const Err<List<Wallet>, WalletFailure>(
+          WalletStorageFailure('SqliteException(11): disk image is malformed'),
+        ),
+      );
+
+      final result = await usecase.execute(fingerprint);
+
+      final failure = (result as Err).failure as SeedFailure;
+      expect(failure, isA<SeedDeleteFailure>());
+      // The wallet layer's raw reason stays in the log.
+      expect(failure.logMessage, isNot(contains('disk image is malformed')));
+      verifyNever(() => seedRepository.delete(any()));
+    });
   });
 }

@@ -99,14 +99,14 @@ void main() {
         onlyBitcoin: true,
         environment: Environment.mainnet,
       ),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
       () => walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: Environment.testnet,
       ),
-    ).thenAnswer((_) async => <Wallet>[_testnetWallet]);
+    ).thenAnswer((_) async => Ok(<Wallet>[_testnetWallet]));
 
     when(() => seedRepository.get(any())).thenAnswer((_) async => seed);
     when(

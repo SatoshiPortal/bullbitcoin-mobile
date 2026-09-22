@@ -7,14 +7,13 @@ sealed class WalletState with _$WalletState {
   const factory WalletState({
     @Default(WalletStatus.initial) WalletStatus status,
     @Default([]) List<Wallet> wallets,
-    NoWalletsFoundException? noWalletsFoundException,
     @Default([]) List<WalletWarning> warnings,
     @Default({}) Map<String, bool> syncStatus,
-    @Default(null) Object? error,
+    WalletFailure? failure,
     @Default(0) int unconfirmedIncomingBalance,
     @Default(false) bool isRefreshing,
     @Default(false) bool isDeletingWallet,
-    WalletError? walletDeletionError,
+    WalletFailure? walletDeletionFailure,
     @Default(false) bool isCheckingServiceStatus,
     @Default(false) bool backupWarningDismissed,
     @Default(false) bool isOnLegacyStorage,
@@ -35,7 +34,10 @@ sealed class WalletState with _$WalletState {
             .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
             .firstOrNull;
 
-  bool get noWalletsFound => noWalletsFoundException != null;
+  bool get noWalletsFound => failure is NoWalletsFoundFailure;
+
+  WalletFailure? get loadFailure =>
+      failure is NoWalletsFoundFailure ? null : failure;
 
   int totalBalance() => wallets.fold<int>(
     0,

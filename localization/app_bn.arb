@@ -12332,5 +12332,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin সার্ভার উপলব্ধ নয়",
   "walletWarningElectrumLiquidDown": "Liquid সার্ভার উপলব্ধ নয়",
   "walletWarningElectrumBothDown": "Bitcoin এবং Liquid সার্ভার উপলব্ধ নয়",
-  "walletWarningElectrumAction": "সার্ভার সেটিংস কনফিগার করতে ট্যাপ করুন"
+  "walletWarningElectrumAction": "সার্ভার সেটিংস কনফিগার করতে ট্যাপ করুন",
+  "walletLoadFailedRetryHint": "রিফ্রেশ করতে নিচে টানুন এবং আবার চেষ্টা করুন"
 }

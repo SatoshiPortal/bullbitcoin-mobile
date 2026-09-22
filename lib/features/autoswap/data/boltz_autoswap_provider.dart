@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -36,9 +37,15 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
     try {
       final environment = (await _settingsRepository.fetch()).environment;
-      final wallets = await _walletRepository.getWallets(
-        environment: environment,
-      );
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(environment: environment)) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          return Err(
+            AutoswapProviderFailure('wallets: ${failure.runtimeType}'),
+          );
+      }
       final liquidWallet = wallets
           .where((wallet) => wallet.isDefault && wallet.isLiquid)
           .firstOrNull;

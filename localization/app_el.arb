@@ -12122,5 +12122,6 @@
   "walletWarningElectrumBitcoinDown": "Ο διακομιστής Bitcoin δεν είναι διαθέσιμος",
   "walletWarningElectrumLiquidDown": "Ο διακομιστής Liquid δεν είναι διαθέσιμος",
   "walletWarningElectrumBothDown": "Οι διακομιστές Bitcoin και Liquid δεν είναι διαθέσιμοι",
-  "walletWarningElectrumAction": "Πατήστε για να ρυθμίσετε τον διακομιστή"
+  "walletWarningElectrumAction": "Πατήστε για να ρυθμίσετε τον διακομιστή",
+  "walletLoadFailedRetryHint": "Τραβήξτε προς τα κάτω για ανανέωση και δοκιμάστε ξανά"
 }

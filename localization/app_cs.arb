@@ -12122,5 +12122,6 @@
   "walletWarningElectrumBitcoinDown": "Server Bitcoin není dostupný",
   "walletWarningElectrumLiquidDown": "Server Liquid není dostupný",
   "walletWarningElectrumBothDown": "Servery Bitcoin a Liquid nejsou dostupné",
-  "walletWarningElectrumAction": "Klepnutím nastavíte server"
+  "walletWarningElectrumAction": "Klepnutím nastavíte server",
+  "walletLoadFailedRetryHint": "Přetažením dolů obnovte a zkuste to znovu"
 }

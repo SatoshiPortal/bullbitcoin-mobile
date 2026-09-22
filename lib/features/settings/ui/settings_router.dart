@@ -207,14 +207,14 @@ class SettingsRouter {
               ),
               BlocListener<WalletBloc, WalletState>(
                 listenWhen: (previous, current) {
-                  // Listen for wallet deletion error to show a sheet.
-                  return previous.walletDeletionError == null &&
-                      current.walletDeletionError != null;
+                  // Listen for a wallet deletion failure to show a sheet.
+                  return previous.walletDeletionFailure == null &&
+                      current.walletDeletionFailure != null;
                 },
                 listener: (context, state) {
                   WalletDeletionFailedSheet.show(
                     context,
-                    error: state.walletDeletionError!,
+                    failure: state.walletDeletionFailure!,
                   );
                 },
               ),

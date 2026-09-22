@@ -9297,5 +9297,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin ছাৰ্ভাৰ উপলব্ধ নহয়",
   "walletWarningElectrumLiquidDown": "Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
   "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
-  "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক"
+  "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
+  "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক"
 }

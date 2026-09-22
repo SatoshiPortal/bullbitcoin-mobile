@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -50,7 +51,7 @@ void main() {
     ).thenAnswer((_) async => []);
     when(
       () => walletRepository.deleteWallet(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
     when(
       () => seedRepository.delete(any()),
     ).thenAnswer((_) async => const Ok(null));
@@ -61,10 +62,12 @@ void main() {
       final wallet = buildWallet();
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => wallet);
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
+      when(() => walletRepository.getWallets()).thenAnswer((_) async => Ok([]));
 
-      await usecase.execute(walletId: walletId);
+      final result = await usecase.execute(walletId: walletId);
+
+      expect(result, isA<Ok<void, WalletFailure>>());
 
       verify(() => seedRepository.delete(fingerprint)).called(1);
     });
@@ -76,12 +79,14 @@ void main() {
         final sibling = buildWallet();
         when(
           () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => wallet);
+        ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
         when(
           () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => [sibling]);
+        ).thenAnswer((_) async => Ok([sibling]));
 
-        await usecase.execute(walletId: walletId);
+        final result = await usecase.execute(walletId: walletId);
+
+        expect(result, isA<Ok<void, WalletFailure>>());
 
         verifyNever(() => seedRepository.delete(any()));
       },
@@ -91,9 +96,11 @@ void main() {
       final wallet = buildWallet(masterFingerprint: '');
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => wallet);
+      ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
 
-      await usecase.execute(walletId: walletId);
+      final result = await usecase.execute(walletId: walletId);
+
+      expect(result, isA<Ok<void, WalletFailure>>());
 
       verifyNever(() => seedRepository.delete(any()));
       verifyNever(() => walletRepository.getWallets());
@@ -106,8 +113,10 @@ void main() {
         final wallet = buildWallet();
         when(
           () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => wallet);
-        when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => Ok([]));
         when(
           () => seedRepository.delete(fingerprint),
         ).thenAnswer((_) async => const Err(SeedDeleteFailure('boom')));

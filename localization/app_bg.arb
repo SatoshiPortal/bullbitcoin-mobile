@@ -10149,5 +10149,6 @@
   "walletWarningElectrumBitcoinDown": "Сървърът Bitcoin е недостъпен",
   "walletWarningElectrumLiquidDown": "Сървърът Liquid е недостъпен",
   "walletWarningElectrumBothDown": "Сървърите Bitcoin и Liquid са недостъпни",
-  "walletWarningElectrumAction": "Докоснете, за да настроите сървъра"
+  "walletWarningElectrumAction": "Докоснете, за да настроите сървъра",
+  "walletLoadFailedRetryHint": "Плъзнете надолу, за да обновите и опитайте отново"
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -75,7 +76,7 @@ void main() {
   });
 
   test('returns the wallets', () async {
-    when(getWallets.execute).thenAnswer((_) async => <Wallet>[]);
+    when(getWallets.execute).thenAnswer((_) async => Ok(<Wallet>[]));
 
     final result = await usecase.wallets();
 
@@ -83,9 +84,20 @@ void main() {
   });
 
   test('a failed wallet read is sanitized', () async {
-    when(getWallets.execute).thenThrow(Exception(_rawReason));
+    // The wallet use case returns a failure now rather than throwing: the
+    // repository is the try/catch boundary (#1895).
+    when(getWallets.execute).thenAnswer(
+      (_) async => const Err<List<Wallet>, WalletFailure>(
+        WalletStorageFailure(_rawReason),
+      ),
+    );
 
-    expect(await usecase.wallets(), isA<Err<List<Wallet>, BuyFailure>>());
+    final result = await usecase.wallets();
+
+    final failure = (result as Err<List<Wallet>, BuyFailure>).failure;
+    expect(failure, isA<BuyUnexpectedFailure>());
+    // The wallet layer's reason must not survive into this feature's family.
+    expect(failure.logMessage, isNot(contains(_rawReason)));
   });
 
   test('returns the payout address', () async {

@@ -4,6 +4,10 @@ import 'dart:collection';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure_bridge.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:flutter/widgets.dart'
@@ -221,16 +225,34 @@ class SyncCoordinator {
     }
   }
 
+  /// Fails the round when the wallets cannot be read.
+  ///
+  /// Deliberately not degraded to an empty list: `_drainOnce` stamps
+  /// `_lastSuccessAt` for any round that completes normally, so a swallowed
+  /// read failure would both report a successful sync to pull-to-refresh and
+  /// count toward the throttle — suppressing the retries that would recover
+  /// from a transient failure.
+  Future<List<Wallet>> _walletsToSync(
+    Future<Result<List<Wallet>, WalletFailure>> read,
+  ) async {
+    return switch (await read) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw WalletFailureException(failure),
+    };
+  }
+
   Future<void> _runTask(SyncKind kind) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        final wallets = await _getWallets.execute(onlyBitcoin: true);
-        for (final wallet in wallets) {
+        for (final wallet in await _walletsToSync(
+          _getWallets.execute(onlyBitcoin: true),
+        )) {
           await _syncWallet.execute(wallet);
         }
       case SyncKind.liquid:
-        final wallets = await _getWallets.execute(onlyLiquid: true);
-        for (final wallet in wallets) {
+        for (final wallet in await _walletsToSync(
+          _getWallets.execute(onlyLiquid: true),
+        )) {
           await _syncWallet.execute(wallet);
         }
       case SyncKind.swaps:

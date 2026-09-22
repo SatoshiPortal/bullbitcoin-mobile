@@ -3575,5 +3575,6 @@
   "walletWarningElectrumBitcoinDown": "Máy chủ Bitcoin không khả dụng",
   "walletWarningElectrumLiquidDown": "Máy chủ Liquid không khả dụng",
   "walletWarningElectrumBothDown": "Máy chủ Bitcoin và Liquid không khả dụng",
-  "walletWarningElectrumAction": "Chạm để định cấu hình cài đặt máy chủ"
+  "walletWarningElectrumAction": "Chạm để định cấu hình cài đặt máy chủ",
+  "walletLoadFailedRetryHint": "Kéo xuống để làm mới và thử lại"
 }

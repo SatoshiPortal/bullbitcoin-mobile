@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
@@ -58,12 +59,21 @@ class SetDcaUsecase {
       address = lightningAddress;
     } else {
       try {
-        final wallets = await _wallet.getWallets(
+        final List<Wallet> wallets;
+        switch (await _wallet.getWallets(
           environment: environment,
           onlyDefaults: true,
           onlyBitcoin: network == DcaNetwork.bitcoin,
           onlyLiquid: network == DcaNetwork.liquid,
-        );
+        )) {
+          case Ok(:final value):
+            wallets = value;
+          case Err(:final failure):
+            log.warning('DCA receive address: ${failure.logMessage}');
+            return Err(
+              DcaUnexpectedFailure('default wallet: ${failure.runtimeType}'),
+            );
+        }
 
         if (wallets.isEmpty) {
           log.warning('No default wallet found for DCA network $network');

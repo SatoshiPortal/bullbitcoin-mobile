@@ -4926,5 +4926,6 @@
   "walletWarningElectrumBitcoinDown": "Serveur Bitcoin indisponible",
   "walletWarningElectrumLiquidDown": "Serveur Liquid indisponible",
   "walletWarningElectrumBothDown": "Serveurs Bitcoin et Liquid indisponibles",
-  "walletWarningElectrumAction": "Appuyez pour configurer vos paramètres de serveur"
+  "walletWarningElectrumAction": "Appuyez pour configurer vos paramètres de serveur",
+  "walletLoadFailedRetryHint": "Tirez vers le bas pour actualiser et réessayer"
 }

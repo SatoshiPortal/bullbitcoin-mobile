@@ -54,12 +54,13 @@ class LoadBuyContextUsecase {
 
   @useResult
   Future<Result<List<Wallet>, BuyFailure>> wallets() async {
-    try {
-      return Ok(await _getWalletsUsecase.execute());
-    } catch (e, st) {
-      log.severe(message: 'Failed to load the wallets', error: e, trace: st);
-      return Err(BuyUnexpectedFailure('$e'));
+    final result = await _getWalletsUsecase.execute();
+    if (result case Err(:final failure)) {
+      log.warning('Failed to load the wallets: ${failure.logMessage}');
     }
+    return result.mapErr(
+      (failure) => BuyUnexpectedFailure('wallets: ${failure.runtimeType}'),
+    );
   }
 
   /// The address the exchange will pay out to.

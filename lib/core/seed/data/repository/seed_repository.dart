@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
@@ -9,8 +10,20 @@ import 'package:meta/meta.dart';
 
 class SeedRepository {
   final SeedDatasource _source;
+  final SeedStoreTypeDatasource _storeType;
 
-  const SeedRepository({required this._source});
+  const SeedRepository({required this._source, required this._storeType});
+
+  @useResult
+  Future<Result<bool, SeedFailure>> isOnLegacyStorage() async {
+    try {
+      final model = await _storeType.read();
+      return Ok(model?.toEntity().isLegacyStorage ?? false);
+    } catch (e, st) {
+      log.severe(message: 'seed store type read failed', error: e, trace: st);
+      return Err(SeedFetchFailure('seed store read: ${e.runtimeType}'));
+    }
+  }
 
   Future<MnemonicSeed> createFromMnemonic({
     required List<String> mnemonicWords,

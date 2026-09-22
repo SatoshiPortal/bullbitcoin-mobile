@@ -12122,5 +12122,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin 서버를 사용할 수 없음",
   "walletWarningElectrumLiquidDown": "Liquid 서버를 사용할 수 없음",
   "walletWarningElectrumBothDown": "Bitcoin 및 Liquid 서버를 사용할 수 없음",
-  "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요"
+  "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요",
+  "walletLoadFailedRetryHint": "아래로 당겨 새로 고친 후 다시 시도하세요"
 }

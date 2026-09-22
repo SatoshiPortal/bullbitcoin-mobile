@@ -4868,5 +4868,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin-palvelin ei ole käytettävissä",
   "walletWarningElectrumLiquidDown": "Liquid-palvelin ei ole käytettävissä",
   "walletWarningElectrumBothDown": "Bitcoin- ja Liquid-palvelimet eivät ole käytettävissä",
-  "walletWarningElectrumAction": "Määritä palvelinasetukset napauttamalla"
+  "walletWarningElectrumAction": "Määritä palvelinasetukset napauttamalla",
+  "walletLoadFailedRetryHint": "Päivitä vetämällä alaspäin ja yritä uudelleen"
 }

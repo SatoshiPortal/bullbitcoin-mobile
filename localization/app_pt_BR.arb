@@ -12134,5 +12134,6 @@
   "walletWarningElectrumBitcoinDown": "Servidor Bitcoin indisponível",
   "walletWarningElectrumLiquidDown": "Servidor Liquid indisponível",
   "walletWarningElectrumBothDown": "Servidores Bitcoin e Liquid indisponíveis",
-  "walletWarningElectrumAction": "Toque para configurar as configurações do servidor"
+  "walletWarningElectrumAction": "Toque para configurar as configurações do servidor",
+  "walletLoadFailedRetryHint": "Puxe para baixo para atualizar e tente novamente"
 }

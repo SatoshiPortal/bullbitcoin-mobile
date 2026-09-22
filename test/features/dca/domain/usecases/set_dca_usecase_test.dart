@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
@@ -120,7 +121,7 @@ void main() {
             onlyBitcoin: true,
             onlyLiquid: false,
           ),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => Ok([]));
 
         final result = await usecase.execute(
           amount: 10,
@@ -136,6 +137,43 @@ void main() {
       },
     );
 
+    test(
+      'a failed wallet read is NOT reported as a missing receive address',
+      () async {
+        // An onboarded install always has both default wallets, so an empty
+        // list means "not set up" while a failure means "could not read".
+        // Reporting the same thing for both would misdiagnose the common case.
+        when(
+          () => wallet.getWallets(
+            environment: Environment.mainnet,
+            onlyDefaults: true,
+            onlyBitcoin: true,
+            onlyLiquid: false,
+          ),
+        ).thenAnswer(
+          (_) async => const Err<List<Wallet>, WalletFailure>(
+            WalletStorageFailure(
+              'SqliteException(11): disk image is malformed',
+            ),
+          ),
+        );
+
+        final result = await usecase.execute(
+          amount: 10,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.bitcoin,
+        );
+
+        final failure = failureOf(result);
+        expect(failure, isA<DcaUnexpectedFailure>());
+        expect(failure, isNot(isA<DcaReceiveAddressFailure>()));
+        // The wallet layer's reason stays in the log.
+        expect(failure.logMessage, isNot(contains('disk image is malformed')));
+        verifyZeroInteractions(mainnetOrders);
+      },
+    );
+
     test('maps a failing address generation to ReceiveAddressFailure without '
         'logging the wallet identifier', () async {
       when(
@@ -145,7 +183,7 @@ void main() {
           onlyBitcoin: true,
           onlyLiquid: false,
         ),
-      ).thenAnswer((_) async => [FakeWallet()]);
+      ).thenAnswer((_) async => Ok([FakeWallet()]));
       when(
         () => walletAddress.generateNewReceiveAddress(
           walletId: any(named: 'walletId'),

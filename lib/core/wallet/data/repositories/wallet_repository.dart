@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:async/async.dart';
+import 'package:async/async.dart' hide Result;
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -17,9 +17,13 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:meta/meta.dart';
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -43,21 +47,32 @@ class WalletRepository {
   }
 
   Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
-      .asyncMap((walletId) async => await getWallet(walletId))
-      .where((event) => event != null)
-      .map((event) => event!);
+      .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
+      .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
+      .where((wallet) => wallet != null)
+      .map((wallet) => wallet!);
 
   Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
-      .asyncMap((walletId) async => await getWallet(walletId))
-      .where((event) => event != null)
-      .map((event) => event!);
+      .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
+      .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
+      .where((wallet) => wallet != null)
+      .map((wallet) => wallet!);
 
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
 
-  bool isWalletSyncing({String? walletId}) =>
-      _bdkWallet.isWalletSyncing(walletId: walletId) ||
-      _lwkWallet.isWalletSyncing(walletId: walletId);
+  @useResult
+  Result<bool, WalletFailure> isWalletSyncing({String? walletId}) {
+    try {
+      return Ok(
+        _bdkWallet.isWalletSyncing(walletId: walletId) ||
+            _lwkWallet.isWalletSyncing(walletId: walletId),
+      );
+    } catch (e, st) {
+      log.severe(message: 'isWalletSyncing failed', error: e, trace: st);
+      return Err(_classify(e, 'isWalletSyncing'));
+    }
+  }
 
   Future<Wallet> createWallet({
     required Seed seed,
@@ -90,7 +105,7 @@ class WalletRepository {
     );
 
     if (isDefault) {
-      final allWallets = await getWallets(onlyDefaults: true);
+      final allWallets = await _readWallets(onlyDefaults: true);
       for (final wallet in allWallets) {
         if (wallet.isDefault && wallet.network == metadata.network) {
           throw Exception('Default wallet already exists');
@@ -130,7 +145,7 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets();
+    final allWallets = await _readWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
         throw WalletAlreadyExistsException(metadata.id);
@@ -178,7 +193,7 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets();
+    final allWallets = await _readWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
         throw WalletAlreadyExistsException(metadata.id);
@@ -209,7 +224,25 @@ class WalletRepository {
     );
   }
 
-  Future<Wallet?> getWallet(String walletId, {bool sync = false}) async {
+  @useResult
+  Future<Result<Wallet, WalletFailure>> getWallet(
+    String walletId, {
+    bool sync = false,
+  }) async {
+    try {
+      final wallet = await _readWallet(walletId, sync: sync);
+      // A missing wallet is a modeled outcome, not an exception: the id simply
+      // is not in the store.
+      return wallet == null
+          ? const Err(WalletNotFoundFailure('no metadata for the wallet id'))
+          : Ok(wallet);
+    } catch (e, st) {
+      log.severe(message: 'getWallet failed', error: e, trace: st);
+      return Err(_classify(e, 'getWallet'));
+    }
+  }
+
+  Future<Wallet?> _readWallet(String walletId, {bool sync = false}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
@@ -248,7 +281,54 @@ class WalletRepository {
     );
   }
 
-  Future<List<Wallet>> getWallets({
+  @useResult
+  Future<Result<List<Wallet>, WalletFailure>> getWallets({
+    Environment? environment,
+    bool? onlyDefaults,
+    bool? onlyBitcoin,
+    bool? onlyLiquid,
+    bool sync = false,
+  }) async {
+    try {
+      return Ok(
+        await _readWallets(
+          environment: environment,
+          onlyDefaults: onlyDefaults,
+          onlyBitcoin: onlyBitcoin,
+          onlyLiquid: onlyLiquid,
+          sync: sync,
+        ),
+      );
+    } catch (e, st) {
+      log.severe(message: 'getWallets failed', error: e, trace: st);
+      return Err(_classify(e, 'getWallets'));
+    }
+  }
+
+  /// Turns a thrown datasource error into the right failure variant.
+  ///
+  /// Two signals have to survive this boundary as types:
+  ///
+  /// - an LWK status conflict, because app startup heals it by dropping the
+  ///   LWK database and retrying. The datasource throws `e.msg` as a bare
+  ///   String today, so the text match is what works; the `LwkError` arm is
+  ///   there so a raw error reaching here is not silently misclassified into
+  ///   a storage failure, which would disable the heal.
+  /// - an Electrum failure from a `sync: true` read, which is a *sync*
+  ///   failure, not a read failure: the stored wallet is fine, only its
+  ///   balance is stale, and the remedy is the server settings.
+  WalletFailure _classify(Object e, String operation) {
+    if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
+        e.toString().contains('UpdateOnDifferentStatus')) {
+      return WalletLwkStatusConflictFailure('$operation: lwk status conflict');
+    }
+    if (e is ElectrumFallbackException) {
+      return WalletSyncFailure('$operation: ${e.runtimeType}');
+    }
+    return WalletStorageFailure('$operation failed: ${e.runtimeType}');
+  }
+
+  Future<List<Wallet>> _readWallets({
     Environment? environment,
     bool? onlyDefaults,
     bool? onlyBitcoin,
@@ -373,27 +453,38 @@ class WalletRepository {
     );
   }
 
-  Future<void> deleteWallet({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) throw WalletError.notFound(walletId);
-
-    if (metadata.isBitcoin) {
-      try {
-        await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
-      } on WalletNotFound {
-        log.warning('deleteWallet: BDK file already absent for $walletId');
+  @useResult
+  Future<Result<void, WalletFailure>> deleteWallet({
+    required String walletId,
+  }) async {
+    try {
+      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      if (metadata == null) {
+        return const Err(WalletNotFoundFailure('no metadata to delete'));
       }
-    }
 
-    if (metadata.isLiquid) {
-      try {
-        await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
-      } on WalletNotFound {
-        log.warning('deleteWallet: LWK file already absent for $walletId');
+      if (metadata.isBitcoin) {
+        try {
+          await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+        } on WalletNotFound {
+          log.warning('deleteWallet: BDK file already absent for $walletId');
+        }
       }
-    }
 
-    await _walletMetadataDatasource.delete(walletId);
+      if (metadata.isLiquid) {
+        try {
+          await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+        } on WalletNotFound {
+          log.warning('deleteWallet: LWK file already absent for $walletId');
+        }
+      }
+
+      await _walletMetadataDatasource.delete(walletId);
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(message: 'deleteWallet failed', error: e, trace: st);
+      return Err(_classify(e, 'deleteWallet'));
+    }
   }
 
   // used only to delete lwk db - required for UpdateOnDifferentStatusError
@@ -525,7 +616,7 @@ class WalletRepository {
   }
 
   Future<bool> isTorRequired() async {
-    final defaultWallets = await getWallets(
+    final defaultWallets = await _readWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
       environment: Environment.mainnet,

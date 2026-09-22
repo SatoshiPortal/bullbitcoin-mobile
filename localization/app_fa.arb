@@ -12122,5 +12122,6 @@
   "walletWarningElectrumBitcoinDown": "سرور Bitcoin در دسترس نیست",
   "walletWarningElectrumLiquidDown": "سرور Liquid در دسترس نیست",
   "walletWarningElectrumBothDown": "سرورهای Bitcoin و Liquid در دسترس نیستند",
-  "walletWarningElectrumAction": "برای پیکربندی تنظیمات سرور ضربه بزنید"
+  "walletWarningElectrumAction": "برای پیکربندی تنظیمات سرور ضربه بزنید",
+  "walletLoadFailedRetryHint": "برای به‌روزرسانی به پایین بکشید و دوباره تلاش کنید"
 }

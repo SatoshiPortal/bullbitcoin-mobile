@@ -12122,5 +12122,6 @@
   "walletWarningElectrumBitcoinDown": "Bitcoin sunucusu kullanılamıyor",
   "walletWarningElectrumLiquidDown": "Liquid sunucusu kullanılamıyor",
   "walletWarningElectrumBothDown": "Bitcoin ve Liquid sunucuları kullanılamıyor",
-  "walletWarningElectrumAction": "Sunucu ayarlarınızı yapılandırmak için dokunun"
+  "walletWarningElectrumAction": "Sunucu ayarlarınızı yapılandırmak için dokunun",
+  "walletLoadFailedRetryHint": "Yenilemek için aşağı çekin ve tekrar deneyin"
 }

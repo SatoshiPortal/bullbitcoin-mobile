@@ -3587,5 +3587,6 @@
   "walletWarningElectrumBitcoinDown": "Seva ya Bitcoin haipatikani",
   "walletWarningElectrumLiquidDown": "Seva ya Liquid haipatikani",
   "walletWarningElectrumBothDown": "Seva za Bitcoin na Liquid hazipatikani",
-  "walletWarningElectrumAction": "Gusa ili kusanidi mipangilio ya seva"
+  "walletWarningElectrumAction": "Gusa ili kusanidi mipangilio ya seva",
+  "walletLoadFailedRetryHint": "Buruta chini ili kuonyesha upya na ujaribu tena"
 }

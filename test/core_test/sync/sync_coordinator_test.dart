@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
@@ -50,11 +52,11 @@ void main() {
     final liquid = Completer<void>();
     when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
       await bitcoin.future;
-      return <Wallet>[];
+      return const Ok<List<Wallet>, WalletFailure>([]);
     });
     when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
       await liquid.future;
-      return <Wallet>[];
+      return const Ok<List<Wallet>, WalletFailure>([]);
     });
     return (bitcoin: bitcoin, liquid: liquid);
   }
@@ -114,10 +116,10 @@ void main() {
     // No gating: each kind completes immediately so _lastSuccessAt is set.
     when(
       () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
       () => getWallets.execute(onlyLiquid: true),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
     await coordinator.sync(trigger: SyncTrigger.automatic);
     // Immediately again (well within the 2s window) — every kind is throttled.
     await coordinator.sync(trigger: SyncTrigger.automatic);
@@ -133,15 +135,43 @@ void main() {
     verifyNever(syncSwaps.call);
   });
 
+  test(
+    'a failed wallet read fails the round and does not arm the throttle',
+    () async {
+      // Degrading the failure to an empty list would let the round complete
+      // normally, stamping _lastSuccessAt — so the sync would be reported as
+      // successful AND the throttle would then suppress the retry that would
+      // recover from a transient read failure.
+      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
+        (_) async => const Err<List<Wallet>, WalletFailure>(
+          WalletStorageFailure('SqliteException(11): disk image is malformed'),
+        ),
+      );
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => Ok(<Wallet>[]));
+
+      await expectLater(
+        coordinator.sync(trigger: SyncTrigger.automatic),
+        throwsA(isA<Exception>()),
+      );
+
+      // Not throttled away: the next automatic round retries bitcoin.
+      await coordinator.sync(trigger: SyncTrigger.automatic).catchError((_) {});
+
+      verify(() => getWallets.execute(onlyBitcoin: true)).called(2);
+    },
+  );
+
   test('a general sync does not wait for swap polling', () async {
     final order = <String>[];
     when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
       order.add('bitcoin');
-      return <Wallet>[];
+      return const Ok<List<Wallet>, WalletFailure>([]);
     });
     when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
       order.add('liquid');
-      return <Wallet>[];
+      return const Ok<List<Wallet>, WalletFailure>([]);
     });
     when(syncSwaps.call).thenAnswer((_) async => order.add('swaps'));
 
@@ -173,10 +203,10 @@ void main() {
   test('does not sync swaps while the app is paused', () async {
     when(
       () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
       () => getWallets.execute(onlyLiquid: true),
-    ).thenAnswer((_) async => <Wallet>[]);
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
     TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
       AppLifecycleState.paused,
     );

@@ -8,9 +8,8 @@ void main() {
   testWidgets('describes a Tor action as an unreachable SOCKS5 proxy', (
     tester,
   ) async {
-    final warning = WalletWarning(
-      title: 'Bitcoin electrum server failure',
-      description: 'Click to configure electrum server settings',
+    const warning = WalletWarning(
+      reason: ElectrumServerDown.bitcoin,
       action: WalletWarningAction.torSettings,
       type: WarningType.error,
     );

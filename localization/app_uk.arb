@@ -4877,5 +4877,6 @@
   "walletWarningElectrumBitcoinDown": "Сервер Bitcoin недоступний",
   "walletWarningElectrumLiquidDown": "Сервер Liquid недоступний",
   "walletWarningElectrumBothDown": "Сервери Bitcoin і Liquid недоступні",
-  "walletWarningElectrumAction": "Натисніть, щоб налаштувати параметри сервера"
+  "walletWarningElectrumAction": "Натисніть, щоб налаштувати параметри сервера",
+  "walletLoadFailedRetryHint": "Потягніть вниз, щоб оновити та спробувати ще раз"
 }
