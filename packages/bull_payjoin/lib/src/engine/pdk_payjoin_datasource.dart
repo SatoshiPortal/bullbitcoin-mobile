@@ -320,7 +320,7 @@ class PdkPayjoinDatasource {
     required bool Function(Outpoint) ownsOutpoint,
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
-    required String Function(String) processPsbt,
+    required Future<String> Function(String psbt) signPsbt,
   }) async {
     final persister = InMemoryJsonReceiverSessionPersister.fromJson(
       receiverModel.receiver,
@@ -335,7 +335,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput: hasReceiverOutput,
       inputPairs: inputPairs,
       receiverModel: receiverModel,
-      processPsbt: processPsbt,
+      signPsbt: signPsbt,
     );
 
     // Update the model with the proposal psbt so it can be known a proposal has
@@ -414,7 +414,7 @@ class PdkPayjoinDatasource {
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required PayjoinReceiverModel receiverModel,
-    required String Function(String) processPsbt,
+    required Future<String> Function(String psbt) signPsbt,
   }) async {
     switch (state) {
       case InitializedReceiveSession():
@@ -429,7 +429,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case MaybeInputsOwnedReceiveSession():
         return _checkInputsNotOwned(
@@ -439,7 +439,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case MaybeInputsSeenReceiveSession():
         return _checkNoInputsSeenBefore(
@@ -448,7 +448,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case OutputsUnknownReceiveSession():
         return _identifyReceiverOutputs(
@@ -457,7 +457,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsOutputsReceiveSession():
         return _commitOutputs(
@@ -465,7 +465,7 @@ class PdkPayjoinDatasource {
           persister,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsInputsReceiveSession():
         return _contributeInputs(
@@ -473,17 +473,12 @@ class PdkPayjoinDatasource {
           persister,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsFeeRangeReceiveSession():
-        return _applyFeeRange(
-          state.inner,
-          persister,
-          receiverModel,
-          processPsbt,
-        );
+        return _applyFeeRange(state.inner, persister, receiverModel, signPsbt);
       case ProvisionalProposalReceiveSession():
-        return _finalizeProposal(state.inner, persister, processPsbt);
+        return _finalizeProposal(state.inner, persister, signPsbt);
       case PayjoinProposalReceiveSession():
         return _sendPayjoinProposal(state.inner, persister);
       case HasReplyableExceptionReceiveSession():
@@ -506,7 +501,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner.assumeInteractiveReceiver().save(persister: persister);
     return _checkInputsNotOwned(
@@ -516,7 +511,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -527,7 +522,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .checkInputsNotOwned(isOwned: _IsInputOwned(ownsOutpoint))
@@ -538,7 +533,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -548,7 +543,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .checkNoInputsSeenBefore(isKnown: _AssumeUnseen())
@@ -559,7 +554,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -569,20 +564,14 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .identifyReceiverOutputs(
           isReceiverOutput: _IsScriptOwned(hasReceiverOutput),
         )
         .save(persister: persister);
-    return _commitOutputs(
-      next,
-      persister,
-      inputPairs,
-      receiverModel,
-      processPsbt,
-    );
+    return _commitOutputs(next, persister, inputPairs, receiverModel, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _commitOutputs(
@@ -590,7 +579,7 @@ class PdkPayjoinDatasource {
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner.commitOutputs().save(persister: persister);
     return _contributeInputs(
@@ -598,7 +587,7 @@ class PdkPayjoinDatasource {
       persister,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -607,7 +596,7 @@ class PdkPayjoinDatasource {
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final candidates = inputPairs.map(_buildInputPair).toList();
     InputPair? chosen;
@@ -625,14 +614,14 @@ class PdkPayjoinDatasource {
         .contributeInputs(replacementInputs: [chosen])
         .commitInputs()
         .save(persister: persister);
-    return _applyFeeRange(next, persister, receiverModel, processPsbt);
+    return _applyFeeRange(next, persister, receiverModel, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _applyFeeRange(
     WantsFeeRange inner,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .applyFeeRange(
@@ -640,16 +629,19 @@ class PdkPayjoinDatasource {
           maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
         )
         .save(persister: persister);
-    return _finalizeProposal(next, persister, processPsbt);
+    return _finalizeProposal(next, persister, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _finalizeProposal(
     ProvisionalProposal inner,
     InMemoryJsonReceiverSessionPersister persister,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
+    // Two steps, because the PDK's callback is synchronous and signing is not: the PSBT the PDK will ask for is computed first — deterministically, the proposal with the sender's signatures cleared — and signed; the callback then only hands back that result. Anything else it is asked to sign is refused, so no signature leaves for a PSBT the receiver did not see.
+    final unsigned = inner.psbtToSign();
+    final signed = await signPsbt(unsigned);
     final next = inner
-        .finalizeProposal(processPsbt: _ProcessPsbt(processPsbt))
+        .finalizeProposal(processPsbt: _ProcessPsbt(unsigned, signed))
         .save(persister: persister);
     return _sendPayjoinProposal(next, persister);
   }
@@ -1029,12 +1021,19 @@ class _AssumeUnseen implements IsOutputKnown {
   bool callback(OutPoint outpoint) => false;
 }
 
+/// Answers the PDK's signing callback with a PSBT signed beforehand, and only for the PSBT it was signed from.
 class _ProcessPsbt implements ProcessPsbt {
-  final String Function(String) _sign;
-  _ProcessPsbt(this._sign);
+  final String _unsigned;
+  final String _signed;
+  _ProcessPsbt(this._unsigned, this._signed);
 
   @override
-  String callback(String psbt) => _sign(psbt);
+  String callback(String psbt) {
+    if (psbt != _unsigned) {
+      throw StateError('Payjoin asked to sign a PSBT other than its proposal');
+    }
+    return _signed;
+  }
 }
 
 class InMemoryJsonReceiverSessionPersister

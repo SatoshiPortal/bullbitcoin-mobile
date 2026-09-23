@@ -162,16 +162,6 @@ final class Secret {
     ),
   );
 
-  /// A reusable signing capability, for payjoin, which hands a signer to the protocol layer rather than calling it once. The closure captures a built wallet; the caller never holds the mnemonic.
-  Future<Result<PsbtSigner, SecretFailure>> psbtSigner({
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-  }) => _repository.useMnemonic(
-    info,
-    (m) =>
-        Signer.bitcoin.psbtSigner(m, scriptType: scriptType, network: network),
-  );
-
   // ------------------------------------------------------- silent payments
 
   /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.

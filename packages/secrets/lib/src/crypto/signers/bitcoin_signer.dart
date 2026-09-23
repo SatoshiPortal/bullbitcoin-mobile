@@ -6,11 +6,6 @@ import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
 
-/// Signs a base64 PSBT and returns the signed result.
-///
-/// Synchronous on purpose: bdk's `sign` and `serialize` are, and the Payjoin receiver hands this callback to a native finalisation step that cannot suspend. A closure that could `await` here would have nowhere to do so.
-typedef PsbtSigner = String Function(String psbt);
-
 /// Bitcoin signing through bdk. Reached as `Signer.bitcoin`.
 ///
 /// Builds a wallet the signer owns and throws away. It never touches the
@@ -23,10 +18,8 @@ typedef PsbtSigner = String Function(String psbt);
 /// the GC gets to it, and until then an xprv and a private descriptor sit
 /// in native memory. `dispose()` is what makes "secrets are ephemeral"
 /// true here rather than eventually. `lower()` clones the pointer, so the
-/// callee holds its own reference and disposing ours is safe.
-///
-/// The one handle that outlives a call is the wallet behind
-/// [psbtSigner] — see there.
+/// callee holds its own reference and disposing ours is safe. No handle
+/// outlives a call: payjoin signs its proposal through [signPsbt] too.
 final class BitcoinSigner {
   /// bdk's gap limit when deriving addresses to recognise its own inputs.
   /// Matches `BdkFacade`, so a PSBT this signer accepts is the one the
@@ -36,9 +29,6 @@ final class BitcoinSigner {
   const BitcoinSigner();
 
   /// Signs one PSBT and frees everything it built.
-  ///
-  /// The normal path. [psbtSigner] exists for payjoin, which cannot work
-  /// this way.
   Future<String> signPsbt(
     MnemonicMaterial secret, {
     required String psbt,
@@ -53,28 +43,8 @@ final class BitcoinSigner {
     }
   }
 
-  /// A closure that signs PSBTs for [secret].
-  ///
-  /// The wallet is built here and captured by the closure, so a caller
-  /// that signs many transactions pays the construction once. The
-  /// mnemonic never crosses the returned boundary.
-  ///
-  /// ⚠️ **The wallet lives as long as the closure**, and it holds private
-  /// descriptors in native memory: bdk offers no way to sign repeatedly
-  /// without one. Nothing leaks — the handle's finalizer frees it once the
-  /// closure is unreachable — but the caller decides how long that is.
-  /// Payjoin is the only caller, and it drops the signer with the session.
-  Future<PsbtSigner> psbtSigner(
-    MnemonicMaterial secret, {
-    required ScriptType scriptType,
-    required BitcoinNetwork network,
-  }) async {
-    final wallet = _wallet(secret, scriptType: scriptType, network: network);
-    return (String psbt) => _sign(wallet, psbt);
-  }
-
-  /// bdk's exceptions do not leave: the closure returned by [psbtSigner]
-  /// runs outside any boundary, and bdk's parse error quotes its input.
+  /// bdk's exceptions do not leave as they are: bdk's parse error quotes
+  /// its input, so every failure becomes the package's own.
   static String _sign(bdk.Wallet wallet, String psbt) {
     final bdk.Psbt parsed;
     try {
@@ -92,9 +62,8 @@ final class BitcoinSigner {
     } on Exception {
       throw const PsbtSigningFailed();
     } finally {
-      // The free is a rustCall too, and from `psbtSigner`'s closure this runs
-      // outside any boundary: a failure here is translated rather than handed
-      // to the payjoin engine with a Rust message attached.
+      // The free is a rustCall too: a failure here is translated rather
+      // than surfaced with a Rust message attached.
       try {
         parsed.dispose();
       } on Exception {
@@ -168,8 +137,8 @@ final class BitcoinSigner {
 
       external = keychain(bdk.KeychainKind.external_);
       internal = keychain(bdk.KeychainKind.internal);
-      // Nothing to keep: this wallet exists for the length of one signing
-      // session and leaves no file behind.
+      // Nothing to keep: this wallet exists for the length of one signature
+      // and leaves no file behind.
       persister = bdk.Persister.newInMemory();
       wallet = bdk.Wallet(
         descriptor: external,
