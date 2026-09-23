@@ -3,7 +3,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/public/secret.dart';
 import 'package:secrets/src/domain/domain.dart';
-import 'package:secrets/src/crypto/crypto.dart' show Descriptors, PsbtSigner;
+import 'package:secrets/src/crypto/crypto.dart' show Descriptors;
 import 'package:secrets/src/widgets/widgets.dart' show SecretWidgets;
 
 /// Grouped spelling for [Secret]'s operations.
@@ -130,13 +130,6 @@ extension type const SecretSigning._(Secret _secret) {
     String pset, {
     required LiquidNetwork network,
   }) => _secret.signPset(pset, network: network);
-
-  /// A reusable signing capability, for payjoin.
-  /// See [Secret.psbtSigner].
-  Future<Result<PsbtSigner, SecretFailure>> psbtSigner({
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-  }) => _secret.psbtSigner(network: network, scriptType: scriptType);
 }
 
 /// Sealed backups of this secret.

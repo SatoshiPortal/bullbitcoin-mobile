@@ -9,13 +9,12 @@
 /// question "can this secret sign?" is answered by the type before any
 /// key is derived.
 ///
-/// Reached through [Signer], a namespace: `Signer.bitcoin.psbtSigner(…)`,
+/// Reached through [Signer], a namespace: `Signer.bitcoin.signPsbt(…)`,
 /// `Signer.liquid.signPset(…)` — the same shape as `Deriver` and
 /// `Backup`.
 ///
-/// There is deliberately no common interface: Bitcoin returns a
-/// reusable closure and needs a script type, Liquid is one-shot and
-/// does not, and the two networks are different enums. Nothing calls a
+/// There is deliberately no common interface: Bitcoin needs a script
+/// type and Liquid does not, and the two networks are different enums. Nothing calls a
 /// signer polymorphically — `Secret.signPsbt` knows it wants Bitcoin —
 /// so an interface would document a shape no code relies on.
 ///
@@ -37,7 +36,7 @@ import 'package:secrets/src/crypto/signers/bitcoin_signer.dart';
 import 'package:secrets/src/crypto/signers/liquid_signer.dart';
 import 'package:secrets/src/domain/domain.dart';
 
-export 'bitcoin_signer.dart' show BitcoinSigner, PsbtSigner;
+export 'bitcoin_signer.dart' show BitcoinSigner;
 export 'liquid_signer.dart' show LiquidSigner;
 
 /// The BIP39 sentence every signer signs from.

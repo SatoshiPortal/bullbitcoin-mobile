@@ -28,7 +28,7 @@ class InvalidVault implements Exception {
   String toString() => 'InvalidVault: $message';
 }
 
-/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. Inside the boundary it is a `SecretDerivationFailure`; from the retained `PsbtSigner` callback, which runs outside any boundary, it is what the caller catches.
+/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `SecretDerivationFailure`.
 class PsbtSigningFailed implements Exception {
   const PsbtSigningFailed();
 }

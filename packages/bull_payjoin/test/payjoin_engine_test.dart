@@ -800,21 +800,12 @@ void main() {
             (Outpoint _) => true,
       );
       when(
-        () => wallet.createPsbtProcessor(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async =>
-            (String psbt) => psbt,
-      );
-      when(
         () => pdk.proposePayjoin(
           receiverModel: any(named: 'receiverModel'),
           ownsOutpoint: any(named: 'ownsOutpoint'),
           hasReceiverOutput: any(named: 'hasReceiverOutput'),
           inputPairs: any(named: 'inputPairs'),
-          processPsbt: any(named: 'processPsbt'),
+          signPsbt: any(named: 'signPsbt'),
         ),
       ).thenAnswer((_) async => proposal);
       final proposed = engine.payjoinStream.firstWhere(
