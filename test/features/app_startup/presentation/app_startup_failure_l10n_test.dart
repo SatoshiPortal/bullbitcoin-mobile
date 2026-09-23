@@ -13,8 +13,6 @@ const _rawReason =
 final _everyFailure = <AppStartupFailure>[
   const AppStartupKeychainLockedFailure(_rawReason),
   const AppStartupWalletCheckFailure(_rawReason),
-  const AppStartupLegacyCheckFailure(_rawReason),
-  const AppStartupLegacySeedsFailure(_rawReason),
   const AppStartupResetFailure(_rawReason),
   const AppStartupPinCheckFailure(_rawReason),
 ];

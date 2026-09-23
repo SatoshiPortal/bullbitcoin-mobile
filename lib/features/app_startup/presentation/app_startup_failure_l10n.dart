@@ -6,8 +6,6 @@ extension AppStartupFailureL10n on AppStartupFailure {
   String toTranslated(BuildContext context) => switch (this) {
     AppStartupKeychainLockedFailure() ||
     AppStartupWalletCheckFailure() ||
-    AppStartupLegacyCheckFailure() ||
-    AppStartupLegacySeedsFailure() ||
     AppStartupResetFailure() ||
     AppStartupPinCheckFailure() => context.loc.appStartupErrorMessage,
   };

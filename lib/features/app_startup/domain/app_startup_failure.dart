@@ -18,16 +18,6 @@ final class AppStartupWalletCheckFailure extends AppStartupFailure {
   const AppStartupWalletCheckFailure([super.logMessage]);
 }
 
-/// Whether this is a pre-v5 install could not be determined.
-final class AppStartupLegacyCheckFailure extends AppStartupFailure {
-  const AppStartupLegacyCheckFailure([super.logMessage]);
-}
-
-/// The legacy seeds could not be enumerated for the backup screen.
-final class AppStartupLegacySeedsFailure extends AppStartupFailure {
-  const AppStartupLegacySeedsFailure([super.logMessage]);
-}
-
 /// Clearing data left behind by a previous install failed.
 final class AppStartupResetFailure extends AppStartupFailure {
   const AppStartupResetFailure([super.logMessage]);
