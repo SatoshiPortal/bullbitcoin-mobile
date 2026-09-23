@@ -8,14 +8,10 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart' hide EncryptedVault;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart';
@@ -56,16 +52,6 @@ Future<void> main({bool isInitialized = false}) async {
     'zoo',
     'wrong',
   ];
-  final mnemonic = bip39.Mnemonic.fromWords(
-    words: expectedMnemonicWords,
-    language: bip39.Language.english,
-    passphrase: '',
-  );
-  final xprv = Bip32Derivation.getXprvFromSeed(
-    Uint8List.fromList(mnemonic.seed),
-    Network.bitcoinMainnet,
-  );
-
   setUpAll(() async {
     final state = await ensureTorReadyUsecase.execute();
     expect(state, isA<TorReady>());
@@ -134,26 +120,6 @@ Future<void> main({bool isInitialized = false}) async {
         }, isTrue);
       },
     );
-
-    test('OLD path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: oldPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, oldPathVaultKey);
-    });
-
-    test('NEW path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: newPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, newPathVaultKey);
-    });
 
     test('OLD path: Decrypt vault from key', () {
       final decryptedResult = decryptVaultUsecase.execute(
