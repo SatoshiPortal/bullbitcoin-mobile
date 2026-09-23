@@ -9,7 +9,7 @@ import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage
 /// `FlutterSecureStoragePlatform.instance`. That puts the package's real
 /// key composition, JSON encoding and — the part that was never covered
 /// before — its translation of `PlatformException` into
-/// [SecretStoreLockedException] inside the test.
+/// `SecretStoreLockedException` inside the test.
 ///
 /// The instance is process-wide, so [install] replaces whatever was
 /// there. Two stores cannot be live at once: a test needing two
