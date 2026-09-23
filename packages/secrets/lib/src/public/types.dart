@@ -6,7 +6,7 @@
 /// never reach a caller by accident.
 library;
 
-export 'package:secrets/src/crypto/crypto.dart' show Descriptors, PsbtSigner;
+export 'package:secrets/src/crypto/crypto.dart' show Descriptors;
 export 'package:secrets/src/domain/domain.dart'
     show
         DatabaseKey,
