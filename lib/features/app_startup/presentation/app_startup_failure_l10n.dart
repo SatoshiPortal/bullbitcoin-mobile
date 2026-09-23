@@ -7,8 +7,6 @@ extension AppStartupFailureL10n on AppStartupFailure {
     AppStartupKeychainLockedFailure() ||
     AppStartupWalletCheckFailure() ||
     AppStartupMissingDefaultSecretFailure() ||
-    AppStartupLegacyCheckFailure() ||
-    AppStartupLegacySeedsFailure() ||
     AppStartupResetFailure() ||
     AppStartupPinCheckFailure() => context.loc.appStartupErrorMessage,
   };
