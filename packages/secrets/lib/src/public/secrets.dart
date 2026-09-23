@@ -138,7 +138,7 @@ final class Secrets {
   ///
   /// [key] is the half the user kept or the key server held; the derivation path travels inside [file]. A file that is not a vault, or a key that does not open it, is an [InvalidVaultFailure] and nothing is stored.
   ///
-  /// ⚠️ **A vault carries the words alone**, so pass [passphrase] to restore the wallet the user actually had. Without it the result is a [WordsOnly] — restored, storable, usable, and a different Bitcoin wallet if there ever was a passphrase. [WholeSecret] says the passphrase took part, not that it was the right one: there is nothing in the file to check it against, so a mistyped passphrase restores a third wallet, silently. Let the user confirm on a balance or an address they recognise. See the README, § Passphrase.
+  /// ⚠️ **A vault carries the words alone**, so pass [passphrase] to restore the wallet the user actually had. Without it the result is a [WordsOnly] — restored, storable, usable, and a different Bitcoin wallet if there ever was a passphrase. [WholeSecret] says the passphrase took part, not that it was the right one: there is nothing in the file to check it against, so a mistyped passphrase restores a third wallet, silently. Let the user confirm on a balance or an address they recognise. See doc/design.md, § Passphrase.
   Future<Result<PassphraseScope<RestoredVault>, SecretFailure>> restoreVault({
     required String file,
     required String key,

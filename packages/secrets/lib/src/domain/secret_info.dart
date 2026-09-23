@@ -39,7 +39,7 @@ final class SecretInfo {
 
   /// ⚠️ `true` does not mean every operation honours it. Liquid, the
   /// swap key and the vault derive from the words alone, silently. See
-  /// the README, § Passphrase.
+  /// doc/design.md, § Passphrase.
   final bool hasPassphrase;
 
   /// `null` for a mnemonic secret.

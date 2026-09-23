@@ -15,7 +15,7 @@ import 'package:secrets/src/crypto/crypto.dart';
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
-/// ⚠️ A passphrase is honoured by Bitcoin derivation and signing only. Liquid, the swap key and the Backup derive from the words alone, with no warning at runtime. See the README, § Passphrase.
+/// ⚠️ A passphrase is honoured by Bitcoin derivation and signing only. Liquid, the swap key and the Backup derive from the words alone, with no warning at runtime. See doc/design.md, § Passphrase.
 final class Secret {
   /// Identity and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
@@ -84,7 +84,7 @@ final class Secret {
 
   /// The confidential descriptor, covering both Liquid keychains. lwk derives it from the words, so a seed-only secret is refused from [info] alone.
   ///
-  /// ⚠️ **A passphrase takes no part here** — lwk derives from the words alone, at every layer. So the result is a [WordsOnly] for a secret that has one: the descriptor, its addresses and its funds are the passphrase-less sibling's. See the README, § Passphrase.
+  /// ⚠️ **A passphrase takes no part here** — lwk derives from the words alone, at every layer. So the result is a [WordsOnly] for a secret that has one: the descriptor, its addresses and its funds are the passphrase-less sibling's. See doc/design.md, § Passphrase.
   Future<Result<PassphraseScope<String>, SecretFailure>> liquidDescriptor({
     required LiquidNetwork network,
   }) => _repository.useMnemonic(
@@ -148,7 +148,7 @@ final class Secret {
 
   /// Signs a PSET.
   ///
-  /// ⚠️ **A passphrase is ignored here**, as in [liquidDescriptor] — consistently, which keeps the signature matching the descriptor. See the README, § Passphrase.
+  /// ⚠️ **A passphrase is ignored here**, as in [liquidDescriptor] — consistently, which keeps the signature matching the descriptor. See doc/design.md, § Passphrase.
   Future<Result<String, SecretFailure>> signPset(
     String pset, {
     required LiquidNetwork network,
@@ -168,7 +168,7 @@ final class Secret {
   ///
   /// [metadata] is whatever the caller wants back from `Secrets.restoreVault`; it must not carry a `mnemonic` entry. The backup key is derived at a fresh random BIP85 index each time. No network.
   ///
-  /// ⚠️ **The passphrase is not in the file.** The format carries the words alone — the one every existing Backup and the key server speak — so this returns a [WordsOnly] for a secret that has a passphrase: restoring the file alone gives a different Bitcoin wallet. Tell the user to keep the passphrase with the backup, and pass it back to `Secrets.restoreVault`. See the README, § Passphrase.
+  /// ⚠️ **The passphrase is not in the file.** The format carries the words alone — the one every existing Backup and the key server speak — so this returns a [WordsOnly] for a secret that has a passphrase: restoring the file alone gives a different Bitcoin wallet. Tell the user to keep the passphrase with the backup, and pass it back to `Secrets.restoreVault`. See doc/design.md, § Passphrase.
   Future<Result<PassphraseScope<EncryptedVault>, SecretFailure>> backupVault({
     Map<String, dynamic> metadata = const {},
   }) async {

@@ -6,7 +6,7 @@ import 'package:secrets/src/domain/domain.dart';
 ///
 /// A derivation, not a signer, and it will stay one: the swap key is a
 /// delegated credential — a separate mnemonic that `swaps` stores and
-/// signs with on its own. See the README, § Modules.
+/// signs with on its own. See doc/design.md, § Modules.
 final class BoltzDeriver {
   const BoltzDeriver();
 
@@ -22,8 +22,8 @@ final class BoltzDeriver {
   /// ⚠️ **Keys already stored were derived from the words alone**, and
   /// nothing re-derives them: a passphrase wallet that has a swap key
   /// keeps it. The caller must not treat this as reproducing a stored
-  /// key — `swaps` asks for one only when it holds none. See the README,
-  /// § Passphrase.
+  /// key — `swaps` asks for one only when it holds none. See
+  /// doc/design.md, § Passphrase.
   Future<SwapKey> swapKey(
     MnemonicMaterial secret, {
     required BitcoinNetwork network,

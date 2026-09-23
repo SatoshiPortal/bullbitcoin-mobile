@@ -17,7 +17,7 @@ final class LiquidDeriver {
   /// any layer and its signer hard-codes `to_seed("")`, so a passphrase
   /// secret gets its passphrase-less sibling's descriptor — same
   /// addresses, same funds. `Secret.liquidDescriptor` marks the result
-  /// `WordsOnly` for exactly that reason. See the README, § Passphrase.
+  /// `WordsOnly` for exactly that reason. See doc/design.md, § Passphrase.
   ///
   /// Regtest is refused rather than folded into testnet: Elements
   /// regtest is a different chain, and a confidential descriptor built

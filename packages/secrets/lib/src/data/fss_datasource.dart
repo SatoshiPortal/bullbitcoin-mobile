@@ -26,9 +26,9 @@ typedef StoredListing = ({List<StoredSecret> parsed, int unparsable});
 ///
 /// The only holder of a `FlutterSecureStorage` instance here, and the only place that composes a key. Not exported, and `Secrets` builds it itself, so nothing outside can obtain the instance.
 ///
-/// Two namespaces with deliberately different read semantics: a corrupt seed is skipped so it cannot hide the others, a corrupt module key is refused and kept. See the README, § The package owns the keystore.
+/// Two namespaces with deliberately different read semantics: a corrupt seed is skipped so it cannot hide the others, a corrupt module key is refused and kept. See doc/design.md, § The package owns the keystore.
 ///
-/// **The lock is `static` and not reentrant**: the primitives ([_readRaw], [_writeRaw], [_deleteRaw], [_readAllRaw]) never take it, and a composed operation takes it exactly once and calls only primitives. A nested take hangs rather than throwing. Why it is per process and why single calls go unguarded: README, § One lock.
+/// **The lock is `static` and not reentrant**: the primitives ([_readRaw], [_writeRaw], [_deleteRaw], [_readAllRaw]) never take it, and a composed operation takes it exactly once and calls only primitives. A nested take hangs rather than throwing. Why it is per process and why single calls go unguarded: doc/design.md, § One lock.
 class FlutterSecureStorageDatasource {
   // --------------------------------------------------------------- keyspace
 
@@ -169,7 +169,7 @@ class FlutterSecureStorageDatasource {
 
   /// Reads one secret. Returns `null` only for a clean miss on the read that was allowed to settle; a last read that threw, or came back empty, propagates.
   ///
-  /// The retry loop exists because two upstream failure modes produce a `null` for a key that exists (#853, #592). Believing a `null` is asymmetric — a false "present" is a benign read error, a false "absent" tells the user their wallet is gone — so a genuine miss costs the full backoff and there is no fast path for it. See the README, § Absence.
+  /// The retry loop exists because two upstream failure modes produce a `null` for a key that exists (#853, #592). Believing a `null` is asymmetric — a false "present" is a benign read error, a false "absent" tells the user their wallet is gone — so a genuine miss costs the full backoff and there is no fast path for it. See doc/design.md, § Absence.
   ///
   /// [SecretStoreLockedException] passes through untouched: a sealed keystore is not an absence, and retrying cannot unseal it.
   Future<SecretModel?> fetchSecret(Fingerprint id) async {
@@ -261,7 +261,7 @@ class FlutterSecureStorageDatasource {
   ///
   /// Read and create are one locked operation because they must be atomic: unserialised, two first asks each read a miss, each generate, and the second write wins — the first caller then holds a key that opens nothing.
   ///
-  /// **Only a clean `null` creates.** Anything present but unusable is a [ModuleKeyCorruptException] and the bytes are left exactly as they are: regenerating over them is the one irreversible act available here. The opposite of the seed namespace, where a bad value is skipped — there, one entry must not hide the others; here there is nothing to hide and something to lose. No retry loop either, for the same reason. See the README, § Database keys.
+  /// **Only a clean `null` creates.** Anything present but unusable is a [ModuleKeyCorruptException] and the bytes are left exactly as they are: regenerating over them is the one irreversible act available here. The opposite of the seed namespace, where a bad value is skipped — there, one entry must not hide the others; here there is nothing to hide and something to lose. No retry loop either, for the same reason. See doc/design.md, § Database keys.
   ///
   /// Generation is the caller's: this type holds no randomness and no crypto, only the keyspace and the lock.
   Future<KeyModel> fetchOrCreateModuleKey({
