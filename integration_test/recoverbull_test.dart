@@ -13,6 +13,7 @@ import 'package:secrets/secrets.dart' hide EncryptedVault;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/foundation.dart';

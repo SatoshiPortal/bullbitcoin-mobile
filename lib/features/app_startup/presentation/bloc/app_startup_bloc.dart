@@ -4,7 +4,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
@@ -26,7 +25,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._resetAppDataUsecase,
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
-    required this._checkLegacyInstallUsecase,
     required this._initializeRequiredTorUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
@@ -37,7 +35,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
 
   /// True while we're sitting on the splash because a startup step
@@ -79,29 +76,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       case Err(:final failure):
         emit(AppStartupState.failure(failure));
         return;
-    }
-
-    // Pre-v5 ("BULL") installs are no longer migrated: gate them behind a
-    // backup screen. Only when the new DB is empty — the legacy marker can
-    // survive a failed migration while the user has since set up working
-    // v5+ wallets, and those current seeds are not legacy-format: gating
-    // such an install would show a backup screen missing its live wallets
-    // and instruct deleting them.
-    if (!doDefaultWalletsExist) {
-      switch (await _checkLegacyInstallUsecase.execute()) {
-        case Ok(value: true):
-          log.warning('Legacy (pre-v5) install detected — backup gate shown');
-          emit(const AppStartupState.legacyBackupRequired());
-          return;
-        case Ok():
-          break;
-        case Err(failure: AppStartupKeychainLockedFailure()):
-          _waitForKeychainUnlock();
-          return;
-        case Err(:final failure):
-          emit(AppStartupState.failure(failure));
-          return;
-      }
     }
 
     bool isPinCodeSet = false;

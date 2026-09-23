@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
@@ -44,8 +43,6 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
               // return const HomeScreen();
               return widget.app;
-            } else if (state is AppStartupLegacyBackupRequired) {
-              return const LegacyBackupScreen();
             } else if (state is AppStartupFailureState) {
               return AppStartupFailureScreen(failure: state.failure);
             }
