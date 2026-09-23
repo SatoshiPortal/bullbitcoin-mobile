@@ -235,7 +235,7 @@ void main() {
       // what generate takes: a closed set, never an int
       'MnemonicWordCount',
       // what operations hand back
-      'Descriptors', 'PsbtSigner',
+      'Descriptors',
       'SwapKey', 'EncryptedVault', 'DatabaseKey', 'SecretInfo', 'SecretKind',
       'SecretListing',
       // the failure family
@@ -340,8 +340,6 @@ void main() {
       // material: the stored secret itself, and `@internal` — only the
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
-      // a signing capability, not data
-      'psbtSigner': 'capability',
       // ciphertext plus the key that opens it
       'backupVault': 'ciphertext',
     };

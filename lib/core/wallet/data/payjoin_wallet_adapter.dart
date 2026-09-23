@@ -64,21 +64,6 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   }
 
   @override
-  Future<String Function(String psbt)> createPsbtProcessor({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async {
-    // The callback captures a signing wallet built inside the package; it is not the seed, but it is a live signing capability. Bounding its lifetime with an explicit close is pending (lot 3); today it lives as long as the receiver holds it, as the previous private wallet did.
-    final (secret, metadata) = await _loadSecret(walletId, network);
-    return _unwrap(
-      await secret.sign.psbtSigner(
-        network: network,
-        scriptType: metadata.scriptType.shared,
-      ),
-    );
-  }
-
-  @override
   Future<List<PayjoinUtxo>> spendableUtxos({
     required String walletId,
     required BitcoinNetwork network,

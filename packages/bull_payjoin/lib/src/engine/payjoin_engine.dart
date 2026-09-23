@@ -1441,16 +1441,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: payjoin.walletId,
         network: network,
       );
-      final signPsbtSync = await _wallet.createPsbtProcessor(
-        walletId: payjoin.walletId,
-        network: network,
-      );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
         ownsOutpoint: ownsOutpointSync,
         hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
-        processPsbt: signPsbtSync,
+        signPsbt: (psbt) => _wallet.signPsbt(
+          walletId: payjoin.walletId,
+          network: network,
+          psbt: psbt,
+        ),
       );
 
       try {

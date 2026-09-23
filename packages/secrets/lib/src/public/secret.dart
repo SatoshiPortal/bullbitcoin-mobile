@@ -162,16 +162,6 @@ final class Secret {
     ),
   );
 
-  /// A reusable signing capability, for payjoin, which hands a signer to the protocol layer rather than calling it once. The closure captures a built wallet; the caller never holds the mnemonic.
-  Future<Result<PsbtSigner, SecretFailure>> psbtSigner({
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-  }) => _repository.useMnemonic(
-    info,
-    (m) =>
-        Signer.bitcoin.psbtSigner(m, scriptType: scriptType, network: network),
-  );
-
   // ---------------------------------------------------------------- backup
 
   /// Seals this secret into a RecoverBull vault. Not a reveal: what comes back is ciphertext plus the key that opens it — hold both and you hold the mnemonic, so store them apart.

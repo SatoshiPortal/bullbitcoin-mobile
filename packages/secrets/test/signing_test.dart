@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-import 'package:secrets/src/crypto/exceptions.dart' show PsbtSigningFailed;
 import 'package:secrets/testing.dart';
 
 import 'result_helpers.dart';
@@ -64,24 +63,5 @@ void main() {
         expect(err(result), isA<SecretDerivationFailure>(), reason: '$network');
       }
     });
-  });
-
-  group('psbtSigner', () {
-    test(
-      'hands back a synchronous signer that refuses garbage by type',
-      () async {
-        final signer = ok(
-          await secret.sign.psbtSigner(
-            network: BitcoinNetwork.mainnet,
-            scriptType: ScriptType.bip84,
-          ),
-        );
-
-        // Outside the boundary by design — the payjoin engine calls this from
-        // a native callback — so the refusal is the package's own exception,
-        // never bdk's, and never a Result.
-        expect(() => signer('not a psbt'), throwsA(isA<PsbtSigningFailed>()));
-      },
-    );
   });
 }
