@@ -128,8 +128,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   /// Signs with the wallet's own key, which never leaves `secrets`.
   ///
   /// The package builds the bdk wallet, signs, and throws it away; this
-  /// repository no longer constructs a `PrivateBdkWalletModel`, so the
-  /// mnemonic has no reason to exist here.
+  /// repository holds no private wallet model, so the mnemonic has no
+  /// reason to exist here.
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final metadata = await _metadataFor(walletId);
     final secret = await _secretFor(metadata);

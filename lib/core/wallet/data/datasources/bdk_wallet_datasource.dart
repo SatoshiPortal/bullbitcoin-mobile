@@ -175,38 +175,6 @@ class BdkWalletDatasource {
     return owned.contains;
   }
 
-  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
-  /// wallet. Uses the same sign options as [signPsbt] — in particular
-  /// `allowAllSighashes: false`, since this signs the wallet's contribution
-  /// to an externally-supplied transaction (a payjoin proposal).
-  Future<String Function(String)> createPsbtSigner({
-    required PrivateBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-    return (String psbtBase64) {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      // Unlike signPsbt (the sender signing a complete transaction, where a
-      // non-finalized result is a genuine anomaly), this signs only the
-      // receiver's own contributed input into a multi-party payjoin
-      // proposal — the sender's inputs are still unsigned at this point by
-      // protocol design, so bdk's whole-PSBT finalization check is always
-      // false here. Don't log it: it isn't an error, and logging it on every
-      // successful payjoin would read like one.
-      bdkWallet.sign(
-        psbt: psbt,
-        signOptions: bdk.SignOptions(
-          trustWitnessUtxo: true,
-          assumeHeight: null,
-          allowAllSighashes: false,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      return psbt.serialize();
-    };
-  }
-
   /// Returns [psbt] with this wallet's BIP32 derivations added to every input
   /// and output it owns, from its local index. Signs nothing: the wallet is
   /// built from the public descriptors.
@@ -410,33 +378,6 @@ class BdkWalletDatasource {
     return totalAmount;
   }
   // 25000 - 988
-
-  Future<String> signPsbt(
-    String unsignedPsbt, {
-    required PrivateBdkWalletModel wallet,
-  }) async {
-    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-
-    final isFinalized = bdkWallet.sign(
-      psbt: psbt,
-      signOptions: bdk.SignOptions(
-        trustWitnessUtxo: true,
-        assumeHeight: null,
-        allowAllSighashes: false,
-        tryFinalize: true,
-        signWithTapInternalKey: false,
-        allowGrinding: true,
-      ),
-    );
-    if (!isFinalized) {
-      log.info('Signed PSBT is not finalized');
-    } else {
-      log.info('Signed PSBT is finalized');
-    }
-
-    return psbt.serialize();
-  }
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
