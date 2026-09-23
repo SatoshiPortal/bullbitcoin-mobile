@@ -19,7 +19,7 @@ import 'package:secrets/src/domain/domain.dart';
 /// see [signPset].
 ///
 /// ⚠️ A passphrase is ignored. lwk's signer hard-codes `to_seed("")`
-/// and no layer of the binding takes one. See the README, § Passphrase.
+/// and no layer of the binding takes one. See doc/design.md, § Passphrase.
 final class LiquidSigner {
   const LiquidSigner();
 
