@@ -78,6 +78,7 @@ Hard rules:
     **Exception (melos migration):** `packages/` and `features/` are intentionally pre-created with `.gitkeep` as reserved workspace homes for the in-progress monorepo migration — do not remove them or treat them as a rule-#14 violation. See the Monorepo / melos section.
 
 15. **Enforce with the compiler, not hope.** Repository contracts → `abstract interface class` (forbids `extends`, forces `implements`); lock finer capabilities with `@Deprecated.implement()` / `.instantiate()` / `.extend()`. Failure families and multi-case states → `sealed`; a missing `switch` case is a compile error. `Result`-returning repo methods → annotate `@useResult`. Cross-feature and `data/`-from-`presentation/` bans → a rule in the first-party analyzer plugin system (Dart 3.10+); under melos, package boundaries + the `implementation_imports` lint make them hard errors. All available in the current toolchain (Flutter 3.41/3.44 bundle Dart 3.11/3.12) — no point-release dependency.
+16. **Routing — one router per feature, composed at the root.** Each feature owns `ui/<feature>_router.dart`, holding a `<Feature>Route` enum and a `<Feature>Router` class. The enum declares one member per screen with its path string — the root member absolute (`dca('/dca')`), the children relative (`dcaConfirmation('confirmation')`) — and its `.name` is the route name `context.pushNamed`/`goNamed` navigate by. The router exposes `static final route` (or `routes` when the feature publishes several), so mounting it takes no arguments. [`lib/router.dart`](lib/router.dart) composes those into `AppRouter.router`, and one feature nests inside another by placing `<Feature>Router.route` in the parent's `routes:` list. Each `builder` resolves what it needs through `locator<T>()`: GoRouter runs that closure at navigation time, which keeps resolution lazy and leaves the route tree buildable in a test without a configured GetIt. A feature that other features route into re-exports its router and its route enum from its `public/` facade (rule #1), so that one import is the whole surface the mounting feature needs.
 
 When a request would break these rules, explain why and propose a compliant alternative. Don't silently comply.
 
@@ -122,6 +123,7 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 | Event | `<feature>_event.dart` | `send_event.dart` |
 | Facade | `<feature>_facade.dart` | `labels_facade.dart` |
 | Locator | `<feature>_locator.dart` | `wallet_locator.dart` |
+| Router | `<feature>_router.dart` in `ui/`, holding the route enum too | `dca_router.dart` |
 | Failure (family) | `<feature>_failure.dart` (domain) + `<feature>_failure_l10n.dart` (presentation) | per rule #11 |
 
 **Classes** — `PascalCase`, matching local quirks:
@@ -136,6 +138,7 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 - **Bloc/Cubit**: `<Feature>Bloc` / `<Feature>Cubit` (`SendBloc`, `SettingsCubit`).
 - **State / Event**: `<Feature>State` / `<Feature>Event`, sealed with freezed when there are multiple cases.
 - **Facade**: `<Feature>Facade` (`LabelsFacade`).
+- **Router / route enum**: `<Feature>Router` exposing `static final route` or `routes`, alongside a `<Feature>Route` enum in the same file (`DcaRouter` + `DcaRoute`). See rule #16. Legacy outlier `settings_route.dart` keeps the enum in a sibling file the router exports.
 - **Watcher** (when introduced): `<Subject>Watcher`.
 - **Failure**: one sealed `<Feature>Failure` family per feature in `domain/<feature>_failure.dart` (base `Failure`); never `<Feature>Error` — `Error` is reserved for `dart:core` bugs. Translation extension `<Feature>FailureL10n` in `presentation/`. See rule #11.
 
