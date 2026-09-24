@@ -2,6 +2,7 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// Liquid derivations through lwk. Reached as `Deriver.liquid`.
 ///
@@ -9,6 +10,7 @@ import 'package:secrets/src/domain/domain.dart';
 /// from the BIP39 words, so a seed-only secret is refused by the type
 /// before anything is computed.
 final class LiquidDeriver {
+  @internal
   const LiquidDeriver();
 
   /// The confidential descriptor, which covers both keychains.

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// One word of a mnemonic, as a widget the host can place but not read.
 ///
@@ -7,6 +8,7 @@ final class SealedWord extends StatelessWidget {
   final String _word;
   final TextStyle? _style;
 
+  @internal
   const SealedWord(this._word, {this._style, super.key});
 
   @override

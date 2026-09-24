@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 /// Why key material is being exposed.
 ///
 /// Required by [SecretReveal.words] so every reveal names itself at the
@@ -21,6 +23,7 @@ final class RevealedMnemonic {
   /// Empty when there is none.
   final String passphrase;
 
+  @internal
   const RevealedMnemonic({required this.words, required this.passphrase});
 
   bool get hasPassphrase => passphrase.isNotEmpty;

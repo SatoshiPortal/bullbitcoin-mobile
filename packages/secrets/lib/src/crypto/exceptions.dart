@@ -5,11 +5,14 @@
 /// Every message is one of this file's callers' fixed strings.
 library;
 
+import 'package:meta/meta.dart';
+
 /// Thrown when `LiquidNetwork.regtest` reaches lwk, which has no such
 /// variant — here and in `LiquidSigner`. Translated to
 /// `UnsupportedNetworkFailure` by the error boundary.
 class UnsupportedLiquidNetwork implements Exception {
   final String message;
+  @internal
   const UnsupportedLiquidNetwork(this.message);
 
   @override
@@ -22,6 +25,7 @@ class UnsupportedLiquidNetwork implements Exception {
 /// can travel into a failure without a redaction step.
 class InvalidVault implements Exception {
   final String message;
+  @internal
   const InvalidVault(this.message);
 
   @override
@@ -30,10 +34,12 @@ class InvalidVault implements Exception {
 
 /// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `SecretDerivationFailure`.
 class PsbtSigningFailed implements Exception {
+  @internal
   const PsbtSigningFailed();
 }
 
 /// lwk refused to sign. Carries nothing: lwk's own message is dropped on purpose. Reported by type as `SecretDerivationFailure`.
 class LiquidSigningFailed implements Exception {
+  @internal
   const LiquidSigningFailed();
 }

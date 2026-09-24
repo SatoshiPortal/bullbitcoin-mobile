@@ -26,6 +26,7 @@ final class BitcoinSigner {
   /// app's wallet would have accepted.
   static const _lookahead = 25;
 
+  @internal
   const BitcoinSigner();
 
   /// Signs one PSBT and frees everything it built.
