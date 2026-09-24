@@ -37,8 +37,8 @@ final class SecretInfo {
   /// 12 or 24 in practice; `null` for a bytes secret.
   final int? wordCount;
 
-  /// ⚠️ `true` does not mean every operation honours it. Liquid, the
-  /// swap key and the vault derive from the words alone, silently. See
+  /// ⚠️ `true` does not mean every operation honours it. Liquid and the
+  /// vault derive from the words alone, and say so with [scope]. See
   /// doc/design.md, § Passphrase.
   final bool hasPassphrase;
 

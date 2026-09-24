@@ -12,7 +12,7 @@ import 'package:secrets/src/widgets/widgets.dart' show SecretWidgets;
 /// and so on. Every member of this file is a **single forwarding
 /// expression** to the method of the same meaning on [Secret] — there is
 /// no behaviour here, no key material, no error handling, and there must
-/// never be any. `test/inertness_test.dart` asserts it: no `await`, no
+/// never be any. `test/invariants_test.dart` asserts it: no `await`, no
 /// `guard`, no reference to the repository, the deriver, the signer or
 /// `SecretMaterial`, and one expression per member.
 ///

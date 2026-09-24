@@ -31,11 +31,11 @@ final candidate = ok(await secrets.idOf(words: words, passphrase: passphrase));
 if (ok(await secrets.exists(candidate))) return alreadyImported;
 ```
 
-`Secrets` is the lifecycle — `generate`, `import`, `fetch`, `list`, `exists`, `idOf`, `trash`, `restoreVault`, `databaseKey`. It hands back a `Secret`: a handle that holds no key material, only `info` (identity and shape, safe to log) and `id`, its `Fingerprint`. The words themselves are consumed by `import` and never held by the caller afterwards. Everything else hangs off that handle, grouped by what it does:
+`Secrets` is the lifecycle — `generate`, `import`, `fetch`, `list`, `exists`, `idOf`, `trash`, `repairIdentity`, `restoreVault`, and a module's own database key (`databaseKey`, `existingDatabaseKey`, `resetDatabaseKey`). It hands back a `Secret`: a handle that holds no key material, only `info` (identity and shape, safe to log) and `id`, its `Fingerprint`. The words themselves are consumed by `import` and never held by the caller afterwards. Everything else hangs off that handle, grouped by what it does:
 
 | | | returns |
 |---|---|---|
-| `secret.derive` | `xpub`, `liquidXpub`, `descriptors.bitcoin`, `descriptors.liquid`, `bip85.hex`, `bip85.mnemonic`, `swapKey` | public keys, descriptors, BIP85 children, the swap credential |
+| `secret.derive` | `xpub`, `liquidXpub`, `descriptors.bitcoin`, `descriptors.liquid`, `bip85.hex`, `bip85.mnemonic`, `swapKey` | public keys, descriptors, BIP85 children, the swap credential; the Liquid descriptor carries its SLIP-77 blinding key, a view key |
 | `secret.sign` | `psbt`, `pset`, `psbtSigner` | a signed transaction, or a closable signing capability |
 | `secret.backup` | `vault` | a sealed RecoverBull vault |
 | `secret.widgets` | `mnemonicView`, `mnemonicChallenge` | the words on screen — never in your hands |
@@ -50,10 +50,11 @@ secret.widgets.mnemonicView(onFailure: (context, failure) => …);
 
 Every operation returns `Future<Result<…, SecretFailure>>`, and none returns the stored words. The three that hand back *derived* material — `bip85.hex`, `bip85.mnemonic`, `swapKey` — are the whole list, pinned by a test. Showing the words to the user goes through `secret.widgets`: the widgets read them inside their own state and hand you widgets with no text accessor. Their constructors are `@internal`; the handle is the only way to build them.
 
-## Three things to know before calling
+## Four things to know before calling
 
-- **⚠️ Passphrase.** Bitcoin derivation and signing honour it. Liquid, the swap key and the vault derive from the words alone — no Liquid wallet supports a passphrase — and say so in the type: those return a `PassphraseScope`, `WordsOnly` when a passphrase exists but took no part. Pass the passphrase back to `Secrets.restoreVault`. The app's default wallets are passphrase-less by rule, and several paths depend on it — see [doc/design.md](doc/design.md), § Passphrase, before allowing one.
-- **Failures.** One sealed family, `SecretFailure`. `SecretFetchFailure` is the keystore, `SecretDerivationFailure` is the engine, `SecretStoreLockedFailure` is a sealed keystore — never an absence. Caller misuse is an `ArgumentError`, raised before the boundary.
+- **⚠️ Passphrase.** Bitcoin derivation and signing and the swap key honour it. Liquid and the vault derive from the words alone — no Liquid wallet supports a passphrase — and say so in the type: `descriptors.liquid` and `backup.vault` return a `PassphraseScope`, `WordsOnly` when a passphrase exists but took no part. Pass the passphrase back to `Secrets.restoreVault`. The app's default wallets are passphrase-less by rule, and several paths depend on it — see [doc/design.md](doc/design.md), § Passphrase, before allowing one.
+- **Failures.** One sealed family, `SecretFailure`. `SecretFetchFailure` is the keystore, `SecretDerivationFailure` is the engine, `SecretStoreLockedFailure` is a sealed keystore — never an absence. Caller misuse the package checks — a reserved vault metadata key, a malformed module-key segment — is an `ArgumentError`, raised before the boundary.
+- **Signing.** Both chains refuse a PSBT or PSET that asks for anything but `SIGHASH_ALL`: bdk's `allowAllSighashes: false` for Bitcoin, a check in the package before lwk for Liquid. What a transaction pays and to whom is the caller's policy, not the package's.
 - **Tests.** `Secrets` and `Secret` are `final`: a double of the custody boundary is a hole in it. Install an in-memory keystore with `package:secrets/testing.dart` and run the real thing. Test-only — an invariant test fails if anything under `lib/` imports it.
 
 ## Read next

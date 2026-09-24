@@ -179,7 +179,7 @@ final class Secrets {
 
   /// The encryption key for one package's database.
   ///
-  /// Thirty-two random bytes, generated on first ask, kept in this package's namespace. Not user material: it opens one local database and cannot reach a seed or another package's database. First asks are atomic process-wide. A stored value that is present but unusable is a [DatabaseKeyCorruptFailure] and is never written over.
+  /// Thirty-two random bytes, generated on first ask, kept in this package's namespace. Not user material: it opens one local database and cannot reach a seed or another package's database. First asks are atomic within an isolate (the lock is a Dart `static`). A stored value that is present but unusable is a [DatabaseKeyCorruptFailure] and is never written over.
   ///
   /// A package should not hold a [Secrets] to get one. Compose instead, so it can only ever name its own keys:
   ///

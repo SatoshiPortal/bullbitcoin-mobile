@@ -37,8 +37,10 @@ await secret.verifyWords(candidate);
 ```
 
 Everything above returns something *derived* from the secret — a public
-key, a public descriptor, a signature. The mnemonic never crosses the
-boundary. Use whichever spelling reads better; they compile to the same
+key, a descriptor, a signature, a verdict. The mnemonic never crosses the
+boundary; to show it, `secret.widgets.mnemonicView(…)` and
+`secret.widgets.mnemonicChallenge(…)` build the sealed widgets, whose
+constructors are `@internal` (§ The exits). Use whichever spelling reads better; they compile to the same
 call, and `test/invariants_test.dart` asserts that the sugar can never
 be more than a forward.
 
@@ -161,7 +163,8 @@ mnemonic:
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`
 and `MnemonicChallenge`, and a feature that reaches for it gets an
-`invalid_use_of_internal_member` error. Showing a user their words is a
+`invalid_use_of_internal_member` error. The widgets are built through
+`secret.widgets`; their constructors are `@internal` too. Showing a user their words is a
 display concern, and a display that hands them back has nothing left to
 seal — so the host receives each word **as a widget** whose text has no
 accessor (`wordBuilder(context, number, Widget word)`, `MnemonicTile.word`),
@@ -173,6 +176,13 @@ without exposing anything.
 
 Do not grep for the three — `test/invariants_test.dart` pins the set, so
 adding a fourth turns the suite red and names it.
+
+`derive.descriptors.liquid` is not on it, but it is not public either:
+lwk's confidential descriptor embeds the SLIP-77 master blinding key, so
+whoever holds it sees every amount and asset of that Liquid wallet — a
+view key, with no spend authority. The package treats the same string as
+secret when lwk writes it to disk (§ The package owns the keystore);
+hosts should store and log it as private data.
 
 `backup.vault` is not on this list, but note that its result pairs
 ciphertext with the key that opens it: hold both and you hold the
@@ -205,13 +215,14 @@ exposes; everything else in the directory is implementation.
 ```
 lib/secrets.dart          the package: the surface, explicit `show` lists — what a caller can name
 lib/src/
-  public/                 what you call          Secrets, Secret, the grouped sugar, the sealed widgets, types — forwards Results, catches nothing
+  public/                 what you call          Secrets, Secret, the grouped sugar, the export lists (types.dart, widgets.dart) — forwards Results, catches nothing
   crypto/crypto.dart      what it computes       derivers/, signers/, backups/, generator
     derivers/derivers.dart one deriver per library  identity, bitcoin, liquid, bip85, boltz — a static namespace
-    signers/signers.dart  one signer per chain   bitcoin_signer, liquid_signer
+    signers/signers.dart  one signer per chain   bitcoin_signer, liquid_signer, and pset_sighash (the Liquid sighash guard)
     backups/backups.dart  one backup per format  recoverbull — a static namespace
   data/data.dart          where it is kept       the keystore, the two repositories, the one try/catch (boundary.dart)
   domain/domain.dart      what it speaks in      value types, failures
+  widgets/widgets.dart    what the user sees     MnemonicView, MnemonicChallenge, SecretWidgets (`secret.widgets`); SealedWord stays unexported
   testing/testing.dart    the test seam          the in-memory keystore, behind lib/testing.dart — test code only
 ```
 
@@ -230,9 +241,11 @@ Two rules make this real, and both are tests:
   the suite fails. Inside a module, files import each other freely.
 - **Foreign dependencies are confined to the module that owns them.**
   bdk, lwk, boltz and recoverbull live under `crypto/`; the keystore and
-  its federated platform packages under `data/` and `testing/`; `domain/`
-  imports nothing foreign — it is the one directory that needs no device
-  to be verified; `public/` orchestrates and computes nothing.
+  its federated platform packages under `data/` and `testing/`; Flutter
+  under `widgets/`, `data/` and `testing/` (the plugin's
+  `PlatformException`); `domain/` imports nothing foreign — it is the one
+  directory that needs no device to be verified; `public/` orchestrates
+  and computes nothing.
 
 **Derivers are static.** `Deriver.bitcoin.xpub(…)`, `Deriver.bip85.hex(…)`,
 `Deriver.boltz.swapKey(…)`: each is a pure function of material, pinned
@@ -264,23 +277,29 @@ invariant test.
 
 ## How to audit this package
 
-Eight properties carry the boundary, and each is an assertion in
-`test/invariants_test.dart` rather than something to establish by
-reading:
+Ten properties carry the boundary, and each is an assertion rather than
+something to establish by reading — eight in `test/invariants_test.dart`,
+two in `test/internal_seal_test.dart`, which reads the resolved element
+model:
 
 | property | what the test checks |
 |---|---|
-| every failure is built in the data layer | no `SecretFailure` is constructed outside `src/data/boundary.dart` and `src/data/secret_repository.dart`; `public/` catches nothing |
+| every failure is built in the data layer | no `SecretFailure` is constructed outside `src/data/boundary.dart`, `src/data/secret_repository.dart` and `src/data/database_key_repository.dart`; `public/` catches nothing |
 | the grouped API adds nothing | `src/public/extensions.dart` contains no `await`, no collaborator, no statement body |
 | material leaves at four named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey}` — and `revealMnemonic` is `@internal` |
 | the public surface is a literal list | the export graph is walked and compared name for name |
 | the passphrase caveat has one author | `WordsOnly`/`WholeSecret` are constructed only in `SecretInfo.scope` |
 | modules are fronted by their entry point | every cross-module import targets `<module>/<module>.dart` |
-| foreign dependencies stay in their module | bdk/lwk/boltz/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, nothing foreign under `domain/` |
+| foreign dependencies stay in their module | bdk/lwk/boltz/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, nothing foreign under `domain/` |
 | the testing library never reaches production code | nothing under `lib/` imports `package:secrets/testing.dart` or `src/testing/` |
+| nothing unexported is constructible from outside | every public constructor of an unexported class under `lib/src/` is `@internal` — a dot shorthand (`.new()`) builds a type from context alone, without naming or importing it |
+| no exported signature hands out an unexported type | no exported, non-`@internal` member mentions one in its parameters or return type |
 
 The on-disk format never moving is pinned byte for byte by
-`test/secret_model_golden_test.dart`.
+`test/secret_model_golden_test.dart`. `make internal-seal-check`, in
+`make checks` and CI, refuses any `// ignore:` of
+`invalid_use_of_internal_member` in the workspace: `cannot-ignore` does not
+hold that diagnostic on Dart 3.12.2.
 
 So an audit is: run the suite, then read four files —
 `src/public/secret.dart` for what the package does, `src/data/boundary.dart`
@@ -295,7 +314,12 @@ xpub the package derives is checked against bdk deriving the same path
 independently (`test/derivation_mappings_test.dart`). lwk and boltz are
 flutter_rust_bridge plugins with no host library: `liquidDescriptor`,
 `signPset` and `swapKey` are reached only by `integration_test/` on a
-device, and only their pre-FFI refusals are unit-tested.
+device, and only their pre-FFI refusals are unit-tested — the Liquid
+sighash guard among them, which reads the PSET in pure Dart. The swap key
+is pinned from both sides: the host suite checks that the package's BIP85
+child 26589 is boltz's published swap mnemonic
+(`test/swap_key_vector_test.dart`), and the device test checks that
+`swapKey` returns exactly that child.
 
 The repository is the boundary (AGENTS.md, rule 11): every repository
 method returns a `Result`, and `Secret` never holds material — it hands the
@@ -354,7 +378,8 @@ test substitutes the platform, it does not mock the façade. Recorded in
 **Never import `package:secrets/src/...`.** The `src/` tree is private
 and crossing it defeats the package. The app's root `analysis_options.yaml`
 makes `implementation_imports` an **error**, and `invalid_use_of_internal_member`
-— the seal on `Secret.revealMnemonic` — an error too. Workspace members
+— the seal on `Secret.revealMnemonic` and on every constructor the
+package does not export — an error too. Workspace members
 that ship their own options file inherit both at `info`/`warning` from
 `package:lints`; none of them imports this package, and CI's
 `--fatal-infos --fatal-warnings` catches the day one does.
@@ -392,14 +417,13 @@ budget of two is enough everywhere.
 The converse holds too: a value that is present but unreadable is a
 `SecretFetchFailure`, never a `SecretNotFoundFailure` — callers treat
 not-found as "the seed is gone", and a corrupt entry is not that. The
-same goes for a read that throws on its last attempt, and for stored
-words that no longer pass bip39: read failures, not absences. An empty
-string is retried exactly like a null — the plugin has been seen
-returning `""` for an entry that exists. Only a clean `null` on the read
-that was allowed to settle concludes absence. The write side agrees: an
-entry that reads back empty is **occupied**, and `storeSecret` and
-`moveSecret` refuse to write over it exactly as they refuse a value that
-does not parse — the seed twin of the module-key rule, pinned by
+same goes for a read that throws on its last attempt, for a `""` seen on
+any attempt, and for stored words that no longer pass bip39: read
+failures, not absences. Only a clean `null` on the read that was allowed
+to settle, with no `""` before it, concludes absence. The write side
+agrees: an entry that reads back empty is **occupied**, and `storeSecret`
+and `moveSecret` refuse to write over it exactly as they refuse a value
+that does not parse — the seed twin of the module-key rule, pinned by
 `test/fss9_cohort_test.dart` and `test/ownership_test.dart`.
 
 ## The cohort whose secrets are not there
@@ -418,9 +442,10 @@ tell this apart from everything else and says the right thing:
 |---|---|---|
 | nothing under `seed_` | `list()` → `Ok([])`, `fetch` → `SecretNotFoundFailure` after the full retry budget | `MissingDefaultSecretException` at startup → the restore flow, `hasBackup` on |
 | an fss9 value still under `seed_<fp>` | skipped by `list()`; `fetch` → `SecretFetchFailure` | the generic failure — **never** a restore offer, because the bytes may still be recoverable |
+| unmigrated EncryptedSharedPreferences data in the plugin's file | the pinned plugin (10.3.3, `migrateOnAlgorithmChange: false`) refuses to initialise on every call: `list()` and `fetch` → `SecretFetchFailure`, `import` and `databaseKey` → `SecretStoreFailure`, nothing written | the generic failure, as above |
 | the keystore is locked | `SecretStoreLockedFailure` | `KeychainLockedException` → wait for unlock and retry, no screen |
 
-`test/fss9_cohort_test.dart` pins all three, including that nothing is
+`test/fss9_cohort_test.dart` pins the first three — the fake keystore cannot model the plugin refusing to initialise, which is established from the plugin's source — including that nothing is
 ever written over an unreadable entry: a backup is the cohort's way back,
 and an overwrite would remove the only thing that could still be read.
 
@@ -439,6 +464,15 @@ rather than an ordinary-looking call on an object you were given. In a
 single process this is not a hard guarantee; it removes the
 legitimate-looking path, which is the part that matters.
 
+Its Android options — `resetOnError: false`, `migrateOnAlgorithmChange:
+false`, never delete, never migrate — hold only while every
+`FlutterSecureStorage` client in the engine passes the same ones: the
+pinned plugin keeps one native store per preferences name and freezes the
+options of whichever client initialises it first. Today there is one other
+client, the app's `lib/core/storage/storage_locator.dart`, and it passes
+the same options. A new client with the defaults would re-enable
+delete-on-error for the seeds.
+
 That one type also owns the whole keyspace — `seed_<fingerprint>` for
 secrets, `com.bullbitcoin.secrets/<kind>/<package>/<name>` for the keys
 held on other modules' behalf — so both namespaces are read side by side
@@ -446,8 +480,8 @@ in one file. They differ because the first is frozen and predates the
 convention; do not harmonise them.
 
 **One lock, for the composed sequences.** A `static` lock guards the
-package's read-modify-writes — `storeSecret`, `fetchOrCreateModuleKey`,
-`deleteModuleKey` — and nothing else.
+package's read-modify-writes — `storeSecret`, `moveSecret`, `trashSecret`,
+`fetchOrCreateModuleKey`, `deleteModuleKey` — and nothing else.
 Unserialised, two first asks for the same module key each read a miss,
 each generate, and the second write wins: the first caller holds a key
 that opens nothing, and a database nobody can read again. Only holding
@@ -515,3 +549,14 @@ the descriptors, not the transaction history. The bdk wallet is built
 from the BIP39 words with the same `SignOptions` the app's own datasource
 used before the migration — a refactor must not change how signatures
 are produced.
+
+**Neither chain lets a PSBT or PSET choose what the signature commits
+to.** bdk refuses any input whose sighash is not `ALL`
+(`allowAllSighashes: false`). lwk_signer 0.18.0 signs with whatever
+sighash the PSET names, so `signPset` reads every input's
+`PSBT_IN_SIGHASH_TYPE` first, in pure Dart (`crypto/signers/pset_sighash.dart`),
+and refuses anything but absent or `SIGHASH_ALL`, and anything it cannot
+read. PSETs lwk builds for the app leave the field absent. Beyond the
+sighash, the package applies no policy on outputs, fees or inputs: it
+signs the inputs its keys own, and deciding what is acceptable to sign is
+the caller's.

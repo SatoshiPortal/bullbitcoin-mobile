@@ -15,7 +15,7 @@ import 'package:secrets/src/crypto/crypto.dart';
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
-/// ⚠️ A passphrase is honoured by Bitcoin derivation and signing only. Liquid, the swap key and the Backup derive from the words alone, with no warning at runtime. See doc/design.md, § Passphrase.
+/// ⚠️ A passphrase is honoured by Bitcoin derivation and signing and by the swap key. Liquid and the Backup derive from the words alone, and say so with [WordsOnly]. See doc/design.md, § Passphrase.
 final class Secret {
   /// Identity and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
