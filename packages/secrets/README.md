@@ -52,7 +52,7 @@ Every operation returns `Future<Result<…, SecretFailure>>`, and none returns t
 
 ## Three things to know before calling
 
-- **⚠️ Passphrase.** Bitcoin derivation and signing honour it. Liquid, the swap key and the vault derive from the words alone — no Liquid wallet supports a passphrase — and say so in the type: those return a `PassphraseScope`, `WordsOnly` when a passphrase exists but took no part. Pass the passphrase back to `Secrets.restoreVault`.
+- **⚠️ Passphrase.** Bitcoin derivation and signing honour it. Liquid, the swap key and the vault derive from the words alone — no Liquid wallet supports a passphrase — and say so in the type: those return a `PassphraseScope`, `WordsOnly` when a passphrase exists but took no part. Pass the passphrase back to `Secrets.restoreVault`. The app's default wallets are passphrase-less by rule, and several paths depend on it — see [doc/design.md](doc/design.md), § Passphrase, before allowing one.
 - **Failures.** One sealed family, `SecretFailure`. `SecretFetchFailure` is the keystore, `SecretDerivationFailure` is the engine, `SecretStoreLockedFailure` is a sealed keystore — never an absence. Caller misuse is an `ArgumentError`, raised before the boundary.
 - **Tests.** `Secrets` and `Secret` are `final`: a double of the custody boundary is a hole in it. Install an in-memory keystore with `package:secrets/testing.dart` and run the real thing. Test-only — an invariant test fails if anything under `lib/` imports it.
 

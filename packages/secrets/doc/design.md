@@ -56,6 +56,8 @@ has.
 > — same `SecretInfo.mnemonicFingerprint`, different `id` — therefore
 > share a Liquid wallet, and a vault of one restores as the other.
 
+**Default wallets are passphrase-less, by rule.** The app builds its default Bitcoin and Liquid wallets from one secret without a passphrase, and `CreateDefaultWalletsUsecase` takes none. Liquid (lwk derives from the words alone), the RecoverBull vault (words only, key from the passphrased seed), the swap key (released builds derived it from the words alone), BIP85 children and the physical backup check (`verifyWords` compares words only) are correct only because of that. Allowing a passphrase on the defaults starts with lwk supporting one; a passphrase secret today is an imported, non-default wallet.
+
 **Nothing is silent any more.** Both operations return a
 `PassphraseScope<T>`, which is `sealed`, so a caller cannot reach the
 value without meeting the case where the passphrase was left out:
