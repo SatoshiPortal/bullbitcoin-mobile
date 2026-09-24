@@ -284,5 +284,26 @@ void main() {
       expect(storage.entries['seed_00000000'], entry(a));
       expect(storage.entries['seed_$aFingerprint'], isEmpty);
     });
+
+    test(
+      'a single spurious miss on the true identity is not believed',
+      () async {
+        // The destination holds another secret, but its first read comes back
+        // null — the plugin's false-absent. One read is not enough to write
+        // over a key: the repair re-reads, sees the other secret, and refuses.
+        final other = entry(b);
+        final storage = FakeSecureStoragePlatform(
+          entries: {'seed_00000000': entry(a), 'seed_$aFingerprint': other},
+          scripted: [entry(a), null],
+        )..install();
+        final secrets = Secrets(scratchDirectory: () async => '/tmp');
+
+        final result = await secrets.repairIdentity(Fingerprint('00000000'));
+
+        expect(result, isA<Err<Secret, SecretFailure>>());
+        expect(storage.entries['seed_00000000'], entry(a));
+        expect(storage.entries['seed_$aFingerprint'], other);
+      },
+    );
   });
 }

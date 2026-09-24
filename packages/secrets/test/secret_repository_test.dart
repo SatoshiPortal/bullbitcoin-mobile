@@ -324,6 +324,22 @@ void main() {
       );
     });
 
+    test('a single spurious miss before the write is not believed', () async {
+      // The plugin has returned null for keys that exist (#853, #592). One
+      // null before the only irreversible act on the seed namespace would
+      // write over whatever is really there; the store re-reads first.
+      final storage = FakeSecureStoragePlatform(
+        entries: {'seed_$plainFingerprint': entry(underivable)},
+        scripted: [null],
+      );
+
+      expect(
+        err(await repoWith(storage).store(words: words)),
+        isA<SecretStoreFailure>(),
+      );
+      expect(storage.entries['seed_$plainFingerprint'], entry(underivable));
+    });
+
     test('storing the same secret again is allowed', () async {
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);

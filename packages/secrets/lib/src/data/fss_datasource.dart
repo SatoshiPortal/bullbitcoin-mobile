@@ -101,6 +101,16 @@ class FlutterSecureStorageDatasource {
 
   // ------------------------------------------------------------------ secrets
 
+  /// What is stored under [key], read for the decision to write over it.
+  ///
+  /// A single null is not believed before the one irreversible act on the seed namespace: the plugin has returned null for keys that exist (#853, #592 — the reason [fetchSecret] retries). One re-read after [_initialDelay] turns a spurious miss into a hit; a genuine first store pays 300 ms once. The same rule as the module-key create path, under the same lock.
+  Future<String?> _occupant(String key) async {
+    final first = await _readRaw(key);
+    if (first != null) return first;
+    await Future<void>.delayed(_initialDelay);
+    return _readRaw(key);
+  }
+
   /// Writes a secret under its identity, refusing to replace a different one.
   ///
   /// A BIP32 fingerprint is 32 bits, so two secrets can claim the same key. Writing blind would destroy the first without a trace. Re-storing the same secret — a repeated import, a restore of a vault already held — is allowed and rewrites the same bytes.
@@ -114,7 +124,7 @@ class FlutterSecureStorageDatasource {
     final key = keyForSecret(id);
     final json = jsonEncode(secret.toJson());
     return _lock.synchronized(() async {
-      final existing = await _readRaw(key);
+      final existing = await _occupant(key);
       // Any value counts as occupied, an empty one included. The plugin has
       // been seen returning "" for an entry that exists, and the read path
       // already treats that as present-and-unreadable; a write that called it
@@ -214,7 +224,7 @@ class FlutterSecureStorageDatasource {
       if (to == from) return (id: from, model: model);
 
       final toKey = keyForSecret(to);
-      final existing = await _readRaw(toKey);
+      final existing = await _occupant(toKey);
       // Any value counts as occupied, an empty one included. The plugin has
       // been seen returning "" for an entry that exists, and the read path
       // already treats that as present-and-unreadable; a write that called it
