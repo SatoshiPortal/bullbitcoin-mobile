@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/get_price_history_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';

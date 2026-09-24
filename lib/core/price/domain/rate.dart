@@ -11,7 +11,6 @@ enum RateTimelineInterval {
   final String _interval;
   const RateTimelineInterval(this._interval);
 
-  String get enumValue => _interval;
   String get value => _interval;
 
   static RateTimelineInterval fromValue(String value) {

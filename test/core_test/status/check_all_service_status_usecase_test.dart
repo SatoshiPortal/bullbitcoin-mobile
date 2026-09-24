@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
@@ -19,8 +19,8 @@ import 'package:primitives/primitives.dart' show Ok;
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
 
-class _MockExchangeRateRepository extends Mock
-    implements ExchangeRateRepository {}
+class _MockBitcoinPriceRepository extends Mock
+    implements BitcoinPriceRepository {}
 
 class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
@@ -62,9 +62,9 @@ void main() {
     when(
       () => electrum.checkServersInUseAreOnlineForNetwork(any()),
     ).thenAnswer((_) async => true);
-    final exchangeRateRepository = _MockExchangeRateRepository();
+    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
     when(
-      () => exchangeRateRepository.getCurrencyValue(
+      () => bitcoinPriceRepository.getCurrencyValue(
         amountSat: any(named: 'amountSat'),
         currency: any(named: 'currency'),
       ),
@@ -91,7 +91,7 @@ void main() {
     when(() => tor.external).thenReturn(external);
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,
-      exchangeRateRepository: exchangeRateRepository,
+      bitcoinPriceRepository: bitcoinPriceRepository,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: payjoinDiagnostics,
       feesRepository: feesRepository,
@@ -118,9 +118,9 @@ void main() {
       when(
         () => electrum.checkServersInUseAreOnlineForNetwork(any()),
       ).thenAnswer((_) async => true);
-      final exchangeRateRepository = _MockExchangeRateRepository();
+      final bitcoinPriceRepository = _MockBitcoinPriceRepository();
       when(
-        () => exchangeRateRepository.getCurrencyValue(
+        () => bitcoinPriceRepository.getCurrencyValue(
           amountSat: any(named: 'amountSat'),
           currency: any(named: 'currency'),
         ),
@@ -151,7 +151,7 @@ void main() {
       );
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
-        exchangeRateRepository: exchangeRateRepository,
+        bitcoinPriceRepository: bitcoinPriceRepository,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
@@ -178,9 +178,9 @@ void main() {
       when(
         () => electrum.checkServersInUseAreOnlineForNetwork(any()),
       ).thenAnswer((_) async => true);
-      final exchangeRateRepository = _MockExchangeRateRepository();
+      final bitcoinPriceRepository = _MockBitcoinPriceRepository();
       when(
-        () => exchangeRateRepository.getCurrencyValue(
+        () => bitcoinPriceRepository.getCurrencyValue(
           amountSat: any(named: 'amountSat'),
           currency: any(named: 'currency'),
         ),
@@ -208,7 +208,7 @@ void main() {
       );
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
-        exchangeRateRepository: exchangeRateRepository,
+        bitcoinPriceRepository: bitcoinPriceRepository,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
@@ -241,9 +241,9 @@ void main() {
           Network.liquidMainnet,
         ),
       ).thenAnswer((_) async => true);
-      final exchangeRateRepository = _MockExchangeRateRepository();
+      final bitcoinPriceRepository = _MockBitcoinPriceRepository();
       when(
-        () => exchangeRateRepository.getCurrencyValue(
+        () => bitcoinPriceRepository.getCurrencyValue(
           amountSat: any(named: 'amountSat'),
           currency: any(named: 'currency'),
         ),
@@ -266,7 +266,7 @@ void main() {
 
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
-        exchangeRateRepository: exchangeRateRepository,
+        bitcoinPriceRepository: bitcoinPriceRepository,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
@@ -311,9 +311,9 @@ void main() {
       () =>
           electrum.checkServersInUseAreOnlineForNetwork(Network.liquidMainnet),
     ).thenAnswer((_) async => true);
-    final exchangeRateRepository = _MockExchangeRateRepository();
+    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
     when(
-      () => exchangeRateRepository.getCurrencyValue(
+      () => bitcoinPriceRepository.getCurrencyValue(
         amountSat: any(named: 'amountSat'),
         currency: any(named: 'currency'),
       ),
@@ -335,7 +335,7 @@ void main() {
     final updates = <AllServicesStatus>[];
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,
-      exchangeRateRepository: exchangeRateRepository,
+      bitcoinPriceRepository: bitcoinPriceRepository,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
       feesRepository: feesRepository,
@@ -370,9 +370,9 @@ void main() {
           Network.liquidMainnet,
         ),
       ).thenAnswer((_) async => throw Exception('Electrum probe failed'));
-      final exchangeRateRepository = _MockExchangeRateRepository();
+      final bitcoinPriceRepository = _MockBitcoinPriceRepository();
       when(
-        () => exchangeRateRepository.getCurrencyValue(
+        () => bitcoinPriceRepository.getCurrencyValue(
           amountSat: any(named: 'amountSat'),
           currency: any(named: 'currency'),
         ),
@@ -394,7 +394,7 @@ void main() {
 
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
-        exchangeRateRepository: exchangeRateRepository,
+        bitcoinPriceRepository: bitcoinPriceRepository,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
@@ -418,9 +418,9 @@ void main() {
       () =>
           electrum.checkServersInUseAreOnlineForNetwork(Network.bitcoinMainnet),
     ).thenAnswer((_) async => throw StateError('Electrum probe failed'));
-    final exchangeRateRepository = _MockExchangeRateRepository();
+    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
     when(
-      () => exchangeRateRepository.getCurrencyValue(
+      () => bitcoinPriceRepository.getCurrencyValue(
         amountSat: any(named: 'amountSat'),
         currency: any(named: 'currency'),
       ),
@@ -442,7 +442,7 @@ void main() {
 
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,
-      exchangeRateRepository: exchangeRateRepository,
+      bitcoinPriceRepository: bitcoinPriceRepository,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
       feesRepository: feesRepository,
