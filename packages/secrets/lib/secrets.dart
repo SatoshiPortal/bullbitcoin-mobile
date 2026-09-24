@@ -23,7 +23,7 @@
 /// secret.widgets.mnemonicView(onFailure: (context, failure) => …);
 /// ```
 ///
-/// Every operation returns `Future<Result<…, SecretFailure>>` and none returns the stored words; the three that hand back derived material — `bip85.hex`, `bip85.mnemonic`, `swapKey` — are the whole list. ⚠️ Liquid, the swap key and the vault derive from the words alone: those return a [PassphraseScope]. The README is the short version of this; `doc/design.md` holds the contract and how to audit it.
+/// Every operation returns `Future<Result<…, SecretFailure>>` and none returns the stored words; the three that hand back derived material — `bip85.hex`, `bip85.mnemonic`, `swapKey` — are the whole list. ⚠️ Liquid and the vault derive from the words alone: `descriptors.liquid` and `backup.vault` return a [PassphraseScope]. Bitcoin and the swap key honour the passphrase. The README is the short version of this; `doc/design.md` holds the contract and how to audit it.
 ///
 /// This file *is* the surface: explicit `show` lists, so what is public is decided here and nowhere else. The failures a caller handles come through `types.dart`, the sealed widgets through `widgets.dart`; the invariant test pins the exact set of names.
 library;

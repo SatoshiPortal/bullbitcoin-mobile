@@ -59,7 +59,7 @@ final class LiquidSigner {
     final parent = Directory(await scratchDirectory());
     // A process killed mid-signature leaves its directory behind, and the
     // parent's own purge policy is the OS's, not ours. Sweep stale siblings
-    // before adding one: anything older than an hour cannot be a signature
+    // before adding one: anything older than ten minutes cannot be a signature
     // still in flight, so this races with nothing. Best-effort — a sweep
     // that fails must not fail the signature.
     await sweepStale(parent);
