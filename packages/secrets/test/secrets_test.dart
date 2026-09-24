@@ -543,6 +543,27 @@ void main() {
       );
     });
 
+    test('a PSET asking for SIGHASH_NONE is refused before lwk', () async {
+      // lwk_signer signs with the sighash the PSET asks for; the package
+      // refuses first. The PSET below is one input with sighash 0x02 —
+      // reaching lwk here would crash, lwk has no host library.
+      final secrets = secretsWith(
+        FakeSecureStoragePlatform(entries: {'seed_73c5da0a': mnemonicEntry}),
+      );
+      final secret =
+          (await secrets.fetch(id) as Ok<Secret, SecretFailure>).value;
+
+      final result = await secret.sign.pset(
+        'cHNldP8BAgQCAAAAAQQBAQEFAQAB+wQCAAAAAAEDBAIAAAAA',
+        network: LiquidNetwork.mainnet,
+      );
+
+      expect(
+        (result as Err<String, SecretFailure>).failure,
+        isA<SecretDerivationFailure>(),
+      );
+    });
+
     test('Liquid regtest is refused rather than signed on testnet', () async {
       // A signature produced against testnet's chain would be valid for
       // the wrong chain — worse than a refusal.
