@@ -50,9 +50,7 @@ import 'package:bull_logs/bull_logs.dart';
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
-  static GoRoute route({
-    required DefaultWalletsFacade defaultWalletsFacade,
-  }) => GoRoute(
+  static final route = GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
@@ -94,7 +92,7 @@ class SettingsRouter {
         path: SettingsRoute.exchangeSecurity.path,
         builder: (context, state) => const ExchangeSecurityScreen(),
       ),
-      DefaultWalletsRouter.route(facade: defaultWalletsFacade),
+      DefaultWalletsRouter.route,
       GoRoute(
         name: SettingsRoute.exchangeAppSettings.name,
         path: SettingsRoute.exchangeAppSettings.path,
