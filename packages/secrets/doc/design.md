@@ -373,7 +373,22 @@ red, the on-disk format moved.
 has been observed reporting an entry as empty or absent instead of
 raising. A false "present" is a benign read error; a false "absent" tells
 the user their wallet is gone. That is why there is no existence check to
-trust and why a genuine miss costs the full retry backoff.
+trust, and why every read that decides something goes through one primitive,
+`_settle`: a null or a `""` is re-read, a `""` anywhere is sticky (the key
+exists), a read that keeps throwing is a read failure, and a locked keystore
+passes through at once. It has two budgets, because a re-read only costs when
+the answer is "absent":
+
+| budget | where | reads | worst case | why |
+|---|---|---|---|---|
+| `settled` | `fetch`, `existingDatabaseKey` | 5, 300 ms doubling | ~4.5 s | outside the lock; absence is exceptional, so only a genuine miss pays |
+| `underLock` | `import`/`generate`/`restoreVault`, `repairIdentity` (source and destination), the first `databaseKey` | 2, 300 ms apart | 300 ms | inside a composed write, where absence is the normal outcome of a first store; the full budget would add ~4.5 s to every new secret and hold every other composed operation behind it |
+
+Two reads stay outside it on purpose. `exists` is one read: a false "no"
+lets a duplicate import reach `storeSecret`, which settles on its own. `list`
+is one `readAll`, with no retry. Every rescue logs `RETRY_RESCUE` with its
+attempt number and budget: if rescues never come after the second read, one
+budget of two is enough everywhere.
 The converse holds too: a value that is present but unreadable is a
 `SecretFetchFailure`, never a `SecretNotFoundFailure` — callers treat
 not-found as "the seed is gone", and a corrupt entry is not that. The

@@ -79,7 +79,6 @@ class FlutterSecureStorageDatasource {
   /// silently regress the whole locked/absent distinction.
   static const _errSecInteractionNotAllowed = -25308;
 
-  static const _maxRetries = 5;
   static const _initialDelay = Duration(milliseconds: 300);
 
   final FlutterSecureStorage _storage;
@@ -101,16 +100,6 @@ class FlutterSecureStorageDatasource {
 
   // ------------------------------------------------------------------ secrets
 
-  /// What is stored under [key], read for the decision to write over it.
-  ///
-  /// A single null is not believed before the one irreversible act on the seed namespace: the plugin has returned null for keys that exist (#853, #592 — the reason [fetchSecret] retries). One re-read after [_initialDelay] turns a spurious miss into a hit; a genuine first store pays 300 ms once. The same rule as the module-key create path, under the same lock.
-  Future<String?> _occupant(String key) async {
-    final first = await _readRaw(key);
-    if (first != null) return first;
-    await Future<void>.delayed(_initialDelay);
-    return _readRaw(key);
-  }
-
   /// Writes a secret under its identity, refusing to replace a different one.
   ///
   /// A BIP32 fingerprint is 32 bits, so two secrets can claim the same key. Writing blind would destroy the first without a trace. Re-storing the same secret — a repeated import, a restore of a vault already held — is allowed and rewrites the same bytes.
@@ -124,13 +113,18 @@ class FlutterSecureStorageDatasource {
     final key = keyForSecret(id);
     final json = jsonEncode(secret.toJson());
     return _lock.synchronized(() async {
-      final existing = await _occupant(key);
-      // Any value counts as occupied, an empty one included. The plugin has
-      // been seen returning "" for an entry that exists, and the read path
-      // already treats that as present-and-unreadable; a write that called it
-      // absent would land on the one entry this class refuses to read.
-      // `_holdsSameSecret` refuses whatever does not parse, so nothing else
-      // is needed here.
+      // Any value counts as occupied, an empty one included: "" is a key
+      // that exists and did not answer, and a write that called it absent
+      // would land on the one entry this class refuses to read.
+      final existing = switch (await _settle(
+        key,
+        budget: _ReadBudget.underLock,
+        label: 'secret $id',
+      )) {
+        _Found(:final value) => value,
+        _Empty() => '',
+        _Absent() => null,
+      };
       if (existing != null) {
         if (!await _holdsSameSecret(existing, secret, seedOf)) {
           throw SecretIdentityConflict(
@@ -181,17 +175,26 @@ class FlutterSecureStorageDatasource {
 
   /// Reads one secret. Returns `null` only for a clean miss on the read that was allowed to settle; a last read that threw, or came back empty, propagates.
   ///
-  /// The retry loop exists because two upstream failure modes produce a `null` for a key that exists (#853, #592). Believing a `null` is asymmetric — a false "present" is a benign read error, a false "absent" tells the user their wallet is gone — so a genuine miss costs the full backoff and there is no fast path for it. See doc/design.md, § Absence.
+  /// Read with the [_ReadBudget.settled] budget: a plain read, where absence is exceptional, so a genuine miss costs the full backoff and there is no fast path for it. See [_settle] and doc/design.md, § Absence.
   ///
   /// [SecretStoreLockedException] passes through untouched: a sealed keystore is not an absence, and retrying cannot unseal it.
   Future<SecretModel?> fetchSecret(Fingerprint id) async {
-    final json = await _readGuarded(keyForSecret(id), label: 'secret $id');
-    return json == null ? null : SecretModel.fromJson(json);
+    return switch (await _settle(
+      keyForSecret(id),
+      budget: _ReadBudget.settled,
+      label: 'secret $id',
+    )) {
+      _Found(:final value) => SecretModel.fromJson(decodeJson(value)),
+      // The key is there — a missing key reads as null, not "" — but its
+      // value never came. Nothing this package writes is empty.
+      _Empty() => throw const FormatException('stored value is empty'),
+      _Absent() => null,
+    };
   }
 
   /// Whether an entry exists, in a single read.
   ///
-  /// Deliberately skips the retry loop [fetchSecret] runs. That loop
+  /// Deliberately skips [_settle], which [fetchSecret] runs. That loop
   /// exists because a false "absent" on a seed read tells a user their
   /// wallet is gone; here a false "absent" lets a duplicate import
   /// through, which the import flow then rejects on its own. The costs
@@ -214,27 +217,33 @@ class FlutterSecureStorageDatasource {
   }) {
     final fromKey = keyForSecret(from);
     return _lock.synchronized(() async {
-      // `_readRaw`, not the retry loop: a false "absent" here costs a retry of
-      // the repair, never a wallet, and the lock must not be held for the
-      // ~4.5 s the loop can take.
-      final raw = await _readRaw(fromKey);
+      final raw = switch (await _settle(
+        fromKey,
+        budget: _ReadBudget.underLock,
+        label: 'secret $from',
+      )) {
+        _Found(:final value) => value,
+        // A key that exists and did not answer is not an absence: reporting
+        // not-found would say the seed is gone.
+        _Empty() => throw const FormatException('stored value is empty'),
+        _Absent() => null,
+      };
       if (raw == null) return null;
-      // "" is a key that exists and did not answer, not an absence: the
-      // read path says so, and reporting not-found would say the seed is
-      // gone. Refused as a read of something that is not ours to move.
-      if (raw.isEmpty) throw const FormatException('stored value is empty');
       final model = SecretModel.fromJson(decodeJson(raw));
       final to = await identify(model);
       if (to == from) return (id: from, model: model);
 
       final toKey = keyForSecret(to);
-      final existing = await _occupant(toKey);
-      // Any value counts as occupied, an empty one included. The plugin has
-      // been seen returning "" for an entry that exists, and the read path
-      // already treats that as present-and-unreadable; a write that called it
-      // absent would land on the one entry this class refuses to read.
-      // `_holdsSameSecret` refuses whatever does not parse, so nothing else
-      // is needed here.
+      // Occupied as in [storeSecret]: any value, an empty one included.
+      final existing = switch (await _settle(
+        toKey,
+        budget: _ReadBudget.underLock,
+        label: 'secret $to',
+      )) {
+        _Found(:final value) => value,
+        _Empty() => '',
+        _Absent() => null,
+      };
       if (existing != null) {
         if (!await _holdsSameSecret(existing, model, seedOf)) {
           throw SecretIdentityConflict(
@@ -277,7 +286,7 @@ class FlutterSecureStorageDatasource {
   ///
   /// Read and create are one locked operation because they must be atomic: unserialised, two first asks each read a miss, each generate, and the second write wins — the first caller then holds a key that opens nothing.
   ///
-  /// **Only a clean `null` creates.** Anything present but unusable is a [ModuleKeyCorruptException] and the bytes are left exactly as they are: regenerating over them is the one irreversible act available here. The opposite of the seed namespace, where a bad value is skipped — there, one entry must not hide the others; here there is nothing to hide and something to lose. No retry loop either, for the same reason. See doc/design.md, § Database keys.
+  /// **Only a clean `null` creates.** Anything present but unusable is a [ModuleKeyCorruptException] and the bytes are left exactly as they are: regenerating over them is the one irreversible act available here. The opposite of the seed namespace, where a bad value is skipped — there, one entry must not hide the others; here there is nothing to hide and something to lose. The read settles under the lock with the [_ReadBudget.underLock] budget before a miss is believed. See doc/design.md, § Database keys.
   ///
   /// Generation is the caller's: this type holds no randomness and no crypto, only the keyspace and the lock.
   Future<KeyModel> fetchOrCreateModuleKey({
@@ -290,24 +299,23 @@ class FlutterSecureStorageDatasource {
     // Taken once, around the whole read-modify-write. See the class doc:
     // nothing inside may take it again.
     return _lock.synchronized(() async {
-      // A single `null` is not believed before the one irreversible act here
-      // — generating over a key that exists. The plugin has returned null for
-      // present entries (K1, Codex 2026-09-17; the seed path retries for the
-      // same reason). One re-read after a pause turns a spurious miss into a
-      // hit; a genuine first ask pays 300 ms once per module key.
-      var existing = await _readRaw(key);
-      if (existing == null) {
-        await Future<void>.delayed(_initialDelay);
-        existing = await _readRaw(key);
-      }
+      // Generating over a key that exists is the one irreversible act here,
+      // so the read settles first (K1, Codex 2026-09-17).
+      final existing = switch (await _settle(
+        key,
+        budget: _ReadBudget.underLock,
+        label: 'module key $key',
+      )) {
+        _Found(:final value) => value,
+        // Nothing this package writes is empty: the entry exists and its
+        // value did not come back.
+        _Empty() => throw ModuleKeyCorruptException(
+          'module key at $key is empty',
+        ),
+        _Absent() => null,
+      };
 
       if (existing != null) {
-        if (existing.isEmpty) {
-          // A missing key reads as null, not "". Nothing this package
-          // writes is empty, so the entry exists and its value did not
-          // come back.
-          throw ModuleKeyCorruptException('module key at $key is empty');
-        }
         try {
           return KeyModel.fromJson(
             decodeJson(existing),
@@ -343,19 +351,28 @@ class FlutterSecureStorageDatasource {
     final key = keyForModule(kind: kind, package: package, name: name);
     // One contract for "present but unusable", whatever the shape — empty,
     // not JSON, or JSON that is not a key: [ModuleKeyCorruptException], as
-    // in [fetchOrCreateModuleKey]. `_readGuarded` reports the first two as
-    // `FormatException` after its retries; they are re-labelled here so the
-    // caller never sees a read failure where the remedy is a corrupt-key one.
-    final Map<String, dynamic>? json;
+    // in [fetchOrCreateModuleKey], so the caller never sees a read failure
+    // where the remedy is a corrupt-key one.
+    final raw = switch (await _settle(
+      key,
+      budget: _ReadBudget.settled,
+      label: 'module key $key',
+    )) {
+      _Found(:final value) => value,
+      _Empty() => throw ModuleKeyCorruptException(
+        'module key at $key is empty',
+      ),
+      _Absent() => null,
+    };
+    if (raw == null) return null;
     try {
-      json = await _readGuarded(key, label: 'module key $key');
+      return KeyModel.fromJson(
+        decodeJson(raw),
+        expectedName: key,
+        expectedKind: kind,
+      );
     } on FormatException catch (e) {
-      throw ModuleKeyCorruptException('module key at $key: ${e.message}');
-    }
-    if (json == null) return null;
-    try {
-      return KeyModel.fromJson(json, expectedName: key, expectedKind: kind);
-    } on FormatException catch (e) {
+      // `e.message` is one of `KeyModel`'s or `decodeJson`'s fixed strings.
       throw ModuleKeyCorruptException('module key at $key: ${e.message}');
     }
   }
@@ -372,28 +389,33 @@ class FlutterSecureStorageDatasource {
 
   // ------------------------------------------------------------- shared core
 
-  /// Reads through the retry loop, for values whose absence must be
-  /// trustworthy. See [fetchSecret] for why.
-  Future<Map<String, dynamic>?> _readGuarded(
+  /// Reads [key] until the answer can be believed, within [budget].
+  ///
+  /// The one place this class decides that a key is absent. Two upstream failure modes return `null` for a key that exists (#853, #592), and `""` is the plugin's other false face, so neither is believed on one read: both are re-read, and a thrown read is retried like them. Believing a null is asymmetric — a false "present" is a benign read error, a false "absent" either tells the user their wallet is gone or lets a write land on it — so there is no fast path for a miss.
+  ///
+  /// - a non-empty value on any attempt is [_Found];
+  /// - a `""` on any attempt, with no value after it, is [_Empty] — sticky: the key exists, and a later null does not un-prove it;
+  /// - a clean `null` on the read allowed to settle, with no `""` before it, is [_Absent];
+  /// - a last read that threw rethrows, logged: a keystore that keeps failing is a read failure, never an absence.
+  ///
+  /// [SecretStoreLockedException] passes through at once: a sealed keystore is not an absence, and retrying cannot unseal it. Only [Exception]s are retried; an [Error] propagates (AGENTS.md, rule 11). See doc/design.md, § Absence, for the two budgets.
+  Future<_Settled> _settle(
     String key, {
+    required _ReadBudget budget,
     required String label,
   }) async {
     Object? lastError;
     StackTrace? lastTrace;
-    // Sticky: one "" anywhere in the loop proves the key exists, and a
-    // later null does not un-prove it.
     var sawEmpty = false;
 
-    for (var attempt = 0; attempt < _maxRetries; attempt++) {
+    for (var attempt = 0; attempt < budget.attempts; attempt++) {
       String? value;
       try {
         value = await _readRaw(key);
         lastError = null;
       } on SecretStoreLockedException {
-        // Retrying cannot help: the lock clears on user unlock, not on backoff. Let the typed exception reach the UI.
         rethrow;
       } on Exception catch (e, st) {
-        // `Exception` only: the loop exists to outlive a transient plugin failure, not to hide a programmer error. An `Error` propagates at once (AGENTS.md, rule 11).
         lastError = e;
         lastTrace = st;
         log.fine(
@@ -403,50 +425,32 @@ class FlutterSecureStorageDatasource {
       }
       if (value != null && value.isEmpty) sawEmpty = true;
 
-      // Empty is the other face of the false-absent bug — the plugin has
-      // been seen returning "" for an entry that exists — and is retried
-      // exactly like null. Only a non-empty value is a value.
       if (value != null && value.isNotEmpty) {
         if (attempt > 0) {
-          // Deliberately louder than the rest of this loop. This line is
-          // the evidence that decides whether the loop still earns its
-          // ~4.5s: if it never appears in the field, the loop goes.
-          log.warning('RETRY_RESCUE: $label read on attempt ${attempt + 1}');
+          // Deliberately louder than the rest of this loop. The attempt
+          // number is the evidence that sets the budgets: if rescues never
+          // come after the second read, one budget of two is enough.
+          log.warning(
+            'RETRY_RESCUE: $label read on attempt ${attempt + 1} '
+            '(${budget.name})',
+          );
         }
-        // Decoding is outside the retry on purpose. A value that is
-        // present but is not JSON will not become JSON on the next read,
-        // and it must not be reported as an absence either: the
-        // exception propagates, and the façade reports a read failure —
-        // never a not-found, which callers treat as "the seed is gone".
-        return decodeJson(value);
+        return _Found(value);
       }
 
-      if (attempt == _maxRetries - 1) break;
-      await Future<void>.delayed(_initialDelay * (1 << attempt));
+      if (attempt == budget.attempts - 1) break;
+      await Future<void>.delayed(budget.delayBefore(attempt + 1));
     }
 
     if (lastError != null && lastTrace != null) {
-      // The last read threw. That is not a read that found nothing:
-      // absence is concluded from a clean null only, and a keystore that
-      // keeps failing is reported as a read failure, never as a missing
-      // seed. Earlier failures followed by a clean null still count as
-      // absence — the read that was allowed to settle came back empty.
       log.severe(
-        message: 'Failed to read $label after $_maxRetries attempts',
+        message: 'Failed to read $label after ${budget.attempts} attempts',
         error: describeSafely(lastError),
         trace: lastTrace,
       );
       Error.throwWithStackTrace(lastError, lastTrace);
     }
-    if (sawEmpty) {
-      // The key is there — a missing key reads as null, not "" — but its
-      // value never came, on any attempt. Nothing this package writes is
-      // empty, so this is an entry that cannot be read, and it is reported
-      // as such: never as an absence, whatever the last read returned.
-      throw const FormatException('stored value is empty');
-    }
-
-    return null;
+    return sawEmpty ? const _Empty() : const _Absent();
   }
 
   /// Decodes a stored value, or throws [FormatException].
@@ -560,3 +564,44 @@ StoredListing _parseAll(Map<String, String> entries) {
 /// `CheckForExistingDefaultWalletsUsecase` read a transient,
 /// self-healing state as "the wallet seed is gone" and offer destructive
 /// recovery.
+
+/// How long [FlutterSecureStorageDatasource._settle] may insist before a null counts as an absence.
+///
+/// Two budgets, one mechanism. A re-read only costs when the answer is "absent", so the budget follows where absence is the normal outcome. See doc/design.md, § Absence.
+enum _ReadBudget {
+  /// Plain reads, outside the lock, where absence is exceptional: five reads, 300 ms doubling, ~4.5 s at worst — paid only by a genuine miss.
+  settled(attempts: 5, doubling: true),
+
+  /// Reads inside a composed write, under the lock, where absence is the normal outcome of a first store: two reads 300 ms apart. The full budget would add ~4.5 s to every new secret and hold every other composed operation behind it.
+  underLock(attempts: 2, doubling: false);
+
+  const _ReadBudget({required this.attempts, required this.doubling});
+
+  final int attempts;
+  final bool doubling;
+
+  /// The pause before [attempt] (1-based after the first read).
+  Duration delayBefore(int attempt) => doubling
+      ? FlutterSecureStorageDatasource._initialDelay * (1 << (attempt - 1))
+      : FlutterSecureStorageDatasource._initialDelay;
+}
+
+/// What a settled read concluded.
+sealed class _Settled {
+  const _Settled();
+}
+
+final class _Found extends _Settled {
+  final String value;
+
+  const _Found(this.value);
+}
+
+/// The key exists and its value never came.
+final class _Empty extends _Settled {
+  const _Empty();
+}
+
+final class _Absent extends _Settled {
+  const _Absent();
+}

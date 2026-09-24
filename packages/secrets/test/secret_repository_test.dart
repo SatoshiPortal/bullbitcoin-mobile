@@ -340,6 +340,23 @@ void main() {
       expect(storage.entries['seed_$plainFingerprint'], entry(underivable));
     });
 
+    test(
+      'a read that fails once under the lock is retried, not fatal',
+      () async {
+        // The composed writes read through the same settling primitive as
+        // fetch: a transient plugin failure is retried within the budget.
+        final storage = FakeSecureStoragePlatform(
+          scripted: [Exception('flaky keystore')],
+        );
+
+        expect(
+          ok(await repoWith(storage).store(words: words)).id.hex,
+          plainFingerprint,
+        );
+        expect(storage.entries['seed_$plainFingerprint'], entry(words));
+      },
+    );
+
     test('storing the same secret again is allowed', () async {
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);
@@ -662,6 +679,20 @@ void main() {
         first.hex,
         reason: 'the old key must still open its database',
       );
+    });
+
+    test('a single empty read does not make an existing key corrupt', () async {
+      // "" is the plugin's other false face. On the create path it used to
+      // be refused as corrupt on the first read — a spurious failure with a
+      // destructive remedy. It now settles like a null: re-read once.
+      final storage = FakeSecureStoragePlatform();
+      final keys = keysWith(storage);
+      final first = ok(await keys.forModule(package: 'swaps', name: 'main'));
+
+      storage.scripted.add(''); // one spurious empty read
+      final again = ok(await keys.forModule(package: 'swaps', name: 'main'));
+
+      expect(again.hex, first.hex);
     });
 
     test(
