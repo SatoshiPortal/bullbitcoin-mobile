@@ -151,7 +151,7 @@ passphrase and run 256 000 PBKDF2 rounds over it on every open.
 
 ## The exits
 
-Material leaves through three methods, and none of them is the stored
+The README's operation table is the full inventory — every output, whether it can spend, and what it reveals. The material among them leaves through three methods, and none of them is the stored
 mnemonic:
 
 | | |
