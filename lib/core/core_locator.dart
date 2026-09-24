@@ -82,14 +82,14 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
-    // One instance per process, as a lazy singleton: the package's lock is process-wide, but its scratch directory and its logging context are per instance. The host supplies nothing about storage.
+    // One instance per process, as a lazy singleton: its scratch directory and its logging context are per instance. The package's lock is per isolate; the WorkManager isolate builds its own instance and must not write the keystore. The host supplies nothing about storage.
     //
     // The temporary directory, not the documents one. Signing a PSET makes lwk
     // write its wallet cache — which carries a Liquid confidential descriptor,
     // and so the seed-derived SLIP-77 blinding key — into a fresh directory
     // under this path, removed in a finally. A process killed mid-signature
-    // leaves one behind, and nothing sweeps them, so the choice of parent is
-    // what bounds the residue: the OS purges its temporary directory and,
+    // leaves one behind; the package sweeps `lwk_sign_*` older than ten
+    // minutes, and the choice of parent bounds what the sweep misses: the OS purges its temporary directory and,
     // on iOS, excludes it from backups independently of anything this app
     // does. The documents directory is neither purged nor independently
     // excluded — it relies on a single try? in AppDelegate that fails open.
