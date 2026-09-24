@@ -5,11 +5,13 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// How a secret gets its identity: words → seed → BIP32 master fingerprint.
 ///
 /// Pure, and the only place this computation lives. `data/` files a secret under the fingerprint this returns and checks it on the way back out; neither step derives anything itself. Reached as `Deriver.identity`.
 final class IdentityDeriver {
+  @internal
   const IdentityDeriver();
 
   /// The BIP39 seed of [words] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.

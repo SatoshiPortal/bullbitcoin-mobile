@@ -12,6 +12,7 @@ import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/data/models/key_model.dart';
 import 'package:secrets/src/data/models/secret_model.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// A stored entry, paired with the identity it was filed under.
 ///
@@ -83,6 +84,7 @@ class FlutterSecureStorageDatasource {
 
   final FlutterSecureStorage _storage;
 
+  @internal
   FlutterSecureStorageDatasource()
     : _storage = const FlutterSecureStorage(
         aOptions: AndroidOptions(

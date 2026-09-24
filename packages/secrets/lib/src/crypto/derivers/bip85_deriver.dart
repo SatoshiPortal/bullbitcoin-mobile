@@ -3,6 +3,7 @@ import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/derivers/bitcoin_deriver.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// BIP85 children of a secret. Reached as `Deriver.bip85`.
 ///
@@ -10,6 +11,7 @@ import 'package:secrets/src/domain/domain.dart';
 /// package: handing the xprv out to let the app derive would be handing
 /// out the seed in another encoding.
 final class Bip85Deriver {
+  @internal
   const Bip85Deriver();
 
   /// The xprv BIP85 derives from — always the mainnet encoding.

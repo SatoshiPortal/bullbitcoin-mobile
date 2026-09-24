@@ -24,6 +24,8 @@
 /// from as `expectedName`.
 library;
 
+import 'package:meta/meta.dart';
+
 /// What a stored key is for. The first segment of its storage key, and a field of its envelope; a read refuses a key of another kind.
 ///
 /// An enum so that the set of kinds is closed and a typo is a compile error, with the wire name kept apart so that adding a kind never renames one already on disk.
@@ -65,6 +67,7 @@ class KeyModel {
   final String bytesHex;
   final DateTime createdAt;
 
+  @internal
   const KeyModel({
     required this.version,
     required this.kind,
@@ -73,6 +76,7 @@ class KeyModel {
     required this.createdAt,
   });
 
+  @internal
   KeyModel.dek({
     required this.name,
     required this.bytesHex,
@@ -92,6 +96,7 @@ class KeyModel {
   ///
   /// [expectedName] and [expectedKind] are what the caller looked up; a
   /// mismatch means the value moved, or was never ours.
+  @internal
   factory KeyModel.fromJson(
     Map<String, dynamic> json, {
     required String expectedName,

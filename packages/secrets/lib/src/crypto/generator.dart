@@ -12,6 +12,8 @@ import 'package:secrets/src/domain/domain.dart' show MnemonicWordCount;
 /// dependency and is probably fine, but it changes how every new wallet
 /// in the app is born and deserves its own change and its own review.
 class Generator {
+  const Generator._();
+
   static List<String> mnemonic({
     MnemonicWordCount wordCount = MnemonicWordCount.words12,
   }) {
