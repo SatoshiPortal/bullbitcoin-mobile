@@ -6,6 +6,7 @@ import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart';
 import 'package:secrets/src/crypto/derivers/identity_deriver.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
+import 'package:meta/meta.dart';
 
 /// The RecoverBull vault: seals and opens it, and derives the BIP85 key
 /// behind it. The sealed result is an `EncryptedVault`. Reached as
@@ -22,6 +23,7 @@ import 'package:secrets/src/crypto/exceptions.dart';
 /// words under [_kMnemonic] alongside whatever the caller adds, and the
 /// encrypted file carries its own derivation path under `path`.
 final class RecoverBullBackup {
+  @internal
   const RecoverBullBackup();
 
   /// BIP85 application number RecoverBull reserves for backup keys.

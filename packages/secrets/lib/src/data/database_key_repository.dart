@@ -6,6 +6,7 @@ import 'package:secrets/src/data/boundary.dart';
 import 'package:secrets/src/data/fss_datasource.dart';
 import 'package:secrets/src/data/models/key_model.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// The encryption keys this package holds on other modules' behalf.
 ///
@@ -16,6 +17,7 @@ class DatabaseKeyRepository {
 
   final _source = FlutterSecureStorageDatasource();
 
+  @internal
   DatabaseKeyRepository();
 
   /// The database key for one package, generated on first ask.

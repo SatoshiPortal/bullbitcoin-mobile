@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/secret_info.dart';
+import 'package:meta/meta.dart';
 
 /// The secret itself: live key material.
 ///
@@ -61,6 +62,7 @@ final class MnemonicMaterial extends SecretMaterial {
   @override
   final Uint8List seedBytes;
 
+  @internal
   const MnemonicMaterial({
     required this.id,
     required this.mnemonicFingerprint,
@@ -87,6 +89,7 @@ final class SeedMaterial extends SecretMaterial {
   @override
   final Uint8List seedBytes;
 
+  @internal
   const SeedMaterial({required this.id, required this.seedBytes});
 
   @override
