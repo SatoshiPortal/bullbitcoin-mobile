@@ -25,6 +25,8 @@ final class Secret {
   /// The host's scratch directory, which Liquid signing writes under.
   final Future<String> Function() _scratchDirectory;
 
+  /// Built only by [Secrets] — `fetch`, `list`, `generate`, `import`. The parameter types are not exported, but a dot shorthand (`repository: .new()`) would build them from context alone, so the constructor itself is the seal.
+  @internal
   const Secret(
     this.info, {
     required this._repository,

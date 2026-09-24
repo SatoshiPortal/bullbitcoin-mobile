@@ -1,6 +1,7 @@
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// The swap key boltz derives from a wallet. Reached as `Deriver.boltz`.
 ///
@@ -8,6 +9,7 @@ import 'package:secrets/src/domain/domain.dart';
 /// delegated credential — a separate mnemonic that `swaps` stores and
 /// signs with on its own. See doc/design.md, § Modules.
 final class BoltzDeriver {
+  @internal
   const BoltzDeriver();
 
   /// The dedicated swap key for [secret].

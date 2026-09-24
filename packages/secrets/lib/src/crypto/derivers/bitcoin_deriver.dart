@@ -2,6 +2,7 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// Public descriptors for both keychains of a wallet.
 typedef Descriptors = ({String external, String internal});
@@ -11,6 +12,7 @@ typedef Descriptors = ({String external, String internal});
 /// Works from the seed, so a bytes-only secret serves it. Reached as
 /// `Deriver.bitcoin`.
 final class BitcoinDeriver {
+  @internal
   const BitcoinDeriver();
 
   /// The master xprv, encoded for [network].

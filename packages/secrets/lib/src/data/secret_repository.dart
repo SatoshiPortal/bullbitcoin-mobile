@@ -11,6 +11,7 @@ import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/data/fss_datasource.dart';
 import 'package:secrets/src/data/models/secret_model.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// Maps the stored shape to live key material, and to descriptions of it — and is where every exception becomes a [SecretFailure].
 ///
@@ -20,6 +21,7 @@ import 'package:secrets/src/domain/domain.dart';
 class SecretRepository {
   final _source = FlutterSecureStorageDatasource();
 
+  @internal
   SecretRepository();
 
   // ------------------------------------------------------------------- reads

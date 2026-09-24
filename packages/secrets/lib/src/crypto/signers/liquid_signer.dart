@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// Liquid signing through lwk. Reached as `Signer.liquid`.
 ///
@@ -21,6 +22,7 @@ import 'package:secrets/src/domain/domain.dart';
 /// ⚠️ A passphrase is ignored. lwk's signer hard-codes `to_seed("")`
 /// and no layer of the binding takes one. See doc/design.md, § Passphrase.
 final class LiquidSigner {
+  @internal
   const LiquidSigner();
 
   /// Signs one PSET and returns it.

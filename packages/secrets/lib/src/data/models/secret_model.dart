@@ -1,4 +1,5 @@
 import 'package:secrets/src/domain/domain.dart';
+import 'package:meta/meta.dart';
 
 /// The on-disk shape of a secret. **Frozen contract.**
 ///
@@ -121,6 +122,7 @@ final class MnemonicSecretModel extends SecretModel {
   /// shared its caller's list would let the words change after its
   /// identity was derived and before it was written — filing one secret
   /// under another's fingerprint. See `test/secret_model_test`.
+  @internal
   factory MnemonicSecretModel({
     required List<String> mnemonicWords,
     String? passphrase,
@@ -166,6 +168,7 @@ final class BytesSecretModel extends SecretModel {
   /// than only in `fromJson`: a byte outside 0..255 is not a byte
   /// however the model was built, and it would be written to the
   /// keystore as an out-of-range JSON number.
+  @internal
   factory BytesSecretModel({required List<int> bytes}) {
     if (bytes.length < SecretModel._minSeedBytes ||
         bytes.length > SecretModel._maxSeedBytes) {
