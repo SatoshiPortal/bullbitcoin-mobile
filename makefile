@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: internal-seal-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -65,7 +65,12 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-checks: analyze bull-ui-check fix-check format-check unit-test
+# The @internal seal (packages/secrets: Secret.revealMnemonic, every unexported constructor) is an analyzer error, and an `// ignore:` would silence it without a reviewer noticing. `cannot-ignore` in analysis_options.yaml does not hold this diagnostic on the pinned SDK (Dart 3.12.2, checked 2026-09-24), so the ban is a grep over every git-tracked Dart file of the workspace — the root app and every melos member alike.
+internal-seal-check:
+	@echo "🔒 no ignore of invalid_use_of_internal_member anywhere in the workspace"
+	@if git grep -nE "ignore(_for_file)?:.*invalid_use_of_internal_member" -- "*.dart"; then echo "invalid_use_of_internal_member must not be ignored: it is the seal on package:secrets"; exit 1; fi
+
+checks: analyze bull-ui-check internal-seal-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
