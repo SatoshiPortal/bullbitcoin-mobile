@@ -26,7 +26,7 @@ class SecretRepository {
 
   // ------------------------------------------------------------------- reads
 
-  /// One secret's description. Absence is concluded only after the datasource's full retry loop.
+  /// One secret's description. Absence is concluded only once the datasource's read has settled.
   Future<Result<SecretInfo, SecretFailure>> describe(Fingerprint id) =>
       _read(id, (model) => _describe(id, model));
 
@@ -187,7 +187,7 @@ class SecretRepository {
 
   // ----------------------------------------------------------------- private
 
-  /// Reads one entry and projects it. The datasource's `null` — a full read through the retry loop that found nothing — is the one path to [SecretNotFoundFailure]; anything the entry then refuses is a read failure, never an absence.
+  /// Reads one entry and projects it. The datasource's `null` — a settled read that found nothing — is the one path to [SecretNotFoundFailure]; anything the entry then refuses is a read failure, never an absence.
   Future<Result<T, SecretFailure>> _read<T>(
     Fingerprint id,
     Future<T> Function(SecretModel model) project,
