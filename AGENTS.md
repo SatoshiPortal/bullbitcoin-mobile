@@ -16,7 +16,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **Use the makefile.** Don't reinvent commands:
   - `make deps` — `fvm flutter pub get --enforce-lockfile`
   - `make analyze` — `fvm flutter analyze --fatal-warnings --fatal-infos` (matches CI; same check the pre-commit hook runs)
-  - `make checks` — full CI `checks` job locally: analyze + `make bull-ui-check` + `make fix-check` + `make format-check` + unit tests. Green here means that job is green in CI
+  - `make checks` — full CI `checks` job locally: analyze + `make bull-ui-check` + `make custody-check` + `make fix-check` + `make format-check` + unit tests. Green here means that job is green in CI
   - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
   - `make translations` — `fvm flutter gen-l10n`
@@ -235,6 +235,7 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 
 This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold these as hard as the architecture rules:
 
+- **Only `packages/secrets` touches the keystore that holds the seeds.** No new import of `flutter_secure_storage` outside it (the app's own secure store in `lib/core/storage` is the one allowlisted exception), no import of `package:secrets/src/`, and never an `// ignore:` of `invalid_use_of_internal_member`. `make custody-check` fails on any of them, and the `PR custody review` workflow asks the contributor why in a PR comment. Rules: `tools/pr_governance/custody.js`.
 - **Never log secrets.** Mnemonics, seeds, xprivs, PINs, raw key material never reach logs, Sentry, or analytics. Scrub before reporting; assume anything logged is exfiltrated.
 - **Secrets are ephemeral.** Read from `flutter_secure_storage` at point of use; don't cache key material in long-lived bloc/singleton state. Treat a revealed value as short-lived.
 - **Sealed UI for display.** Show a secret through a widget that reads it internally and never returns it (the `MnemonicView` pattern — see ARCHITECTURE.md "Sealed UI as a security tool"); never add a getter that hands the raw value to a caller.

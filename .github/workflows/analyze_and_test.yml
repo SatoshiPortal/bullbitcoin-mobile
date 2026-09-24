@@ -204,9 +204,9 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
 
-      - name: The @internal seal on package:secrets is never ignored
+      - name: Custody boundary (seal never ignored, keystore plugin only in packages/secrets)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
-        run: make internal-seal-check
+        run: make custody-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
