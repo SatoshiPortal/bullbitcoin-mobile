@@ -1,33 +1,31 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
+import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
+import 'package:bb_mobile/features/default_wallets/public/default_wallets_view_data.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-class ExchangeBitcoinWalletsScreen extends StatefulWidget {
-  const ExchangeBitcoinWalletsScreen({super.key});
+typedef DefaultWalletsFooterBuilder =
+    Widget Function(BuildContext context, DefaultWalletsViewData wallets);
 
-  @override
-  State<ExchangeBitcoinWalletsScreen> createState() =>
-      _ExchangeBitcoinWalletsScreenState();
-}
+class DefaultWalletsEditor extends StatelessWidget {
+  final bool showDescription;
+  final EdgeInsetsGeometry padding;
+  final DefaultWalletsFooterBuilder? footerBuilder;
 
-class _ExchangeBitcoinWalletsScreenState
-    extends State<ExchangeBitcoinWalletsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<DefaultWalletsCubit>().init();
-  }
+  const DefaultWalletsEditor({
+    this.showDescription = true,
+    this.padding = const EdgeInsets.all(16),
+    this.footerBuilder,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +43,28 @@ class _ExchangeBitcoinWalletsScreenState
           SnackBarUtils.showSnackBar(context, state.saveError!);
         }
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: context.loc.exchangeBitcoinWalletsTitle,
-            onBack: () => context.pop(),
-          ),
-        ),
-        body: _buildBody(context),
+      child: _EditorContent(
+        showDescription: showDescription,
+        padding: padding,
+        footerBuilder: footerBuilder,
       ),
     );
   }
+}
 
-  Widget _buildBody(BuildContext context) {
+class _EditorContent extends StatelessWidget {
+  final bool showDescription;
+  final EdgeInsetsGeometry padding;
+  final DefaultWalletsFooterBuilder? footerBuilder;
+
+  const _EditorContent({
+    required this.showDescription,
+    required this.padding,
+    required this.footerBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final state = context.watch<DefaultWalletsCubit>().state;
 
     return Column(
@@ -105,20 +109,31 @@ class _ExchangeBitcoinWalletsScreenState
       );
     }
 
+    final wallets = DefaultWalletsViewData(
+      bitcoinAddress: state.currentBitcoinAddress,
+      lightningAddress: state.currentLightningAddress,
+      liquidAddress: state.currentLiquidAddress,
+      isLoading: state.isLoading,
+      isSaving: state.isSaving,
+      isEditing: state.isEditing,
+    );
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: padding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText(
-                context.loc.exchangeBitcoinWalletsDescription,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.outline,
+              if (showDescription) ...[
+                BBText(
+                  context.loc.exchangeBitcoinWalletsDescription,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.outline,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
+              ],
               _WalletAddressField(
                 type: WalletAddressType.bitcoin,
                 label: context.loc.exchangeBitcoinWalletsBitcoinAddressLabel,
@@ -133,6 +148,10 @@ class _ExchangeBitcoinWalletsScreenState
                 type: WalletAddressType.liquid,
                 label: context.loc.exchangeBitcoinWalletsLiquidAddressLabel,
               ),
+              if (footerBuilder case final builder?) ...[
+                const SizedBox(height: 24),
+                builder(context, wallets),
+              ],
             ],
           ),
         ),
@@ -142,10 +161,10 @@ class _ExchangeBitcoinWalletsScreenState
 }
 
 class _WalletAddressField extends StatelessWidget {
-  const _WalletAddressField({required this.type, required this.label});
-
   final WalletAddressType type;
   final String label;
+
+  const _WalletAddressField({required this.type, required this.label});
 
   @override
   Widget build(BuildContext context) {

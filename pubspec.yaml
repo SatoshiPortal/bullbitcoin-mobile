@@ -167,6 +167,7 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.29.0
   melos: ^7.8.1
+  bloc_test: ^10.0.0
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

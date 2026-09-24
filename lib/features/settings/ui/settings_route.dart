@@ -13,7 +13,6 @@ enum SettingsRoute {
   exchangeSettings('exchange-settings'),
   exchangeAccountInfo('exchange-account-info'),
   exchangeSecurity('exchange-security'),
-  exchangeBitcoinWallets('exchange-bitcoin-wallets'),
   exchangeAppSettings('exchange-app-settings'),
   exchangeFileUpload('exchange-file-upload'),
   exchangeStatistics('exchange-statistics'),
