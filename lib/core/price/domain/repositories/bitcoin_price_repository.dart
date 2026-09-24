@@ -1,4 +1,4 @@
-abstract class ExchangeRateRepository {
+abstract interface class BitcoinPriceRepository {
   Future<List<String>> get availableCurrencies;
   Future<double> getCurrencyValue({
     required BigInt amountSat,

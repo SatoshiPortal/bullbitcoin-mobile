@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
+import 'package:bb_mobile/core/price/domain/repositories/price_history_repository.dart';
 
 class GetPriceHistoryUsecase {
-  final PriceRepository _priceRepository;
+  final PriceHistoryRepository _priceHistoryRepository;
 
-  GetPriceHistoryUsecase({required this._priceRepository});
+  GetPriceHistoryUsecase({required this._priceHistoryRepository});
 
   Future<List<Rate>> execute({
     required String fromCurrency,
@@ -13,7 +13,7 @@ class GetPriceHistoryUsecase {
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
-    return await _priceRepository.getPriceHistory(
+    return await _priceHistoryRepository.getPriceHistory(
       fromCurrency: fromCurrency,
       toCurrency: toCurrency,
       interval: interval,

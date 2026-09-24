@@ -1,15 +1,15 @@
-import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
+import 'package:bb_mobile/core/price/data/datasources/local_price_history_datasource.dart';
+import 'package:bb_mobile/core/price/data/datasources/bullbitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
+import 'package:bb_mobile/core/price/domain/repositories/price_history_repository.dart';
 
-class PriceRepositoryImpl implements PriceRepository {
-  final PriceRemoteDatasource _remoteDatasource;
-  final PriceLocalDatasource _localDatasource;
+class PriceHistoryRepositoryImpl implements PriceHistoryRepository {
+  final BullbitcoinPriceDatasource _bullbitcoinPriceDatasource;
+  final LocalPriceHistoryDatasource _localPriceHistoryDatasource;
 
-  PriceRepositoryImpl({
-    required this._remoteDatasource,
-    required this._localDatasource,
+  PriceHistoryRepositoryImpl({
+    required this._bullbitcoinPriceDatasource,
+    required this._localPriceHistoryDatasource,
   });
 
   @override
@@ -30,7 +30,7 @@ class PriceRepositoryImpl implements PriceRepository {
       RateTimelineInterval.day => now.subtract(const Duration(days: 90)),
     };
 
-    final localPrices = await _localDatasource.getPriceHistory(
+    final localPrices = await _localPriceHistoryDatasource.getPriceHistory(
       fromCurrency: fromCurrency,
       toCurrency: toCurrency,
       interval: interval,
@@ -59,7 +59,7 @@ class PriceRepositoryImpl implements PriceRepository {
       RateTimelineInterval.day => now.subtract(const Duration(days: 90)),
     };
 
-    final remotePriceModels = await _remoteDatasource.getPriceHistory(
+    final remotePriceModels = await _bullbitcoinPriceDatasource.getPriceHistory(
       fromCurrency: fromCurrency,
       toCurrency: toCurrency,
       interval: interval,
@@ -72,17 +72,17 @@ class PriceRepositoryImpl implements PriceRepository {
           .map((model) => model.toEntity())
           .toList();
 
-      await _localDatasource.clearPrices(
+      await _localPriceHistoryDatasource.clearPrices(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
         interval: interval.value,
       );
 
-      await _localDatasource.savePrices(remotePrices);
+      await _localPriceHistoryDatasource.savePrices(remotePrices);
 
       if (interval == RateTimelineInterval.fifteen) {
         final dayFromDate = now.subtract(const Duration(days: 90));
-        final localDay = await _localDatasource.getPriceHistory(
+        final localDay = await _localPriceHistoryDatasource.getPriceHistory(
           fromCurrency: fromCurrency,
           toCurrency: toCurrency,
           interval: RateTimelineInterval.day,
@@ -91,7 +91,7 @@ class PriceRepositoryImpl implements PriceRepository {
         );
 
         if (localDay.isEmpty) {
-          final dayPrices = await _remoteDatasource.getPriceHistory(
+          final dayPrices = await _bullbitcoinPriceDatasource.getPriceHistory(
             fromCurrency: fromCurrency,
             toCurrency: toCurrency,
             interval: RateTimelineInterval.day,
@@ -102,13 +102,13 @@ class PriceRepositoryImpl implements PriceRepository {
             final dayPricesEntities = dayPrices
                 .map((model) => model.toEntity())
                 .toList();
-            await _localDatasource.clearPrices(
+            await _localPriceHistoryDatasource.clearPrices(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.day.value,
             );
-            await _localDatasource.savePrices(dayPricesEntities);
-            await _localDatasource.cleanupOldRates(
+            await _localPriceHistoryDatasource.savePrices(dayPricesEntities);
+            await _localPriceHistoryDatasource.cleanupOldRates(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.day.value,
@@ -117,14 +117,14 @@ class PriceRepositoryImpl implements PriceRepository {
           }
         }
 
-        await _localDatasource.cleanupOldRates(
+        await _localPriceHistoryDatasource.cleanupOldRates(
           fromCurrency: fromCurrency,
           toCurrency: toCurrency,
           interval: RateTimelineInterval.fifteen.value,
           maxAge: const Duration(minutes: 15),
         );
       } else if (interval == RateTimelineInterval.day) {
-        await _localDatasource.cleanupOldRates(
+        await _localPriceHistoryDatasource.cleanupOldRates(
           fromCurrency: fromCurrency,
           toCurrency: toCurrency,
           interval: RateTimelineInterval.day.value,
@@ -132,7 +132,7 @@ class PriceRepositoryImpl implements PriceRepository {
         );
 
         final fifteenFromDate = now.subtract(const Duration(minutes: 15));
-        final localFifteen = await _localDatasource.getPriceHistory(
+        final localFifteen = await _localPriceHistoryDatasource.getPriceHistory(
           fromCurrency: fromCurrency,
           toCurrency: toCurrency,
           interval: RateTimelineInterval.fifteen,
@@ -141,24 +141,27 @@ class PriceRepositoryImpl implements PriceRepository {
         );
 
         if (localFifteen.isEmpty) {
-          final fifteenPrices = await _remoteDatasource.getPriceHistory(
-            fromCurrency: fromCurrency,
-            toCurrency: toCurrency,
-            interval: RateTimelineInterval.fifteen,
-            fromDate: fifteenFromDate,
-            toDate: now,
-          );
+          final fifteenPrices = await _bullbitcoinPriceDatasource
+              .getPriceHistory(
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                interval: RateTimelineInterval.fifteen,
+                fromDate: fifteenFromDate,
+                toDate: now,
+              );
           if (fifteenPrices.isNotEmpty) {
             final fifteenPricesEntities = fifteenPrices
                 .map((model) => model.toEntity())
                 .toList();
-            await _localDatasource.clearPrices(
+            await _localPriceHistoryDatasource.clearPrices(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.fifteen.value,
             );
-            await _localDatasource.savePrices(fifteenPricesEntities);
-            await _localDatasource.cleanupOldRates(
+            await _localPriceHistoryDatasource.savePrices(
+              fifteenPricesEntities,
+            );
+            await _localPriceHistoryDatasource.cleanupOldRates(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.fifteen.value,
@@ -176,6 +179,6 @@ class PriceRepositoryImpl implements PriceRepository {
 
   @override
   Future<void> savePriceHistory(List<Rate> prices) async {
-    await _localDatasource.savePrices(prices);
+    await _localPriceHistoryDatasource.savePrices(prices);
   }
 }

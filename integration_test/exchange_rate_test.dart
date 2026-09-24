@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/price/data/datasources/bullbitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
@@ -12,8 +12,8 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final bitcoinPriceDatasource = locator<BullbitcoinApiDatasource>(
-    instanceName: 'mainnetExchangeApiDatasource',
+  final bitcoinPriceDatasource = locator<BullbitcoinPriceDatasource>(
+    instanceName: 'mainnetBullbitcoinPriceDatasource',
   );
   final getAvailableCurrenciesUsecase =
       locator<GetAvailableCurrenciesUsecase>();

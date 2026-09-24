@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
 
 class RateModel {
   final String fromCurrency;

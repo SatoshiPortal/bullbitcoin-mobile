@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
 
-class PriceLocalDatasource {
+class LocalPriceHistoryDatasource {
   final SqliteDatabase _db;
 
-  PriceLocalDatasource({required this._db});
+  LocalPriceHistoryDatasource({required this._db});
 
   Future<void> savePrices(List<Rate> prices) async {
     if (prices.isEmpty) return;
