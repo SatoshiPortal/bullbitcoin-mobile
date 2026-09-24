@@ -9,7 +9,7 @@ import 'package:secrets/src/public/secret.dart';
 ///
 /// The sealed-UI pattern (ARCHITECTURE.md, "Sealed UI as a security tool"): the mnemonic is read inside this widget's state and rendered here, so a feature can display it but cannot obtain it programmatically. This is why it lives in the package that holds the seed, and why the package depends on Flutter at all.
 ///
-/// The seal covers API leakage only. Screenshot blocking and treating the screen as ephemeral remain the host screen's job; the semantics tree is excluded here, so accessibility services never read the words out.
+/// The words and the passphrase are painted (see `SealedWord`), so a host walking its own element tree finds no text of them. What leaves is pixels: screenshot blocking and treating the screen as ephemeral remain the host screen's job; the semantics tree is excluded here, so accessibility services never read the words out.
 ///
 /// Reads once, on first build, with [RevealReason.userDisplay]; the read is logged by the package like any reveal.
 final class MnemonicView extends StatefulWidget {
@@ -81,7 +81,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
     final builder = widget.wordBuilder;
     final layout = widget.layout;
     if (builder == null && layout == null) {
-      return Text(words.join(' '), style: widget.style);
+      return SealedWord(words.join(' '), style: widget.style);
     }
     final cells = [
       for (var i = 0; i < words.length; i++)
@@ -124,7 +124,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
                         style: widget.passphraseLabelStyle ?? widget.style,
                       ),
                     ),
-                  Text(value.passphrase, style: widget.style),
+                  SealedWord(value.passphrase, style: widget.style),
                 ],
               ],
             ),

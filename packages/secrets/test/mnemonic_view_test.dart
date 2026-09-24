@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:secrets/src/widgets/sealed_word.dart' show debugSealedTextOf;
 
 /// The sealed display: it shows a secret's words and hands them to nobody.
 ///
@@ -82,7 +83,7 @@ void main() {
     expect(find.text('reading'), findsOneWidget);
     await settle(tester);
 
-    expect(find.text(wordsA.join(' ')), findsOneWidget);
+    expect(sealed(wordsA.join(' ')), findsOneWidget);
   });
 
   testWidgets('the words stay out of the semantics tree', (tester) async {
@@ -123,21 +124,21 @@ void main() {
 
     await tester.pumpWidget(hosted(a));
     await settle(tester);
-    expect(find.text(wordsA.join(' ')), findsOneWidget);
+    expect(sealed(wordsA.join(' ')), findsOneWidget);
 
     // The same element receives B — what an unkeyed, reordered list does.
     await tester.pumpWidget(hosted(b));
     await tester.pump();
 
     expect(
-      find.text(wordsA.join(' ')),
+      sealed(wordsA.join(' ')),
       findsNothing,
       reason: "a retained FutureBuilder would keep A's words while B loads",
     );
 
     await settle(tester);
-    expect(find.text(wordsB.join(' ')), findsOneWidget);
-    expect(find.text(wordsA.join(' ')), findsNothing);
+    expect(sealed(wordsB.join(' ')), findsOneWidget);
+    expect(sealed(wordsA.join(' ')), findsNothing);
   });
 
   testWidgets('a failed read renders the failure, and no stored text', (
@@ -153,6 +154,64 @@ void main() {
 
     expect(find.textContaining('failed:'), findsOneWidget);
     expect(find.textContaining(sentinel), findsNothing);
-    expect(find.text(wordsA.join(' ')), findsNothing);
+    expect(sealed(wordsA.join(' ')), findsNothing);
   });
+
+  testWidgets('a walk of the element tree finds no word and no passphrase', (
+    tester,
+  ) async {
+    // What a host can do with plain Flutter: visit every element and read
+    // each Text, RichText and EditableText. The words and the passphrase
+    // are painted, so none of them is there — in the default sentence and
+    // in a host's own word cells alike.
+    late Secret secret;
+    await tester.runAsync(() async {
+      secret =
+          (await secrets.import(words: wordsA, passphrase: 'hunter2')
+                  as Ok<Secret, SecretFailure>)
+              .value;
+    });
+    for (final view in [
+      secret.widgets.mnemonicView(onFailure: (_, _) => const SizedBox()),
+      secret.widgets.mnemonicView(
+        onFailure: (_, _) => const SizedBox(),
+        wordBuilder: (context, number, word) =>
+            Row(children: [Text('$number.'), word]),
+        layout: (context, words) => Column(children: words),
+      ),
+    ]) {
+      await tester.pumpWidget(
+        Directionality(textDirection: TextDirection.ltr, child: view),
+      );
+      await settle(tester);
+
+      final readable = walk(tester).join(' ');
+      for (final word in {...wordsA, 'hunter2'}) {
+        expect(readable, isNot(contains(word)));
+      }
+      expect(sealed('hunter2'), findsOneWidget, reason: 'painted, still shown');
+    }
+  });
+}
+
+/// A word as it is painted: the widgets hold no `Text` to find, so the
+/// package's own tests read the sealed render object instead.
+Finder sealed(String text) => find.byElementPredicate(
+  (e) => debugSealedTextOf(e) == text,
+  description: 'sealed text "$text"',
+);
+
+/// Every string a host could read by walking its own element tree.
+List<String> walk(WidgetTester tester) {
+  final out = <String>[];
+  void visit(Element e) {
+    final w = e.widget;
+    if (w is RichText) out.add(w.text.toPlainText());
+    if (w is Text && w.data != null) out.add(w.data!);
+    if (w is EditableText) out.add(w.controller.text);
+    e.visitChildElements(visit);
+  }
+
+  tester.binding.rootElement!.visitChildElements(visit);
+  return out;
 }
