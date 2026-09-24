@@ -231,6 +231,43 @@ void main() {
     );
 
     test(
+      'an early "" followed by clean nulls is a read failure, not an absence',
+      () async {
+        // "" proved the key exists; later nulls do not un-prove it. Before,
+        // only the last read counted, and this came back as not-found — the
+        // one failure callers take as "the seed is gone".
+        final storage = FakeSecureStoragePlatform(
+          scripted: ['', null, null, null, null],
+        );
+
+        final result = await secretsWith(storage).fetch(id);
+
+        final failure = (result as Err<Secret, SecretFailure>).failure;
+        expect(failure, isA<SecretFetchFailure>());
+        expect(failure, isNot(isA<SecretNotFoundFailure>()));
+        expect(storage.reads, 5);
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test(
+      'the same holds for a module key: corrupt, not missing',
+      () async {
+        final storage = FakeSecureStoragePlatform(
+          scripted: ['', null, null, null, null],
+        );
+
+        final result = await secretsWith(
+          storage,
+        ).existingDatabaseKey(package: 'swaps', name: 'main');
+
+        final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
+        expect(failure, isA<DatabaseKeyCorruptFailure>());
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test(
       'an early error followed by a clean null is still an absence',
       () async {
         final storage = FakeSecureStoragePlatform(

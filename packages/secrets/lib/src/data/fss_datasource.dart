@@ -218,7 +218,11 @@ class FlutterSecureStorageDatasource {
       // the repair, never a wallet, and the lock must not be held for the
       // ~4.5 s the loop can take.
       final raw = await _readRaw(fromKey);
-      if (raw == null || raw.isEmpty) return null;
+      if (raw == null) return null;
+      // "" is a key that exists and did not answer, not an absence: the
+      // read path says so, and reporting not-found would say the seed is
+      // gone. Refused as a read of something that is not ours to move.
+      if (raw.isEmpty) throw const FormatException('stored value is empty');
       final model = SecretModel.fromJson(decodeJson(raw));
       final to = await identify(model);
       if (to == from) return (id: from, model: model);
@@ -376,7 +380,9 @@ class FlutterSecureStorageDatasource {
   }) async {
     Object? lastError;
     StackTrace? lastTrace;
-    var lastWasEmpty = false;
+    // Sticky: one "" anywhere in the loop proves the key exists, and a
+    // later null does not un-prove it.
+    var sawEmpty = false;
 
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
       String? value;
@@ -395,7 +401,7 @@ class FlutterSecureStorageDatasource {
           '${describeSafely(e)}',
         );
       }
-      lastWasEmpty = value != null && value.isEmpty;
+      if (value != null && value.isEmpty) sawEmpty = true;
 
       // Empty is the other face of the false-absent bug — the plugin has
       // been seen returning "" for an entry that exists — and is retried
@@ -432,10 +438,11 @@ class FlutterSecureStorageDatasource {
       );
       Error.throwWithStackTrace(lastError, lastTrace);
     }
-    if (lastWasEmpty) {
+    if (sawEmpty) {
       // The key is there — a missing key reads as null, not "" — but its
-      // value never came. Nothing this package writes is empty, so this
-      // is an entry that cannot be read, and it is reported as such.
+      // value never came, on any attempt. Nothing this package writes is
+      // empty, so this is an entry that cannot be read, and it is reported
+      // as such: never as an absence, whatever the last read returned.
       throw const FormatException('stored value is empty');
     }
 

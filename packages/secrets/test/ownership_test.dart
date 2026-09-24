@@ -305,5 +305,25 @@ void main() {
         expect(storage.entries['seed_$aFingerprint'], other);
       },
     );
+
+    test(
+      'a source that reads back empty is refused, not reported absent',
+      () async {
+        // "" is the plugin's other false face: the key is there, its value
+        // did not come. Reporting it as not-found would say the seed is gone.
+        final storage = FakeSecureStoragePlatform(
+          entries: {'seed_00000000': ''},
+        )..install();
+        final secrets = Secrets(scratchDirectory: () async => '/tmp');
+
+        final result = await secrets.repairIdentity(Fingerprint('00000000'));
+
+        // A repair failure, like a source that is not JSON: the entry is not
+        // gone, and nothing is moved or deleted.
+        final failure = (result as Err<Secret, SecretFailure>).failure;
+        expect(failure, isNot(isA<SecretNotFoundFailure>()));
+        expect(storage.entries.keys, ['seed_00000000']);
+      },
+    );
   });
 }
