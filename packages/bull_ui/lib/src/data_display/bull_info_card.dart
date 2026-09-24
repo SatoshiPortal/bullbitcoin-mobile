@@ -46,7 +46,7 @@ class BullInfoCard extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(BullRadius.xs),
+          borderRadius: BorderRadius.circular(BullRadius.xxs),
         ),
         child: IntrinsicHeight(
           child: Row(

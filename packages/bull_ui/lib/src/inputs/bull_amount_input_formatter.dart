@@ -4,14 +4,21 @@ import 'package:flutter/services.dart';
 /// duplicated from `core/widgets/inputs/amount_input_formatter.dart`.
 ///
 /// Decimal places are derived from [inputCurrencyCode]: `0` for sats, `8` for
-/// BTC, `2` for fiat. Commas are normalised to dots and over-long fractions
-/// are truncated.
+/// BTC, `2` for fiat, unless [maxDecimals] overrides it. Commas are normalised
+/// to dots and over-long fractions are truncated.
 class BullAmountInputFormatter extends TextInputFormatter {
   /// Creates a formatter for the given currency code (e.g. `BTC`, `sats`).
-  BullAmountInputFormatter(this.inputCurrencyCode);
+  BullAmountInputFormatter(this.inputCurrencyCode, {this.maxDecimals});
 
   /// The currency code that determines the allowed decimal precision.
   final String inputCurrencyCode;
+
+  /// Optional hard cap on decimal places, overriding the value derived from
+  /// [inputCurrencyCode]. The custom-fee tile passes 2 here so a sat/vByte
+  /// rate can't be typed with more precision than it can store/redisplay —
+  /// the BTC-derived default of 8 would let "0.12345678" be entered, snap to
+  /// the nearest sat/kwu, then redisplay as "0.12" (typed ≠ stored ≠ shown).
+  final int? maxDecimals;
 
   @override
   TextEditingValue formatEditUpdate(
@@ -19,11 +26,12 @@ class BullAmountInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     final decimalPlaces =
-        (inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats')
-        ? 0
-        : inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC'
-        ? 8
-        : 2; // Fiat currencies default to 2 decimals.
+        maxDecimals ??
+        ((inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats')
+            ? 0
+            : inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC'
+            ? 8
+            : 2); // Fiat currencies default to 2 decimals.
 
     var newText = newValue.text;
 

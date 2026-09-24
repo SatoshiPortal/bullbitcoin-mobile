@@ -45,7 +45,7 @@ class BullBackupOptionCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(color: colors.border, offset: const Offset(0, 2)),
           ],
-          borderRadius: BorderRadius.circular(BullRadius.xs),
+          borderRadius: BorderRadius.circular(BullRadius.xxs),
         ),
         child: Row(
           children: [
