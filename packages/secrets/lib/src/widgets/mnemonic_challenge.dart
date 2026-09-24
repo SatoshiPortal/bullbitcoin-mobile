@@ -44,11 +44,11 @@ final class MnemonicTile {
 /// The verdict is [Secret.verifyWords], so the comparison that decides a
 /// user's backup is the same one everywhere and is timed the same way.
 ///
-/// The seal covers API leakage only: no member hands out a word, and the tile
-/// text has no accessor. A host that walks its own element tree can still
-/// read the inner `Text` — that is a deliberate act, and reads as one in
-/// review. Screenshot blocking stays the host screen's job; the semantics
-/// tree is excluded here.
+/// No member hands out a word, and the tile word is painted (see
+/// `SealedWord`): a host walking its own element tree finds no text of the
+/// mnemonic, so the per-tap order it could learn by tapping tiles itself is
+/// an order of tiles it cannot read. What leaves is pixels — screenshot
+/// blocking stays the host screen's job; the semantics tree is excluded here.
 final class MnemonicChallenge extends StatefulWidget {
   final Secret secret;
 
