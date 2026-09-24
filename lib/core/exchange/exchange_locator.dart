@@ -47,7 +47,7 @@ class ExchangeLocator {
     // datasource only; the authenticated chain (recipients, fund_exchange)
     // and the support-chat client are intentionally left alone for this
     // release.
-    const orderApiTimeout = ApiServiceConstants.bbApiTimeout;
+    const orderApiTimeout = Duration(seconds: 30);
 
     locator.registerLazySingleton<BullbitcoinApiDatasource>(
       () => BullbitcoinApiDatasource(

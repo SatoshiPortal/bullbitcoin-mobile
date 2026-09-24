@@ -100,7 +100,6 @@ class ApiServiceConstants {
   // BullBitcoin API
   static const String bbApiUrl = 'https://api.bullbitcoin.com';
   static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';
-  static const Duration bbApiTimeout = Duration(seconds: 30);
   static const String bbAuthUrl = 'https://accounts.bullbitcoin.com';
   static const String bbAuthTestUrl = 'https://accounts05.bullbitcoin.dev';
   static const String bbAppUrl = 'https://app.bullbitcoin.com';

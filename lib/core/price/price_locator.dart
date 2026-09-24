@@ -20,12 +20,7 @@ class PriceLocator {
     locator.registerLazySingleton<BullbitcoinPriceDatasource>(
       () => BullbitcoinPriceDatasource(
         bullbitcoinApiHttpClient: Dio(
-          BaseOptions(
-            baseUrl: ApiServiceConstants.bbApiUrl,
-            connectTimeout: ApiServiceConstants.bbApiTimeout,
-            receiveTimeout: ApiServiceConstants.bbApiTimeout,
-            sendTimeout: ApiServiceConstants.bbApiTimeout,
-          ),
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl),
         ),
       ),
       instanceName: 'mainnetBullbitcoinPriceDatasource',
@@ -34,12 +29,7 @@ class PriceLocator {
     locator.registerLazySingleton<BullbitcoinPriceDatasource>(
       () => BullbitcoinPriceDatasource(
         bullbitcoinApiHttpClient: Dio(
-          BaseOptions(
-            baseUrl: ApiServiceConstants.bbApiTestUrl,
-            connectTimeout: ApiServiceConstants.bbApiTimeout,
-            receiveTimeout: ApiServiceConstants.bbApiTimeout,
-            sendTimeout: ApiServiceConstants.bbApiTimeout,
-          ),
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiTestUrl),
         ),
       ),
       instanceName: 'testnetBullbitcoinPriceDatasource',
