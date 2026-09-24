@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:secrets/src/widgets/sealed_word.dart' show debugSealedTextOf;
 
 import 'result_helpers.dart';
 
@@ -101,8 +102,8 @@ void main() {
     expect(find.text('reading'), findsOneWidget);
     await settle(tester);
 
-    expect(find.text('abandon'), findsNWidgets(11));
-    expect(find.text('about'), findsOneWidget);
+    expect(sealed('abandon'), findsNWidgets(11));
+    expect(sealed('about'), findsOneWidget);
     expect(find.text('#0'), findsNWidgets(12));
   });
 
@@ -143,7 +144,7 @@ void main() {
     await settle(tester);
 
     // `about` is word 12; tapping it first breaks the order.
-    await tester.tap(find.text('about'));
+    await tester.tap(sealed('about'));
     await settle(tester);
 
     expect(mistakes, 1);
@@ -166,13 +167,13 @@ void main() {
     // tile's `onTap` is null, so `.at(i)` visits each distinct tile exactly
     // once whatever the shuffle produced.
     for (var i = 0; i < 11; i++) {
-      await tester.tap(find.text('abandon').at(i));
+      await tester.tap(sealed('abandon').at(i));
       await tester.pump();
     }
     expect(mistakes, 0, reason: 'every tap was a correct next word');
     expect(progress.last, (11, 12));
 
-    await tester.tap(find.text('about'));
+    await tester.tap(sealed('about'));
     await settle(tester);
 
     expect(solved, 1);
@@ -193,13 +194,13 @@ void main() {
     await tester.pumpWidget(hosted(b));
     await settle(tester);
 
-    expect(find.text('abandon'), findsNothing);
-    expect(find.text('legal'), findsNWidgets(2));
+    expect(sealed('abandon'), findsNothing);
+    expect(sealed('legal'), findsNWidgets(2));
 
     // And the running check is B's: B's first word is `legal`; `about` is
     // not in B at all, so a first tap on any B word other than `legal`
     // resets — which proves the answer key is B's, not A's.
-    await tester.tap(find.text('yellow'));
+    await tester.tap(sealed('yellow'));
     await settle(tester);
     expect(mistakes, 1);
     expect(solved, 0);
@@ -240,7 +241,43 @@ void main() {
     await settle(tester);
 
     expect(find.text('failed: SecretIdentityMismatchFailure'), findsOneWidget);
-    expect(find.text('abandon'), findsNothing);
+    expect(sealed('abandon'), findsNothing);
     expect(solved, 0);
   });
+
+  testWidgets('a walk of the element tree finds no word', (tester) async {
+    // The tiles carry painted words: a host walking its tree reads the
+    // position labels it drew itself and nothing of the mnemonic.
+    final secret = await store(tester, wordsA);
+    await tester.pumpWidget(hosted(secret));
+    await settle(tester);
+
+    final readable = walk(tester).join(' ');
+    for (final word in wordsA.toSet()) {
+      expect(readable, isNot(contains(word)));
+    }
+    expect(sealed('about'), findsOneWidget);
+  });
+}
+
+/// A word as it is painted: the widgets hold no `Text` to find, so the
+/// package's own tests read the sealed render object instead.
+Finder sealed(String text) => find.byElementPredicate(
+  (e) => debugSealedTextOf(e) == text,
+  description: 'sealed text "$text"',
+);
+
+/// Every string a host could read by walking its own element tree.
+List<String> walk(WidgetTester tester) {
+  final out = <String>[];
+  void visit(Element e) {
+    final w = e.widget;
+    if (w is RichText) out.add(w.text.toPlainText());
+    if (w is Text && w.data != null) out.add(w.data!);
+    if (w is EditableText) out.add(w.controller.text);
+    e.visitChildElements(visit);
+  }
+
+  tester.binding.rootElement!.visitChildElements(visit);
+  return out;
 }

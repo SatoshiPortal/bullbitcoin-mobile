@@ -169,10 +169,14 @@ display concern, and a display that hands them back has nothing left to
 seal — so the host receives each word **as a widget** whose text has no
 accessor (`wordBuilder(context, number, Widget word)`, `MnemonicTile.word`),
 and arranges widgets. A `Map<int, Widget>` in the callback rebuilds
-nothing. What remains possible is walking one's own element tree for the
-inner `Text`: a deliberate act that reads as one in review, which is the
-line every sealed UI draws. To *compare* words, `verifyWords` answers
-without exposing anything.
+nothing, and neither does walking the element tree: `SealedWord` paints
+its text through a private render object, so no `Text` or `RichText` of
+the mnemonic or the passphrase is ever in the tree, and the render object
+keeps the string in library-private fields. What leaves the widgets is
+pixels — a screenshot, or a rendered image read back — which the host's
+capture protection handles. The package's own tests read the painted text
+through `debugSealedTextOf`, `@internal` and reachable only from `src/`.
+To *compare* words, `verifyWords` answers without exposing anything.
 
 Do not grep for the three — `test/invariants_test.dart` pins the set, so
 adding a fourth turns the suite red and names it.
