@@ -1,4 +1,4 @@
-.PHONY: internal-seal-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: custody-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -65,12 +65,13 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-# The @internal seal (packages/secrets: Secret.revealMnemonic, every unexported constructor) is an analyzer error, and an `// ignore:` would silence it without a reviewer noticing. `cannot-ignore` in analysis_options.yaml does not hold this diagnostic on the pinned SDK (Dart 3.12.2, checked 2026-09-24), so the ban is a grep over every git-tracked Dart file of the workspace — the root app and every melos member alike.
-internal-seal-check:
-	@echo "🔒 no ignore of invalid_use_of_internal_member anywhere in the workspace"
-	@if git grep -nE "ignore(_for_file)?:.*invalid_use_of_internal_member" -- "*.dart"; then echo "invalid_use_of_internal_member must not be ignored: it is the seal on package:secrets"; exit 1; fi
+# The custody boundary around users' seeds, as a gate: no `// ignore:` of invalid_use_of_internal_member (the seal on package:secrets — `cannot-ignore` does not hold that diagnostic on Dart 3.12.2, checked 2026-09-24), no import of flutter_secure_storage outside packages/secrets and the app's own secure store, no import of package:secrets/src/ outside the package, and no keystore dependency in another pubspec. Every git-tracked Dart file and pubspec of the workspace, the root app and every melos member alike. The rules live in tools/pr_governance/custody.js, shared with the PR custody review workflow that asks a contributor why.
+custody-check:
+	@echo "🔒 custody boundary: seal, keystore plugin, package internals"
+	@node --test tools/pr_governance/custody.test.js > /dev/null
+	@node tools/pr_governance/custody-check.js
 
-checks: analyze bull-ui-check internal-seal-check fix-check format-check unit-test
+checks: analyze bull-ui-check custody-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -81,7 +82,7 @@ action-pins-check:
 
 pr-governance-test:
 	@echo "🛡️ Testing PR governance policy"
-	@node --test tools/pr_governance/policy.test.js
+	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
