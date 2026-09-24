@@ -204,6 +204,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
 
+      - name: The @internal seal on package:secrets is never ignored
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make internal-seal-check
+
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make fix-check
