@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/main.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -187,6 +188,47 @@ Future<void> main({bool isInitialized = false}) async {
         isNot(zooBip85At0),
       );
     });
+
+    test(
+      'the swap key is a BIP85 child of the wallet, never its own key',
+      () async {
+        // boltz-client 0.4.1 derives the swap mnemonic as the 12-word BIP85
+        // child 26589 of the wallet root; the package's own BIP85 is the
+        // oracle, pinned against boltz's published vector in
+        // packages/secrets/test/swap_key_vector_test.dart. So what swapKey
+        // hands out is that child and its keys — not the words this secret
+        // stores, and not a key under this secret's fingerprint.
+        final secret = await importWords();
+        for (final network in [
+          BitcoinNetwork.mainnet,
+          BitcoinNetwork.testnet,
+        ]) {
+          final key = unwrap(await secret.derive.swapKey(network: network));
+          final child = unwrap(
+            await secret.derive.bip85.mnemonic(
+              length: bip39.MnemonicLength.words12,
+              index: 26589,
+            ),
+          );
+
+          expect(key.mnemonic, child.join(' '), reason: network.name);
+          expect(key.mnemonic, isNot(words.join(' ')), reason: network.name);
+          expect(key.fingerprint, isNot(secret.id), reason: network.name);
+          expect(
+            key.xpub,
+            isNot(
+              unwrap(
+                await secret.derive.xpub(
+                  network: network,
+                  scriptType: ScriptType.bip84,
+                ),
+              ),
+            ),
+            reason: network.name,
+          );
+        }
+      },
+    );
 
     test('the swap key includes the passphrase', () async {
       // Decision of 2026-09-15: `walletPassphrase` is sent, so words alone no
