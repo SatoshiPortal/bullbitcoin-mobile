@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
+import 'package:secrets/src/crypto/signers/pset_sighash.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
@@ -43,6 +44,9 @@ final class LiquidSigner {
   }) async {
     final mnemonic = mnemonicSentence(secret);
     final lwkNetwork = _network(network);
+    // Before any file or FFI call: lwk honours whatever sighash the PSET
+    // asks for, so the refusal has to be ours. See [PsetSighash].
+    PsetSighash.requireAll(pset);
 
     // A fresh directory per signature, removed below.
     //
