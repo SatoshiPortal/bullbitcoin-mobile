@@ -300,10 +300,12 @@ model:
 | no exported signature hands out an unexported type | no exported, non-`@internal` member mentions one in its parameters or return type |
 
 The on-disk format never moving is pinned byte for byte by
-`test/secret_model_golden_test.dart`. `make internal-seal-check`, in
-`make checks` and CI, refuses any `// ignore:` of
-`invalid_use_of_internal_member` in the workspace: `cannot-ignore` does not
-hold that diagnostic on Dart 3.12.2.
+`test/secret_model_golden_test.dart`. `make custody-check`, in `make checks` and CI, refuses any `// ignore:` of
+`invalid_use_of_internal_member` in the workspace — `cannot-ignore` does not
+hold that diagnostic on Dart 3.12.2 — and any import of `flutter_secure_storage`
+or `package:secrets/src/` outside the package, the app's own secure store
+excepted. The `PR custody review` workflow comments on a pull request that
+adds one, asking the contributor why.
 
 So an audit is: run the suite, then read four files —
 `src/public/secret.dart` for what the package does, `src/data/boundary.dart`
