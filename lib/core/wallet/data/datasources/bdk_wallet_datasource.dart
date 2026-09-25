@@ -523,10 +523,15 @@ class BdkWalletDatasource {
         final fee = bdkWallet.calculateFee(tx: tx.transaction).toSat();
         final chainPosition = tx.chainPosition;
         int? confirmationTime;
+        int? confirmationHeight;
         if (chainPosition is bdk.ConfirmedChainPosition) {
           final blockTime = chainPosition.confirmationBlockTime;
 
           confirmationTime = blockTime.confirmationTime;
+          // The confirming height, paired with the transaction's nLockTime,
+          // bounds when an incoming payment was broadcast. The wallet has no
+          // other way to know: Electrum carries no first-seen time.
+          confirmationHeight = blockTime.blockId.height;
         }
 
         final isIncoming = received > sent;
@@ -546,6 +551,8 @@ class BdkWalletDatasource {
           feeSat: fee.toInt(),
           vsize: tx.transaction.vsize().toInt(),
           confirmationTimestamp: confirmationTime,
+          lockTime: tx.transaction.lockTime(),
+          confirmationHeight: confirmationHeight,
           isToSelf: isToSelf,
           inputs: inputModels,
           outputs: outputModels,

@@ -1,10 +1,12 @@
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/historical_value/historical_value_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/export_transactions_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,6 +27,15 @@ enum TransactionsRoute {
 
 /// The router for the transactions feature.
 class TransactionsRouter {
+  /// Supplies what a transaction was worth when it happened.
+  ///
+  /// Provided per route rather than app-wide so the rate series is built only
+  /// on the surfaces that render it, and released with them.
+  static Widget _withHistoricalValue(Widget child) => BlocProvider(
+    create: (_) => locator<HistoricalValueCubit>()..load(),
+    child: child,
+  );
+
   static final transactionsRoute = GoRoute(
     name: TransactionsRoute.transactions.name,
     path: TransactionsRoute.transactions.path,
@@ -32,7 +43,7 @@ class TransactionsRouter {
       // final filterParam = state.uri.queryParameters['filter'];
       return BlocProvider(
         create: (context) => locator<TransactionsCubit>()..loadTxs(),
-        child: const TransactionsScreen(),
+        child: _withHistoricalValue(const TransactionsScreen()),
       );
     },
   );
@@ -59,7 +70,7 @@ class TransactionsRouter {
           create: (context) =>
               locator<TransactionDetailsCubit>()
                 ..initByWalletTxId(txId, walletId: walletId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),
@@ -71,7 +82,7 @@ class TransactionsRouter {
         return BlocProvider(
           create: (context) =>
               locator<TransactionDetailsCubit>()..initByPayjoinTxId(txId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),
@@ -85,7 +96,7 @@ class TransactionsRouter {
           create: (context) =>
               locator<TransactionDetailsCubit>()
                 ..initBySwapId(swapId, walletId: walletId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),
@@ -97,7 +108,7 @@ class TransactionsRouter {
         return BlocProvider(
           create: (context) =>
               locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),
@@ -110,7 +121,7 @@ class TransactionsRouter {
           create: (context) =>
               locator<TransactionDetailsCubit>()
                 ..initByOrderSwapLocalId(localId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),
@@ -122,7 +133,7 @@ class TransactionsRouter {
         return BlocProvider(
           create: (context) =>
               locator<TransactionDetailsCubit>()..initByOrderId(orderId),
-          child: const TransactionDetailsScreen(),
+          child: _withHistoricalValue(const TransactionDetailsScreen()),
         );
       },
     ),

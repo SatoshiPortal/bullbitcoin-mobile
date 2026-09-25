@@ -39,6 +39,19 @@ sealed class WalletTransaction with _$WalletTransaction {
     required List<TransactionOutput> outputs,
     required bool isRbf,
     DateTime? confirmationTime,
+
+    /// The transaction's `nLockTime`, and the height of the block that
+    /// confirmed it.
+    ///
+    /// Together these bound when the sender broadcast an incoming payment,
+    /// which the wallet cannot otherwise know. Bitcoin Core and Electrum set
+    /// `nLockTime` to the chain tip when they *build* a transaction, so the
+    /// height gap between the two is roughly how long it waited in the
+    /// mempool. Null on Liquid, which confirms in about a minute and needs no
+    /// such bound, and on any transaction the wallet read before this was
+    /// recorded.
+    int? lockTime,
+    int? confirmationHeight,
     @Default(false) bool isToSelf,
     @Default([]) List<Label> labels,
     String? unblindedUrl,

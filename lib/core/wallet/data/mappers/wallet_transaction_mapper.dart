@@ -27,6 +27,8 @@ class WalletTransactionMapper {
       confirmationTimestamp: confirmationTime != null
           ? confirmationTime.millisecondsSinceEpoch ~/ 1000
           : null,
+      lockTime: walletTransaction.lockTime,
+      confirmationHeight: walletTransaction.confirmationHeight,
       isToSelf: walletTransaction.isToSelf,
       isTestnet: walletTransaction.network.isTestnet,
       isLiquid: walletTransaction.network.isLiquid,
@@ -64,6 +66,8 @@ class WalletTransactionMapper {
               walletTransactionModel.confirmationTimestamp! * 1000,
             )
           : null,
+      lockTime: walletTransactionModel.lockTime,
+      confirmationHeight: walletTransactionModel.confirmationHeight,
       isToSelf: walletTransactionModel.isToSelf,
       labels: labels ?? [],
       inputs: inputs,

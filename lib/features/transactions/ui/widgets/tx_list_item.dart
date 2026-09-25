@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_historical_value.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -164,6 +165,14 @@ class TxListItem extends StatelessWidget {
                             orderAmountAndCurrency != null
                         ? orderAmountAndCurrency.$2
                         : null,
+                  ),
+
+                  // What it was worth at the time. Ranges are omitted here:
+                  // they need the room the details screen has.
+                  TransactionHistoricalValue(
+                    tx: tx,
+                    alignment: CrossAxisAlignment.start,
+                    rangesAllowed: false,
                   ),
 
                   if (labels.isNotEmpty && tx.walletTransaction != null)

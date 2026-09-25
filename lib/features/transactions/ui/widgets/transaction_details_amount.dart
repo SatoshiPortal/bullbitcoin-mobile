@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_historical_value.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionDetailsAmount extends StatelessWidget {
@@ -29,27 +30,40 @@ class TransactionDetailsAmount extends StatelessWidget {
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat = isOrder && tx?.order?.displaysFiatAmount == true;
 
-    return Row(
-      mainAxisAlignment: .center,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        CurrencyText(
-          isOrder && !showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$1.toInt()
-              : amountSat ?? 0,
-          showFiat: false,
-          style: context.font.displaySmall?.copyWith(
-            color: context.appColors.secondary,
-            fontWeight: .w500,
-          ),
-          fiatAmount:
-              isOrder && showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$1.toDouble()
-              : null,
-          fiatCurrency:
-              isOrder && showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$2
-              : null,
+        Row(
+          mainAxisAlignment: .center,
+          children: [
+            CurrencyText(
+              isOrder && !showOrderInFiat && orderAmountAndCurrency != null
+                  ? orderAmountAndCurrency.$1.toInt()
+                  : amountSat ?? 0,
+              showFiat: false,
+              style: context.font.displaySmall?.copyWith(
+                color: context.appColors.secondary,
+                fontWeight: .w500,
+              ),
+              fiatAmount:
+                  isOrder && showOrderInFiat && orderAmountAndCurrency != null
+                  ? orderAmountAndCurrency.$1.toDouble()
+                  : null,
+              fiatCurrency:
+                  isOrder && showOrderInFiat && orderAmountAndCurrency != null
+                  ? orderAmountAndCurrency.$2
+                  : null,
+            ),
+          ],
         ),
+        if (tx != null) ...[
+          const SizedBox(height: 8),
+          TransactionHistoricalValue(
+            tx: tx,
+            showLabel: true,
+            alignment: CrossAxisAlignment.center,
+          ),
+        ],
       ],
     );
   }
