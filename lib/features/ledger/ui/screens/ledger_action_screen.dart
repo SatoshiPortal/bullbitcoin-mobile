@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -31,7 +30,7 @@ import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart'
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -574,7 +573,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   }
 
   void _showInstructions(BuildContext context) {
-    InstructionsBottomSheet.show(
+    BullInstructionsSheet.show(
       context,
       title: context.loc.ledgerHelpTitle,
       subtitle: context.loc.ledgerHelpSubtitle,

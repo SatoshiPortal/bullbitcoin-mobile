@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet;
 
 class ColdcardQInstructionsBottomSheet {
   static Future<void> show(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.importColdcardQInstructionsTitle,
       instructions: [
@@ -28,7 +28,7 @@ class ColdcardQInstructionsBottomSheet {
 
 class ColdcardMk4InstructionsBottomSheet {
   static Future<void> show(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.importColdcardMk4InstructionsTitle,
       instructions: [

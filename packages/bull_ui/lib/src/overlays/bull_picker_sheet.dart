@@ -86,7 +86,7 @@ class BullPickerSheet<T> extends StatelessWidget {
                         Expanded(
                           child: Text(
                             label(option),
-                            style: Theme.of(context).textTheme.headlineMedium
+                            style: Theme.of(context).textTheme.headlineSmall
                                 ?.copyWith(
                                   color: selected
                                       ? colors.primary
