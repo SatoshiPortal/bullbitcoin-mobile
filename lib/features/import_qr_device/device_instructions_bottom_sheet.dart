@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet;
 
 class DeviceInstructionsBottomSheet {
   static Future<void> show(
@@ -7,7 +7,7 @@ class DeviceInstructionsBottomSheet {
     required String title,
     required List<String> instructions,
   }) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: title,
       instructions: instructions,

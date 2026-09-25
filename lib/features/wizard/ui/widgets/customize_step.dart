@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/picker_sheet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPickerSheet;
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
@@ -141,7 +141,7 @@ Future<AppThemeMode?> _showThemeSheet(
 ) {
   return BlurredBottomSheet.show<AppThemeMode>(
     context: context,
-    child: BBPickerSheet<AppThemeMode>(
+    child: BullPickerSheet<AppThemeMode>(
       title: context.loc.settingsThemeTitle,
       options: _wizardThemeModes,
       isSelected: (mode) => mode == current,
@@ -153,7 +153,7 @@ Future<AppThemeMode?> _showThemeSheet(
 Future<Language?> _showLanguageSheet(BuildContext context, Language current) {
   return BlurredBottomSheet.show<Language>(
     context: context,
-    child: BBPickerSheet<Language>(
+    child: BullPickerSheet<Language>(
       title: context.loc.settingsLanguageTitle,
       options: Language.values,
       isSelected: (lang) => lang == current,

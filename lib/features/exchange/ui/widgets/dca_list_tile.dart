@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -9,7 +8,7 @@ import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDialog, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaListTile extends StatefulWidget {
@@ -92,7 +91,7 @@ class _DcaListTileState extends State<DcaListTile> {
                 context.pushNamed(DcaRoute.dca.name);
               } else {
                 // Deactivate DCA - show confirmation dialog
-                BlurredDialog.show(
+                BullDialog.show(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
                     backgroundColor: context.appColors.surfaceFixed,
