@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
@@ -13,8 +12,6 @@ class BdkFacade {
   static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {
       return createPublicWallet(walletModel);
-    } else if (walletModel is PrivateBdkWalletModel) {
-      return createPrivateWallet(walletModel);
     } else {
       throw ArgumentError('Unsupported wallet model type');
     }
@@ -50,104 +47,6 @@ class BdkFacade {
       final dbPersister = bdk.Persister.newSqlite(path: dbPath);
 
       // Use load if database (wallet) exists, otherwise create new
-      final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: dbPersister,
-        lookahead: _lookahead,
-      );
-    }
-  }
-
-  static Future<bdk.Wallet> createPrivateWallet(WalletModel walletModel) async {
-    if (walletModel is! PrivateBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
-    }
-
-    final network = walletModel.isTestnet
-        ? bdk.Network.testnet
-        : bdk.Network.bitcoin;
-    final networkKind = walletModel.isTestnet
-        ? bdk.NetworkKind.test
-        : bdk.NetworkKind.main;
-
-    final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
-    final secretKey = bdk.DescriptorSecretKey(
-      networkKind: networkKind,
-      mnemonic: bdkMnemonic,
-      password: walletModel.passphrase,
-    );
-
-    bdk.Descriptor? external;
-    bdk.Descriptor? internal;
-
-    switch (walletModel.scriptType) {
-      case ScriptType.bip84:
-        external = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip49:
-        external = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip44:
-        external = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-    }
-
-    // Get the database path
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-
-    try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
-      // Use load if database exists, otherwise create new
       final wallet = await dbFile.exists()
           ? bdk.Wallet.load(
               descriptor: external,

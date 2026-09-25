@@ -1,7 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -12,37 +8,19 @@ import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failur
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
-class MockCheckDuplicateMnemonicUsecase extends Mock
+class _MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
-class MockSeedRepository extends Mock implements SeedRepository {}
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class MockWalletRepository extends Mock implements WalletRepository {}
-
-class MockWallet extends Mock implements Wallet {}
+class _MockWallet extends Mock implements Wallet {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(
-      MnemonicSeed(
-        mnemonicWords: const [],
-        bytes: Uint8List(0),
-        masterFingerprint: '',
-      ),
-    );
-    registerFallbackValue(Network.bitcoinMainnet);
-    registerFallbackValue(ScriptType.bip84);
-  });
-
-  late MockCheckDuplicateMnemonicUsecase checkDuplicate;
-  late MockSeedRepository seedRepository;
-  late MockSettingsRepository settingsRepository;
-  late MockWalletRepository walletRepository;
-  late ImportWalletUsecase usecase;
-
   const words = [
     'abandon',
     'abandon',
@@ -57,130 +35,126 @@ void main() {
     'abandon',
     'about',
   ];
-
-  final fakeSeed = MnemonicSeed(
-    mnemonicWords: words,
-    bytes: Uint8List(32),
-    masterFingerprint: 'aabbccdd',
-  );
-
-  final fakeSettings = SettingsEntity(
+  final settings = SettingsEntity(
     environment: Environment.mainnet,
     bitcoinUnit: BitcoinUnit.sats,
     currencyCode: 'USD',
   );
 
+  late FakeSecureStoragePlatform storage;
+  late Secrets secrets;
+  late _MockCheckDuplicateMnemonicUsecase checkDuplicate;
+  late _MockSettingsRepository settingsRepository;
+  late _MockWalletRepository walletRepository;
+  late ImportWalletUsecase usecase;
+
+  setUpAll(() async {
+    // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
+    FakeSecureStoragePlatform().install();
+    final fallback = await Secrets(
+      scratchDirectory: () async => '/tmp',
+    ).import(words: words);
+    registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+    registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(ScriptType.bip84);
+  });
+
   setUp(() {
-    checkDuplicate = MockCheckDuplicateMnemonicUsecase();
-    seedRepository = MockSeedRepository();
-    settingsRepository = MockSettingsRepository();
-    walletRepository = MockWalletRepository();
+    storage = FakeSecureStoragePlatform()..install();
+    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
+    settingsRepository = _MockSettingsRepository();
+    walletRepository = _MockWalletRepository();
     usecase = ImportWalletUsecase(
       checkDuplicateMnemonicUsecase: checkDuplicate,
-      seedRepository: seedRepository,
+      secrets: secrets,
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
     );
-    // Used by the orphaned-seed cleanup path on import failure (#2634).
     when(
-      () => seedRepository.fingerprintFor(
+      () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
-    ).thenReturn('aabbccdd');
-    when(
-      () => seedRepository.delete(any()),
     ).thenAnswer((_) async => const Ok(null));
-    // No seed for this mnemonic yet: this import is the one creating it, so
-    // the cleanup path owns it.
-    when(() => seedRepository.exists(any())).thenAnswer((_) async => false);
+    // No wallet references any seed unless a test says so.
+    when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
+    when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
   });
 
+  void stubCreateWallet(Future<Wallet> Function() answer) {
+    when(
+      () => walletRepository.createWallet(
+        secret: any(named: 'secret'),
+        network: any(named: 'network'),
+        scriptType: any(named: 'scriptType'),
+        isDefault: any(named: 'isDefault'),
+        sync: any(named: 'sync'),
+        label: any(named: 'label'),
+      ),
+    ).thenAnswer((_) async => answer());
+  }
+
   group('ImportWalletUsecase', () {
-    test('returns Ok(wallet) on success', () async {
-      final fakeWallet = MockWallet();
-      when(
-        () => checkDuplicate.execute(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => fakeSettings);
-      when(
-        () => seedRepository.createFromMnemonic(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        ),
-      ).thenAnswer((_) async => fakeSeed);
-      when(
-        () => walletRepository.createWallet(
-          seed: any(named: 'seed'),
-          network: any(named: 'network'),
-          scriptType: any(named: 'scriptType'),
-          isDefault: any(named: 'isDefault'),
-          sync: any(named: 'sync'),
-          label: any(named: 'label'),
-        ),
-      ).thenAnswer((_) async => fakeWallet);
+    test('returns Ok(wallet) and stores the secret', () async {
+      final wallet = _MockWallet();
+      stubCreateWallet(() async => wallet);
 
       final result = await usecase.execute(
         mnemonicWords: words,
         label: 'My Wallet',
       );
 
-      expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
-      expect((result as Ok).value, fakeWallet);
+      expect((result as Ok).value, wallet);
+      expect(
+        storage.entries.keys.where((k) => k.startsWith('seed_')),
+        hasLength(1),
+      );
+    });
+
+    test('a duplicate stops before anything else is touched', () async {
+      when(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      ).thenAnswer((_) async => const Err(ImportMnemonicDuplicateFailure()));
+
+      final result = await usecase.execute(mnemonicWords: words);
+
+      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      verifyNever(() => settingsRepository.fetch());
+      expect(storage.entries, isEmpty);
     });
 
     test(
-      'returns Err(ImportMnemonicDuplicateFailure) when duplicate — no raw leak',
+      'a secret this import created is removed when the wallet cannot be built (#2634)',
       () async {
-        when(
-          () => checkDuplicate.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenAnswer((_) async => const Err(ImportMnemonicDuplicateFailure()));
+        stubCreateWallet(() async => throw Exception('wallet creation failed'));
 
-        final result = await usecase.execute(
-          mnemonicWords: words,
-          label: 'My Wallet',
-        );
+        final result = await usecase.execute(mnemonicWords: words);
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
-        verifyNever(() => settingsRepository.fetch());
-      },
-    );
-
-    test(
-      'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
-      () async {
-        when(
-          () => checkDuplicate.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenAnswer((_) async => const Ok(null));
-        when(
-          () => settingsRepository.fetch(),
-        ).thenThrow(Exception('settings unavailable'));
-
-        final result = await usecase.execute(
-          mnemonicWords: words,
-          label: 'My Wallet',
-        );
-
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-        final failure = (result as Err).failure;
-        expect(failure, isA<ImportMnemonicUnexpectedFailure>());
+        expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
-          (failure as ImportMnemonicUnexpectedFailure).logMessage,
-          contains('settings unavailable'),
+          storage.entries.keys.where((k) => k.startsWith('seed_')),
+          isEmpty,
+          reason: 'the import that created it owns the cleanup',
         );
       },
     );
+
+    test('a secret that was already stored survives a failed import', () async {
+      // Imported before this run: the failing import did not create it, so it is not its to delete.
+      await secrets.import(words: words);
+      stubCreateWallet(() async => throw Exception('wallet creation failed'));
+
+      final result = await usecase.execute(mnemonicWords: words);
+
+      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect(
+        storage.entries.keys.where((k) => k.startsWith('seed_')),
+        hasLength(1),
+      );
+    });
   });
 }

@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: custody-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -65,7 +65,13 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-checks: analyze bull-ui-check fix-check format-check unit-test
+# The custody boundary around users' seeds, as a gate: no `// ignore:` of invalid_use_of_internal_member (the seal on package:secrets — `cannot-ignore` does not hold that diagnostic on Dart 3.12.2, checked 2026-09-24), no import of flutter_secure_storage outside packages/secrets and the app's own secure store, no import of package:secrets/src/ outside the package, and no keystore dependency in another pubspec. Every git-tracked Dart file and pubspec of the workspace, the root app and every melos member alike. The rules live in tools/pr_governance/custody.js, shared with the PR custody review workflow that asks a contributor why.
+custody-check:
+	@echo "🔒 custody boundary: seal, keystore plugin, package internals"
+	@node --test tools/pr_governance/custody.test.js > /dev/null
+	@node tools/pr_governance/custody-check.js
+
+checks: analyze bull-ui-check custody-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -76,7 +82,7 @@ action-pins-check:
 
 pr-governance-test:
 	@echo "🛡️ Testing PR governance policy"
-	@node --test tools/pr_governance/policy.test.js
+	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -396,19 +402,11 @@ devcontainer-up:
 
 test: unit-test integration-test
 
+# One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 unit-test:
-	@echo "🏃‍ running unit tests"
-	@fvm flutter test test/ --reporter=compact
-	@set -e; for p in packages/*/; do \
-		if [ -d "$${p}test" ]; then \
-			echo "🏃‍ running $${p}test"; \
-			if grep -qE '^  flutter:$$' "$${p}pubspec.yaml"; then \
-				( cd "$$p" && fvm flutter test --reporter=compact ); \
-			else \
-				( cd "$$p" && fvm dart test --reporter=compact ); \
-			fi; \
-		fi; \
-	done
+	@echo "🏃‍ running unit tests of every workspace member"
+	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --reporter=compact
+	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

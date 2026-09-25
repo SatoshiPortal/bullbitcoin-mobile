@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -60,7 +60,7 @@ class WalletRepository {
       _lwkWallet.isWalletSyncing(walletId: walletId);
 
   Future<Wallet> createWallet({
-    required Seed seed,
+    required Secret secret,
     required Network network,
     required ScriptType scriptType,
     String? label,
@@ -80,8 +80,8 @@ class WalletRepository {
         ? 'Instant Payments'
         : label;
 
-    final metadata = await WalletMetadataService.deriveFromSeed(
-      seed: seed,
+    final metadata = await WalletMetadataService.deriveFromSecret(
+      secret: secret,
       network: network,
       scriptType: scriptType,
       label: walletLabel,

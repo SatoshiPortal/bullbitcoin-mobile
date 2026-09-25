@@ -21,11 +21,12 @@ class HomeWarnings extends StatelessWidget {
     return BlocBuilder<WalletBloc, WalletState>(
       buildWhen: (previous, current) =>
           previous.hasNoBackup() != current.hasNoBackup() ||
-          previous.isOnLegacyStorage != current.isOnLegacyStorage ||
           previous.warnings != current.warnings,
       builder: (context, state) {
-        final showBackupWarning =
-            state.hasNoBackup() && !state.isOnLegacyStorage;
+        // The legacy-storage cohort used to suppress this warning, since
+        // they were shown a blocking overlay instead. That cohort and
+        // its overlay are gone.
+        final showBackupWarning = state.hasNoBackup();
         final serverWarning = state.warnings;
 
         if (!showBackupWarning && serverWarning.isEmpty) {

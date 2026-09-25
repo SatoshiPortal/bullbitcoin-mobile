@@ -16,7 +16,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **Use the makefile.** Don't reinvent commands:
   - `make deps` — `fvm flutter pub get --enforce-lockfile`
   - `make analyze` — `fvm flutter analyze --fatal-warnings --fatal-infos` (matches CI; same check the pre-commit hook runs)
-  - `make checks` — full CI `checks` job locally: analyze + `make bull-ui-check` + `make fix-check` + `make format-check` + unit tests. Green here means that job is green in CI
+  - `make checks` — full CI `checks` job locally: analyze + `make bull-ui-check` + `make custody-check` + `make fix-check` + `make format-check` + unit tests. Green here means that job is green in CI
   - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
   - `make translations` — `fvm flutter gen-l10n`
@@ -40,12 +40,12 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 ## Monorepo / melos
 
-The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains at the repo root through `useRootAsPackage: true`. Current `workspace:` members (checked 2026-08-27, see ARCHITECTURE.md "Monorepo Migration" for what each one owns): `bull_ui`, `bull_ui_catalogue`, `primitives`, `bull_payjoin`, `bull_tor`, `screen_privacy`, `bull_logger`, `bull_logs`. The makefile remains the canonical entry point across the workspace.
+The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains at the repo root through `useRootAsPackage: true`. Current `workspace:` members (checked 2026-09-17, see ARCHITECTURE.md "Monorepo Migration" for what each one owns): `secrets`, `bull_ui`, `bull_ui_catalogue`, `primitives`, `bull_payjoin`, `bull_tor`, `screen_privacy`, `bull_logger`, `bull_logs`. The makefile remains the canonical entry point across the workspace.
 
 - **Run melos through the makefile** (`make bootstrap`), which wraps `fvm dart run melos` so the pinned SDK ([`.fvmrc`](.fvmrc)) is used. Never type bare `melos` (wrong SDK). For melos subcommands without a make target yet, use `fvm dart run melos <cmd>` — and add a make wrapper if it becomes routine.
 - **The makefile stays canonical** for daily commands. melos does not replace it: `make deps` is still `fvm flutter pub get --enforce-lockfile`, and the reproducible build chain ([Containerfile.app](Containerfile.app), [build-android.yml](.github/workflows/build-android.yml)) does not run melos. melos is a `dev_dependency` only — never compiled into the app, so the reproducible APK is unaffected.
 - **`packages/` and `features/` are reserved homes** for the migration (exception to rule #14 below): shared-foundation/infrastructure code lives in `packages/` (`lib/core`'s infra-only spirit per rule #7 applies there too); Flutter feature packages mounted by the root shell live in `features/`. Packages stay pure Dart by default; a Flutter dependency is allowed only when the package's capability inherently requires it (plugin/platform lifecycle, a sealed UI component, or implementing `bull_ui`) — never to permit feature presentation in an infrastructure package. Each extracted package gets `resolution: workspace` plus an entry in the root `workspace:` key (pattern established by melos PR #927). See ARCHITECTURE.md "Monorepo Migration" for the full rules.
-- **Workspace verification is measured, not assumed.** Whole-project `fvm flutter analyze` covers the root and all members, and `make bootstrap` succeeds with `enforceLockfile: true` (verified 2026-07-30). Pub workspaces use the single root `pubspec.lock`; do not add member lockfiles. `make unit-test` dispatches Flutter members to `fvm flutter test` and pure-Dart members to `fvm dart test`.
+- **Workspace verification is measured, not assumed.** Whole-project `fvm flutter analyze` covers the root and all members, and `make bootstrap` succeeds with `enforceLockfile: true` (verified 2026-07-30). Pub workspaces use the single root `pubspec.lock`; do not add member lockfiles. `make unit-test` runs `melos exec` over every declared member with a `test/` directory, the app included: Flutter members through `fvm flutter test`, pure-Dart members through `fvm dart test`. It calls `melos exec` directly through `fvm dart run`, because `melos run` would re-invoke a bare `melos` from `PATH`.
 
 ## Architecture — enforce, don't drift
 
@@ -235,6 +235,7 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 
 This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold these as hard as the architecture rules:
 
+- **Only `packages/secrets` touches the keystore that holds the seeds.** No new import of `flutter_secure_storage` outside it (the app's own secure store in `lib/core/storage` is the one allowlisted exception), no import of `package:secrets/src/`, and never an `// ignore:` of `invalid_use_of_internal_member`. `make custody-check` fails on any of them, and the `PR custody review` workflow asks the contributor why in a PR comment. Rules: `tools/pr_governance/custody.js`.
 - **Never log secrets.** Mnemonics, seeds, xprivs, PINs, raw key material never reach logs, Sentry, or analytics. Scrub before reporting; assume anything logged is exfiltrated.
 - **Secrets are ephemeral.** Read from `flutter_secure_storage` at point of use; don't cache key material in long-lived bloc/singleton state. Treat a revealed value as short-lived.
 - **Sealed UI for display.** Show a secret through a widget that reads it internally and never returns it (the `MnemonicView` pattern — see ARCHITECTURE.md "Sealed UI as a security tool"); never add a getter that hands the raw value to a caller.

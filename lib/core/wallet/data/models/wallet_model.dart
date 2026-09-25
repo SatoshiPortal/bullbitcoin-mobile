@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_model.freezed.dart';
@@ -17,18 +16,6 @@ sealed class WalletModel with _$WalletModel {
     required String combinedCtDescriptor,
     required bool isTestnet,
   }) = PublicLwkWalletModel;
-  const factory WalletModel.privateBdk({
-    required String id,
-    required ScriptType scriptType,
-    required String mnemonic,
-    String? passphrase,
-    required bool isTestnet,
-  }) = PrivateBdkWalletModel;
-  const factory WalletModel.privateLwk({
-    required String id,
-    required String mnemonic,
-    required bool isTestnet,
-  }) = PrivateLwkWalletModel;
 
   const WalletModel._();
 

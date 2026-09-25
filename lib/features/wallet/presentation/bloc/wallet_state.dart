@@ -17,8 +17,6 @@ sealed class WalletState with _$WalletState {
     WalletError? walletDeletionError,
     @Default(false) bool isCheckingServiceStatus,
     @Default(false) bool backupWarningDismissed,
-    @Default(false) bool isOnLegacyStorage,
-    @Default(false) bool legacyStorageWarningDismissed,
   }) = _WalletState;
   const WalletState._();
 
@@ -53,9 +51,5 @@ sealed class WalletState with _$WalletState {
 
   bool showBackupWarning() {
     return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
-  }
-
-  bool showLegacyStorageWarning() {
-    return isOnLegacyStorage && !legacyStorageWarningDismissed;
   }
 }

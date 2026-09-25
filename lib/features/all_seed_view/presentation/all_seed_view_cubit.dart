@@ -1,10 +1,12 @@
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -18,19 +20,21 @@ part 'all_seed_view_state.dart';
 
 class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   AllSeedViewCubit({
-    required this._getAllSeedsUsecase,
+    required this._getAllSecretsUsecase,
     required this._getWalletsUsecase,
-    required this._deleteSeedUsecase,
-    required this._processAndSeparateSeedsUsecase,
+    required this._deleteSecretUsecase,
+    required this._separateSecretsUsecase,
     required this._getSwapMasterKeyUsecase,
+    required this._getSwapMnemonicUsecase,
     required this._deleteSwapMasterKeyUsecase,
   }) : super(const AllSeedViewState());
 
-  final GetAllSeedsUsecase _getAllSeedsUsecase;
+  final GetAllSecretsUsecase _getAllSecretsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final DeleteSeedUsecase _deleteSeedUsecase;
-  final ProcessAndSeparateSeedsUsecase _processAndSeparateSeedsUsecase;
+  final DeleteSecretUsecase _deleteSecretUsecase;
+  final SeparateSecretsUsecase _separateSecretsUsecase;
   final GetSwapMasterKeyUsecase _getSwapMasterKeyUsecase;
+  final GetSwapMnemonicUsecase _getSwapMnemonicUsecase;
   final DeleteSwapMasterKeyUsecase _deleteSwapMasterKeyUsecase;
 
   /// Called once the user has re-confirmed the app PIN on this screen.
@@ -47,12 +51,14 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     if (!state.isUnlocked) return;
     emit(state.copyWith(loading: true, failure: null));
 
-    final List<MnemonicSeed> seeds;
-    switch ((await _getAllSeedsUsecase.execute()).mapErr(
+    final List<Secret> seeds;
+    final int unreadable;
+    switch ((await _getAllSecretsUsecase.execute()).mapErr(
       (f) => AllSeedViewFetchFailure(f.logMessage),
     )) {
       case Ok(:final value):
-        seeds = value;
+        seeds = value.secrets;
+        unreadable = value.unreadable;
       case Err(:final failure):
         emit(state.copyWith(loading: false, failure: failure));
         return;
@@ -79,8 +85,8 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       );
     }
 
-    final processed = _processAndSeparateSeedsUsecase.execute(
-      seeds: seeds,
+    final processed = _separateSecretsUsecase.execute(
+      secrets: seeds,
       existingFingerprints: existingFingerprints,
     );
 
@@ -98,9 +104,24 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
         loading: false,
         existingWallets: processed.existingWallets,
         oldWallets: processed.oldWallets,
+        unreadableEntries: unreadable,
         swapMasterKey: swapMasterKey,
         failure: null,
       ),
+    );
+  }
+
+  /// The swap mnemonic, at the moment the card draws it.
+  ///
+  /// Not in state, by design: the words used to be carried in
+  /// [SwapMasterKeyInfo] and live for as long as this screen. The caller is
+  /// the card's own `FutureBuilder` — the sealed-display shape, for a
+  /// credential that belongs to `swaps` and so cannot use `MnemonicView`.
+  Future<String?> loadSwapMnemonic() async {
+    final walletFingerprint = state.swapMasterKey?.walletFingerprint;
+    if (walletFingerprint == null) return null;
+    return _getSwapMnemonicUsecase.execute(
+      walletFingerprint: walletFingerprint,
     );
   }
 
@@ -109,17 +130,15 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   void hideSeeds() => emit(state.copyWith(seedsVisible: false));
 
   Future<void> deleteSeed(String fingerprint) async {
-    switch ((await _deleteSeedUsecase.execute(
-      fingerprint,
-    )).mapErr((f) => AllSeedViewDeleteFailure(f.logMessage))) {
+    switch (await _deleteSecretUsecase.execute(Fingerprint(fingerprint))) {
       case Ok():
         emit(
           state.copyWith(
             existingWallets: state.existingWallets
-                .where((s) => s.masterFingerprint != fingerprint)
+                .where((s) => s.id.hex != fingerprint)
                 .toList(),
             oldWallets: state.oldWallets
-                .where((s) => s.masterFingerprint != fingerprint)
+                .where((s) => s.id.hex != fingerprint)
                 .toList(),
             failure: null,
           ),
