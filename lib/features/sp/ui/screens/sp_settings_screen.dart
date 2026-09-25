@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
@@ -14,7 +13,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDialog, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -353,7 +352,7 @@ Future<bool> _confirm(
   required String content,
   required String confirmLabel,
 }) async {
-  final result = await BlurredDialog.show<bool>(
+  final result = await BullDialog.show<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title),
