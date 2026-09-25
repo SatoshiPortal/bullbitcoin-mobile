@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
@@ -35,7 +34,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._syncCoordinator,
     required this._getUnconfirmedIncomingBalanceUsecase,
     required this._deleteWalletUsecase,
-    required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
   }) : super(const WalletState()) {
@@ -46,7 +44,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
     on<WalletDeleted>(_onDeleted);
     on<DismissBackupWarning>(_onDismissBackupWarning);
-    on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
   }
 
@@ -59,7 +56,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
 
@@ -96,16 +92,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               isSyncing, // If global sync is true, all wallets are syncing
       };
 
-      final seedStoreType = await _seedStoreTypeDatasource.read();
-      final isOnLegacyStorage =
-          seedStoreType?.toEntity().isLegacyStorage ?? false;
-
       emit(
         WalletState(
           status: WalletStatus.success,
           wallets: wallets,
           syncStatus: syncStatus,
-          isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
 
@@ -372,13 +363,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     emit(state.copyWith(backupWarningDismissed: true));
-  }
-
-  void _onDismissLegacyStorageWarning(
-    DismissLegacyStorageWarning event,
-    Emitter<WalletState> emit,
-  ) {
-    emit(state.copyWith(legacyStorageWarningDismissed: true));
   }
 
   Future<void> _onVerifyBackupStatus(

@@ -204,6 +204,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
 
+      - name: Custody boundary (seal never ignored, keystore plugin only in packages/secrets)
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make custody-check
+
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make fix-check

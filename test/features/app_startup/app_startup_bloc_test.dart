@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
@@ -20,9 +19,6 @@ class _MockCheckPinCodeExistsUsecase extends Mock
 
 class _MockCheckForExistingDefaultWalletsUsecase extends Mock
     implements CheckForExistingDefaultWalletsUsecase {}
-
-class _MockCheckLegacyInstallUsecase extends Mock
-    implements CheckLegacyInstallUsecase {}
 
 class _MockCheckBackupUsecase extends Mock implements CheckBackupUsecase {}
 
@@ -42,14 +38,12 @@ void main() {
   late _MockResetAppDataUsecase resetAppData;
   late _MockCheckPinCodeExistsUsecase checkPinCodeExists;
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
-  late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockInitializeRequiredTorUsecase initializeRequiredTor;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
     checkPinCodeExistsUsecase: checkPinCodeExists,
     checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
-    checkLegacyInstallUsecase: checkLegacyInstall,
     checkBackupUsecase: _MockCheckBackupUsecase(),
     initializeRequiredTorUsecase: initializeRequiredTor,
   );
@@ -58,7 +52,6 @@ void main() {
     resetAppData = _MockResetAppDataUsecase();
     checkPinCodeExists = _MockCheckPinCodeExistsUsecase();
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
-    checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     initializeRequiredTor = _MockInitializeRequiredTorUsecase();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
@@ -66,56 +59,27 @@ void main() {
     when(() => initializeRequiredTor.execute()).thenAnswer((_) async => null);
   });
 
-  test(
-    'gates when the legacy marker is present and no default wallets exist',
-    () async {
-      when(() => checkDefaultWallets.execute()).thenAnswer((_) async => false);
-      when(() => checkLegacyInstall.execute()).thenAnswer((_) async => true);
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
+  test('starts up when default wallets exist', () async {
+    when(() => checkDefaultWallets.execute()).thenAnswer((_) async => true);
+    when(
+      () => checkPinCodeExists.execute(),
+    ).thenAnswer((_) async => const Ok(true));
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
 
-      unawaited(
-        expectLater(
-          bloc.stream,
-          emitsInOrder([
-            isA<AppStartupLoadingInProgress>(),
-            isA<AppStartupLegacyBackupRequired>(),
-          ]),
-        ),
-      );
+    unawaited(
+      expectLater(
+        bloc.stream,
+        emitsInOrder([
+          isA<AppStartupLoadingInProgress>(),
+          isA<AppStartupSuccess>(),
+        ]),
+      ),
+    );
 
-      bloc.add(const AppStartupStarted());
-    },
-  );
-
-  test(
-    'skips the gate when default wallets exist despite a legacy marker',
-    () async {
-      when(() => checkDefaultWallets.execute()).thenAnswer((_) async => true);
-      when(
-        () => checkPinCodeExists.execute(),
-      ).thenAnswer((_) async => const Ok(true));
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
-
-      unawaited(
-        expectLater(
-          bloc.stream,
-          emitsInOrder([
-            isA<AppStartupLoadingInProgress>(),
-            isA<AppStartupSuccess>(),
-          ]),
-        ),
-      );
-
-      bloc.add(const AppStartupStarted());
-      await bloc.stream.firstWhere((s) => s is AppStartupSuccess);
-
-      // The legacy check must not even run: current seeds are not
-      // legacy-format and would be missing from the backup screen.
-      verifyNever(() => checkLegacyInstall.execute());
-    },
-  );
+    bloc.add(const AppStartupStarted());
+    await bloc.stream.firstWhere((s) => s is AppStartupSuccess);
+  });
 
   test(
     'stays on splash when the keychain is locked before first unlock',
@@ -138,9 +102,8 @@ void main() {
     },
   );
 
-  test('does not gate a fresh install without a legacy marker', () async {
+  test('a fresh install with no default wallets starts up', () async {
     when(() => checkDefaultWallets.execute()).thenAnswer((_) async => false);
-    when(() => checkLegacyInstall.execute()).thenAnswer((_) async => false);
     final bloc = buildBloc();
     addTearDown(bloc.close);
 

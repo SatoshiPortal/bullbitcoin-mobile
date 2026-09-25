@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
-import 'package:bb_mobile/core/seed/seed_locator.dart';
+import 'package:secrets/secrets.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
 import 'package:bb_mobile/core/settings/settings_locator.dart';
@@ -41,7 +42,6 @@ class CoreLocator {
     await MempoolLocator.registerDatasources(locator);
     RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
-    SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
@@ -82,7 +82,22 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
-    SeedLocator.registerRepositories(locator);
+    // One instance per process, as a lazy singleton: its scratch directory and its logging context are per instance. The package's lock is per isolate; the WorkManager isolate builds its own instance and must not write the keystore. The host supplies nothing about storage.
+    //
+    // The temporary directory, not the documents one. Signing a PSET makes lwk
+    // write its wallet cache — which carries a Liquid confidential descriptor,
+    // and so the seed-derived SLIP-77 blinding key — into a fresh directory
+    // under this path, removed in a finally. A process killed mid-signature
+    // leaves one behind; the package sweeps `lwk_sign_*` older than ten
+    // minutes, and the choice of parent bounds what the sweep misses: the OS purges its temporary directory and,
+    // on iOS, excludes it from backups independently of anything this app
+    // does. The documents directory is neither purged nor independently
+    // excluded — it relies on a single try? in AppDelegate that fails open.
+    locator.registerLazySingleton<Secrets>(
+      () => Secrets(
+        scratchDirectory: () async => (await getTemporaryDirectory()).path,
+      ),
+    );
     RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
@@ -94,7 +109,6 @@ class CoreLocator {
   static void registerServices(GetIt locator) {
     ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);
-    SeedLocator.registerServices(locator);
   }
 
   static void registerUsecases(GetIt locator) {
@@ -106,8 +120,6 @@ class CoreLocator {
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
     RecoverbullLocator.registerUsecases(locator);
-    SeedLocator.registerUsecases(locator);
-    StorageLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);

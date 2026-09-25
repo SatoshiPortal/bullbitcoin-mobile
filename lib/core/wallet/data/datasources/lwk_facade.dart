@@ -69,34 +69,6 @@ class LwkFacade {
     }
   }
 
-  static Future<lwk.Wallet> createPrivateWallet(WalletModel walletModel) async {
-    try {
-      if (walletModel is! PrivateLwkWalletModel) {
-        throw Exception('Wallet is not an LWK wallet');
-      }
-      final network = walletModel.isTestnet
-          ? lwk.LiquidNetwork.testnet
-          : lwk.LiquidNetwork.mainnet;
-      final descriptor = await lwk.Descriptor.newConfidential(
-        mnemonic: walletModel.mnemonic,
-        network: network,
-      );
-      final dbPath = await _getDbPath(walletModel.hexId);
-      final wallet = await lwk.Wallet.init(
-        network: network,
-        dbpath: dbPath,
-        descriptor: descriptor,
-      );
-      return wallet;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   static Future<void> sync(
     WalletModel wallet,
     ElectrumServerModel electrumServer,

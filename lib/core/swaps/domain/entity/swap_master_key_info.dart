@@ -1,11 +1,11 @@
-/// Display/management view of the dedicated swap master key (the "swap
-/// mnemonic"), surfaced in the seed viewer so a super-user can inspect and
-/// delete it. Carries only what the UI needs — never round-tripped into
-/// storage.
+/// What the seed viewer shows about the dedicated swap master key.
+///
+/// **No mnemonic.** The words used to travel in here and sit in cubit state
+/// for as long as the screen lived. They are now read at the moment they are
+/// drawn, by `GetSwapMnemonicUsecase`, the same sealed-display shape
+/// `secrets` uses for wallet seeds — see ARCHITECTURE.md, "Sealed UI as a
+/// security tool". Never round-tripped into storage.
 class SwapMasterKeyInfo {
-  /// The swap mnemonic words (space-joined).
-  final String mnemonic;
-
   /// The swap master key's OWN fingerprint (distinct from [walletFingerprint]).
   final String fingerprint;
 
@@ -16,7 +16,6 @@ class SwapMasterKeyInfo {
   final String network;
 
   const SwapMasterKeyInfo({
-    required this.mnemonic,
     required this.fingerprint,
     required this.walletFingerprint,
     required this.network,

@@ -1,13 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -17,17 +18,16 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
+  final Secrets _secrets;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
+    required this._secrets,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _seed = seedDatasource,
-       _bdkWallet = bdkWalletDatasource,
+  }) : _bdkWallet = bdkWalletDatasource,
        _frozenUtxos = frozenWalletUtxoDatasource;
 
   @override
@@ -125,10 +125,45 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     return psbt;
   }
 
+  /// Signs with the wallet's own key, which never leaves `secrets`.
+  ///
+  /// The package builds the bdk wallet, signs, and throws it away; this
+  /// repository holds no private wallet model, so the mnemonic has no
+  /// reason to exist here.
   Future<String> signPsbt(String psbt, {required String walletId}) async {
-    final wallet = await getPrivateWallet(walletId: walletId);
-    final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
-    return signedPsbt;
+    final metadata = await _metadataFor(walletId);
+    final secret = await _secretFor(metadata);
+
+    return switch (await secret.sign.psbt(
+      psbt,
+      network: metadata.network.bitcoin,
+      scriptType: metadata.scriptType.shared,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('Failed to sign PSBT: $failure'),
+    };
+  }
+
+  Future<WalletMetadataModel> _metadataFor(String walletId) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    return metadata;
+  }
+
+  Future<Secret> _secretFor(WalletMetadataModel metadata) async {
+    final fingerprint = metadata.seedFingerprint;
+    if (fingerprint == null) {
+      throw Exception('No secret for wallet: not a seed-derived wallet');
+    }
+    return switch (await _secrets.fetch(fingerprint)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
+    };
   }
 
   Future<bool> isScriptOfWallet({
@@ -221,35 +256,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     );
   }
 
-  Future<PrivateBdkWalletModel> getPrivateWallet({
-    required String walletId,
-  }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
-
-    final wallet =
-        WalletModel.privateBdk(
-              id: metadata.id,
-              mnemonic: mnemonic,
-              passphrase: seed.passphrase,
-              scriptType: metadata.scriptType,
-              isTestnet: metadata.isTestnet,
-            )
-            as PrivateBdkWalletModel;
-    return wallet;
-  }
-
   Future<({BigInt satoshis, int transactions})> dryScan({
     required List<int> entropy,
     required String passphrase,
@@ -271,13 +277,24 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
-    final wallet = await getPrivateWallet(walletId: walletId);
+    final metadata = await _metadataFor(walletId);
+    // Building an RBF replacement needs the wallet's UTXO set, not its
+    // key: the public descriptors are enough. Signing happens after,
+    // inside `secrets`.
+    final wallet =
+        WalletModel.publicBdk(
+              externalDescriptor: metadata.externalPublicDescriptor,
+              internalDescriptor: metadata.internalPublicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
+
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
       wallet: wallet,
       txid: txid,
       feeRate: newFeeRate,
     );
-    final signedPsbt = await signPsbt(psbt, walletId: walletId);
-    return signedPsbt;
+    return signPsbt(psbt, walletId: walletId);
   }
 }

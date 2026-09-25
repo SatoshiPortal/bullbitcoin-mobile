@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,18 +13,14 @@ class _MockCompletePhysicalBackupVerificationUsecase extends Mock
 class _MockLoadWalletsForNetworkUsecase extends Mock
     implements LoadWalletsForNetworkUsecase {}
 
-class _MockGetMnemonicFromFingerprintUsecase extends Mock
-    implements GetMnemonicFromFingerprintUsecase {}
-
-class _MockVerifyPhysicalBackupUsecase extends Mock
-    implements VerifyPhysicalBackupUsecase {}
+class _MockGetSecretFromFingerprintUsecase extends Mock
+    implements GetSecretFromFingerprintUsecase {}
 
 class _SeedableTestWalletBackupBloc extends TestWalletBackupBloc {
   _SeedableTestWalletBackupBloc({
     required super.completePhysicalBackupVerificationUsecase,
     required super.loadWalletsForNetworkUsecase,
-    required super.getMnemonicFromFingerprintUsecase,
-    required super.verifyPhysicalBackupUsecase,
+    required super.getSecretFromFingerprintUsecase,
   });
 
   void seed(TestWalletBackupState state) => emit(state);
@@ -66,21 +61,18 @@ Wallet _wallet({required bool isDefault, required String origin}) => Wallet(
 void main() {
   late _MockCompletePhysicalBackupVerificationUsecase completeUsecase;
   late _MockLoadWalletsForNetworkUsecase loadWalletsUsecase;
-  late _MockGetMnemonicFromFingerprintUsecase getMnemonicUsecase;
-  late _MockVerifyPhysicalBackupUsecase verifyUsecase;
+  late _MockGetSecretFromFingerprintUsecase getSecretUsecase;
 
   setUp(() {
     completeUsecase = _MockCompletePhysicalBackupVerificationUsecase();
     loadWalletsUsecase = _MockLoadWalletsForNetworkUsecase();
-    getMnemonicUsecase = _MockGetMnemonicFromFingerprintUsecase();
-    verifyUsecase = _MockVerifyPhysicalBackupUsecase();
+    getSecretUsecase = _MockGetSecretFromFingerprintUsecase();
   });
 
   _SeedableTestWalletBackupBloc buildBloc() => _SeedableTestWalletBackupBloc(
     completePhysicalBackupVerificationUsecase: completeUsecase,
     loadWalletsForNetworkUsecase: loadWalletsUsecase,
-    getMnemonicFromFingerprintUsecase: getMnemonicUsecase,
-    verifyPhysicalBackupUsecase: verifyUsecase,
+    getSecretFromFingerprintUsecase: getSecretUsecase,
   );
 
   group('TestWalletBackupBloc', () {
@@ -106,14 +98,12 @@ void main() {
     });
 
     test(
-      'emits success and completes the backup when words are correct',
+      'records the backup once the sealed challenge has judged it',
       () async {
-        when(
-          () => verifyUsecase.execute(
-            fingerprint: _fingerprint,
-            mnemonic: _mnemonicWords,
-          ),
-        ).thenAnswer((_) async => true);
+        // The comparison no longer happens here: `MnemonicChallenge` runs it
+        // through `Secret.verifyWords`, inside the package, and the event that
+        // reaches this bloc carries no words at all. What is left to test is
+        // the bookkeeping.
         when(() => completeUsecase.execute()).thenAnswer((_) async {});
         final bloc = buildBloc();
         bloc.seed(
@@ -130,56 +120,36 @@ void main() {
             ),
           ),
         );
-        bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
+        bloc.add(const VerifyPhysicalBackup());
         await expectation;
 
-        verify(
-          () => verifyUsecase.execute(
-            fingerprint: _fingerprint,
-            mnemonic: _mnemonicWords,
-          ),
-        ).called(1);
         verify(() => completeUsecase.execute()).called(1);
         await bloc.close();
       },
     );
 
-    test(
-      'emits failure and does not complete the backup when words are wrong',
-      () async {
-        when(
-          () => verifyUsecase.execute(
-            fingerprint: any(named: 'fingerprint'),
-            mnemonic: any(named: 'mnemonic'),
-          ),
-        ).thenAnswer((_) async => false);
-        final bloc = buildBloc();
-        bloc.seed(
-          TestWalletBackupState(
-            selectedWallet: _wallet(isDefault: true, origin: 'a'),
-          ),
-        );
+    test('refuses to record a backup with no wallet selected', () async {
+      final bloc = buildBloc();
 
-        final expectation = expectLater(
-          bloc.stream,
-          emits(
-            predicate<TestWalletBackupState>(
-              (s) => s.verificationStatus == BackupVerificationStatus.failure,
-            ),
+      final expectation = expectLater(
+        bloc.stream,
+        emits(
+          predicate<TestWalletBackupState>(
+            (s) => s.statusError == 'No wallet selected',
           ),
-        );
-        bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
-        await expectation;
+        ),
+      );
+      bloc.add(const VerifyPhysicalBackup());
+      await expectation;
 
-        verifyNever(() => completeUsecase.execute());
-        await bloc.close();
-      },
-    );
+      verifyNever(() => completeUsecase.execute());
+      await bloc.close();
+    });
 
-    test('never exposes the secret through state or toString', () async {
-      when(
-        () => getMnemonicUsecase.execute(_fingerprint),
-      ).thenAnswer((_) async => (_mnemonicWords, 'secret-passphrase'));
+    test('hands out a handle, never the words', () async {
+      // The bloc cannot return a mnemonic any more: the usecase gives a
+      // `Secret`, which carries a description and a reference. There is no
+      // app-side path left that could put words in state.
       final bloc = buildBloc();
       bloc.seed(
         TestWalletBackupState(
@@ -187,14 +157,10 @@ void main() {
         ),
       );
 
-      final (words, passphrase) = await bloc.loadSelectedWalletMnemonic();
-
-      expect(words, _mnemonicWords);
-      expect(passphrase, 'secret-passphrase');
       for (final word in _mnemonicWords) {
         expect(bloc.state.toString(), isNot(contains(word)));
       }
-      expect(bloc.state.toString(), isNot(contains('secret-passphrase')));
+      expect(bloc.loadSelectedWalletSecret, isA<Function>());
       await bloc.close();
     });
   });

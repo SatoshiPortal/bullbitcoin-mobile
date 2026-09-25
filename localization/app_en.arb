@@ -8070,6 +8070,15 @@
   "@recoverbullEncryptedVaultCreated": {
     "description": "Success message title after vault creation"
   },
+  "recoverbullVaultPassphraseNotIncluded": "Your wallet has a passphrase, and this vault does not contain it. Keep the passphrase with your backup: the vault alone restores a different wallet.",
+  "@recoverbullVaultPassphraseNotIncluded": {
+    "description": "Warning shown after creating a vault for a wallet that has a BIP39 passphrase, since the vault format carries the words only"
+  },
+  "allSeedViewUnreadableEntries": "{count, plural, =1{1 stored entry could not be read and is not shown.} other{{count} stored entries could not be read and are not shown.}}",
+  "@allSeedViewUnreadableEntries": {
+    "description": "Shown in the seed viewer when the keystore holds entries under the secrets prefix that could not be parsed",
+    "placeholders": {"count": {"type": "int"}}
+  },
   "recoverbullEnterInput": "Enter your {inputType}",
   "@recoverbullEnterInput": {
     "description": "Input field label prompting for PIN or password",
@@ -12421,94 +12430,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "legacyStorageBadgeActionRequired": "ACTION REQUIRED",
-  "@legacyStorageBadgeActionRequired": {
-    "description": "Red pill badge above the legacy storage warning page title"
-  },
-  "legacyStorageBadgeConfirm": "CONFIRM",
-  "@legacyStorageBadgeConfirm": {
-    "description": "Red pill badge above the are-you-sure confirmation title"
-  },
-  "legacyStorageNoBackupPageTitle": "BACKUP AND RE-INSTALL YOUR WALLET",
-  "@legacyStorageNoBackupPageTitle": {
-    "description": "Full-page warning title shown when the wallet has no backup"
-  },
-  "legacyStorageHasBackupPageTitle": "RE-INSTALL YOUR WALLET",
-  "@legacyStorageHasBackupPageTitle": {
-    "description": "Full-page warning title shown when the wallet already has a backup"
-  },
-  "legacyStorageIntroDescription": "Your wallet is running on software that will soon be deprecated. This cannot be updated without uninstalling and re-installing the app.",
-  "@legacyStorageIntroDescription": {
-    "description": "Intro paragraph below the full-page warning title"
-  },
-  "legacyStorageStepBackupWallet": "Backup your wallet",
-  "@legacyStorageStepBackupWallet": {
-    "description": "Step 1 in the legacy storage warning checklist"
-  },
-  "legacyStorageStepExportLabels": "Export your labels (if you have any)",
-  "@legacyStorageStepExportLabels": {
-    "description": "Step 2 in the legacy storage warning checklist"
-  },
-  "legacyStorageStepEnsureSwapsCompleted": "Ensure all swaps are completed",
-  "@legacyStorageStepEnsureSwapsCompleted": {
-    "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
-  },
-  "legacyStorageStepUninstall": "Uninstall the app from your device",
-  "@legacyStorageStepUninstall": {
-    "description": "Uninstall step in the legacy storage warning checklist"
-  },
-  "legacyStorageStepReinstall": "Download the latest version and re-install",
-  "@legacyStorageStepReinstall": {
-    "description": "Reinstall step in the legacy storage warning checklist"
-  },
-  "legacyStorageStepRestoreBackup": "Restore your backup",
-  "@legacyStorageStepRestoreBackup": {
-    "description": "Final step in the legacy storage warning checklist"
-  },
-  "legacyStorageImportantTitle": "Important",
-  "@legacyStorageImportantTitle": {
-    "description": "Title of the red callout box on the legacy storage warning page"
-  },
-  "legacyStorageImportantBody": "Please do not skip this process unless you absolutely cannot do a backup at this moment.",
-  "@legacyStorageImportantBody": {
-    "description": "Body of the red callout box on the legacy storage warning page"
-  },
-  "legacyStorageContinueFooterNoBackup": "You can continue using the app without doing a backup, but we strongly recommend against it.",
-  "@legacyStorageContinueFooterNoBackup": {
-    "description": "Footer text on the legacy storage warning page when the wallet has no backup"
-  },
-  "legacyStorageContinueFooterHasBackup": "You can continue using the app, but we strongly recommend against it.",
-  "@legacyStorageContinueFooterHasBackup": {
-    "description": "Footer text on the legacy storage warning page when the wallet already has a backup"
-  },
-  "legacyStorageBackupNowButton": "Backup now",
-  "@legacyStorageBackupNowButton": {
-    "description": "Primary CTA on the legacy storage warning and confirmation pages"
-  },
-  "legacyStorageRiskAckButton": "No, I understand the risk",
-  "@legacyStorageRiskAckButton": {
-    "description": "Secondary CTA on the legacy storage warning page that acknowledges the risk"
-  },
-  "legacyStorageAreYouSureTitle": "ARE YOU SURE?",
-  "@legacyStorageAreYouSureTitle": {
-    "description": "Title of the legacy storage are-you-sure confirmation page"
-  },
-  "legacyStorageAreYouSureParagraphOne": "The software used to store the wallet’s Bitcoin private keys is being deprecated. We strongly recommend you create a backup right now to avoid any disruption in the future.",
-  "@legacyStorageAreYouSureParagraphOne": {
-    "description": "First paragraph of the are-you-sure confirmation page"
-  },
-  "legacyStorageAreYouSureParagraphTwo": "The Encrypted Vault backup option will take about 1 minute, no special tools required. Using the physical backup, all you need is a pen and paper.",
-  "@legacyStorageAreYouSureParagraphTwo": {
-    "description": "Second paragraph of the are-you-sure confirmation page"
-  },
-  "legacyStorageContinueWithoutBackupButton": "Continue without backup",
-  "@legacyStorageContinueWithoutBackupButton": {
-    "description": "Confirm button on the are-you-sure page that dismisses the warning"
-  },
-  "legacyStorageAcceptRisksCheckbox": "I accept the risks of not doing a backup",
-  "@legacyStorageAcceptRisksCheckbox": {
-    "description": "Checkbox label that gates the continue-without-backup button"
-  },
   "backButton": "Back",
   "@backButton": {
     "description": "Generic back button label"
@@ -12664,14 +12585,6 @@
   "wizardJourneyTip8": "Create air-gapped transactions for your hardware wallet",
   "@wizardJourneyTip8": {
     "description": "Tip 8 on the wizard journey page"
-  },
-  "legacyStorageHasBackupImportantBody": "Please do not skip this process unless you absolutely need to use the wallet urgently or waiting for a swap to complete.",
-  "@legacyStorageHasBackupImportantBody": {
-    "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
-  },
-  "legacyStorageRiskAckButtonHasBackup": "I understand the risk",
-  "@legacyStorageRiskAckButtonHasBackup": {
-    "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
   },
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "@walletSetupErrorTryAgain": {
@@ -14010,38 +13923,6 @@
   "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
   "@mnemonicUnknownWordError": {
     "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
-  },
-  "legacyBackupTitle": "Backup required",
-  "@legacyBackupTitle": {
-    "description": "Title of the blocking backup screen shown to pre-v5 (legacy) installs"
-  },
-  "legacyBackupMessage": "This version of the app is too old to be upgraded automatically. To keep your bitcoin, write down the recovery phrase(s) below, then delete and reinstall the app.",
-  "@legacyBackupMessage": {
-    "description": "Explanation on the legacy backup gate screen"
-  },
-  "legacyBackupWalletLabel": "Wallet",
-  "@legacyBackupWalletLabel": {
-    "description": "Label above a legacy wallet fingerprint on the backup gate screen"
-  },
-  "legacyBackupPassphraseLabel": "Passphrase",
-  "@legacyBackupPassphraseLabel": {
-    "description": "Label above a legacy wallet passphrase on the backup gate screen"
-  },
-  "legacyBackupConfirm": "I have written down all recovery phrases and passphrases above",
-  "@legacyBackupConfirm": {
-    "description": "Confirmation checkbox label on the legacy backup gate screen"
-  },
-  "legacyBackupReinstallMessage": "Delete this app and reinstall it from the store. During setup, choose to recover an existing wallet and enter your recovery phrase.",
-  "@legacyBackupReinstallMessage": {
-    "description": "Reinstall instructions shown after the user confirms their backup"
-  },
-  "legacyBackupReinstallTitle": "Next steps",
-  "@legacyBackupReinstallTitle": {
-    "description": "Title of the instructions shown after the user confirms their backup"
-  },
-  "legacyBackupNoSeedsMessage": "No recovery phrase could be read from this install. Do NOT delete the app — contact support first.",
-  "@legacyBackupNoSeedsMessage": {
-    "description": "Warning shown when a legacy install has no readable seed"
   },
   "sellDepositAddress": "Deposit address",
   "@sellDepositAddress": {

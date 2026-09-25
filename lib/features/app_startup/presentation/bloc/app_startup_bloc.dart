@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/app_startup/domain/missing_default_secret_exception.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
@@ -27,7 +27,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._resetAppDataUsecase,
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
-    required this._checkLegacyInstallUsecase,
     required this._checkBackupUsecase,
     required this._initializeRequiredTorUsecase,
   }) : super(const AppStartupState.initial()) {
@@ -39,7 +38,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
 
@@ -79,19 +77,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
 
       final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
           .execute();
-
-      // Pre-v5 ("BULL") installs are no longer migrated: gate them behind a
-      // backup screen. Only when the new DB is empty — the legacy marker can
-      // survive a failed migration while the user has since set up working
-      // v5+ wallets, and those current seeds are not legacy-format: gating
-      // such an install would show a backup screen missing its live wallets
-      // and instruct deleting them.
-      if (!doDefaultWalletsExist &&
-          await _checkLegacyInstallUsecase.execute()) {
-        log.warning('Legacy (pre-v5) install detected — backup gate shown');
-        emit(const AppStartupState.legacyBackupRequired());
-        return;
-      }
 
       bool isPinCodeSet = false;
 
@@ -136,6 +121,36 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // re-dispatches `AppStartupStarted` on `resumed`, which only
       // fires after the user has unlocked the device since boot.
       _waitForKeychainUnlock();
+    } on MissingDefaultSecretException catch (e, st) {
+      // The seed is gone and the wallet metadata is not — the fss9 cohort,
+      // or a wiped keystore. Distinct from the catch-all below so the log
+      // says which, and so the state carries `hasBackup`.
+      //
+      // ⚠️ `hasBackup` reaches `AppStartupFailureScreen` and that screen does
+      // not read it: it renders the same title, message and "contact support"
+      // button on every failure. So this branch changes what is logged, not
+      // what the user is offered — a user whose keystore is gone but whose
+      // encrypted vault exists is still told to contact support, and cannot
+      // reach a restore from here. Reproduced on device, 2026-09-17: the
+      // screen persists across a full restart.
+      //
+      // The remedy this distinction exists for is not implemented. Offering
+      // it means a route from the failure screen into the recovery flow,
+      // which is a product change rather than a fix; tracked separately.
+      // Until then, do not read this branch as "the user is offered a
+      // restore".
+      log.severe(
+        message: 'App startup: default wallet has no secret',
+        error: 'MissingDefaultSecretException',
+        trace: st,
+      );
+      bool hasBackup;
+      try {
+        hasBackup = await _checkBackupUsecase.execute();
+      } catch (_) {
+        hasBackup = false;
+      }
+      emit(AppStartupState.failure(e, hasBackup: hasBackup));
     } catch (e, st) {
       log.severe(message: 'App startup failed', error: e, trace: st);
 
