@@ -227,7 +227,9 @@ jobs:
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
     # jlumbroso free-disk-space step (see checks job) in one commit.
     runs-on: ubuntu-24.04-arm
-    # Use the same pinned Debian Trixie base as Containerfile.tools.
+    # webview_flutter_linux needs WPE WebKit, which no Ubuntu release packages,
+    # so the stock runner environment cannot build the Linux app at all. Same
+    # pinned Debian Trixie base as Containerfile.tools.
     container:
       image: debian:trixie@sha256:fe7312b5f05bf5f43fad76bcd8945642e4e47a68aefd1b73f447615899d0fac1
     timeout-minutes: 60
@@ -250,6 +252,8 @@ jobs:
       # doesn't apply), so reclaim the few big preinstalled dirs inline;
       # `|| true` because they may not exist on this image. The setup action
       # logs `df -h` to confirm headroom.
+      # NO-OP while the job runs in the container above: these are runner-VM
+      # paths, absent inside it. Kept for if the container ever goes away.
       - name: Free disk space (inline, arch-agnostic)
         run: |
           sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
@@ -260,6 +264,8 @@ jobs:
       # Idempotent: installs rustup if absent, then ensures the stable
       # toolchain exists either way (newer rustup does not auto-install
       # toolchains on `rustup run`).
+      # The container above ships no rustup, so only the install branch runs.
+      # Kept for if the container ever goes away.
       - name: Ensure rustup + stable toolchain
         run: |
           if ! command -v rustup >/dev/null 2>&1; then
