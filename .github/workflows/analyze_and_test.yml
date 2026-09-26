@@ -227,8 +227,20 @@ jobs:
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
     # jlumbroso free-disk-space step (see checks job) in one commit.
     runs-on: ubuntu-24.04-arm
+    # Use the same pinned Debian Trixie base as Containerfile.tools.
+    container:
+      image: debian:trixie@sha256:fe7312b5f05bf5f43fad76bcd8945642e4e47a68aefd1b73f447615899d0fac1
     timeout-minutes: 60
     steps:
+      - name: Bootstrap Debian CI container
+        run: |
+          apt-get update
+          apt-get install -y \
+            build-essential ca-certificates curl git make openjdk-21-jdk-headless \
+            sudo tar unzip xz-utils zip zstd
+          java_home="$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")")"
+          echo "JAVA_HOME=$java_home" >> "$GITHUB_ENV"
+
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -275,7 +287,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             clang lld cmake ninja-build pkg-config \
-            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libgtk-3-dev liblzma-dev libwpewebkit-2.0-dev libwpebackend-fdo-1.0-dev \
             libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
             dbus gnome-keyring \
             xdg-desktop-portal xdg-desktop-portal-gtk \
@@ -285,8 +297,8 @@ jobs:
       # display to init even though the tests themselves render nothing —
       # on a headless runner the app aborts at startup ("log reader
       # stopped unexpectedly / Unable to start the app on the device").
-      # xvfb-run gives it a virtual X server. dbus-run-session + an
-      # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
+      # xvfb-run gives it a virtual X server. The system and session D-Bus
+      # daemons provide the services required by Linux plugins.
       # Tests read the mnemonics via Platform.environment, so the secrets are
       # exported as real env vars (not a .env file, which nothing loads). When a
       # secret is unset (e.g. on forks) the var is empty and the funded-testnet
@@ -306,7 +318,17 @@ jobs:
           # standard sccache-in-CI pairing — CI never reuses incremental state
           # anyway).
           CARGO_INCREMENTAL: "0"
+          # Embedded Tor (arti) refuses to start unless its state dir and every
+          # ancestor is owned by the running user or root. path_provider derives
+          # that dir from these, which default under $HOME — /github/home in a
+          # job container, mounted from a runner-owned path while we run as
+          # root. HOME stays as-is so the caches restored under it still
+          # resolve.
+          XDG_DATA_HOME: /root/.local/share
+          XDG_CACHE_HOME: /root/.cache
         run: |
+          sudo mkdir -p /run/dbus
+          sudo dbus-daemon --system --fork
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
             make integration-test
