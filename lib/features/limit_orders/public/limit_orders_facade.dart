@@ -1,0 +1,59 @@
+import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/list_active_limit_orders_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
+import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_cubit.dart';
+import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
+import 'package:bb_mobile/features/limit_orders/ui/screens/create_limit_order_screen.dart';
+import 'package:bb_mobile/features/limit_orders/ui/screens/limit_order_details_screen.dart';
+import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_dashboard_card.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+export '../limit_orders_locator.dart' show LimitOrdersLocator;
+export '../ui/limit_orders_router.dart'
+    show LimitOrdersRoute, LimitOrdersRouter;
+
+class LimitOrdersFacade {
+  final ListActiveLimitOrdersUsecase _listActive;
+  final CancelAllLimitOrdersUsecase _cancelAll;
+  final CanCreateLimitOrderUsecase _canCreate;
+  final LoadLimitOrderCreationUsecase _loadCreation;
+  final GetLimitOrderRateUsecase _getRate;
+  final CreateLimitOrderUsecase _create;
+  final GetLimitOrderUsecase _getOrder;
+  final CancelLimitOrderUsecase _cancelOrder;
+
+  const LimitOrdersFacade(
+    this._listActive,
+    this._cancelAll,
+    this._canCreate,
+    this._loadCreation,
+    this._getRate,
+    this._create,
+    this._getOrder,
+    this._cancelOrder,
+  );
+
+  Widget buildDashboardCard() => BlocProvider(
+    create: (_) =>
+        LimitOrdersCubit(_listActive, _cancelAll, _canCreate)..load(),
+    child: const LimitOrdersDashboardCard(),
+  );
+
+  Widget buildCreateScreen() => BlocProvider(
+    create: (_) =>
+        CreateLimitOrderCubit(_loadCreation, _getRate, _create)..load(),
+    child: const CreateLimitOrderScreen(),
+  );
+
+  Widget buildDetailsScreen(String id) => BlocProvider(
+    create: (_) => LimitOrderDetailsCubit(id, _getOrder, _cancelOrder)..load(),
+    child: const LimitOrderDetailsScreen(),
+  );
+}

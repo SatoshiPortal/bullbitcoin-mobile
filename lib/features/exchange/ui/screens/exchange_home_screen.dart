@@ -13,6 +13,8 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.da
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -92,6 +94,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         onStatusChanged: () =>
                             context.read<ExchangeCubit>().fetchUserSummary(),
                       ),
+                      locator<LimitOrdersFacade>().buildDashboardCard(),
                       const Gap(12),
                       if (!notLoggedIn) const AnnouncementBanner(),
                     ],
