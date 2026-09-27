@@ -139,7 +139,7 @@ class CheckForExistingDefaultWalletsUsecase {
       switch (await _secrets.fetch(Fingerprint(wallet.masterFingerprint))) {
         case Ok():
           log.fine('FINE: Seed Found');
-        case Err(failure: SecretStoreLockedFailure()):
+        case Err(failure: KeystoreLockedFailure()):
           log.warning(
             'Keystore locked while checking ${wallet.masterFingerprint}; '
             'waiting for unlock',

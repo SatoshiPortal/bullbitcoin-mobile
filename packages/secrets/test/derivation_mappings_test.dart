@@ -25,6 +25,7 @@ void main() {
 
   late Secret secret;
   late bdk.DescriptorSecretKey root;
+  late bdk.DescriptorSecretKey testRoot;
 
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
@@ -33,21 +34,82 @@ void main() {
         scratchDirectory: () async => '/tmp',
       ).import(words: words.split(' ')),
     );
-    root = bdk.DescriptorSecretKey(
-      networkKind: bdk.NetworkKind.main,
-      mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
-      password: null,
-    );
+    final mnemonic = bdk.Mnemonic.fromString(mnemonic: words);
+    try {
+      root = bdk.DescriptorSecretKey(
+        networkKind: bdk.NetworkKind.main,
+        mnemonic: mnemonic,
+        password: null,
+      );
+      testRoot = bdk.DescriptorSecretKey(
+        networkKind: bdk.NetworkKind.test,
+        mnemonic: mnemonic,
+        password: null,
+      );
+    } finally {
+      mnemonic.dispose();
+    }
   });
 
-  /// bdk's account xpub at `m/purpose'/coinType'/0'`, as a bare base58 key.
-  String oracle(ScriptType scriptType, int coinType) {
-    final derived = root.derive(
-      path: bdk.DerivationPath(path: "m/${scriptType.purpose}'/$coinType'/0'"),
+  tearDownAll(() {
+    root.dispose();
+    testRoot.dispose();
+  });
+
+  /// bdk's account xpub, as a bare base58 key.
+  String oracle(ScriptType scriptType, int coinType, {int accountIndex = 0}) {
+    final path = bdk.DerivationPath(
+      path: "m/${scriptType.purpose}'/$coinType'/$accountIndex'",
     );
-    final text = derived.asPublic().toString();
-    // `[fingerprint/path]xpub…/*` — keep the extended key only.
-    return RegExp(r'[xt]pub[1-9A-HJ-NP-Za-km-z]+').firstMatch(text)!.group(0)!;
+    bdk.DescriptorSecretKey? derived;
+    bdk.DescriptorPublicKey? public;
+    try {
+      derived = root.derive(path: path);
+      public = derived.asPublic();
+      // `[fingerprint/path]xpub…` — keep the extended key only.
+      return RegExp(
+        r'[xt]pub[1-9A-HJ-NP-Za-km-z]+',
+      ).firstMatch(public.toString())!.group(0)!;
+    } finally {
+      public?.dispose();
+      derived?.dispose();
+      path.dispose();
+    }
+  }
+
+  String accountZeroDescriptor(
+    ScriptType scriptType,
+    BitcoinNetwork network,
+    bdk.KeychainKind keychain,
+  ) {
+    final networkKind = network.isMainnet
+        ? bdk.NetworkKind.main
+        : bdk.NetworkKind.test;
+    // Native templates choose the coin type from networkKind but retain the
+    // root key's version bytes. Match the production master xprv encoding.
+    final networkRoot = network.isMainnet ? root : testRoot;
+    final descriptor = switch (scriptType) {
+      ScriptType.bip44 => bdk.Descriptor.newBip44(
+        secretKey: networkRoot,
+        keychainKind: keychain,
+        networkKind: networkKind,
+      ),
+      ScriptType.bip49 => bdk.Descriptor.newBip49(
+        secretKey: networkRoot,
+        keychainKind: keychain,
+        networkKind: networkKind,
+      ),
+      ScriptType.bip84 => bdk.Descriptor.newBip84(
+        secretKey: networkRoot,
+        keychainKind: keychain,
+        networkKind: networkKind,
+      ),
+    };
+    try {
+      return descriptor.toString();
+    } finally {
+      descriptor.dispose();
+    }
   }
 
   group('Bitcoin: every network and script type', () {
@@ -66,6 +128,82 @@ void main() {
           );
           expect(actual, startsWith(expectedType.name));
         });
+
+        test(
+          '$network / $scriptType preserves account-zero descriptors',
+          () async {
+            final descriptors = ok(
+              await secret.derive.descriptors.bitcoin(
+                network: network,
+                scriptType: scriptType,
+              ),
+            );
+            expect(
+              descriptors.external,
+              accountZeroDescriptor(
+                scriptType,
+                network,
+                bdk.KeychainKind.external_,
+              ),
+            );
+            expect(
+              descriptors.internal,
+              accountZeroDescriptor(
+                scriptType,
+                network,
+                bdk.KeychainKind.internal,
+              ),
+            );
+          },
+        );
+
+        test(
+          '$network / $scriptType account-one descriptors match its xpub',
+          () async {
+            const accountIndex = 1;
+            final descriptors = ok(
+              await secret.derive.descriptors.bitcoin(
+                network: network,
+                scriptType: scriptType,
+                accountIndex: accountIndex,
+              ),
+            );
+            final xpub = ok(
+              await secret.derive.xpub(
+                network: network,
+                scriptType: scriptType,
+                accountIndex: accountIndex,
+              ),
+            );
+            final canonicalType = network.isMainnet
+                ? XpubType.xpub
+                : XpubType.tpub;
+            final canonicalKey = canonicalType.reencode(xpub);
+            expect(
+              canonicalKey,
+              canonicalType.reencode(
+                oracle(
+                  scriptType,
+                  network.coinType,
+                  accountIndex: accountIndex,
+                ),
+              ),
+            );
+            final origin =
+                "[${secret.id.hex}/${scriptType.purpose}'/${network.coinType}'/$accountIndex']";
+            for (final (chain, descriptor) in [
+              (0, descriptors.external),
+              (1, descriptors.internal),
+            ]) {
+              final key = '$origin$canonicalKey/$chain/*';
+              expect(descriptor.split('#').first, switch (scriptType) {
+                ScriptType.bip44 => 'pkh($key)',
+                ScriptType.bip49 => 'sh(wpkh($key))',
+                ScriptType.bip84 => 'wpkh($key)',
+              });
+            }
+          },
+        );
       }
     }
   });
@@ -75,10 +213,7 @@ void main() {
       for (final scriptType in ScriptType.values) {
         test('$network / $scriptType', () async {
           final actual = ok(
-            await secret.derive.liquidXpub(
-              network: network,
-              scriptType: scriptType,
-            ),
+            await secret.derive.xpub(network: network, scriptType: scriptType),
           );
           // Liquid keys wear Bitcoin's prefixes for the matching chain;
           // the coin type is Liquid's own — 1776 on mainnet, 1 elsewhere.

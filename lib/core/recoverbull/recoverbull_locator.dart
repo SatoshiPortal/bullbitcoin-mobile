@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart
 import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
@@ -126,13 +125,9 @@ class RecoverbullLocator {
       ),
     );
 
-    locator.registerFactory<DecryptVaultUsecase>(
-      () => DecryptVaultUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-      ),
-    );
     locator.registerFactory<RestoreVaultUsecase>(
       () => RestoreVaultUsecase(
+        secrets: locator<Secrets>(),
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
       ),
@@ -176,6 +171,7 @@ class RecoverbullLocator {
     );
     locator.registerFactory<UpdateLatestEncryptedVaultTestUsecase>(
       () => UpdateLatestEncryptedVaultTestUsecase(
+        secrets: locator<Secrets>(),
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),

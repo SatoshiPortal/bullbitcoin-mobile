@@ -14,14 +14,17 @@ import 'package:secrets/src/data/models/secret_model.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
 
-/// A stored entry, paired with the identity it was filed under.
+/// A stored entry, paired with the fingerprint it was filed under.
 ///
 /// The key matters: it *is* the master fingerprint, so carrying it out
 /// of the store saves the repository from re-deriving one.
 typedef StoredSecret = ({Fingerprint id, SecretModel model});
 
-/// What a full read of the namespace yielded: the entries that parsed, and how many did not. The count is what lets a caller say "and N could not be read" rather than showing a shorter list as the whole truth.
-typedef StoredListing = ({List<StoredSecret> parsed, int unparsable});
+/// A full namespace read: parsed entries and the IDs of unreadable entries. A malformed storage key keeps a null ID rather than disappearing from the list.
+typedef StoredListing = ({
+  List<StoredSecret> parsed,
+  List<Fingerprint?> unparsable,
+});
 
 /// Everything this package puts in `flutter_secure_storage`, and the rules for getting it back.
 ///
@@ -100,15 +103,16 @@ class FlutterSecureStorageDatasource {
 
   // ------------------------------------------------------------------ secrets
 
-  /// Writes a secret under its identity, refusing to replace a different one.
+  /// Writes a secret under its fingerprint, refusing to replace a different one.
   ///
-  /// A BIP32 fingerprint is 32 bits, so two secrets can claim the same key. Writing blind would destroy the first without a trace. Re-storing the same secret — a repeated import, a restore of a vault already held — is allowed and rewrites the same bytes.
+  /// A BIP32 fingerprint is 32 bits, so two secrets can claim the same key. Writing blind would destroy the first without a trace. Restoration may reuse an identical entry; import passes rejectExisting to report a duplicate atomically. Existing bytes are never rewritten.
   ///
   /// Read, compare and write under [_lock]: the second composed operation of this class, and the reason the lock is not named for the first.
   Future<void> storeSecret({
     required Fingerprint id,
     required SecretModel secret,
     required Future<Uint8List> Function(SecretModel model) seedOf,
+    bool rejectExisting = false,
   }) {
     final key = keyForSecret(id);
     final json = jsonEncode(secret.toJson());
@@ -127,12 +131,13 @@ class FlutterSecureStorageDatasource {
       };
       if (existing != null) {
         if (!await _holdsSameSecret(existing, secret, seedOf)) {
-          throw SecretIdentityConflict(
+          throw FingerprintConflictException(
             'a different secret is already stored under $id',
           );
         }
         // The same secret, perhaps in an older encoding. Left byte for byte:
         // the format is frozen, and there is nothing to gain by rewriting.
+        if (rejectExisting) throw SecretAlreadyExistsException(id);
         return;
       }
       await _writeRaw(key, json);
@@ -141,7 +146,7 @@ class FlutterSecureStorageDatasource {
 
   /// Whether [existing] holds the same secret as [candidate] — parsed, not compared as text.
   ///
-  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". Same words with passphrases that differ *as strings* may still be one secret — `é` and `e` + combining accent are one passphrase to BIP39's NFKD (U1, Codex 2026-09-17) — so that case is settled by deriving **both full seeds** and comparing all 64 bytes: two PBKDF2s, on the rare path only. Never by fingerprint — 32 bits is exactly the collision this check exists to refuse. Different words are never the same secret — which holds because `IdentityDeriver` derives against the English wordlist, whose words are all ASCII, so no two spellings normalise to one mnemonic. A second wordlist would break that and this comparison would have to reach the seeds for differing words too. A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
+  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". Same words with passphrases that differ *as strings* may still be one secret — `é` and `e` + combining accent are one passphrase to BIP39's NFKD (2026-09-17) — so that case is settled by deriving **both full seeds** and comparing all 64 bytes: two PBKDF2s, on the rare path only. Never by fingerprint — 32 bits is exactly the collision this check exists to refuse. Different words are never the same secret — which holds because `FingerprintDeriver` derives against the English wordlist, whose words are all ASCII, so no two spellings normalise to one mnemonic. A second wordlist would break that and this comparison would have to reach the seeds for differing words too. A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
   static Future<bool> _holdsSameSecret(
     String existing,
     SecretModel candidate,
@@ -177,7 +182,7 @@ class FlutterSecureStorageDatasource {
   ///
   /// Read with the [_ReadBudget.settled] budget: a plain read, where absence is exceptional, so a genuine miss costs the full backoff and there is no fast path for it. See [_settle] and doc/design.md, § Absence.
   ///
-  /// [SecretStoreLockedException] passes through untouched: a sealed keystore is not an absence, and retrying cannot unseal it.
+  /// [KeystoreLockedException] passes through untouched: a sealed keystore is not an absence, and retrying cannot unseal it.
   Future<SecretModel?> fetchSecret(Fingerprint id) async {
     return switch (await _settle(
       keyForSecret(id),
@@ -203,62 +208,11 @@ class FlutterSecureStorageDatasource {
   Future<bool> secretExists(Fingerprint id) async =>
       await _readRaw(keyForSecret(id)) != null;
 
-  /// Under the lock, so a delete cannot interleave with a move or a store of the same key. Never called from inside another locked operation — those use [_deleteRaw].
+  /// Under the lock, so a delete cannot interleave with a store of the same key. Never called from inside another locked operation — those use [_deleteRaw].
   Future<void> trashSecret(Fingerprint id) =>
       _lock.synchronized(() => _deleteRaw(keyForSecret(id)));
 
-  /// Re-files the entry under [from] to the key [identify] derives from it — one read, one decision, one write, one delete, all under the lock.
-  ///
-  /// The identity is computed on the very model that is written, so a concurrent change to the entry cannot make this file one model under another's identity. The write refuses if [to] already holds a different secret, and the original is only deleted after the copy exists. Returns the model and where it now lives; `null` when nothing was stored under [from].
-  Future<({Fingerprint id, SecretModel model})?> moveSecret(
-    Fingerprint from, {
-    required Future<Fingerprint> Function(SecretModel model) identify,
-    required Future<Uint8List> Function(SecretModel model) seedOf,
-  }) {
-    final fromKey = keyForSecret(from);
-    return _lock.synchronized(() async {
-      final raw = switch (await _settle(
-        fromKey,
-        budget: _ReadBudget.underLock,
-        label: 'secret $from',
-      )) {
-        _Found(:final value) => value,
-        // A key that exists and did not answer is not an absence: reporting
-        // not-found would say the seed is gone.
-        _Empty() => throw const FormatException('stored value is empty'),
-        _Absent() => null,
-      };
-      if (raw == null) return null;
-      final model = SecretModel.fromJson(decodeJson(raw));
-      final to = await identify(model);
-      if (to == from) return (id: from, model: model);
-
-      final toKey = keyForSecret(to);
-      // Occupied as in [storeSecret]: any value, an empty one included.
-      final existing = switch (await _settle(
-        toKey,
-        budget: _ReadBudget.underLock,
-        label: 'secret $to',
-      )) {
-        _Found(:final value) => value,
-        _Empty() => '',
-        _Absent() => null,
-      };
-      if (existing != null) {
-        if (!await _holdsSameSecret(existing, model, seedOf)) {
-          throw SecretIdentityConflict(
-            'a different secret is already stored under $to',
-          );
-        }
-      } else {
-        await _writeRaw(toKey, jsonEncode(model.toJson()));
-      }
-      await _deleteRaw(fromKey);
-      return (id: to, model: model);
-    });
-  }
-
-  /// Every parsable secret in the namespace, with its identity.
+  /// Every parsable secret in the namespace, with its fingerprint.
   ///
   /// Unparsable entries are skipped rather than fatal: a single corrupt
   /// value must not hide the user's other wallets.
@@ -398,7 +352,7 @@ class FlutterSecureStorageDatasource {
   /// - a clean `null` on the read allowed to settle, with no `""` before it, is [_Absent];
   /// - a last read that threw rethrows, logged: a keystore that keeps failing is a read failure, never an absence.
   ///
-  /// [SecretStoreLockedException] passes through at once: a sealed keystore is not an absence, and retrying cannot unseal it. Only [Exception]s are retried; an [Error] propagates (AGENTS.md, rule 11). See doc/design.md, § Absence, for the two budgets.
+  /// [KeystoreLockedException] passes through at once: a sealed keystore is not an absence, and retrying cannot unseal it. Only [Exception]s are retried; an [Error] propagates (AGENTS.md, rule 11). See doc/design.md, § Absence, for the two budgets.
   Future<_Settled> _settle(
     String key, {
     required _ReadBudget budget,
@@ -413,7 +367,7 @@ class FlutterSecureStorageDatasource {
       try {
         value = await _readRaw(key);
         lastError = null;
-      } on SecretStoreLockedException {
+      } on KeystoreLockedException {
         rethrow;
       } on Exception catch (e, st) {
         lastError = e;
@@ -474,7 +428,7 @@ class FlutterSecureStorageDatasource {
 
   // -------------------------------------------------------------------- lock
 
-  /// Guards composed operations — [storeSecret], [moveSecret], [trashSecret], [fetchOrCreateModuleKey], [deleteModuleKey].
+  /// Guards composed operations — [storeSecret], [trashSecret], [fetchOrCreateModuleKey], [deleteModuleKey].
   /// Process-wide, because the keystore is. See the class doc for why it
   /// is not per instance, why single calls are not guarded, and why it
   /// must never be taken twice on one path.
@@ -508,7 +462,7 @@ class FlutterSecureStorageDatasource {
       if (e.details == _errSecInteractionNotAllowed ||
           e.code == '$_errSecInteractionNotAllowed' ||
           (e.message ?? '').contains('$_errSecInteractionNotAllowed')) {
-        throw const SecretStoreLockedException(
+        throw const KeystoreLockedException(
           'device has not been unlocked since boot',
         );
       }
@@ -527,16 +481,15 @@ class FlutterSecureStorageDatasource {
 StoredListing _parseAll(Map<String, String> entries) {
   const namespace = FlutterSecureStorageDatasource.secretNamespace;
   final secrets = <StoredSecret>[];
-  var unparsable = 0;
+  final unparsable = <Fingerprint?>[];
   for (final entry in entries.entries) {
     if (!entry.key.startsWith(namespace)) continue;
     // Under this package's prefix but not something it wrote — an empty
     // value, a key that is not a fingerprint, a value that is not our JSON.
-    // Skipped, so it cannot hide the others; counted, so it is not hidden
-    // itself.
+    // Kept as an unreadable entry, so it cannot hide the others or disappear itself.
     final id = FlutterSecureStorageDatasource.idFromKey(entry.key);
     if (entry.value.isEmpty || id == null) {
-      unparsable++;
+      unparsable.add(id);
       continue;
     }
     try {
@@ -548,7 +501,7 @@ StoredListing _parseAll(Map<String, String> entries) {
       ));
     } on Exception {
       // A value that does not parse is skipped, not a listing failure. An `Error` propagates.
-      unparsable++;
+      unparsable.add(id);
     }
   }
   return (parsed: secrets, unparsable: unparsable);

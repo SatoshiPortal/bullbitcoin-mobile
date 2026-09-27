@@ -10,7 +10,7 @@ export 'package:bull_sdk/bwk.dart'
 /// ⚠️ The one place the stored words leave this package for a library: bwk-dart builds an account from a mnemonic only, and the account it returns keeps the keys for as long as it lives. A key-based constructor (bwk-bitcoin/bwk#114) would let the package hand over derived keys instead.
 abstract final class SilentPayments {
   static Future<SpAccount> open(
-    MnemonicMaterial secret, {
+    Mnemonic secret, {
     required String name,
     required SpNetwork network,
     required String blindbitUrl,

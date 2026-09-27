@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connecti
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -40,8 +39,6 @@ class _MockCheckConnection extends Mock
 
 class _MockFetchKey extends Mock implements FetchVaultKeyFromServerUsecase {}
 
-class _MockDecrypt extends Mock implements DecryptVaultUsecase {}
-
 class _MockRestore extends Mock implements RestoreVaultUsecase {}
 
 class _MockConnectDrive extends Mock implements ConnectToGoogleDriveUsecase {}
@@ -71,7 +68,6 @@ void main() {
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
-  late _MockDecrypt decrypt;
   late _MockRestore restore;
   late _MockConnectDrive connectDrive;
   late _MockSaveDrive saveDrive;
@@ -95,7 +91,6 @@ void main() {
       () => checkConnection.execute(),
     ).thenAnswer((_) async => const Ok(true));
     fetchKey = _MockFetchKey();
-    decrypt = _MockDecrypt();
     restore = _MockRestore();
     connectDrive = _MockConnectDrive();
     saveDrive = _MockSaveDrive();
@@ -133,7 +128,6 @@ void main() {
       wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
-    decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
     saveToGoogleDriveUsecase: saveDrive,
@@ -202,13 +196,9 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(() => createVault.execute()).thenAnswer(
-          (_) async => Ok((
-            vault: vault,
-            vaultKey: 'deadbeef',
-            passphraseExcluded: false,
-          )),
-        );
+        when(
+          () => createVault.execute(),
+        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
         when(
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
@@ -272,7 +262,7 @@ void main() {
     expect(bloc.state.failure, isA<ExternalTorProxyUnavailableFailure>());
     expect(bloc.state.vaultKey, isNull);
     verifyNever(
-      () => decrypt.execute(
+      () => updateLatest.execute(
         vault: any(named: 'vault'),
         vaultKey: any(named: 'vaultKey'),
       ),
@@ -283,10 +273,9 @@ void main() {
     'maps external failure while storing without announcing creation',
     () async {
       final vault = _MockEncryptedVault();
-      when(() => createVault.execute()).thenAnswer(
-        (_) async =>
-            Ok((vault: vault, vaultKey: 'key', passphraseExcluded: false)),
-      );
+      when(
+        () => createVault.execute(),
+      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));
@@ -316,6 +305,134 @@ void main() {
       ).called(1);
     },
   );
+
+  group('vault custody', () {
+    test(
+      'a fetched key stays out of state until its vault is verified',
+      () async {
+        final vault = _MockEncryptedVault();
+        when(
+          () => fetchKey.execute(vault: vault, password: 'pw'),
+        ).thenAnswer((_) async => const Ok('unverified-key'));
+        when(
+          () => updateLatest.execute(vault: vault, vaultKey: 'unverified-key'),
+        ).thenAnswer(
+          (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
+        );
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.viewVaultKey,
+          preSelectedVault: vault,
+        );
+        final states = <RecoverBullState>[];
+        final subscription = bloc.stream.listen(states.add);
+
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+        expect(states.map((state) => state.vaultKey), everyElement(isNull));
+        expect(
+          states.map((state) => state.isVaultVerified),
+          everyElement(isFalse),
+        );
+        await subscription.cancel();
+        await bloc.close();
+      },
+    );
+
+    test(
+      'a failed inspection never marks the vault as verified or starts recovery',
+      () async {
+        final vault = _MockEncryptedVault();
+        when(
+          () => updateLatest.execute(vault: vault, vaultKey: 'invalid-key'),
+        ).thenAnswer(
+          (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
+        );
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+        final states = <RecoverBullState>[];
+        final subscription = bloc.stream.listen(states.add);
+
+        bloc.add(const OnVaultDecryption(vaultKey: 'invalid-key'));
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+        expect(
+          states.map((state) => state.isVaultVerified),
+          everyElement(isFalse),
+        );
+        expect(states.map((state) => state.vaultKey), everyElement(isNull));
+        expect(bloc.state.isFlowFinished, isFalse);
+        verifyNever(
+          () => restore.execute(
+            vault: any(named: 'vault'),
+            vaultKey: any(named: 'vaultKey'),
+          ),
+        );
+        verifyZeroInteractions(walletBloc);
+        await subscription.cancel();
+        await bloc.close();
+      },
+    );
+
+    test('testing a vault verifies it without importing it', () async {
+      final vault = _MockEncryptedVault();
+      when(
+        () => updateLatest.execute(vault: vault, vaultKey: 'vault-key'),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.testVault,
+        preSelectedVault: vault,
+      );
+
+      bloc.add(const OnVaultDecryption(vaultKey: 'vault-key'));
+      await pumpEventQueue();
+
+      expect(bloc.state.isVaultVerified, isTrue);
+      expect(bloc.state.vaultKey, 'vault-key');
+      expect(bloc.state.failure, isNull);
+      verifyNever(
+        () => restore.execute(
+          vault: any(named: 'vault'),
+          vaultKey: any(named: 'vaultKey'),
+        ),
+      );
+      verifyZeroInteractions(walletBloc);
+      await bloc.close();
+    });
+
+    test(
+      'a failed restore never finishes the flow or starts wallet sync',
+      () async {
+        final vault = _MockEncryptedVault();
+        when(
+          () => updateLatest.execute(vault: vault, vaultKey: 'vault-key'),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => restore.execute(vault: vault, vaultKey: 'vault-key'),
+        ).thenAnswer(
+          (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
+        );
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+
+        bloc.add(const OnVaultDecryption(vaultKey: 'vault-key'));
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isA<VaultRecoveryFailure>());
+        expect(bloc.state.isFlowFinished, isFalse);
+        expect(bloc.state.isVaultVerified, isFalse);
+        expect(bloc.state.vaultKey, isNull);
+        verifyZeroInteractions(walletBloc);
+        await bloc.close();
+      },
+    );
+  });
 
   group('Tor retry concurrency', () {
     test('drops a second retry while the first one is in flight', () async {

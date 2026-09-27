@@ -7,16 +7,15 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
@@ -59,7 +58,20 @@ Future<void> main({bool isInitialized = false}) async {
     await sqlite.managers.bip85Derivations.delete();
     await sqlite.managers.walletMetadatas.delete();
 
-    await createDefaultWalletsUsecase.execute(mnemonicWords: mnemonic.words);
+    final imported = await secrets.import(words: mnemonic.words);
+    final Secret secret;
+    switch (imported) {
+      case Ok(:final value):
+        secret = value;
+      case Err(failure: SecretAlreadyExistsFailure(:final id)):
+        secret = switch (await secrets.fetch(id)) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('fetch failed: ${failure.runtimeType}'),
+        };
+      case Err(:final failure):
+        fail('import failed: ${failure.runtimeType}');
+    }
+    await createDefaultWalletsUsecase.execute(secret: secret);
   });
 
   setUp(() async {
@@ -95,10 +107,9 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Get the xprv from the default-wallet seed (the outer `mnemonic`),
         // i.e. the same seed the usecase derives from — NOT the derived result.
-        final xprv = Bip32Derivation.getXprvFromSeed(
+        final xprv = bip32.Bip32Keys.fromSeed(
           Uint8List.fromList(mnemonic.seed),
-          Network.bitcoinMainnet,
-        );
+        ).toBase58();
 
         // Now generate the same derivation using BIP85 library directly
         final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
@@ -130,10 +141,9 @@ Future<void> main({bool isInitialized = false}) async {
         final (derivation: _, mnemonic: bMnemonic) = (bResult as Ok).value;
 
         // Get the xprv from the seed
-        final xprv = Bip32Derivation.getXprvFromSeed(
+        final xprv = bip32.Bip32Keys.fromSeed(
           Uint8List.fromList(mnemonic.seed),
-          Network.bitcoinMainnet,
-        );
+        ).toBase58();
 
         // Verify database has both derivations stored
         final storedDerivations = await bip85Datasource.fetchAll();

@@ -49,8 +49,7 @@ void main() {
       final secrets = secretsWith(FakeSecureStoragePlatform());
 
       final listing = ok(await secrets.list());
-      expect(listing.secrets, isEmpty);
-      expect(listing.unreadable, 0);
+      expect(listing, isEmpty);
     });
 
     test('a wallet metadata still points at a fingerprint: not found', () async {
@@ -88,13 +87,17 @@ void main() {
 
       final listed = ok(await secrets.list());
 
-      expect(listed.secrets, hasLength(1));
-      expect(listed.secrets.single.id.hex, 'deadbeef');
+      expect(listed.whereType<Secret>(), hasLength(1));
+      expect(listed.whereType<Secret>().single.id.hex, 'deadbeef');
       expect(
-        listed.unreadable,
-        1,
-        reason:
-            'skipped, and said so — a shorter list is not a smaller keystore',
+        listed.whereType<UnreadableSecret>(),
+        hasLength(1),
+        reason: 'an unreadable entry remains visible in the listing',
+      );
+      expect(listed.whereType<UnreadableSecret>().single.id?.hex, fingerprint);
+      expect(
+        listed.whereType<UnreadableSecret>().single.failure,
+        isA<FetchSecretFailure>(),
       );
     });
 
@@ -108,7 +111,7 @@ void main() {
 
       final failure = err(await secrets.fetch(Fingerprint(fingerprint)));
 
-      expect(failure, isA<SecretFetchFailure>());
+      expect(failure, isA<FetchSecretFailure>());
       expect(failure, isNot(isA<SecretNotFoundFailure>()));
     });
 
@@ -120,8 +123,11 @@ void main() {
       );
       final secrets = secretsWith(storage);
 
-      await secrets.fetch(Fingerprint(fingerprint));
-      await secrets.list();
+      expect(
+        err(await secrets.fetch(Fingerprint(fingerprint))),
+        isA<FetchSecretFailure>(),
+      );
+      expect(ok(await secrets.list()), hasLength(1));
 
       expect(storage.entries['seed_$fingerprint'], fss9Value);
     });
@@ -140,7 +146,7 @@ void main() {
 
       expect(
         err(await secrets.import(words: words)),
-        isA<SecretStoreFailure>(),
+        isA<StoreSecretFailure>(),
         reason: 'an empty value under that key is occupied, not absent',
       );
       expect(
@@ -153,7 +159,7 @@ void main() {
 
   test('a restore from a backup puts the cohort back where it was', () async {
     // The whole point of the path. The words come from the user's vault, not
-    // from the old entry, and the wallet lands under the same identity — so
+    // from the old entry, and the wallet lands under the same fingerprint — so
     // the metadata that survived still joins.
     final storage = FakeSecureStoragePlatform(
       entries: {'seed_$fingerprint': fss9Value},
@@ -164,7 +170,7 @@ void main() {
     // must refuse rather than destroy what might still be recoverable.
     expect(
       err(await secrets.import(words: words)),
-      isA<SecretStoreFailure>(),
+      isA<StoreSecretFailure>(),
       reason: 'a foreign value under that key is never overwritten',
     );
     expect(storage.entries['seed_$fingerprint'], fss9Value);

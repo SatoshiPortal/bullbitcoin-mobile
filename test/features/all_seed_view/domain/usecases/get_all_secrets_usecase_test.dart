@@ -46,26 +46,26 @@ void main() {
 
   group('GetAllSecretsUsecase', () {
     test('returns the stored secrets as handles', () async {
-      await secrets.import(words: words);
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final result = await usecase.execute();
 
-      final listing =
-          (result as Ok<SecretListing<Secret>, SecretFailure>).value;
-      expect(listing.secrets, hasLength(1));
-      expect(listing.unreadable, 0);
+      final listing = (result as Ok<List<SecretEntry>, SecretFailure>).value;
+      expect(listing, hasLength(1));
+      expect(listing.single, isA<Secret>());
     });
 
     test('returns an empty list when nothing is stored', () async {
       final listing =
-          ((await usecase.execute())
-                  as Ok<SecretListing<Secret>, SecretFailure>)
+          ((await usecase.execute()) as Ok<List<SecretEntry>, SecretFailure>)
               .value;
-      expect(listing.secrets, isEmpty);
-      expect(listing.unreadable, 0);
+      expect(listing, isEmpty);
     });
 
-    test('counts what it could not read instead of hiding it', () async {
+    test('returns an unreadable entry beside readable secrets', () async {
       // R6's last item: a shorter list must never look like a smaller
       // keystore. One good entry, one value under the prefix that is not ours.
       FakeSecureStoragePlatform(
@@ -73,15 +73,20 @@ void main() {
       ).install();
       secrets = Secrets(scratchDirectory: () async => '/tmp');
       usecase = GetAllSecretsUsecase(secrets: secrets);
-      await secrets.import(words: words);
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final listing =
-          ((await usecase.execute())
-                  as Ok<SecretListing<Secret>, SecretFailure>)
+          ((await usecase.execute()) as Ok<List<SecretEntry>, SecretFailure>)
               .value;
 
-      expect(listing.secrets, hasLength(1));
-      expect(listing.unreadable, 1);
+      expect(listing, hasLength(2));
+      expect(listing.whereType<Secret>(), hasLength(1));
+      final unreadable = listing.whereType<UnreadableSecret>().single;
+      expect(unreadable.id?.hex, 'deadbeef');
+      expect(unreadable.failure, isA<FetchSecretFailure>());
     });
 
     test('a keystore failure stays a failure, with no stored text', () async {
@@ -91,7 +96,7 @@ void main() {
       final result = await usecase.execute();
 
       final failure = (result as Err).failure;
-      expect(failure, isA<SecretFetchFailure>());
+      expect(failure, isA<FetchSecretFailure>());
       expect(failure.logMessage, isNot(contains(sentinel)));
     });
   });

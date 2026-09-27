@@ -8,7 +8,7 @@ import 'result_helpers.dart';
 
 /// Fixed mnemonics in, fixed keys out — pinned as values, not as prefixes.
 ///
-/// Everything here is pure Dart (bip39, bip32, bip85), so it runs without the FFI and fails the moment identity, xpub or BIP85 derivation changes shape. The integration suite asserts the same constants against the engines. Two of these identities are anchored independently: `73c5da0a` is the published BIP39 vector's master fingerprint, and `3f635a63` was computed by a second auditor (Codex, 2026-09-17) before being pinned here.
+/// Everything here is pure Dart (bip39, bip32, bip85), so it runs without the FFI and fails the moment fingerprint, xpub or BIP85 derivation changes shape. The integration suite asserts the same constants against the engines. Two of these fingerprints are anchored independently: `73c5da0a` is the published BIP39 vector's master fingerprint, and `3f635a63` was computed by a second auditor (Codex, 2026-09-17) before being pinned here.
 void main() {
   const zoo = [
     'zoo',

@@ -10,14 +10,14 @@ import 'package:primitives/primitives.dart';
 /// takes them on every call. That is why it is derived once at setup and
 /// handed to whoever owns the swap lifecycle, rather than re-derived: the
 /// wallet's seed is touched a single time, here.
-final class SwapKey {
+final class SwapMasterKey {
   final String xprv;
   final String xpub;
   final String mnemonic;
   final Fingerprint fingerprint;
   final bool isTestnet;
 
-  const SwapKey({
+  const SwapMasterKey({
     required this.xprv,
     required this.xpub,
     required this.mnemonic,
@@ -26,5 +26,5 @@ final class SwapKey {
   });
 
   @override
-  String toString() => 'SwapKey($fingerprint, •••)';
+  String toString() => 'SwapMasterKey($fingerprint, •••)';
 }

@@ -1,4 +1,4 @@
-.PHONY: custody-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: secrets-api-docs secrets-api-docs-check custody-check all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -65,13 +65,21 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-# The custody boundary around users' seeds, as a gate: no `// ignore:` of invalid_use_of_internal_member (the seal on package:secrets — `cannot-ignore` does not hold that diagnostic on Dart 3.12.2, checked 2026-09-24), no import of flutter_secure_storage outside packages/secrets and the app's own secure store, no import of package:secrets/src/ outside the package, and no keystore dependency in another pubspec. Every git-tracked Dart file and pubspec of the workspace, the root app and every melos member alike. The rules live in tools/pr_governance/custody.js, shared with the PR custody review workflow that asks a contributor why.
+# The custody boundary around users' seeds, as a gate: no `// ignore:` of invalid_use_of_internal_member (the seal on package:secrets — `cannot-ignore` does not hold that diagnostic on Dart 3.12.2, checked 2026-09-24), no import of flutter_secure_storage outside packages/secrets and the app's own secure store, no import of package:secrets/src/ outside the package, and no keystore dependency in another pubspec. Every git-tracked Dart file and pubspec of the workspace, the root app and every melos member alike. The keystore rules live in tools/pr_governance/custody.js, shared with the PR custody review workflow that asks a contributor why. packages/secrets/tool/key_material_gate.dart resolves production Dart symbols to reject private derivation and vault decryption outside the package; its named exceptions cover pre-import scanning and the exported swap child key.
 custody-check:
-	@echo "🔒 custody boundary: seal, keystore plugin, package internals"
+	@echo "🔒 custody boundary: seal, keystore plugin, package internals, key material"
 	@node --test tools/pr_governance/custody.test.js > /dev/null
 	@node tools/pr_governance/custody-check.js
+	@fvm dart packages/secrets/tool/key_material_gate.dart
 
-checks: analyze bull-ui-check custody-check fix-check format-check unit-test
+# The README's simplified public API trees are generated from resolved exports.
+secrets-api-docs:
+	@fvm dart packages/secrets/tool/api_docs.dart
+
+secrets-api-docs-check:
+	@fvm dart packages/secrets/tool/api_docs.dart --check
+
+checks: analyze bull-ui-check custody-check secrets-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).

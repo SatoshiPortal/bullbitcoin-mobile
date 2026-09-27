@@ -193,7 +193,7 @@ jobs:
         id: setup
         uses: ./.github/actions/flutter-setup
 
-      # The four static checks are gated on `!cancelled()` + setup success
+      # Static checks are gated on `!cancelled()` + setup success
       # instead of the implicit success(): one CI run surfaces ALL static
       # failures instead of stopping at the first (they're independent and
       # cheap, ~1.5min combined). `!cancelled()` (not `always()`) so a
@@ -207,9 +207,13 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
 
-      - name: Custody boundary (seal never ignored, keystore plugin only in packages/secrets)
+      - name: Custody boundary (keystore access, resolved key derivation and vault decryption)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make custody-check
+
+      - name: Secrets public API trees should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make secrets-api-docs-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}

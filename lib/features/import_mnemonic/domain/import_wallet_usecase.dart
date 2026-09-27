@@ -11,11 +11,8 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
 class ImportWalletUsecase {
-  /// Imports are serialised process-wide. Two concurrent imports of the same
-  /// words each saw "not stored yet", each imported, and the one whose wallet
-  /// failed then trashed the seed the other's wallet had just been built on
-  /// (Codex, import-race, 2026-09-16). A user cannot start two imports at
-  /// once on purpose, so the lock costs nothing and removes the race.
+  /// Imports are serialised process-wide so wallet creation and any cleanup
+  /// complete before another wallet import uses the same secret.
   static final _imports = Lock();
 
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
@@ -74,19 +71,21 @@ class ImportWalletUsecase {
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;
 
-      // Package failures come back as values; this usecase already reports every exception as an unexpected failure below, so unwrap by throwing.
-      T unwrap<T>(Result<T, SecretFailure> r) => switch (r) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw StateError(failure.runtimeType.toString()),
-      };
-      final fingerprint = unwrap(
-        await _secrets.idOf(words: mnemonicWords, passphrase: passphrase),
-      );
-      final seedAlreadyStored = unwrap(await _secrets.exists(fingerprint));
-      final secret = unwrap(
-        await _secrets.import(words: mnemonicWords, passphrase: passphrase),
-      );
-      if (!seedAlreadyStored) seedCreatedByThisImport = fingerprint;
+      final Secret secret;
+      switch (await _secrets.import(
+        words: mnemonicWords,
+        passphrase: passphrase,
+      )) {
+        case Ok(:final value):
+          secret = value;
+          seedCreatedByThisImport = secret.id;
+        case Err(failure: SecretAlreadyExistsFailure()):
+          // The preflight check is indicative; another operation may have
+          // stored this secret since then. A duplicate owns no cleanup.
+          return const Err(ImportMnemonicDuplicateFailure());
+        case Err(:final failure):
+          return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+      }
       final wallet = await _wallet.createWallet(
         secret: secret,
         network: bitcoinNetwork,

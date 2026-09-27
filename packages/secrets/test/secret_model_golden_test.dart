@@ -280,7 +280,7 @@ void main() {
   });
 
   group('an empty passphrase', () {
-    // `store(passphrase: '')` derives the same identity as no passphrase
+    // `store(passphrase: '')` derives the same fingerprint as no passphrase
     // — so it overwrites the same entry, but writes `""` where the other
     // writes `null`. Two byte shapes for one secret; both must decode.
     const emptyJson =

@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -122,7 +121,9 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Application.bip39
           when segments.length == 4 && segments[0] == 39 && segments[1] == 0 =>
         (await secret.derive.bip85.mnemonic(
-          length: bip39.MnemonicLength.fromWords(segments[2]!),
+          wordCount: MnemonicWordCount.values.firstWhere(
+            (value) => value.count == segments[2],
+          ),
           index: segments[3]!,
         )).map((words) => words.join(' ')),
       _ => null,

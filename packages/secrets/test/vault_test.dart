@@ -42,6 +42,28 @@ void main() {
   Future<Secret> secretIn(Secrets secrets) async =>
       ok(await secrets.fetch(Fingerprint(plainFingerprint)));
 
+  group('vault keys', () {
+    test('normalizes case and whitespace without changing the key', () {
+      expect(VaultKey('AB ' * 32).hex, 'ab' * 32);
+    });
+
+    test('rejects malformed keys without echoing them', () {
+      const sentinel = 'SYNTHETIC_KEY_SENTINEL';
+      for (final malformed in ['', '0' * 63, '0' * 65, sentinel]) {
+        expect(
+          () => VaultKey(malformed),
+          throwsA(
+            isA<FormatException>().having(
+              (error) => error.toString(),
+              'redacted message',
+              isNot(contains(sentinel)),
+            ),
+          ),
+        );
+      }
+    });
+  });
+
   group('sealing a vault', () {
     late Secrets secrets;
 
@@ -54,40 +76,43 @@ void main() {
     });
 
     test('returns ciphertext, never the words', () async {
-      final vault = anyScope(await (await secretIn(secrets)).backup.vault());
+      final vault = ok(await (await secretIn(secrets)).backup.recoverbull());
 
       // The property this whole group exists for: nothing a caller
       // receives contains the mnemonic.
       for (final word in {...words}) {
-        expect(vault.file, isNot(contains(word)));
+        expect(vault.vault.json, isNot(contains(word)));
       }
-      expect(vault.toString(), isNot(contains(vault.key)));
+      expect(vault.toString(), isNot(contains(vault.key.hex)));
+      expect(vault.key.toString(), isNot(contains(vault.key.hex)));
     });
 
     test('carries its derivation path so a restore can re-derive', () async {
-      final vault = anyScope(await (await secretIn(secrets)).backup.vault());
+      final vault = ok(await (await secretIn(secrets)).backup.recoverbull());
 
-      expect(vault.derivationPath, startsWith("1608'/0'/"));
       expect(
-        (jsonDecode(vault.file) as Map<String, dynamic>)['path'],
-        vault.derivationPath,
+        (jsonDecode(vault.vault.json) as Map<String, dynamic>)['path'],
+        startsWith("1608'/0'/"),
       );
     });
 
     test('two vaults of one secret never share a key', () async {
       final secret = await secretIn(secrets);
-      final first = anyScope(await secret.backup.vault());
-      final second = anyScope(await secret.backup.vault());
+      final first = ok(await secret.backup.recoverbull());
+      final second = ok(await secret.backup.recoverbull());
 
-      expect(second.key, isNot(first.key));
-      expect(second.derivationPath, isNot(first.derivationPath));
+      expect(second.key.hex, isNot(first.key.hex));
+      expect(
+        (jsonDecode(second.vault.json) as Map<String, dynamic>)['path'],
+        isNot((jsonDecode(first.vault.json) as Map<String, dynamic>)['path']),
+      );
     });
 
     test('the caller cannot overwrite the mnemonic field', () async {
       // A programmer error, not a runtime failure: the reserved key is documented, and `metadata` is the app's own fields. It throws, so it is caught in development rather than reported as a recoverable failure in production.
       final secret = await secretIn(secrets);
       await expectLater(
-        secret.backup.vault(
+        secret.backup.recoverbull(
           metadata: const {
             'mnemonic': <String>['attacker'],
           },
@@ -97,8 +122,7 @@ void main() {
     });
   });
 
-  group('the passphrase is not in the file, and that is said', () {
-    // Decision of 2026-09-15: the format does not change, so the caller is told instead — and the type makes it impossible to read the vault without meeting the case.
+  group('the vault contains only the words', () {
     const passphraseFingerprint = 'b4e3f5ed';
     String entryWith(String? passphrase) => jsonEncode({
       'mnemonicWords': words,
@@ -106,98 +130,98 @@ void main() {
       'runtimeType': 'mnemonic',
     });
 
-    test('a secret without one seals as the whole secret', () async {
-      final secrets = secretsWith(
-        FakeSecureStoragePlatform(
-          entries: {'seed_$plainFingerprint': entryWith(null)},
-        ),
-      );
-
-      expect(
-        ok(await (await secretIn(secrets)).backup.vault()),
-        isA<WholeSecret<EncryptedVault>>(),
-      );
-    });
-
-    test('a secret with one seals as words only', () async {
-      final secrets = secretsWith(
-        FakeSecureStoragePlatform(
-          entries: {'seed_$passphraseFingerprint': entryWith('TREZOR')},
-        ),
-      );
-      final secret = ok(
-        await secrets.fetch(Fingerprint(passphraseFingerprint)),
-      );
-
-      expect(
-        ok(await secret.backup.vault()),
-        isA<WordsOnly<EncryptedVault>>(),
-        reason: 'the file restores a different wallet; the caller must know',
-      );
-    });
-
-    // The Liquid descriptor carries the same mark, and cannot be asserted
-    // here: `liquidDescriptor` calls lwk before wrapping, so it needs the
-    // FFI. What is checked instead is that it cannot disagree — one
-    // private helper builds every scope, pinned in `invariants_test.dart`
-    // — and the value itself lives in the integration suite.
-
     test('restoring with the passphrase restores the wallet', () async {
-      // The path that makes the signal actionable: the user supplies the passphrase at restore time, and the words never leave the package to be re-imported.
+      // The caller supplies the passphrase separately at restore time; the vault itself carries only the words.
       final source = secretsWith(
         FakeSecureStoragePlatform(
           entries: {'seed_$passphraseFingerprint': entryWith('TREZOR')},
         ),
       );
       final secret = ok(await source.fetch(Fingerprint(passphraseFingerprint)));
-      final vault = anyScope(await secret.backup.vault());
+      final vault = ok(await secret.backup.recoverbull());
 
       final without = secretsWith(FakeSecureStoragePlatform());
       final bare = ok(
-        await without.restoreVault(file: vault.file, key: vault.key),
+        await without.recoverbull.restore(vault: vault.vault, key: vault.key),
       );
-      expect(bare, isA<WordsOnly<RestoredVault>>());
       expect(
-        scoped(bare).secret.id.hex,
+        bare.secret.id.hex,
         plainFingerprint,
         reason: 'the file alone gives the passphrase-less sibling',
       );
 
       final with_ = secretsWith(FakeSecureStoragePlatform());
       final whole = ok(
-        await with_.restoreVault(
-          file: vault.file,
+        await with_.recoverbull.restore(
+          vault: vault.vault,
           key: vault.key,
           passphrase: 'TREZOR',
         ),
       );
-      expect(whole, isA<WholeSecret<RestoredVault>>());
-      expect(scoped(whole).secret.id.hex, passphraseFingerprint);
+      expect(whole.secret.id.hex, passphraseFingerprint);
     });
   });
 
   group('restoring a vault', () {
+    test(
+      'repeated restoration keeps the existing secret byte for byte',
+      () async {
+        final secrets = secretsWith(
+          FakeSecureStoragePlatform(
+            entries: {'seed_$plainFingerprint': mnemonicEntry},
+          ),
+        );
+        final backup = ok(await (await secretIn(secrets)).backup.recoverbull());
+        final historical = jsonEncode({
+          'runtimeType': 'mnemonic',
+          'passphrase': null,
+          'mnemonicWords': words,
+        });
+        final storage = FakeSecureStoragePlatform(
+          entries: {'seed_$plainFingerprint': historical},
+        );
+        final target = secretsWith(storage);
+
+        final first = ok(
+          await target.recoverbull.restore(
+            vault: backup.vault,
+            key: backup.key,
+          ),
+        );
+        final second = ok(
+          await target.recoverbull.restore(
+            vault: backup.vault,
+            key: backup.key,
+          ),
+        );
+
+        expect(first.secret.id, Fingerprint(plainFingerprint));
+        expect(second.secret.id, first.secret.id);
+        expect(storage.entries, {'seed_$plainFingerprint': historical});
+      },
+    );
+
     test('round-trips into a stored secret, words never surfacing', () async {
       final source = secretsWith(
         FakeSecureStoragePlatform(
           entries: {'seed_$plainFingerprint': mnemonicEntry},
         ),
       );
-      final vault = anyScope(
+      final vault = ok(
         await (await secretIn(
           source,
-        )).backup.vault(metadata: const {'isPhysicalBackupTested': true}),
+        )).backup.recoverbull(metadata: const {'isPhysicalBackupTested': true}),
       );
 
       // A fresh device: nothing stored yet.
       final target = FakeSecureStoragePlatform();
-      final restored = anyScope(
+      final restored = ok(
         await secretsWith(
           target,
-        ).restoreVault(file: vault.file, key: vault.key),
+        ).recoverbull.restore(vault: vault.vault, key: vault.key),
       );
 
-      // Same wallet, filed under the same identity.
+      // Same wallet, filed under the same fingerprint.
       expect(restored.secret.id.hex, plainFingerprint);
       expect(target.entries.keys, ['seed_$plainFingerprint']);
       // The caller's own fields come back; the words do not.
@@ -212,12 +236,12 @@ void main() {
           entries: {'seed_$plainFingerprint': mnemonicEntry},
         ),
       );
-      final vault = anyScope(await (await secretIn(source)).backup.vault());
+      final vault = ok(await (await secretIn(source)).backup.recoverbull());
 
       final target = FakeSecureStoragePlatform();
       final result = await secretsWith(
         target,
-      ).restoreVault(file: vault.file, key: 'f' * 64);
+      ).recoverbull.restore(vault: vault.vault, key: VaultKey('f' * 64));
 
       // Its own failure, not a storage one: the UI can say "wrong key"
       // rather than "could not save".
@@ -228,9 +252,10 @@ void main() {
     test('a file that is not a vault is refused', () async {
       final target = FakeSecureStoragePlatform();
 
-      final result = await secretsWith(
-        target,
-      ).restoreVault(file: 'not a vault', key: 'f' * 64);
+      final result = await secretsWith(target).recoverbull.restore(
+        vault: const EncryptedVault(json: 'not a vault'),
+        key: VaultKey('f' * 64),
+      );
 
       expect(err(result), isA<InvalidVaultFailure>());
       expect(target.entries, isEmpty);
@@ -275,9 +300,10 @@ void main() {
         ).toJson();
         final target = FakeSecureStoragePlatform();
 
-        final result = await secretsWith(
-          target,
-        ).restoreVault(file: file, key: '01' * 32);
+        final result = await secretsWith(target).recoverbull.restore(
+          vault: EncryptedVault(json: file),
+          key: VaultKey('01' * 32),
+        );
 
         expect(err(result), isA<InvalidVaultFailure>());
         expect(target.entries, isEmpty);
@@ -300,12 +326,85 @@ void main() {
       ).toJson();
       final target = FakeSecureStoragePlatform();
 
-      final result = await secretsWith(
-        target,
-      ).restoreVault(file: file, key: '01' * 32);
+      final result = await secretsWith(target).recoverbull.restore(
+        vault: EncryptedVault(json: file),
+        key: VaultKey('01' * 32),
+      );
 
       expect(err(result), isA<InvalidVaultFailure>());
       expect(target.entries, isEmpty);
+    });
+  });
+
+  group('inspecting a vault without storing its words', () {
+    final key = VaultKey('01' * 32);
+
+    EncryptedVault sealed(Map<String, dynamic> plaintext) => EncryptedVault(
+      json: RecoverBull.createBackup(
+        secret: utf8.encode(jsonEncode(plaintext)),
+        backupKey: List<int>.filled(32, 1),
+      ).toJson(),
+    );
+
+    test(
+      'derives the fingerprint from words and ignores forged metadata',
+      () async {
+        final storage = _UntouchedStorage();
+        final secrets = secretsWith(storage);
+        final vault = sealed({
+          'mnemonic': words,
+          'fingerprint': 'deadbeef',
+          'masterFingerprint': 'deadbeef',
+        });
+
+        expect(
+          ok(await secrets.recoverbull.fingerprint(vault: vault, key: key)),
+          Fingerprint(plainFingerprint),
+        );
+        expect(storage.calls, 0);
+      },
+    );
+
+    test('a wrong key fails without touching the keystore', () async {
+      final storage = _UntouchedStorage();
+      final secrets = secretsWith(storage);
+
+      final result = await secrets.recoverbull.fingerprint(
+        vault: sealed({'mnemonic': words}),
+        key: VaultKey('02' * 32),
+      );
+
+      expect(err(result), isA<InvalidVaultFailure>());
+      expect(storage.calls, 0);
+    });
+
+    test('invalid words fail without touching the keystore', () async {
+      final storage = _UntouchedStorage();
+      final secrets = secretsWith(storage);
+      const sentinel = 'SYNTHETIC_MNEMONIC_SENTINEL';
+
+      final result = await secrets.recoverbull.fingerprint(
+        vault: sealed({'mnemonic': List.filled(12, sentinel)}),
+        key: key,
+      );
+
+      final failure = err(result);
+      expect(failure, isA<InvalidVaultFailure>());
+      expect(failure.logMessage, isNot(contains(sentinel)));
+      expect(storage.calls, 0);
+    });
+
+    test('a malformed file fails without touching the keystore', () async {
+      final storage = _UntouchedStorage();
+      final secrets = secretsWith(storage);
+
+      final result = await secrets.recoverbull.fingerprint(
+        vault: const EncryptedVault(json: 'not a vault'),
+        key: key,
+      );
+
+      expect(err(result), isA<InvalidVaultFailure>());
+      expect(storage.calls, 0);
     });
   });
 
@@ -355,20 +454,82 @@ void main() {
         );
       });
 
+      test(
+        '$label — inspection derives the original fingerprint without storage',
+        () async {
+          final storage = _UntouchedStorage();
+          final secrets = secretsWith(storage);
+
+          final fingerprint = ok(
+            await secrets.recoverbull.fingerprint(
+              vault: EncryptedVault(json: vector['file'] as String),
+              key: VaultKey(vector['key'] as String),
+            ),
+          );
+
+          expect(fingerprint, Fingerprint('3f635a63'));
+          expect(storage.calls, 0);
+        },
+      );
+
       test('$label — the file opens and restores its words', () async {
         final secrets = secretsWith(FakeSecureStoragePlatform());
 
-        final restored = anyScope(
-          await secrets.restoreVault(
-            file: vector['file'] as String,
-            key: vector['key'] as String,
+        final restored = ok(
+          await secrets.recoverbull.restore(
+            vault: EncryptedVault(json: vector['file'] as String),
+            key: VaultKey(vector['key'] as String),
           ),
         );
 
         // Compared inside the package: the restored words are never read back out to be asserted on.
-        expect(ok(await restored.secret.verifyWords(vaultWords)), isTrue);
+        expect(ok(await restored.secret.verify.mnemonic(vaultWords)), isTrue);
         expect(restored.metadata.containsKey('mnemonic'), isFalse);
       });
     }
   });
+}
+
+/// Any keystore access makes a stateless inspection fail, including reads that would otherwise return absence.
+final class _UntouchedStorage extends FakeSecureStoragePlatform {
+  int calls = 0;
+
+  Never _access() {
+    calls++;
+    throw StateError('vault inspection must not access secure storage');
+  }
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async => _access();
+
+  @override
+  Future<Map<String, String>> readAll({
+    required Map<String, String> options,
+  }) async => _access();
+
+  @override
+  Future<void> write({
+    required String key,
+    required String value,
+    required Map<String, String> options,
+  }) async => _access();
+
+  @override
+  Future<void> delete({
+    required String key,
+    required Map<String, String> options,
+  }) async => _access();
+
+  @override
+  Future<void> deleteAll({required Map<String, String> options}) async =>
+      _access();
+
+  @override
+  Future<bool> containsKey({
+    required String key,
+    required Map<String, String> options,
+  }) async => _access();
 }

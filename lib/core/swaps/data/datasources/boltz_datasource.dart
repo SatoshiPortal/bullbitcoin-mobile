@@ -16,7 +16,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
-import 'package:bull_sdk/boltz.dart' hide Network;
+import 'package:bull_sdk/boltz.dart' hide Network, SwapMasterKey;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
 typedef BoltzWebSocketFactory =
@@ -192,7 +192,7 @@ class BoltzDatasource {
 
   /// Stores a swap master key the `secrets` package has already derived. Nothing here touches the wallet's words; the package did, once.
   Future<void> storeSwapMasterKey({
-    required SwapKey key,
+    required SwapMasterKey key,
     required String walletFingerprint,
   }) async {
     final model = SwapMasterKeyModel(

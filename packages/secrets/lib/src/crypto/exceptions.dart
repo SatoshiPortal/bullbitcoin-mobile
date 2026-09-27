@@ -32,13 +32,13 @@ class InvalidVault implements Exception {
   String toString() => 'InvalidVault: $message';
 }
 
-/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `SecretDerivationFailure`.
+/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `UseSecretFailure`.
 class PsbtSigningFailed implements Exception {
   @internal
   const PsbtSigningFailed();
 }
 
-/// lwk refused to sign. Carries nothing: lwk's own message is dropped on purpose. Reported by type as `SecretDerivationFailure`.
+/// lwk refused to sign. Carries nothing: lwk's own message is dropped on purpose. Reported by type as `UseSecretFailure`.
 class LiquidSigningFailed implements Exception {
   @internal
   const LiquidSigningFailed();
@@ -47,6 +47,7 @@ class LiquidSigningFailed implements Exception {
 /// The operation derives from the words alone, so a passphrase cannot be honoured. Refused rather than computed for the passphrase-less sibling. Translated to `PassphraseUnsupportedFailure` by the error boundary.
 class PassphraseUnsupported implements Exception {
   final String message;
+  @internal
   const PassphraseUnsupported(this.message);
 
   @override
@@ -55,5 +56,6 @@ class PassphraseUnsupported implements Exception {
 
 /// bwk refused to open the Silent Payments account. Carries nothing: bwk's message can quote its input. Reported by type as `SecretDerivationFailure`.
 class SilentPaymentsOpenFailed implements Exception {
+  @internal
   const SilentPaymentsOpenFailed();
 }
