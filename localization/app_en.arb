@@ -4453,7 +4453,7 @@
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
   },
-  "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2…",
+  "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2...",
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
@@ -5409,7 +5409,7 @@
   "@bitboxErrorConnectionFailed": {
     "description": "Error when connection to BitBox device fails"
   },
-  "bitboxErrorInvalidResponse": "Invalid response from BitBox device. Please try again.",
+  "bitboxErrorInvalidResponse": "Invalid response from BitBox. Please try again.",
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
@@ -5570,7 +5570,7 @@
       }
     }
   },
-  "bitboxScreenConnectSubtext": "Make sure your BitBox02 is unlocked and connected via USB.",
+  "bitboxScreenConnectSubtext": "Make sure your BitBox is unlocked and connected via USB.",
   "@bitboxScreenConnectSubtext": {
     "description": "Subtext for initial state"
   },
@@ -5582,7 +5582,7 @@
   "@bitboxScreenConnectingSubtext": {
     "description": "Subtext when connecting"
   },
-  "bitboxScreenPairingCodeSubtext": "Verify this code matches your BitBox02 screen, then confirm on the device.",
+  "bitboxScreenPairingCodeSubtext": "Verify this code matches your BitBox screen, then confirm on the device.",
   "@bitboxScreenPairingCodeSubtext": {
     "description": "Subtext when showing pairing code"
   },
@@ -5590,7 +5590,7 @@
   "@bitboxScreenEnterPasswordSubtext": {
     "description": "Subtext when waiting for password"
   },
-  "bitboxScreenVerifyAddressSubtext": "Compare this address with your BitBox02 screen",
+  "bitboxScreenVerifyAddressSubtext": "Compare this address with your BitBox screen",
   "@bitboxScreenVerifyAddressSubtext": {
     "description": "Subtext when showing address verification"
   },
@@ -5598,7 +5598,7 @@
   "@bitboxScreenUnknownError": {
     "description": "Fallback error message"
   },
-  "bitboxScreenWaitingConfirmation": "Waiting for confirmation on BitBox02...",
+  "bitboxScreenWaitingConfirmation": "Waiting for confirmation on BitBox...",
   "@bitboxScreenWaitingConfirmation": {
     "description": "Message shown while waiting for device confirmation"
   },
@@ -5634,11 +5634,11 @@
   "@bitboxScreenNestedSegwitBip49Subtitle": {
     "description": "Subtitle for BIP49 option"
   },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "bitboxScreenTroubleshootingTitle": "BitBox Troubleshooting",
   "@bitboxScreenTroubleshootingTitle": {
     "description": "Title for troubleshooting instructions"
   },
-  "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
+  "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
   "@bitboxScreenTroubleshootingSubtitle": {
     "description": "Subtitle for troubleshooting instructions"
   },
@@ -5650,7 +5650,7 @@
   "@bitboxScreenTroubleshootingStep2": {
     "description": "Troubleshooting step 2"
   },
-  "bitboxScreenTroubleshootingStep3": "Restart your BitBox02 device by unplugging and reconnecting it.",
+  "bitboxScreenTroubleshootingStep3": "Restart your BitBox device by unplugging and reconnecting it.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
   },
@@ -5719,7 +5719,7 @@
   "@replaceByFeeSatsVbUnit": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "replaceByFeeScreenTitle": "Replace by fee",
+  "replaceByFeeScreenTitle": "Replace-by-fee",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
@@ -6888,7 +6888,7 @@
   "@consolidationFailedBody": {
     "description": "Body of the error banner shown when a consolidation attempt fails"
   },
-  "consolidationInProgress": "Consolidating…",
+  "consolidationInProgress": "Consolidating...",
   "@consolidationInProgress": {
     "description": "Shown while the consolidation transactions are being broadcast"
   },
@@ -8430,7 +8430,7 @@
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
   },
-  "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions…",
+  "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions...",
   "@recoverbullRecoveryLoadingMessage": {
     "description": "Loading message while checking wallet balance and transactions"
   },
@@ -8476,7 +8476,7 @@
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
   },
-  "rbfTitle": "Replace by fee",
+  "rbfTitle": "Replace-by-fee",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
@@ -8888,7 +8888,7 @@
   "@kruxStep7": {
     "description": "Krux troubleshooting tip 1"
   },
-  "kruxStep8": "   - Move the red laser up and down over QR code",
+  "kruxStep8": "   - Hold the QR code steady and centered",
   "@kruxStep8": {
     "description": "Krux troubleshooting tip 2"
   },
@@ -8948,7 +8948,7 @@
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
   },
-  "keystoneStep6": "   - Move the red laser up and down over QR code",
+  "keystoneStep6": "   - Hold the QR code steady and centered",
   "@keystoneStep6": {
     "description": "Keystone troubleshooting tip 2"
   },
@@ -9008,7 +9008,7 @@
   "@passportStep5": {
     "description": "Passport troubleshooting tip 1"
   },
-  "passportStep6": "   - Move the red laser up and down over QR code",
+  "passportStep6": "   - Hold the QR code steady and centered",
   "@passportStep6": {
     "description": "Passport troubleshooting tip 2"
   },
@@ -9068,7 +9068,7 @@
   "@seedsignerStep5": {
     "description": "SeedSigner troubleshooting tip 1"
   },
-  "seedsignerStep6": "   - Move the red laser up and down over QR code",
+  "seedsignerStep6": "   - Hold the QR code steady and centered",
   "@seedsignerStep6": {
     "description": "SeedSigner troubleshooting tip 2"
   },
@@ -9764,11 +9764,11 @@
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
   },
-  "importQrDeviceJadeStep8": "Click the \"open camera\" button",
+  "importQrDeviceJadeStep8": "On your mobile, click \"open camera\"",
   "@importQrDeviceJadeStep8": {
     "description": "Jade instruction step 8"
   },
-  "importQrDeviceJadeStep9": "Scan the QR code you see on your device.",
+  "importQrDeviceJadeStep9": "Scan the QR code you see on your Jade.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
   },
@@ -9776,7 +9776,7 @@
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
   },
-  "importQrDeviceJadeFirmwareWarning": "Make sure your device is updated to the latest firmware",
+  "importQrDeviceJadeFirmwareWarning": "Make sure your Jade is updated to the latest firmware",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
@@ -9800,11 +9800,11 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "importQrDeviceKruxStep4": "Click the \"open camera\" button",
+  "importQrDeviceKruxStep4": "On your mobile, click \"open camera\"",
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "importQrDeviceKruxStep5": "Scan the QR code you see on your device.",
+  "importQrDeviceKruxStep5": "Scan the QR code you see on your Krux.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
   },
@@ -9828,7 +9828,7 @@
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
+  "importQrDeviceKeystoneStep3": "Tap the \"...\" (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
@@ -9896,7 +9896,7 @@
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
+  "importQrDevicePassportStep8": "On your mobile, click \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9948,7 +9948,7 @@
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
-  "importQrDeviceSeedsignerStep7": "On your mobile device, tap Open Camera",
+  "importQrDeviceSeedsignerStep7": "On your mobile, click \"open camera\"",
   "@importQrDeviceSeedsignerStep7": {
     "description": "SeedSigner instruction step 7"
   },
@@ -10000,7 +10000,7 @@
   "@importQrDeviceSpecterStep7": {
     "description": "Specter instruction step 7"
   },
-  "importQrDeviceSpecterStep8": "On your mobile device, tap Open Camera",
+  "importQrDeviceSpecterStep8": "On your mobile, click \"open camera\"",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
   },
@@ -10091,15 +10091,15 @@
   "@importColdcardQStep2": {
     "description": "Coldcard Q import instruction step 2"
   },
-  "importColdcardQStep3": "Select the advanced/settings menu",
+  "importColdcardQStep3": "Select the \"Advanced/Tools\" menu",
   "@importColdcardQStep3": {
     "description": "Coldcard Q import instruction step 3"
   },
-  "importColdcardQStep4": "Click \"export wallet\"",
+  "importColdcardQStep4": "Click \"Export Wallet\"",
   "@importColdcardQStep4": {
     "description": "Coldcard Q import instruction step 4"
   },
-  "importColdcardQStep5": "Select \"descriptor\" as export type",
+  "importColdcardQStep5": "Select \"Descriptor\" as export type",
   "@importColdcardQStep5": {
     "description": "Coldcard Q import instruction step 5"
   },
@@ -10115,11 +10115,11 @@
   "@importColdcardQStep8": {
     "description": "Coldcard Q import instruction step 8"
   },
-  "importColdcardQStep9": "For QR, click the QR code button on the device. It will show you a QR code on the device",
+  "importColdcardQStep9": "For QR, click the QR code button on the Coldcard Q device. It will show you a QR code on the device",
   "@importColdcardQStep9": {
     "description": "Coldcard Q import instruction step 9"
   },
-  "importColdcardQStep10": "For NFC, click the NFC button on the device",
+  "importColdcardQStep10": "For NFC, click the NFC button on the Coldcard Q",
   "@importColdcardQStep10": {
     "description": "Coldcard Q import instruction step 10"
   },
@@ -10127,7 +10127,7 @@
   "@importColdcardQStep11": {
     "description": "Coldcard Q import instruction step 11"
   },
-  "importColdcardQStep12": "Scan the QR code you see on your device or put the phone NFC on top of the Coldcard NFC",
+  "importColdcardQStep12": "Scan the QR code you see on your ColdCard Q or put the phone NFC on top of the Coldcard NFC",
   "@importColdcardQStep12": {
     "description": "Coldcard Q import instruction step 12"
   },
@@ -10147,15 +10147,15 @@
   "@importColdcardMk4Step2": {
     "description": "Coldcard Mk4 import instruction step 2"
   },
-  "importColdcardMk4Step3": "Select the advanced/settings menu",
+  "importColdcardMk4Step3": "Select the \"Advanced/Tools\" menu",
   "@importColdcardMk4Step3": {
     "description": "Coldcard Mk4 import instruction step 3"
   },
-  "importColdcardMk4Step4": "Click \"export wallet\"",
+  "importColdcardMk4Step4": "Click \"Export Wallet\"",
   "@importColdcardMk4Step4": {
     "description": "Coldcard Mk4 import instruction step 4"
   },
-  "importColdcardMk4Step5": "Select \"descriptor\" as export type",
+  "importColdcardMk4Step5": "Select \"Descriptor\" as export type",
   "@importColdcardMk4Step5": {
     "description": "Coldcard Mk4 import instruction step 5"
   },
@@ -10701,11 +10701,11 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "sellSendingPayment": "Sending payment…",
+  "sellSendingPayment": "Sending payment...",
   "@sellSendingPayment": {
     "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
   },
-  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order...",
   "@sellPaymentSentRefreshingOrder": {
     "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
@@ -10893,7 +10893,7 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "If no protocol is specified, ssl will be used by default.",
+  "electrumBitcoinSslInfo": "If no protocol is specified, SSL will be used by default.",
   "@electrumBitcoinSslInfo": {
     "description": "Info text for Bitcoin server protocol"
   },
@@ -11115,7 +11115,7 @@
   "@electrumPrivacyNoticeContent1": {
     "description": "First paragraph of privacy notice"
   },
-  "electrumPrivacyNoticeContent2": "However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
+  "electrumPrivacyNoticeContent2": "However, if you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
   "@electrumPrivacyNoticeContent2": {
     "description": "Second paragraph of privacy notice"
   },
@@ -13368,7 +13368,7 @@
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
   },
-  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox Nova.",
   "@bitboxErrorBluetoothPermissionDenied": {
     "description": "Error when Bluetooth permissions are not granted for BitBox"
   },
@@ -13376,11 +13376,11 @@
   "@bitboxErrorBluetoothUnavailable": {
     "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
   },
-  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
+  "bitboxErrorNoBleDevicesFound": "No BitBox Nova found nearby. Check Bluetooth and try again.",
   "@bitboxErrorNoBleDevicesFound": {
     "description": "Error when no BitBox02 Nova BLE devices are detected"
   },
-  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox Nova devices found. Keep only one nearby and try again.",
   "@bitboxErrorMultipleBleDevicesFound": {
     "description": "Error when multiple BitBox02 Nova BLE devices are detected"
   },
@@ -13388,15 +13388,15 @@
   "@bitboxErrorOperationFailed": {
     "description": "Generic error when a BitBox operation fails"
   },
-  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
+  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox Nova is unlocked and Bluetooth is enabled.",
   "@bitboxScreenConnectSubtextBluetooth": {
     "description": "Subtext for initial Bluetooth state"
   },
-  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
+  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox Nova nearby...",
   "@bitboxScreenScanningSubtextBluetooth": {
     "description": "Subtext when scanning over Bluetooth"
   },
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox Nova Troubleshooting",
   "@bitboxScreenTroubleshootingBluetoothTitle": {
     "description": "Title for Bluetooth troubleshooting instructions"
   },
@@ -13408,11 +13408,11 @@
   "@bitboxScreenTroubleshootingBluetoothStep1": {
     "description": "Bluetooth troubleshooting step 1"
   },
-  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox Nova.",
   "@bitboxScreenTroubleshootingBluetoothStep2": {
     "description": "Bluetooth troubleshooting step 2"
   },
-  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox Nova and try connecting again.",
   "@bitboxScreenTroubleshootingBluetoothStep3": {
     "description": "Bluetooth troubleshooting step 3"
   },
@@ -13425,11 +13425,11 @@
       }
     }
   },
-  "importWalletBitBox": "BitBox02",
+  "importWalletBitBox": "BitBox",
   "@importWalletBitBox": {
     "description": "Button label for BitBox02 hardware wallet"
   },
-  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletBitBoxNova": "BitBox Nova",
   "@importWalletBitBoxNova": {
     "description": "Button label for BitBox02 Nova hardware wallet"
   },
@@ -14172,7 +14172,7 @@
   "@mempoolErrorNetworkMismatch": {
     "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
   },
-  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction...",
   "@transactionPayjoinFallbackProcessing": {
     "description": "Status shown while broadcasting a payjoin fallback transaction"
   },
@@ -14184,7 +14184,7 @@
   "@torSettingsDescCensored": {
     "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
   },
-  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "torSettingsBootstrapProgress": "Connecting... {percent}%",
   "@torSettingsBootstrapProgress": {
     "description": "Bootstrap progress percentage while Tor is connecting.",
     "placeholders": {

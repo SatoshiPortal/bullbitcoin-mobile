@@ -70,7 +70,7 @@ void main() {
 
     await tester.tap(find.text('Send without payjoin'));
     await tester.pump();
-    expect(find.text('Processing as a regular transaction…'), findsOneWidget);
+    expect(find.text('Processing as a regular transaction...'), findsOneWidget);
 
     state = TransactionDetailsState(
       transaction: Transaction(payjoin: _session(PayjoinStatus.aborted)),
