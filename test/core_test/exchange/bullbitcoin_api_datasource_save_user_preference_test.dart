@@ -8,12 +8,11 @@ class _MockDio extends Mock implements Dio {}
 
 const _usersPath = '/ak/api-users';
 
-Response<dynamic> _response(Map<String, dynamic> body, {int status = 200}) =>
-    Response(
-      requestOptions: RequestOptions(path: _usersPath),
-      statusCode: status,
-      data: body,
-    );
+Response<dynamic> _response(dynamic body, {int status = 200}) => Response(
+  requestOptions: RequestOptions(path: _usersPath),
+  statusCode: status,
+  data: body,
+);
 
 void main() {
   late _MockDio dio;
@@ -24,7 +23,7 @@ void main() {
     datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
   });
 
-  void stub(Map<String, dynamic> body, {int status = 200}) {
+  void stub(dynamic body, {int status = 200}) {
     when(
       () => dio.post<dynamic>(
         _usersPath,
@@ -67,6 +66,12 @@ void main() {
 
     test('rejects a non-200 response', () async {
       stub(<String, dynamic>{}, status: 500);
+
+      await expectLater(save(), throwsA(isA<Exception>()));
+    });
+
+    test('rejects a non-map response body', () async {
+      stub('unexpected response');
 
       await expectLater(save(), throwsA(isA<Exception>()));
     });

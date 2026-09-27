@@ -13,12 +13,8 @@ class AutoBuyCubit extends Cubit<AutoBuyState> {
   final SetAutoBuyUsecase _setAutoBuyUsecase;
   final GetAutoBuyStatusUsecase _getAutoBuyStatusUsecase;
 
-  AutoBuyCubit(
-    this._setAutoBuyUsecase,
-    this._getAutoBuyStatusUsecase, {
-    bool isActive = false,
-    bool isRestricted = true,
-  }) : super(AutoBuyState(isActive: isActive, isRestricted: isRestricted));
+  AutoBuyCubit(this._setAutoBuyUsecase, this._getAutoBuyStatusUsecase)
+    : super(const AutoBuyState());
 
   Future<void> loadStatus() async {
     emit(state.copyWith(isLoadingStatus: true, failure: null));
@@ -56,10 +52,6 @@ class AutoBuyCubit extends Cubit<AutoBuyState> {
         failure: null,
       ),
     );
-  }
-
-  void showWalletsFromConfirmation() {
-    emit(state.copyWith(step: AutoBuyStep.wallets, failure: null));
   }
 
   Future<void> setEnabled(bool enabled) async {

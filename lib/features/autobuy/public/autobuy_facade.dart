@@ -41,13 +41,6 @@ class AutoBuyFacade {
     child: AutoBuyScreen(defaultWalletsFacade: _defaultWalletsFacade),
   );
 
-  AutoBuyCubit _createCubit({
-    bool isActive = false,
-    bool isRestricted = true,
-  }) => AutoBuyCubit(
-    _setAutoBuyUsecase,
-    _getAutoBuyStatusUsecase,
-    isActive: isActive,
-    isRestricted: isRestricted,
-  );
+  AutoBuyCubit _createCubit() =>
+      AutoBuyCubit(_setAutoBuyUsecase, _getAutoBuyStatusUsecase);
 }

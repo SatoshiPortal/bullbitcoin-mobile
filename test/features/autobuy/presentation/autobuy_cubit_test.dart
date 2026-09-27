@@ -18,13 +18,7 @@ void main() {
   late MockSetAutoBuyUsecase setAutoBuy;
   late MockGetAutoBuyStatusUsecase getStatus;
 
-  AutoBuyCubit buildCubit({bool isActive = false, bool isRestricted = false}) =>
-      AutoBuyCubit(
-        setAutoBuy,
-        getStatus,
-        isActive: isActive,
-        isRestricted: isRestricted,
-      );
+  AutoBuyCubit buildCubit() => AutoBuyCubit(setAutoBuy, getStatus);
 
   const wallets = DefaultWallets(
     bitcoin: DefaultWallet(
@@ -72,10 +66,11 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'moves through intro, wallet, and confirmation steps',
     build: buildCubit,
+    seed: () => const AutoBuyState(isRestricted: false),
     act: (cubit) {
       cubit.showWallets();
       cubit.showConfirmation(wallets);
-      cubit.showWalletsFromConfirmation();
+      cubit.showWallets();
       cubit.showIntro();
     },
     expect: () => const [
@@ -200,7 +195,8 @@ void main() {
             const Ok(AutoBuyStatus(isActive: false, isRestricted: false)),
       );
     },
-    build: () => buildCubit(isActive: true),
+    build: buildCubit,
+    seed: () => const AutoBuyState(isActive: true, isRestricted: false),
     act: (cubit) => cubit.setEnabled(false),
     expect: () => const [
       AutoBuyState(isActive: true, isRestricted: false, isSaving: true),

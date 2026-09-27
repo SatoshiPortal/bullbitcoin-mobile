@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBorderedTile,
@@ -15,6 +13,9 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullSpacing,
         Gap;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AutoBuyScreen extends StatelessWidget {
@@ -33,8 +34,11 @@ class AutoBuyScreen extends StatelessWidget {
       listener: (context, state) {
         if (state.statusChangeSucceeded && state.isActive) {
           context.pop();
-        } else if (state.failure case final failure?) {
-          BullSnackBar.show(context, message: failure.toTranslated(context));
+        } else if (state.step != AutoBuyStep.intro && state.failure != null) {
+          BullSnackBar.show(
+            context,
+            message: state.failure!.toTranslated(context),
+          );
         }
       },
       child: BlocBuilder<AutoBuyCubit, AutoBuyState>(
@@ -51,6 +55,11 @@ class AutoBuyScreen extends StatelessWidget {
               AutoBuyStep.intro when state.isLoadingStatus => const Center(
                 child: CircularProgressIndicator(),
               ),
+              AutoBuyStep.intro when state.failure != null =>
+                _StatusLoadFailure(
+                  message: state.failure!.toTranslated(context),
+                  onRetry: context.read<AutoBuyCubit>().loadStatus,
+                ),
               AutoBuyStep.intro => _IntroStep(isRestricted: state.isRestricted),
               AutoBuyStep.wallets => defaultWalletsFacade.buildEditor(
                 footerBuilder: (context, wallets, status) => BullButton.big(
@@ -83,12 +92,41 @@ class AutoBuyScreen extends StatelessWidget {
     final cubit = context.read<AutoBuyCubit>();
     switch (step) {
       case AutoBuyStep.intro:
-        Navigator.of(context).pop();
+        context.pop();
       case AutoBuyStep.wallets:
         cubit.showIntro();
       case AutoBuyStep.confirm:
-        cubit.showWalletsFromConfirmation();
+        cubit.showWallets();
     }
+  }
+}
+
+class _StatusLoadFailure extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _StatusLoadFailure({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(BullSpacing.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(message, textAlign: TextAlign.center),
+            const Gap(BullSpacing.md),
+            BullButton.small(
+              label: context.loc.retry,
+              onPressed: onRetry,
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -139,7 +177,7 @@ class _IntroStep extends StatelessWidget {
                 link: true,
                 child: TextButton(
                   onPressed: () => launchUrl(
-                    Uri.parse('https://www.bullbitcoin.com/terms'),
+                    Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
                     mode: LaunchMode.inAppBrowserView,
                   ),
                   child: Text(

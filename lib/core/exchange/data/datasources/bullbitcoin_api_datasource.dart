@@ -268,7 +268,12 @@ class BullbitcoinApiDatasource {
       throw Exception('Failed to save user preferences');
     }
 
-    final error = resp.data['error'];
+    final data = resp.data;
+    if (data is! Map) {
+      throw Exception('Failed to save user preferences: invalid response');
+    }
+
+    final error = data['error'];
     if (error != null) {
       final message = error is Map ? error['message'] : error;
       throw Exception('Failed to save user preferences: $message');
