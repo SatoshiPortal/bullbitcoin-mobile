@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -37,6 +39,13 @@ class ExchangeHomeScreen extends StatelessWidget {
     );
     final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
     final hasDcaActive = dca?.isActive ?? false;
+    final autoBuy = context.select(
+      (ExchangeCubit cubit) => cubit.state.userSummary?.autoBuy,
+    );
+    final isFundingRestricted = context.select(
+      (ExchangeCubit cubit) =>
+          cubit.state.userSummary?.isFundingRestricted ?? true,
+    );
 
     if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
@@ -68,6 +77,21 @@ class ExchangeHomeScreen extends StatelessWidget {
                       if (!isFullyVerified) const ExchangeHomeKycCard(),
                       const Gap(12),
                       DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
+                      const Gap(12),
+                      locator<AutoBuyFacade>().buildHomeCard(
+                        isActive: autoBuy?.isActive ?? false,
+                        isRestricted: isFundingRestricted,
+                        onActivate: () async {
+                          await context.pushNamed(AutoBuyRoute.autoBuy.name);
+                          if (context.mounted) {
+                            await context
+                                .read<ExchangeCubit>()
+                                .fetchUserSummary();
+                          }
+                        },
+                        onStatusChanged: () =>
+                            context.read<ExchangeCubit>().fetchUserSummary(),
+                      ),
                       const Gap(12),
                       if (!notLoggedIn) const AnnouncementBanner(),
                     ],

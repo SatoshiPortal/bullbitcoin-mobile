@@ -14703,5 +14703,77 @@
   "withdrawInteracSecurityAnswerFormatError": "Use letters, numbers, or hyphens without spaces",
   "@withdrawInteracSecurityAnswerFormatError": {
     "description": "Validation error for unsupported Interac security answer characters."
+  },
+  "autoBuyTitle": "Auto-Buy",
+  "@autoBuyTitle": {
+    "description": "Title for the AutoBuy dashboard card and screen"
+  },
+  "autoBuyDescription": "Automatically buy bitcoin each time you deposit funds into your account",
+  "@autoBuyDescription": {
+    "description": "Short description of AutoBuy"
+  },
+  "autoBuyActivate": "Activate Auto-Buy",
+  "@autoBuyActivate": {
+    "description": "Button label to open the AutoBuy activation flow"
+  },
+  "autoBuyDeactivate": "Deactivate Auto-Buy",
+  "@autoBuyDeactivate": {
+    "description": "Button label to deactivate AutoBuy"
+  },
+  "autoBuyCancelTitle": "Cancel Auto-Buy?",
+  "@autoBuyCancelTitle": {
+    "description": "Title of the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyCancelMessage": "You will not automatically buy bitcoin next time you fund your account.",
+  "@autoBuyCancelMessage": {
+    "description": "Message in the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyDeactivateConfirm": "Yes, deactivate",
+  "@autoBuyDeactivateConfirm": {
+    "description": "Confirmation button for deactivating AutoBuy"
+  },
+  "autoBuyHowItWorks": "How it works",
+  "@autoBuyHowItWorks": {
+    "description": "Heading above the AutoBuy explanation"
+  },
+  "autoBuyConnectWallet": "Connect your Bitcoin, Lightning, or Liquid wallet",
+  "@autoBuyConnectWallet": {
+    "description": "First AutoBuy explanation step"
+  },
+  "autoBuyPurchaseCreated": "A Bitcoin purchase is automatically created each time you fund your Bull Bitcoin account.",
+  "@autoBuyPurchaseCreated": {
+    "description": "Second AutoBuy explanation step"
+  },
+  "autoBuyBitcoinSent": "Bitcoin is sent directly to your own wallet.",
+  "@autoBuyBitcoinSent": {
+    "description": "Third AutoBuy explanation step"
+  },
+  "autoBuyRiskDisclaimer": "Order execution cannot be guaranteed. Delays or price changes between the deposit and purchase can change the effective rate.",
+  "@autoBuyRiskDisclaimer": {
+    "description": "Risk notice shown before an AutoBuy is enabled"
+  },
+  "autoBuyGetStarted": "Get started with Auto-Buy",
+  "@autoBuyGetStarted": {
+    "description": "Button label to start AutoBuy setup"
+  },
+  "autoBuyConfirmTitle": "Confirm Auto-Buy",
+  "@autoBuyConfirmTitle": {
+    "description": "Title of the AutoBuy confirmation screen"
+  },
+  "autoBuyInfoMessage": "Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.",
+  "@autoBuyInfoMessage": {
+    "description": "Explanation on the AutoBuy confirmation screen"
+  },
+  "autoBuyAccountUnavailableError": "Your Bull Bitcoin account is not available. Try again later.",
+  "@autoBuyAccountUnavailableError": {
+    "description": "Error shown when AutoBuy cannot load the exchange account"
+  },
+  "autoBuyWalletRequiredError": "Add at least one default Bitcoin, Lightning, or Liquid address.",
+  "@autoBuyWalletRequiredError": {
+    "description": "Error shown when AutoBuy is enabled without a default wallet"
+  },
+  "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
+  "@autoBuyUpdateError": {
+    "description": "Error shown when enabling or disabling AutoBuy fails"
   }
 }
