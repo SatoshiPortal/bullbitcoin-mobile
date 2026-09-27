@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_typ
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class RecipientDetails {
+sealed class RecipientDetails {
   final String? label;
   final bool isDefault;
   final bool? isOwner;

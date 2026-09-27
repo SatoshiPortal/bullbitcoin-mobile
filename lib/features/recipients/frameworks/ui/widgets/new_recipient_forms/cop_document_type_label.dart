@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/cop_document_type.dart';
 import 'package:flutter/widgets.dart';
 
 String copDocumentTypeLabel(BuildContext context, CopDocumentType type) =>

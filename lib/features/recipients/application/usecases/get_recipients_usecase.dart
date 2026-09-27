@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
@@ -22,7 +22,7 @@ class GetRecipientsParams {
 }
 
 class GetRecipientsResult {
-  final List<RecipientDto> recipients;
+  final List<Recipient> recipients;
   final int totalRecipients;
 
   GetRecipientsResult({
@@ -57,9 +57,7 @@ class GetRecipientsUsecase {
       search: params.search,
     );
     return GetRecipientsResult(
-      recipients: recipientsResult.recipients
-          .map((e) => RecipientDto.fromDomain(e))
-          .toList(),
+      recipients: recipientsResult.recipients,
       totalRecipients: recipientsResult.totalRecipients,
     );
   }

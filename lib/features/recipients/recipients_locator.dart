@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:dio/dio.dart';

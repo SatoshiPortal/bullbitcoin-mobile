@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 
 class AddRecipientParams {
@@ -10,7 +10,7 @@ class AddRecipientParams {
 }
 
 class AddRecipientResult {
-  final RecipientDto recipient;
+  final Recipient recipient;
 
   AddRecipientResult({required this.recipient});
 }
@@ -36,6 +36,6 @@ class AddRecipientUsecase {
       isTestnet: isTestnet,
     );
 
-    return AddRecipientResult(recipient: RecipientDto.fromDomain(recipient));
+    return AddRecipientResult(recipient: recipient);
   }
 }
