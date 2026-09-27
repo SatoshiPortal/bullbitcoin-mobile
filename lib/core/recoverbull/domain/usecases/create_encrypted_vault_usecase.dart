@@ -51,10 +51,8 @@ class CreateEncryptedVaultUsecase {
 
       // The default wallet is used to derive the backup key
       final defaultWallet = defaultBitcoinWallets.first;
-      await _walletRepository.updateEncryptedBackupTime(
-        time: DateTime.now(),
-        walletId: defaultWallet.id,
-      );
+      // Creating a vault does not verify a backup. Only successful inspection
+      // or restoration records its tested status and date.
       final secret = switch (await _secrets.fetch(
         Fingerprint(defaultWallet.masterFingerprint),
       )) {

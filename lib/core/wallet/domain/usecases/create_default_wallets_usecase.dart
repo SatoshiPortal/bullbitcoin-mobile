@@ -62,7 +62,17 @@ class CreateDefaultWalletsUsecase {
       };
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
-      if (hasBitcoin && hasLiquid) return existing;
+      if (existing.isNotEmpty) {
+        // A restore must never reuse or certify existing defaults. A partial
+        // setup is also refused rather than mixing secrets across networks.
+        if (secret != null ||
+            mnemonicWords != null ||
+            !hasBitcoin ||
+            !hasLiquid) {
+          throw StateError('Default wallets already exist');
+        }
+        return existing;
+      }
 
       final isGenerated = secret == null && mnemonicWords == null;
       final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;

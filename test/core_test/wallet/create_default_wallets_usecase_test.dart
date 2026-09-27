@@ -224,4 +224,81 @@ void main() {
       expect(storage.entries, persisted);
     },
   );
+  for (final partial in [false, true]) {
+    for (final useHandle in [false, true]) {
+      test(
+        'restoration refuses existing defaults (partial: $partial, handle: $useHandle)',
+        () async {
+          final bitcoin = _Wallet();
+          final liquid = _Wallet();
+          when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
+          when(() => liquid.network).thenReturn(Network.liquidMainnet);
+          when(
+            () => wallets.getWallets(
+              onlyDefaults: true,
+              environment: Environment.mainnet,
+            ),
+          ).thenAnswer((_) async => Ok([bitcoin, if (!partial) liquid]));
+          final before = Map<String, String>.of(storage.entries);
+          final reads = storage.reads;
+          await expectLater(
+            create.execute(
+              secret: useHandle ? stored : null,
+              mnemonicWords: useHandle ? null : words,
+            ),
+            throwsA(isA<CreateDefaultWalletsException>()),
+          );
+          expect(storage.entries, before);
+          expect(storage.reads, reads);
+          verifyNever(
+            () => wallets.createWallet(
+              secret: any(named: 'secret'),
+              network: any(named: 'network'),
+              scriptType: ScriptType.bip84,
+              isDefault: true,
+              birthday: null,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  test('creation reuses complete defaults without reading custody', () async {
+    final bitcoin = _Wallet();
+    final liquid = _Wallet();
+    when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
+    when(() => liquid.network).thenReturn(Network.liquidMainnet);
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
+    ).thenAnswer((_) async => Ok([bitcoin, liquid]));
+    final reads = storage.reads;
+    expect(await create.execute(), [bitcoin, liquid]);
+    expect(storage.reads, reads);
+  });
+
+  test(
+    'creation refuses a partial setup instead of generating another secret',
+    () async {
+      final bitcoin = _Wallet();
+      when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.mainnet,
+        ),
+      ).thenAnswer((_) async => Ok([bitcoin]));
+      final before = Map<String, String>.of(storage.entries);
+      final reads = storage.reads;
+      await expectLater(
+        create.execute(),
+        throwsA(isA<CreateDefaultWalletsException>()),
+      );
+      expect(storage.entries, before);
+      expect(storage.reads, reads);
+    },
+  );
 }

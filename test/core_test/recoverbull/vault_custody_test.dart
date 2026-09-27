@@ -157,6 +157,12 @@ void main() {
         Ok<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
       >(),
     );
+    verifyNever(
+      () => wallets.updateEncryptedBackupTime(
+        time: any(named: 'time'),
+        walletId: any(named: 'walletId'),
+      ),
+    );
     final created =
         (result
                 as Ok<
@@ -178,6 +184,31 @@ void main() {
       'latestEncryptedBackup': encryptedAt.toIso8601String(),
       'latestPhysicalBackup': physicalAt.toIso8601String(),
     });
+  });
+
+  test('failed vault creation never marks the backup as tested', () async {
+    final defaultWallet = wallet(
+      'default',
+      fingerprint,
+      Network.bitcoinMainnet,
+    );
+    when(
+      () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
+    ).thenAnswer((_) async => Ok([defaultWallet]));
+    storage.locked = true;
+
+    final result = await CreateEncryptedVaultUsecase(
+      secrets: custody,
+      walletRepository: wallets,
+    ).execute();
+
+    expect(result, isA<Err>());
+    verifyNever(
+      () => wallets.updateEncryptedBackupTime(
+        time: any(named: 'time'),
+        walletId: any(named: 'walletId'),
+      ),
+    );
   });
 
   test(
@@ -320,6 +351,40 @@ void main() {
       verifyZeroInteractions(settings);
       expect(storage.entries, before);
       expect(storage.writes, writes);
+    },
+  );
+  test(
+    'restoration never certifies defaults belonging to another vault',
+    () async {
+      final unrelated = _value(await custody.import(words: currentWords));
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.mainnet,
+        ),
+      ).thenAnswer(
+        (_) async => Ok([
+          wallet('bitcoin', unrelated.id.hex, Network.bitcoinMainnet),
+          wallet('liquid', unrelated.id.hex, Network.liquidMainnet),
+        ]),
+      );
+      final restore = RestoreVaultUsecase(
+        secrets: custody,
+        walletRepository: wallets,
+        createDefaultWalletsUsecase: CreateDefaultWalletsUsecase(
+          secrets: custody,
+          settingsRepository: settings,
+          walletRepository: wallets,
+        ),
+      );
+      final result = await restore.execute(vault: vault, vaultKey: vaultKey);
+      expect(result, isA<Err<Null, RecoverBullCoreFailure>>());
+      verifyNever(
+        () => wallets.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
     },
   );
 }
