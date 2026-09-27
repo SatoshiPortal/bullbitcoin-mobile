@@ -19,15 +19,15 @@ final class BoltzDeriver {
   /// on.
   ///
   /// The passphrase takes part, so two secrets that share words get
-  /// different swap keys — the derivation the secret's identity implies.
+  /// different swap keys — the derivation the secret's fingerprint implies.
   ///
   /// ⚠️ **Keys already stored were derived from the words alone**, and
   /// nothing re-derives them: a passphrase wallet that has a swap key
   /// keeps it. The caller must not treat this as reproducing a stored
   /// key — `swaps` asks for one only when it holds none. See
   /// doc/design.md, § Passphrase.
-  Future<SwapKey> swapKey(
-    MnemonicMaterial secret, {
+  Future<SwapMasterKey> swapKey(
+    Mnemonic secret, {
     required BitcoinNetwork network,
   }) async {
     final derived = await boltz.SwapMasterKey.create(
@@ -41,7 +41,7 @@ final class BoltzDeriver {
         BitcoinNetwork.regtest => boltz.Network.regtest,
       },
     );
-    return SwapKey(
+    return SwapMasterKey(
       xprv: derived.xprv,
       xpub: derived.xpub,
       mnemonic: derived.mnemonic,

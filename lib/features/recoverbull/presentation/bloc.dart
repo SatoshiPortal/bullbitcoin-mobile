@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
@@ -8,7 +7,6 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -49,7 +47,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   /// need more than one try.
   final ConnectToKeyServerUsecase _connectToKeyServerUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
-  final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
   final WalletBloc _walletBloc;
@@ -73,7 +70,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
-    required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
@@ -390,12 +386,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
-          // Held in state so the backup screens can tell the user their
-          // passphrase is not in the file. The vault format is unchanged
-          // on purpose — every existing backup and the key server speak it.
-          emit(
-            state.copyWith(vaultExcludesPassphrase: value.passphraseExcluded),
-          );
         case Err():
           emit(state.copyWith(failure: const VaultCreationFailure()));
           return;
@@ -463,14 +453,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     try {
       if (state.flow == RecoverBullFlow.secureVault) return;
 
-      emit(state.copyWith(isLoading: true, vaultKey: null));
+      emit(
+        state.copyWith(isLoading: true, vaultKey: null, isVaultVerified: false),
+      );
 
       switch (await _fetchVaultKeyFromServerUsecase.execute(
         vault: event.vault,
         password: event.password,
       )) {
         case Ok(:final value):
-          emit(state.copyWith(vaultKey: value));
           log.fine('Vault key fetched from server');
           await _onVaultDecryption(OnVaultDecryption(vaultKey: value), emit);
         case Err(:final failure):
@@ -494,37 +485,30 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     final vault = state.vault!;
 
     try {
-      emit(state.copyWith(isLoading: true));
-
-      final DecryptedVault decryptedVault;
-      switch (_decryptVaultUsecase.execute(vault: vault, vaultKey: vaultKey)) {
-        case Ok(:final value):
-          decryptedVault = value;
-        case Err():
-          emit(state.copyWith(failure: const VaultDecryptionFailure()));
-          return;
-      }
+      emit(
+        state.copyWith(isLoading: true, isVaultVerified: false, vaultKey: null),
+      );
 
       switch (state.flow) {
         case RecoverBullFlow.viewVaultKey || RecoverBullFlow.testVault:
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
-            decryptedVault: decryptedVault,
+            vault: vault,
+            vaultKey: vaultKey,
           );
           if (updated case Err()) {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));
             return;
           }
-          emit(state.copyWith(decryptedVault: decryptedVault));
         case RecoverBullFlow.recoverVault:
-          emit(state.copyWith(decryptedVault: decryptedVault));
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
-            decryptedVault: decryptedVault,
+            vault: vault,
+            vaultKey: vaultKey,
           );
           if (updated case Err()) {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));
             return;
           }
-          await _restoreAndStart(decryptedVault, emit);
+          await _restoreAndStart(vault, vaultKey, emit);
           return;
         case RecoverBullFlow.secureVault:
           throw UnimplementedError();
@@ -532,7 +516,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           throw UnimplementedError();
       }
 
-      emit(state.copyWith(vaultKey: vaultKey));
+      emit(state.copyWith(isVaultVerified: true, vaultKey: vaultKey));
       log.fine('Vault decrypted');
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -547,11 +531,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // the wallet home. Replaces the deprecated dry-scan preview screen, which
   // showed a balance/tx preview gated behind a manual "Continue" button.
   Future<void> _restoreAndStart(
-    DecryptedVault decryptedVault,
+    EncryptedVault vault,
+    String vaultKey,
     Emitter<RecoverBullState> emit,
   ) async {
     switch (await _restoreVaultUsecase.execute(
-      decryptedVault: decryptedVault,
+      vault: vault,
+      vaultKey: vaultKey,
     )) {
       case Ok():
         _walletBloc.add(const WalletStarted());

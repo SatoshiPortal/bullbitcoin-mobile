@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.da
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -467,12 +468,25 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                     passphraseLabelStyle: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
                     ),
-                    onFailure: (context, failure) => BBText(
-                      AllSeedViewFetchFailure(
-                        failure.logMessage,
-                      ).toTranslated(context),
-                      style: context.font.bodyMedium,
-                      color: context.appColors.error,
+                    failureBuilder: (context, failure, retry) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        BBText(
+                          AllSeedViewFetchFailure(
+                            failure.logMessage,
+                          ).toTranslated(context),
+                          style: context.font.bodyMedium,
+                          color: context.appColors.error,
+                        ),
+                        const Gap(16),
+                        BullButton.small(
+                          label: context.loc.retry,
+                          onPressed: retry,
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ],
                     ),
                   ),
                 ),

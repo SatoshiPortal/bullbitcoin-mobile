@@ -34,7 +34,7 @@ void main() {
         'lib/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart',
       ).readAsStringSync();
 
-      expect(source, contains('_secrets.exists(id)'));
+      expect(source, contains('_secrets.contains('));
       expect(source, isNot(contains('trash')));
     });
   });

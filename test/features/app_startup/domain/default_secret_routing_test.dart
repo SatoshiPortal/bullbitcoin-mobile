@@ -12,23 +12,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bb_mobile/features/app_startup/data/shared_preferences_startup_storage_repository.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-/// Startup must not collapse three different states into one.
-///
-/// A locked keystore is transient, and the user is only asked to unlock. A
-/// genuine absence is the fss9 cohort, and the remedy is a restore. An
-/// unreadable value is neither — offering to replace a seed that may still be
-/// recoverable is the one irreversible mistake available here. The last two
-/// share a failure today, the startup screen shows one message for both, so
-/// what keeps them apart is the failure's log message naming the wallet.
-///
-/// `Secrets` is `final` and takes no injected store (the rule-6 derogation),
-/// so the conditions are produced at the plugin seam, which is what the real
-/// app has underneath it too.
+/// Startup distinguishes locked, missing, unreadable and retired storage.
+/// An Android fss9 marker stops startup before wallet or keystore access;
+/// missing and unreadable current-store seeds have distinct typed outcomes.
+/// Conditions are injected at the secure-storage plugin seam.
 void main() {
   const words = [
     'abandon',
@@ -54,23 +48,25 @@ void main() {
   late _MockSettingsRepository settings;
   late _MockWalletRepository wallets;
 
-  Wallet wallet(Network network) => Wallet(
-    origin: 'origin-${network.name}',
-    label: 'Test',
-    network: network,
-    isDefault: true,
-    masterFingerprint: fingerprint,
-    xpubFingerprint: fingerprint,
-    scriptType: ScriptType.bip84,
-    xpub: 'xpub',
-    externalPublicDescriptor: 'desc',
-    internalPublicDescriptor: 'desc',
-    signer: SignerEntity.local,
-    signerDevice: null,
-    balanceSat: BigInt.zero,
-  );
+  Wallet wallet(Network network, {String masterFingerprint = fingerprint}) =>
+      Wallet(
+        origin: 'origin-${network.name}',
+        label: 'Test',
+        network: network,
+        isDefault: true,
+        masterFingerprint: masterFingerprint,
+        xpubFingerprint: fingerprint,
+        scriptType: ScriptType.bip84,
+        xpub: 'xpub',
+        externalPublicDescriptor: 'desc',
+        internalPublicDescriptor: 'desc',
+        signer: SignerEntity.local,
+        signerDevice: null,
+        balanceSat: BigInt.zero,
+      );
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     settings = _MockSettingsRepository();
     wallets = _MockWalletRepository();
 
@@ -101,6 +97,9 @@ void main() {
       settingsRepository: settings,
       walletRepository: wallets,
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
+      startupStorageRepository: SharedPreferencesStartupStorageRepository(
+        isAndroid: true,
+      ),
     );
   }
 
@@ -141,7 +140,7 @@ void main() {
   test(
     'an absent seed names the wallet and asks for a restore',
     () async {
-      // The fss9 cohort: metadata survived, the entry did not.
+      // Current-store metadata survived, but its seed entry is absent.
       final usecase = usecaseOn(FakeSecureStoragePlatform());
 
       expect(
@@ -149,7 +148,7 @@ void main() {
         isA<Err<bool, AppStartupFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<AppStartupWalletCheckFailure>().having(
+          isA<AppStartupDefaultSecretMissingFailure>().having(
             (f) => f.logMessage,
             'logMessage',
             contains(fingerprint),
@@ -174,7 +173,7 @@ void main() {
       isA<Err<bool, AppStartupFailure>>().having(
         (r) => r.failure,
         'failure',
-        isA<AppStartupWalletCheckFailure>().having(
+        isA<AppStartupDefaultSecretUnreadableFailure>().having(
           (f) => f.logMessage,
           'logMessage',
           isNot(contains(fingerprint)),
@@ -182,4 +181,94 @@ void main() {
       ),
     );
   });
+  test(
+    'missing and unreadable secrets have distinct recovery outcomes',
+    () async {
+      final missing = await usecaseOn(FakeSecureStoragePlatform()).execute();
+      final unreadable = await usecaseOn(
+        FakeSecureStoragePlatform(entries: {'seed_$fingerprint': 'not json'}),
+      ).execute();
+      expect(missing, isA<Err<bool, AppStartupFailure>>());
+      expect(unreadable, isA<Err<bool, AppStartupFailure>>());
+      expect(
+        (missing as Err<bool, AppStartupFailure>).failure.runtimeType,
+        isNot((unreadable as Err<bool, AppStartupFailure>).failure.runtimeType),
+        reason:
+            'absence requires a verified backup; unreadable storage must be preserved',
+      );
+    },
+  );
+  test(
+    'a malformed stored fingerprint is unreadable, never a missing secret',
+    () async {
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: any(named: 'onlyDefaults'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok([
+          wallet(Network.bitcoinMainnet, masterFingerprint: 'malformed'),
+          wallet(Network.liquidMainnet, masterFingerprint: 'malformed'),
+        ]),
+      );
+      final result = await usecaseOn(FakeSecureStoragePlatform()).execute();
+      expect(
+        result,
+        isA<Err<bool, AppStartupFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<AppStartupDefaultSecretUnreadableFailure>(),
+        ),
+      );
+    },
+  );
+
+  test('fss9 requests restoration before wallet and seed access', () async {
+    SharedPreferences.setMockInitialValues({
+      'seed_store_type': '{"storageLibrary":"fss9"}',
+    });
+    final storage = FakeSecureStoragePlatform(
+      entries: {'seed_$fingerprint': entry},
+    );
+    final before = Map<String, String>.of(storage.entries);
+    final result = await usecaseOn(storage).execute();
+
+    expect(
+      result,
+      isA<Err<bool, AppStartupFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<AppStartupLegacyStorageFailure>(),
+      ),
+    );
+    verifyZeroInteractions(settings);
+    verifyZeroInteractions(wallets);
+    expect(storage.reads, 0);
+    expect(storage.entries, before);
+  });
+
+  test(
+    'malformed storage metadata fails before wallet and seed access',
+    () async {
+      SharedPreferences.setMockInitialValues({'seed_store_type': 'not json'});
+      final storage = FakeSecureStoragePlatform(
+        entries: {'seed_$fingerprint': entry},
+      );
+      final result = await usecaseOn(storage).execute();
+
+      expect(
+        result,
+        isA<Err<bool, AppStartupFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<AppStartupWalletCheckFailure>(),
+        ),
+      );
+      verifyZeroInteractions(settings);
+      verifyZeroInteractions(wallets);
+      expect(storage.reads, 0);
+      expect(storage.entries, {'seed_$fingerprint': entry});
+    },
+  );
 }

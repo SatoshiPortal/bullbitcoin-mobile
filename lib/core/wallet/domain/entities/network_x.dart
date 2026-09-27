@@ -14,6 +14,14 @@ import 'package:primitives/primitives.dart' as primitives;
 /// total — but adding those environments to the app later will not need
 /// anything from `secrets`.
 extension NetworkX on Network {
+  /// The shared chain-typed network for an operation supported on either chain.
+  primitives.Network get shared => switch (this) {
+    Network.bitcoinMainnet => primitives.BitcoinNetwork.mainnet,
+    Network.bitcoinTestnet => primitives.BitcoinNetwork.testnet,
+    Network.liquidMainnet => primitives.LiquidNetwork.mainnet,
+    Network.liquidTestnet => primitives.LiquidNetwork.testnet,
+  };
+
   /// The Bitcoin network this value names.
   ///
   /// Throws for a Liquid value: the caller has already branched wrong.

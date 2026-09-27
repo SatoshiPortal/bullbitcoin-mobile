@@ -32,13 +32,13 @@ class InvalidVault implements Exception {
   String toString() => 'InvalidVault: $message';
 }
 
-/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `SecretDerivationFailure`.
+/// bdk refused to parse or sign a PSBT. Carries nothing: bdk's message quotes its input. The boundary turns it into a `UseSecretFailure`.
 class PsbtSigningFailed implements Exception {
   @internal
   const PsbtSigningFailed();
 }
 
-/// lwk refused to sign. Carries nothing: lwk's own message is dropped on purpose. Reported by type as `SecretDerivationFailure`.
+/// lwk refused to sign. Carries nothing: lwk's own message is dropped on purpose. Reported by type as `UseSecretFailure`.
 class LiquidSigningFailed implements Exception {
   @internal
   const LiquidSigningFailed();

@@ -486,7 +486,7 @@ class BoltzSwapRepository
   /// Called once, only when [swapMasterKeyReady] reported a miss, so swap
   /// creation and restore can READ the key from storage and never derive lazily.
   Future<void> storeSwapMasterKey({
-    required SwapKey key,
+    required SwapMasterKey key,
     required String walletFingerprint,
   }) =>
       _boltz.storeSwapMasterKey(key: key, walletFingerprint: walletFingerprint);

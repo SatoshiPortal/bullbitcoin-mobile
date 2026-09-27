@@ -136,15 +136,10 @@ void main() {
   for (final entry in expected.entries) {
     final (network, scriptType) = entry.key;
     test('$network / $scriptType', () async {
-      final xpub = switch (network.isBitcoin
-          ? await secret.derive.xpub(
-              network: network.bitcoin,
-              scriptType: scriptType.shared,
-            )
-          : await secret.derive.liquidXpub(
-              network: network.liquid,
-              scriptType: scriptType.shared,
-            )) {
+      final xpub = switch (await secret.derive.xpub(
+        network: network.shared,
+        scriptType: scriptType.shared,
+      )) {
         p.Ok(:final value) => value,
         p.Err(:final failure) => fail('xpub: ${failure.runtimeType}'),
       };

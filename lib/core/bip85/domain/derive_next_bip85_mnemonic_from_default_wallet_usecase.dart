@@ -67,7 +67,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
           return Err(failure);
         case Ok(:final value):
           final words = switch (await secret.derive.bip85.mnemonic(
-            length: length,
+            wordCount: MnemonicWordCount.values.byName(length.name),
             index: value,
           )) {
             Ok(:final value) => value,

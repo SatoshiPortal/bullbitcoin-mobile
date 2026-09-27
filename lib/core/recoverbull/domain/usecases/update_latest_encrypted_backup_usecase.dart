@@ -1,22 +1,20 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bip32_keys/bip32_keys.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:convert/convert.dart';
+import 'package:secrets/secrets.dart' as secrets;
 
 /// If the key server is down
 class UpdateLatestEncryptedVaultTestUsecase {
+  final secrets.Secrets _secrets;
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
 
   UpdateLatestEncryptedVaultTestUsecase({
+    required this._secrets,
     required this._walletRepository,
     required this._settingsRepository,
   });
@@ -24,17 +22,23 @@ class UpdateLatestEncryptedVaultTestUsecase {
   // Orchestrates the still-throwing wallet/settings core repos; the local
   // try/catch is the boundary, mapping any failure to a sanitized core failure.
   Future<Result<Null, RecoverBullCoreFailure>> execute({
-    required DecryptedVault decryptedVault,
+    required EncryptedVault vault,
+    required String vaultKey,
   }) async {
     try {
-      final mnemonic = bip39.Mnemonic.fromWords(
-        words: decryptedVault.mnemonic,
-        language: bip39.Language.english,
-        passphrase: '',
+      final inspection = await _secrets.recoverbull.fingerprint(
+        vault: secrets.EncryptedVault(json: vault.toFile()),
+        key: secrets.VaultKey(vaultKey),
       );
-
-      final decodedRoot = Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed));
-      final decodedFingerprint = hex.encode(decodedRoot.fingerprint);
+      final String decodedFingerprint;
+      switch (inspection) {
+        case Ok(:final value):
+          decodedFingerprint = value.hex;
+        case Err():
+          return const Err(
+            RecoverBullUnexpectedCoreFailure('Backup verification failed'),
+          );
+      }
 
       final settings = await _settingsRepository.fetch();
       final List<Wallet> availableWallets;

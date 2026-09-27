@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:secrets/src/widgets/sealed_word.dart' show debugSealedTextOf;
+import 'package:secrets/src/widgets/painted_text.dart'
+    show PaintedMnemonic, PaintedPassphrase, PaintedWord, debugPaintedTextOf;
 
 /// The sealed display: it shows a secret's words and hands them to nobody.
 ///
@@ -71,7 +72,12 @@ void main() {
     textDirection: TextDirection.ltr,
     child: MnemonicView(
       secret: secret,
-      onFailure: (_, failure) => Text('failed: ${failure.runtimeType}'),
+      failureBuilder: (_, failure, retry) => Column(
+        children: [
+          Text('failed: ${failure.runtimeType}'),
+          GestureDetector(onTap: retry, child: const Text('retry')),
+        ],
+      ),
       placeholder: const Text('reading'),
     ),
   );
@@ -84,6 +90,7 @@ void main() {
     await settle(tester);
 
     expect(sealed(wordsA.join(' ')), findsOneWidget);
+    expect(find.byType(PaintedMnemonic), findsOneWidget);
   });
 
   testWidgets('the words stay out of the semantics tree', (tester) async {
@@ -172,12 +179,14 @@ void main() {
               .value;
     });
     for (final view in [
-      secret.widgets.mnemonicView(onFailure: (_, _) => const SizedBox()),
       secret.widgets.mnemonicView(
-        onFailure: (_, _) => const SizedBox(),
+        failureBuilder: (_, _, _) => const SizedBox(),
+      ),
+      secret.widgets.mnemonicView(
+        failureBuilder: (_, _, _) => const SizedBox(),
         wordBuilder: (context, number, word) =>
             Row(children: [Text('$number.'), word]),
-        layout: (context, words) => Column(children: words),
+        layoutBuilder: (context, words) => Column(children: words),
       ),
     ]) {
       await tester.pumpWidget(
@@ -190,14 +199,50 @@ void main() {
         expect(readable, isNot(contains(word)));
       }
       expect(sealed('hunter2'), findsOneWidget, reason: 'painted, still shown');
+      expect(find.byType(PaintedPassphrase), findsOneWidget);
+      if (find.byType(PaintedMnemonic).evaluate().isEmpty) {
+        expect(find.byType(PaintedWord), findsNWidgets(wordsA.length));
+      }
     }
+  });
+
+  testWidgets('a failed read can be retried and its message stays accessible', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final secret = await store(tester, wordsA);
+    storage.locked = true;
+
+    await tester.pumpWidget(hosted(secret));
+    expect(find.bySemanticsLabel('reading'), findsOneWidget);
+    await settle(tester);
+    expect(
+      find.bySemanticsLabel('failed: KeystoreLockedFailure'),
+      findsOneWidget,
+    );
+    expect(sealed(wordsA.join(' ')), findsNothing);
+
+    final reads = storage.reads;
+    storage.locked = false;
+    await tester.pumpWidget(hosted(secret));
+    await settle(tester);
+    expect(storage.reads, reads, reason: 'same-id rebuilds do not retry');
+
+    await tester.tap(find.text('retry'));
+    await tester.pump();
+    expect(find.text('reading'), findsOneWidget);
+    await settle(tester);
+    expect(sealed(wordsA.join(' ')), findsOneWidget);
+    expect(find.textContaining('failed:'), findsNothing);
+    expect(find.bySemanticsLabel(wordsA.join(' ')), findsNothing);
+    semantics.dispose();
   });
 }
 
 /// A word as it is painted: the widgets hold no `Text` to find, so the
 /// package's own tests read the sealed render object instead.
 Finder sealed(String text) => find.byElementPredicate(
-  (e) => debugSealedTextOf(e) == text,
+  (e) => debugPaintedTextOf(e) == text,
   description: 'sealed text "$text"',
 );
 

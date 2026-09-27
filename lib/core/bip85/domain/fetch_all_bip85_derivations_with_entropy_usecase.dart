@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -113,6 +112,18 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       return _skip(e, 'index does not match the row');
     }
 
+    final wordCount =
+        e.application == Bip85Application.bip39 && segments.length == 4
+        ? MnemonicWordCount.values
+              .where((value) => value.count == segments[2])
+              .firstOrNull
+        : null;
+    if (e.application == Bip85Application.bip39 &&
+        segments.length == 4 &&
+        wordCount == null) {
+      return _skip(e, 'unsupported mnemonic word count');
+    }
+
     final Result<String, SecretFailure>? result = switch (e.application) {
       Bip85Application.hex when segments.length == 3 && segments[0] == 128169 =>
         await secret.derive.bip85.hex(
@@ -122,7 +133,7 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Application.bip39
           when segments.length == 4 && segments[0] == 39 && segments[1] == 0 =>
         (await secret.derive.bip85.mnemonic(
-          length: bip39.MnemonicLength.fromWords(segments[2]!),
+          wordCount: wordCount!,
           index: segments[3]!,
         )).map((words) => words.join(' ')),
       _ => null,

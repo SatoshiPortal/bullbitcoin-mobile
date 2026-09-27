@@ -46,6 +46,32 @@ void main() {
     return Secrets(scratchDirectory: () async => Directory.systemTemp.path);
   }
 
+  test(
+    'database key handles keep the module on reads, creates and resets',
+    () async {
+      final storage = FakeSecureStoragePlatform();
+      final secrets = secretsWith(storage);
+      final firstModule = secrets.databaseKeys(module: 'swaps');
+      final otherModule = secrets.databaseKeys(module: 'payjoin');
+      final first = ok(await firstModule.getOrCreate(name: 'main'));
+      final other = ok(await otherModule.getOrCreate(name: 'main'));
+
+      expect(first.hex, isNot(other.hex));
+      expect(
+        ok(await secrets.databaseKeys(module: 'swaps').get(name: 'main')).hex,
+        first.hex,
+      );
+
+      ok(await firstModule.reset(name: 'main'));
+      expect(storage.entries.length, 1);
+      expect(ok(await otherModule.get(name: 'main')).hex, other.hex);
+      expect(
+        ok(await firstModule.getOrCreate(name: 'main')).hex,
+        isNot(first.hex),
+      );
+    },
+  );
+
   group('a sealed keystore is not a missing secret', () {
     // The property this whole distinction exists for. If a locked
     // keychain reported "not found", callers such as
@@ -64,7 +90,7 @@ void main() {
 
       expect(result, isA<Err<Secret, SecretFailure>>());
       final failure = (result as Err<Secret, SecretFailure>).failure;
-      expect(failure, isA<SecretStoreLockedFailure>());
+      expect(failure, isA<KeystoreLockedFailure>());
       expect(failure, isNot(isA<SecretNotFoundFailure>()));
     });
 
@@ -103,7 +129,7 @@ void main() {
 
         expect(
           (result as Err<Secret, SecretFailure>).failure,
-          isA<SecretStoreLockedFailure>(),
+          isA<KeystoreLockedFailure>(),
           reason: '$error',
         );
       }
@@ -119,8 +145,8 @@ void main() {
         ).fetch(id);
 
         final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<SecretFetchFailure>());
-        expect(failure, isNot(isA<SecretStoreLockedFailure>()));
+        expect(failure, isA<FetchSecretFailure>());
+        expect(failure, isNot(isA<KeystoreLockedFailure>()));
         expect(failure, isNot(isA<SecretNotFoundFailure>()));
       },
       timeout: const Timeout(Duration(seconds: 20)),
@@ -132,7 +158,10 @@ void main() {
       // sealed keystore, which is the budget a genuine absence pays.
       final storage = FakeSecureStoragePlatform(locked: true);
 
-      await secretsWith(storage).fetch(id);
+      expect(
+        err(await secretsWith(storage).fetch(id)),
+        isA<KeystoreLockedFailure>(),
+      );
 
       expect(storage.reads, 1);
     });
@@ -159,7 +188,7 @@ void main() {
         final result = await secretsWith(storage).fetch(id);
 
         final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<SecretFetchFailure>());
+        expect(failure, isA<FetchSecretFailure>());
         expect(failure, isNot(isA<SecretNotFoundFailure>()));
         expect(storage.reads, 1);
         // The stored value is the secret; the failure must not quote it.
@@ -207,7 +236,7 @@ void main() {
         final result = await secretsWith(storage).fetch(id);
 
         final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<SecretFetchFailure>());
+        expect(failure, isA<FetchSecretFailure>());
         expect(failure, isNot(isA<SecretNotFoundFailure>()));
         expect(storage.reads, 5);
       },
@@ -224,7 +253,7 @@ void main() {
         final result = await secretsWith(storage).fetch(id);
 
         final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<SecretFetchFailure>());
+        expect(failure, isA<FetchSecretFailure>());
         expect(failure, isNot(isA<SecretNotFoundFailure>()));
       },
       timeout: const Timeout(Duration(seconds: 20)),
@@ -243,7 +272,7 @@ void main() {
         final result = await secretsWith(storage).fetch(id);
 
         final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<SecretFetchFailure>());
+        expect(failure, isA<FetchSecretFailure>());
         expect(failure, isNot(isA<SecretNotFoundFailure>()));
         expect(storage.reads, 5);
       },
@@ -259,7 +288,7 @@ void main() {
 
         final result = await secretsWith(
           storage,
-        ).existingDatabaseKey(package: 'swaps', name: 'main');
+        ).databaseKeys(module: 'swaps').get(name: 'main');
 
         final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
         expect(failure, isA<DatabaseKeyCorruptFailure>());
@@ -304,7 +333,7 @@ void main() {
       ).fetch(id);
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
-      expect(failure, isA<SecretFetchFailure>());
+      expect(failure, isA<FetchSecretFailure>());
       expect(failure, isNot(isA<InvalidMnemonicFailure>()));
     });
 
@@ -325,7 +354,7 @@ void main() {
 
       final failure = err(await secrets.fetch(id));
 
-      expect(failure, isA<SecretFetchFailure>());
+      expect(failure, isA<FetchSecretFailure>());
       expect(failure, isNot(isA<InvalidMnemonicFailure>()));
       expect(failure, isNot(isA<SecretNotFoundFailure>()));
     });
@@ -341,8 +370,10 @@ void main() {
       ).list();
 
       final listing = ok(result);
-      expect(listing.secrets.map((s) => s.id), [id]);
-      expect(listing.unreadable, 1, reason: 'skipped, and counted');
+      expect(listing.whereType<Secret>().map((s) => s.id), [id]);
+      final unreadable = listing.whereType<UnreadableSecret>().single;
+      expect(unreadable.id, Fingerprint('deadbeef'));
+      expect(unreadable.failure, isA<FetchSecretFailure>());
     });
   });
 
@@ -372,13 +403,13 @@ void main() {
       expect(failure.toString(), isNot(contains('zzzzbogus')));
     });
 
-    test('idOf agrees', () async {
+    test('contains validates the candidate', () async {
       final result = await secretsWith(
         FakeSecureStoragePlatform(),
-      ).idOf(words: List.filled(12, 'abandon'));
+      ).contains(words: List.filled(12, 'abandon'));
 
       expect(
-        (result as Err<Fingerprint, SecretFailure>).failure,
+        (result as Err<bool, SecretFailure>).failure,
         isA<InvalidMnemonicFailure>(),
       );
     });
@@ -426,7 +457,7 @@ void main() {
           );
 
           expect(failure, isA<InvalidMnemonicFailure>());
-          expect(failure, isNot(isA<SecretStoreFailure>()));
+          expect(failure, isNot(isA<StoreSecretFailure>()));
           expect(storage.entries, isEmpty);
         },
       );
@@ -441,11 +472,12 @@ void main() {
         expect(failure, isA<InvalidMnemonicFailure>());
       });
 
-      test('idOf refuses the same list import refuses', () async {
-        // idOf derives through seed(), not check(); the rule has to live in
-        // both or the two disagree about one input.
+      test('contains refuses the same list import refuses', () async {
+        // Candidate lookup and import must agree about malformed input.
         final failure = err(
-          await secretsWith(FakeSecureStoragePlatform()).idOf(words: regrouped),
+          await secretsWith(
+            FakeSecureStoragePlatform(),
+          ).contains(words: regrouped),
         );
 
         expect(failure, isA<InvalidMnemonicFailure>());
@@ -459,7 +491,7 @@ void main() {
         // path every unparsable value takes — and it must never be written
         // over, because "does not parse" is not "is the same secret".
         final clean = secretsWith(FakeSecureStoragePlatform());
-        final id = ok(await clean.idOf(words: fifteen));
+        final id = ok(await clean.import(words: fifteen)).id;
         final planted = jsonEncode({
           'mnemonicWords': regrouped,
           'passphrase': null,
@@ -471,16 +503,16 @@ void main() {
         final secrets = secretsWith(storage);
 
         final listing = ok(await secrets.list());
-        expect(listing.secrets, isEmpty);
-        expect(listing.unreadable, 1);
+        expect(listing.whereType<Secret>(), isEmpty);
+        expect(listing.whereType<UnreadableSecret>(), hasLength(1));
 
         final fetched = err(await secrets.fetch(id));
-        expect(fetched, isA<SecretFetchFailure>());
+        expect(fetched, isA<FetchSecretFailure>());
         expect(fetched, isNot(isA<SecretNotFoundFailure>()));
         expect(fetched, isNot(isA<InvalidMnemonicFailure>()));
 
         final reimport = err(await secrets.import(words: fifteen));
-        expect(reimport, isA<SecretStoreFailure>());
+        expect(reimport, isA<StoreSecretFailure>());
         expect(
           storage.entries['seed_${id.hex}'],
           planted,
@@ -490,7 +522,7 @@ void main() {
     });
   });
 
-  group('verifyWords answers without exposing anything', () {
+  group('verify.mnemonic answers without exposing anything', () {
     late Secrets secrets;
 
     setUp(() {
@@ -503,18 +535,18 @@ void main() {
         (await secrets.fetch(id) as Ok<Secret, SecretFailure>).value;
 
     test('accepts the right words', () async {
-      final result = await (await secretOf()).verifyWords(words);
+      final result = await (await secretOf()).verify.mnemonic(words);
       expect((result as Ok<bool, SecretFailure>).value, isTrue);
     });
 
     test('rejects a wrong word', () async {
       final wrong = [...words]..[5] = 'zoo';
-      final result = await (await secretOf()).verifyWords(wrong);
+      final result = await (await secretOf()).verify.mnemonic(wrong);
       expect((result as Ok<bool, SecretFailure>).value, isFalse);
     });
 
     test('rejects a wrong length', () async {
-      final result = await (await secretOf()).verifyWords(
+      final result = await (await secretOf()).verify.mnemonic(
         words.take(11).toList(),
       );
       expect((result as Ok<bool, SecretFailure>).value, isFalse);
@@ -597,7 +629,7 @@ void main() {
 
       expect(
         (result as Err<String, SecretFailure>).failure,
-        isA<SecretDerivationFailure>(),
+        isA<UseSecretFailure>(),
       );
     });
 
@@ -639,29 +671,60 @@ void main() {
       );
 
       expect(
-        (result as Err<SwapKey, SecretFailure>).failure,
+        (result as Err<SwapMasterKey, SecretFailure>).failure,
         isA<MnemonicRequiredFailure>(),
       );
     });
   });
 
   group('list', () {
-    test('describes what is stored and skips what it cannot read', () async {
-      final secrets = secretsWith(
-        FakeSecureStoragePlatform(
-          entries: {
-            'seed_73c5da0a': mnemonicEntry,
-            'seed_aabbccdd': bytesEntry,
-            'seed_broken': 'not json',
-          },
-        ),
-      );
+    test(
+      'a locked readAll is a global failure, not an unreadable entry',
+      () async {
+        final secrets = secretsWith(
+          FakeSecureStoragePlatform(
+            entries: {'seed_73c5da0a': mnemonicEntry},
+            locked: true,
+          ),
+        );
 
-      final result = ok(await secrets.list()).secrets;
+        expect(err(await secrets.list()), isA<KeystoreLockedFailure>());
+      },
+    );
 
-      expect(result, hasLength(2));
-      expect(result.map((s) => s.info.kind), containsAll(SecretKind.values));
-    });
+    test(
+      'describes readable entries and preserves individual failures',
+      () async {
+        final secrets = secretsWith(
+          FakeSecureStoragePlatform(
+            entries: {
+              'seed_73c5da0a': mnemonicEntry,
+              'seed_aabbccdd': bytesEntry,
+              'seed_broken': 'not json',
+              'seed_invalid': mnemonicEntry,
+              'seed_deadbeef': 'not json',
+            },
+          ),
+        );
+
+        final result = ok(await secrets.list());
+
+        expect(result, hasLength(5));
+        expect(
+          result.whereType<Secret>().map((s) => s.info.kind),
+          containsAll(SecretKind.values),
+        );
+        final unreadable = result.whereType<UnreadableSecret>().toList();
+        expect(
+          unreadable.map((entry) => entry.id),
+          unorderedEquals([null, null, Fingerprint('deadbeef')]),
+        );
+        expect(
+          unreadable.map((entry) => entry.failure),
+          everyElement(isA<FetchSecretFailure>()),
+        );
+      },
+    );
   });
 
   group('an invalid word count is classified at its origin', () {
@@ -687,9 +750,12 @@ void main() {
           ),
           backupKey: List.filled(32, 1),
         ).toJson();
-        final result = await Secrets(
-          scratchDirectory: () async => '/tmp',
-        ).restoreVault(file: file, key: '01' * 32);
+        final result = await Secrets(scratchDirectory: () async => '/tmp')
+            .recoverbull
+            .restore(
+              vault: EncryptedVault(json: file),
+              key: VaultKey('01' * 32),
+            );
         expect(err(result), isA<InvalidVaultFailure>());
         expect(storage.entries, isEmpty);
       },

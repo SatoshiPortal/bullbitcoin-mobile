@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 /// Liquid derivations through lwk. Reached as `Deriver.liquid`.
 ///
-/// Takes [MnemonicMaterial], never a bare `SecretMaterial`: lwk derives
+/// Takes [Mnemonic], never a bare `SecretMaterial`: lwk derives
 /// from the BIP39 words, so a seed-only secret is refused by the type
 /// before anything is computed.
 final class LiquidDeriver {
@@ -18,14 +18,13 @@ final class LiquidDeriver {
   /// ⚠️ **A passphrase takes no part.** lwk has no passphrase parameter at
   /// any layer and its signer hard-codes `to_seed("")`, so a passphrase
   /// secret gets its passphrase-less sibling's descriptor — same
-  /// addresses, same funds. `Secret.liquidDescriptor` marks the result
-  /// `WordsOnly` for exactly that reason. See doc/design.md, § Passphrase.
+  /// addresses, same funds. See doc/design.md, § Passphrase.
   ///
   /// Regtest is refused rather than folded into testnet: Elements
   /// regtest is a different chain, and a confidential descriptor built
   /// for testnet would hand back addresses that do not belong to it.
   Future<String> descriptor(
-    MnemonicMaterial secret, {
+    Mnemonic secret, {
     required LiquidNetwork network,
   }) async {
     final descriptor = await lwk.Descriptor.newConfidential(

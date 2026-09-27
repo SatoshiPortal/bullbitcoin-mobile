@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
@@ -191,7 +191,8 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 }
                 return secret.widgets.mnemonicView(
                   placeholder: const Center(child: CircularProgressIndicator()),
-                  onFailure: (context, failure) => const _DisplayError(),
+                  failureBuilder: (context, failure, retry) =>
+                      _DisplayError(onRetry: retry),
                   passphraseLabel: context.loc.testBackupPassphrase,
                   passphraseLabelStyle: context.font.labelMedium?.copyWith(
                     fontWeight: .w700,
@@ -208,7 +209,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                       _RecoveryPhraseWord(number: number, word: word),
                   // Two columns, numbered down each: the widgets come back
                   // in order and carry no word this layer can read.
-                  layout: (context, words) => Column(
+                  layoutBuilder: (context, words) => Column(
                     children: [
                       for (var i = 0; i < (words.length + 1) ~/ 2; i++)
                         Row(
@@ -296,15 +297,30 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
 }
 
 class _DisplayError extends StatelessWidget {
-  const _DisplayError({this.failure});
-
   final TestWalletBackupFailure? failure;
+  final VoidCallback? onRetry;
+
+  const _DisplayError({this.failure, this.onRetry});
 
   @override
-  Widget build(BuildContext context) => BBText(
-    failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong,
-    textAlign: .center,
-    style: context.font.bodyLarge?.copyWith(color: context.appColors.error),
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      BBText(
+        failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong,
+        textAlign: .center,
+        style: context.font.bodyLarge?.copyWith(color: context.appColors.error),
+      ),
+      if (onRetry case final retry?) ...[
+        const Gap(16),
+        BullButton.small(
+          label: context.loc.retry,
+          onPressed: retry,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+      ],
+    ],
   );
 }
 

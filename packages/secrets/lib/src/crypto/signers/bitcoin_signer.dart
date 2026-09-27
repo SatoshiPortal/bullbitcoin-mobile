@@ -2,6 +2,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/crypto/derivers/bitcoin_deriver.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -31,12 +32,18 @@ final class BitcoinSigner {
 
   /// Signs one PSBT and frees everything it built.
   Future<String> signPsbt(
-    MnemonicMaterial secret, {
+    Mnemonic secret, {
     required String psbt,
     required ScriptType scriptType,
     required BitcoinNetwork network,
+    int accountIndex = 0,
   }) async {
-    final wallet = _wallet(secret, scriptType: scriptType, network: network);
+    final wallet = _wallet(
+      secret,
+      scriptType: scriptType,
+      network: network,
+      accountIndex: accountIndex,
+    );
     try {
       return _sign(wallet, psbt);
     } finally {
@@ -75,19 +82,17 @@ final class BitcoinSigner {
 
   /// A signing-only bdk wallet, persisted nowhere.
   ///
-  /// Built from the BIP39 words rather than from the master xprv, which
-  /// mirrors `BdkFacade.createPrivateWallet` exactly. The two paths
-  /// should produce identical keys, but a refactor is the wrong place to
-  /// find out otherwise: signatures must come out of the same
-  /// construction they came out of before.
+  /// Built from the BIP39 words and passphrase, as before. The account path
+  /// matches the public descriptors and xpub derivation.
   ///
   /// The mnemonic, the secret key and the two descriptors are freed here:
   /// the wallet holds its own references, and these would otherwise keep
   /// an xprv in native memory for as long as the wallet.
   bdk.Wallet _wallet(
-    MnemonicMaterial secret, {
+    Mnemonic secret, {
     required ScriptType scriptType,
     required BitcoinNetwork network,
+    required int accountIndex,
   }) {
     final networkKind = network.isMainnet
         ? bdk.NetworkKind.main
@@ -118,23 +123,14 @@ final class BitcoinSigner {
         password: secret.passphrase.isNotEmpty ? secret.passphrase : null,
       );
 
-      bdk.Descriptor keychain(bdk.KeychainKind kind) => switch (scriptType) {
-        ScriptType.bip84 => bdk.Descriptor.newBip84(
-          secretKey: secretKey!,
-          keychainKind: kind,
-          networkKind: networkKind,
-        ),
-        ScriptType.bip49 => bdk.Descriptor.newBip49(
-          secretKey: secretKey!,
-          keychainKind: kind,
-          networkKind: networkKind,
-        ),
-        ScriptType.bip44 => bdk.Descriptor.newBip44(
-          secretKey: secretKey!,
-          keychainKind: kind,
-          networkKind: networkKind,
-        ),
-      };
+      bdk.Descriptor keychain(bdk.KeychainKind kind) =>
+          BitcoinDeriver.privateDescriptor(
+            secretKey!,
+            scriptType: scriptType,
+            network: network,
+            accountIndex: accountIndex,
+            keychain: kind,
+          );
 
       external = keychain(bdk.KeychainKind.external_);
       internal = keychain(bdk.KeychainKind.internal);

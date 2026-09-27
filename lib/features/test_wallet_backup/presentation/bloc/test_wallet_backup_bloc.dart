@@ -95,7 +95,7 @@ class TestWalletBackupBloc
   /// Records a backup the user has just re-entered correctly.
   ///
   /// The comparison itself happened in `MnemonicChallenge`, through
-  /// `Secret.verifyWords` — inside the package, on words this layer never
+  /// `secret.verify.mnemonic` — inside the package, on words this layer never
   /// saw. What is left here is the bookkeeping.
   Future<void> _verifyPhysicalBackup(
     VerifyPhysicalBackup event,

@@ -1,158 +1,65 @@
 # secrets — design notes
 
-What the package promises, how it is built and how to audit it. The [README](../README.md) is the short version: one entry point, and what you can do from it.
+What the package promises, how it is built and how to audit it. The [README](../README.md) is the short version: lifecycle, per-secret operations and generated public call trees.
 
 ## The contract
 
-**No exported type carries key material.** `Secrets` is the lifecycle —
-make a secret, find one, forget one — and hands back a `Secret`, which
-carries every operation as a flat method:
+**The lifecycle and secret handles carry no key material.** `Secrets` creates, imports, fetches, lists and deletes stored secrets. `Secret` holds a fingerprint, a metadata snapshot and access to operations on that entry. Each operation reads its material when needed; a handle is not a cached seed and does not guarantee future storage access.
 
-```dart
-await secret.xpub(network: n, scriptType: s);
-await secret.signPsbt(psbt, network: n, scriptType: s);
-await secret.backupVault(metadata: meta);
-```
+The grouped interface is the only public spelling: `secret.derive.xpub`, `secret.derive.descriptors.bitcoin`, `secret.sign.psbt`, `secret.backup.recoverbull`, `secret.verify.mnemonic` and `secret.widgets.mnemonicView`. Extension types forward directly to internal implementation methods on `Secret`. Those flat methods remain together for audit, but their `@internal` annotations exclude them from the consumer API. The forwarding invariant prevents the groups from implementing additional behavior or handling material themselves.
 
-`Secret` is one class in one file, and that is deliberate: it is the
-audit surface. Reading it once shows every operation the package can
-perform and every one that hands back material.
+`import` returns a `Secret` on success and a dedicated duplicate failure for an existing entry. An import never silently overwrites a stored secret. `contains(words:, passphrase:)` combines candidate validation and a preliminary existence check; `exists(id)` checks a known fingerprint. Neither replaces the import's own duplicate decision. `idOf` is not public.
 
-The grouped spelling is sugar over those same methods — zero-cost
-`extension type`s that forward and hold no behaviour of their own:
+`list` returns `List<SecretEntry>`. The sealed family has two alternatives: `Secret` for a usable entry and `UnreadableSecret` carrying the failure and a fingerprint when recoverable. This preserves individual unreadable entries without making a usable handle's properties nullable. A global read failure returns an `Err`, not an empty list.
 
-```dart
-final secret = switch (await secrets.fetch(Fingerprint(wallet.masterFingerprint))) {
-  Ok(:final value) => value,
-  Err(:final failure) => return failure,
-};
+`verify.mnemonic(words)` compares stored words alone and requires a mnemonic entry. `verify.seed(hex)` compares the full seed bytes, derived with the stored passphrase for mnemonic entries and read directly for seed-only entries. A mismatch is `Ok(false)`; inability to perform the comparison is a failure. No stored material leaves either method.
 
-secret.info                                      // a plain value, for state
-await secret.derive.xpub(network: n, scriptType: s);
-await secret.derive.descriptors.liquid(network: n);   // a PassphraseScope
-await secret.derive.descriptors.bitcoin(network: n, scriptType: s);
-await secret.derive.bip85.hex(numBytes: 32, index: 0);
-await secret.sign.psbt(psbt, network: n, scriptType: s);
-await secret.verifyWords(candidate);
-```
+The identifier is `primitives.Fingerprint`: eight lowercase hex characters validated at construction. Networks, script types, xpub formats, `Result` and `Failure` come from `primitives` too. Applications import that canonical vocabulary rather than a duplicate set of types.
 
-Everything above returns something *derived* from the secret — a public
-key, a descriptor, a signature, a verdict. The mnemonic never crosses the
-boundary; to show it, `secret.widgets.mnemonicView(…)` and
-`secret.widgets.mnemonicChallenge(…)` build the sealed widgets, whose
-constructors are `@internal` (§ The exits). Use whichever spelling reads better; they compile to the same
-call, and `test/invariants_test.dart` asserts that the sugar can never
-be more than a forward.
+## Generated public API map
 
-Identity is `primitives.Fingerprint`: 8 lowercase hex, validated on the
-way in, and the same type the rest of the monorepo uses to name a seed.
-Networks, script types, xpub formats, `Result` and `Failure` come from
-`primitives` too — this package adds no vocabulary the monorepo already
-has.
+The README's simplified `Secrets` and `Secret` call trees are generated from `lib/secrets.dart` by `tool/api_docs.dart`. It resolves the canonical export namespace, exported extensions and extension types with the installed analyzer. Public instance members are included; private or `@internal` members, constructors, static members and Object protocol methods are omitted. Future Result returns are reduced to their success type with a shared legend. Required and optional arguments and explicit defaults come from the resolved elements.
 
-## ⚠️ Passphrase — two operations derive from the words alone
+Synchronous getters and factories returning exported capability objects are expanded. Extension types are capability candidates; ordinary classes must have callable members, no public constructor and no external superclass other than Object. Data objects, asynchronous results and framework widgets remain leaves. Traversal stops at a repeated type. This is a navigation map, not a replacement for dartdoc: parameter types, constructor setup and behavior are explained in the surrounding documentation.
 
-> ⚠️ **A BIP39 passphrase is honoured by Bitcoin derivation, signing and
-> the swap key.** Liquid and the RecoverBull vault derive from the
-> **words alone**. Two secrets that share words but differ by passphrase
-> — same `SecretInfo.mnemonicFingerprint`, different `id` — therefore
-> share a Liquid wallet, and a vault of one restores as the other.
+Run `make secrets-api-docs` after changing the public API and include the README update in the same change. `make secrets-api-docs-check` is nonmutating and fails on drift in both `make checks` and CI. No operation names are duplicated in generator configuration; only the two root types are configured. Synthetic resolved-source tests cover exports, nested groups, defaults, internal-member exclusion and stale-document detection. Behavioral prose remains authored and reviewed separately.
 
-**Default wallets are passphrase-less, by rule.** The app builds its default Bitcoin and Liquid wallets from one secret without a passphrase, and `CreateDefaultWalletsUsecase` takes none. Liquid (lwk derives from the words alone), the RecoverBull vault (words only, key from the passphrased seed), the swap key (released builds derived it from the words alone), BIP85 children and the physical backup check (`verifyWords` compares words only) are correct only because of that. Allowing a passphrase on the defaults starts with lwk supporting one; a passphrase secret today is an imported, non-default wallet.
+## Passphrase
 
-**Nothing is silent any more.** Both operations return a
-`PassphraseScope<T>`, which is `sealed`, so a caller cannot reach the
-value without meeting the case where the passphrase was left out:
+Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words only; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
 
-```dart
-switch (await secret.backup.vault(metadata: meta)) {
-  Ok(value: WholeSecret(:final value)) => save(value),
-  Ok(value: WordsOnly(:final value)) =>
-      saveAndTellTheUserToKeepTheirPassphrase(value),
-  Err(:final failure) => report(failure),
-}
-```
+These methods return their values directly. There is no passphrase wrapper or refusal: the behavior is part of each operation's contract. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
 
-`SecretInfo.scope` decides it, once, for all of them — an invariant test
-holds it to that, which is also how `liquidDescriptor` is covered
-without the FFI.
+**Default wallets never have a passphrase.** The app generates or imports their words without one. A restored `Secret` handle is also rejected by `CreateDefaultWalletsUsecase` if it carries a passphrase, before any wallet is created. Liquid, RecoverBull recovery, BIP85, swaps and the physical backup check rely on this invariant. Passphrase-protected Bitcoin wallets are imported non-default wallets.
 
-| operation | what happens | why |
-|---|---|---|
-| `derive.descriptors.liquid` | passphrase takes no part; result is `WordsOnly` | lwk has no passphrase parameter at any layer (verified below) |
-| `sign.pset` | passphrase takes no part | same, and consistently — which is what keeps the signature matching the descriptor |
-| `backup.vault` | words sealed, passphrase not; result is `WordsOnly` | the vault plaintext carries `mnemonic` only — the format every existing vault and the key server speak |
-| `Secrets.restoreVault` | pass `passphrase:` to restore the wallet the user had | the file cannot carry it, so the user supplies it; without it the result is `WordsOnly` and the secret stored is the passphrase-less sibling |
-| `derive.swapKey` | **passphrase included** | `walletPassphrase` is sent (2026-09-15). Keys stored before that were derived from the words alone and are **not** re-derived — `swaps` asks only when it holds none |
+The bound lwk API accepts `network` and `mnemonic`, with no passphrase parameter. Its `lwk_signer` 0.18.0 implementation uses `mnemonic.to_seed("")` (verified 2026-09-14). Changing that behavior would move existing Liquid wallets; it is not a migration omission. Device vectors compare the descriptors produced from identical words with and without a passphrase.
 
-**Verified, so nobody has to re-verify** (2026-09-14):
+## Networks
 
-1. `bull_sdk` binding — `Descriptor.newConfidential({network, mnemonic})`
-   and `Wallet.signTx({network, pset, mnemonic})`; no `passphrase` or
-   `password` anywhere in the lwk binding.
-2. lwk-dart glue (`f554c78`, `rust/src/public/descriptor.rs:17` and
-   `wallet.rs:554`) — both build `SwSigner::new(&mnemonic, is_mainnet)`.
-3. `lwk_signer` 0.18.0, `src/software.rs:103` —
-   `let seed = mnemonic.to_seed("");` The passphrase is hard-coded empty.
-   The only other root is `SwSigner::from_xprv`, which the binding does
-   not expose.
+`primitives.Network` is sealed over `BitcoinNetwork` and `LiquidNetwork`. Account xpub derivation accepts either, preserving Bitcoin's coin types 0/1 and Liquid's 1776/1. The account index defaults to zero across xpub derivation, Bitcoin descriptors and Bitcoin signing. Bitcoin descriptors return receive/change descriptors and require a script type; Liquid returns a confidential descriptor. Those APIs and `sign.psbt`/`sign.pset` remain chain-specific. The app's older flat enum maps to the shared types at its wallet boundary.
 
-**Consequences for the app**
+## Recovery
 
-- A Liquid wallet imported with a passphrase watches the **same
-  addresses** as the passphrase-less one: same confidential descriptor,
-  same funds, two wallet ids. The app logs `LIQUID_WORDS_ONLY` where the
-  metadata is built.
-- A user who relies on the passphrase for plausible deniability has none
-  on Liquid: the passphrase-less words open the Liquid wallet.
-- A vault of a passphrase secret restores the passphrase-less wallet
-  **unless the passphrase is passed back** to `restoreVault`. The backup
-  screens hold `vaultExcludesPassphrase` for exactly that message.
+`secret.backup.recoverbull(metadata:)` returns `({EncryptedVault vault, VaultKey key})`. The vault exposes its encoded document through `json`; its derivation path is read from that document, never supplied as a second source of truth. It never contains the key. Both values redact their default string representation; their record does too. Keep the recovery key apart from the vault.
 
-**Liquid derives from the words alone, as a rule** (decision of
-2026-09-23): no Liquid wallet supports a BIP39 passphrase, this one
-included, and the package derives and signs consistently on that basis.
-It is stated by the `WordsOnly` type and here, not treated as a gap to
-close — lifting it would move the Liquid wallet of every passphrase user
-who already has one. The vault's `WordsOnly` case is the same fact: the
-plaintext carries `mnemonic` only, the format every existing vault and the
-key server speak.
+`secrets.recoverbull.restore(vault:, key:)` decrypts and stores the words internally, returning a `Secret` and the caller's metadata. Unlike direct import, restoration is idempotent when the same secret is already present; it returns the existing handle without overwriting the entry. `secrets.recoverbull.fingerprint(vault:, key:)` instead computes the passphrase-less fingerprint without any keystore read or write. Inspection does not trust a fingerprint from metadata and never imports a temporary secret. RecoverBull presentation keeps a verification status, not a decrypted vault.
 
 ## Database keys
 
-`Secrets.databaseKey` hands a package the encryption key for its own
-database — thirty-two random bytes, generated on first ask, kept in this
-package's keystore namespace. It is not user material: it opens one local
-database and nothing else.
-
-Generated **only** on a clean miss. A stored value that is present but
-unusable — empty, not our JSON, filed under another name, not 32 bytes of
-hex — is a `DatabaseKeyCorruptFailure`, and the bytes are left exactly as
-they are. Writing over them is the one irreversible act available here:
-the database they opened could then never be read, by anyone, ever.
-Refusing costs an unopenable database too, but it keeps the only thing
-that could still open it. Discarding the database and its key together is
-the module owner's decision — this package does not know whether that
-database is a rebuildable cache or the only copy of something. When the
-owner decides, `Secrets.resetDatabaseKey(package:, name:)` is the one
-destructive call: it deletes the key, so the database must go in the same
-step. Nothing on a recovery path calls it.
-
-Compose rather than injecting `Secrets`, so a package can only ever name
-its own keys:
+`Secrets.databaseKeys(module:)` returns a handle restricted to one module. It offers `getOrCreate(name:)`, `get(name:)` and `reset(name:)`. Inject that handle instead of the full lifecycle service:
 
 ```dart
-Swaps(databaseKey: (name) => secrets.databaseKey(package: 'swaps', name: name));
+final keys = secrets.databaseKeys(module: 'swaps');
+final key = await keys.getOrCreate(name: 'main');
 ```
 
-Give the bytes to SQLCipher in raw mode — `DatabaseKey.pragma` spells it.
-A bare hex string makes SQLCipher treat an already-random key as a
-passphrase and run 256 000 PBKDF2 rounds over it on every open.
+Keys are thirty-two random bytes in the existing namespace. `getOrCreate` generates only on a clean miss, atomically within the isolate. `get` never creates a key: a settled miss is `SecretNotFoundFailure`. A present but empty, malformed, displaced or wrongly sized value is `DatabaseKeyCorruptFailure`, and is never overwritten. `reset` deletes the key; the module owner must discard its database as well. Recovery never resets a key automatically.
+
+The public vocabulary does not change persisted key names. Give the key to SQLCipher in raw mode using `DatabaseKey.pragma`; using the hex as a passphrase needlessly runs PBKDF2.
 
 ## The exits
 
-The README's operation table is the full inventory — every output, whether it can spend, and what it reveals. The material among them leaves through three methods, and none of them is the stored
-mnemonic:
+The README's operation table is the full inventory — every output, whether it can spend, and what it reveals. Three derivation operations return key material, and none returns the stored mnemonic. Backup keys and database keys are separate outputs in the same inventory:
 
 | | |
 |---|---|
@@ -169,14 +76,14 @@ display concern, and a display that hands them back has nothing left to
 seal — so the host receives each word **as a widget** whose text has no
 accessor (`wordBuilder(context, number, Widget word)`, `MnemonicTile.word`),
 and arranges widgets. A `Map<int, Widget>` in the callback rebuilds
-nothing, and neither does walking the element tree: `SealedWord` paints
+nothing, and neither does walking the element tree: `PaintedWord` paints
 its text through a private render object, so no `Text` or `RichText` of
 the mnemonic or the passphrase is ever in the tree, and the render object
 keeps the string in library-private fields. What leaves the widgets is
 pixels — a screenshot, or a rendered image read back — which the host's
 capture protection handles. The package's own tests read the painted text
-through `debugSealedTextOf`, `@internal` and reachable only from `src/`.
-To *compare* words, `verifyWords` answers without exposing anything.
+through `debugPaintedTextOf`, `@internal` and reachable only from `src/`.
+To *compare* words, `verify.mnemonic` answers without exposing anything.
 
 Do not grep for the three — `test/invariants_test.dart` pins the set, so
 adding a fourth turns the suite red and names it.
@@ -188,7 +95,7 @@ view key, with no spend authority. The package treats the same string as
 secret when lwk writes it to disk (§ The package owns the keystore);
 hosts should store and log it as private data.
 
-`backup.vault` is not on this list, but note that its result pairs
+`backup.recoverbull` is not on this list, but note that its result pairs
 ciphertext with the key that opens it: hold both and you hold the
 mnemonic. Store them apart.
 
@@ -219,20 +126,20 @@ exposes; everything else in the directory is implementation.
 ```
 lib/secrets.dart          the package: the surface, explicit `show` lists — what a caller can name
 lib/src/
-  public/                 what you call          Secrets, Secret, the grouped sugar, the export lists (types.dart, widgets.dart) — forwards Results, catches nothing
+  public/                 what you call          Secrets, Secret, the grouped operations, the export lists (types.dart, widgets.dart) — forwards Results, catches nothing
   crypto/crypto.dart      what it computes       derivers/, signers/, backups/, generator
-    derivers/derivers.dart one deriver per library  identity, bitcoin, liquid, bip85, boltz — a static namespace
+    derivers/derivers.dart one deriver per library  fingerprint, bitcoin, liquid, bip85, boltz — a static namespace
     signers/signers.dart  one signer per chain   bitcoin_signer, liquid_signer, and pset_sighash (the Liquid sighash guard)
     backups/backups.dart  one backup per format  recoverbull — a static namespace
   data/data.dart          where it is kept       the keystore, the two repositories, the one try/catch (boundary.dart)
   domain/domain.dart      what it speaks in      value types, failures
-  widgets/widgets.dart    what the user sees     MnemonicView, MnemonicChallenge, SecretWidgets (`secret.widgets`); SealedWord stays unexported
+  widgets/widgets.dart    what the user sees     MnemonicView, MnemonicChallenge, SecretWidgets (`secret.widgets`); PaintedWord, PaintedPassphrase and PaintedMnemonic stay unexported
   testing/testing.dart    the test seam          the in-memory keystore, behind lib/testing.dart — test code only
 ```
 
 `lib/testing.dart` is the package's second public library. It is outside
 `src/`, so `implementation_imports` does not cover it; an invariant test
-does — nothing under `lib/` may import it, and consumers import it from
+does — nothing under this package's `lib/` may import it, and consumers must import it from
 `test/` alone.
 
 Each entry point is a barrel with an explicit `show` list — it defines
@@ -263,7 +170,7 @@ repository (the serialised keystore queue) and that closure.
 
 **Adding a signer** (Ark is the expected next one): a `<chain>_signer.dart`
 under `crypto/signers/`, exported from `signers.dart`; it takes
-`MnemonicMaterial` and turns it into a sentence with `mnemonicSentence`
+`Mnemonic` and turns it into a sentence with `mnemonicSentence`
 and nothing else; a `static const` on `Signer`; the operation on `Secret`
 beside the others. If the library needs a host resource, it is a
 parameter of the operation, never a field — that is what keeps the
@@ -281,10 +188,7 @@ invariant test.
 
 ## How to audit this package
 
-Ten properties carry the boundary, and each is an assertion rather than
-something to establish by reading — eight in `test/invariants_test.dart`,
-two in `test/internal_seal_test.dart`, which reads the resolved element
-model:
+The boundary has structural checks in `test/invariants_test.dart` and `test/internal_seal_test.dart`, which uses the resolved element model:
 
 | property | what the test checks |
 |---|---|
@@ -292,10 +196,9 @@ model:
 | the grouped API adds nothing | `src/public/extensions.dart` contains no `await`, no collaborator, no statement body |
 | material leaves at four named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey}` — and `revealMnemonic` is `@internal` |
 | the public surface is a literal list | the export graph is walked and compared name for name |
-| the passphrase caveat has one author | `WordsOnly`/`WholeSecret` are constructed only in `SecretInfo.scope` |
 | modules are fronted by their entry point | every cross-module import targets `<module>/<module>.dart` |
 | foreign dependencies stay in their module | bdk/lwk/boltz/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, nothing foreign under `domain/` |
-| the testing library never reaches production code | nothing under `lib/` imports `package:secrets/testing.dart` or `src/testing/` |
+| the testing library never reaches production code | nothing under this package's `lib/` imports `package:secrets/testing.dart` or `src/testing/` |
 | nothing unexported is constructible from outside | every public constructor of an unexported class under `lib/src/` is `@internal` — a dot shorthand (`.new()`) builds a type from context alone, without naming or importing it |
 | no exported signature hands out an unexported type | no exported, non-`@internal` member mentions one in its parameters or return type |
 
@@ -306,6 +209,8 @@ hold that diagnostic on Dart 3.12.2 — and any import of `flutter_secure_storag
 or `package:secrets/src/` outside the package, the app's own secure store
 excepted. The `PR custody review` workflow comments on a pull request that
 adds one, asking the contributor why.
+
+The second part of `make custody-check` resolves production Dart symbols and rejects known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning still belongs to a future sync extraction; RecoverBull restoration and inspection are migrated.
 
 So an audit is: run the suite, then read four files —
 `src/public/secret.dart` for what the package does, `src/data/boundary.dart`
@@ -331,18 +236,12 @@ The repository is the boundary (AGENTS.md, rule 11): every repository
 method returns a `Result`, and `Secret` never holds material — it hands the
 repository a closure, which runs on material that exists only for that
 call (`use`, `useMnemonic`). Two failures tell a caller *which side* went
-wrong: `SecretFetchFailure` is the keystore, `SecretDerivationFailure` is
+wrong: `FetchSecretFailure` is the keystore, `UseSecretFailure` is
 the engine — a PSBT that does not parse never reads as an unreadable seed.
 An `Error` raised under the boundary is a bug and keeps propagating —
 but re-thrown with its type only, never a message this package did not
 write. A value that does not derive to the key it is filed under is a
-`SecretIdentityMismatchFailure`, and the entry is left exactly as it is:
-`Secrets.repairIdentity(id)` re-files it under the identity it really
-has, inside the package, so nothing has to leave to fix it. The move is a
-write then a delete, so a crash leaves both copies rather than none, and
-a true identity already held by a different secret refuses instead of
-overwriting — the user re-imports their backup for the original
-fingerprint then.
+`FingerprintMismatchFailure`, and the entry is left exactly as it is. The app can ask the user to re-import the correct backup; the package never silently re-files the stored material.
 
 ## Where checks live
 
@@ -398,7 +297,7 @@ rather than a leak. Persistence goes through `SecretModel` alone.
 users' devices under `seed_<fingerprint>`. Any drift orphans wallets with
 no migration path short of asking the user for their backup.
 `test/secret_model_golden_test.dart` pins the exact strings — if it goes
-red, the on-disk format moved.
+red, the on-disk format moved. The domain names `Seed` and `SecretKind.seed` still serialize as `runtimeType: "bytes"` with the historical `bytes` field.
 
 **Absence is only ever concluded from a full read.** `flutter_secure_storage`
 has been observed reporting an entry as empty or absent instead of
@@ -412,8 +311,8 @@ the answer is "absent":
 
 | budget | where | reads | worst case | why |
 |---|---|---|---|---|
-| `settled` | `fetch`, `existingDatabaseKey` | 5, 300 ms doubling | ~4.5 s | outside the lock; absence is exceptional, so only a genuine miss pays |
-| `underLock` | `import`/`generate`/`restoreVault`, `repairIdentity` (source and destination), the first `databaseKey` | 2, 300 ms apart | 300 ms | inside a composed write, where absence is the normal outcome of a first store; the full budget would add ~4.5 s to every new secret and hold every other composed operation behind it |
+| `settled` | `fetch`, `DatabaseKeys.get` | 5, 300 ms doubling | ~4.5 s | outside the lock; absence is exceptional, so only a genuine miss pays |
+| `underLock` | `import`/`generate`/`recoverbull.restore`, the first `DatabaseKeys.getOrCreate` | 2, 300 ms apart | 300 ms | inside a composed write, where absence is the normal outcome of a first store; the full budget would add ~4.5 s to every new secret and hold every other composed operation behind it |
 
 Two reads stay outside it on purpose. `exists` is one read: a false "no"
 lets a duplicate import reach `storeSecret`, which settles on its own. `list`
@@ -421,14 +320,13 @@ is one `readAll`, with no retry. Every rescue logs `RETRY_RESCUE` with its
 attempt number and budget: if rescues never come after the second read, one
 budget of two is enough everywhere.
 The converse holds too: a value that is present but unreadable is a
-`SecretFetchFailure`, never a `SecretNotFoundFailure` — callers treat
+`FetchSecretFailure`, never a `SecretNotFoundFailure` — callers treat
 not-found as "the seed is gone", and a corrupt entry is not that. The
 same goes for a read that throws on its last attempt, for a `""` seen on
 any attempt, and for stored words that no longer pass bip39: read
 failures, not absences. Only a clean `null` on the read that was allowed
 to settle, with no `""` before it, concludes absence. The write side
-agrees: an entry that reads back empty is **occupied**, and `storeSecret`
-and `moveSecret` refuse to write over it exactly as they refuse a value
+agrees: an entry that reads back empty is **occupied**, and `storeSecret` refuses to write over it exactly as they refuse a value
 that does not parse — the seed twin of the module-key rule, pinned by
 `test/fss9_cohort_test.dart` and `test/ownership_test.dart`.
 
@@ -447,9 +345,9 @@ tell this apart from everything else and says the right thing:
 | what the device looks like | what the package reports | what the app does |
 |---|---|---|
 | nothing under `seed_` | `list()` → `Ok([])`, `fetch` → `SecretNotFoundFailure` after the full retry budget | `MissingDefaultSecretException` at startup → the restore flow, `hasBackup` on |
-| an fss9 value still under `seed_<fp>` | skipped by `list()`; `fetch` → `SecretFetchFailure` | the generic failure — **never** a restore offer, because the bytes may still be recoverable |
-| unmigrated EncryptedSharedPreferences data in the plugin's file | the pinned plugin (10.3.3, `migrateOnAlgorithmChange: false`) refuses to initialise on every call: `list()` and `fetch` → `SecretFetchFailure`, `import` and `databaseKey` → `SecretStoreFailure`, nothing written | the generic failure, as above |
-| the keystore is locked | `SecretStoreLockedFailure` | `KeychainLockedException` → wait for unlock and retry, no screen |
+| an fss9 value still under `seed_<fp>` | `list()` includes an `UnreadableSecret`; `fetch` → `FetchSecretFailure` | the generic failure — **never** a restore offer, because the bytes may still be recoverable |
+| unmigrated EncryptedSharedPreferences data in the plugin's file | the pinned plugin (10.3.3, `migrateOnAlgorithmChange: false`) refuses to initialise on every call: `list()` and `fetch` → `FetchSecretFailure`, `import` and `DatabaseKeys.getOrCreate` → `StoreSecretFailure`, nothing written | the generic failure, as above |
+| the keystore is locked | `KeystoreLockedFailure` | `KeychainLockedException` → wait for unlock and retry, no screen |
 
 `test/fss9_cohort_test.dart` pins the first three — the fake keystore cannot model the plugin refusing to initialise, which is established from the plugin's source — including that nothing is
 ever written over an unreadable entry: a backup is the cohort's way back,
@@ -486,7 +384,7 @@ in one file. They differ because the first is frozen and predates the
 convention; do not harmonise them.
 
 **One lock, for the composed sequences.** A `static` lock guards the
-package's read-modify-writes — `storeSecret`, `moveSecret`, `trashSecret`,
+package's read-modify-writes — `storeSecret`, `trashSecret`,
 `fetchOrCreateModuleKey`, `deleteModuleKey` — and nothing else.
 Unserialised, two first asks for the same module key each read a miss,
 each generate, and the second write wins: the first caller holds a key

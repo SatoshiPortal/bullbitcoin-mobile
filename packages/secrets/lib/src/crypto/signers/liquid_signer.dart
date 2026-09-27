@@ -37,7 +37,7 @@ final class LiquidSigner {
   /// field-free is what lets it sit on the [Signer] namespace like the
   /// others. It goes away the day lwk-dart binds `SwSigner` directly.
   Future<String> signPset(
-    MnemonicMaterial secret, {
+    Mnemonic secret, {
     required String pset,
     required LiquidNetwork network,
     required Future<String> Function() scratchDirectory,

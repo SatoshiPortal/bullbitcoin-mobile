@@ -111,9 +111,9 @@ void main() {
       'records the backup once the sealed challenge has judged it',
       () async {
         // The comparison no longer happens here: `MnemonicChallenge` runs it
-        // through `Secret.verifyWords`, inside the package, and the event that
-        // reaches this bloc carries no words at all. What is left to test is
-        // the bookkeeping.
+        // through `secret.verify.mnemonic`, inside the package, and the event
+        // that reaches this bloc carries no words at all. What is left to test
+        // is the bookkeeping.
         when(
           () => completeUsecase.execute(),
         ).thenAnswer((_) async => const Ok(null));

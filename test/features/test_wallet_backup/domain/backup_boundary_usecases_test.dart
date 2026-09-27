@@ -198,7 +198,10 @@ void main() {
     });
 
     test('returns the handle of a stored secret', () async {
-      await secrets.import(words: words);
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final result = await usecase.execute('73c5da0a');
 

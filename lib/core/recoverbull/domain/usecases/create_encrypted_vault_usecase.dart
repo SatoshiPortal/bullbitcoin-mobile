@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:secrets/secrets.dart' as secrets;
 import 'package:primitives/primitives.dart' show Fingerprint;
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -18,18 +17,9 @@ class CreateEncryptedVaultUsecase {
     required this._walletRepository,
   });
 
-  // Orchestrates wallet + seed (still-throwing core repos) and the recoverbull
-  // repo. The local try/catch is the boundary for the wallet/seed calls; the
-  // recoverbull repo already returns a Result that we forward.
-  /// [passphraseExcluded] is the package's `WordsOnly` verdict: the wallet
-  /// has a passphrase and the vault format has no field for it, so this
-  /// file alone restores a different wallet. The user must keep the
-  /// passphrase with the backup — `Secrets.restoreVault` takes it back.
+  // Coordinates wallet metadata with the package's sealed backup operation.
   Future<
-    Result<
-      ({EncryptedVault vault, String vaultKey, bool passphraseExcluded}),
-      RecoverBullCoreFailure
-    >
+    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
   >
   execute() async {
     try {
@@ -78,34 +68,25 @@ class CreateEncryptedVaultUsecase {
           ),
         );
       }
-      // The plaintext keeps exactly the keys and encodings `DecryptedVault.toJson` has always written — built from the same type, minus the words, which the package writes itself. Every existing vault and the key server read this shape.
-      final metadata = DecryptedVault(
-        mnemonic: const [],
-        masterFingerprint: defaultWallet.masterFingerprint,
-        isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
-        isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
-        latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
-        latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
-      ).toJson()..remove('mnemonic');
-      final scope = switch (await secret.backup.vault(metadata: metadata)) {
+      // Preserve the historical metadata keys and ISO date encoding. The package adds the mnemonic inside its custody boundary.
+      final metadata = <String, dynamic>{
+        'masterFingerprint': defaultWallet.masterFingerprint,
+        'isEncryptedVaultTested': defaultWallet.isEncryptedVaultTested,
+        'isPhysicalBackupTested': defaultWallet.isPhysicalBackupTested,
+        'latestEncryptedBackup': defaultWallet.latestEncryptedBackup
+            ?.toIso8601String(),
+        'latestPhysicalBackup': defaultWallet.latestPhysicalBackup
+            ?.toIso8601String(),
+      };
+      final backup = switch (await secret.backup.recoverbull(
+        metadata: metadata,
+      )) {
         Ok(:final value) => value,
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };
-      // The type has no shortcut: the caller meets both cases or does not compile.
-      final (sealed, passphraseExcluded) = switch (scope) {
-        secrets.WholeSecret(:final value) => (value, false),
-        secrets.WordsOnly(:final value) => (value, true),
-      };
-      if (passphraseExcluded) {
-        log.warning(
-          'VAULT_WORDS_ONLY: vault for ${defaultWallet.masterFingerprint} '
-          'carries the words alone; the passphrase is not in the file',
-        );
-      }
       return Ok((
-        vault: EncryptedVault(file: sealed.file),
-        vaultKey: sealed.key,
-        passphraseExcluded: passphraseExcluded,
+        vault: EncryptedVault(file: backup.vault.json),
+        vaultKey: backup.key.hex,
       ));
     } catch (e, st) {
       log.severe(message: 'createEncryptedVault failed', error: e, trace: st);

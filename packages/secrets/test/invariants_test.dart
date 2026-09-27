@@ -62,16 +62,13 @@ void main() {
     expect(offenders, isEmpty);
   });
 
-  test('the fluent sugar cannot do anything', () {
-    // `secret.sign.psbt(…)` must be exactly `secret.signPsbt(…)`. If the
-    // sugar could hold behaviour, the flat class would stop being the
-    // whole audit surface.
+  test('the grouped public surface only forwards to internal operations', () {
+    // Grouped calls reuse the inventoried implementation without adding behavior or exposing internal material.
     final body = code(read('lib/src/public/extensions.dart'));
 
     for (final forbidden in [
       'await ', 'async', 'guard(', 'log.',
       '_repository', '_deriver', '_signer',
-      'SecretMaterial', 'MnemonicMaterial', 'SeedMaterial',
       'return ', // every member is a single arrow expression
     ]) {
       expect(
@@ -80,6 +77,12 @@ void main() {
         reason: 'extensions.dart must not contain "$forbidden"',
       );
     }
+
+    expect(
+      RegExp(r'\b(?:SecretMaterial|Mnemonic|Seed)\b').hasMatch(body),
+      isFalse,
+      reason: 'extensions.dart must not name internal key material',
+    );
 
     // Every member forwards to the representation object and nothing
     // else: as many `_secret.` as there are member bodies.
@@ -114,7 +117,10 @@ void main() {
         if (target == mine || !modules.contains(target)) continue;
         // The one upward import: a sealed widget wraps the handle it draws
         // for, and `public/` has no entry point — it is the top.
-        if (mine == 'widgets' && path == 'public/secret.dart') continue;
+        if (mine == 'widgets' &&
+            {'public/secret.dart', 'public/extensions.dart'}.contains(path)) {
+          continue;
+        }
         if (path != '$target/$target.dart') {
           offenders.add('${file.path} → $path');
         }
@@ -224,53 +230,36 @@ void main() {
     // Every name a consumer can write after `import 'package:secrets/secrets.dart'`.
     const declared = {
       // lifecycle and handle
-      'Secrets', 'Secret', 'RestoredVault',
+      'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
-      'SecretSigning', 'SecretBackup',
-      // the passphrase caveat, as a type a caller must switch on
-      'PassphraseScope', 'WholeSecret', 'WordsOnly',
+      'SecretSigning', 'SecretBackup', 'SecretVerification', 'DatabaseKeys',
+      'Recoverbull',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
       'MnemonicWordCount',
       // what operations hand back
       'Descriptors',
-      'SwapKey', 'EncryptedVault', 'DatabaseKey', 'SecretInfo', 'SecretKind',
-      'SecretListing',
+      'SwapMasterKey',
+      'EncryptedVault',
+      'VaultKey',
+      'DatabaseKey',
+      'SecretInfo',
+      'SecretKind',
       // the failure family
-      'SecretFailure', 'SecretNotFoundFailure', 'SecretFetchFailure',
-      'SecretStoreFailure', 'SecretDeleteFailure', 'SecretStoreLockedFailure',
+      'SecretFailure',
+      'SecretAlreadyExistsFailure',
+      'SecretNotFoundFailure',
+      'FetchSecretFailure',
+      'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
       'InvalidMnemonicFailure', 'InvalidVaultFailure',
-      'UnsupportedNetworkFailure', 'SecretIdentityMismatchFailure',
-      'SecretDerivationFailure',
+      'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
+      'UseSecretFailure',
     };
 
     expect(surfaceOf('lib/secrets.dart'), declared);
-  });
-
-  test('the passphrase caveat has one author', () {
-    // Three outputs derive from the words alone; whether one is `WordsOnly` must not be decided three times. `SecretInfo.scope` decides it, which is also what lets `liquidDescriptor` — FFI-bound, so not unit-testable — be covered by the same line as `backupVault`, which is.
-    final built = RegExp(r'\b(WordsOnly|WholeSecret)\(');
-
-    expect(
-      built.allMatches(code(read('lib/src/domain/secret_info.dart'))),
-      hasLength(2),
-      reason: 'both variants are constructed in SecretInfo.scope',
-    );
-
-    const mayInvert = 'lib/src/public/secrets.dart'; // see restoreVault
-    for (final file in sources) {
-      if (file.path == 'lib/src/domain/secret_info.dart') continue;
-      if (file.path == 'lib/src/domain/passphrase_scope.dart') continue;
-      if (file.path == mayInvert) continue;
-      expect(
-        built.hasMatch(code(file.readAsStringSync())),
-        isFalse,
-        reason: '${file.path} decides the passphrase caveat on its own',
-      );
-    }
   });
 
   test('the stored mnemonic has no exit: revealMnemonic is @internal', () {
@@ -280,7 +269,7 @@ void main() {
     final body = code(read('lib/src/public/secret.dart'));
     expect(
       RegExp(
-        r'@internal\s+Future<Result<RevealedMnemonic, SecretFailure>>\s+revealMnemonic\(',
+        r'@internal\s+(?:@useResult\s+)?Future<Result<RevealedMnemonic, SecretFailure>>\s+revealMnemonic\(',
       ).hasMatch(body),
       isTrue,
       reason: 'revealMnemonic must be annotated @internal',
@@ -295,11 +284,11 @@ void main() {
   test('the sealed widgets hand out widgets, never a word', () {
     // A1 (Codex, 2026-09-16): a builder that receives `String word` lets a
     // `Map<int, String>` in the callback rebuild the mnemonic — no import of
-    // internals needed. So the host gets a `SealedWord`, whose text has no
+    // internals needed. So the host gets a `PaintedWord`, whose text has no
     // accessor, and this holds the signatures to it.
     final view = code(read('lib/src/widgets/mnemonic_view.dart'));
     final challenge = code(read('lib/src/widgets/mnemonic_challenge.dart'));
-    final sealed = code(read('lib/src/widgets/sealed_word.dart'));
+    final sealed = code(read('lib/src/widgets/painted_text.dart'));
 
     expect(
       RegExp(
@@ -316,10 +305,10 @@ void main() {
     );
     expect(challenge, isNot(contains('final String word')));
     // And the widget itself exposes nothing: private fields, no getter.
-    expect(sealed, contains('final String _word;'));
+    expect(sealed, contains('final String _text;'));
     expect(RegExp(r'String get \w+').hasMatch(sealed), isFalse);
     // Not part of the surface — it is the seal, not an API.
-    expect(read('lib/secrets.dart'), isNot(contains('sealed_word')));
+    expect(read('lib/secrets.dart'), isNot(contains('painted_text')));
   });
 
   test('every operation on Secret is inventoried', () {
@@ -327,12 +316,12 @@ void main() {
     const inventory = {
       // derived: public keys, descriptors, signatures, a verdict
       'xpub': 'derived',
-      'liquidXpub': 'derived',
       'bitcoinDescriptors': 'derived',
       'liquidDescriptor': 'derived',
       'signPsbt': 'derived',
       'signPset': 'derived',
       'verifyWords': 'derived',
+      'verifySeed': 'derived',
       // material by design: children this feature was asked to create, for use elsewhere
       'bip85Hex': 'material',
       'bip85Mnemonic': 'material',
@@ -341,7 +330,7 @@ void main() {
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
       // ciphertext plus the key that opens it
-      'backupVault': 'ciphertext',
+      'backupRecoverbull': 'ciphertext',
     };
 
     // Every public member of `Secret`, whatever it returns. M2 (Codex,
@@ -387,6 +376,14 @@ void main() {
             continue;
           }
           if (name.lexeme == 'toString') continue;
+          expect(
+            member.metadata.any(
+              (annotation) => annotation.name.toSource() == 'internal',
+            ),
+            isTrue,
+            reason:
+                'Secret.${name.lexeme} is implemented here but exposed only through a grouped operation',
+          );
           operations[name.lexeme] = returnType?.toSource() ?? 'dynamic';
         default:
           others.add(member.toSource().split('\n').first);

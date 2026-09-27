@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:secrets/src/widgets/sealed_word.dart' show debugSealedTextOf;
+import 'package:secrets/src/widgets/painted_text.dart' show debugPaintedTextOf;
 
 import 'result_helpers.dart';
 
@@ -42,10 +42,11 @@ void main() {
     'yellow',
   ];
 
+  late FakeSecureStoragePlatform storage;
   late Secrets secrets;
 
   setUp(() {
-    FakeSecureStoragePlatform().install();
+    storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
   });
 
@@ -81,7 +82,12 @@ void main() {
     child: MnemonicChallenge(
       secret: secret,
       placeholder: const Text('reading'),
-      onFailure: (_, failure) => Text('failed: ${failure.runtimeType}'),
+      failureBuilder: (_, failure, retry) => Column(
+        children: [
+          Text('failed: ${failure.runtimeType}'),
+          GestureDetector(onTap: retry, child: const Text('retry')),
+        ],
+      ),
       onSolved: () => solved++,
       onMistake: () => mistakes++,
       onProgress: (placed, total) => progress.add((placed, total)),
@@ -89,7 +95,7 @@ void main() {
         onTap: tile.onTap,
         child: Row(children: [Text('#${tile.position ?? 0}'), tile.word]),
       ),
-      layout: (context, tiles) => Column(children: tiles),
+      layoutBuilder: (context, tiles) => Column(children: tiles),
     ),
   );
 
@@ -117,14 +123,14 @@ void main() {
         textDirection: TextDirection.ltr,
         child: MnemonicChallenge(
           secret: secret,
-          onFailure: (_, _) => const SizedBox(),
+          failureBuilder: (_, _, _) => const SizedBox(),
           onSolved: () {},
           onMistake: () {},
           tileBuilder: (context, tile) {
             handed ??= tile.word;
             return tile.word;
           },
-          layout: (context, tiles) => Column(children: tiles),
+          layoutBuilder: (context, tiles) => Column(children: tiles),
         ),
       ),
     );
@@ -132,7 +138,7 @@ void main() {
 
     expect(handed, isNotNull);
     expect(handed, isNot(isA<Text>()));
-    expect(handed.runtimeType.toString(), 'SealedWord');
+    expect(handed.runtimeType.toString(), 'PaintedWord');
   });
 
   testWidgets('a wrong first tap resets instead of accumulating', (
@@ -178,6 +184,75 @@ void main() {
 
     expect(solved, 1);
     expect(mistakes, 0);
+  });
+
+  testWidgets('a locked store during final verification reports a failure', (
+    tester,
+  ) async {
+    final secret = await store(tester, wordsA);
+    await tester.pumpWidget(hosted(secret));
+    await settle(tester);
+
+    for (var i = 0; i < 11; i++) {
+      await tester.tap(sealed('abandon').at(i));
+      await tester.pump();
+    }
+    storage.locked = true;
+    await tester.tap(sealed('about'));
+    await settle(tester);
+
+    expect(mistakes, 0, reason: 'a storage failure is not an incorrect answer');
+    expect(solved, 0);
+    expect(find.text('failed: KeystoreLockedFailure'), findsOneWidget);
+    expect(sealed('abandon'), findsNothing);
+    expect(progress.last, (0, 12));
+
+    storage.locked = false;
+    await tester.tap(find.text('retry'));
+    await tester.pump();
+    expect(find.text('reading'), findsOneWidget);
+    await settle(tester);
+
+    expect(find.text('#0'), findsNWidgets(12));
+    expect(progress.last, (0, 12));
+    for (var i = 0; i < 11; i++) {
+      await tester.tap(sealed('abandon').at(i));
+      await tester.pump();
+    }
+    await tester.tap(sealed('about'));
+    await settle(tester);
+    expect(solved, 1);
+    expect(mistakes, 0);
+  });
+
+  testWidgets('an initial read failure can be retried and remains accessible', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final secret = await store(tester, wordsA);
+    storage.locked = true;
+
+    await tester.pumpWidget(hosted(secret));
+    expect(find.bySemanticsLabel('reading'), findsOneWidget);
+    await settle(tester);
+    expect(
+      find.bySemanticsLabel('failed: KeystoreLockedFailure'),
+      findsOneWidget,
+    );
+
+    final reads = storage.reads;
+    storage.locked = false;
+    await tester.pumpWidget(hosted(secret));
+    await settle(tester);
+    expect(storage.reads, reads, reason: 'same-id rebuilds do not retry');
+    expect(sealed('abandon'), findsNothing);
+
+    await tester.tap(find.text('retry'));
+    await settle(tester);
+    expect(sealed('abandon'), findsNWidgets(11));
+    expect(progress.last, (0, 12));
+    expect(find.bySemanticsLabel('about'), findsNothing);
+    semantics.dispose();
   });
 
   testWidgets('a secret swapped mid-read never becomes the answer key', (
@@ -240,7 +315,7 @@ void main() {
     await tester.pumpWidget(hosted(secret));
     await settle(tester);
 
-    expect(find.text('failed: SecretIdentityMismatchFailure'), findsOneWidget);
+    expect(find.text('failed: FingerprintMismatchFailure'), findsOneWidget);
     expect(sealed('abandon'), findsNothing);
     expect(solved, 0);
   });
@@ -263,7 +338,7 @@ void main() {
 /// A word as it is painted: the widgets hold no `Text` to find, so the
 /// package's own tests read the sealed render object instead.
 Finder sealed(String text) => find.byElementPredicate(
-  (e) => debugSealedTextOf(e) == text,
+  (e) => debugPaintedTextOf(e) == text,
   description: 'sealed text "$text"',
 );
 

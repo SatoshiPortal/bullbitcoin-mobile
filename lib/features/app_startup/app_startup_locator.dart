@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/data/wallet_startup_adapter.dart';
+import 'package:bb_mobile/features/app_startup/data/shared_preferences_startup_storage_repository.dart';
+import 'package:bb_mobile/features/app_startup/domain/repositories/startup_storage_repository.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
@@ -18,6 +22,12 @@ class AppStartupLocator {
       () => WalletStartupAdapter(locator<WalletRepository>()),
     );
 
+    locator.registerLazySingleton<StartupStorageRepository>(
+      () => SharedPreferencesStartupStorageRepository(
+        isAndroid: Platform.isAndroid,
+      ),
+    );
+
     // Use cases
     locator.registerFactory<ResetAppDataUsecase>(
       () =>
@@ -28,6 +38,7 @@ class AppStartupLocator {
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         secrets: locator<Secrets>(),
+        startupStorageRepository: locator<StartupStorageRepository>(),
       ),
     );
     locator.registerFactory<InitializeRequiredTorUsecase>(

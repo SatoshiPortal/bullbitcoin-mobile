@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
@@ -118,15 +117,10 @@ class WalletMetadataService {
   }) async {
     // Each chain with its own SLIP-44 coin type — 0/1 for Bitcoin, 1776/1 for Liquid — as every wallet already on a device was derived. Folding Liquid onto Bitcoin mainnet changed `xpub` and `xpubFingerprint` for every Liquid wallet.
     final xpub = _unwrap(
-      network.isBitcoin
-          ? await secret.derive.xpub(
-              network: network.bitcoin,
-              scriptType: scriptType.shared,
-            )
-          : await secret.derive.liquidXpub(
-              network: network.liquid,
-              scriptType: scriptType.shared,
-            ),
+      await secret.derive.xpub(
+        network: network.shared,
+        scriptType: scriptType.shared,
+      ),
     );
 
     final String descriptor;
@@ -143,23 +137,10 @@ class WalletMetadataService {
     } else {
       // The confidential descriptor covers both keychains, and a
       // seed-only secret is refused before anything is loaded.
-      final scope = _unwrap(
+      // Liquid descriptors ignore the passphrase, consistently with signing.
+      descriptor = _unwrap(
         await secret.derive.descriptors.liquid(network: network.liquid),
       );
-      switch (scope) {
-        case WholeSecret(:final value):
-          descriptor = value;
-        case WordsOnly(:final value):
-          // lwk takes no passphrase, so this wallet is the passphrase-less
-          // sibling's: same addresses, same funds. Recorded because the
-          // metadata says the wallet derives from a passphrase secret and
-          // the Liquid half of it does not.
-          log.warning(
-            'LIQUID_WORDS_ONLY: Liquid wallet for ${secret.info.id.hex} '
-            'derives from the words alone; its passphrase takes no part',
-          );
-          descriptor = value;
-      }
       changeDescriptor = descriptor;
     }
 

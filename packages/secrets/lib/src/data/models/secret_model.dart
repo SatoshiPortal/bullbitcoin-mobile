@@ -120,7 +120,7 @@ final class MnemonicSecretModel extends SecretModel {
   /// `ArgumentError` would escape as an unexpected failure.
   /// The list is **copied** before anything can await it. A model that
   /// shared its caller's list would let the words change after its
-  /// identity was derived and before it was written — filing one secret
+  /// fingerprint was derived and before it was written — filing one secret
   /// under another's fingerprint. See `test/secret_model_test`.
   @internal
   factory MnemonicSecretModel({

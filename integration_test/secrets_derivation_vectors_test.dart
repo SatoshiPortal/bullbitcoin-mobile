@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:bb_mobile/main.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+
+import '../packages/secrets/test/fixtures/liquid_signing_fixture.dart';
 
 /// Pins what `secrets` derives, against the FFI the unit suite cannot load.
 ///
@@ -13,12 +15,7 @@ import 'package:secrets/secrets.dart';
 /// here instead of moving a user's wallet. The Liquid descriptor is only
 /// checkable here at all, since lwk is FFI-bound.
 ///
-/// The second checks that a refused signature is classified where it
-/// happened and carries no library message — also FFI-only, since both
-/// refusals come out of bdk and lwk. A *successful* signature is proven
-/// elsewhere: a synthetic PSBT with a witness UTXO verifies an ECDSA
-/// signature without funds — the auditor's probes do exactly that — and the
-/// funded paths run in `coins_test.dart` and `payjoin_test.dart`.
+/// Offline signatures cover successful Liquid finalization here and successful Bitcoin finalization in the package unit suite. Refusal cases keep storage failures separate and drop library messages.
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
@@ -42,6 +39,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   late Secrets secrets;
   late Directory scratch;
+  final imported = <String, Secret>{};
 
   setUpAll(() async {
     scratch = await Directory.systemTemp.createTemp('secrets_vectors_');
@@ -52,25 +50,31 @@ Future<void> main({bool isInitialized = false}) async {
     if (scratch.existsSync()) await scratch.delete(recursive: true);
   });
 
-  Future<Secret> importWords({String? passphrase}) async =>
-      switch (await secrets.import(words: words, passphrase: passphrase)) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import: ${failure.runtimeType}'),
-      };
-
   T unwrap<T>(Result<T, SecretFailure> r) => switch (r) {
     Ok(:final value) => value,
     Err(:final failure) => fail('failed: ${failure.runtimeType}'),
   };
 
-  T scoped<T>(PassphraseScope<T> scope) => switch (scope) {
-    WholeSecret(:final value) => value,
-    WordsOnly(:final value) => value,
-  };
+  Future<Secret> importFixture(
+    List<String> words, {
+    String? passphrase,
+  }) async =>
+      switch (await secrets.import(words: words, passphrase: passphrase)) {
+        Ok(:final value) => value,
+        Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+          await secrets.fetch(id),
+        ),
+        Err(:final failure) => fail('import: ${failure.runtimeType}'),
+      };
+
+  Future<Secret> importWords({String? passphrase}) async {
+    final key = passphrase ?? '';
+    return imported[key] ??= await importFixture(words, passphrase: passphrase);
+  }
 
   group('derivation is pinned, so a key cannot be reborn by accident', () {
-    // The identities and keys below are the same constants
-    // `packages/secrets/test/identity_vectors_test.dart` pins in pure Dart;
+    // The fingerprints and keys below are the same constants
+    // `packages/secrets/test/fingerprint_vectors_test.dart` pins in pure Dart;
     // here they are asserted against bdk and lwk. `3f635a63` was computed
     // independently by a second auditor before being pinned.
     const zooId = '3f635a63';
@@ -85,9 +89,37 @@ Future<void> main({bool isInitialized = false}) async {
     const zooBip85At0 =
         'c8e13c54dfebea496b2f3bcde9d92fc548119ec977037ba200294b7be6ac83d3';
 
-    test('the identity is the master fingerprint of these words', () async {
+    test('the fingerprint is the master fingerprint of these words', () async {
       final secret = await importWords();
       expect(secret.id.hex, zooId);
+    });
+
+    test('account-one descriptors carry the selected testnet xpub', () async {
+      final secret = await importWords();
+      final xpub = unwrap(
+        await secret.derive.xpub(
+          network: BitcoinNetwork.testnet,
+          scriptType: ScriptType.bip84,
+          accountIndex: 1,
+        ),
+      );
+      final descriptors = unwrap(
+        await secret.derive.descriptors.bitcoin(
+          network: BitcoinNetwork.testnet,
+          scriptType: ScriptType.bip84,
+          accountIndex: 1,
+        ),
+      );
+      final canonicalKey = XpubType.tpub.reencode(xpub);
+      expect(xpub, isNot(zooVpub));
+      expect(
+        descriptors.external,
+        startsWith("wpkh([$zooId/84'/1'/1']$canonicalKey/0/*)"),
+      );
+      expect(
+        descriptors.internal,
+        startsWith("wpkh([$zooId/84'/1'/1']$canonicalKey/1/*)"),
+      );
     });
 
     test('bip84 xpub, mainnet and testnet', () async {
@@ -142,7 +174,7 @@ Future<void> main({bool isInitialized = false}) async {
       }
     });
 
-    test('the Liquid descriptor ignores the passphrase, and says so', () async {
+    test('the Liquid descriptor ignores the passphrase', () async {
       // The claim the README makes about lwk, asserted against lwk itself —
       // the unit suite cannot, since this call needs the FFI.
       final plain = await importWords();
@@ -162,18 +194,8 @@ Future<void> main({bool isInitialized = false}) async {
         ),
       );
 
-      expect(a, isA<WholeSecret<String>>());
-      expect(
-        b,
-        isA<WordsOnly<String>>(),
-        reason: 'the caller must be told the passphrase took no part',
-      );
-      expect(
-        scoped(b),
-        scoped(a),
-        reason: 'same descriptor: same addresses, same funds',
-      );
-      expect(scoped(a), contains('ct('));
+      expect(b, a, reason: 'same descriptor: same addresses, same funds');
+      expect(a, contains('ct('));
     });
 
     test('a BIP85 child is the pinned value', () async {
@@ -206,7 +228,7 @@ Future<void> main({bool isInitialized = false}) async {
           final key = unwrap(await secret.derive.swapKey(network: network));
           final child = unwrap(
             await secret.derive.bip85.mnemonic(
-              length: bip39.MnemonicLength.words12,
+              wordCount: MnemonicWordCount.words12,
               index: 26589,
             ),
           );
@@ -248,41 +270,79 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test(
-      'a vault of a passphrase secret is marked, and restores with it',
+      'a vault restores its words with a separately supplied passphrase',
       () async {
         final withPassphrase = await importWords(passphrase: 'TREZOR');
-        final sealed = unwrap(await withPassphrase.backup.vault());
-        expect(sealed, isA<WordsOnly<EncryptedVault>>());
+        final sealed = unwrap(await withPassphrase.backup.recoverbull());
 
         // The file alone gives the sibling; with the passphrase, the wallet.
         final bare = unwrap(
-          await secrets.restoreVault(
-            file: scoped(sealed).file,
-            key: scoped(sealed).key,
+          await secrets.recoverbull.restore(
+            vault: sealed.vault,
+            key: sealed.key,
           ),
         );
-        expect(bare, isA<WordsOnly<RestoredVault>>());
-        expect(scoped(bare).secret.id.hex, zooId);
+        expect(bare.secret.id.hex, zooId);
 
         final whole = unwrap(
-          await secrets.restoreVault(
-            file: scoped(sealed).file,
-            key: scoped(sealed).key,
+          await secrets.recoverbull.restore(
+            vault: sealed.vault,
+            key: sealed.key,
             passphrase: 'TREZOR',
           ),
         );
-        expect(whole, isA<WholeSecret<RestoredVault>>());
-        expect(scoped(whole).secret.id.hex, withPassphrase.id.hex);
+        expect(whole.secret.id.hex, withPassphrase.id.hex);
       },
     );
   });
 
+  test(
+    'signs and finalizes the upstream Liquid fixture without chain access',
+    () async {
+      final secret = await importFixture([
+        ...List.filled(11, 'abandon'),
+        'about',
+      ]);
+      final unsigned = lwk.LiquidTransaction.fromPset(
+        psetString: liquidSigningPset,
+      );
+      final before = scratch.listSync().length;
+      final String expectedTxid;
+      try {
+        expect(unsigned.getInputs().single.witness, isEmpty);
+        expectedTxid = unsigned.txid();
+      } finally {
+        unsigned.dispose();
+      }
+
+      final signed = unwrap(
+        await secret.sign.pset(
+          liquidSigningPset,
+          network: LiquidNetwork.testnet,
+        ),
+      );
+      final transaction = lwk.LiquidTransaction.fromPset(psetString: signed);
+      try {
+        final witness = transaction.getInputs().single.witness;
+        expect(witness, hasLength(2));
+        expect(witness.first, startsWith('30'), reason: 'DER-encoded ECDSA');
+        expect(witness.first, endsWith('01'), reason: 'SIGHASH_ALL');
+        expect(witness.last, liquidSigningPublicKey);
+        expect(transaction.txid(), expectedTxid);
+        expect(transaction.outputCount(), BigInt.from(3));
+        expect(scratch.listSync().length, before);
+      } finally {
+        transaction.dispose();
+      }
+    },
+  );
+
   group('a refused signature is classified where it happened', () {
     // Only checkable with the FFI loaded: both refusals come out of bdk and
-    // lwk. What they must not be is a `SecretFetchFailure` — that reads as
+    // lwk. What they must not be is a `FetchSecretFailure` — that reads as
     // "your seed is unreadable" — and what they must not carry is the
     // library's own message, which quotes its input.
-    test('a PSBT that does not parse is a derivation failure', () async {
+    test('a PSBT that does not parse is a use failure', () async {
       final secret = await importWords();
 
       final result = await secret.sign.psbt(
@@ -295,7 +355,7 @@ Future<void> main({bool isInitialized = false}) async {
         Err(:final failure) => failure,
         Ok() => fail('a non-PSBT was accepted'),
       };
-      expect(failure, isA<SecretDerivationFailure>());
+      expect(failure, isA<UseSecretFailure>());
       expect(failure.logMessage, isNotNull);
       expect(failure.logMessage, isNot(contains('not a psbt')));
     });
@@ -312,7 +372,7 @@ Future<void> main({bool isInitialized = false}) async {
         Err(:final failure) => failure,
         Ok() => fail('a non-PSET was accepted'),
       };
-      expect(failure, isA<SecretDerivationFailure>());
+      expect(failure, isA<UseSecretFailure>());
       // `logMessage` is the exception's type name and nothing else — asserted
       // positively, so a null here cannot pass as "contains no word".
       expect(failure.logMessage, 'LiquidSigningFailed');
@@ -325,7 +385,10 @@ Future<void> main({bool isInitialized = false}) async {
       final secret = await importWords();
       final before = scratch.listSync().length;
 
-      await secret.sign.pset('not a pset', network: LiquidNetwork.testnet);
+      expect(
+        await secret.sign.pset('not a pset', network: LiquidNetwork.testnet),
+        isA<Err<String, SecretFailure>>(),
+      );
 
       expect(scratch.listSync().length, before);
     });

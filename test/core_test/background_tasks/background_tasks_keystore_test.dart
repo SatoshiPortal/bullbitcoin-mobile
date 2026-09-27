@@ -35,7 +35,7 @@ void main() {
         'DeleteSecretUsecase',
         'RestoreVaultUsecase',
         'CreateEncryptedVaultUsecase',
-        'repairIdentity',
+        '.recoverbull.restore(',
         '.trash(',
         '.import(',
         '.generate(',

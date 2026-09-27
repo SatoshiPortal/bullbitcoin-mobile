@@ -8,18 +8,20 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/missing_default_secret_exception.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/app_startup/domain/repositories/startup_storage_repository.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
   final Secrets _secrets;
+  final StartupStorageRepository _startupStorageRepository;
 
   CheckForExistingDefaultWalletsUsecase({
     required this._settingsRepository,
     required this._walletRepository,
     required this._secrets,
+    required this._startupStorageRepository,
   });
 
   @useResult
@@ -28,10 +30,6 @@ class CheckForExistingDefaultWalletsUsecase {
       return await _check();
     } on KeychainLockedException {
       return const Err(AppStartupKeychainLockedFailure());
-    } on MissingDefaultSecretException catch (e) {
-      // Logged where it is thrown; kept apart from the catch-all so the
-      // failure says which, never quoting more than the fingerprint.
-      return Err(AppStartupWalletCheckFailure('$e'));
     } on Object catch (e, st) {
       log.severe(
         message: 'Default wallet check failed at startup',
@@ -43,6 +41,15 @@ class CheckForExistingDefaultWalletsUsecase {
   }
 
   Future<Result<bool, AppStartupFailure>> _check() async {
+    switch (await _startupStorageRepository.requiresLegacyRestore()) {
+      case Ok(value: true):
+        return const Err(AppStartupLegacyStorageFailure());
+      case Ok(value: false):
+        break;
+      case Err(:final failure):
+        return Err(failure);
+    }
+
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
 
@@ -90,7 +97,8 @@ class CheckForExistingDefaultWalletsUsecase {
       );
       try {
         final secret = switch (await _secrets.fetch(
-          Fingerprint(defaultWallets.first.masterFingerprint),
+          Fingerprint.tryParse(defaultWallets.first.masterFingerprint) ??
+              (throw const FormatException('invalid default fingerprint')),
         )) {
           Ok(:final value) => value,
           Err(:final failure) => throw Exception(
@@ -134,40 +142,25 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     log.fine('FINE: found default wallet');
-    await Future.wait(
-      defaultWallets.map((wallet) async {
-        // Three outcomes, three remedies — which is the whole reason the
-        // package refuses to collapse them. A locked keystore is transient
-        // and the app waits for unlock; a genuine absence is the fss9 cohort
-        // and the app offers a restore; anything else is a read that failed,
-        // and offering a restore for that would be offering to replace a
-        // seed that is still there.
-        switch (await _secrets.fetch(Fingerprint(wallet.masterFingerprint))) {
-          case Ok():
-            log.fine('FINE: Seed Found');
-          case Err(failure: SecretStoreLockedFailure()):
-            log.warning(
-              'Keystore locked while checking ${wallet.masterFingerprint}; '
-              'waiting for unlock',
-            );
-            throw const KeychainLockedException();
-          case Err(failure: SecretNotFoundFailure()):
-            log.severe(
-              message: 'No secret for default wallet — offering restore',
-              error: 'SecretNotFoundFailure',
-              trace: StackTrace.current,
-            );
-            throw MissingDefaultSecretException(wallet.masterFingerprint);
-          case Err(:final failure):
-            log.severe(
-              message: 'Seed unreadable for default wallet',
-              error: failure.runtimeType.toString(),
-              trace: StackTrace.current,
-            );
-            throw Exception('default secret: ${failure.runtimeType}');
-        }
-      }),
-    );
+    for (final wallet in defaultWallets) {
+      final id = Fingerprint.tryParse(wallet.masterFingerprint);
+      if (id == null) {
+        return const Err(AppStartupDefaultSecretUnreadableFailure());
+      }
+      switch (await _secrets.fetch(id)) {
+        case Ok():
+          break;
+        case Err(failure: KeystoreLockedFailure()):
+          return const Err(AppStartupKeychainLockedFailure());
+        case Err(failure: SecretNotFoundFailure()):
+          return Err(
+            AppStartupDefaultSecretMissingFailure('default secret absent: $id'),
+          );
+        case Err(:final failure):
+          log.warning('Default secret unreadable: ${failure.runtimeType}');
+          return const Err(AppStartupDefaultSecretUnreadableFailure());
+      }
+    }
     return const Ok(true);
   }
 

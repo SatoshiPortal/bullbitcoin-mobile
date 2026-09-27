@@ -13,6 +13,9 @@ const _rawReason =
 final _everyFailure = <AppStartupFailure>[
   const AppStartupKeychainLockedFailure(_rawReason),
   const AppStartupWalletCheckFailure(_rawReason),
+  const AppStartupDefaultSecretMissingFailure(_rawReason),
+  const AppStartupDefaultSecretUnreadableFailure(_rawReason),
+  const AppStartupLegacyStorageFailure(_rawReason),
   const AppStartupResetFailure(_rawReason),
   const AppStartupPinCheckFailure(_rawReason),
 ];
@@ -65,17 +68,15 @@ void main() {
       }
     });
 
-    testWidgets('every variant reads the same, by design', (tester) async {
-      // Startup has no wallet, session or screen to return to, so there is no
-      // action to offer beyond the support link the screen already shows.
-      // This pins that deliberate choice: if someone adds per-variant copy,
-      // this fails and they have to justify it.
+    testWidgets('recovery outcomes have distinct user instructions', (
+      tester,
+    ) async {
       final messages = <String>{};
       for (final failure in _everyFailure) {
         messages.add(await _translate(tester, failure));
       }
 
-      expect(messages, hasLength(1));
+      expect(messages, hasLength(4));
     });
   });
 }

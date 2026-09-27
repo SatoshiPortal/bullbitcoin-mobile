@@ -17,10 +17,12 @@ Future<Result<T, SecretFailure>> boundary<T>(
 }) async {
   try {
     return Ok(await body());
-  } on SecretStoreLockedException catch (e) {
+  } on SecretAlreadyExistsException catch (e) {
+    return Err(SecretAlreadyExistsFailure(e.id));
+  } on KeystoreLockedException catch (e) {
     // Must not collapse into not-found: callers read that as "the seed is gone" and may offer destructive recovery.
     log.warning('Keystore locked: ${e.message}');
-    return Err(SecretStoreLockedFailure(e.message));
+    return Err(KeystoreLockedFailure(e.message));
   } on ModuleKeyCorruptException catch (e, st) {
     // Names the storage key, never a value. Nothing was overwritten.
     log.severe(
@@ -29,10 +31,10 @@ Future<Result<T, SecretFailure>> boundary<T>(
       trace: st,
     );
     return Err(DatabaseKeyCorruptFailure(e.message));
-  } on SecretIdentityMismatch catch (e) {
-    return Err(SecretIdentityMismatchFailure(e.message));
-  } on SecretIdentityConflict catch (e) {
-    return Err(SecretStoreFailure(e.message));
+  } on FingerprintMismatchException catch (e) {
+    return Err(FingerprintMismatchFailure(e.message));
+  } on FingerprintConflictException catch (e) {
+    return Err(StoreSecretFailure(e.message));
   } on UnsupportedLiquidNetwork catch (e) {
     return Err(UnsupportedNetworkFailure(e.message));
   } on InvalidVault catch (e) {

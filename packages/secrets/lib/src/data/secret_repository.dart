@@ -30,30 +30,35 @@ class SecretRepository {
   Future<Result<SecretInfo, SecretFailure>> describe(Fingerprint id) =>
       _read(id, (model) => _describe(id, model));
 
-  /// Describes every stored secret without materialising any of them. An entry whose words no longer pass bip39 is skipped, like one that does not parse: one corrupt value must not hide the others — and the count of what was skipped travels with the list, so a shorter list is never mistaken for a smaller keystore.
+  /// Describes every stored secret without materialising any of them. An unreadable value becomes an individual failure without hiding the other entries.
   Future<Result<InfoListing, SecretFailure>> describeAll() =>
       boundary(() async {
         final listing = await _source.fetchAllSecrets();
+        final unreadable = <({Fingerprint? id, SecretFailure failure})>[
+          for (final id in listing.unparsable)
+            (id: id, failure: const FetchSecretFailure('invalid stored entry')),
+        ];
         final described = await Future.wait(
           listing.parsed.map((e) async {
             try {
               return await _describe(e.id, e.model);
             } on FormatException {
               log.warning('Skipping secret ${e.id}: stored words fail bip39');
+              unreadable.add((
+                id: e.id,
+                failure: const FetchSecretFailure('stored words fail bip39'),
+              ));
               return null;
             }
           }),
         );
         final infos = described.nonNulls.toList();
-        return SecretListing(
-          secrets: infos,
-          unreadable: listing.unparsable + (described.length - infos.length),
-        );
-      }, orElse: SecretFetchFailure.new);
+        return SecretListing(secrets: infos, unreadable: unreadable);
+      }, orElse: FetchSecretFailure.new);
 
   /// Runs [body] on the secret's material, which exists only for the call.
   ///
-  /// A read that fails is a [SecretFetchFailure]; [body] raising is a [SecretDerivationFailure], so a bad PSBT never reads as an unreadable seed.
+  /// A read that fails is a [FetchSecretFailure]; [body] raising is a [UseSecretFailure], so a bad PSBT never reads as an unreadable seed.
   Future<Result<T, SecretFailure>> use<T>(
     SecretInfo info,
     FutureOr<T> Function(SecretMaterial material) body,
@@ -67,7 +72,7 @@ class SecretRepository {
       Err(:final failure) => Err(failure),
       Ok(:final value) => await boundary(
         () async => await body(value),
-        orElse: SecretDerivationFailure.new,
+        orElse: UseSecretFailure.new,
       ),
     };
   }
@@ -75,7 +80,7 @@ class SecretRepository {
   /// [use], for operations that need BIP39 words. A seed-only secret is refused from [info] alone, before any PBKDF2.
   Future<Result<T, SecretFailure>> useMnemonic<T>(
     SecretInfo info,
-    FutureOr<T> Function(MnemonicMaterial material) body,
+    FutureOr<T> Function(Mnemonic material) body,
   ) {
     if (!info.isMnemonic) {
       return Future.value(
@@ -84,8 +89,10 @@ class SecretRepository {
     }
     return use(info, (material) {
       // Unreachable while `materialize` checks the key: a seed-only model cannot derive to a mnemonic's fingerprint.
-      if (material is! MnemonicMaterial) {
-        throw const SecretIdentityMismatch('stored secret carries no words');
+      if (material is! Mnemonic) {
+        throw const FingerprintMismatchException(
+          'stored secret carries no words',
+        );
       }
       return body(material);
     });
@@ -93,16 +100,16 @@ class SecretRepository {
 
   /// Whether a secret exists, best-effort. See [FlutterSecureStorageDatasource.secretExists].
   Future<Result<bool, SecretFailure>> exists(Fingerprint id) =>
-      boundary(() => _source.secretExists(id), orElse: SecretFetchFailure.new);
+      boundary(() => _source.secretExists(id), orElse: FetchSecretFailure.new);
 
-  /// Identity a candidate mnemonic would have, without storing it.
+  /// Fingerprint a candidate mnemonic would have, without storing it.
   Future<Result<Fingerprint, SecretFailure>> idOf({
     required List<String> words,
     String? passphrase,
   }) => boundary(
     () => Isolate.run(
-      () => Deriver.identity.fingerprint(
-        Deriver.identity.seed(words, passphrase: passphrase ?? ''),
+      () => Deriver.fingerprint.fingerprint(
+        Deriver.fingerprint.seed(words, passphrase: passphrase ?? ''),
       ),
     ),
     orElse: InvalidMnemonicFailure.new,
@@ -110,13 +117,14 @@ class SecretRepository {
 
   // ------------------------------------------------------------------ writes
 
-  /// Stores a mnemonic and returns its description. Mnemonics are the only kind anything writes; [SeedMaterial] stays readable for entries that predate that.
+  /// Stores a mnemonic and returns its description. Mnemonics are the only kind anything writes; [Seed] stays readable for entries that predate that.
   Future<Result<SecretInfo, SecretFailure>> store({
     required List<String> words,
     String? passphrase,
+    bool rejectExisting = false,
   }) => boundary(() async {
     // Validated as words first — count, wordlist, checksum — so a bad count reads as "invalid mnemonic" like a bad checksum, not as the model's FormatException. Cheap: no seed yet.
-    Deriver.identity.check(words);
+    Deriver.fingerprint.check(words);
     final model = MnemonicSecretModel(
       mnemonicWords: words,
       // Absent and empty are one passphrase to BIP39 and to this package; the
@@ -130,9 +138,33 @@ class SecretRepository {
       id: id,
       secret: model,
       seedOf: (m) => Isolate.run(() => _seedOf(m)),
+      rejectExisting: rejectExisting,
     );
     return _describe(id, model);
-  }, orElse: SecretStoreFailure.new);
+  }, orElse: StoreSecretFailure.new);
+
+  /// Compares the full seed, not merely the collision-prone fingerprint.
+  Future<Result<bool, SecretFailure>> contains({
+    required List<String> words,
+    String? passphrase,
+  }) {
+    final candidate = List<String>.of(words);
+    return boundary(() async {
+      final seed = await Isolate.run(
+        () => Deriver.fingerprint.seed(candidate, passphrase: passphrase ?? ''),
+      );
+      final id = Deriver.fingerprint.fingerprint(seed);
+      final stored = await _source.fetchSecret(id);
+      if (stored == null) return false;
+      final existing = await _readOffIsolate(() => _seedOf(stored));
+      if (seed.length != existing.length) return false;
+      var difference = 0;
+      for (var i = 0; i < seed.length; i++) {
+        difference |= seed[i] ^ existing[i];
+      }
+      return difference == 0;
+    }, orElse: FetchSecretFailure.new);
+  }
 
   /// Opens a RecoverBull vault and stores the words it carries, under [passphrase] when the user supplied one. The words exist only inside this call.
   Future<Result<RestoredSecret, SecretFailure>> restore({
@@ -142,7 +174,7 @@ class SecretRepository {
   }) async {
     final opened = await boundary(
       () async => Backup.recoverbull.open(file: file, backupKey: key),
-      orElse: SecretStoreFailure.new,
+      orElse: StoreSecretFailure.new,
     );
     return switch (opened) {
       Err(:final failure) => Err(failure),
@@ -153,37 +185,22 @@ class SecretRepository {
     };
   }
 
-  /// Re-files an entry under the identity it really has.
-  ///
-  /// The remedy for [SecretIdentityMismatchFailure]: the words are intact, only the key they are under is wrong, so nothing needs to leave the package to fix it. Idempotent — an entry already under its own identity is simply described.
-  ///
-  /// One locked datasource operation — [FlutterSecureStorageDatasource.moveSecret] — so the identity is derived from the very model that is written, and the move is a write then a delete: a crash in between leaves both copies rather than none. If the true identity is already taken by a *different* secret, the write refuses and the original is untouched.
-  Future<Result<SecretInfo, SecretFailure>> repairIdentity(
-    Fingerprint id,
-  ) async {
-    final moved = await boundary(
-      () => _source.moveSecret(
-        id,
-        identify: (model) => Isolate.run(() => _identify(model)),
-        seedOf: (model) => Isolate.run(() => _seedOf(model)),
-      ),
-      orElse: SecretStoreFailure.new,
-    );
-    return switch (moved) {
-      Err(:final failure) => Err(failure),
-      Ok(value: null) => const Err(
-        SecretNotFoundFailure('no secret under that id'),
-      ),
-      Ok(value: (:final Fingerprint id, :final SecretModel model)) =>
-        await boundary(() {
-          log.info('SECRET_REPAIR: secret now filed under $id');
-          return _describe(id, model);
-        }, orElse: SecretFetchFailure.new),
-    };
-  }
+  /// Inspects a RecoverBull vault without reading or writing the keystore. Only its validated mnemonic determines the fingerprint; metadata is not trusted for it.
+  Future<Result<Fingerprint, SecretFailure>> inspect({
+    required String file,
+    required String key,
+  }) => boundary(
+    () => Isolate.run(() {
+      final opened = Backup.recoverbull.open(file: file, backupKey: key);
+      return Deriver.fingerprint.fingerprint(
+        Deriver.fingerprint.seed(opened.words),
+      );
+    }),
+    orElse: UseSecretFailure.new,
+  );
 
   Future<Result<void, SecretFailure>> trash(Fingerprint id) =>
-      boundary(() => _source.trashSecret(id), orElse: SecretDeleteFailure.new);
+      boundary(() => _source.trashSecret(id), orElse: TrashSecretFailure.new);
 
   // ----------------------------------------------------------------- private
 
@@ -194,7 +211,7 @@ class SecretRepository {
   ) async {
     final fetched = await boundary(
       () => _source.fetchSecret(id),
-      orElse: SecretFetchFailure.new,
+      orElse: FetchSecretFailure.new,
     );
     return switch (fetched) {
       Err(:final failure) => Err(failure),
@@ -203,30 +220,27 @@ class SecretRepository {
       ),
       Ok(value: final SecretModel model) => await boundary(
         () => project(model),
-        orElse: SecretFetchFailure.new,
+        orElse: FetchSecretFailure.new,
       ),
     };
   }
 
-  /// Projects a stored model onto its description. Derives only when a passphrase splits the two identities; that pass goes off-isolate.
+  /// Projects a stored model onto its description without deriving a seed.
   ///
-  /// Words that no longer pass bip39 are refused here for every entry, not only when a passphrase forces a derivation — otherwise the same bytes would list under one passphrase field and vanish under another (Codex, D3, 2026-09-16). Cheap: `check` derives no seed.
+  /// Words that no longer pass bip39 are refused for every entry, with or without a passphrase. Validation checks the wordlist and checksum without deriving a seed.
   Future<SecretInfo> _describe(Fingerprint id, SecretModel model) async {
     switch (model) {
       case BytesSecretModel(:final bytes):
-        return SecretInfo.bytes(id: id, lengthInBits: bytes.length * 8);
+        return SecretInfo.seed(id: id, lengthInBits: bytes.length * 8);
       case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
         try {
-          Deriver.identity.check(mnemonicWords);
+          Deriver.fingerprint.check(mnemonicWords);
         } on MnemonicException {
           throw const FormatException('stored words are not a BIP39 mnemonic');
         }
         final hasPassphrase = passphrase != null && passphrase.isNotEmpty;
         return SecretInfo.mnemonic(
           id: id,
-          mnemonicFingerprint: hasPassphrase
-              ? await _readOffIsolate(() => _plainFingerprint(mnemonicWords))
-              : id,
           wordCount: mnemonicWords.length,
           hasPassphrase: hasPassphrase,
         );
@@ -244,11 +258,11 @@ class SecretRepository {
 
   /// Runs in an isolate; static so it stays sendable.
   ///
-  /// The key is checked against the material, not trusted: the entry was filed under the fingerprint derived at write time, and serving a value that derives elsewhere would hand one wallet's keys under another's identity. One fingerprint over a seed already computed.
+  /// The key is checked against the material, not trusted: the entry was filed under the fingerprint derived at write time, and serving a value that derives elsewhere would hand one wallet's keys under another's fingerprint. One fingerprint over a seed already computed.
   static SecretMaterial materialize(Fingerprint id, SecretModel model) {
     final material = _materialize(id, model);
-    if (Deriver.identity.fingerprint(material.seedBytes) != id) {
-      throw SecretIdentityMismatch(
+    if (Deriver.fingerprint.fingerprint(material.seedBytes) != id) {
+      throw FingerprintMismatchException(
         'stored secret does not derive to ${id.hex}',
       );
     }
@@ -258,29 +272,25 @@ class SecretRepository {
   static SecretMaterial _materialize(Fingerprint id, SecretModel model) {
     switch (model) {
       case BytesSecretModel(:final bytes):
-        return SeedMaterial(id: id, seedBytes: Uint8List.fromList(bytes));
+        return Seed(id: id, seedBytes: Uint8List.fromList(bytes));
       case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
         final pass = passphrase ?? '';
-        return MnemonicMaterial(
+        return Mnemonic(
           id: id,
-          // A passphrase-less derivation is a second PBKDF2 pass; only pay it when a passphrase splits the two.
-          mnemonicFingerprint: pass.isEmpty
-              ? id
-              : _plainFingerprint(mnemonicWords),
           words: mnemonicWords,
           passphrase: pass,
-          seedBytes: Deriver.identity.seed(mnemonicWords, passphrase: pass),
+          seedBytes: Deriver.fingerprint.seed(mnemonicWords, passphrase: pass),
         );
     }
   }
 
   static Fingerprint _identify(SecretModel model) => switch (model) {
-    BytesSecretModel(:final bytes) => Deriver.identity.fingerprint(
+    BytesSecretModel(:final bytes) => Deriver.fingerprint.fingerprint(
       Uint8List.fromList(bytes),
     ),
     MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
-      Deriver.identity.fingerprint(
-        Deriver.identity.seed(mnemonicWords, passphrase: passphrase ?? ''),
+      Deriver.fingerprint.fingerprint(
+        Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
       ),
   };
 
@@ -288,11 +298,8 @@ class SecretRepository {
   static Uint8List _seedOf(SecretModel model) => switch (model) {
     BytesSecretModel(:final bytes) => Uint8List.fromList(bytes),
     MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
-      Deriver.identity.seed(mnemonicWords, passphrase: passphrase ?? ''),
+      Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
   };
-
-  static Fingerprint _plainFingerprint(List<String> words) =>
-      Deriver.identity.fingerprint(Deriver.identity.seed(words));
 }
 
 /// What [SecretRepository.restore] hands back: the description and the caller's own metadata, never the words.

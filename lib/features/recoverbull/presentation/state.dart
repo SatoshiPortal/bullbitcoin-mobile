@@ -18,12 +18,9 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) EncryptedVault? vault,
     @Default(null) String? vaultKey,
     @Default(null) String? vaultPassword,
-    @Default(null) DecryptedVault? decryptedVault,
+    @Default(false) bool isVaultVerified,
     @Default(false) bool isLoading,
 
-    /// The vault was sealed for a wallet that has a passphrase, which the
-    /// format does not carry: the file alone restores a different wallet.
-    @Default(false) bool vaultExcludesPassphrase,
     @Default(null) RecoverBullFailure? failure,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
 

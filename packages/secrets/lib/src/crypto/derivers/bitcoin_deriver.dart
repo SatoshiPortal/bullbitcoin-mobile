@@ -61,36 +61,23 @@ final class BitcoinDeriver {
     SecretMaterial secret, {
     required ScriptType scriptType,
     required BitcoinNetwork network,
+    int accountIndex = 0,
   }) async {
     final secretKey = bdk.DescriptorSecretKey.fromString(
       privateKey: masterXprv(secret, network),
     );
-    final networkKind = network.isMainnet
-        ? bdk.NetworkKind.main
-        : bdk.NetworkKind.test;
-
     // Each bdk handle is freed as soon as its string is read: they are
     // UniFFI handles holding an xprv, and their finalizers would
     // otherwise keep one in native memory until the GC ran. See
     // `BitcoinSigner` for the full note.
     String build(bdk.KeychainKind keychain) {
-      final descriptor = switch (scriptType) {
-        ScriptType.bip84 => bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        ),
-        ScriptType.bip49 => bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        ),
-        ScriptType.bip44 => bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        ),
-      };
+      final descriptor = privateDescriptor(
+        secretKey,
+        scriptType: scriptType,
+        network: network,
+        accountIndex: accountIndex,
+        keychain: keychain,
+      );
       try {
         // `toString` returns the public descriptor.
         return descriptor.toString();
@@ -107,5 +94,35 @@ final class BitcoinDeriver {
     } finally {
       secretKey.dispose();
     }
+  }
+
+  /// Builds the same account path for public derivation and signing.
+  ///
+  /// BDK's BIP44/49/84 templates hardcode account zero. Parsing an explicit
+  /// private descriptor supports any account while retaining its key origin
+  /// when BDK converts it to a public descriptor. The caller owns the returned
+  /// handle and must dispose it before returning from the operation.
+  @internal
+  static bdk.Descriptor privateDescriptor(
+    bdk.DescriptorSecretKey secretKey, {
+    required ScriptType scriptType,
+    required BitcoinNetwork network,
+    required int accountIndex,
+    required bdk.KeychainKind keychain,
+  }) {
+    final chain = keychain == bdk.KeychainKind.external_ ? 0 : 1;
+    final key =
+        "${secretKey.toString()}/${scriptType.purpose}'/"
+        "${network.coinType}'/$accountIndex'/$chain/*";
+    return bdk.Descriptor(
+      descriptor: switch (scriptType) {
+        ScriptType.bip84 => 'wpkh($key)',
+        ScriptType.bip49 => 'sh(wpkh($key))',
+        ScriptType.bip44 => 'pkh($key)',
+      },
+      networkKind: network.isMainnet
+          ? bdk.NetworkKind.main
+          : bdk.NetworkKind.test,
+    );
   }
 }

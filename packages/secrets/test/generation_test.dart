@@ -38,7 +38,7 @@ void main() {
     }
   });
 
-  test('two generations never share an identity', () async {
+  test('two generations never share an fingerprint', () async {
     final secrets = secretsWith(FakeSecureStoragePlatform());
     final a = ok(await secrets.generate());
     final b = ok(await secrets.generate());

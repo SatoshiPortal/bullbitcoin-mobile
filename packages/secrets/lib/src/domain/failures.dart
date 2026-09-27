@@ -1,5 +1,12 @@
 import 'package:primitives/primitives.dart';
 
+/// Import refused an existing secret without changing its stored value.
+final class SecretAlreadyExistsFailure extends SecretFailure {
+  final Fingerprint id;
+
+  const SecretAlreadyExistsFailure(this.id) : super('secret already exists');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }
@@ -10,20 +17,20 @@ final class SecretNotFoundFailure extends SecretFailure {
 
 /// The keystore is locked; the secret is intact. Callers must surface a
 /// "unlock your device and retry" state, never a recovery flow.
-final class SecretStoreLockedFailure extends SecretFailure {
-  const SecretStoreLockedFailure([super.logMessage]);
+final class KeystoreLockedFailure extends SecretFailure {
+  const KeystoreLockedFailure([super.logMessage]);
 }
 
-final class SecretFetchFailure extends SecretFailure {
-  const SecretFetchFailure([super.logMessage]);
+final class FetchSecretFailure extends SecretFailure {
+  const FetchSecretFailure([super.logMessage]);
 }
 
-final class SecretStoreFailure extends SecretFailure {
-  const SecretStoreFailure([super.logMessage]);
+final class StoreSecretFailure extends SecretFailure {
+  const StoreSecretFailure([super.logMessage]);
 }
 
-final class SecretDeleteFailure extends SecretFailure {
-  const SecretDeleteFailure([super.logMessage]);
+final class TrashSecretFailure extends SecretFailure {
+  const TrashSecretFailure([super.logMessage]);
 }
 
 /// The database key stored for a module is present but unusable, and was
@@ -61,7 +68,7 @@ final class InvalidMnemonicFailure extends SecretFailure {
 
 /// The vault could not be opened: the file is not a RecoverBull vault,
 /// the key does not open it, or its plaintext carries no mnemonic.
-/// Nothing was stored. Distinct from [SecretStoreFailure] so a wrong
+/// Nothing was stored. Distinct from [StoreSecretFailure] so a wrong
 /// key can be told apart from a keystore that refused a write.
 final class InvalidVaultFailure extends SecretFailure {
   const InvalidVaultFailure([super.logMessage]);
@@ -69,16 +76,16 @@ final class InvalidVaultFailure extends SecretFailure {
 
 /// The stored value does not derive to the fingerprint it is filed under, so it was not served.
 ///
-/// Not a read failure and not an absence: the entry is intact but names the wrong wallet. Remedy is a repair — re-import the words for this identity, or re-file them under the identity they really have.
-final class SecretIdentityMismatchFailure extends SecretFailure {
-  const SecretIdentityMismatchFailure([super.logMessage]);
+/// Distinct from an unreadable or absent entry: the stored value is kept, and the caller must resolve which wallet it belongs to.
+final class FingerprintMismatchFailure extends SecretFailure {
+  const FingerprintMismatchFailure([super.logMessage]);
 }
 
 /// The secret was read but the engine refused the operation: a PSBT that does not parse, a descriptor it cannot build.
 ///
-/// Kept apart from [SecretFetchFailure] so a bad input never reads as an unreadable seed.
-final class SecretDerivationFailure extends SecretFailure {
-  const SecretDerivationFailure([super.logMessage]);
+/// Kept apart from [FetchSecretFailure] so a bad input never reads as an unreadable seed.
+final class UseSecretFailure extends SecretFailure {
+  const UseSecretFailure([super.logMessage]);
 }
 
 /// What an unrecognised exception is allowed to say.

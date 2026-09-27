@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wal
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -232,8 +232,9 @@ class _Challenge extends StatelessWidget {
         final Secret value;
         switch (snapshot.data) {
           case null:
-            if (secret == null && noWalletToLoad)
+            if (secret == null && noWalletToLoad) {
               return const SizedBox.shrink();
+            }
             return const Center(child: CircularProgressIndicator());
           case Err(:final failure):
             return error(failure.toTranslated(context));
@@ -247,12 +248,24 @@ class _Challenge extends StatelessWidget {
             color: context.appColors.secondary,
           ),
           placeholder: const Center(child: CircularProgressIndicator()),
-          onFailure: (context, failure) => BBText(
-            context.loc.oopsSomethingWentWrong,
-            textAlign: .center,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.error,
-            ),
+          failureBuilder: (context, failure, retry) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BBText(
+                context.loc.oopsSomethingWentWrong,
+                textAlign: .center,
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.appColors.error,
+                ),
+              ),
+              const Gap(16),
+              BullButton.small(
+                label: context.loc.retry,
+                onPressed: retry,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
+              ),
+            ],
           ),
           onProgress: onProgress,
           onSolved: () => context.read<TestWalletBackupBloc>().add(
@@ -263,7 +276,7 @@ class _Challenge extends StatelessWidget {
             context.loc.testBackupErrorIncorrectOrder,
           ),
           tileBuilder: (context, tile) => Expanded(child: _Tile(tile: tile)),
-          layout: (context, tiles) => Column(
+          layoutBuilder: (context, tiles) => Column(
             children: [
               for (var i = 0; i < (tiles.length + 1) ~/ 2; i++)
                 Row(

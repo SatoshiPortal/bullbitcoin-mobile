@@ -18,7 +18,7 @@ import 'package:bb_mobile/main.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide ScriptType;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -75,9 +75,9 @@ void main() {
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
     getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
-    when(() => getAllSecretsUsecase.execute()).thenAnswer(
-      (_) async => Ok(SecretListing(secrets: [aSecret], unreadable: 0)),
-    );
+    when(
+      () => getAllSecretsUsecase.execute(),
+    ).thenAnswer((_) async => Ok([aSecret]));
     when(
       () => getWalletsUsecase.execute(),
     ).thenAnswer((_) async => const Ok([]));
@@ -105,8 +105,10 @@ void main() {
         // the package could not parse. The screen shows the count in the
         // empty branch; this holds the state it reads.
         when(() => getAllSecretsUsecase.execute()).thenAnswer(
-          (_) async =>
-              const Ok(SecretListing(secrets: <Secret>[], unreadable: 2)),
+          (_) async => const Ok([
+            UnreadableSecret(failure: FetchSecretFailure()),
+            UnreadableSecret(failure: FetchSecretFailure()),
+          ]),
         );
         await cubit.unlock(issueGrant());
 
@@ -115,6 +117,21 @@ void main() {
         expect(cubit.state.failure, isNull);
       },
     );
+
+    test('readable and unreadable entries remain visible together', () async {
+      when(() => getAllSecretsUsecase.execute()).thenAnswer(
+        (_) async => Ok([
+          aSecret,
+          const UnreadableSecret(failure: FetchSecretFailure()),
+        ]),
+      );
+
+      await cubit.unlock(issueGrant());
+
+      expect(cubit.state.allSeeds, [aSecret]);
+      expect(cubit.state.unreadableEntries, 1);
+      expect(cubit.state.failure, isNull);
+    });
 
     test(
       'audit reproducer: secrets are never listed before re-authentication',

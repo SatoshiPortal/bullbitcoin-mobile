@@ -2,7 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
-import 'package:secrets/src/widgets/sealed_word.dart';
+import 'package:secrets/src/widgets/painted_text.dart';
+import 'package:secrets/src/public/extensions.dart';
 import 'package:secrets/src/public/secret.dart';
 
 /// One tile in a [MnemonicChallenge]: a word to tap, and where it stands.
@@ -41,11 +42,11 @@ final class MnemonicTile {
 /// in here — the host receives one [MnemonicTile] at a time and arranges
 /// widgets. It never holds the mnemonic, in state or anywhere else.
 ///
-/// The verdict is [Secret.verifyWords], so the comparison that decides a
+/// The verdict is `secret.verify.mnemonic`, so the comparison that decides a
 /// user's backup is the same one everywhere and is timed the same way.
 ///
 /// No member hands out a word, and the tile word is painted (see
-/// `SealedWord`): a host walking its own element tree finds no text of the
+/// `PaintedWord`): a host walking its own element tree finds no text of the
 /// mnemonic, so the per-tap order it could learn by tapping tiles itself is
 /// an order of tiles it cannot read. What leaves is pixels — screenshot
 /// blocking stays the host screen's job; the semantics tree is excluded here.
@@ -56,7 +57,7 @@ final class MnemonicChallenge extends StatefulWidget {
   final Widget Function(BuildContext context, MnemonicTile tile) tileBuilder;
 
   /// Arranges the rendered tiles. Receives widgets, not words.
-  final Widget Function(BuildContext context, List<Widget> tiles) layout;
+  final Widget Function(BuildContext context, List<Widget> tiles) layoutBuilder;
 
   /// The user placed every word, and the sequence matched.
   final VoidCallback onSolved;
@@ -65,15 +66,17 @@ final class MnemonicChallenge extends StatefulWidget {
   /// cleared: this is for the message, not for the reset.
   final VoidCallback onMistake;
 
-  /// How many words the user has placed, out of how many. For the "what is
-  /// word N" prompt — it says nothing about which words.
+  /// How many words the user has placed, out of how many. For the "what is word N" prompt — it says nothing about which words. A complete count precedes verification; only [onSolved] confirms success.
   final void Function(int placed, int total)? onProgress;
 
   /// Text style for the word inside each tile.
   final TextStyle? style;
 
   final Widget placeholder;
-  final Widget Function(BuildContext, SecretFailure) onFailure;
+
+  /// Renders a read or verification failure. Calling retry clears the selection and reads the secret again; failures never count as mistakes.
+  final Widget Function(BuildContext, SecretFailure, VoidCallback retry)
+  failureBuilder;
 
   /// Built through `secret.widgets`; not for hosts to call.
   @internal
@@ -81,10 +84,10 @@ final class MnemonicChallenge extends StatefulWidget {
     super.key,
     required this.secret,
     required this.tileBuilder,
-    required this.layout,
+    required this.layoutBuilder,
     required this.onSolved,
     required this.onMistake,
-    required this.onFailure,
+    required this.failureBuilder,
     this.onProgress,
     this.style,
     this.placeholder = const SizedBox.shrink(),
@@ -96,6 +99,8 @@ final class MnemonicChallenge extends StatefulWidget {
 
 final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   late Future<Result<RevealedMnemonic, SecretFailure>> _revealed;
+  int _generation = 0;
+  bool _verifying = false;
 
   /// The words in the order the user sees them. Rebuilt on every mistake.
   List<String> _shuffled = const [];
@@ -110,20 +115,33 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   @override
   void initState() {
     super.initState();
-    _revealed = _reveal();
+    _startRead();
   }
 
   @override
   void didUpdateWidget(MnemonicChallenge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.secret.id != oldWidget.secret.id) {
-      setState(() {
-        _answer = const [];
-        _shuffled = const [];
-        _placed.clear();
-        _revealed = _reveal();
-      });
+      setState(_startRead);
     }
+  }
+
+  void _clear() {
+    _answer = const [];
+    _shuffled = const [];
+    _placed.clear();
+    _verifying = false;
+  }
+
+  void _startRead() {
+    _clear();
+    _revealed = _reveal(++_generation);
+  }
+
+  void _retry() {
+    if (!mounted) return;
+    setState(_startRead);
+    widget.onProgress?.call(0, widget.secret.info.wordCount ?? 0);
   }
 
   /// Reads for the secret this widget holds *now*. The read outlives an
@@ -131,30 +149,41 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   /// — so the result is kept only if it is still that secret's, and the
   /// widget is still mounted. Otherwise it is dropped: a stale read must not
   /// become the answer key for the secret on screen.
-  Future<Result<RevealedMnemonic, SecretFailure>> _reveal() async {
+  Future<Result<RevealedMnemonic, SecretFailure>> _reveal(
+    int generation,
+  ) async {
     final id = widget.secret.id;
     final result = await widget.secret.revealMnemonic(
       reason: RevealReason.physicalBackupCheck,
     );
-    if (!mounted || widget.secret.id != id) return result;
+    if (!mounted || widget.secret.id != id || generation != _generation) {
+      return result;
+    }
     if (result case Ok(:final value)) {
       _answer = value.words;
       _shuffled = [...value.words]..shuffle();
+      widget.onProgress?.call(0, _answer.length);
     }
     return result;
   }
 
   void _reshuffle() {
     _placed.clear();
+    _verifying = false;
     _shuffled = [..._answer]..shuffle();
   }
 
   Future<void> _tap(int index) async {
-    if (_answer.isEmpty || index >= _shuffled.length) return;
+    if (_answer.isEmpty ||
+        index >= _shuffled.length ||
+        _placed.contains(index) ||
+        _verifying) {
+      return;
+    }
     final placed = [for (final i in _placed) _shuffled[i], _shuffled[index]];
 
     // The running check: a wrong word is caught on the tap, not at the end.
-    // No early exit, like `verifyWords`: one rule for comparing words, even
+    // No early exit, like `verify.mnemonic`: one rule for comparing words, even
     // where the only observer of the timing is the user.
     var correctSoFar = true;
     for (var i = 0; i < placed.length; i++) {
@@ -167,7 +196,10 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
       return;
     }
 
-    setState(() => _placed.add(index));
+    setState(() {
+      _placed.add(index);
+      _verifying = placed.length == _answer.length;
+    });
     widget.onProgress?.call(_placed.length, _answer.length);
     if (placed.length < _answer.length) return;
 
@@ -177,50 +209,68 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
     // verdict is for *that* secret, and is reported only if the widget still
     // shows it once the read returns.
     final secret = widget.secret;
-    final verdict = await secret.verifyWords(placed);
-    if (!mounted || widget.secret.id != secret.id) return;
+    final generation = _generation;
+    final verdict = await secret.verify.mnemonic(placed);
+    if (!mounted ||
+        widget.secret.id != secret.id ||
+        generation != _generation) {
+      return;
+    }
     switch (verdict) {
       case Ok(value: true):
         widget.onSolved();
       case Ok(value: false):
-      case Err():
         setState(_reshuffle);
         widget.onProgress?.call(0, _answer.length);
         widget.onMistake();
+      case Err(:final failure):
+        final total = _answer.length;
+        setState(() {
+          _clear();
+          _generation++;
+          _revealed = Future.value(Err(failure));
+        });
+        widget.onProgress?.call(0, total);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: FutureBuilder(
-        key: ValueKey(widget.secret.id.hex),
-        future: _revealed,
-        builder: (context, snapshot) {
-          final result = snapshot.data;
-          if (result == null ||
-              snapshot.connectionState != ConnectionState.done) {
-            return widget.placeholder;
-          }
-          return switch (result) {
-            Err(:final failure) => widget.onFailure(context, failure),
-            Ok() => widget.layout(context, [
+    return FutureBuilder(
+      key: ValueKey((widget.secret.id.hex, _generation)),
+      future: _revealed,
+      builder: (context, snapshot) {
+        final result = snapshot.data;
+        if (result == null ||
+            snapshot.connectionState != ConnectionState.done) {
+          return widget.placeholder;
+        }
+        return switch (result) {
+          Err(:final failure) => widget.failureBuilder(
+            context,
+            failure,
+            _retry,
+          ),
+          Ok() => ExcludeSemantics(
+            child: widget.layoutBuilder(context, [
               for (var i = 0; i < _shuffled.length; i++)
                 widget.tileBuilder(
                   context,
                   MnemonicTile(
-                    word: SealedWord(_shuffled[i], style: widget.style),
+                    word: PaintedWord(_shuffled[i], style: widget.style),
                     isPlaced: _placed.contains(i),
                     position: _placed.contains(i)
                         ? _placed.indexOf(i) + 1
                         : null,
-                    onTap: _placed.contains(i) ? null : () => _tap(i),
+                    onTap: _placed.contains(i) || _verifying
+                        ? null
+                        : () => _tap(i),
                   ),
                 ),
             ]),
-          };
-        },
-      ),
+          ),
+        };
+      },
     );
   }
 }

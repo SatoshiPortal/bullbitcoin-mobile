@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-/// `Secrets` is `final`, so there is no double of it — by design. These run the real package against an in-memory keystore installed at the plugin's own seam, which means the identity this usecase compares is derived by the same code that will derive it in production.
+/// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
 void main() {
   const words = [
     'abandon',
@@ -41,7 +41,10 @@ void main() {
     });
 
     test('returns Err(duplicate) once the same mnemonic is stored', () async {
-      await secrets.import(words: words);
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final result = await usecase.execute(mnemonicWords: words);
 
@@ -49,7 +52,10 @@ void main() {
     });
 
     test('a passphrase makes a different secret, not a duplicate', () async {
-      await secrets.import(words: words);
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final result = await usecase.execute(
         mnemonicWords: words,
@@ -61,8 +67,12 @@ void main() {
 
     test('a keystore error is unexpected, and carries no stored text', () async {
       const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
-      await secrets.import(words: words);
-      storage.scripted.add(Exception(sentinel));
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
+      // contains now reads and compares the stored seed, so every retry must fail.
+      storage.scripted.addAll(List.filled(5, Exception(sentinel)));
 
       final result = await usecase.execute(mnemonicWords: words);
 
