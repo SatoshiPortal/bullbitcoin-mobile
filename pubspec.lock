@@ -2365,8 +2365,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0cae2b66f68ebf426fba81c3fb43347d2c5f0345"
-      resolved-ref: "0cae2b66f68ebf426fba81c3fb43347d2c5f0345"
+      ref: "5edb8ba4996f5deb04a87957e7d7c5209b09a6aa"
+      resolved-ref: "5edb8ba4996f5deb04a87957e7d7c5209b09a6aa"
       url: "https://github.com/basantagoswami/webview_flutter_linux.git"
     source: git
     version: "0.0.1"
