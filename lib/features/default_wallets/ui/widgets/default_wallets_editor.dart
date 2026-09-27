@@ -7,22 +7,25 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_view_data.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 typedef DefaultWalletsFooterBuilder =
-    Widget Function(BuildContext context, DefaultWalletsViewData wallets);
+    Widget Function(
+      BuildContext context,
+      DefaultWallets wallets,
+      ({bool isLoading, bool isSaving, bool isEditing}) status,
+    );
 
 class DefaultWalletsEditor extends StatelessWidget {
-  final bool showDescription;
-  final EdgeInsetsGeometry padding;
+  final bool? showDescription;
+  final EdgeInsetsGeometry? padding;
   final DefaultWalletsFooterBuilder? footerBuilder;
 
   const DefaultWalletsEditor({
-    this.showDescription = true,
-    this.padding = const EdgeInsets.all(16),
+    this.showDescription,
+    this.padding,
     this.footerBuilder,
     super.key,
   });
@@ -53,8 +56,10 @@ class DefaultWalletsEditor extends StatelessWidget {
 }
 
 class _EditorContent extends StatelessWidget {
-  final bool showDescription;
-  final EdgeInsetsGeometry padding;
+  static const _defaultPadding = EdgeInsets.all(16);
+
+  final bool? showDescription;
+  final EdgeInsetsGeometry? padding;
   final DefaultWalletsFooterBuilder? footerBuilder;
 
   const _EditorContent({
@@ -109,23 +114,14 @@ class _EditorContent extends StatelessWidget {
       );
     }
 
-    final wallets = DefaultWalletsViewData(
-      bitcoinAddress: state.currentBitcoinAddress,
-      lightningAddress: state.currentLightningAddress,
-      liquidAddress: state.currentLiquidAddress,
-      isLoading: state.isLoading,
-      isSaving: state.isSaving,
-      isEditing: state.isEditing,
-    );
-
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: padding,
+          padding: padding ?? _defaultPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (showDescription) ...[
+              if (showDescription ?? true) ...[
                 BBText(
                   context.loc.exchangeBitcoinWalletsDescription,
                   style: context.font.bodyMedium?.copyWith(
@@ -150,7 +146,15 @@ class _EditorContent extends StatelessWidget {
               ),
               if (footerBuilder case final builder?) ...[
                 const SizedBox(height: 24),
-                builder(context, wallets),
+                builder(
+                  context,
+                  state.defaultWallets ?? const DefaultWallets(),
+                  (
+                    isLoading: state.isLoading,
+                    isSaving: state.isSaving,
+                    isEditing: state.isEditing,
+                  ),
+                ),
               ],
             ],
           ),
