@@ -6,6 +6,15 @@
 library;
 
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
+
+/// The same secret is already stored; an import must create a new entry.
+class SecretAlreadyExistsException implements Exception {
+  final Fingerprint id;
+
+  @internal
+  const SecretAlreadyExistsException(this.id);
+}
 
 /// A module key is present but cannot be used, and must not be replaced.
 ///
@@ -24,35 +33,35 @@ class ModuleKeyCorruptException implements Exception {
   String toString() => 'ModuleKeyCorruptException: $message';
 }
 
-class SecretStoreLockedException implements Exception {
+class KeystoreLockedException implements Exception {
   final String message;
   @internal
-  const SecretStoreLockedException(this.message);
+  const KeystoreLockedException(this.message);
 
   @override
-  String toString() => 'SecretStoreLockedException: $message';
+  String toString() => 'KeystoreLockedException: $message';
 }
 
-/// A different secret is already stored under this identity.
+/// A different secret is already stored under this fingerprint.
 ///
-/// Two BIP32 fingerprints can collide; the first secret stored under one must not be replaced by the second. Translated to `SecretStoreFailure` by the error boundary — nothing was written.
-class SecretIdentityConflict implements Exception {
+/// Two BIP32 fingerprints can collide; the first secret stored under one must not be replaced by the second. Translated to `StoreSecretFailure` by the error boundary — nothing was written.
+class FingerprintConflictException implements Exception {
   final String message;
   @internal
-  const SecretIdentityConflict(this.message);
+  const FingerprintConflictException(this.message);
 
   @override
-  String toString() => 'SecretIdentityConflict: $message';
+  String toString() => 'FingerprintConflictException: $message';
 }
 
 /// The value under a key derives to a different fingerprint than the key names.
 ///
-/// Serving it would hand one wallet's keys under another wallet's identity, so a read refuses. Translated to `SecretIdentityMismatchFailure`; the entry is left as it is for the repair flow.
-class SecretIdentityMismatch implements Exception {
+/// Serving it would hand one wallet's keys under another wallet's fingerprint, so a read refuses. Translated to `FingerprintMismatchFailure`; the entry is left as it is.
+class FingerprintMismatchException implements Exception {
   final String message;
   @internal
-  const SecretIdentityMismatch(this.message);
+  const FingerprintMismatchException(this.message);
 
   @override
-  String toString() => 'SecretIdentityMismatch: $message';
+  String toString() => 'FingerprintMismatchException: $message';
 }

@@ -17,7 +17,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullDialog,
         BullFadingLinearProgress,
         BullSnackBar,
-        BullText;
+        BullText,
+        Gap;
 
 class AllSeedViewScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
@@ -472,12 +473,25 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                     passphraseLabelStyle: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
                     ),
-                    onFailure: (context, failure) => BullText(
-                      AllSeedViewFetchFailure(
-                        failure.logMessage,
-                      ).toTranslated(context),
-                      style: context.font.bodyMedium,
-                      color: context.appColors.error,
+                    failureBuilder: (context, failure, retry) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        BullText(
+                          AllSeedViewFetchFailure(
+                            failure.logMessage,
+                          ).toTranslated(context),
+                          style: context.font.bodyMedium,
+                          color: context.appColors.error,
+                        ),
+                        const Gap(16),
+                        BullButton.small(
+                          label: context.loc.retry,
+                          onPressed: retry,
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ],
                     ),
                   ),
                 ),

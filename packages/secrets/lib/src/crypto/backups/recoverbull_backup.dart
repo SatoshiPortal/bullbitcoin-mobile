@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart';
-import 'package:secrets/src/crypto/derivers/identity_deriver.dart';
+import 'package:secrets/src/crypto/derivers/fingerprint_deriver.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:meta/meta.dart';
 
@@ -65,7 +65,7 @@ final class RecoverBullBackup {
     required String backupKey,
     required String derivationPath,
   }) {
-    // Validated by `Secret.backupVault` before the boundary, where the
+    // Validated by `Secret.backupRecoverbull` before the boundary, where the
     // caller still gets an ArgumentError with this package's message.
     assert(
       !metadata.containsKey(_kMnemonic),
@@ -145,7 +145,7 @@ final class RecoverBullBackup {
     // would accept a list whose elements are several words each and leave
     // that list to be stored. `check` derives no seed.
     try {
-      const IdentityDeriver().check(List<String>.from(words));
+      const FingerprintDeriver().check(List<String>.from(words));
     } on MnemonicException {
       throw const InvalidVault('vault mnemonic is not a valid BIP39 mnemonic');
     }

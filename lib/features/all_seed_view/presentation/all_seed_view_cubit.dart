@@ -58,8 +58,8 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       (f) => AllSeedViewFetchFailure(f.logMessage),
     )) {
       case Ok(:final value):
-        seeds = value.secrets;
-        unreadable = value.unreadable;
+        seeds = value.whereType<Secret>().toList();
+        unreadable = value.whereType<UnreadableSecret>().length;
       case Err(:final failure):
         emit(state.copyWith(loading: false, failure: failure));
         return;

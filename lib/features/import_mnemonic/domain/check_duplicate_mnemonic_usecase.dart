@@ -15,23 +15,12 @@ class CheckDuplicateMnemonicUsecase {
     String passphrase = '',
   }) async {
     try {
-      // `idOf` derives the identity without storing anything, and
-      // `exists` answers in one read — a wrong "no" here lets a
-      // duplicate through, which is cheap, so it does not pay for the
-      // retry budget a seed read does.
-      // Words that are not a mnemonic cannot have an identity; the package says so as a failure, reported here in this feature's own vocabulary.
-      final Fingerprint id;
-      switch (await _secrets.idOf(
+      // This preflight avoids an unnecessary wallet scan. The strict import
+      // remains responsible for rejecting a duplicate at the time of storage.
+      return switch (await _secrets.contains(
         words: mnemonicWords,
         passphrase: passphrase,
       )) {
-        case Ok(:final value):
-          id = value;
-        case Err(:final failure):
-          return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
-      }
-
-      return switch (await _secrets.exists(id)) {
         Ok(value: true) => const Err(ImportMnemonicDuplicateFailure()),
         Ok() => const Ok(null),
         Err(:final failure) => Err(

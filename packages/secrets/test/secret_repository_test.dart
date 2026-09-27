@@ -14,7 +14,7 @@ import 'result_helpers.dart';
 
 void main() {
   // The published BIP39 test mnemonic and its well-known master
-  // fingerprint. Pinning it means a change in how we derive identity
+  // fingerprint. Pinning it means a change in how we derive fingerprint
   // fails here rather than silently filing wallets under new keys.
   const words = [
     'abandon',
@@ -68,7 +68,7 @@ void main() {
     return DatabaseKeyRepository();
   }
 
-  group('identity', () {
+  group('fingerprint', () {
     test('matches the published BIP39 vector', () async {
       expect(
         ok(await repoWith(FakeSecureStoragePlatform()).idOf(words: words)).hex,
@@ -76,7 +76,7 @@ void main() {
       );
     });
 
-    test('a passphrase produces a different identity', () async {
+    test('a passphrase produces a different fingerprint', () async {
       expect(
         ok(
           await repoWith(
@@ -147,25 +147,24 @@ void main() {
 
         expect(
           err(await repo.describe(Fingerprint('deadbeef'))),
-          isA<SecretFetchFailure>(),
+          isA<FetchSecretFailure>(),
         );
       },
     );
 
-    test('without a passphrase the plain identity is the identity', () async {
+    test('describes a mnemonic without a passphrase', () async {
       final storage = FakeSecureStoragePlatform(
         entries: {'seed_$plainFingerprint': entry(words)},
       );
 
       final info = (ok(await repoWith(storage).describeAll()).secrets).single;
 
-      // Free: no second PBKDF2 pass is owed when nothing splits them.
-      expect(info.mnemonicFingerprint, info.id);
+      expect(info.id, Fingerprint(plainFingerprint));
       expect(info.hasPassphrase, isFalse);
     });
 
     test(
-      'with a passphrase the plain identity is derived and differs',
+      'describes the fingerprint and passphrase flag without grouping',
       () async {
         final storage = FakeSecureStoragePlatform(
           entries: {
@@ -177,9 +176,6 @@ void main() {
 
         expect(info.id, Fingerprint(trezorFingerprint));
         expect(info.hasPassphrase, isTrue);
-        // Same words, no passphrase — this is what lets callers group
-        // secrets by mnemonic without ever reading the words.
-        expect(info.mnemonicFingerprint, Fingerprint(plainFingerprint));
       },
     );
 
@@ -217,8 +213,8 @@ void main() {
 
       final secret = ok(await repo.use(info, (m) => m));
 
-      expect(secret, isA<MnemonicMaterial>());
-      expect((secret as MnemonicMaterial).words, words);
+      expect(secret, isA<Mnemonic>());
+      expect((secret as Mnemonic).words, words);
       expect(secret.passphrase, isEmpty);
       expect(secret.seedBytes, hasLength(64));
       expect(secret.id, Fingerprint(plainFingerprint));
@@ -239,7 +235,7 @@ void main() {
           await repo.use(info, (_) => throw const FormatException('bad psbt')),
         );
 
-        expect(failure, isA<SecretDerivationFailure>());
+        expect(failure, isA<UseSecretFailure>());
         expect(failure.logMessage, isNot(contains('bad psbt')));
       },
     );
@@ -268,8 +264,8 @@ void main() {
       () async {
         // The entry holds the standard words but is filed under another
         // key. Trusting the key — which this package did until the
-        // identity check landed — serves these words' keys under the other
-        // wallet's identity: the app joins on this fingerprint, so it
+        // fingerprint check landed — serves these words' keys under the other
+        // wallet's fingerprint: the app joins on this fingerprint, so it
         // would display one wallet and derive another, with no error.
         //
         // The inverse of the mutation `store` used to allow: whichever way
@@ -283,7 +279,7 @@ void main() {
 
         expect(
           err(await repo.use(info, (m) => m)),
-          isA<SecretIdentityMismatchFailure>(),
+          isA<FingerprintMismatchFailure>(),
           reason: 'a mismatch is its own failure, never an absence',
         );
       },
@@ -315,7 +311,7 @@ void main() {
 
       expect(
         err(await repoWith(storage).store(words: words)),
-        isA<SecretStoreFailure>(),
+        isA<StoreSecretFailure>(),
       );
       expect(
         storage.entries['seed_$plainFingerprint'],
@@ -335,7 +331,7 @@ void main() {
 
       expect(
         err(await repoWith(storage).store(words: words)),
-        isA<SecretStoreFailure>(),
+        isA<StoreSecretFailure>(),
       );
       expect(storage.entries['seed_$plainFingerprint'], entry(underivable));
     });
@@ -368,7 +364,7 @@ void main() {
     });
 
     test('an absent and an empty passphrase are one secret', () async {
-      // Same identity, and compared as JSON they differed: `null` against
+      // Same fingerprint, and compared as JSON they differed: `null` against
       // `""`. That refused a legitimate re-import as "another secret" (Codex,
       // 2026-09-16). Compared as models they are the same, and the disk
       // keeps saying `null`.
@@ -384,9 +380,9 @@ void main() {
 
     test('two spellings of one passphrase are one secret', () async {
       // U1 (Codex, 2026-09-17): `é` and `e` + combining acute are one
-      // passphrase to BIP39 (NFKD), so one identity. Compared as strings
+      // passphrase to BIP39 (NFKD), so one fingerprint. Compared as strings
       // they differed and a legitimate re-import was refused. Settled by
-      // identity on that path; a different passphrase still refuses.
+      // fingerprint on that path; a different passphrase still refuses.
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);
 
@@ -431,7 +427,7 @@ void main() {
             ),
           ),
         ),
-        throwsA(isA<SecretIdentityConflict>()),
+        throwsA(isA<FingerprintConflictException>()),
       );
       // Same words, passphrases differ as strings, seeds equal: one secret.
       await source.storeSecret(
@@ -471,7 +467,7 @@ void main() {
     );
   });
 
-  group('identity is validated, not merely typed', () {
+  group('fingerprint is validated, not merely typed', () {
     test('a malformed fingerprint is refused at construction', () {
       // What the previous extension type could not do: any string was a
       // valid id, so a wallet id or an xpub passed silently.
@@ -502,8 +498,8 @@ void main() {
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
 
-      final first = ok(await keys.forModule(package: 'swaps', name: 'main'));
-      final again = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final first = ok(await keys.forModule(module: 'swaps', name: 'main'));
+      final again = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
       expect(first.bytes, hasLength(32));
       expect(again.hex, first.hex);
@@ -518,8 +514,8 @@ void main() {
       final keys = keysWith(storage);
 
       final (a, b) = await (
-        keys.forModule(package: 'swaps', name: 'main'),
-        keys.forModule(package: 'swaps', name: 'main'),
+        keys.forModule(module: 'swaps', name: 'main'),
+        keys.forModule(module: 'swaps', name: 'main'),
       ).wait;
 
       expect(ok(a).hex, ok(b).hex);
@@ -536,10 +532,10 @@ void main() {
     test('every key is distinct', () async {
       final keys = keysWith(FakeSecureStoragePlatform());
 
-      final swaps = ok(await keys.forModule(package: 'swaps', name: 'main'));
-      final other = ok(await keys.forModule(package: 'swaps', name: 'archive'));
+      final swaps = ok(await keys.forModule(module: 'swaps', name: 'main'));
+      final other = ok(await keys.forModule(module: 'swaps', name: 'archive'));
       final payjoin = ok(
-        await keys.forModule(package: 'bull_payjoin', name: 'main'),
+        await keys.forModule(module: 'bull_payjoin', name: 'main'),
       );
 
       expect({swaps.hex, other.hex, payjoin.hex}, hasLength(3));
@@ -547,7 +543,7 @@ void main() {
 
     test('the stored envelope is versioned and self-describing', () async {
       final storage = FakeSecureStoragePlatform();
-      await keysWith(storage).forModule(package: 'swaps', name: 'main');
+      await keysWith(storage).forModule(module: 'swaps', name: 'main');
 
       final envelope =
           jsonDecode(storage.entries['com.bullbitcoin.secrets/dek/swaps/main']!)
@@ -566,7 +562,7 @@ void main() {
       // inside the envelope is what catches that.
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      await keys.forModule(package: 'swaps', name: 'main');
+      await keys.forModule(module: 'swaps', name: 'main');
 
       final moved = storage.entries.remove(
         'com.bullbitcoin.secrets/dek/swaps/main',
@@ -574,7 +570,7 @@ void main() {
       storage.entries['com.bullbitcoin.secrets/dek/exchange/main'] = moved;
 
       expect(
-        err(await keys.forModule(package: 'exchange', name: 'main')),
+        err(await keys.forModule(module: 'exchange', name: 'main')),
         isA<DatabaseKeyCorruptFailure>(),
       );
       // Refused, and kept: replacing it would destroy the only key that
@@ -595,8 +591,8 @@ void main() {
       FakeSecureStoragePlatform().install();
 
       final keys = await Future.wait([
-        DatabaseKeyRepository().forModule(package: 'swaps', name: 'main'),
-        DatabaseKeyRepository().forModule(package: 'swaps', name: 'main'),
+        DatabaseKeyRepository().forModule(module: 'swaps', name: 'main'),
+        DatabaseKeyRepository().forModule(module: 'swaps', name: 'main'),
       ]);
 
       expect(ok(keys.first).hex, ok(keys.last).hex);
@@ -609,13 +605,13 @@ void main() {
       // key opened can never be read again.
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      await keys.forModule(package: 'swaps', name: 'main');
+      await keys.forModule(module: 'swaps', name: 'main');
 
       const key = 'com.bullbitcoin.secrets/dek/swaps/main';
       storage.entries[key] = '';
 
       expect(
-        err(await keys.forModule(package: 'swaps', name: 'main')),
+        err(await keys.forModule(module: 'swaps', name: 'main')),
         isA<DatabaseKeyCorruptFailure>(),
       );
       expect(
@@ -628,13 +624,13 @@ void main() {
     test('a key that is not our JSON is refused, not replaced', () async {
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      await keys.forModule(package: 'swaps', name: 'main');
+      await keys.forModule(module: 'swaps', name: 'main');
 
       const key = 'com.bullbitcoin.secrets/dek/swaps/main';
       storage.entries[key] = 'not json at all';
 
       expect(
-        err(await keys.forModule(package: 'swaps', name: 'main')),
+        err(await keys.forModule(module: 'swaps', name: 'main')),
         isA<DatabaseKeyCorruptFailure>(),
       );
       expect(storage.entries[key], 'not json at all');
@@ -647,7 +643,7 @@ void main() {
         // from the read that produced it.
         final storage = FakeSecureStoragePlatform();
         final keys = keysWith(storage);
-        await keys.forModule(package: 'swaps', name: 'main');
+        await keys.forModule(module: 'swaps', name: 'main');
 
         const key = 'com.bullbitcoin.secrets/dek/swaps/main';
         final envelope =
@@ -656,7 +652,7 @@ void main() {
         storage.entries[key] = jsonEncode(envelope);
 
         expect(
-          err(await keys.forModule(package: 'swaps', name: 'main')),
+          err(await keys.forModule(module: 'swaps', name: 'main')),
           isA<DatabaseKeyCorruptFailure>(),
         );
       },
@@ -669,10 +665,10 @@ void main() {
       // act here.
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      final first = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final first = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
       storage.scripted.add(null); // one spurious "absent"
-      final again = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final again = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
       expect(
         again.hex,
@@ -687,10 +683,10 @@ void main() {
       // destructive remedy. It now settles like a null: re-read once.
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      final first = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final first = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
       storage.scripted.add(''); // one spurious empty read
-      final again = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final again = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
       expect(again.hex, first.hex);
     });
@@ -702,16 +698,14 @@ void main() {
         final keys = keysWith(storage);
 
         expect(
-          err(await keys.existing(package: 'swaps', name: 'main')),
+          err(await keys.existing(module: 'swaps', name: 'main')),
           isA<SecretNotFoundFailure>(),
         );
         expect(storage.entries, isEmpty, reason: 'nothing was generated');
 
-        final created = ok(
-          await keys.forModule(package: 'swaps', name: 'main'),
-        );
+        final created = ok(await keys.forModule(module: 'swaps', name: 'main'));
         expect(
-          ok(await keys.existing(package: 'swaps', name: 'main')).hex,
+          ok(await keys.existing(module: 'swaps', name: 'main')).hex,
           created.hex,
         );
       },
@@ -729,7 +723,7 @@ void main() {
         for (final broken in ['', 'not json at all', '{"v":1,"kind":"dek"}']) {
           final storage = FakeSecureStoragePlatform(entries: {key: broken});
           final failure = err(
-            await keysWith(storage).existing(package: 'swaps', name: 'main'),
+            await keysWith(storage).existing(module: 'swaps', name: 'main'),
           );
           expect(failure, isA<DatabaseKeyCorruptFailure>(), reason: broken);
           expect(storage.entries[key], broken, reason: 'left as it was');
@@ -742,12 +736,12 @@ void main() {
       // The one destructive act, and it is explicit: nothing on the recovery path calls it.
       final storage = FakeSecureStoragePlatform();
       final keys = keysWith(storage);
-      final before = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final before = ok(await keys.forModule(module: 'swaps', name: 'main'));
 
-      ok(await keys.reset(package: 'swaps', name: 'main'));
+      ok(await keys.reset(module: 'swaps', name: 'main'));
       expect(storage.entries, isEmpty);
 
-      final after = ok(await keys.forModule(package: 'swaps', name: 'main'));
+      final after = ok(await keys.forModule(module: 'swaps', name: 'main'));
       expect(after.hex, isNot(before.hex));
     });
 
@@ -757,7 +751,7 @@ void main() {
       final key = ok(
         await keysWith(
           FakeSecureStoragePlatform(),
-        ).forModule(package: 'swaps', name: 'main'),
+        ).forModule(module: 'swaps', name: 'main'),
       );
 
       expect(key.pragma, "x'${key.hex}'");

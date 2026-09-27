@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:secrets/secrets.dart' show Secret;
+import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bull_sdk/bwk.dart';
@@ -38,7 +38,7 @@ class BwkSpAccountDatasource {
     required int matchConcurrencyFactor,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
-    switch (await secret.silentPaymentsAccount(
+    switch (await secret.silentPayments.account(
       name: SpStorageNames.accountName,
       network: network,
       blindbitUrl: blindbitUrl,

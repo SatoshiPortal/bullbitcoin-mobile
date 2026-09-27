@@ -19,7 +19,7 @@ enum XpubType {
 }
 
 extension ScriptTypeX on ScriptType {
-  XpubType getXpubType(BitcoinNetwork network) {
+  XpubType getXpubType(Network network) {
     if (network.isMainnet) {
       return switch (this) {
         ScriptType.bip44 => XpubType.xpub,

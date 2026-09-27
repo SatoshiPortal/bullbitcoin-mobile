@@ -19,23 +19,24 @@ extension type const SecretWidgets._(Secret _secret) {
   /// Shows the words, and the passphrase when there is one. See [MnemonicView].
   MnemonicView mnemonicView({
     Key? key,
-    required Widget Function(BuildContext, SecretFailure) onFailure,
+    required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
+    failureBuilder,
     TextStyle? style,
     String? passphraseLabel,
     TextStyle? passphraseLabelStyle,
     Widget placeholder = const SizedBox.shrink(),
     Widget Function(BuildContext context, int number, Widget word)? wordBuilder,
-    Widget Function(BuildContext context, List<Widget> words)? layout,
+    Widget Function(BuildContext context, List<Widget> words)? layoutBuilder,
   }) => MnemonicView(
     key: key,
     secret: _secret,
-    onFailure: onFailure,
+    failureBuilder: failureBuilder,
     style: style,
     passphraseLabel: passphraseLabel,
     passphraseLabelStyle: passphraseLabelStyle,
     placeholder: placeholder,
     wordBuilder: wordBuilder,
-    layout: layout,
+    layoutBuilder: layoutBuilder,
   );
 
   /// The "tap your words in order" backup check. See [MnemonicChallenge].
@@ -43,10 +44,12 @@ extension type const SecretWidgets._(Secret _secret) {
     Key? key,
     required Widget Function(BuildContext context, MnemonicTile tile)
     tileBuilder,
-    required Widget Function(BuildContext context, List<Widget> tiles) layout,
+    required Widget Function(BuildContext context, List<Widget> tiles)
+    layoutBuilder,
     required VoidCallback onSolved,
     required VoidCallback onMistake,
-    required Widget Function(BuildContext, SecretFailure) onFailure,
+    required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
+    failureBuilder,
     void Function(int placed, int total)? onProgress,
     TextStyle? style,
     Widget placeholder = const SizedBox.shrink(),
@@ -54,10 +57,10 @@ extension type const SecretWidgets._(Secret _secret) {
     key: key,
     secret: _secret,
     tileBuilder: tileBuilder,
-    layout: layout,
+    layoutBuilder: layoutBuilder,
     onSolved: onSolved,
     onMistake: onMistake,
-    onFailure: onFailure,
+    failureBuilder: failureBuilder,
     onProgress: onProgress,
     style: style,
     placeholder: placeholder,

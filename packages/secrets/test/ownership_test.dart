@@ -15,11 +15,11 @@ import 'result_helpers.dart';
 ///
 /// These two properties are one subject, because they used to fail
 /// together and in a way that compounded. The package kept the caller's
-/// word list and derived identity across an `await`, so a caller that
+/// word list and derived fingerprint across an `await`, so a caller that
 /// touched its own list afterwards had the *other* words written under
-/// the *first* identity. Reading then trusted the storage key for
-/// identity without checking the material under it — so the substituted
-/// entry came back announcing the identity it did not have, and every
+/// the *first* fingerprint. Reading then trusted the storage key for
+/// fingerprint without checking the material under it — so the substituted
+/// entry came back announcing the fingerprint it did not have, and every
 /// derivation served the wrong wallet's keys under the right wallet's
 /// name. `import()` returned `Ok`. Nothing warned.
 ///
@@ -80,7 +80,8 @@ void main() {
       expect(
         written['mnemonicWords'],
         a,
-        reason: 'the entry must hold the words its identity was derived from',
+        reason:
+            'the entry must hold the words its fingerprint was derived from',
       );
     });
 
@@ -191,138 +192,10 @@ void main() {
         expect(result, isA<Err<String, SecretFailure>>());
         expect(
           (result as Err<String, SecretFailure>).failure,
-          isA<SecretIdentityMismatchFailure>(),
+          isA<FingerprintMismatchFailure>(),
           reason:
               'its own failure, never a not-found: callers read that as "the seed is gone"',
         );
-      },
-    );
-  });
-
-  group('a mismatched entry is repaired where it lies', () {
-    // Decision of 2026-09-15: the entry is not deleted and the words are not
-    // handed out — it is re-filed under the identity it really has, inside the
-    // package, and the app creates the wallet it actually owns.
-    String entry(List<String> words) => jsonEncode({
-      'mnemonicWords': words,
-      'passphrase': null,
-      'runtimeType': 'mnemonic',
-    });
-
-    test(
-      'the entry moves to its true identity, and the old key goes',
-      () async {
-        final storage = FakeSecureStoragePlatform(
-          entries: {'seed_00000000': entry(a)},
-        )..install();
-        final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-        final repaired = switch (await secrets.repairIdentity(
-          Fingerprint('00000000'),
-        )) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail('repair: ${failure.runtimeType}'),
-        };
-
-        expect(repaired.id.hex, aFingerprint);
-        expect(storage.entries.keys, ['seed_$aFingerprint']);
-        // And it works now, which is the point.
-        final result = await repaired.derive.xpub(
-          network: BitcoinNetwork.mainnet,
-          scriptType: ScriptType.bip84,
-        );
-        expect(result, isA<Ok<String, SecretFailure>>());
-      },
-    );
-
-    test('an entry already under its own identity is untouched', () async {
-      final storage = FakeSecureStoragePlatform(
-        entries: {'seed_$aFingerprint': entry(a)},
-      )..install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-      final repaired = switch (await secrets.repairIdentity(
-        Fingerprint(aFingerprint),
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('repair: ${failure.runtimeType}'),
-      };
-
-      expect(repaired.id.hex, aFingerprint);
-      expect(storage.entries.keys, ['seed_$aFingerprint']);
-    });
-
-    test('a true identity already taken is refused, losing nothing', () async {
-      // Some *other* secret sits where this one belongs. Moving would destroy
-      // it, so the repair refuses and both entries stay exactly as they were.
-      final other = entry(b);
-      final storage = FakeSecureStoragePlatform(
-        entries: {'seed_00000000': entry(a), 'seed_$aFingerprint': other},
-      )..install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-      final result = await secrets.repairIdentity(Fingerprint('00000000'));
-
-      expect(result, isA<Err<Secret, SecretFailure>>());
-      expect(storage.entries['seed_00000000'], entry(a));
-      expect(storage.entries['seed_$aFingerprint'], other);
-    });
-
-    test('a true identity that reads back empty is refused too', () async {
-      // Same refusal when the destination holds "" rather than another
-      // secret: the plugin has returned "" for entries that exist, and the
-      // read path calls that present-and-unreadable. Moving over it would
-      // destroy what may still be recoverable, so both entries stay put.
-      final storage = FakeSecureStoragePlatform(
-        entries: {'seed_00000000': entry(a), 'seed_$aFingerprint': ''},
-      )..install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-      final result = await secrets.repairIdentity(Fingerprint('00000000'));
-
-      expect(result, isA<Err<Secret, SecretFailure>>());
-      expect(storage.entries['seed_00000000'], entry(a));
-      expect(storage.entries['seed_$aFingerprint'], isEmpty);
-    });
-
-    test(
-      'a single spurious miss on the true identity is not believed',
-      () async {
-        // The destination holds another secret, but its first read comes back
-        // null — the plugin's false-absent. One read is not enough to write
-        // over a key: the repair re-reads, sees the other secret, and refuses.
-        final other = entry(b);
-        final storage = FakeSecureStoragePlatform(
-          entries: {'seed_00000000': entry(a), 'seed_$aFingerprint': other},
-          scripted: [entry(a), null],
-        )..install();
-        final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-        final result = await secrets.repairIdentity(Fingerprint('00000000'));
-
-        expect(result, isA<Err<Secret, SecretFailure>>());
-        expect(storage.entries['seed_00000000'], entry(a));
-        expect(storage.entries['seed_$aFingerprint'], other);
-      },
-    );
-
-    test(
-      'a source that reads back empty is refused, not reported absent',
-      () async {
-        // "" is the plugin's other false face: the key is there, its value
-        // did not come. Reporting it as not-found would say the seed is gone.
-        final storage = FakeSecureStoragePlatform(
-          entries: {'seed_00000000': ''},
-        )..install();
-        final secrets = Secrets(scratchDirectory: () async => '/tmp');
-
-        final result = await secrets.repairIdentity(Fingerprint('00000000'));
-
-        // A repair failure, like a source that is not JSON: the entry is not
-        // gone, and nothing is moved or deleted.
-        final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isNot(isA<SecretNotFoundFailure>()));
-        expect(storage.entries.keys, ['seed_00000000']);
       },
     );
   });

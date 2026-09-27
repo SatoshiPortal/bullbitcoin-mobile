@@ -1,22 +1,30 @@
-/// A sealed vault: the ciphertext, and the key that opens it.
-///
-/// The two travel together out of `backup.vault` and must not be stored
-/// together — hold both and you hold the mnemonic. [derivationPath] is
-/// also written inside [file], so a restore needs only the file and the
-/// key.
+/// An opaque RecoverBull JSON document, without the recovery key.
 final class EncryptedVault {
-  final String file;
+  final String json;
 
-  final String key;
-
-  final String derivationPath;
-
-  const EncryptedVault({
-    required this.file,
-    required this.key,
-    required this.derivationPath,
-  });
+  /// Format and authentication are checked by the vault operation, which returns a typed failure for invalid input.
+  const EncryptedVault({required this.json});
 
   @override
-  String toString() => 'EncryptedVault($derivationPath, •••)';
+  String toString() => 'EncryptedVault(•••)';
+}
+
+/// The 32-byte recovery key. Store it separately from the vault it opens.
+final class VaultKey {
+  final String hex;
+
+  factory VaultKey(String hex) {
+    final normalized = hex.replaceAll(RegExp(r'\s'), '').toLowerCase();
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(normalized)) {
+      throw const FormatException(
+        'a vault key must contain 32 hexadecimal bytes',
+      );
+    }
+    return VaultKey._(normalized);
+  }
+
+  const VaultKey._(this.hex);
+
+  @override
+  String toString() => 'VaultKey(•••)';
 }

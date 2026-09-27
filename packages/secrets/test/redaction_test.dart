@@ -51,15 +51,15 @@ void main() {
       'zebra',
     ];
 
-    test('idOf returns a failure rather than throwing', () async {
+    test('contains returns a failure rather than throwing', () async {
       // It used to return a bare Future, so the exception escaped
       // uncaught — with the word in it.
       final result = await secretsWith(
         FakeSecureStoragePlatform(),
-      ).idOf(words: wrongChecksum);
+      ).contains(words: wrongChecksum);
 
-      expect(result, isA<Err<Fingerprint, SecretFailure>>());
-      final failure = (result as Err<Fingerprint, SecretFailure>).failure;
+      expect(result, isA<Err<bool, SecretFailure>>());
+      final failure = (result as Err<bool, SecretFailure>).failure;
       expect(failure.logMessage, isNot(contains('zebra')));
     });
 
@@ -149,7 +149,7 @@ void redactionOfStoredContent() {
 
       final result = await Secrets(
         scratchDirectory: () async => '/tmp',
-      ).databaseKey(package: 'probe', name: 'main');
+      ).databaseKeys(module: 'probe').getOrCreate(name: 'main');
 
       final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
       expect(failure, isA<DatabaseKeyCorruptFailure>());
@@ -181,7 +181,7 @@ void redactionOfStoredContent() {
       ).fetch(Fingerprint('00000000'));
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
-      expect(failure, isA<SecretFetchFailure>());
+      expect(failure, isA<FetchSecretFailure>());
       expect(failure.logMessage, isNot(contains(sentinel)));
     },
   );
@@ -196,7 +196,7 @@ void redactionOfStoredContent() {
       await expectLater(
         boundary<void>(
           () async => throw StateError('zebra is the sentinel'),
-          orElse: SecretFetchFailure.new,
+          orElse: FetchSecretFailure.new,
         ),
         throwsA(
           isA<Error>()

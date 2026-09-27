@@ -16,7 +16,7 @@
 /// `seal` takes the words and returns ciphertext, whose `open` returns
 /// the words separately from the caller's own fields, and whose failures
 /// are its own fixed strings — exported below, and a `static const` on
-/// [Backup]. Then a method on `Secret` beside `backupVault`.
+/// [Backup]. Then a method on `Secret` beside `backupRecoverbull`.
 library;
 
 import 'package:secrets/src/crypto/backups/recoverbull_backup.dart';

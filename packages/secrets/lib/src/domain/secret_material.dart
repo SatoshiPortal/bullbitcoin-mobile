@@ -26,7 +26,7 @@ import 'package:meta/meta.dart';
 sealed class SecretMaterial {
   const SecretMaterial();
 
-  /// Identity of this secret. Taken from the storage key rather than
+  /// Fingerprint of this secret. Taken from the storage key rather than
   /// re-derived — see `SecretRepository`.
   Fingerprint get id;
 
@@ -42,15 +42,9 @@ sealed class SecretMaterial {
   String toString() => 'SecretMaterial(${info.kind.name}, ${id.hex})';
 }
 
-final class MnemonicMaterial extends SecretMaterial {
+final class Mnemonic extends SecretMaterial {
   @override
   final Fingerprint id;
-
-  /// Identity of the same words with an *empty* passphrase.
-  ///
-  /// Equal to [id] when there is no passphrase; otherwise a second
-  /// PBKDF2 pass, paid only in that case.
-  final Fingerprint mnemonicFingerprint;
 
   final List<String> words;
 
@@ -63,9 +57,8 @@ final class MnemonicMaterial extends SecretMaterial {
   final Uint8List seedBytes;
 
   @internal
-  const MnemonicMaterial({
+  const Mnemonic({
     required this.id,
-    required this.mnemonicFingerprint,
     required this.words,
     required this.passphrase,
     required this.seedBytes,
@@ -76,13 +69,12 @@ final class MnemonicMaterial extends SecretMaterial {
   @override
   SecretInfo get info => SecretInfo.mnemonic(
     id: id,
-    mnemonicFingerprint: mnemonicFingerprint,
     wordCount: words.length,
     hasPassphrase: hasPassphrase,
   );
 }
 
-final class SeedMaterial extends SecretMaterial {
+final class Seed extends SecretMaterial {
   @override
   final Fingerprint id;
 
@@ -90,9 +82,9 @@ final class SeedMaterial extends SecretMaterial {
   final Uint8List seedBytes;
 
   @internal
-  const SeedMaterial({required this.id, required this.seedBytes});
+  const Seed({required this.id, required this.seedBytes});
 
   @override
   SecretInfo get info =>
-      SecretInfo.bytes(id: id, lengthInBits: seedBytes.length * 8);
+      SecretInfo.seed(id: id, lengthInBits: seedBytes.length * 8);
 }

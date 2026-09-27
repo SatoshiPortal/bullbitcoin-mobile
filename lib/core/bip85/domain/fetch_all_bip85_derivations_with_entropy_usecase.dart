@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -103,28 +102,32 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
     if (parts.any((p) => !p.endsWith("'"))) {
       return _skip(e, 'unhardened component');
     }
-    final segments = parts
-        .map((p) => int.tryParse(p.substring(0, p.length - 1)))
-        .toList();
-    if (segments.any((n) => n == null)) {
-      return _skip(e, 'non-numeric component');
+    final segments = <int>[];
+    for (final p in parts) {
+      final n = int.tryParse(p.substring(0, p.length - 1));
+      if (n == null) return _skip(e, 'non-numeric component');
+      segments.add(n);
     }
     if (segments.last != e.index) {
       return _skip(e, 'index does not match the row');
     }
 
-    final Result<String, SecretFailure>? result = switch (e.application) {
-      Bip85Application.hex when segments.length == 3 && segments[0] == 128169 =>
-        await secret.derive.bip85.hex(
-          numBytes: segments[1]!,
-          index: segments[2]!,
-        ),
-      Bip85Application.bip39
-          when segments.length == 4 && segments[0] == 39 && segments[1] == 0 =>
-        (await secret.derive.bip85.mnemonic(
-          length: bip39.MnemonicLength.fromWords(segments[2]!),
-          index: segments[3]!,
-        )).map((words) => words.join(' ')),
+    final Result<String, SecretFailure>? result = switch ((
+      e.application,
+      segments,
+    )) {
+      (Bip85Application.hex, [128169, final numBytes, final index]) =>
+        await secret.derive.bip85.hex(numBytes: numBytes, index: index),
+      (Bip85Application.bip39, [39, 0, final count, final index]) =>
+        switch (MnemonicWordCount.values
+            .where((value) => value.count == count)
+            .firstOrNull) {
+          final wordCount? => (await secret.derive.bip85.mnemonic(
+            wordCount: wordCount,
+            index: index,
+          )).map((words) => words.join(' ')),
+          null => null,
+        },
       _ => null,
     };
     if (result == null) {

@@ -345,6 +345,13 @@ void main() {
           0,
         );
       });
+
+      test('a BIP39 word count no mnemonic has is skipped', () async {
+        expect(
+          await derived(row("39'/0'/13'/0'", Bip85Application.bip39, 0)),
+          0,
+        );
+      });
     });
 
     test('rows of another root key are not re-derived from this one', () async {

@@ -175,7 +175,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
             // previous snapshot's data until it resolves, which would draw the
             // previous wallet's words under the newly selected one.
             child: FutureBuilder<Result<Secret, TestWalletBackupFailure>>(
-              key: ValueKey(_fingerprint),
+              key: ValueKey<String?>(_fingerprint),
               future: _secret,
               builder: (context, snapshot) {
                 // The future no longer throws — a failure comes back as an
@@ -183,7 +183,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 // unexpected throw degrades to the generic message.
                 switch (snapshot.data) {
                   case Err(:final failure):
-                    return _DisplayError(failure);
+                    return _DisplayError(failure: failure);
                   case _ when snapshot.hasError:
                     return const _DisplayError();
                   default:
@@ -198,7 +198,8 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 }
                 return secret.widgets.mnemonicView(
                   placeholder: const Center(child: CircularProgressIndicator()),
-                  onFailure: (context, failure) => const _DisplayError(),
+                  failureBuilder: (context, failure, retry) =>
+                      _DisplayError(onRetry: retry),
                   passphraseLabel: context.loc.testBackupPassphrase,
                   passphraseLabelStyle: context.font.labelMedium?.copyWith(
                     fontWeight: .w700,
@@ -215,7 +216,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                       _RecoveryPhraseWord(number: number, word: word),
                   // Two columns, numbered down each: the widgets come back
                   // in order and carry no word this layer can read.
-                  layout: (context, words) => Column(
+                  layoutBuilder: (context, words) => Column(
                     children: [
                       for (var i = 0; i < (words.length + 1) ~/ 2; i++)
                         Row(
@@ -303,15 +304,30 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
 }
 
 class _DisplayError extends StatelessWidget {
-  const _DisplayError([this.failure]);
-
   final TestWalletBackupFailure? failure;
+  final VoidCallback? onRetry;
+
+  const _DisplayError({this.failure, this.onRetry});
 
   @override
-  Widget build(BuildContext context) => BullText(
-    failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong,
-    textAlign: .center,
-    style: context.font.bodyLarge?.copyWith(color: context.appColors.error),
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      BullText(
+        failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong,
+        textAlign: .center,
+        style: context.font.bodyLarge?.copyWith(color: context.appColors.error),
+      ),
+      if (onRetry case final retry?) ...[
+        const Gap(16),
+        BullButton.small(
+          label: context.loc.retry,
+          onPressed: retry,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+      ],
+    ],
   );
 }
 

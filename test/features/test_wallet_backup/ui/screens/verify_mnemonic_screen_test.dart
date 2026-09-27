@@ -176,7 +176,7 @@ void main() {
   // test could look for: which wallet is on screen is read from the
   // challenge's key, which is that wallet's fingerprint.
   void expectChallengeFor(Wallet wallet, Matcher matcher) => expect(
-    find.byKey(ValueKey(wallet.masterFingerprint)),
+    find.byKey(ValueKey<String?>(wallet.masterFingerprint)),
     matcher,
     reason: wallet.label,
   );
