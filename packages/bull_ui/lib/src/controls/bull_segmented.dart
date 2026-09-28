@@ -3,8 +3,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
 
-/// Full-width sliding segmented control — duplicated from
-/// `core/widgets/segment/segmented_full.dart`. Used for sort/filter segments.
+/// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
   const BullSegmented({
     super.key,
