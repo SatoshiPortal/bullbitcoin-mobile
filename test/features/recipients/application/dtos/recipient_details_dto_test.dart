@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

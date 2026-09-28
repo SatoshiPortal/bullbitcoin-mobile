@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -32,45 +31,16 @@ sealed class RecipientViewModel with _$RecipientViewModel {
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
-  factory RecipientViewModel.fromDto(RecipientDto dto) {
-    return RecipientViewModel(
-      id: dto.recipientId,
-      type: dto.recipientType,
-      name: dto.details.name,
-      firstname: dto.details.firstname,
-      lastname: dto.details.lastname,
-      email: dto.details.email,
-      isCorporate: dto.details.isCorporate,
-      corporateName: dto.details.corporateName,
-      ownerName: dto.details.ownerName,
-      label: dto.details.label,
-      payeeName: dto.details.payeeName,
-      payeeCode: dto.details.payeeCode,
-      payeeAccountNumber: dto.details.payeeAccountNumber,
-      institutionNumber: dto.details.institutionNumber,
-      transitNumber: dto.details.transitNumber,
-      accountNumber: dto.details.accountNumber,
-      iban: dto.details.iban,
-      clabe: dto.details.clabe,
-      phoneNumber: dto.details.phoneNumber,
-      debitcard: dto.details.debitcard,
-      isOwner: dto.isOwner,
-      bankAccount: dto.details.bankAccount ?? dto.details.claveUniform,
-    );
-  }
-
   String get jurisdictionCode => type.jurisdictionCode;
   String get currencyCode => type.currencyCode;
 
   String? get displayName {
-    // Check corporate first for all types
     if (isCorporate == true &&
         corporateName != null &&
         corporateName!.isNotEmpty) {
       return corporateName!;
     }
 
-    // Type-specific logic
     switch (type) {
       case RecipientType.interacEmailCad:
         if (name != null && name!.isNotEmpty) return name!;
@@ -138,8 +108,6 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         if (label != null && label!.isNotEmpty) return label!;
         return null;
 
-      // ownerName is often absent for the SINPE types (#2529), so fall all the
-      // way back to the account identifier rather than showing nothing.
       case RecipientType.sinpeIbanUsd:
       case RecipientType.sinpeIbanCrc:
         if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;

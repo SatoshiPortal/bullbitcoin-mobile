@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
+import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -244,11 +245,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         .toList();
   }
 
-  List<RecipientViewModel> _toViewModels(List<RecipientDto> dtos) {
-    return dtos
+  List<RecipientViewModel> _toViewModels(List<Recipient> recipients) {
+    return recipients
         .map((recipient) {
           try {
-            return RecipientViewModel.fromDto(recipient);
+            return recipient.toViewModel();
           } catch (err, stackTrace) {
             log.severe(
               message: 'Error transforming recipient to view model',
@@ -275,7 +276,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.fine(
         'Successfully added recipient with ID: ${result.recipient.recipientId}',
       );
-      final addedRecipient = RecipientViewModel.fromDto(result.recipient);
+      final addedRecipient = result.recipient.toViewModel();
 
       // Call the selection hook for the newly added recipient
       if (_onRecipientSelectedHook != null) {
