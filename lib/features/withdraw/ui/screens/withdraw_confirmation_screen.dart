@@ -4,13 +4,12 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class WithdrawConfirmationScreen extends StatelessWidget {
   const WithdrawConfirmationScreen({super.key});
@@ -52,7 +51,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
               foregroundColor: context.appColors.primary,
             ),
             Expanded(
-              child: ScrollableColumn(
+              child: BullScrollableColumn(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 children: [
                   const Gap(24.0),

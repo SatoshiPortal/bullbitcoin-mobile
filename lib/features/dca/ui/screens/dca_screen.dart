@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
@@ -14,7 +13,7 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart'
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -69,7 +68,7 @@ class _DcaScreenState extends State<DcaScreen> {
                 focusNodes: [_amountNode],
                 child: Form(
                   key: _formKey,
-                  child: ScrollableColumn(
+                  child: BullScrollableColumn(
                     crossAxisAlignment: .start,
                     children: [
                       const Gap(24),

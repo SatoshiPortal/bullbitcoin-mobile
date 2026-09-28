@@ -1,6 +1,8 @@
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'test_app.dart';
 
 void main() {
   const lastItemKey = Key('last-item');
@@ -14,20 +16,18 @@ void main() {
     required double bottomInset,
   }) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BBPullableBody(
-            onRefresh: () async {},
-            bottomInset: bottomInset,
-            slivers: const [
-              SliverToBoxAdapter(
-                child: SizedBox(height: contentHeight - lastItemHeight),
-              ),
-              SliverToBoxAdapter(
-                child: SizedBox(key: lastItemKey, height: lastItemHeight),
-              ),
-            ],
-          ),
+      wrapWithTheme(
+        BullPullableBody(
+          onRefresh: () async {},
+          bottomInset: bottomInset,
+          slivers: const [
+            SliverToBoxAdapter(
+              child: SizedBox(height: contentHeight - lastItemHeight),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(key: lastItemKey, height: lastItemHeight),
+            ),
+          ],
         ),
       ),
     );
@@ -84,13 +84,11 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BBPullableBody(
-            onRefresh: () async {},
-            bottomInset: 84,
-            slivers: const [SliverToBoxAdapter(child: SizedBox(height: 100))],
-          ),
+      wrapWithTheme(
+        BullPullableBody(
+          onRefresh: () async {},
+          bottomInset: 84,
+          slivers: const [SliverToBoxAdapter(child: SizedBox(height: 100))],
         ),
       ),
     );
