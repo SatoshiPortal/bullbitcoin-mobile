@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
+import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:bb_mobile/features/exchange_settings/exchange_settings_locator.dart';
@@ -160,6 +161,7 @@ class AppLocator {
     }
 
     ExchangeLocator.setup(locator);
+    DefaultWalletsLocator.setup(locator);
     ExchangeSettingsLocator.setup(locator);
     ExchangeSupportChatLocator.setup(locator);
     BuyLocator.setup(locator);
