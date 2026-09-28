@@ -2,8 +2,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
-/// Generic single-selection bottom-sheet picker — duplicated from
-/// `core/widgets/bottom_sheet/picker_sheet.dart` (`BBPickerSheet`).
+/// Generic single-selection bottom-sheet picker.
 ///
 /// Rounded-top surface with a centered title, close icon and a scrollable list
 /// of tappable rows; the selected row is tinted [BullTheme.red] and shows a

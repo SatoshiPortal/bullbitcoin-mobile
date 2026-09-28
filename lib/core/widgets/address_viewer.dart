@@ -138,6 +138,7 @@ class AddressViewer extends StatelessWidget {
   }) {
     return BullDialog.show<void>(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _AddressDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,

@@ -26,7 +26,7 @@ class BullBottomSheet extends StatelessWidget {
       isDismissible: isDismissible,
       useSafeArea: true,
       backgroundColor: colors.surface,
-      barrierColor: colors.text.withValues(alpha: 0.4),
+      barrierColor: colors.surface.withAlpha(100),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(BullRadius.lg),

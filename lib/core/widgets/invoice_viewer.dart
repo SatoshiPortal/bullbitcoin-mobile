@@ -105,6 +105,7 @@ class InvoiceViewer extends StatelessWidget {
   }) {
     return BullDialog.show<void>(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _InvoiceDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
