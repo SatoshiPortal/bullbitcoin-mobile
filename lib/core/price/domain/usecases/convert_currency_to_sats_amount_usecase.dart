@@ -1,15 +1,16 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
+// NOTE: not used anywhere as of now
 class ConvertCurrencyToSatsAmountUsecase {
-  final ExchangeRateRepository _mainnetExchangeRateRepository;
-  final ExchangeRateRepository _testnetExchangeRateRepository;
+  final BitcoinPriceRepository _mainnetBitcoinPriceRepository;
+  final BitcoinPriceRepository _testnetBitcoinPriceRepository;
   final SettingsRepository _settingsRepository;
 
   ConvertCurrencyToSatsAmountUsecase({
-    required this._mainnetExchangeRateRepository,
-    required this._testnetExchangeRateRepository,
+    required this._mainnetBitcoinPriceRepository,
+    required this._testnetBitcoinPriceRepository,
     required this._settingsRepository,
   });
 
@@ -22,8 +23,8 @@ class ConvertCurrencyToSatsAmountUsecase {
       final currency = settings.currencyCode;
       final isTestnet = settings.environment.isTestnet;
       final repo = isTestnet
-          ? _testnetExchangeRateRepository
-          : _mainnetExchangeRateRepository;
+          ? _testnetBitcoinPriceRepository
+          : _mainnetBitcoinPriceRepository;
       final availableCurrencies = await repo.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {

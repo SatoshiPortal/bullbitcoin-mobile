@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
@@ -21,7 +21,7 @@ class CheckAllServiceStatusUsecase {
   static const _torStatusTimeout = Duration(seconds: 20);
 
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final ExchangeRateRepository _exchangeRateRepository;
+  final BitcoinPriceRepository _bitcoinPriceRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
@@ -33,7 +33,7 @@ class CheckAllServiceStatusUsecase {
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
-    required this._exchangeRateRepository,
+    required this._bitcoinPriceRepository,
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
     required this._feesRepository,
@@ -203,7 +203,7 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatusInfo> _checkPricerService(Network network) async {
-    final price = await _exchangeRateRepository.getCurrencyValue(
+    final price = await _bitcoinPriceRepository.getCurrencyValue(
       amountSat: BigInt.from(100000000), // 1 BTC in sats
       currency: 'USD',
     );

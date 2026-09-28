@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
 
-abstract class PriceRepository {
+abstract interface class PriceHistoryRepository {
   Future<List<Rate>> getPriceHistory({
     required String fromCurrency,
     required String toCurrency,

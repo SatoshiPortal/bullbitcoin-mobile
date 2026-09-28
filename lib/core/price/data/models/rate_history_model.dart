@@ -1,7 +1,7 @@
 import 'dart:math' show pow;
 
-import 'package:bb_mobile/core/exchange/data/models/rate_model.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/price/data/models/rate_model.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
 
 class RateHistoryModel {
   final String fromCurrency;

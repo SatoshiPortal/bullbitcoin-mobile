@@ -1,23 +1,23 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/price/data/datasources/bullbitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 
-class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
-  final BitcoinPriceDatasource _bitcoinPrice;
+class BitcoinPriceRepositoryImpl implements BitcoinPriceRepository {
+  final BullbitcoinPriceDatasource _bullbitcoinPrice;
 
-  ExchangeRateRepositoryImpl({
-    required BitcoinPriceDatasource bitcoinPriceDatasource,
-  }) : _bitcoinPrice = bitcoinPriceDatasource;
+  BitcoinPriceRepositoryImpl({
+    required BullbitcoinPriceDatasource bullbitcoinPriceDatasource,
+  }) : _bullbitcoinPrice = bullbitcoinPriceDatasource;
 
   @override
   Future<List<String>> get availableCurrencies =>
-      _bitcoinPrice.availableCurrencies;
+      _bullbitcoinPrice.availableCurrencies;
 
   @override
   Future<double> getCurrencyValue({
     required BigInt amountSat,
     required String currency,
   }) async {
-    final price = await _bitcoinPrice.getPrice(currency);
+    final price = await _bullbitcoinPrice.getPrice(currency);
     final amountBtc = amountSat / BigInt.from(100000000);
     return amountBtc * price;
   }
@@ -27,11 +27,12 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     required double amountFiat,
     required String currency,
   }) async {
-    final price = await _bitcoinPrice.getPrice(currency);
+    final price = await _bullbitcoinPrice.getPrice(currency);
     final amountBtc = amountFiat / price;
     return BigInt.from((amountBtc * 100000000).truncate());
   }
 
+  // NOTE: not used anywhere as of now
   @override
   Future<double> convertFiatToFiat({
     required double amount,
@@ -45,8 +46,8 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     if (amount == 0) return 0;
 
     // Get BTC prices in both currencies
-    final btcInFrom = await _bitcoinPrice.getPrice(fromCurrency);
-    final btcInTo = await _bitcoinPrice.getPrice(toCurrency);
+    final btcInFrom = await _bullbitcoinPrice.getPrice(fromCurrency);
+    final btcInTo = await _bullbitcoinPrice.getPrice(toCurrency);
 
     // Convert: targetValue = sourceValue * (btcPriceInTarget / btcPriceInSource)
     return amount * (btcInTo / btcInFrom);

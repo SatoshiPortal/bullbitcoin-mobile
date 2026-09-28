@@ -1,28 +1,65 @@
 import 'dart:math' show pow;
 
-import 'package:bb_mobile/core/exchange/data/models/rate_history_request_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/rate_model.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/price/data/models/rate_history_request_model.dart';
+import 'package:bb_mobile/core/price/data/models/rate_model.dart';
+import 'package:bb_mobile/core/price/data/models/rate_request_model.dart';
+import 'package:bb_mobile/core/price/domain/rate.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:dio/dio.dart';
 
-abstract class PriceRemoteDatasource {
-  Future<List<RateModel>> getPriceHistory({
-    required String fromCurrency,
-    required String toCurrency,
-    required RateTimelineInterval interval,
-    DateTime? fromDate,
-    DateTime? toDate,
-  });
-}
-
-class BullbitcoinPriceRemoteDatasource implements PriceRemoteDatasource {
+class BullbitcoinPriceDatasource {
   final Dio _http;
   final _pricePath = '/public/price';
 
-  BullbitcoinPriceRemoteDatasource({required Dio bullbitcoinApiHttpClient})
+  BullbitcoinPriceDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
 
-  @override
+  Future<List<String>> get availableCurrencies async {
+    // TODO: fetch the actual list of currencies from the api
+    return CurrencyConstants.supportedFiat;
+  }
+
+  Future<double> getPrice(String currencyCode) async {
+    try {
+      final requestModel = RateRequestModel(
+        fromCurrency: 'BTC',
+        toCurrency: currencyCode.toUpperCase(),
+      );
+
+      final resp = await _http.post(
+        _pricePath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'getRate',
+          'params': requestModel.toApiParams(),
+        },
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        log.warning('Pricer error');
+        return 0.0;
+      }
+      // Parse the response data correctly
+      final data = resp.data as Map<String, dynamic>;
+      final result = data['result'] as Map<String, dynamic>;
+      final element = result['element'] as Map<String, dynamic>;
+
+      // Extract price and precision
+      final price = (element['indexPrice'] as num).toDouble();
+      final precision = element['precision'] as int? ?? 2;
+
+      // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
+      final rate = price / pow(10, precision);
+
+      return rate;
+    } catch (e) {
+      log.warning('Pricer error', error: e);
+      return 0.0;
+    }
+  }
+
   Future<List<RateModel>> getPriceHistory({
     required String fromCurrency,
     required String toCurrency,
@@ -34,7 +71,7 @@ class BullbitcoinPriceRemoteDatasource implements PriceRemoteDatasource {
       final requestModel = RateHistoryRequestModel(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
-        interval: interval.enumValue,
+        interval: interval.value,
         fromDate: fromDate,
         toDate: toDate,
       );

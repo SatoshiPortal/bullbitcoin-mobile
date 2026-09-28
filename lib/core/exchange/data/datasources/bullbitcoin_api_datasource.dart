@@ -1,5 +1,4 @@
 import 'dart:convert' show jsonEncode;
-import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
@@ -7,19 +6,12 @@ import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:dio/dio.dart';
 
-abstract class BitcoinPriceDatasource {
-  Future<List<String>> get availableCurrencies;
-  Future<double> getPrice(String currencyCode);
-}
-
-class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
+class BullbitcoinApiDatasource {
   final Dio _http;
-  final _pricePath = '/public/price';
   final _usersPath = '/ak/api-users';
   final _ordersPath = '/ak/api-orders';
   final _orderTriggerPath = '/ak/api-ordertrigger';
@@ -29,54 +21,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
-
-  @override
-  Future<List<String>> get availableCurrencies async {
-    // TODO: fetch the actual list of currencies from the api
-    return CurrencyConstants.supportedFiat;
-  }
-
-  @override
-  Future<double> getPrice(String currencyCode) async {
-    try {
-      final resp = await _http.post(
-        _pricePath,
-        // TODO: Create a model for this request data
-        data: {
-          'id': 1,
-          'jsonrpc': '2.0',
-          'method': 'getRate',
-          'params': {
-            'element': {
-              'fromCurrency': 'BTC',
-              'toCurrency': currencyCode.toUpperCase(),
-            },
-          },
-        },
-      );
-
-      if (resp.statusCode == null || resp.statusCode != 200) {
-        log.warning('Pricer error');
-        return 0.0;
-      }
-      // Parse the response data correctly
-      final data = resp.data as Map<String, dynamic>;
-      final result = data['result'] as Map<String, dynamic>;
-      final element = result['element'] as Map<String, dynamic>;
-
-      // Extract price and precision
-      final price = (element['indexPrice'] as num).toDouble();
-      final precision = element['precision'] as int? ?? 2;
-
-      // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
-      final rate = price / pow(10, precision);
-
-      return rate;
-    } catch (e) {
-      log.warning('Pricer error', error: e);
-      return 0.0;
-    }
-  }
 
   Future<void> registerResponsibilityConsent(String apiKey) async {
     try {
