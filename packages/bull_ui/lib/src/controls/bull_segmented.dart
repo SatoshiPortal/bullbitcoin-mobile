@@ -38,6 +38,17 @@ class _BullSegmentedState extends State<BullSegmented> {
     selectedSegment = widget.initialValue ?? widget.items.first;
   }
 
+  // The sliding control moves its thumb when initialValue changes, so the
+  // label styling has to follow or the two disagree after a parent rebuild.
+  @override
+  void didUpdateWidget(covariant BullSegmented oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue ||
+        !widget.items.contains(selectedSegment)) {
+      selectedSegment = widget.initialValue ?? widget.items.first;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
