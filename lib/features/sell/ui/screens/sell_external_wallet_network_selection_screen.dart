@@ -2,13 +2,12 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
@@ -33,7 +32,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
               foregroundColor: context.appColors.primary,
             ),
             Expanded(
-              child: ScrollableColumn(
+              child: BullScrollableColumn(
                 children: [
                   const Gap(24.0),
                   Text(

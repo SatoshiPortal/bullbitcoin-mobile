@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_wallet_radio_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class DcaWalletSelectionScreen extends StatefulWidget {
   const DcaWalletSelectionScreen({super.key});
@@ -44,7 +43,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
         body: SafeArea(
           child: Form(
             key: _formKey,
-            child: ScrollableColumn(
+            child: BullScrollableColumn(
               crossAxisAlignment: .start,
               children: [
                 const Gap(24),
