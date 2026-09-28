@@ -62,7 +62,7 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 `BullDialPad` (`DialPad`), `BullAmountInputFormatter` (`AmountInputFormatter`),
 `BullLowerCaseTextFormatter` (`LowerCaseTextFormatter`).
 
-**Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch` (`BBSwitch`).
+**Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.
 
 **Feedback** — `BullRefreshIndicator` (`BBRefreshIndicator`), `BullShimmerBox`/
 `BullShimmerLine`, `BullSnackBar`, `BullCountdown` (`Countdown`),
