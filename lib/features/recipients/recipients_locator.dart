@@ -11,8 +11,6 @@ import 'package:bb_mobile/features/recipients/domain/update_interac_security_det
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
