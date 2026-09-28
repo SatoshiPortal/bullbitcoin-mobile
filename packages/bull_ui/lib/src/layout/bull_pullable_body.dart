@@ -1,8 +1,7 @@
 import 'package:bull_ui/src/feedback/bull_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 
-/// Standard pull-to-refresh body — duplicated from
-/// `core/widgets/bb_pullable_body.dart` (`BBPullableBody`).
+/// Standard pull-to-refresh body.
 ///
 /// Wraps [slivers] in a single [CustomScrollView] with always-scrollable
 /// physics and a trailing `SliverFillRemaining` so the gesture is accepted
@@ -14,6 +13,7 @@ class BullPullableBody extends StatelessWidget {
     required this.onRefresh,
     required this.slivers,
     this.bottomChild,
+    this.bottomInset = 0,
   });
 
   /// Forwarded to the inner [BullRefreshIndicator]; use a
@@ -29,6 +29,10 @@ class BullPullableBody extends StatelessWidget {
   /// Optional footer pinned to the bottom of the viewport.
   final Widget? bottomChild;
 
+  /// Space reserved at the end of the scroll content, so the last sliver can
+  /// be scrolled clear of a footer pinned over the body.
+  final double bottomInset;
+
   @override
   Widget build(BuildContext context) {
     return BullRefreshIndicator(
@@ -38,6 +42,8 @@ class BullPullableBody extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           ...slivers,
+          if (bottomInset > 0)
+            SliverToBoxAdapter(child: SizedBox(height: bottomInset)),
           SliverFillRemaining(
             hasScrollBody: false,
             child: bottomChild == null

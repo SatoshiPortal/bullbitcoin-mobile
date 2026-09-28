@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 /// A [Column] that becomes scrollable when its content overflows but still
-/// fills the viewport when it fits — duplicated from
-/// `core/widgets/scrollable_column.dart`.
+/// fills the viewport when it fits.
 ///
 /// Follows the Flutter team's recommended `SingleChildScrollView` +
 /// `ConstrainedBox(minHeight)` + `IntrinsicHeight` pattern so `Spacer`s and
