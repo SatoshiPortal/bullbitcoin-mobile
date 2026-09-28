@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -47,7 +46,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
-    return BBPullableBody(
+    return BullPullableBody(
       onRefresh: () async {
         // Wait for the chain sync (bitcoin + liquid + swaps) to actually
         // finish before reloading the local tx list.

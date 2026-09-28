@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -11,6 +10,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody;
 
 class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen({super.key});
@@ -116,7 +116,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 child: const SizedBox(height: 300),
               ),
             ),
-            BBPullableBody(
+            BullPullableBody(
               indicatorKey: _indicatorKey,
               onRefresh: () => context.read<WalletBloc>().refresh(),
               // Clearance for the bar pinned at the bottom of this Stack, so

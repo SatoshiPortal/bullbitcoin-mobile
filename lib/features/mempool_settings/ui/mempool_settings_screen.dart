@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -9,7 +8,7 @@ import 'package:bb_mobile/features/mempool_settings/presentation/mempool_setting
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
 
 class MempoolSettingsScreen extends StatefulWidget {
   const MempoolSettingsScreen({super.key});
@@ -50,7 +49,7 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
         ),
       ),
       body: SafeArea(
-        child: BBPullableBody(
+        child: BullPullableBody(
           onRefresh: () async =>
               await context.read<MempoolSettingsCubit>().refresh(),
           slivers: [
