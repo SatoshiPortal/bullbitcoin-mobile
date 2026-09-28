@@ -2,14 +2,13 @@ import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart'
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -198,7 +197,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (_hasBip21)
-            BBSegmentFull(
+            BullSegmented(
               items: {
                 context.loc.viewerAddressTab,
                 context.loc.viewerPaymentUriTab,
