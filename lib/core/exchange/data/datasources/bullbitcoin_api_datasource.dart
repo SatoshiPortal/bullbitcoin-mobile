@@ -253,23 +253,30 @@ class BullbitcoinApiDatasource {
     required String apiKey,
     required UserPreferencePayloadModel params,
   }) async {
-    try {
-      final resp = await _http.post(
-        _usersPath,
-        data: {
-          'id': 1,
-          'jsonrpc': '2.0',
-          'method': 'saveUserPreferences',
-          'params': {'userPreferences': params.toMap()},
-        },
-        options: Options(headers: {'X-API-Key': apiKey}),
-      );
+    final resp = await _http.post(
+      _usersPath,
+      data: {
+        'id': 1,
+        'jsonrpc': '2.0',
+        'method': 'saveUserPreferences',
+        'params': {'userPreferences': params.toMap()},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
 
-      if (resp.statusCode == null || resp.statusCode != 200) {
-        throw Exception('Failed to save user preferences');
-      }
-    } catch (e) {
-      rethrow;
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to save user preferences');
+    }
+
+    final data = resp.data;
+    if (data is! Map) {
+      throw Exception('Failed to save user preferences: invalid response');
+    }
+
+    final error = data['error'];
+    if (error != null) {
+      final message = error is Map ? error['message'] : error;
+      throw Exception('Failed to save user preferences: $message');
     }
   }
 

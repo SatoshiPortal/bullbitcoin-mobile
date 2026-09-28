@@ -1,6 +1,16 @@
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 
 class NotificationMessageModel {
+  static const _kinds = <String, NotificationMessageKind>{
+    'balance': NotificationMessageKind.balance,
+    'group': NotificationMessageKind.group,
+    'kyc': NotificationMessageKind.kyc,
+    'userPreferences': NotificationMessageKind.userPreferences,
+    'message': NotificationMessageKind.message,
+    'order': NotificationMessageKind.order,
+    'user': NotificationMessageKind.user,
+  };
+
   final String type;
   final String? orderId;
   final Map<String, dynamic> rawData;
@@ -10,6 +20,9 @@ class NotificationMessageModel {
       orderId = json['orderId'] as String?,
       rawData = json;
 
-  NotificationMessage toEntity() =>
-      NotificationMessage(type: type, orderId: orderId, rawData: rawData);
+  NotificationMessage toEntity() => NotificationMessage(
+    kind: _kinds[type] ?? NotificationMessageKind.unknown,
+    orderId: orderId,
+    rawData: rawData,
+  );
 }

@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/announcements/announcements_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
+import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
@@ -162,6 +163,7 @@ class AppLocator {
 
     ExchangeLocator.setup(locator);
     DefaultWalletsLocator.setup(locator);
+    AutoBuyLocator.setup(locator);
     ExchangeSettingsLocator.setup(locator);
     ExchangeSupportChatLocator.setup(locator);
     BuyLocator.setup(locator);

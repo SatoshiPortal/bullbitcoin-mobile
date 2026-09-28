@@ -26,10 +26,13 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }) : super(const ExchangeState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
         .where(
-          (message) =>
-              message.type == 'balance' ||
-              message.type == 'group' ||
-              message.type == 'kyc',
+          (message) => switch (message.kind) {
+            NotificationMessageKind.balance ||
+            NotificationMessageKind.group ||
+            NotificationMessageKind.kyc ||
+            NotificationMessageKind.userPreferences => true,
+            _ => false,
+          },
         )
         .listen((_) => fetchUserSummary());
   }
