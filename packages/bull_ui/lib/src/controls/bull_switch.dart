@@ -1,7 +1,11 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// Switch — duplicated from `core/widgets/switch/bb_switch.dart`.
+/// Themed on/off switch.
+///
+/// Matches the app-wide switch theme: a surface-coloured thumb on a [text]
+/// track when on and a [textMuted] track when off, so the off track stays
+/// visible on both plain and tinted rows.
 class BullSwitch extends StatelessWidget {
   const BullSwitch({super.key, required this.value, required this.onChanged});
 
@@ -16,10 +20,10 @@ class BullSwitch extends StatelessWidget {
     final colors = context.bull;
     return Switch(
       value: value,
-      activeThumbColor: colors.onSecondary,
-      activeTrackColor: colors.secondary,
-      inactiveThumbColor: colors.border,
-      inactiveTrackColor: colors.surfaceContainer,
+      activeThumbColor: colors.surface,
+      activeTrackColor: colors.text,
+      inactiveThumbColor: colors.surface,
+      inactiveTrackColor: colors.textMuted,
       trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
         (states) => colors.transparent,
       ),
