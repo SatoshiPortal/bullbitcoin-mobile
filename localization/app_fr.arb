@@ -4952,5 +4952,10 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "withdrawInteracSecurityDetailsTitle": "Détails de sécurité Interac",
+  "withdrawInteracSaveAsDefault": "Enregistrer ces renseignements par défaut",
+  "withdrawInteracSecurityQuestionLengthError": "La question de sécurité doit contenir de 3 à 40 caractères",
+  "withdrawInteracSecurityAnswerLengthError": "La réponse de sécurité doit contenir de 3 à 40 caractères",
+  "withdrawInteracSecurityAnswerFormatError": "Utilisez des lettres, des chiffres ou des traits d’union sans espaces"
 }

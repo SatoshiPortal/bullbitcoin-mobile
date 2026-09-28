@@ -12212,5 +12212,10 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "withdrawInteracSecurityDetailsTitle": "Dados de segurança do Interac",
+  "withdrawInteracSaveAsDefault": "Salvar estes dados como padrão",
+  "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
+  "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",
+  "withdrawInteracSecurityAnswerFormatError": "Use letras, números ou hifens sem espaços"
 }

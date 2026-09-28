@@ -3588,5 +3588,10 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "withdrawInteracSecurityDetailsTitle": "Thông tin bảo mật Interac",
+  "withdrawInteracSaveAsDefault": "Lưu các thông tin này làm mặc định",
+  "withdrawInteracSecurityQuestionLengthError": "Câu hỏi bảo mật phải có từ 3 đến 40 ký tự",
+  "withdrawInteracSecurityAnswerLengthError": "Câu trả lời bảo mật phải có từ 3 đến 40 ký tự",
+  "withdrawInteracSecurityAnswerFormatError": "Dùng chữ cái, số hoặc dấu gạch nối và không có khoảng trắng"
 }

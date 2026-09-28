@@ -12,11 +12,9 @@ class WithdrawRecipientsScreen extends StatelessWidget {
     return BlocBuilder<WithdrawBloc, WithdrawState>(
       bloc: context.read<WithdrawBloc>(),
       builder: (context, state) {
-        return RecipientsScreen(
-          filter: RecipientFilterCriteria(
-            types: RecipientType.typesForCurrency(state.currency.code).toList(),
-            isOwner: true,
-          ),
+        return RecipientSelectionScreen(
+          types: RecipientType.typesForCurrency(state.currency.code).toList(),
+          isOwner: true,
           onRecipientSelected: (recipient, {required isNew}) async {
             context.read<WithdrawBloc>().add(
               WithdrawEvent.recipientSelected(recipient, isNew: isNew),
