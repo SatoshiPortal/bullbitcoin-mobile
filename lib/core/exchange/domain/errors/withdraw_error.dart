@@ -33,6 +33,6 @@ sealed class WithdrawError with _$WithdrawError {
     aboveMaxAmount: (_, _) => context.loc.withdrawAboveMaxAmountError,
     orderNotFound: () => context.loc.withdrawOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.withdrawOrderAlreadyConfirmedError,
-    unexpected: (message) => message,
+    unexpected: (_) => context.loc.oopsSomethingWentWrong,
   );
 }
