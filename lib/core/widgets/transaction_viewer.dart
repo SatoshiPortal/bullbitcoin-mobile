@@ -142,6 +142,7 @@ class TransactionViewer extends StatelessWidget {
   void _showDetailDialog(BuildContext context) {
     BullDialog.show(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _TransactionDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,

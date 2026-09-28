@@ -4,9 +4,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
-/// A bottom sheet that lists numbered instruction steps — duplicated from
-/// `core/widgets/bottom_sheet/instructions_bottom_sheet.dart`
-/// (`InstructionsBottomSheet`).
+/// A bottom sheet that lists numbered instruction steps.
 ///
 /// Shows a centered [title], an optional [subtitle] and a scrollable list of
 /// auto-numbered [instructions]. Use [BullInstructionsSheet.show] to present it
