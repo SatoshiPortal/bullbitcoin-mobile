@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_result
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
@@ -42,8 +42,8 @@ class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
 
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
-class _MockSeedStoreTypeDatasource extends Mock
-    implements SeedStoreTypeDatasource {}
+class _MockCheckLegacySeedStorageUsecase extends Mock
+    implements CheckLegacySeedStorageUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
     implements CheckBackupNeededUsecase {}
@@ -76,7 +76,7 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
-    seedStoreTypeDatasource: _MockSeedStoreTypeDatasource(),
+    checkLegacySeedStorageUsecase: _MockCheckLegacySeedStorageUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase:

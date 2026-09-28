@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
@@ -41,7 +41,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._syncCoordinator,
     required this._getUnconfirmedIncomingBalanceUsecase,
     required this._deleteWalletUsecase,
-    required this._seedStoreTypeDatasource,
+    required this._checkLegacySeedStorageUsecase,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -72,7 +72,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final SeedStoreTypeDatasource _seedStoreTypeDatasource;
+  final CheckLegacySeedStorageUsecase _checkLegacySeedStorageUsecase;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
@@ -131,9 +131,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               isSyncing, // If global sync is true, all wallets are syncing
       };
 
-      final seedStoreType = await _seedStoreTypeDatasource.read();
-      final isOnLegacyStorage =
-          seedStoreType?.toEntity().isLegacyStorage ?? false;
+      final isOnLegacyStorage = await _checkLegacySeedStorageUsecase.execute();
 
       emit(
         state.copyWith(

@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
+import 'package:bb_mobile/core/seed/domain/repositories/seed_store_type_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -48,6 +49,9 @@ class WalletLocator {
         locator<Tor>(),
       ),
     );
+    locator.registerFactory<CheckLegacySeedStorageUsecase>(
+      () => CheckLegacySeedStorageUsecase(locator<SeedStoreTypeRepository>()),
+    );
     locator.registerFactory<CheckSpWalletSetupForWalletUsecase>(
       () => CheckSpWalletSetupForWalletUsecase(spFacade: locator<SpFacade>()),
     );
@@ -86,7 +90,7 @@ class WalletLocator {
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
-        seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
+        checkLegacySeedStorageUsecase: locator<CheckLegacySeedStorageUsecase>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),

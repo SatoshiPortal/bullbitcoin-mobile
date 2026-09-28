@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -70,7 +70,8 @@ class _MockCheckSpWalletSetupForWallet extends Mock
 class _MockCheckSpScanningForWallet extends Mock
     implements CheckSpScanningForWalletUsecase {}
 
-class _MockSeedStoreType extends Mock implements SeedStoreTypeDatasource {}
+class _MockCheckLegacySeedStorage extends Mock
+    implements CheckLegacySeedStorageUsecase {}
 
 class _MockExternalTorStatus extends Mock
     implements GetExternalTorProxyStatusUsecase {}
@@ -113,7 +114,7 @@ WalletBloc _makeBloc({
   getWallets ??= _MockGetWalletsUsecase();
   syncCoordinator ??= _MockSyncCoordinator();
   final checkWalletSyncing = _MockCheckWalletSyncingUsecase();
-  final seedStoreType = _MockSeedStoreType();
+  final checkLegacySeedStorage = _MockCheckLegacySeedStorage();
 
   when(
     () => watchStarted.execute(),
@@ -139,7 +140,7 @@ WalletBloc _makeBloc({
     () => checkWalletSyncing.execute(walletId: any(named: 'walletId')),
   ).thenReturn(false);
   when(() => checkWalletSyncing.execute()).thenReturn(false);
-  when(() => seedStoreType.read()).thenAnswer((_) async => null);
+  when(() => checkLegacySeedStorage.execute()).thenAnswer((_) async => false);
 
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
   when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
@@ -159,7 +160,7 @@ WalletBloc _makeBloc({
     checkSpScanningForWalletUsecase: checkScanning,
     refreshSpWalletForWalletUsecase: refreshSp,
     watchSpWalletUsecase: watchSp,
-    seedStoreTypeDatasource: seedStoreType,
+    checkLegacySeedStorageUsecase: checkLegacySeedStorage,
     checkSpFeatureGateForWalletUsecase: checkSpFeatureGate,
   );
 }
