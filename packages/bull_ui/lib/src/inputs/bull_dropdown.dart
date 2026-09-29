@@ -1,8 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// A themed [DropdownButtonFormField] — duplicated from
-/// `core/widgets/dropdown/bb_dropdown.dart` (`BBDropdown`).
+/// A themed [DropdownButtonFormField].
 ///
 /// Generic over the item value type [T]. Items are left-aligned and the menu
 /// is capped at 240px tall.

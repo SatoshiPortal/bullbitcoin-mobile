@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 
-/// Restricts a text field to a valid monetary amount for a given currency —
-/// duplicated from `core/widgets/inputs/amount_input_formatter.dart`.
+/// Restricts a text field to a valid monetary amount for a given currency.
 ///
 /// Decimal places are derived from [inputCurrencyCode]: `0` for sats, `8` for
 /// BTC, `2` for fiat, unless [maxDecimals] overrides it. Commas are normalised

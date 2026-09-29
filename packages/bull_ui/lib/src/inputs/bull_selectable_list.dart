@@ -36,8 +36,7 @@ class BullSelectableListItem {
   final bool isSubtitle2Loading;
 }
 
-/// A vertical list of single-select cards — duplicated from
-/// `core/widgets/dropdown/selectable_list.dart` (`SelectableList`).
+/// A vertical list of single-select cards.
 ///
 /// Tapping a row pops the enclosing route with that row's
 /// [BullSelectableListItem.value]; the row matching [selectedValue] is shown
