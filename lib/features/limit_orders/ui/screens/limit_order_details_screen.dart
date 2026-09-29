@@ -2,8 +2,10 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_cubit.dart';
+import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_state.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
 import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_order_detail_row.dart';
+import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,15 +20,22 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
     final state = context.watch<LimitOrderDetailsCubit>().state;
     return BullScaffold(
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             BullTopBar(
               title: context.loc.limitOrderDetailsTitle,
               onBack: context.pop,
             ),
+            SizedBox(
+              height: 3,
+              child: state.isLoading || state.isCancelling
+                  ? const LimitOrdersLoadingBar()
+                  : null,
+            ),
             Expanded(
               child: state.isLoading && state.order == null
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const SizedBox.shrink()
                   : state.order == null
                   ? _error(context, state.failure?.toTranslated(context))
                   : _details(context, state.order!, state.wasCancelled),
@@ -34,6 +43,32 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: _bottomBar(context, state),
+    );
+  }
+
+  Widget? _bottomBar(BuildContext context, LimitOrderDetailsState state) {
+    final order = state.order;
+    if (order == null) return null;
+    final button = order.isActive && !state.wasCancelled
+        ? BullButton.big(
+            label: context.loc.limitOrderCancel,
+            onPressed: state.isCancelling
+                ? () {}
+                : () => _confirmCancel(context),
+            disabled: state.isCancelling,
+            bgColor: context.bull.primary,
+            textColor: context.bull.onPrimary,
+          )
+        : BullButton.big(
+            label: context.loc.limitOrdersDone,
+            onPressed: () => context.pop(state.wasCancelled),
+            bgColor: context.bull.secondary,
+            textColor: context.bull.onSecondary,
+          );
+    return SafeArea(
+      top: false,
+      child: Padding(padding: const EdgeInsets.all(16), child: button),
     );
   }
 
@@ -99,31 +134,13 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
           label: context.loc.limitOrderDetailsExpires,
           value: dateFormat.format(order.expiresAt.toLocal()),
         ),
-        const Spacer(),
         if (state.failure case final failure?) ...[
+          const Gap(12),
           Text(
             failure.toTranslated(context),
             style: TextStyle(color: context.bull.error),
           ),
-          const Gap(12),
         ],
-        if (order.isActive && !wasCancelled)
-          BullButton.big(
-            label: context.loc.limitOrderCancel,
-            onPressed: state.isCancelling
-                ? () {}
-                : () => _confirmCancel(context),
-            disabled: state.isCancelling,
-            bgColor: context.bull.error,
-            textColor: context.bull.onError,
-          )
-        else
-          BullButton.big(
-            label: context.loc.limitOrdersDone,
-            onPressed: () => context.pop(wasCancelled),
-            bgColor: context.bull.secondary,
-            textColor: context.bull.onSecondary,
-          ),
       ],
     );
   }
@@ -145,8 +162,8 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
           BullButton.big(
             label: context.loc.limitOrdersDialogConfirm,
             onPressed: () => Navigator.pop(dialogContext, true),
-            bgColor: context.bull.error,
-            textColor: context.bull.onError,
+            bgColor: context.bull.primary,
+            textColor: context.bull.onPrimary,
           ),
           const Gap(BullSpacing.sm),
           BullButton.big(

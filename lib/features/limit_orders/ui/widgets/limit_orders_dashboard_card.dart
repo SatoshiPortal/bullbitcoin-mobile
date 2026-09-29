@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
@@ -27,12 +28,20 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
 
   Widget _content(BuildContext context, LimitOrdersState state) {
     if (state.isLoading && state.orders.isEmpty) {
-      return const Center(
+      return const Column(
         key: ValueKey('loading'),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: CircularProgressIndicator(),
-        ),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LoadingLineContent(
+            height: 16,
+            padding: EdgeInsets.symmetric(vertical: 6),
+          ),
+          LoadingLineContent(
+            height: 16,
+            width: 180,
+            padding: EdgeInsets.symmetric(vertical: 6),
+          ),
+        ],
       );
     }
     if (state.failure != null && state.orders.isEmpty) {
@@ -55,33 +64,22 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
       );
     }
     if (state.orders.isEmpty) {
-      return Column(
+      return InkWell(
         key: const ValueKey('inactive'),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.multiline_chart),
-              const Gap(12),
-              Expanded(
-                child: Text(
-                  context.loc.limitOrdersTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+        onTap: () => _openCreate(context),
+        child: Row(
+          children: [
+            const Icon(Icons.multiline_chart),
+            const Gap(12),
+            Expanded(
+              child: Text(
+                context.loc.limitOrdersTitle,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-            ],
-          ),
-          const Gap(8),
-          Text(context.loc.limitOrdersDashboardDescription),
-          const Gap(12),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              onPressed: () => _openCreate(context),
-              child: Text(context.loc.limitOrdersOpen),
             ),
-          ),
-        ],
+            const Icon(Icons.chevron_right),
+          ],
+        ),
       );
     }
 
@@ -189,8 +187,8 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           BullButton.big(
             label: context.loc.limitOrdersDialogConfirm,
             onPressed: () => Navigator.pop(dialogContext, true),
-            bgColor: context.bull.error,
-            textColor: context.bull.onError,
+            bgColor: context.bull.primary,
+            textColor: context.bull.onPrimary,
           ),
           const Gap(BullSpacing.sm),
           BullButton.big(

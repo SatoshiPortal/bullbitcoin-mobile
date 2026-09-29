@@ -2,11 +2,13 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
 import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_order_detail_row.dart';
+import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +24,30 @@ final class CreateLimitOrderScreen extends StatefulWidget {
 final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   final _discountController = TextEditingController(text: '1');
   final _amountController = TextEditingController();
+  final _amountNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController.addListener(_onAmountChanged);
+  }
+
+  void _onAmountChanged() {
+    if (!mounted) return;
+    final parsed =
+        double.tryParse(
+          _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+        ) ??
+        0;
+    context.read<CreateLimitOrderCubit>().setAmount(parsed);
+  }
 
   @override
   void dispose() {
+    _amountController.removeListener(_onAmountChanged);
     _discountController.dispose();
     _amountController.dispose();
+    _amountNode.dispose();
     super.dispose();
   }
 
@@ -35,6 +56,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     final state = context.watch<CreateLimitOrderCubit>().state;
     return BullScaffold(
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             BullTopBar(
@@ -47,21 +69,80 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                 }
               },
             ),
-            BullFadingLinearProgress(
-              trigger: state.isLoading || state.isSubmitting,
+            SizedBox(
               height: 3,
-              foregroundColor: context.bull.primary,
+              child: state.isLoading || state.isSubmitting
+                  ? const LimitOrdersLoadingBar()
+                  : null,
             ),
             Expanded(child: _body(context, state)),
           ],
         ),
       ),
+      bottomNavigationBar: _bottomBar(context, state),
+    );
+  }
+
+  Widget? _bottomBar(BuildContext context, CreateLimitOrderState state) {
+    final noButton =
+        state.rate == null && (state.isLoading || state.failure != null);
+    if (noButton) return null;
+
+    final cubit = context.read<CreateLimitOrderCubit>();
+    final balance = state.selectedBalance;
+    final button = switch (state.step) {
+      CreateLimitOrderStep.intro => _primaryButton(
+        context,
+        label: context.loc.continueButton,
+        onPressed: cubit.continueFromIntro,
+      ),
+      CreateLimitOrderStep.target => _primaryButton(
+        context,
+        label: context.loc.continueButton,
+        onPressed: cubit.continueFromTarget,
+      ),
+      CreateLimitOrderStep.amount => _primaryButton(
+        context,
+        label: context.loc.continueButton,
+        disabled:
+            state.fiatAmount <= 0 ||
+            (balance != null && state.fiatAmount > balance.amount),
+        onPressed: cubit.continueFromAmount,
+      ),
+      CreateLimitOrderStep.wallet => _primaryButton(
+        context,
+        label: context.loc.continueButton,
+        disabled: state.wallet == null,
+        onPressed: cubit.continueFromWallet,
+      ),
+      CreateLimitOrderStep.confirmation => _primaryButton(
+        context,
+        label: context.loc.limitOrdersConfirm,
+        disabled: state.isSubmitting,
+        onPressed: cubit.submit,
+      ),
+      CreateLimitOrderStep.done => _primaryButton(
+        context,
+        label: context.loc.limitOrdersBackToExchange,
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop(true);
+          } else {
+            context.go('/exchange');
+          }
+        },
+      ),
+    };
+
+    return SafeArea(
+      top: false,
+      child: Padding(padding: const EdgeInsets.all(16), child: button),
     );
   }
 
   Widget _body(BuildContext context, CreateLimitOrderState state) {
     if (state.isLoading && state.rate == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const SizedBox.shrink();
     }
     if (state.failure != null && state.rate == null) {
       return _FailureView(
@@ -101,11 +182,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       _Bullet(context.loc.limitOrdersIntroBulletBalance),
       _Bullet(context.loc.limitOrdersIntroBulletExecution),
       const Spacer(),
-      _primaryButton(
-        context,
-        label: context.loc.continueButton,
-        onPressed: context.read<CreateLimitOrderCubit>().continueFromIntro,
-      ),
     ],
   );
 
@@ -177,12 +253,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
             context.read<CreateLimitOrderCubit>().setDiscount(value);
           },
         ),
-        const Spacer(),
-        _primaryButton(
-          context,
-          label: context.loc.continueButton,
-          onPressed: context.read<CreateLimitOrderCubit>().continueFromTarget,
-        ),
       ],
     );
   }
@@ -204,29 +274,16 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           ),
         ),
         const Gap(24),
-        TextFormField(
-          controller: _amountController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            labelText: context.loc.limitOrdersFiatAmount,
-            suffixText: balance.currency.code,
-          ),
-          onChanged: (value) => context.read<CreateLimitOrderCubit>().setAmount(
-            double.tryParse(value) ?? 0,
-          ),
+        ExchangeAmountInputField(
+          amountController: _amountController,
+          focusNode: _amountNode,
+          fiatCurrency: state.currency,
         ),
         const Gap(16),
         Text(
           context.loc.limitOrdersEstimatedBitcoin(
             FormatAmount.btc(state.estimatedBtcAmount),
           ),
-        ),
-        const Spacer(),
-        _primaryButton(
-          context,
-          label: context.loc.continueButton,
-          disabled: state.fiatAmount <= 0 || state.fiatAmount > balance.amount,
-          onPressed: context.read<CreateLimitOrderCubit>().continueFromAmount,
         ),
       ],
     );
@@ -266,13 +323,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               title: Text(_walletName(context, wallet.type)),
               subtitle: Text(wallet.address, maxLines: 2),
             ),
-        const Spacer(),
-        _primaryButton(
-          context,
-          label: context.loc.continueButton,
-          disabled: state.wallet == null,
-          onPressed: context.read<CreateLimitOrderCubit>().continueFromWallet,
-        ),
       ],
     );
   }
@@ -317,20 +367,13 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           context.loc.limitOrdersTermsNotice,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        const Spacer(),
         if (state.failure case final failure?) ...[
+          const Gap(12),
           Text(
             failure.toTranslated(context),
             style: TextStyle(color: context.bull.error),
           ),
-          const Gap(12),
         ],
-        _primaryButton(
-          context,
-          label: context.loc.limitOrdersConfirm,
-          disabled: state.isSubmitting,
-          onPressed: context.read<CreateLimitOrderCubit>().submit,
-        ),
       ],
     );
   }
@@ -363,17 +406,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
             textAlign: TextAlign.center,
           ),
           const Spacer(),
-          _primaryButton(
-            context,
-            label: context.loc.limitOrdersBackToExchange,
-            onPressed: () {
-              if (context.canPop()) {
-                context.pop(true);
-              } else {
-                context.go('/exchange');
-              }
-            },
-          ),
         ],
       );
 
