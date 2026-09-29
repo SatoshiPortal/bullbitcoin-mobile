@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -102,9 +103,9 @@ class _WithdrawPaymentDetailsScreenState
           (bloc.state as WithdrawPaymentDetailsInputState)
               .isCreatingWithdrawOrder,
     );
-    final withdrawError = context.select(
+    final withdrawFailure = context.select(
       (WithdrawBloc bloc) => bloc.state is WithdrawPaymentDetailsInputState
-          ? (bloc.state as WithdrawPaymentDetailsInputState).error
+          ? (bloc.state as WithdrawPaymentDetailsInputState).failure
           : null,
     );
     final colors = context.bull;
@@ -207,10 +208,10 @@ class _WithdrawPaymentDetailsScreenState
                       ],
                     ),
                   ),
-                  if (withdrawError != null) ...[
+                  if (withdrawFailure != null) ...[
                     const Gap(16),
                     BullText(
-                      withdrawError.toTranslated(context),
+                      withdrawFailure.toTranslated(context),
                       style: context.bullText.bodySmall,
                       color: colors.error,
                     ),

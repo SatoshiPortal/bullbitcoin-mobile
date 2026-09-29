@@ -1,9 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -13,6 +15,18 @@ class _MockExchangeOrderRepository extends Mock
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
+
+/// The value of an [Ok], failing the test on an [Err].
+T _ok<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected Ok, got $failure'),
+};
+
+/// The failure of an [Err], failing the test on an [Ok].
+F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => fail('expected Err, got $value'),
+  Err(:final failure) => failure,
+};
 
 void main() {
   late _MockExchangeOrderRepository mainnetRepository;
@@ -49,12 +63,14 @@ void main() {
       ),
     ).thenAnswer((_) async => order);
 
-    final result = await usecase.execute(
-      fiatAmount: 125,
-      recipientId: 'recipient-1',
-      recipientEmail: 'person@example.com',
-      securityQuestion: '  Favourite city?  ',
-      securityAnswer: '  Montreal  ',
+    final result = _ok(
+      await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientEmail: 'person@example.com',
+        securityQuestion: '  Favourite city?  ',
+        securityAnswer: '  Montreal  ',
+      ),
     );
 
     expect(result.order, same(order));
@@ -81,9 +97,8 @@ void main() {
       ),
     ).thenAnswer((_) async => order);
 
-    final result = await usecase.execute(
-      fiatAmount: 125,
-      recipientId: 'recipient-1',
+    final result = _ok(
+      await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
     );
 
     expect(result.order, same(order));
@@ -101,16 +116,14 @@ void main() {
   test(
     'rejects incomplete Interac security details before the API call',
     () async {
-      await expectLater(
-        usecase.execute(
-          fiatAmount: 125,
-          recipientId: 'recipient-1',
-          recipientEmail: 'person@example.com',
-          securityQuestion: 'Favourite city?',
-        ),
-        throwsA(isA<UnexpectedWithdrawError>()),
+      final result = await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientEmail: 'person@example.com',
+        securityQuestion: 'Favourite city?',
       );
 
+      expect(_err(result), isA<WithdrawUnexpectedFailure>());
       verifyZeroInteractions(mainnetRepository);
       verifyZeroInteractions(testnetRepository);
     },
@@ -119,17 +132,15 @@ void main() {
   test(
     'rejects invalid Interac security details before the API call',
     () async {
-      await expectLater(
-        usecase.execute(
-          fiatAmount: 125,
-          recipientId: 'recipient-1',
-          recipientEmail: 'person@example.com',
-          securityQuestion: 'Favourite city?',
-          securityAnswer: 'Montreal!',
-        ),
-        throwsA(isA<UnexpectedWithdrawError>()),
+      final result = await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientEmail: 'person@example.com',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal!',
       );
 
+      expect(_err(result), isA<WithdrawUnexpectedFailure>());
       verifyZeroInteractions(mainnetRepository);
       verifyZeroInteractions(testnetRepository);
     },
@@ -153,9 +164,8 @@ void main() {
       ),
     ).thenAnswer((_) async => order);
 
-    final result = await usecase.execute(
-      fiatAmount: 125,
-      recipientId: 'recipient-1',
+    final result = _ok(
+      await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
     );
 
     expect(result.order, same(order));
@@ -165,14 +175,17 @@ void main() {
   test('sanitizes unexpected failures', () async {
     when(() => settingsRepository.fetch()).thenThrow(Exception('Montreal'));
 
-    await expectLater(
-      usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
-      throwsA(
-        isA<UnexpectedWithdrawError>().having(
-          (error) => error.message,
-          'message',
-          isNot(contains('Montreal')),
-        ),
+    final result = await usecase.execute(
+      fiatAmount: 125,
+      recipientId: 'recipient-1',
+    );
+
+    expect(
+      _err(result),
+      isA<WithdrawUnexpectedFailure>().having(
+        (failure) => failure.logMessage,
+        'logMessage',
+        isNot(contains('Montreal')),
       ),
     );
   });
