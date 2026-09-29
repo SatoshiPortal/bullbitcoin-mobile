@@ -2,8 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// Numeric dial pad for PIN / amount entry — duplicated from
-/// `core/widgets/dialpad/dial_pad.dart`.
+/// Numeric dial pad for PIN / amount entry.
 ///
 /// Renders 0–9, a decimal point (hidden when [onlyDigits]) and a backspace.
 /// [onNumberPressed] receives the tapped glyph; [onBackspacePressed] handles

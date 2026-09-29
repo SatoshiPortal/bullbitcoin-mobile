@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
-/// A read-only field with a paste button that fills it from the clipboard —
-/// duplicated from `core/widgets/inputs/paste_input.dart`.
+/// A read-only field with a paste button that fills it from the clipboard.
 class BullPasteInput extends StatelessWidget {
   const BullPasteInput({
     super.key,
@@ -45,9 +44,7 @@ class BullPasteInput extends StatelessWidget {
                   )
                 : BullText(
                     text.trim(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge,
                     color: colors.onSurface,
                   ),
           ),
