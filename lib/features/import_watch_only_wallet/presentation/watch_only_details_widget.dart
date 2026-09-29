@@ -3,13 +3,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInputText, BullLabeledTextInput, Gap;
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {
@@ -45,13 +45,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           style: context.font.bodyMedium,
         ),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
           value: entity.descriptor.combined,
           onChanged: null,
         ),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyType,
           value: entity.descriptor.derivation.label,
           onChanged: null,
@@ -98,13 +98,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             ],
           ),
         if (entity.signerDevice != null)
-          LabeledTextInput(
+          BullLabeledTextInput(
             label: context.loc.importWatchOnlySigningDevice,
             value: entity.signerDevice!.displayName,
             onChanged: null,
           ),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyLabel,
           hint: context.loc.importWatchOnlyRequired,
           value: entity.label,

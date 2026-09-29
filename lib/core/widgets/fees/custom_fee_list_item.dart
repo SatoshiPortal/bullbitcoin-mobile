@@ -6,12 +6,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAmountInputFormatter, Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -501,7 +500,10 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                     // matches what _formatForInput renders back (also 2dp) and
                     // what the sat/kwu store can represent — no typed-vs-stored
                     // -vs-shown drift in the sub-1 regime this targets.
-                    AmountInputFormatter(BitcoinUnit.btc.code, maxDecimals: 2),
+                    BullAmountInputFormatter(
+                      BitcoinUnit.btc.code,
+                      maxDecimals: 2,
+                    ),
                 ],
                 onChanged: _onValueChanged,
                 style: TextStyle(color: context.appColors.onSurface),

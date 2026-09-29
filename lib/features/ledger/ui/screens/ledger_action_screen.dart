@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -31,7 +30,8 @@ import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart'
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSelectableList, BullSelectableListItem, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -355,19 +355,19 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
 
   Future<void> _showScriptTypeSelection(BuildContext context) async {
     final scriptTypeItems = [
-      SelectableListItem(
+      BullSelectableListItem(
         value: 'bip84',
         title: context.loc.ledgerWalletTypeSegwit,
         subtitle1: context.loc.ledgerWalletTypeSegwitDescription,
         subtitle2: '',
       ),
-      SelectableListItem(
+      BullSelectableListItem(
         value: 'bip49',
         title: context.loc.ledgerWalletTypeNestedSegwit,
         subtitle1: context.loc.ledgerWalletTypeNestedSegwitDescription,
         subtitle2: '',
       ),
-      SelectableListItem(
+      BullSelectableListItem(
         value: 'bip44',
         title: context.loc.ledgerWalletTypeLegacy,
         subtitle1: context.loc.ledgerWalletTypeLegacyDescription,
@@ -390,7 +390,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                   style: context.font.headlineMedium,
                 ),
                 const Gap(16),
-                SelectableList(
+                BullSelectableList(
                   selectedValue: _selectedScriptType.name,
                   items: scriptTypeItems,
                 ),

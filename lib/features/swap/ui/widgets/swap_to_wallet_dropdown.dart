@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, Gap;
 
 class SwapToWalletDropdown extends StatelessWidget {
   const SwapToWalletDropdown();
@@ -24,7 +23,7 @@ class SwapToWalletDropdown extends StatelessWidget {
         if (wallets.isEmpty)
           const LoadingLineContent()
         else
-          BBDropdown<Wallet>(
+          BullDropdown<Wallet>(
             items: wallets
                 .map(
                   (wallet) => DropdownMenuItem(

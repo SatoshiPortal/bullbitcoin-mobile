@@ -3,13 +3,12 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/mempool_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullLowerCaseTextFormatter, Gap;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
@@ -208,7 +207,7 @@ class _SetCustomServerBottomSheetState
                     textInputAction: TextInputAction.done,
                     inputFormatters: [
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                      LowerCaseTextFormatter(),
+                      BullLowerCaseTextFormatter(),
                     ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
