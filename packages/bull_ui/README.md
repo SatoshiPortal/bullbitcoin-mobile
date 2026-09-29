@@ -56,11 +56,10 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 **Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`
 (`TabMenuVerticalButton`), `BullViewerActionButton` (`ViewerActionButton`).
 
-**Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText` (`BBInputText`),
-`BullPasteInput` (`PasteInput`), `BullDropdown` (`BBDropdown`),
-`BullSelectableList` + `BullSelectableListItem` (`SelectableList`),
-`BullDialPad` (`DialPad`), `BullAmountInputFormatter` (`AmountInputFormatter`),
-`BullLowerCaseTextFormatter` (`LowerCaseTextFormatter`).
+**Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
+`BullLabeledTextInput`, `BullPasteInput`, `BullDropdown`,
+`BullSelectableList` + `BullSelectableListItem`, `BullDialPad`,
+`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch` (`BBSwitch`).
 
