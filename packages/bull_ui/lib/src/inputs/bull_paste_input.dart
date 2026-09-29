@@ -20,7 +20,7 @@ class BullPasteInput extends StatelessWidget {
   final String hint;
 
   /// Fired with the pasted clipboard contents.
-  final Function(String) onChanged;
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
