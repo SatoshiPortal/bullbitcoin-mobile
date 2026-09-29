@@ -361,7 +361,6 @@ m.Widget bullDropdownClosedUseCase(m.BuildContext context) {
     m.SizedBox(
       width: 320,
       child: BullDropdown<String>(
-        label: context.knobs.string(label: 'label', initialValue: 'Network'),
         value: 'Mainnet',
         items: const [
           m.DropdownMenuItem(value: 'Mainnet', child: m.Text('Mainnet')),

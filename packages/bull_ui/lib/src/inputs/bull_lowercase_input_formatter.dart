@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 
-/// Lowercases every character a user types — duplicated from
-/// `core/widgets/inputs/lowercase_input_formatter.dart`.
+/// Lowercases every character a user types.
 class BullLowerCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(

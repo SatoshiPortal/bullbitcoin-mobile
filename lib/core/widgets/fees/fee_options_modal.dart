@@ -4,13 +4,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSelectableList, BullSelectableListItem, Gap;
 
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on
@@ -188,7 +188,7 @@ class _PresetList extends StatelessWidget {
         fiatCurrencyCode: snapshot.fiatCurrencyCode,
       ),
     ];
-    return SelectableList(
+    return BullSelectableList(
       selectedValue: snapshot.selectedFeeOption.title(),
       items: items,
     );
@@ -196,9 +196,9 @@ class _PresetList extends StatelessWidget {
 }
 
 /// Builds one preset row. While `loading` and the cache slot doesn't
-/// hold a fee yet, [SelectableListItem.isSubtitle2Loading] is true so
+/// hold a fee yet, [BullSelectableListItem.isSubtitle2Loading] is true so
 /// the row renders a shimmer instead of an empty subtitle.
-SelectableListItem _presetItem({
+BullSelectableListItem _presetItem({
   required BuildContext context,
   required String title,
   required String description,
@@ -209,7 +209,7 @@ SelectableListItem _presetItem({
   required String fiatCurrencyCode,
 }) {
   if (rate == null) {
-    return SelectableListItem(
+    return BullSelectableListItem(
       value: title,
       title: title,
       subtitle1: description,
@@ -220,7 +220,7 @@ SelectableListItem _presetItem({
   final rateLabel = '${rate.value} ${context.loc.sendSatsPerVB}';
   final previewFeeSat = slot.feeSat;
   if (previewFeeSat == null) {
-    return SelectableListItem(
+    return BullSelectableListItem(
       value: title,
       title: title,
       subtitle1: description,
@@ -232,7 +232,7 @@ SelectableListItem _presetItem({
       ? ' (~ ${ConvertAmount.satsToFiat(previewFeeSat, exchangeRate)} '
             '$fiatCurrencyCode)'
       : '';
-  return SelectableListItem(
+  return BullSelectableListItem(
     value: title,
     title: title,
     subtitle1: description,

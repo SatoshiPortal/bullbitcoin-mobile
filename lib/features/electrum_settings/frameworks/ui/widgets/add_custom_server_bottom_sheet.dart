@@ -6,14 +6,13 @@ import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullLowerCaseTextFormatter, Gap;
 
 class CustomServerInput {
   final String url;
@@ -160,7 +159,7 @@ class _AddCustomServerBottomSheetState
                       // No whitespace allowed
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
                       // Force lowercase
-                      LowerCaseTextFormatter(),
+                      BullLowerCaseTextFormatter(),
                     ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
