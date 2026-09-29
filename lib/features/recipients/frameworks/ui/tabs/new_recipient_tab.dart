@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipien
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_clabe_mxn_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_sms_mxn_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_selector.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;

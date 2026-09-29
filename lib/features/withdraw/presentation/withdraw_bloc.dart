@@ -3,9 +3,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -23,6 +24,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
+    on<WithdrawInteracSecurityDetailsSubmitted>(
+      _onInteracSecurityDetailsSubmitted,
+      transformer: droppable(),
+    );
     /*on<WithdrawDescriptionInputContinuePressed>(
       _onDescriptionInputContinuePressed,
     );*/
@@ -93,20 +98,28 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       );
       return;
     }
-    emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
-
+    if (state is! WithdrawRecipientInputState) {
+      emit(recipientInputState);
+    }
     try {
       final recipient = event.recipient;
+      if (recipient.requiresInteracSecurityDetails) {
+        emit(
+          recipientInputState.toPaymentDetailsInputState(recipient: recipient),
+        );
+        return;
+      }
 
-      final order = await _createWithdrawOrderUsecase.execute(
+      emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
+
+      final result = await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.id,
-        recipientType: recipient.type,
       );
       emit(
         recipientInputState.toConfirmationState(
           recipient: recipient,
-          order: order,
+          order: result.order,
         ),
       );
     } on WithdrawError catch (e) {
@@ -128,6 +141,77 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       if (state is WithdrawRecipientInputState) {
         emit(
           (state as WithdrawRecipientInputState).copyWith(
+            isCreatingWithdrawOrder: false,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _onInteracSecurityDetailsSubmitted(
+    WithdrawInteracSecurityDetailsSubmitted event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState case WithdrawPaymentDetailsInputState(
+      isCreatingWithdrawOrder: true,
+    )) {
+      return;
+    }
+    final securityDetailsState = currentState.cleanPaymentDetailsInputState;
+    if (securityDetailsState == null) {
+      log.severe(
+        error: 'Expected payment details or confirmation state',
+        trace: StackTrace.current,
+      );
+      return;
+    }
+
+    emit(
+      securityDetailsState.copyWith(isCreatingWithdrawOrder: true, error: null),
+    );
+
+    try {
+      final recipient = securityDetailsState.recipient;
+      final result = await _createWithdrawOrderUsecase.execute(
+        fiatAmount: securityDetailsState.amount.amount,
+        recipientId: recipient.id,
+        recipientEmail: recipient.email,
+        securityQuestion: event.securityQuestion,
+        securityAnswer: event.securityAnswer,
+      );
+      final interacSecurityDetails = result.interacSecurityDetails;
+      if (interacSecurityDetails == null) {
+        throw const WithdrawError.unexpected(
+          message: 'Missing Interac security details',
+        );
+      }
+      emit(
+        securityDetailsState.toConfirmationState(
+          order: result.order,
+          interacSecurityDetails: interacSecurityDetails,
+          saveSecurityDetailsAsDefault: event.saveAsDefault,
+        ),
+      );
+    } on WithdrawError catch (e) {
+      emit(securityDetailsState.copyWith(error: e));
+    } catch (_) {
+      log.severe(
+        message: 'Failed to create withdrawal order',
+        error: 'Unexpected withdrawal creation failure',
+        trace: StackTrace.current,
+      );
+      emit(
+        securityDetailsState.copyWith(
+          error: const WithdrawError.unexpected(
+            message: 'Failed to create withdrawal order',
+          ),
+        ),
+      );
+    } finally {
+      if (state is WithdrawPaymentDetailsInputState) {
+        emit(
+          (state as WithdrawPaymentDetailsInputState).copyWith(
             isCreatingWithdrawOrder: false,
           ),
         );
@@ -196,6 +280,9 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     try {
       final order = await _confirmWithdrawUsecase.execute(
         orderId: confirmationState.order.orderId,
+        interacSecurityDetails: confirmationState.interacSecurityDetails,
+        saveSecurityDetailsAsDefault:
+            confirmationState.saveSecurityDetailsAsDefault,
       );
       emit(confirmationState.toSuccessState(order: order));
     } on WithdrawError catch (e) {
