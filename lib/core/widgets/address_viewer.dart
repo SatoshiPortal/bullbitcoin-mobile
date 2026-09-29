@@ -3,11 +3,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog, BullSegmented, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullSegmented, BullViewerActionButton, Gap;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -289,7 +289,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildCopyAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.copy,
       label: context.loc.viewerTapToCopy,
       onTap: () {
@@ -301,7 +301,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildCopyLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.link,
       label: context.loc.viewerCopyLink,
       onTap: () async {
@@ -317,7 +317,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildOpenLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.open_in_new,
       label: context.loc.viewerViewInExplorer,
       onTap: () async {
