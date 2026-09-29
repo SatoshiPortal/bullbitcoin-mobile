@@ -144,12 +144,14 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
               onPressed: state.isCancellingAll
                   ? null
                   : () => _confirmCancelAll(context),
+              style: _actionButtonStyle(context),
               child: Text(context.loc.limitOrdersCancelAll),
             ),
             const Spacer(),
             if (state.canCreate)
               TextButton(
                 onPressed: () => _openCreate(context),
+                style: _actionButtonStyle(context),
                 child: Text(context.loc.limitOrdersCreateNew),
               ),
           ],
@@ -162,6 +164,13 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
       ],
     );
   }
+
+  ButtonStyle _actionButtonStyle(BuildContext context) => TextButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    textStyle: Theme.of(context).textTheme.titleMedium,
+  );
 
   Future<void> _openCreate(BuildContext context) async {
     final changed = await context.pushNamed<bool>(LimitOrdersRoute.create.name);
