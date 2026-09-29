@@ -13,7 +13,6 @@ class BullDropdown<T> extends StatelessWidget {
     required this.onChanged,
     this.validator,
     this.hint,
-    this.label,
     this.height = 64,
   });
 
@@ -31,9 +30,6 @@ class BullDropdown<T> extends StatelessWidget {
 
   /// Placeholder widget shown when nothing is selected.
   final Widget? hint;
-
-  /// Optional label (currently unused by the layout; kept for API parity).
-  final String? label;
 
   /// Per-item height.
   final double height;
