@@ -3237,14 +3237,6 @@
   "fundExchangeRestrictedTitle": "无法充值",
   "fundExchangeRestrictedMessage": "您的账户无法充值。请联系客服了解更多信息。",
   "fundExchangeWarningTitle": "for监测",
-  "receiveError": "Rror: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "业余",
   "walletDetailsDescriptorLabel": "说明",
   "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",
@@ -4913,5 +4905,9 @@
   "autoBuyAccountUnavailableError": "您的 Bull Bitcoin 账户不可用。请稍后重试。",
   "autoBuyWalletRequiredError": "请至少添加一个默认的 Bitcoin、Lightning 或 Liquid 地址。",
   "autoBuyUpdateError": "无法更新自动买入。请稍后重试。",
-  "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。"
+  "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。",
+  "receiveErrorAmountAboveProtocolLimit": "金额超过比特币的最大可能金额 {max}",
+  "receiveErrorNoteNotSaved": "无法保存您的备注。请重试。",
+  "receiveErrorAddressUnavailable": "无法准备接收地址。请重试。",
+  "receiveErrorBroadcastOriginal": "我们无法广播该交易。请检查您的网络连接并重试。"
 }

@@ -3177,14 +3177,6 @@
   "fundExchangeRestrictedTitle": "Einzahlung nicht verfügbar",
   "fundExchangeRestrictedMessage": "Einzahlungen sind für Ihr Konto nicht verfügbar. Bitte kontaktieren Sie den Support für weitere Informationen.",
   "fundExchangeWarningTitle": "Achtung: Betrugsrisiko",
-  "receiveError": "Fehler: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Wiederholungsversuche",
   "walletDetailsDescriptorLabel": "Output-Descriptor",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",
@@ -4951,5 +4943,9 @@
   "autoBuyAccountUnavailableError": "Ihr Bull Bitcoin-Konto ist nicht verfügbar. Versuchen Sie es später erneut.",
   "autoBuyWalletRequiredError": "Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
   "autoBuyUpdateError": "Auto-Buy konnte nicht aktualisiert werden. Versuchen Sie es später erneut.",
-  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
+  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
+  "receiveErrorAmountAboveProtocolLimit": "Der Betrag liegt über dem maximal möglichen Bitcoin-Betrag von {max}",
+  "receiveErrorNoteNotSaved": "Deine Notiz konnte nicht gespeichert werden. Bitte versuche es erneut.",
+  "receiveErrorAddressUnavailable": "Es konnte keine Empfangsadresse erstellt werden. Bitte versuche es erneut.",
+  "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut."
 }

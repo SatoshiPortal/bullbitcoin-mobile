@@ -3236,14 +3236,6 @@
   "fundExchangeRestrictedTitle": "Пополнение недоступно",
   "fundExchangeRestrictedMessage": "Пополнение недоступно для вашего аккаунта. Пожалуйста, свяжитесь со службой поддержки для получения дополнительной информации.",
   "fundExchangeWarningTitle": "Следите за мошенниками",
-  "receiveError": "Ошибка: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "walletDetailsDescriptorLabel": "Дескриптор",
   "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",
@@ -4919,5 +4911,9 @@
   "autoBuyAccountUnavailableError": "Ваш счёт Bull Bitcoin недоступен. Попробуйте позже.",
   "autoBuyWalletRequiredError": "Добавьте хотя бы один адрес Bitcoin, Lightning или Liquid по умолчанию.",
   "autoBuyUpdateError": "Не удалось обновить автопокупку. Попробуйте позже.",
-  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку."
+  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
+  "receiveErrorAmountAboveProtocolLimit": "Сумма превышает максимально возможную сумму Bitcoin: {max}",
+  "receiveErrorNoteNotSaved": "Не удалось сохранить заметку. Попробуйте ещё раз.",
+  "receiveErrorAddressUnavailable": "Не удалось подготовить адрес для получения. Попробуйте ещё раз.",
+  "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз."
 }

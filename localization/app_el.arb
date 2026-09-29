@@ -8222,15 +8222,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12179,5 +12170,9 @@
   "autoBuyAccountUnavailableError": "Ο λογαριασμός σας Bull Bitcoin δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
   "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
   "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
-  "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη."
+  "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "receiveErrorAmountAboveProtocolLimit": "Το ποσό υπερβαίνει το μέγιστο δυνατό ποσό Bitcoin των {max}",
+  "receiveErrorNoteNotSaved": "Η σημείωσή σας δεν μπόρεσε να αποθηκευτεί. Δοκιμάστε ξανά.",
+  "receiveErrorAddressUnavailable": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης. Δοκιμάστε ξανά.",
+  "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά."
 }
