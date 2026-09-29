@@ -16,6 +16,7 @@ class BullLabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.controller,
     this.enableSuggestions = true,
     this.autocorrect = true,
     this.smartQuotesType,
@@ -36,6 +37,10 @@ class BullLabeledTextInput extends StatelessWidget {
 
   /// Maximum lines.
   final int? maxLines;
+
+  /// Optional external controller, for a caller that owns the field text (a
+  /// form pushing a programmatic change back in). One is created when null.
+  final TextEditingController? controller;
 
   /// Both default to true. Set them false for secrets: the IME's suggestion
   /// and autocorrect caches must never see the value.
@@ -74,6 +79,7 @@ class BullLabeledTextInput extends StatelessWidget {
             ],
           ),
           child: BullInputText(
+            controller: controller,
             value: value,
             onChanged: onChanged ?? (_) {},
             disabled: onChanged == null,
