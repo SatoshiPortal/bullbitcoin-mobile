@@ -32,7 +32,7 @@ class BullLabeledTextInput extends StatelessWidget {
   final String hint;
 
   /// Fired on every change; null disables the field.
-  final Function(String)? onChanged;
+  final void Function(String)? onChanged;
 
   /// Maximum lines.
   final int? maxLines;
