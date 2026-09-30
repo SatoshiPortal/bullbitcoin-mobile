@@ -6,11 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
 /// A bordered, padded container that stacks [BullDetailsTableItem] rows with
-/// hairline dividers between them — duplicated from
-/// `core/widgets/tables/details_table.dart` (`DetailsTable`).
+/// hairline dividers between them.
 ///
 /// Used to present key/value transaction or address details. The fill is
-/// [BullTheme.surface], the border and dividers use [BullTheme.border], and a
+/// [BullTheme.surface], the border and dividers use [BullTheme.outline], and a
 /// soft drop shadow derives from [BullTheme.onSurface].
 class BullDetailsTable extends StatelessWidget {
   const BullDetailsTable({super.key, required this.items});
@@ -26,7 +25,7 @@ class BullDetailsTable extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        border: Border.all(color: colors.border),
+        border: Border.all(color: colors.outline),
         boxShadow: [
           BoxShadow(
             color: colors.onSurface.withValues(alpha: 0.3),
@@ -40,7 +39,7 @@ class BullDetailsTable extends StatelessWidget {
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],
-            if (i != items.length - 1) Divider(color: colors.border),
+            if (i != items.length - 1) Divider(color: colors.outline),
           ],
         ],
       ),
@@ -48,14 +47,14 @@ class BullDetailsTable extends StatelessWidget {
   }
 }
 
-/// A single label/value row for [BullDetailsTable] — duplicated from
-/// `core/widgets/tables/details_table_item.dart` (`DetailsTableItem`).
+/// A single label/value row for [BullDetailsTable].
 ///
 /// Shows [label] on the left and a right-aligned value on the right. The value
 /// is [displayWidget] if provided, otherwise [displayValue] as text, otherwise
 /// a [BullShimmerLine] placeholder. When [copyValue] is non-empty a copy icon
-/// is shown that writes to the clipboard and surfaces a [BullSnackBar]. When
-/// [expandableChild] is provided an expand/collapse toggle reveals it below.
+/// is shown that writes to the clipboard, then calls [onCopied] or, when that
+/// is null, surfaces a [BullSnackBar]. When [expandableChild] is provided an
+/// expand/collapse toggle reveals it below.
 class BullDetailsTableItem extends StatefulWidget {
   const BullDetailsTableItem({
     super.key,
@@ -66,6 +65,7 @@ class BullDetailsTableItem extends StatefulWidget {
     this.expandableChild,
     this.displayWidget,
     this.copiedMessage = 'Copied to clipboard',
+    this.onCopied,
   });
 
   /// Left-hand row label.
@@ -89,6 +89,10 @@ class BullDetailsTableItem extends StatefulWidget {
 
   /// Toast message shown after a successful copy.
   final String copiedMessage;
+
+  /// Called after a successful copy instead of the default [BullSnackBar], for
+  /// screens that confirm the copy their own way.
+  final VoidCallback? onCopied;
 
   @override
   State<BullDetailsTableItem> createState() => _BullDetailsTableItemState();
@@ -133,7 +137,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                                   widget.displayValue!,
                                   textAlign: TextAlign.end,
                                   overflow: TextOverflow.clip,
-                                  style: Theme.of(context).textTheme.bodyMedium
+                                  style: Theme.of(context).textTheme.bodyLarge
                                       ?.copyWith(
                                         color: colors.onSurface,
                                         decoration: widget.isUnderline
@@ -147,17 +151,22 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                     if (widget.copyValue != null &&
                         widget.copyValue!.isNotEmpty)
                       Material(
-                        color: Colors.transparent,
+                        color: colors.transparent,
                         child: InkWell(
                           splashColor: colors.primary.withValues(alpha: 0.12),
                           onTap: () {
                             Clipboard.setData(
                               ClipboardData(text: widget.copyValue!),
                             );
-                            BullSnackBar.show(
-                              context,
-                              message: widget.copiedMessage,
-                            );
+                            final onCopied = widget.onCopied;
+                            if (onCopied != null) {
+                              onCopied();
+                            } else {
+                              BullSnackBar.show(
+                                context,
+                                message: widget.copiedMessage,
+                              );
+                            }
                           },
                           child: Icon(
                             Icons.copy_outlined,
@@ -169,7 +178,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                     if (widget.expandableChild != null) ...[
                       const Gap(8),
                       Material(
-                        color: Colors.transparent,
+                        color: colors.transparent,
                         child: InkWell(
                           onTap: () {
                             setState(() {

@@ -1,8 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// A circular badge that indicates a transaction's direction — duplicated from
-/// `core/widgets/badges/transaction_direction_badge.dart`.
+/// A circular badge that indicates a transaction's direction.
 ///
 /// Shows a swap glyph when [isSwap], otherwise an inbound/outbound arrow based
 /// on [isIncoming].
