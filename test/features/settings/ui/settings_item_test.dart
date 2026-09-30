@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -31,6 +32,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: AppTheme.themeData(AppThemeType.light),
         routerConfig: router,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
