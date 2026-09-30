@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// A `m:ss` countdown to a [DateTime] that fires [onTimeout] when it elapses —
-/// duplicated from `core/widgets/timers/countdown.dart`.
+/// A `m:ss` countdown to a [DateTime] that fires [onTimeout] when it elapses.
 ///
 /// Remaining time is recomputed against the wall clock each tick (not by
 /// subtracting a second), so it stays accurate across app pause/resume.
@@ -96,8 +95,8 @@ class BullCountdownState extends State<BullCountdown> {
       '${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
       style:
           widget.textStyle ??
-          Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+          Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
             color: colors.primary,
           ),
     );
