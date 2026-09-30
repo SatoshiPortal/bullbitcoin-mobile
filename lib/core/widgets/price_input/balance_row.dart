@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
 
 class BalanceRow extends StatelessWidget {
   final String title;
@@ -79,7 +78,7 @@ class BalanceRow extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               const Gap(8),
-              BBSwitch(value: isMax, onChanged: onMaxToggled!),
+              BullSwitch(value: isMax, onChanged: onMaxToggled!),
             ],
           ),
       ],

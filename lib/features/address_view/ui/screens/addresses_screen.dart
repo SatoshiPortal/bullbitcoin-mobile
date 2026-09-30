@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap;
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key, required this.walletId});
@@ -71,7 +70,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: BBSegmentFull(
+              child: BullSegmented(
                 items: {
                   context.loc.addressViewReceiveType,
                   context.loc.addressViewChangeType,

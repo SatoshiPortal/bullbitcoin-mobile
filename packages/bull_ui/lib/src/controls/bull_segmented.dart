@@ -3,8 +3,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
 
-/// Full-width sliding segmented control — duplicated from
-/// `core/widgets/segment/segmented_full.dart`. Used for sort/filter segments.
+/// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
   const BullSegmented({
     super.key,
@@ -37,6 +36,17 @@ class _BullSegmentedState extends State<BullSegmented> {
   void initState() {
     super.initState();
     selectedSegment = widget.initialValue ?? widget.items.first;
+  }
+
+  // The sliding control moves its thumb when initialValue changes, so the
+  // label styling has to follow or the two disagree after a parent rebuild.
+  @override
+  void didUpdateWidget(covariant BullSegmented oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue ||
+        !widget.items.contains(selectedSegment)) {
+      selectedSegment = widget.initialValue ?? widget.items.first;
+    }
   }
 
   @override

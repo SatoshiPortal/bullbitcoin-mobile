@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -9,7 +8,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
 
 enum SendType { send, swap }
 
@@ -187,7 +186,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
               title: context.loc.sendPayjoinLabel,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: BBSwitch(
+                child: BullSwitch(
                   value: _payjoinToggleValue,
                   onChanged: _onPayjoinToggleChanged,
                 ),

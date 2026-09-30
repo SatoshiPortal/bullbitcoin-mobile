@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
@@ -47,7 +46,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, BullSegmented, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -661,7 +660,7 @@ class NetworkDisplay extends StatelessWidget {
       opacity: 0.5,
       duration: const Duration(milliseconds: 200),
       child: IgnorePointer(
-        child: BBSegmentFull(
+        child: BullSegmented(
           items: SendType.values.map((e) => e.displayName).toSet(),
           onSelected: (c) {},
           initialValue: sendType.displayName,

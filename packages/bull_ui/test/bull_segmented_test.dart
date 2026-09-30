@@ -39,5 +39,28 @@ void main() {
 
       expect(selected, isNull);
     });
+
+    testWidgets('restyles the selected label when initialValue changes', (
+      tester,
+    ) async {
+      Widget build(String initialValue) => wrapWithTheme(
+        BullSegmented(
+          items: const {'All', 'Frozen'},
+          initialValue: initialValue,
+          onSelected: (_) {},
+        ),
+      );
+      Color? colorOf(String label) =>
+          tester.widget<Text>(find.text(label)).style?.color;
+
+      await tester.pumpWidget(build('All'));
+      expect(colorOf('All'), testBullTheme.primary);
+
+      await tester.pumpWidget(build('Frozen'));
+      await tester.pumpAndSettle();
+
+      expect(colorOf('Frozen'), testBullTheme.primary);
+      expect(colorOf('All'), isNot(testBullTheme.primary));
+    });
   });
 }
