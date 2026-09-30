@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBackupOptionCard, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupOptionsScreen extends StatefulWidget {
@@ -50,7 +49,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 maxLines: 5,
               ),
               const Gap(16),
-              BackupOptionCard(
+              BullBackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.encryptedVault.path,
                   width: 32,
@@ -73,7 +72,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               ),
               const Gap(16),
 
-              BackupOptionCard(
+              BullBackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.physicalBackup.path,
                   width: 32,

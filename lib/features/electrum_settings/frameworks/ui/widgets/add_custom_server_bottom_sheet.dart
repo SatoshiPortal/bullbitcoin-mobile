@@ -7,13 +7,12 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, Gap;
 
 class CustomServerInput {
   final String url;
@@ -254,7 +253,7 @@ class _AddCustomServerBottomSheetState
                     const Gap(8),
                   ],
                   if (!isLiquid && _isOnion) ...[
-                    SettingsEntryItem(
+                    BullSettingsEntryItem(
                       icon: Icons.vpn_lock,
                       title: context.loc.torTitle,
                       onTap: () => TorSettingsBottomSheet.show(context),
