@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/server_confirmation_page.dart';
@@ -7,6 +6,7 @@ import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 
 class RecoverBullFlowNavigator extends StatefulWidget {
   const RecoverBullFlowNavigator({super.key});
@@ -30,7 +30,7 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: FadingLinearProgress(trigger: true)),
+            body: Center(child: BullFadingLinearProgress(trigger: true)),
           );
         }
 

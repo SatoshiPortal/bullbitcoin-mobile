@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -28,7 +27,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -419,7 +418,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (swap?.receieveAmount == null)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     width: 90,
                     height: 14,
                     padding: EdgeInsets.zero,
@@ -496,7 +495,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           ),
           const Spacer(),
           if (identifier == null)
-            const LoadingLineContent(
+            const BullShimmerLine(
               width: 120,
               height: 14,
               padding: EdgeInsets.zero,
@@ -578,7 +577,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
                   color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
-                const LoadingLineContent(
+                const BullShimmerLine(
                   width: 90,
                   height: 14,
                   padding: EdgeInsets.zero,

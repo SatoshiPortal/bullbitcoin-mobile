@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
 
 class BuyConfirmDetailRow extends StatelessWidget {
   /// Typographic placeholder, not prose: nothing to translate.
@@ -55,7 +55,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
                   color: context.appColors.onSurfaceVariant,
                 ),
               ),
-              (null, false) => const LoadingLineContent(),
+              (null, false) => const BullShimmerLine(),
             },
           ),
         ],

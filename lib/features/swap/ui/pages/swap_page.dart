@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
@@ -24,7 +23,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart'
 import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
@@ -95,7 +94,7 @@ class SwapPageState extends State<SwapPage> {
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<TransferBloc, TransferState, bool>(
               selector: (state) => state.isStarting || state.isCreatingSwap,
-              builder: (context, isLoading) => FadingLinearProgress(
+              builder: (context, isLoading) => BullFadingLinearProgress(
                 height: 3,
                 trigger: isLoading,
                 backgroundColor: context.appColors.onPrimary,

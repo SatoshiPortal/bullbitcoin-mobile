@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
 
 /// Widget tests for [CustomFeeListItem] — the shared custom-fee tile used
 /// by send, swap, and RBF.
@@ -304,7 +304,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField), '0.5');
       await tester.pump();
       expect(
-        find.byType(LoadingLineContent),
+        find.byType(BullShimmerLine),
         findsOneWidget,
         reason: 'shimmer placeholder while caller builds the unsigned PSBT',
       );
@@ -332,7 +332,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField), '0.5');
       await tester.pump();
 
-      expect(find.byType(LoadingLineContent), findsNothing);
+      expect(find.byType(BullShimmerLine), findsNothing);
       expect(
         find.textContaining(' ~ '),
         findsNothing,
@@ -349,7 +349,7 @@ void main() {
       tester,
     ) async {
       await pumpTile(tester);
-      expect(find.byType(LoadingLineContent), findsNothing);
+      expect(find.byType(BullShimmerLine), findsNothing);
     });
   });
 

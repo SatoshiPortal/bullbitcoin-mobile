@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
@@ -16,6 +15,7 @@ import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_fail
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 
 class AllSeedViewScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
@@ -72,7 +72,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(3),
                 child: state.loading
-                    ? FadingLinearProgress(
+                    ? BullFadingLinearProgress(
                         height: 3,
                         trigger: state.loading,
                         backgroundColor: context.appColors.surface,

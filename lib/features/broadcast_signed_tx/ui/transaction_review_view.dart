@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 /// A reusable transaction confirm/review screen that displays transaction
 /// details before broadcasting.
@@ -108,7 +107,7 @@ class _LoadingView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const FadingLinearProgress(trigger: true),
+            const BullFadingLinearProgress(trigger: true),
             const Gap(16),
             Text(context.loc.coreScreensResolvingInputs),
           ],

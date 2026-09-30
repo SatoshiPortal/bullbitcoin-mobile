@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/bloc.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/recoverbull_google_drive/presentation/recover
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -40,7 +39,7 @@ class DriveVaultsListPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          FadingLinearProgress(
+          BullFadingLinearProgress(
             trigger: state.isLoading,
             backgroundColor: context.appColors.surface,
             foregroundColor: context.appColors.primary,

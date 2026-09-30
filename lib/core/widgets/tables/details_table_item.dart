@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 
 class DetailsTableItem extends StatefulWidget {
   const DetailsTableItem({
@@ -73,7 +72,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                                         : TextDecoration.none,
                                   ),
                                 )
-                              : const LoadingLineContent()),
+                              : const BullShimmerLine()),
                     ),
                     const Gap(8),
                     if (widget.copyValue != null &&

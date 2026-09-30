@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullRefreshIndicator;
 
 /// Standard pull-to-refresh body. Use this for any screen that supports
 /// pull-to-refresh — it enforces the three invariants that make the gesture
@@ -27,7 +27,7 @@ class BBPullableBody extends StatelessWidget {
     this.bottomInset = 0,
   });
 
-  /// Forwarded to the inner [BBRefreshIndicator]. Use a
+  /// Forwarded to the inner [BullRefreshIndicator]. Use a
   /// `GlobalKey<RefreshIndicatorState>` to call `.show()` programmatically.
   final Key? indicatorKey;
   final RefreshCallback onRefresh;
@@ -39,7 +39,7 @@ class BBPullableBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBRefreshIndicator(
+    return BullRefreshIndicator(
       indicatorKey: indicatorKey,
       onRefresh: onRefresh,
       child: CustomScrollView(

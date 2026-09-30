@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
@@ -44,7 +43,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: isLoading
-                  ? const LoadingLineContent()
+                  ? const BullShimmerLine()
                   : DropdownButtonFormField<String>(
                       initialValue: selectedCurrency ?? initialCurrency?.code,
                       decoration: const InputDecoration(
