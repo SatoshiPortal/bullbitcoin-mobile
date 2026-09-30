@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
@@ -14,12 +12,8 @@ import '../../limit_order_fixtures.dart';
 
 class MockLimitOrderRepository extends Mock implements LimitOrderRepository {}
 
-class MockGetExchangeUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
-
 void main() {
   late MockLimitOrderRepository repository;
-  late MockGetExchangeUserSummaryUsecase getUserSummary;
   late CreateLimitOrderUsecase usecase;
 
   setUpAll(
@@ -44,11 +38,10 @@ void main() {
 
   setUp(() {
     repository = MockLimitOrderRepository();
-    getUserSummary = MockGetExchangeUserSummaryUsecase();
-    usecase = CreateLimitOrderUsecase(repository, getUserSummary);
+    usecase = CreateLimitOrderUsecase(repository);
   });
 
-  test('rejects a blank address without calling the account', () async {
+  test('rejects a blank address before the rate call', () async {
     final result = await usecase.execute(
       limitPrice: 90000,
       fiatAmount: 100,
@@ -57,7 +50,6 @@ void main() {
     );
 
     expect(failureOf(result), isA<LimitOrderInvalidAddressFailure>());
-    verifyZeroInteractions(getUserSummary);
     verifyZeroInteractions(repository);
   });
 
@@ -70,55 +62,29 @@ void main() {
     );
 
     expect(failureOf(result), isA<LimitOrderInvalidAmountFailure>());
-    verifyZeroInteractions(getUserSummary);
+    verifyZeroInteractions(repository);
   });
 
-  test('reads the current balance rather than trusting the caller', () async {
-    when(() => getUserSummary.execute()).thenAnswer(
-      (_) async => userSummary(
-        balances: const [UserBalance(amount: 50, currencyCode: 'CAD')],
-      ),
-    );
+  test(
+    'allows an amount above the current balance (funded at execution)',
+    () async {
+      stubRate();
+      when(
+        () => repository.create(any()),
+      ).thenAnswer((_) async => Ok(limitOrder()));
 
-    final result = await usecase.execute(
-      limitPrice: 90000,
-      fiatAmount: 100,
-      currency: FiatCurrency.cad,
-      address: 'bc1qexample',
-    );
+      final result = await usecase.execute(
+        limitPrice: 90000,
+        fiatAmount: 1000000,
+        currency: FiatCurrency.cad,
+        address: 'bc1qexample',
+      );
 
-    expect(failureOf(result), isA<LimitOrderInvalidAmountFailure>());
-    verify(() => getUserSummary.execute()).called(1);
-    verifyNever(() => repository.create(any()));
-  });
+      expect(result, isA<Ok<LimitOrder, LimitOrdersFailure>>());
+    },
+  );
 
-  test('sums every balance held in the selected currency', () async {
-    when(() => getUserSummary.execute()).thenAnswer(
-      (_) async => userSummary(
-        balances: const [
-          UserBalance(amount: 60, currencyCode: 'CAD'),
-          UserBalance(amount: 60, currencyCode: 'CAD'),
-          UserBalance(amount: 900, currencyCode: 'USD'),
-        ],
-      ),
-    );
-    stubRate();
-    when(
-      () => repository.create(any()),
-    ).thenAnswer((_) async => Ok(limitOrder()));
-
-    final result = await usecase.execute(
-      limitPrice: 90000,
-      fiatAmount: 100,
-      currency: FiatCurrency.cad,
-      address: 'bc1qexample',
-    );
-
-    expect(result, isA<Ok<LimitOrder, LimitOrdersFailure>>());
-  });
-
-  test('reads the live rate rather than trusting the caller', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
+  test('rejects a target at or above the index price', () async {
     stubRate(indexPrice: 80000);
 
     final result = await usecase.execute(
@@ -133,22 +99,7 @@ void main() {
     verifyNever(() => repository.create(any()));
   });
 
-  test('rejects a target at the index price', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
-    stubRate();
-
-    final result = await usecase.execute(
-      limitPrice: 100000,
-      fiatAmount: 100,
-      currency: FiatCurrency.cad,
-      address: 'bc1qexample',
-    );
-
-    expect(failureOf(result), isA<LimitOrderInvalidTargetFailure>());
-  });
-
   test('creates the order with a trimmed address', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
     stubRate();
     when(
       () => repository.create(any()),
@@ -170,7 +121,6 @@ void main() {
   });
 
   test('forwards a rate failure untouched', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
     when(
       () => repository.getRate(any()),
     ).thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
@@ -184,49 +134,5 @@ void main() {
 
     expect(failureOf(result), isA<LimitOrdersLoadFailure>());
     verifyNever(() => repository.create(any()));
-  });
-
-  test('maps an unavailable account to a typed failure', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(GetExchangeUserSummaryException('account request failed'));
-
-    final result = await usecase.execute(
-      limitPrice: 90000,
-      fiatAmount: 100,
-      currency: FiatCurrency.cad,
-      address: 'bc1qexample',
-    );
-
-    expect(failureOf(result), isA<LimitOrdersAccountUnavailableFailure>());
-  });
-
-  test('maps an unclassified account error to the catch-all', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(Exception('something nobody classified'));
-
-    final result = await usecase.execute(
-      limitPrice: 90000,
-      fiatAmount: 100,
-      currency: FiatCurrency.cad,
-      address: 'bc1qexample',
-    );
-
-    expect(failureOf(result), isA<LimitOrdersUnexpectedFailure>());
-  });
-
-  test('does not convert programmer errors into recoverable failures', () {
-    when(() => getUserSummary.execute()).thenThrow(StateError('bug'));
-
-    expect(
-      () => usecase.execute(
-        limitPrice: 90000,
-        fiatAmount: 100,
-        currency: FiatCurrency.cad,
-        address: 'bc1qexample',
-      ),
-      throwsStateError,
-    );
   });
 }

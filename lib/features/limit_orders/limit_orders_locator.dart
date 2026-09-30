@@ -57,10 +57,7 @@ final class LimitOrdersLocator {
       () => GetLimitOrderRateUsecase(locator<LimitOrderRepository>()),
     );
     locator.registerFactory<CreateLimitOrderUsecase>(
-      () => CreateLimitOrderUsecase(
-        locator<LimitOrderRepository>(),
-        locator<GetExchangeUserSummaryUsecase>(),
-      ),
+      () => CreateLimitOrderUsecase(locator<LimitOrderRepository>()),
     );
     locator.registerFactory<LoadLimitOrderCreationUsecase>(
       () => LoadLimitOrderCreationUsecase(

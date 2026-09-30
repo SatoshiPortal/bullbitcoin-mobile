@@ -98,7 +98,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     if (noButton) return null;
 
     final cubit = context.read<CreateLimitOrderCubit>();
-    final balance = state.selectedBalance;
     final button = switch (state.step) {
       CreateLimitOrderStep.intro => _primaryButton(
         context,
@@ -113,9 +112,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       CreateLimitOrderStep.amount => _primaryButton(
         context,
         label: context.loc.continueButton,
-        disabled:
-            state.fiatAmount <= 0 ||
-            (balance != null && state.fiatAmount > balance.amount),
+        disabled: state.fiatAmount <= 0,
         onPressed: cubit.continueFromAmount,
       ),
       CreateLimitOrderStep.wallet => _primaryButton(
