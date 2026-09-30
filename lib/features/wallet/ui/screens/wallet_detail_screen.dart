@@ -1,14 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -24,7 +22,8 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPullableBody, BullShimmerBox, BullShimmerLine, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +47,7 @@ class WalletDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: walletName.isEmpty
-            ? const LoadingLineContent(width: 150)
+            ? const BullShimmerLine(width: 150)
             : BBText(walletName, style: context.font.headlineMedium),
         actions: [
           IconButton(
@@ -68,7 +67,7 @@ class WalletDetailScreen extends StatelessWidget {
         ],
       ),
       body: wallet == null
-          ? const LoadingBoxContent(height: 100)
+          ? const BullShimmerBox(height: 100)
           : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),

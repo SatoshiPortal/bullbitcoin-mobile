@@ -2,15 +2,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_confirmation_detail_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullScrollableColumn, BullShimmerBox, Gap;
 
 class DcaConfirmationScreen extends StatelessWidget {
   const DcaConfirmationScreen({super.key});
@@ -20,7 +19,7 @@ class DcaConfirmationScreen extends StatelessWidget {
     final confirmationState = context.watch<DcaBloc>().state;
 
     if (confirmationState is! DcaConfirmationState) {
-      return const LoadingBoxContent(height: 200);
+      return const BullShimmerBox(height: 200);
     }
 
     return Scaffold(
@@ -28,7 +27,7 @@ class DcaConfirmationScreen extends StatelessWidget {
         title: Text(context.loc.dcaConfirmTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
+          child: BullFadingLinearProgress(
             height: 3,
             trigger: confirmationState.isConfirmingDca,
             backgroundColor: context.appColors.surface,

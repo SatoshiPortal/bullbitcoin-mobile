@@ -3,14 +3,13 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 class SwapConfirmPage extends StatelessWidget {
   const SwapConfirmPage({super.key});
@@ -50,7 +49,7 @@ class SwapConfirmPage extends StatelessWidget {
         title: Text(context.loc.swapConfirmTransferTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
+          child: BullFadingLinearProgress(
             height: 3,
             trigger: isConfirming,
             backgroundColor: context.appColors.onPrimary,
