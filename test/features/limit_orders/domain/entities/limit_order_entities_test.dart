@@ -58,22 +58,24 @@ void main() {
   });
 
   group('LimitOrder', () {
-    test('cannot be built with a non-positive limit price', () {
-      expect(
-        () => LimitOrder(
-          id: 'lo-1',
-          number: 'LO-1',
-          fiatAmount: 100,
-          currencyCode: 'CAD',
-          limitPrice: 0,
-          estimatedBtcAmount: 0.001,
-          status: LimitOrderStatus.active,
-          createdAt: DateTime.utc(2026),
-          expiresAt: DateTime.utc(2027),
-          address: 'bc1qexample',
-        ),
-        throwsArgumentError,
+    test('tolerates degenerate server values so one order cannot crash the '
+        'list', () {
+      final order = LimitOrder(
+        id: 'lo-1',
+        number: 'LO-1',
+        fiatAmount: 0,
+        currencyCode: 'CAD',
+        limitPrice: 0,
+        estimatedBtcAmount: 0,
+        status: LimitOrderStatus.failed,
+        createdAt: DateTime.utc(2026),
+        expiresAt: DateTime.utc(2027),
+        address: '',
       );
+
+      expect(order.id, 'lo-1');
+      expect(order.address, isEmpty);
+      expect(order.estimatedBtcAmount, 0);
     });
   });
 

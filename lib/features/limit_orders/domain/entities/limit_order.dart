@@ -44,20 +44,7 @@ final class LimitOrder {
     this.executedAt,
     this.cancelledAt,
     this.executedOrderId,
-  }) {
-    if (id.isEmpty) throw ArgumentError.value(id, 'id');
-    if (fiatAmount <= 0) throw ArgumentError.value(fiatAmount, 'fiatAmount');
-    if (currencyCode.isEmpty) {
-      throw ArgumentError.value(currencyCode, 'currencyCode');
-    }
-    if (limitPrice <= 0) {
-      throw ArgumentError.value(limitPrice, 'limitPrice');
-    }
-    if (estimatedBtcAmount <= 0) {
-      throw ArgumentError.value(estimatedBtcAmount, 'estimatedBtcAmount');
-    }
-    if (address.isEmpty) throw ArgumentError.value(address, 'address');
-  }
+  });
 
   bool get isActive => status == LimitOrderStatus.active;
 }
