@@ -64,6 +64,7 @@ class BullDetailsTableItem extends StatefulWidget {
     this.isUnderline = false,
     this.expandableChild,
     this.displayWidget,
+    this.initiallyExpanded = false,
     this.copiedMessage = 'Copied to clipboard',
     this.onCopied,
   });
@@ -87,6 +88,9 @@ class BullDetailsTableItem extends StatefulWidget {
   /// Optional custom value widget, used instead of [displayValue].
   final Widget? displayWidget;
 
+  /// Whether [expandableChild] starts revealed.
+  final bool initiallyExpanded;
+
   /// Toast message shown after a successful copy.
   final String copiedMessage;
 
@@ -99,7 +103,7 @@ class BullDetailsTableItem extends StatefulWidget {
 }
 
 class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
-  bool _expanded = false;
+  late bool _expanded = widget.initiallyExpanded;
 
   @override
   Widget build(BuildContext context) {

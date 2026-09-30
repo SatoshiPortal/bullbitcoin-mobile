@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -104,7 +103,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
   const _ViewVaultKeyButton();
 
   @override
-  Widget build(BuildContext context) => SettingsEntryItem(
+  Widget build(BuildContext context) => BullSettingsEntryItem(
     icon: Icons.vpn_key,
     title: context.loc.backupSettingsViewVaultKey,
     onTap: () => const RecoverBullFacade().openViewVaultKey(context),
@@ -169,7 +168,7 @@ class _TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
+    return BullSettingsEntryItem(
       icon: Icons.verified,
       title: context.loc.backupSettingsTestBackup,
       onTap: () => context.pushNamed(

@@ -63,5 +63,39 @@ void main() {
 
       expect(find.byIcon(Icons.copy_outlined), findsNothing);
     });
+
+    testWidgets('keeps the expandable child hidden by default', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const BullDetailsTableItem(
+            label: 'Inputs',
+            expandableChild: Text('details'),
+          ),
+        ),
+      );
+
+      expect(find.text('details'), findsNothing);
+      expect(find.byIcon(Icons.expand_more), findsOneWidget);
+    });
+
+    testWidgets('starts revealed when initiallyExpanded', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const BullDetailsTableItem(
+            label: 'Inputs',
+            expandableChild: Text('details'),
+            initiallyExpanded: true,
+          ),
+        ),
+      );
+
+      expect(find.text('details'), findsOneWidget);
+      expect(find.byIcon(Icons.expand_less), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.expand_less));
+      await tester.pump();
+
+      expect(find.text('details'), findsNothing);
+    });
   });
 }

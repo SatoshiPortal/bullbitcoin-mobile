@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/tables/details_table.dart';
-import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTable, BullDetailsTableItem, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -50,32 +49,32 @@ class SpTransactionDetailsScreen extends StatelessWidget {
       ),
       details: Column(
         children: [
-          DetailsTable(
+          BullDetailsTable(
             items: [
-              DetailsTableItem(
+              BullDetailsTableItem(
                 label: context.loc.spDirectionLabel,
                 displayValue: _directionLabel(context, payment.direction),
               ),
-              DetailsTableItem(
+              BullDetailsTableItem(
                 label: context.loc.amountLabel,
                 displayValue: FormatAmount.sats(
                   payment.amountSat.value.toInt(),
                 ),
               ),
               if (payment.feeSat != null)
-                DetailsTableItem(
+                BullDetailsTableItem(
                   label: context.loc.spFeeLabel,
                   displayValue: FormatAmount.sats(
                     payment.feeSat!.value.toInt(),
                   ),
                 ),
               if (payment.height != null)
-                DetailsTableItem(
+                BullDetailsTableItem(
                   label: context.loc.spBlockRowLabel,
                   displayValue: '${payment.height}',
                 ),
               if (payment.timestamp != null)
-                DetailsTableItem(
+                BullDetailsTableItem(
                   label: context.loc.spTransactionDateLabel,
                   displayValue: DateFormat('MMM d, y, h:mm a').format(
                     DateTime.fromMillisecondsSinceEpoch(

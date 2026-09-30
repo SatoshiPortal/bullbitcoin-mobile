@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
@@ -14,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem;
 
 class _MockTransactionDetailsCubit extends Mock
     implements TransactionDetailsCubit {}
@@ -80,7 +80,7 @@ void main() {
 
     final orderNumberItem = find.ancestor(
       of: find.text('123456'),
-      matching: find.byType(DetailsTableItem),
+      matching: find.byType(BullDetailsTableItem),
     );
     await tester.tap(
       find.descendant(

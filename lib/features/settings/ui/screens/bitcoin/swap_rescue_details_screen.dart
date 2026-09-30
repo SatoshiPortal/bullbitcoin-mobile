@@ -74,6 +74,8 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                             label: context.loc.swapRescueIdLabel,
                             displayValue: swap.id,
                             copyValue: swap.id,
+                            onCopied: () =>
+                                SnackBarUtils.showCopiedSnackBar(context),
                           ),
                         ],
                       ),

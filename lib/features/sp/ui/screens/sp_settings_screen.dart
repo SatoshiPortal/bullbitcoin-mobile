@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
@@ -13,7 +12,8 @@ import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullSettingsEntryItem, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -180,27 +180,27 @@ class _WalletManagementSection extends StatelessWidget {
       children: [
         Text(context.loc.spWalletManagement, style: context.font.titleMedium),
         const Gap(4),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.account_balance_wallet,
           title: context.loc.spOpenWallet,
           onTap: () => context.pushNamed(SpRoute.spWalletDetail.name),
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.toll,
           title: context.loc.coinsTitle,
           onTap: () => context.pushNamed(SpRoute.spCoins.name),
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.search,
           title: context.loc.spScan,
           onTap: () => context.pushNamed(SpRoute.spScan.name),
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.verified_outlined,
           title: context.loc.spHeaderValidationTitle,
           onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.autorenew,
           title: context.loc.spAutoScanEntry,
           subtitle: context.select((SpCubit c) => c.state.isAutoScanEnabled)
@@ -217,7 +217,7 @@ class _WalletManagementSection extends StatelessWidget {
                   ),
           ),
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.restart_alt,
           title: context.loc.spClearScanStateEntry,
           onTap: disabled
@@ -241,7 +241,7 @@ class _WalletManagementSection extends StatelessWidget {
                   SnackBarUtils.showSnackBar(context, message);
                 },
         ),
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.delete_outline,
           title: context.loc.spDeleteWalletEntry,
           iconColor: context.appColors.error,
