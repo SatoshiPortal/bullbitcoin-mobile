@@ -8,11 +8,10 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Shared bottom-sheet editor for user-entered annotations on payment
@@ -216,7 +215,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           ],
           if (widget.suggestionsFuture != null) _buildSuggestionsBlock(),
           Gap(gap),
-          BorderedTappableTile(
+          BullBorderedTile(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

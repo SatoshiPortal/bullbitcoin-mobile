@@ -5,12 +5,12 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 bool shouldShowTorInAdvancedOptions(ElectrumSettingsState state) =>
     !state.isLiquid && state.hasActiveCustomBitcoinOnionServer;
@@ -420,7 +420,7 @@ class _SetAdvancedOptionsBottomSheetState
                           return Column(
                             children: [
                               const SizedBox(height: 8),
-                              SettingsEntryItem(
+                              BullSettingsEntryItem(
                                 icon: Icons.vpn_lock,
                                 title: context.loc.torTitle,
                                 onTap: () =>

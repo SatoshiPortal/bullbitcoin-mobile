@@ -2,8 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// A small bordered tag with a drop shadow — duplicated from
-/// `core/widgets/cards/tag_card.dart` (`OptionsTag`).
+/// A small bordered tag with a drop shadow.
 class BullOptionsTag extends StatelessWidget {
   const BullOptionsTag({super.key, required this.text});
 
@@ -14,7 +13,7 @@ class BullOptionsTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: colors.surface,
         border: Border.all(color: colors.border),

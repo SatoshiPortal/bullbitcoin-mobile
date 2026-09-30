@@ -72,12 +72,10 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 (`StackedPage`), `BullPullableBody` (`BBPullableBody`).
 
 **Data display** — `BullAddressText`, `BullBadge`, `BullInfoBar`,
-`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`
-(`OptionsTag`), `BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
-`BullBackupOptionCard` (`BackupOptionCard`), `BullBorderedTile`
-(`BorderedTappableTile`), `BullTransactionDirectionBadge`
-(`TransactionDirectionBadge`), `BullSettingsEntryItem` (`SettingsEntryItem`),
-`BullDetailsTable` + `BullDetailsTableItem` (`DetailsTable` / `DetailsTableItem`).
+`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`,
+`BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
+`BullBackupOptionCard`, `BullBorderedTile`, `BullTransactionDirectionBadge`,
+`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`.
 
 **Overlays** — `BullBottomSheet`, `BullDialog`, `BullPickerSheet`
 (`BBPickerSheet`), `BullInstructionsSheet` (`InstructionsBottomSheet`).

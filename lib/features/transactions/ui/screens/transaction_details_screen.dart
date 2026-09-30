@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -27,7 +26,7 @@ import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullTransactionDirectionBadge, Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
@@ -135,7 +134,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                             if (isLoading)
                               const LoadingBoxContent(height: 72, width: 72)
                             else
-                              TransactionDirectionBadge(
+                              BullTransactionDirectionBadge(
                                 isIncoming: isIncoming ?? false,
                                 isSwap: isChainSwap,
                               ),
