@@ -14898,5 +14898,9 @@
   "limitOrdersResolvingAddress": "Getting address…",
   "@limitOrdersResolvingAddress": {
     "description": "Shown while deriving a receive address for the selected in-app wallet"
+  },
+  "limitOrderDetailsEstimatedBitcoin": "Estimated bitcoin",
+  "@limitOrderDetailsEstimatedBitcoin": {
+    "description": "Label for the estimated bitcoin amount row on the limit order details screen"
   }
 }

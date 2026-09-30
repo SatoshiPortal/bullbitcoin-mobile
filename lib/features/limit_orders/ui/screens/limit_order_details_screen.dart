@@ -121,6 +121,21 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
         ),
         const Divider(),
         LimitOrderDetailRow(
+          label: context.loc.limitOrdersEstimatedBuyPrice,
+          value: order.estimatedBtcAmount > 0
+              ? FormatAmount.fiat(
+                  order.fiatAmount / order.estimatedBtcAmount,
+                  order.currencyCode,
+                )
+              : '—',
+        ),
+        const Divider(),
+        LimitOrderDetailRow(
+          label: context.loc.limitOrderDetailsEstimatedBitcoin,
+          value: FormatAmount.btc(order.estimatedBtcAmount),
+        ),
+        const Divider(),
+        LimitOrderDetailRow(
           label: context.loc.limitOrderDetailsAddress,
           value: order.address,
         ),
