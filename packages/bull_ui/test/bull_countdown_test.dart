@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -30,6 +31,22 @@ void main() {
 
       expect(fired, 1);
       expect(find.text('0:00'), findsOneWidget);
+    });
+
+    testWidgets('defaults to a medium-weight bodyMedium in primary', (
+      tester,
+    ) async {
+      final until = DateTime.now().toUtc().add(const Duration(seconds: 90));
+      await tester.pumpWidget(
+        wrapWithTheme(BullCountdown(until: until, onTimeout: () {})),
+      );
+
+      final text = find.textContaining(':');
+      final bodyMedium = Theme.of(tester.element(text)).textTheme.bodyMedium!;
+      final style = tester.widget<Text>(text).style!;
+      expect(style.fontSize, bodyMedium.fontSize);
+      expect(style.fontWeight, FontWeight.w500);
+      expect(style.color, testBullTheme.primary);
     });
   });
 }

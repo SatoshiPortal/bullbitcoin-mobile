@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A thin [LinearProgressIndicator] that fades in/out on [trigger] —
-/// duplicated from `core/widgets/loading/fading_linear_progress.dart`.
+/// A thin [LinearProgressIndicator] that fades in/out on [trigger].
 class BullFadingLinearProgress extends StatefulWidget {
   const BullFadingLinearProgress({
     super.key,

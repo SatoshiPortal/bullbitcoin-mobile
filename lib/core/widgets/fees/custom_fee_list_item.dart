@@ -7,11 +7,10 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -605,7 +604,7 @@ class _PreviewLine extends StatelessWidget {
           // Shimmer fills the rest of the line where "~ X sats" would
           // appear once the real fee lands.
           Expanded(
-            child: LoadingLineContent(padding: EdgeInsets.zero, height: 12),
+            child: BullShimmerLine(padding: EdgeInsets.zero, height: 12),
           ),
         ],
       );

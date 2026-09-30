@@ -3,11 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
@@ -27,7 +23,13 @@ import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullFadingLinearProgress,
+        BullRefreshIndicator,
+        BullShimmerBox,
+        BullShimmerLine,
+        Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
@@ -107,7 +109,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
-            child: FadingLinearProgress(
+            child: BullFadingLinearProgress(
               trigger: isBroadcastingPayjoinOriginalTx,
               backgroundColor: context.appColors.onPrimary,
               foregroundColor: context.appColors.primary,
@@ -115,7 +117,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           ),
         ),
         body: SafeArea(
-          child: BBRefreshIndicator(
+          child: BullRefreshIndicator(
             onRefresh: () => context.read<TransactionDetailsCubit>().refresh(),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -133,7 +135,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             if (isLoading)
-                              const LoadingBoxContent(height: 72, width: 72)
+                              const BullShimmerBox(height: 72, width: 72)
                             else
                               TransactionDirectionBadge(
                                 isIncoming: isIncoming ?? false,
@@ -141,7 +143,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                               ),
                             const Gap(24),
                             if (isLoading)
-                              const LoadingLineContent(width: 150)
+                              const BullShimmerLine(width: 150)
                             else
                               const TransactionDetailsStatusLabel(),
                             if (isOngoingSwap == true && swap != null) ...[
@@ -149,7 +151,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                               SwapProgressIndicator(swap: swap),
                             ],
                             if (isLoading)
-                              const LoadingLineContent(
+                              const BullShimmerLine(
                                 height: 24,
                                 width: 200,
                                 padding: EdgeInsets.zero,
@@ -185,7 +187,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                               const Gap(16),
                             ],
                             if (isLoading)
-                              const LoadingBoxContent(height: 400)
+                              const BullShimmerBox(height: 400)
                             else
                               const TransactionDetailsTable(),
                             if (tx?.order is FiatPaymentOrder &&
@@ -213,7 +215,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                                 payjoin: payjoin,
                               ),
                             if (isLoading)
-                              const LoadingLineContent(height: 40)
+                              const BullShimmerLine(height: 40)
                             else
                               BBButton.big(
                                 label: context.loc.transactionDetailAddNote,

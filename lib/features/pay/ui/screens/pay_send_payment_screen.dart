@@ -7,12 +7,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
@@ -21,7 +18,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCountdown, BullFadingLinearProgress, BullShimmerLine, Gap;
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
@@ -97,7 +95,7 @@ class PaySendPaymentScreen extends StatelessWidget {
         child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: isConfirmingPayment,
               backgroundColor: context.appColors.onPrimary,
@@ -121,7 +119,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                   ),
                 ),
                 if (order?.confirmationDeadline case final deadline?)
-                  Countdown(
+                  BullCountdown(
                     until: deadline,
                     onTimeout: () {
                       context.read<PayBloc>().add(
@@ -386,7 +384,7 @@ class _DetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: value == null
-          ? const LoadingLineContent()
+          ? const BullShimmerLine()
           : Row(
               mainAxisAlignment: .spaceBetween,
               children: [

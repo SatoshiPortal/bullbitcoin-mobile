@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 
 class SelectableListItem {
   final String? iconPath;
@@ -97,7 +96,7 @@ class _SelectableRow extends StatelessWidget {
                     BBText(item.subtitle1, style: context.font.labelMedium),
                     const Gap(2),
                     if (item.isSubtitle2Loading)
-                      LoadingLineContent(
+                      BullShimmerLine(
                         width: 160,
                         height: 12,
                         padding: EdgeInsets.zero,

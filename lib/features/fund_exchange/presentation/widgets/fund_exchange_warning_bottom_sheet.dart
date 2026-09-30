@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -71,7 +70,7 @@ class _FundExchangeWarningBottomSheetState
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FadingLinearProgress(
+        BullFadingLinearProgress(
           height: 3,
           trigger: _isLoading,
           backgroundColor: context.appColors.surface,

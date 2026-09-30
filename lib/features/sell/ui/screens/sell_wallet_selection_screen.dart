@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 
 class SellWalletSelectionScreen extends StatelessWidget {
@@ -37,7 +36,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: isCreatingSellOrder,
               backgroundColor: context.appColors.onPrimary,

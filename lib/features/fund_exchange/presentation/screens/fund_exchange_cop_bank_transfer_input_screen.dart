@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
@@ -15,7 +14,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_pres
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
   const FundExchangeCopBankTransferInputScreen({super.key});
@@ -108,7 +107,7 @@ class _FundExchangeCopBankTransferInputScreenState
           title: Text(context.loc.fundExchangeBankTransfer),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
-            child: FadingLinearProgress(
+            child: BullFadingLinearProgress(
               height: 3,
               trigger: isLoadingFundingDetails,
               backgroundColor: context.appColors.surface,

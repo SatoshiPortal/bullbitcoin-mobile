@@ -1,6 +1,5 @@
-import 'package:bull_ui/bull_ui.dart' show BullRadius;
+import 'package:bull_ui/bull_ui.dart' show BullRadius, BullShimmerBox;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -13,7 +12,7 @@ class QrDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return LoadingBoxContent(height: size, width: size);
+      return BullShimmerBox(height: size, width: size);
     }
 
     return Container(

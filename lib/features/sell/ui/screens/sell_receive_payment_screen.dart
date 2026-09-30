@@ -8,17 +8,15 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullCountdown, BullShimmerLine, Gap;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -75,7 +73,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     color: context.appColors.outline,
                   ),
                   if (order?.confirmationDeadline case final deadline?)
-                    Countdown(
+                    BullCountdown(
                       until: deadline,
                       onTimeout: () {
                         context.read<SellBloc>().add(
@@ -88,7 +86,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             ),
             const Gap(32),
             if (order == null)
-              const LoadingLineContent()
+              const BullShimmerLine()
             else
               CopyInput(
                 text: bitcoinUnit == BitcoinUnit.btc
@@ -99,7 +97,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               ),
             const Gap(32),
             if (order == null)
-              const LoadingLineContent()
+              const BullShimmerLine()
             else
               _buildPaymentInput(context, order),
             const Gap(32),

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
@@ -11,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
 
 class _MockBuyBloc extends Mock implements BuyBloc {}
 
@@ -111,7 +111,7 @@ void main() {
       const BuyState(failure: BuyUnexpectedFailure('DioException 500')),
     );
 
-    expect(find.byType(LoadingLineContent), findsNothing);
+    expect(find.byType(BullShimmerLine), findsNothing);
     expect(find.text('—'), findsNWidgets(3));
   });
 
@@ -120,7 +120,7 @@ void main() {
   ) async {
     await _pumpAccelerateScreen(tester, const BuyState());
 
-    expect(find.byType(LoadingLineContent), findsNWidgets(3));
+    expect(find.byType(BullShimmerLine), findsNWidgets(3));
     expect(find.text('—'), findsNothing);
   });
 
