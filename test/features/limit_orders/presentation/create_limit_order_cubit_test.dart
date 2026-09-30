@@ -89,6 +89,38 @@ void main() {
   );
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'setting the limit price recomputes the discount',
+    setUp: () => when(
+      () => loadCreation.execute(),
+    ).thenAnswer((_) async => Ok(creationContext)),
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.setLimitPrice(90000);
+    },
+    verify: (cubit) {
+      expect(cubit.state.limitPrice, closeTo(90000, 1e-6));
+      expect(cubit.state.discount, closeTo(10, 1e-6));
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'setting the discount recomputes the limit price',
+    setUp: () => when(
+      () => loadCreation.execute(),
+    ).thenAnswer((_) async => Ok(creationContext)),
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.setDiscount(25);
+    },
+    verify: (cubit) {
+      expect(cubit.state.discount, 25);
+      expect(cubit.state.limitPrice, closeTo(75000, 1e-6));
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'stores a typed failure when loading fails',
     setUp: () => when(
       () => loadCreation.execute(),

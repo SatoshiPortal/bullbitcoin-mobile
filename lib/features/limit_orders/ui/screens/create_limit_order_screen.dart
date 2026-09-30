@@ -24,9 +24,12 @@ final class CreateLimitOrderScreen extends StatefulWidget {
 
 final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   final _discountController = TextEditingController(text: '1');
+  final _limitPriceController = TextEditingController();
   final _amountController = TextEditingController();
   final _lightningController = TextEditingController();
   final _amountNode = FocusNode();
+  final _discountNode = FocusNode();
+  final _limitPriceNode = FocusNode();
 
   @override
   void initState() {
@@ -48,9 +51,12 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   void dispose() {
     _amountController.removeListener(_onAmountChanged);
     _discountController.dispose();
+    _limitPriceController.dispose();
     _amountController.dispose();
     _lightningController.dispose();
     _amountNode.dispose();
+    _discountNode.dispose();
+    _limitPriceNode.dispose();
     super.dispose();
   }
 
@@ -190,6 +196,18 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
 
   Widget _target(BuildContext context, CreateLimitOrderState state) {
     final currency = state.currency!;
+    // Two-way sync: reflect the cubit's limit-price/discount in whichever field
+    // the user is not currently editing.
+    if (!_limitPriceNode.hasFocus) {
+      final text = state.limitPrice > 0
+          ? state.limitPrice.toStringAsFixed(2)
+          : '';
+      if (_limitPriceController.text != text) _limitPriceController.text = text;
+    }
+    if (!_discountNode.hasFocus) {
+      final text = state.discount.toStringAsFixed(0);
+      if (_discountController.text != text) _discountController.text = text;
+    }
     return BullScrollableColumn(
       padding: const EdgeInsets.all(24),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,13 +245,26 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           label: context.loc.limitOrdersCurrentPrice,
           value: FormatAmount.fiat(state.rate!.indexPrice, currency.code),
         ),
-        LimitOrderDetailRow(
-          label: context.loc.limitOrdersTargetPrice,
-          value: FormatAmount.fiat(state.limitPrice, currency.code),
+        const Gap(16),
+        TextFormField(
+          controller: _limitPriceController,
+          focusNode: _limitPriceNode,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: context.loc.limitOrdersTargetPrice,
+            suffixText: currency.code,
+          ),
+          onChanged: (value) {
+            final price = double.tryParse(value);
+            if (price != null) {
+              context.read<CreateLimitOrderCubit>().setLimitPrice(price);
+            }
+          },
         ),
         const Gap(16),
         TextFormField(
           controller: _discountController,
+          focusNode: _discountNode,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             labelText: context.loc.limitOrdersDiscount,
@@ -250,9 +281,8 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           min: 1,
           max: 99,
           divisions: 98,
-          value: state.discount,
+          value: state.discount.clamp(1, 99),
           onChanged: (value) {
-            _discountController.text = value.toStringAsFixed(0);
             context.read<CreateLimitOrderCubit>().setDiscount(value);
           },
         ),
