@@ -2,8 +2,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// A settings-list row: leading icon, title, trailing chevron — duplicated
-/// from `core/widgets/settings_entry_item.dart` (`SettingsEntryItem`).
+/// A settings-list row: leading icon, title, trailing chevron.
 ///
 /// When [isSuperUser] is true the icon is replaced with an admin glyph tinted
 /// brand red.
@@ -67,10 +66,9 @@ class BullSettingsEntryItem extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: textColor ?? colors.onSurface,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyLarge?.copyWith(color: textColor ?? colors.onSurface),
       ),
       subtitle: subtitle == null
           ? null

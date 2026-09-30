@@ -5,8 +5,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
-/// A tappable option card with icon, title, description and optional tag —
-/// duplicated from `core/widgets/cards/backup_option_card.dart`.
+/// A tappable option card with icon, title, description and optional tag.
 class BullBackupOptionCard extends StatelessWidget {
   const BullBackupOptionCard({
     super.key,
@@ -62,13 +61,12 @@ class BullBackupOptionCard extends StatelessWidget {
                       children: [
                         BullText(
                           title,
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         const Gap(10),
                         BullText(
                           description,
-                          style: Theme.of(context).textTheme.bodyMedium
+                          style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: colors.textMuted),
                           maxLines: 3,
                         ),
