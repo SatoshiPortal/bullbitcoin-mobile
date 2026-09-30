@@ -193,6 +193,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   }
 
   void continueFromWallet() {
+    if (state.wallet == null || state.amountLimitViolation != null) return;
     emit(
       state.copyWith(
         step: CreateLimitOrderStep.confirmation,
@@ -216,7 +217,12 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   Future<void> submit() async {
     final currency = state.currency;
     final wallet = state.wallet;
-    if (currency == null || wallet == null || state.isSubmitting) return;
+    if (currency == null ||
+        wallet == null ||
+        state.isSubmitting ||
+        state.amountLimitViolation != null) {
+      return;
+    }
 
     emit(state.copyWith(isSubmitting: true, clearFailure: true));
     final result = await _create.execute(

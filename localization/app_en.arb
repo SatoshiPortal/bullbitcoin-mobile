@@ -14902,5 +14902,32 @@
   "limitOrderDetailsEstimatedBitcoin": "Estimated bitcoin",
   "@limitOrderDetailsEstimatedBitcoin": {
     "description": "Label for the estimated bitcoin amount row on the limit order details screen"
+  },
+  "limitOrdersAmountBelowOnchainMin": "Amount is below the on-chain minimum of {amount}",
+  "@limitOrdersAmountBelowOnchainMin": {
+    "description": "Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountBelowLiquidMin": "Amount is below the Liquid minimum of {amount}",
+  "@limitOrdersAmountBelowLiquidMin": {
+    "description": "Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountAboveLightningMax": "Amount is above the Lightning maximum of {amount}",
+  "@limitOrdersAmountAboveLightningMax": {
+    "description": "Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

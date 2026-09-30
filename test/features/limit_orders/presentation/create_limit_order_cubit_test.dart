@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -117,6 +118,58 @@ void main() {
     verify: (cubit) {
       expect(cubit.state.discount, 25);
       expect(cubit.state.limitPrice, closeTo(75000, 1e-6));
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'flags an amount below the on-chain minimum for a bitcoin destination',
+    setUp: () => when(
+      () => loadCreation.execute(),
+    ).thenAnswer((_) async => Ok(creationContext)),
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.setAmount(1);
+      cubit.selectWallet(bitcoinWallet);
+    },
+    verify: (cubit) {
+      final violation = cubit.state.amountLimitViolation;
+      expect(violation, isNotNull);
+      expect(violation!.kind, LimitOrderAmountViolationKind.belowMinimum);
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'does not leave the wallet step while an amount violates a limit',
+    setUp: () => when(
+      () => loadCreation.execute(),
+    ).thenAnswer((_) async => Ok(creationContext)),
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.setAmount(1);
+      cubit.selectWallet(bitcoinWallet);
+      cubit.continueFromWallet();
+    },
+    verify: (cubit) {
+      expect(cubit.state.step, isNot(CreateLimitOrderStep.confirmation));
+      expect(cubit.state.amountLimitViolation, isNotNull);
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'clears the violation for an in-range amount',
+    setUp: () => when(
+      () => loadCreation.execute(),
+    ).thenAnswer((_) async => Ok(creationContext)),
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.setAmount(200);
+      cubit.selectWallet(bitcoinWallet);
+    },
+    verify: (cubit) {
+      expect(cubit.state.amountLimitViolation, isNull);
     },
   );
 

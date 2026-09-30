@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
+import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -56,6 +57,19 @@ final class CreateLimitOrderState {
       limitPrice <= 0 ? 0 : fiatAmount / limitPrice;
 
   double get estimatedBuyPrice => rate?.estimatedBuyPrice(limitPrice) ?? 0;
+
+  /// The buy-limit violation for the chosen destination network, or null when
+  /// the amount is within limits (or no destination/rate is set yet).
+  LimitOrderAmountViolation? get amountLimitViolation {
+    final currentRate = rate;
+    final destination = wallet;
+    if (currentRate == null || destination == null) return null;
+    return LimitOrderAmountLimits.check(
+      fiatAmount: fiatAmount,
+      userPrice: currentRate.userPrice,
+      network: destination.type,
+    );
+  }
 
   CreateLimitOrderState copyWith({
     CreateLimitOrderStep? step,

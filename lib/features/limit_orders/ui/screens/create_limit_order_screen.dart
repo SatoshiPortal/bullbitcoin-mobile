@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
+import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
@@ -118,7 +119,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       CreateLimitOrderStep.wallet => _primaryButton(
         context,
         label: context.loc.continueButton,
-        disabled: state.wallet == null,
+        disabled: state.wallet == null || state.amountLimitViolation != null,
         onPressed: cubit.continueFromWallet,
       ),
       CreateLimitOrderStep.confirmation => _primaryButton(
@@ -399,6 +400,13 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                 : null,
           ),
         ),
+        if (state.amountLimitViolation case final violation?) ...[
+          const Gap(12),
+          Text(
+            _amountLimitMessage(context, violation),
+            style: TextStyle(color: context.bull.error),
+          ),
+        ],
         if (state.wallets.isEmpty && state.appWallets.isEmpty) ...[
           const Gap(16),
           TextButton(
@@ -409,6 +417,24 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         ],
       ],
     );
+  }
+
+  String _amountLimitMessage(
+    BuildContext context,
+    LimitOrderAmountViolation violation,
+  ) {
+    final amount = FormatAmount.btc(violation.boundBtc);
+    return switch ((violation.kind, violation.network)) {
+      (LimitOrderAmountViolationKind.aboveMaximum, _) =>
+        context.loc.limitOrdersAmountAboveLightningMax(amount),
+      (
+        LimitOrderAmountViolationKind.belowMinimum,
+        LimitOrderWalletType.liquid,
+      ) =>
+        context.loc.limitOrdersAmountBelowLiquidMin(amount),
+      (LimitOrderAmountViolationKind.belowMinimum, _) =>
+        context.loc.limitOrdersAmountBelowOnchainMin(amount),
+    };
   }
 
   String _appWalletName(BuildContext context, Wallet wallet) {
