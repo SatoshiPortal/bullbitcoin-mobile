@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
@@ -17,7 +18,12 @@ final class CreateLimitOrderState {
   final double limitPrice;
   final double fiatAmount;
   final List<LimitOrderWallet> wallets;
+  final List<Wallet> appWallets;
   final LimitOrderWallet? wallet;
+  final String? selectedAppWalletId;
+  final bool isResolvingAddress;
+  final String lightningAddressInput;
+  final bool lightningAddressInvalid;
   final LimitOrder? createdOrder;
   final LimitOrdersFailure? failure;
 
@@ -32,7 +38,12 @@ final class CreateLimitOrderState {
     this.limitPrice = 0,
     this.fiatAmount = 0,
     this.wallets = const [],
+    this.appWallets = const [],
     this.wallet,
+    this.selectedAppWalletId,
+    this.isResolvingAddress = false,
+    this.lightningAddressInput = '',
+    this.lightningAddressInvalid = false,
     this.createdOrder,
     this.failure,
   });
@@ -57,8 +68,14 @@ final class CreateLimitOrderState {
     double? limitPrice,
     double? fiatAmount,
     List<LimitOrderWallet>? wallets,
+    List<Wallet>? appWallets,
     LimitOrderWallet? wallet,
     bool clearWallet = false,
+    String? selectedAppWalletId,
+    bool clearSelectedAppWallet = false,
+    bool? isResolvingAddress,
+    String? lightningAddressInput,
+    bool? lightningAddressInvalid,
     LimitOrder? createdOrder,
     LimitOrdersFailure? failure,
     bool clearFailure = false,
@@ -73,7 +90,15 @@ final class CreateLimitOrderState {
     limitPrice: limitPrice ?? this.limitPrice,
     fiatAmount: fiatAmount ?? this.fiatAmount,
     wallets: wallets ?? this.wallets,
+    appWallets: appWallets ?? this.appWallets,
     wallet: clearWallet ? null : wallet ?? this.wallet,
+    selectedAppWalletId: clearSelectedAppWallet
+        ? null
+        : selectedAppWalletId ?? this.selectedAppWalletId,
+    isResolvingAddress: isResolvingAddress ?? this.isResolvingAddress,
+    lightningAddressInput: lightningAddressInput ?? this.lightningAddressInput,
+    lightningAddressInvalid:
+        lightningAddressInvalid ?? this.lightningAddressInvalid,
     createdOrder: createdOrder ?? this.createdOrder,
     failure: clearFailure ? null : failure ?? this.failure,
   );

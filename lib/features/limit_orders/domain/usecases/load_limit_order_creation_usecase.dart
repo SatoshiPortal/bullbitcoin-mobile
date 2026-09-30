@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -12,11 +14,13 @@ import 'package:meta/meta.dart';
 class LoadLimitOrderCreationUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final DefaultWalletsFacade _defaultWalletsFacade;
+  final GetWalletsUsecase _getWalletsUsecase;
   final LimitOrderRepository _repository;
 
   const LoadLimitOrderCreationUsecase(
     this._getExchangeUserSummaryUsecase,
     this._defaultWalletsFacade,
+    this._getWalletsUsecase,
     this._repository,
   );
 
@@ -99,6 +103,23 @@ class LoadLimitOrderCreationUsecase {
         ),
     ];
 
+    List<Wallet> appWallets;
+    try {
+      final all = await _getWalletsUsecase.execute();
+      appWallets = all
+          .where((w) => w.network.isBitcoin || w.network.isLiquid)
+          .toList();
+    } on Error {
+      rethrow;
+    } catch (e, st) {
+      log.warning(
+        'Failed to list wallets for a limit order',
+        error: e,
+        trace: st,
+      );
+      appWallets = const [];
+    }
+
     final rateResult = await _repository.getRate(selectedCurrency.code);
     return switch (rateResult) {
       Err(:final failure) => Err(failure),
@@ -108,6 +129,7 @@ class LoadLimitOrderCreationUsecase {
           selectedCurrency: selectedCurrency,
           rate: value,
           wallets: wallets,
+          appWallets: appWallets,
         ),
       ),
     };

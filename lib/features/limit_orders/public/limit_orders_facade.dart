@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/list_active_limit_orders_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
@@ -28,6 +30,8 @@ class LimitOrdersFacade {
   final CreateLimitOrderUsecase _create;
   final GetLimitOrderUsecase _getOrder;
   final CancelLimitOrderUsecase _cancelOrder;
+  final ResolveWalletAddressUsecase _resolveAddress;
+  final ValidateLightningAddressUsecase _validateLnAddress;
 
   const LimitOrdersFacade(
     this._listActive,
@@ -38,6 +42,8 @@ class LimitOrdersFacade {
     this._create,
     this._getOrder,
     this._cancelOrder,
+    this._resolveAddress,
+    this._validateLnAddress,
   );
 
   Widget buildDashboardCard() => BlocProvider(
@@ -47,8 +53,13 @@ class LimitOrdersFacade {
   );
 
   Widget buildCreateScreen() => BlocProvider(
-    create: (_) =>
-        CreateLimitOrderCubit(_loadCreation, _getRate, _create)..load(),
+    create: (_) => CreateLimitOrderCubit(
+      _loadCreation,
+      _getRate,
+      _create,
+      _resolveAddress,
+      _validateLnAddress,
+    )..load(),
     child: const CreateLimitOrderScreen(),
   );
 

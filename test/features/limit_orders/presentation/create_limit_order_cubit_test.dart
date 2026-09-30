@@ -1,11 +1,14 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -23,10 +26,20 @@ class MockGetLimitOrderRateUsecase extends Mock
 class MockCreateLimitOrderUsecase extends Mock
     implements CreateLimitOrderUsecase {}
 
+class MockResolveWalletAddressUsecase extends Mock
+    implements ResolveWalletAddressUsecase {}
+
+class MockValidateLightningAddressUsecase extends Mock
+    implements ValidateLightningAddressUsecase {}
+
+class _MockWallet extends Mock implements Wallet {}
+
 void main() {
   late MockLoadLimitOrderCreationUsecase loadCreation;
   late MockGetLimitOrderRateUsecase getRate;
   late MockCreateLimitOrderUsecase create;
+  late MockResolveWalletAddressUsecase resolveAddress;
+  late MockValidateLightningAddressUsecase validateLnAddress;
 
   final bitcoinWallet = LimitOrderWallet(
     type: LimitOrderWalletType.bitcoin,
@@ -46,10 +59,17 @@ void main() {
     loadCreation = MockLoadLimitOrderCreationUsecase();
     getRate = MockGetLimitOrderRateUsecase();
     create = MockCreateLimitOrderUsecase();
+    resolveAddress = MockResolveWalletAddressUsecase();
+    validateLnAddress = MockValidateLightningAddressUsecase();
   });
 
-  CreateLimitOrderCubit buildCubit() =>
-      CreateLimitOrderCubit(loadCreation, getRate, create);
+  CreateLimitOrderCubit buildCubit() => CreateLimitOrderCubit(
+    loadCreation,
+    getRate,
+    create,
+    resolveAddress,
+    validateLnAddress,
+  );
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'loads the creation context and initializes the target',
@@ -183,6 +203,72 @@ void main() {
       expect(cubit.state.step, CreateLimitOrderStep.confirmation);
       expect(cubit.state.failure, isA<LimitOrderCreationFailure>());
       expect(cubit.state.isSubmitting, isFalse);
+    },
+  );
+
+  Wallet appWallet(String id, Network network) {
+    final wallet = _MockWallet();
+    when(() => wallet.id).thenReturn(id);
+    when(() => wallet.network).thenReturn(network);
+    return wallet;
+  }
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'selectAppWallet derives a receive address and sets the destination',
+    setUp: () => when(
+      () => resolveAddress.execute('w-btc'),
+    ).thenAnswer((_) async => const Ok('bc1qderived')),
+    build: buildCubit,
+    act: (cubit) =>
+        cubit.selectAppWallet(appWallet('w-btc', Network.bitcoinMainnet)),
+    verify: (cubit) {
+      expect(cubit.state.isResolvingAddress, isFalse);
+      expect(cubit.state.selectedAppWalletId, 'w-btc');
+      expect(cubit.state.wallet?.type, LimitOrderWalletType.bitcoin);
+      expect(cubit.state.wallet?.address, 'bc1qderived');
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'selectAppWallet surfaces a derive failure and clears the selection',
+    setUp: () => when(
+      () => resolveAddress.execute('w-lbtc'),
+    ).thenAnswer((_) async => const Err(LimitOrdersUnexpectedFailure('boom'))),
+    build: buildCubit,
+    act: (cubit) =>
+        cubit.selectAppWallet(appWallet('w-lbtc', Network.liquidMainnet)),
+    verify: (cubit) {
+      expect(cubit.state.isResolvingAddress, isFalse);
+      expect(cubit.state.wallet, isNull);
+      expect(cubit.state.selectedAppWalletId, isNull);
+      expect(cubit.state.failure, isA<LimitOrdersUnexpectedFailure>());
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'accepts a valid lightning address as the destination',
+    setUp: () => when(
+      () => validateLnAddress.execute('sats@bullbitcoin.com'),
+    ).thenAnswer((_) async => 'sats@bullbitcoin.com'),
+    build: buildCubit,
+    act: (cubit) => cubit.setLightningAddress('sats@bullbitcoin.com'),
+    verify: (cubit) {
+      expect(cubit.state.lightningAddressInvalid, isFalse);
+      expect(cubit.state.wallet?.type, LimitOrderWalletType.lightning);
+      expect(cubit.state.wallet?.address, 'sats@bullbitcoin.com');
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'rejects an invoice or otherwise invalid lightning address',
+    setUp: () => when(
+      () => validateLnAddress.execute(any()),
+    ).thenAnswer((_) async => null),
+    build: buildCubit,
+    act: (cubit) => cubit.setLightningAddress('lnbc1invoice'),
+    verify: (cubit) {
+      expect(cubit.state.lightningAddressInvalid, isTrue);
+      expect(cubit.state.wallet, isNull);
     },
   );
 }

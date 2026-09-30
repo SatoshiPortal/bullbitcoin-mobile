@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -18,6 +20,17 @@ class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
 class MockDefaultWalletsFacade extends Mock implements DefaultWalletsFacade {}
+
+class MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+
+class _MockWallet extends Mock implements Wallet {}
+
+Wallet _wallet(String id, Network network) {
+  final wallet = _MockWallet();
+  when(() => wallet.id).thenReturn(id);
+  when(() => wallet.network).thenReturn(network);
+  return wallet;
+}
 
 const _wallets = DefaultWallets(
   bitcoin: DefaultWallet(
@@ -38,6 +51,7 @@ void main() {
   late MockLimitOrderRepository repository;
   late MockGetExchangeUserSummaryUsecase getUserSummary;
   late MockDefaultWalletsFacade defaultWallets;
+  late MockGetWalletsUsecase getWallets;
   late LoadLimitOrderCreationUsecase usecase;
 
   LimitOrdersFailure failureOf(
@@ -52,9 +66,11 @@ void main() {
     repository = MockLimitOrderRepository();
     getUserSummary = MockGetExchangeUserSummaryUsecase();
     defaultWallets = MockDefaultWalletsFacade();
+    getWallets = MockGetWalletsUsecase();
     usecase = LoadLimitOrderCreationUsecase(
       getUserSummary,
       defaultWallets,
+      getWallets,
       repository,
     );
     when(
@@ -63,6 +79,36 @@ void main() {
     when(
       () => defaultWallets.getDefaultWallets(),
     ).thenAnswer((_) async => _wallets);
+    when(() => getWallets.execute()).thenAnswer((_) async => []);
+  });
+
+  test(
+    'includes the in-app bitcoin and liquid wallets in the context',
+    () async {
+      when(
+        () => getUserSummary.execute(),
+      ).thenAnswer((_) async => userSummary());
+      when(() => getWallets.execute()).thenAnswer(
+        (_) async => [
+          _wallet('w-btc', Network.bitcoinMainnet),
+          _wallet('w-lbtc', Network.liquidMainnet),
+        ],
+      );
+
+      final result = await usecase.execute();
+
+      final ids = valueOf(result).appWallets.map((w) => w.id).toList();
+      expect(ids, ['w-btc', 'w-lbtc']);
+    },
+  );
+
+  test('degrades to no in-app wallets when listing them fails', () async {
+    when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
+    when(() => getWallets.execute()).thenThrow(Exception('no wallets'));
+
+    final result = await usecase.execute();
+
+    expect(valueOf(result).appWallets, isEmpty);
   });
 
   test('drops zero balances and refuses an unfunded account', () async {

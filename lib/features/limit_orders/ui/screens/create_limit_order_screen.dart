@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
@@ -24,6 +25,7 @@ final class CreateLimitOrderScreen extends StatefulWidget {
 final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   final _discountController = TextEditingController(text: '1');
   final _amountController = TextEditingController();
+  final _lightningController = TextEditingController();
   final _amountNode = FocusNode();
 
   @override
@@ -47,6 +49,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     _amountController.removeListener(_onAmountChanged);
     _discountController.dispose();
     _amountController.dispose();
+    _lightningController.dispose();
     _amountNode.dispose();
     super.dispose();
   }
@@ -290,6 +293,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   }
 
   Widget _wallet(BuildContext context, CreateLimitOrderState state) {
+    final cubit = context.read<CreateLimitOrderCubit>();
     return BullScrollableColumn(
       padding: const EdgeInsets.all(24),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,19 +305,10 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         const Gap(12),
         Text(context.loc.limitOrdersWalletDescription),
         const Gap(24),
-        if (state.wallets.isEmpty) ...[
-          Text(context.loc.limitOrdersNoDefaultWallets),
-          const Gap(16),
-          TextButton(
-            onPressed: () =>
-                context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
-            child: Text(context.loc.limitOrdersManageDefaultWallets),
-          ),
-        ] else
+        if (state.wallets.isNotEmpty) ...[
           for (final wallet in state.wallets)
             ListTile(
-              onTap: () =>
-                  context.read<CreateLimitOrderCubit>().selectWallet(wallet),
+              onTap: () => cubit.selectWallet(wallet),
               leading: Icon(
                 state.wallet == wallet
                     ? Icons.radio_button_checked
@@ -323,8 +318,78 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               title: Text(_walletName(context, wallet.type)),
               subtitle: Text(wallet.address, maxLines: 2),
             ),
+          const Gap(16),
+        ],
+        if (state.appWallets.isNotEmpty) ...[
+          Text(
+            context.loc.limitOrdersYourWalletsTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const Gap(8),
+          for (final appWallet in state.appWallets)
+            ListTile(
+              onTap: state.isResolvingAddress
+                  ? null
+                  : () => cubit.selectAppWallet(appWallet),
+              leading: Icon(
+                state.selectedAppWalletId == appWallet.id
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: context.bull.primary,
+              ),
+              title: Text(_appWalletName(context, appWallet)),
+              subtitle: Text(
+                appWallet.network.isLiquid
+                    ? context.loc.limitOrdersWalletLiquid
+                    : context.loc.limitOrdersWalletBitcoin,
+              ),
+              trailing:
+                  state.isResolvingAddress &&
+                      state.selectedAppWalletId == appWallet.id
+                  ? const SizedBox.square(
+                      dimension: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : null,
+            ),
+          const Gap(16),
+        ],
+        Text(
+          context.loc.limitOrdersLightningAddressLabel,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const Gap(8),
+        TextField(
+          controller: _lightningController,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.done,
+          autocorrect: false,
+          onSubmitted: cubit.setLightningAddress,
+          decoration: InputDecoration(
+            hintText: context.loc.limitOrdersLightningAddressHint,
+            errorText: state.lightningAddressInvalid
+                ? context.loc.limitOrdersLightningAddressError
+                : null,
+          ),
+        ),
+        if (state.wallets.isEmpty && state.appWallets.isEmpty) ...[
+          const Gap(16),
+          TextButton(
+            onPressed: () =>
+                context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+            child: Text(context.loc.limitOrdersManageDefaultWallets),
+          ),
+        ],
       ],
     );
+  }
+
+  String _appWalletName(BuildContext context, Wallet wallet) {
+    final label = wallet.label;
+    if (label != null && label.isNotEmpty) return label;
+    return wallet.network.isLiquid
+        ? context.loc.limitOrdersWalletLiquid
+        : context.loc.limitOrdersWalletBitcoin;
   }
 
   Widget _confirmation(BuildContext context, CreateLimitOrderState state) {

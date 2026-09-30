@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
+import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,9 +14,16 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   final LoadLimitOrderCreationUsecase _loadCreation;
   final GetLimitOrderRateUsecase _getRate;
   final CreateLimitOrderUsecase _create;
+  final ResolveWalletAddressUsecase _resolveAddress;
+  final ValidateLightningAddressUsecase _validateLnAddress;
 
-  CreateLimitOrderCubit(this._loadCreation, this._getRate, this._create)
-    : super(const CreateLimitOrderState());
+  CreateLimitOrderCubit(
+    this._loadCreation,
+    this._getRate,
+    this._create,
+    this._resolveAddress,
+    this._validateLnAddress,
+  ) : super(const CreateLimitOrderState());
 
   Future<void> load() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
@@ -28,6 +38,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
             currency: value.selectedCurrency,
             rate: value.rate,
             wallets: value.wallets,
+            appWallets: value.appWallets,
             discount: 1,
             limitPrice: value.rate.priceForDiscount(1),
           ),
@@ -101,7 +112,84 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   }
 
   void selectWallet(LimitOrderWallet wallet) {
-    emit(state.copyWith(wallet: wallet, clearFailure: true));
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        clearSelectedAppWallet: true,
+        lightningAddressInvalid: false,
+        clearFailure: true,
+      ),
+    );
+  }
+
+  Future<void> selectAppWallet(Wallet appWallet) async {
+    emit(
+      state.copyWith(
+        isResolvingAddress: true,
+        clearWallet: true,
+        selectedAppWalletId: appWallet.id,
+        lightningAddressInvalid: false,
+        clearFailure: true,
+      ),
+    );
+    final result = await _resolveAddress.execute(appWallet.id);
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            isResolvingAddress: false,
+            wallet: LimitOrderWallet(
+              type: appWallet.network.isLiquid
+                  ? LimitOrderWalletType.liquid
+                  : LimitOrderWalletType.bitcoin,
+              address: value,
+            ),
+          ),
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isResolvingAddress: false,
+            clearSelectedAppWallet: true,
+            failure: failure,
+          ),
+        );
+    }
+  }
+
+  Future<void> setLightningAddress(String input) async {
+    emit(
+      state.copyWith(
+        lightningAddressInput: input,
+        isResolvingAddress: true,
+        clearWallet: true,
+        clearSelectedAppWallet: true,
+        lightningAddressInvalid: false,
+        clearFailure: true,
+      ),
+    );
+    final address = await _validateLnAddress.execute(input);
+    if (isClosed) return;
+    if (address == null) {
+      emit(
+        state.copyWith(
+          isResolvingAddress: false,
+          lightningAddressInvalid: true,
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        isResolvingAddress: false,
+        lightningAddressInvalid: false,
+        wallet: LimitOrderWallet(
+          type: LimitOrderWalletType.lightning,
+          address: address,
+        ),
+      ),
+    );
   }
 
   void continueFromWallet() {

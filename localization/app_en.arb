@@ -14878,5 +14878,25 @@
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
   "@limitOrderCreationError": {"description": "Shown when a Limit Order cannot be created"},
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
-  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"}
+  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"},
+  "limitOrdersYourWalletsTitle": "Your wallets",
+  "@limitOrdersYourWalletsTitle": {
+    "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
+  },
+  "limitOrdersLightningAddressLabel": "Lightning address",
+  "@limitOrdersLightningAddressLabel": {
+    "description": "Label for the manual lightning-address field in the limit-order destination step"
+  },
+  "limitOrdersLightningAddressHint": "you@domain.com",
+  "@limitOrdersLightningAddressHint": {
+    "description": "Hint for the lightning-address field showing the expected lightning address format"
+  },
+  "limitOrdersLightningAddressError": "Enter a valid lightning address, not an invoice",
+  "@limitOrdersLightningAddressError": {
+    "description": "Error shown when the entered lightning destination is not a valid lightning address"
+  },
+  "limitOrdersResolvingAddress": "Getting address…",
+  "@limitOrdersResolvingAddress": {
+    "description": "Shown while deriving a receive address for the selected in-app wallet"
+  }
 }
