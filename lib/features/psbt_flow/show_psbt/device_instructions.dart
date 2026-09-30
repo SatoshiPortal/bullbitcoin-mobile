@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet;
 
 class QrDeviceInstructions {
   static Future<void> showKruxInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.kruxInstructionsTitle,
       instructions: [
@@ -29,7 +29,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showKeystoneInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.keystoneInstructionsTitle,
       instructions: [
@@ -52,7 +52,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showPassportInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.passportInstructionsTitle,
       instructions: [
@@ -75,7 +75,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showSeedSignerInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.seedsignerInstructionsTitle,
       instructions: [
@@ -98,7 +98,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showSpecterInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.psbtFlowSpecterTitle,
       instructions: [
@@ -122,7 +122,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showColdcardQInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.psbtFlowColdcardQInstructionsTitle,
       instructions: [
@@ -154,7 +154,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showColdcardMk4Instructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.psbtFlowColdcardMk4InstructionsTitle,
       instructions: [
@@ -176,7 +176,7 @@ class QrDeviceInstructions {
   }
 
   static Future<void> showJadeInstructions(BuildContext context) {
-    return InstructionsBottomSheet.show(
+    return BullInstructionsSheet.show(
       context,
       title: context.loc.jadeInstructionsTitle,
       instructions: [

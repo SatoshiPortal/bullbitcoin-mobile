@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDialog, Gap;
 
 class DeleteCustomServerDialog {
   static Future<bool?> show(
@@ -11,7 +10,7 @@ class DeleteCustomServerDialog {
     String serverUrl,
     bool isLastCustomServer,
   ) {
-    return BlurredDialog.show<bool>(
+    return BullDialog.show<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: context.appColors.surfaceContainer,

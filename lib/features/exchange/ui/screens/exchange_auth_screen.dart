@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -16,6 +15,7 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDialog;
 
 class ExchangeAuthScreen extends StatefulWidget {
   const ExchangeAuthScreen({super.key});
@@ -309,7 +309,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     await _controller.reload();
 
     if (!mounted) return;
-    await BlurredDialog.show(
+    await BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),
