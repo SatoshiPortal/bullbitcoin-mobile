@@ -30,5 +30,24 @@ void main() {
 
       expect(reader.isComplete, isTrue);
     });
+
+    test('infers testnet from the key origin when use info is absent', () {
+      const parts = [
+        'UR:CRYPTO-ACCOUNT/1-4/LPADAACSKPCYMOMNLGRYHDCKOEADCYSSMECPONAOLYTAADMETAADDLOXAXHDCLAOKSRLNLKPUEGYATHPMNSNIYMUECBY',
+        'UR:CRYPTO-ACCOUNT/2-4/LPAOAACSKPCYMOMNLGRYHDCKKKGHZMLUZORPVDGUOTECSTTKTOLPCWPTNTLKZTTIZTBEAAHDCXVDTPMYRSTDMOPSCXFZ',
+        'UR:CRYPTO-ACCOUNT/3-4/LPAXAACSKPCYMOMNLGRYHDCKSPZSBZSPGERLGDATUYNLPYBTGYIYYKBTWTAOSWKSVTSGCHBYDKYAVDAMTAADMONDGDFD',
+        'UR:CRYPTO-ACCOUNT/4-4/LPAAAACSKPCYMOMNLGRYHDCKDYOTADLOCSDYYKADYKAEYKAOYKAOCYSSMECPONAXAAAYCYIOREKKJKAEAEAEWZWDMYON',
+      ];
+      final reader = UrQrReader();
+
+      for (final part in parts) {
+        reader.receive(part);
+      }
+
+      final account = reader.decoded! as CryptoAccount;
+      expect(account.hdKey!.derivationPath, 'm/48h/1h/0h/2h');
+      expect(account.hdKey!.network, HdKeyNetwork.testnet);
+      expect(account.hdKey!.xpub, startsWith('tpub'));
+    });
   });
 }

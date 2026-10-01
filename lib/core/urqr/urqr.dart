@@ -227,16 +227,6 @@ class CryptoHdKey {
     try {
       keyData = (map[3] as CborBytes).bytes;
       chainCode = (map[4] as CborBytes).bytes;
-
-      if (map.containsKey(5)) {
-        final networkData = map[5] as CborMap;
-        network = (networkData[CborValue(2)] as CborSmallInt?)?.value == 0
-            ? HdKeyNetwork.mainnet
-            : HdKeyNetwork.testnet;
-      } else {
-        network = HdKeyNetwork.mainnet;
-      }
-
       parentFingerprint = (map[8] as CborSmallInt?)?.value;
 
       final pathData = map[6] as CborMap;
@@ -251,6 +241,17 @@ class CryptoHdKey {
             ),
           );
         }
+      }
+
+      if (map.containsKey(5)) {
+        final networkData = map[5] as CborMap;
+        network = (networkData[CborValue(2)] as CborSmallInt?)?.value == 0
+            ? HdKeyNetwork.mainnet
+            : HdKeyNetwork.testnet;
+      } else {
+        network = keypath != null && keypath!.length > 1 && keypath![1].key == 1
+            ? HdKeyNetwork.testnet
+            : HdKeyNetwork.mainnet;
       }
     } catch (e) {
       throw InvalidCborData();
