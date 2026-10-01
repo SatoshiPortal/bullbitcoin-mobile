@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullSnackBar, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart';
@@ -113,7 +111,7 @@ class TorProxyWidget extends StatelessWidget {
         ],
         if (!useTorProxy) ...[
           const Gap(24),
-          InfoCard(
+          BullInfoCard(
             title: context.loc.torSettingsEmbeddedTitle,
             description: context.loc.torSettingsEmbeddedDescription,
             bgColor: context.appColors.tertiaryContainer,
@@ -160,16 +158,16 @@ class TorProxyWidget extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       );
       if (!launched && context.mounted) {
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          context.loc.torSettingsOrbotLinkFailed,
+          message: context.loc.torSettingsOrbotLinkFailed,
         );
       }
     } catch (_) {
       if (context.mounted) {
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          context.loc.torSettingsOrbotLinkFailed,
+          message: context.loc.torSettingsOrbotLinkFailed,
         );
       }
     }

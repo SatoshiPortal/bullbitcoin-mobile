@@ -2,25 +2,28 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInfoCard,
+        BullInputText,
+        BullText,
+        Gap;
 
 class AutoSwapSettingsBottomSheet extends StatelessWidget {
   const AutoSwapSettingsBottomSheet({super.key});
 
   static Future<void> showBottomSheet(BuildContext context) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: BlocProvider<AutoSwapSettingsCubit>(
         create: (_) => locator<AutoSwapSettingsCubit>()..loadSettings(),
@@ -109,7 +112,7 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                                     _EnabledToggle(),
                                     if (state.failure case final failure?) ...[
                                       const Gap(16),
-                                      InfoCard(
+                                      BullInfoCard(
                                         description: failure.toTranslated(
                                           context,
                                         ),
@@ -183,7 +186,7 @@ class _Header extends StatelessWidget {
             children: [
               Expanded(
                 child: Center(
-                  child: BBText(
+                  child: BullText(
                     context.loc.autoswapSettingsTitle,
                     style: context.font.headlineMedium,
                   ),
@@ -214,7 +217,7 @@ class _EnabledToggle extends StatelessWidget {
         Row(
           mainAxisAlignment: .spaceBetween,
           children: [
-            BBText(
+            BullText(
               context.loc.autoswapEnableToggleLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.text,
@@ -254,7 +257,7 @@ class _AmountThresholdField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           context.loc.autoswapMaxBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
@@ -282,7 +285,7 @@ class _AmountThresholdField extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: context.appColors.border),
                     ),
-                    child: BBText(
+                    child: BullText(
                       bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
                       style: context.font.bodyMedium,
                     ),
@@ -299,7 +302,7 @@ class _AmountThresholdField extends StatelessWidget {
         ),
         if (amountThresholdFailure != null) ...[
           const Gap(8),
-          BBText(
+          BullText(
             amountThresholdFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
@@ -307,7 +310,7 @@ class _AmountThresholdField extends StatelessWidget {
           ),
         ],
         const Gap(4),
-        BBText(
+        BullText(
           context.loc.autoswapBaseBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
@@ -338,7 +341,7 @@ class _TriggerBalanceField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           context.loc.autoswapMaximumBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
@@ -366,7 +369,7 @@ class _TriggerBalanceField extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: context.appColors.border),
                     ),
-                    child: BBText(
+                    child: BullText(
                       bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
                       style: context.font.bodyMedium,
                     ),
@@ -383,7 +386,7 @@ class _TriggerBalanceField extends StatelessWidget {
         ),
         if (triggerBalanceFailure != null) ...[
           const Gap(8),
-          BBText(
+          BullText(
             triggerBalanceFailure.toTranslated(context, unit: bitcoinUnit),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
@@ -391,7 +394,7 @@ class _TriggerBalanceField extends StatelessWidget {
           ),
         ],
         const Gap(4),
-        BBText(
+        BullText(
           context.loc.autoswapTriggerAtBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
@@ -419,7 +422,7 @@ class _FeeThresholdField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           context.loc.autoswapMaxFeeLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
@@ -443,7 +446,7 @@ class _FeeThresholdField extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: context.appColors.border),
                   ),
-                  child: BBText('%', style: context.font.bodyMedium),
+                  child: BullText('%', style: context.font.bodyMedium),
                 ),
                 onChanged: (value) {
                   context.read<AutoSwapSettingsCubit>().onFeeThresholdChanged(
@@ -456,7 +459,7 @@ class _FeeThresholdField extends StatelessWidget {
         ),
         if (feeThresholdFailure != null) ...[
           const Gap(8),
-          BBText(
+          BullText(
             feeThresholdFailure.toTranslated(context),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
@@ -464,7 +467,7 @@ class _FeeThresholdField extends StatelessWidget {
           ),
         ],
         const Gap(4),
-        BBText(
+        BullText(
           context.loc.autoswapMaxFeeInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
@@ -488,7 +491,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
         Row(
           mainAxisAlignment: .spaceBetween,
           children: [
-            BBText(
+            BullText(
               context.loc.autoswapAlwaysBlockLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.text,
@@ -505,7 +508,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
           ],
         ),
         const Gap(4),
-        BBText(
+        BullText(
           alwaysBlock
               ? context.loc.autoswapAlwaysBlockInfoEnabled
               : context.loc.autoswapAlwaysBlockInfoDisabled,
@@ -540,7 +543,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
       children: [
         Row(
           children: [
-            BBText(
+            BullText(
               context.loc.autoswapRecipientWalletLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.text,
@@ -548,7 +551,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
             ),
             if (enabled) ...[
               const Gap(4),
-              BBText(
+              BullText(
                 context.loc.autoswapRecipientWalletRequired,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.appColors.error,
@@ -593,7 +596,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
                   return null;
                 }
               : null,
-          hint: BBText(
+          hint: BullText(
             enabled
                 ? context.loc.autoswapRecipientWalletPlaceholderRequired
                 : context.loc.autoswapRecipientWalletPlaceholder,
@@ -608,7 +611,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
           },
         ),
         const Gap(4),
-        BBText(
+        BullText(
           context.loc.autoswapRecipientWalletInfoText,
           style: context.font.labelSmall?.copyWith(
             color: enabled && selectedWalletId == null
@@ -637,7 +640,7 @@ class _SaveButton extends StatelessWidget {
     final isDisabled =
         saving || !enabled || (enabled && selectedWalletId == null);
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.autoswapSaveButton,
       disabled: isDisabled,
       onPressed: isDisabled

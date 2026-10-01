@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class TorPortInputBottomSheet extends StatefulWidget {
@@ -15,7 +13,7 @@ class TorPortInputBottomSheet extends StatefulWidget {
   final int currentPort;
 
   static Future<int?> show(BuildContext context, int currentPort) {
-    return BlurredBottomSheet.show<int>(
+    return BullBottomSheet.show<int>(
       context: context,
       child: TorPortInputBottomSheet(currentPort: currentPort),
     );
@@ -88,7 +86,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                 alignment: Alignment.center,
                 children: [
                   Center(
-                    child: BBText(
+                    child: BullText(
                       context.loc.torSettingsProxyPort,
                       style: context.font.headlineMedium,
                     ),
@@ -120,7 +118,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                 autofocus: true,
               ),
               const Gap(24),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.torSettingsSaveButton,
                 onPressed: _submit,
                 bgColor: context.appColors.primary,
