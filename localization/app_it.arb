@@ -4921,5 +4921,20 @@
   "recipientsVirtualIbanIntro": "Attiva il tuo IBAN virtuale personale prima di creare un destinatario SEPA riservato.",
   "recipientsVirtualIbanNameConfirmation": "Confermo che questo è il mio nome legale.",
   "recipientsVirtualIbanActivate": "Attiva SEPA riservato",
-  "recipientsVirtualIbanActivating": "Creazione del tuo IBAN virtuale. Potrebbero essere necessari alcuni minuti."
+  "recipientsVirtualIbanActivating": "Creazione del tuo IBAN virtuale. Potrebbero essere necessari alcuni minuti.",
+  "recipientsVirtualIbanEuResidencyRequired": "Devi essere residente nell'Unione Europea per attivare SEPA riservato.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Un IBAN virtuale personale per depositare denaro in modo riservato",
+  "fundExchangeMethodNewBadge": "NUOVO",
+  "fundExchangeConfidentialSepaActivateTitle": "Attivare SEPA riservato?",
+  "fundExchangeConfidentialSepaActivateDescription": "Finanzia il tuo account in modo riservato usando un IBAN virtuale personale a tuo nome. È gratis.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Quando invii fondi a Bull Bitcoin dalla tua banca, appare come un bonifico a te stesso.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Nessun codice di bonifico richiesto.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Importante: è richiesta la corrispondenza dei nomi",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Il nome del tuo conto bancario deve corrispondere esattamente al nome del tuo IBAN virtuale Bull Bitcoin, altrimenti il bonifico verrà restituito automaticamente.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Nome del titolare del conto",
+  "fundExchangeConfidentialSepaNameConfirmation": "Confermo che il nome corrisponde al mio conto bancario",
+  "fundExchangeConfidentialSepaActivatedTitle": "SEPA riservato attivato",
+  "fundExchangeConfidentialSepaActivatedDescription": "Ora puoi usare il tuo IBAN virtuale personale per depositare denaro in modo riservato.",
+  "fundExchangeConfidentialSepaShowDetails": "Mostra i dettagli del mio IBAN virtuale",
+  "fundExchangeConfidentialSepaDescription": "Finanzia il tuo account in modo riservato usando un IBAN virtuale personale a tuo nome. Il deposito apparirà come un pagamento a te stesso, senza codice di bonifico."
 }

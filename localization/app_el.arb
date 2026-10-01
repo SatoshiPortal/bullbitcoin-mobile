@@ -12215,5 +12215,20 @@
   "recipientsVirtualIbanIntro": "Ενεργοποιήστε το προσωπικό εικονικό IBAN πριν δημιουργήσετε έναν εμπιστευτικό παραλήπτη SEPA.",
   "recipientsVirtualIbanNameConfirmation": "Επιβεβαιώνω ότι αυτό είναι το νόμιμο όνομά μου.",
   "recipientsVirtualIbanActivate": "Ενεργοποίηση εμπιστευτικού SEPA",
-  "recipientsVirtualIbanActivating": "Δημιουργείται το εικονικό IBAN σας. Αυτό μπορεί να διαρκέσει λίγα λεπτά."
+  "recipientsVirtualIbanActivating": "Δημιουργείται το εικονικό IBAN σας. Αυτό μπορεί να διαρκέσει λίγα λεπτά.",
+  "recipientsVirtualIbanEuResidencyRequired": "Πρέπει να είστε κάτοικος της Ευρωπαϊκής Ένωσης για να ενεργοποιήσετε το εμπιστευτικό SEPA.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Ένα προσωπικό εικονικό IBAN για ιδιωτική κατάθεση χρημάτων",
+  "fundExchangeMethodNewBadge": "ΝΕΟ",
+  "fundExchangeConfidentialSepaActivateTitle": "Ενεργοποίηση εμπιστευτικού SEPA;",
+  "fundExchangeConfidentialSepaActivateDescription": "Χρηματοδοτήστε τον λογαριασμό σας ιδιωτικά χρησιμοποιώντας ένα προσωπικό εικονικό IBAN στο όνομά σας. Είναι δωρεάν.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Όταν στέλνετε χρήματα στην Bull Bitcoin από την τράπεζά σας, εμφανίζεται ως μεταφορά στον εαυτό σας.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Δεν απαιτείται κωδικός μεταφοράς.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Σημαντικό: Απαιτείται αντιστοίχιση ονόματος",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Το όνομα του τραπεζικού σας λογαριασμού πρέπει να ταιριάζει ακριβώς με το όνομα του εικονικού σας IBAN στην Bull Bitcoin, διαφορετικά η μεταφορά θα επιστραφεί αυτόματα.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Όνομα κατόχου λογαριασμού",
+  "fundExchangeConfidentialSepaNameConfirmation": "Επιβεβαιώνω ότι το όνομα ταιριάζει με τον τραπεζικό μου λογαριασμό",
+  "fundExchangeConfidentialSepaActivatedTitle": "Το εμπιστευτικό SEPA ενεργοποιήθηκε",
+  "fundExchangeConfidentialSepaActivatedDescription": "Μπορείτε τώρα να χρησιμοποιήσετε το προσωπικό εικονικό IBAN για ιδιωτική κατάθεση χρημάτων.",
+  "fundExchangeConfidentialSepaShowDetails": "Εμφάνιση στοιχείων του εικονικού μου IBAN",
+  "fundExchangeConfidentialSepaDescription": "Χρηματοδοτήστε τον λογαριασμό σας ιδιωτικά χρησιμοποιώντας ένα προσωπικό εικονικό IBAN στο όνομά σας. Η κατάθεση θα εμφανιστεί ως πληρωμή στον εαυτό σας, χωρίς κωδικό μεταφοράς."
 }

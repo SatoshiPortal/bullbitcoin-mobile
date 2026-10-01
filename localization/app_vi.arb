@@ -3603,5 +3603,20 @@
   "recipientsVirtualIbanIntro": "Kích hoạt IBAN ảo cá nhân trước khi tạo người nhận SEPA bảo mật.",
   "recipientsVirtualIbanNameConfirmation": "Tôi xác nhận đây là tên pháp lý của mình.",
   "recipientsVirtualIbanActivate": "Kích hoạt SEPA bảo mật",
-  "recipientsVirtualIbanActivating": "Đang tạo IBAN ảo của bạn. Quá trình này có thể mất vài phút."
+  "recipientsVirtualIbanActivating": "Đang tạo IBAN ảo của bạn. Quá trình này có thể mất vài phút.",
+  "recipientsVirtualIbanEuResidencyRequired": "Bạn cần là cư dân của Liên minh Châu Âu để kích hoạt SEPA bảo mật.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN ảo cá nhân để nạp tiền một cách riêng tư",
+  "fundExchangeMethodNewBadge": "MỚI",
+  "fundExchangeConfidentialSepaActivateTitle": "Kích hoạt SEPA bảo mật?",
+  "fundExchangeConfidentialSepaActivateDescription": "Nạp tiền vào tài khoản một cách riêng tư bằng IBAN ảo cá nhân mang tên bạn. Hoàn toàn miễn phí.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Khi gửi tiền đến Bull Bitcoin từ ngân hàng của bạn, giao dịch hiển thị như một khoản chuyển cho chính bạn.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Không cần mã chuyển khoản.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Quan trọng: Tên phải trùng khớp",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Tên tài khoản ngân hàng của bạn phải trùng khớp hoàn toàn với tên IBAN ảo Bull Bitcoin của bạn, nếu không giao dịch sẽ tự động bị trả lại.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Tên chủ tài khoản",
+  "fundExchangeConfidentialSepaNameConfirmation": "Tôi xác nhận tên trùng khớp với tài khoản ngân hàng của mình",
+  "fundExchangeConfidentialSepaActivatedTitle": "Đã kích hoạt SEPA bảo mật",
+  "fundExchangeConfidentialSepaActivatedDescription": "Bây giờ bạn có thể dùng IBAN ảo cá nhân để nạp tiền một cách riêng tư.",
+  "fundExchangeConfidentialSepaShowDetails": "Hiển thị chi tiết IBAN ảo của tôi",
+  "fundExchangeConfidentialSepaDescription": "Nạp tiền vào tài khoản một cách riêng tư bằng IBAN ảo cá nhân mang tên bạn. Khoản nạp sẽ hiển thị như một khoản thanh toán cho chính bạn, không cần mã chuyển khoản."
 }

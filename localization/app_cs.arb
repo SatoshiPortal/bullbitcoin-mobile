@@ -12215,5 +12215,20 @@
   "recipientsVirtualIbanIntro": "Před vytvořením důvěrného příjemce SEPA aktivujte svůj osobní virtuální IBAN.",
   "recipientsVirtualIbanNameConfirmation": "Potvrzuji, že toto je mé zákonné jméno.",
   "recipientsVirtualIbanActivate": "Aktivovat důvěrný SEPA",
-  "recipientsVirtualIbanActivating": "Vytváříme váš virtuální IBAN. Může to trvat několik minut."
+  "recipientsVirtualIbanActivating": "Vytváříme váš virtuální IBAN. Může to trvat několik minut.",
+  "recipientsVirtualIbanEuResidencyRequired": "Pro aktivaci důvěrného SEPA musíte být rezidentem Evropské unie.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Osobní virtuální IBAN pro soukromý vklad peněz",
+  "fundExchangeMethodNewBadge": "NOVÉ",
+  "fundExchangeConfidentialSepaActivateTitle": "Aktivovat důvěrný SEPA?",
+  "fundExchangeConfidentialSepaActivateDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Je to zdarma.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Při odesílání prostředků do Bull Bitcoin z vaší banky se převod jeví jako převod sobě samému.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Není vyžadován žádný kód převodu.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Důležité: Vyžaduje se shoda jmen",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Jméno na vašem bankovním účtu se musí přesně shodovat se jménem vašeho virtuálního IBAN u Bull Bitcoin, jinak bude převod automaticky vrácen.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Jméno majitele účtu",
+  "fundExchangeConfidentialSepaNameConfirmation": "Potvrzuji, že jméno odpovídá mému bankovnímu účtu",
+  "fundExchangeConfidentialSepaActivatedTitle": "Důvěrný SEPA aktivován",
+  "fundExchangeConfidentialSepaActivatedDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromému vkládání peněz.",
+  "fundExchangeConfidentialSepaShowDetails": "Zobrazit údaje mého virtuálního IBAN",
+  "fundExchangeConfidentialSepaDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Vklad se zobrazí jako platba sobě samému, bez kódu převodu."
 }

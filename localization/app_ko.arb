@@ -12215,5 +12215,20 @@
   "recipientsVirtualIbanIntro": "기밀 SEPA 수신자를 만들기 전에 개인 가상 IBAN을 활성화하세요.",
   "recipientsVirtualIbanNameConfirmation": "이 이름이 제 법적 이름임을 확인합니다.",
   "recipientsVirtualIbanActivate": "기밀 SEPA 활성화",
-  "recipientsVirtualIbanActivating": "가상 IBAN을 생성하고 있습니다. 몇 분 정도 걸릴 수 있습니다."
+  "recipientsVirtualIbanActivating": "가상 IBAN을 생성하고 있습니다. 몇 분 정도 걸릴 수 있습니다.",
+  "recipientsVirtualIbanEuResidencyRequired": "기밀 SEPA를 활성화하려면 유럽 연합 거주자여야 합니다.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "비공개로 입금할 수 있는 개인 가상 IBAN",
+  "fundExchangeMethodNewBadge": "신규",
+  "fundExchangeConfidentialSepaActivateTitle": "기밀 SEPA를 활성화하시겠습니까?",
+  "fundExchangeConfidentialSepaActivateDescription": "본인 명의의 개인 가상 IBAN으로 비공개로 계정에 입금하세요. 무료입니다.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "은행에서 Bull Bitcoin으로 자금을 보낼 때 본인에게 보내는 이체로 표시됩니다.",
+  "fundExchangeConfidentialSepaBulletNoCode": "이체 코드가 필요 없습니다.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "중요: 이름 일치 필요",
+  "fundExchangeConfidentialSepaNameMatchWarning": "은행 계좌 이름이 Bull Bitcoin 가상 IBAN 이름과 정확히 일치해야 하며, 그렇지 않으면 이체가 자동으로 반환됩니다.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "계좌 소유자 이름",
+  "fundExchangeConfidentialSepaNameConfirmation": "이름이 제 은행 계좌와 일치함을 확인합니다",
+  "fundExchangeConfidentialSepaActivatedTitle": "기밀 SEPA 활성화됨",
+  "fundExchangeConfidentialSepaActivatedDescription": "이제 개인 가상 IBAN으로 비공개 입금이 가능합니다.",
+  "fundExchangeConfidentialSepaShowDetails": "내 가상 IBAN 정보 보기",
+  "fundExchangeConfidentialSepaDescription": "본인 명의의 개인 가상 IBAN으로 비공개로 계정에 입금하세요. 입금은 본인에게 보내는 결제로 표시되며 이체 코드가 필요 없습니다."
 }

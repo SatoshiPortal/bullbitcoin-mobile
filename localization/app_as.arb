@@ -9351,5 +9351,20 @@
   "recipientsVirtualIbanIntro": "গোপনীয় SEPA প্ৰাপক সৃষ্টি কৰাৰ আগতে আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN সক্ৰিয় কৰক।",
   "recipientsVirtualIbanNameConfirmation": "মই নিশ্চিত কৰোঁ যে এইটো মোৰ আইনী নাম।",
   "recipientsVirtualIbanActivate": "গোপনীয় SEPA সক্ৰিয় কৰক",
-  "recipientsVirtualIbanActivating": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।"
+  "recipientsVirtualIbanActivating": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।",
+  "recipientsVirtualIbanEuResidencyRequired": "গোপনীয় SEPA সক্ৰিয় কৰিবলৈ আপুনি ইউৰোপীয় সংঘৰ বাসিন্দা হ'ব লাগিব।",
+  "fundExchangeMethodConfidentialSepaSubtitle": "গোপনীয়ভাৱে ধন জমা কৰিবলৈ এটা ব্যক্তিগত ভাৰ্চুৱেল IBAN",
+  "fundExchangeMethodNewBadge": "নতুন",
+  "fundExchangeConfidentialSepaActivateTitle": "গোপনীয় SEPA সক্ৰিয় কৰিবনে?",
+  "fundExchangeConfidentialSepaActivateDescription": "আপোনাৰ নিজৰ নামত থকা ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰি গোপনীয়ভাৱে আপোনাৰ একাউণ্টত ধন জমা কৰক। ই বিনামূলীয়া।",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "আপোনাৰ বেংকৰ পৰা Bull Bitcoin-লৈ ধন পঠোৱাৰ সময়ত ই আপোনাৰ নিজলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়।",
+  "fundExchangeConfidentialSepaBulletNoCode": "কোনো স্থানান্তৰ ক'ডৰ প্ৰয়োজন নাই।",
+  "fundExchangeConfidentialSepaNameMatchTitle": "গুৰুত্বপূৰ্ণ: নাম মিল থকাটো প্ৰয়োজনীয়",
+  "fundExchangeConfidentialSepaNameMatchWarning": "আপোনাৰ বেংক একাউণ্টৰ নাম Bull Bitcoin ভাৰ্চুৱেল IBAN-ৰ নামৰ সৈতে হুবহু মিল থাকিব লাগিব, অন্যথা স্থানান্তৰ স্বয়ংক্ৰিয়ভাৱে ঘূৰাই দিয়া হ'ব।",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "একাউণ্টৰ গৰাকীৰ নাম",
+  "fundExchangeConfidentialSepaNameConfirmation": "মই নিশ্চিত কৰোঁ যে নামটো মোৰ বেংক একাউণ্টৰ সৈতে মিলে",
+  "fundExchangeConfidentialSepaActivatedTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হ'ল",
+  "fundExchangeConfidentialSepaActivatedDescription": "আপুনি এতিয়া গোপনীয়ভাৱে ধন জমা কৰিবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।",
+  "fundExchangeConfidentialSepaShowDetails": "মোৰ ভাৰ্চুৱেল IBAN-ৰ বিৱৰণ দেখুৱাওক",
+  "fundExchangeConfidentialSepaDescription": "আপোনাৰ নিজৰ নামত থকা ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰি গোপনীয়ভাৱে আপোনাৰ একাউণ্টত ধন জমা কৰক। জমাটো আপোনাৰ নিজলৈ কৰা পৰিশোধ হিচাপে দেখা যাব, কোনো স্থানান্তৰ ক'ডৰ প্ৰয়োজন নাই।"
 }

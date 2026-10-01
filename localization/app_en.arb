@@ -14713,5 +14713,65 @@
   "recipientsVirtualIbanActivate": "Activate Confidential SEPA",
   "@recipientsVirtualIbanActivate": {},
   "recipientsVirtualIbanActivating": "Creating your virtual IBAN. This may take a few minutes.",
-  "@recipientsVirtualIbanActivating": {}
+  "@recipientsVirtualIbanActivating": {},
+  "recipientsVirtualIbanEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
+  "@recipientsVirtualIbanEuResidencyRequired": {
+    "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "A personal virtual IBAN to deposit money privately",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle of the Confidential SEPA funding method tile"
+  },
+  "fundExchangeMethodNewBadge": "NEW",
+  "@fundExchangeMethodNewBadge": {
+    "description": "Badge label marking a funding method as new"
+  },
+  "fundExchangeConfidentialSepaActivateTitle": "Activate Confidential SEPA?",
+  "@fundExchangeConfidentialSepaActivateTitle": {
+    "description": "Title of the Confidential SEPA funding activation intro screen"
+  },
+  "fundExchangeConfidentialSepaActivateDescription": "Fund your account privately using a personal virtual IBAN in your own name. It's free.",
+  "@fundExchangeConfidentialSepaActivateDescription": {
+    "description": "Description on the Confidential SEPA funding activation intro screen"
+  },
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.",
+  "@fundExchangeConfidentialSepaBulletSelfTransfer": {
+    "description": "Bullet point explaining that a confidential SEPA deposit appears as a self-transfer"
+  },
+  "fundExchangeConfidentialSepaBulletNoCode": "No transfer code required.",
+  "@fundExchangeConfidentialSepaBulletNoCode": {
+    "description": "Bullet point noting that confidential SEPA deposits need no transfer code"
+  },
+  "fundExchangeConfidentialSepaNameMatchTitle": "Important: Name Matching Required",
+  "@fundExchangeConfidentialSepaNameMatchTitle": {
+    "description": "Title of the name-matching warning card in the Confidential SEPA funding flow"
+  },
+  "fundExchangeConfidentialSepaNameMatchWarning": "Your bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically.",
+  "@fundExchangeConfidentialSepaNameMatchWarning": {
+    "description": "Warning that the bank account name must match the virtual IBAN name"
+  },
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Account Owner Name",
+  "@fundExchangeConfidentialSepaOwnerNameLabel": {
+    "description": "Label above the read-only account owner name in the Confidential SEPA activation screen"
+  },
+  "fundExchangeConfidentialSepaNameConfirmation": "I confirm the name matches my bank account(s)",
+  "@fundExchangeConfidentialSepaNameConfirmation": {
+    "description": "Checkbox confirming the name matches the user's bank account before activating the virtual IBAN"
+  },
+  "fundExchangeConfidentialSepaActivatedTitle": "Confidential SEPA Activated",
+  "@fundExchangeConfidentialSepaActivatedTitle": {
+    "description": "Title shown when the Confidential SEPA virtual IBAN has been activated"
+  },
+  "fundExchangeConfidentialSepaActivatedDescription": "You can now use your personal virtual IBAN to deposit money privately.",
+  "@fundExchangeConfidentialSepaActivatedDescription": {
+    "description": "Description shown when the Confidential SEPA virtual IBAN has been activated"
+  },
+  "fundExchangeConfidentialSepaShowDetails": "Show my virtual IBAN details",
+  "@fundExchangeConfidentialSepaShowDetails": {
+    "description": "Button that opens the virtual IBAN funding details screen"
+  },
+  "fundExchangeConfidentialSepaDescription": "Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.",
+  "@fundExchangeConfidentialSepaDescription": {
+    "description": "Description on the Confidential SEPA funding details screen"
+  }
 }

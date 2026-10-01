@@ -12219,5 +12219,20 @@
   "recipientsVirtualIbanIntro": "เปิดใช้งาน IBAN เสมือนส่วนบุคคลก่อนสร้างผู้รับ SEPA แบบเป็นความลับ",
   "recipientsVirtualIbanNameConfirmation": "ฉันยืนยันว่านี่คือชื่อตามกฎหมายของฉัน",
   "recipientsVirtualIbanActivate": "เปิดใช้งาน SEPA แบบเป็นความลับ",
-  "recipientsVirtualIbanActivating": "กำลังสร้าง IBAN เสมือนของคุณ ซึ่งอาจใช้เวลาสักครู่"
+  "recipientsVirtualIbanActivating": "กำลังสร้าง IBAN เสมือนของคุณ ซึ่งอาจใช้เวลาสักครู่",
+  "recipientsVirtualIbanEuResidencyRequired": "คุณต้องเป็นผู้พำนักในสหภาพยุโรปเพื่อเปิดใช้งาน SEPA แบบเป็นความลับ",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN เสมือนส่วนบุคคลสำหรับฝากเงินแบบเป็นส่วนตัว",
+  "fundExchangeMethodNewBadge": "ใหม่",
+  "fundExchangeConfidentialSepaActivateTitle": "เปิดใช้งาน SEPA แบบเป็นความลับหรือไม่",
+  "fundExchangeConfidentialSepaActivateDescription": "เติมเงินเข้าบัญชีของคุณแบบเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง ฟรี",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "เมื่อส่งเงินไปยัง Bull Bitcoin จากธนาคารของคุณ รายการจะปรากฏเป็นการโอนถึงตัวคุณเอง",
+  "fundExchangeConfidentialSepaBulletNoCode": "ไม่ต้องใช้รหัสการโอน",
+  "fundExchangeConfidentialSepaNameMatchTitle": "สำคัญ: ชื่อต้องตรงกัน",
+  "fundExchangeConfidentialSepaNameMatchWarning": "ชื่อบัญชีธนาคารของคุณต้องตรงกับชื่อ IBAN เสมือนของ Bull Bitcoin ทุกประการ มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "ชื่อเจ้าของบัญชี",
+  "fundExchangeConfidentialSepaNameConfirmation": "ฉันยืนยันว่าชื่อตรงกับบัญชีธนาคารของฉัน",
+  "fundExchangeConfidentialSepaActivatedTitle": "เปิดใช้งาน SEPA แบบเป็นความลับแล้ว",
+  "fundExchangeConfidentialSepaActivatedDescription": "ตอนนี้คุณสามารถใช้ IBAN เสมือนส่วนบุคคลเพื่อฝากเงินแบบเป็นส่วนตัวได้แล้ว",
+  "fundExchangeConfidentialSepaShowDetails": "แสดงรายละเอียด IBAN เสมือนของฉัน",
+  "fundExchangeConfidentialSepaDescription": "เติมเงินเข้าบัญชีของคุณแบบเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง เงินฝากจะปรากฏเป็นการชำระเงินถึงตัวคุณเอง โดยไม่ต้องใช้รหัสการโอน"
 }

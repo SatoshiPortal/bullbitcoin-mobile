@@ -12218,5 +12218,20 @@
   "recipientsVirtualIbanIntro": "فعّل رقم IBAN الافتراضي الشخصي قبل إنشاء مستلم SEPA سري.",
   "recipientsVirtualIbanNameConfirmation": "أؤكد أن هذا هو اسمي القانوني.",
   "recipientsVirtualIbanActivate": "تفعيل SEPA السري",
-  "recipientsVirtualIbanActivating": "جارٍ إنشاء رقم IBAN الافتراضي. قد يستغرق ذلك بضع دقائق."
+  "recipientsVirtualIbanActivating": "جارٍ إنشاء رقم IBAN الافتراضي. قد يستغرق ذلك بضع دقائق.",
+  "recipientsVirtualIbanEuResidencyRequired": "يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "رقم IBAN افتراضي شخصي لإيداع الأموال بخصوصية",
+  "fundExchangeMethodNewBadge": "جديد",
+  "fundExchangeConfidentialSepaActivateTitle": "تفعيل SEPA السري؟",
+  "fundExchangeConfidentialSepaActivateDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. إنه مجاني.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "عند إرسال الأموال إلى Bull Bitcoin من بنكك، تظهر كتحويل إلى نفسك.",
+  "fundExchangeConfidentialSepaBulletNoCode": "لا حاجة إلى رمز تحويل.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "هام: مطلوب تطابق الاسم",
+  "fundExchangeConfidentialSepaNameMatchWarning": "يجب أن يتطابق اسم حسابك البنكي تماماً مع اسم رقم IBAN الافتراضي في Bull Bitcoin، وإلا سيُعاد التحويل تلقائياً.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "اسم صاحب الحساب",
+  "fundExchangeConfidentialSepaNameConfirmation": "أؤكد أن الاسم يطابق حسابي (حساباتي) البنكية",
+  "fundExchangeConfidentialSepaActivatedTitle": "تم تفعيل SEPA السري",
+  "fundExchangeConfidentialSepaActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لإيداع الأموال بخصوصية.",
+  "fundExchangeConfidentialSepaShowDetails": "عرض تفاصيل رقم IBAN الافتراضي الخاص بي",
+  "fundExchangeConfidentialSepaDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. سيظهر الإيداع كدفعة إلى نفسك، دون الحاجة إلى رمز تحويل."
 }

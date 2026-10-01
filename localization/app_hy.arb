@@ -3603,5 +3603,20 @@
   "recipientsVirtualIbanIntro": "Գաղտնի SEPA ստացող ստեղծելուց առաջ ակտիվացրեք ձեր անձնական վիրտուալ IBAN-ը։",
   "recipientsVirtualIbanNameConfirmation": "Հաստատում եմ, որ սա իմ իրավական անունն է։",
   "recipientsVirtualIbanActivate": "Ակտիվացնել գաղտնի SEPA-ն",
-  "recipientsVirtualIbanActivating": "Ձեր վիրտուալ IBAN-ը ստեղծվում է։ Դա կարող է տևել մի քանի րոպե։"
+  "recipientsVirtualIbanActivating": "Ձեր վիրտուալ IBAN-ը ստեղծվում է։ Դա կարող է տևել մի քանի րոպե։",
+  "recipientsVirtualIbanEuResidencyRequired": "Գաղտնի SEPA-ն ակտիվացնելու համար դուք պետք է լինեք Եվրոպական միության բնակիչ։",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Անձնական վիրտուալ IBAN՝ գումարը գաղտնի մուտքագրելու համար",
+  "fundExchangeMethodNewBadge": "ՆՈՐ",
+  "fundExchangeConfidentialSepaActivateTitle": "Ակտիվացնե՞լ գաղտնի SEPA-ն։",
+  "fundExchangeConfidentialSepaActivateDescription": "Համալրեք ձեր հաշիվը գաղտնի՝ ձեր անունով անձնական վիրտուալ IBAN-ի միջոցով։ Դա անվճար է։",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Ձեր բանկից Bull Bitcoin գումար ուղարկելիս այն երևում է որպես փոխանցում ինքներդ ձեզ։",
+  "fundExchangeConfidentialSepaBulletNoCode": "Փոխանցման կոդ չի պահանջվում։",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Կարևոր է. պահանջվում է անունների համընկնում",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Ձեր բանկային հաշվի անունը պետք է ճշգրտորեն համընկնի ձեր Bull Bitcoin վիրտուալ IBAN-ի անվան հետ, հակառակ դեպքում փոխանցումը ավտոմատ կվերադարձվի։",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Հաշվի սեփականատիրոջ անունը",
+  "fundExchangeConfidentialSepaNameConfirmation": "Հաստատում եմ, որ անունը համընկնում է իմ բանկային հաշվի հետ",
+  "fundExchangeConfidentialSepaActivatedTitle": "Գաղտնի SEPA-ն ակտիվացված է",
+  "fundExchangeConfidentialSepaActivatedDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումարը գաղտնի մուտքագրելու համար։",
+  "fundExchangeConfidentialSepaShowDetails": "Ցուցադրել իմ վիրտուալ IBAN-ի տվյալները",
+  "fundExchangeConfidentialSepaDescription": "Համալրեք ձեր հաշիվը գաղտնի՝ ձեր անունով անձնական վիրտուալ IBAN-ի միջոցով։ Մուտքագրումը կերևա որպես վճարում ինքներդ ձեզ՝ առանց փոխանցման կոդի։"
 }

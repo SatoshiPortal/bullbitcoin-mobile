@@ -4927,5 +4927,20 @@
   "recipientsVirtualIbanIntro": "Активируйте личный виртуальный IBAN перед созданием конфиденциального получателя SEPA.",
   "recipientsVirtualIbanNameConfirmation": "Я подтверждаю, что это моё официальное имя.",
   "recipientsVirtualIbanActivate": "Активировать конфиденциальный SEPA",
-  "recipientsVirtualIbanActivating": "Создаём ваш виртуальный IBAN. Это может занять несколько минут."
+  "recipientsVirtualIbanActivating": "Создаём ваш виртуальный IBAN. Это может занять несколько минут.",
+  "recipientsVirtualIbanEuResidencyRequired": "Чтобы активировать конфиденциальный SEPA, вы должны быть резидентом Европейского союза.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Личный виртуальный IBAN для конфиденциального пополнения",
+  "fundExchangeMethodNewBadge": "НОВОЕ",
+  "fundExchangeConfidentialSepaActivateTitle": "Активировать конфиденциальный SEPA?",
+  "fundExchangeConfidentialSepaActivateDescription": "Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Это бесплатно.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "При отправке средств в Bull Bitcoin из вашего банка перевод выглядит как перевод самому себе.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Код перевода не требуется.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Важно: имена должны совпадать",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Имя владельца банковского счёта должно точно совпадать с именем вашего виртуального IBAN в Bull Bitcoin, иначе перевод будет автоматически возвращён.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Имя владельца счёта",
+  "fundExchangeConfidentialSepaNameConfirmation": "Я подтверждаю, что имя совпадает с моим банковским счётом",
+  "fundExchangeConfidentialSepaActivatedTitle": "Конфиденциальный SEPA активирован",
+  "fundExchangeConfidentialSepaActivatedDescription": "Теперь вы можете использовать личный виртуальный IBAN для конфиденциального пополнения.",
+  "fundExchangeConfidentialSepaShowDetails": "Показать данные моего виртуального IBAN",
+  "fundExchangeConfidentialSepaDescription": "Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Пополнение будет выглядеть как платёж самому себе, без кода перевода."
 }

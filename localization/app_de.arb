@@ -4959,5 +4959,20 @@
   "recipientsVirtualIbanIntro": "Aktivieren Sie Ihre persönliche virtuelle IBAN, bevor Sie einen vertraulichen SEPA-Empfänger erstellen.",
   "recipientsVirtualIbanNameConfirmation": "Ich bestätige, dass dies mein rechtlicher Name ist.",
   "recipientsVirtualIbanActivate": "Vertrauliches SEPA aktivieren",
-  "recipientsVirtualIbanActivating": "Ihre virtuelle IBAN wird erstellt. Dies kann einige Minuten dauern."
+  "recipientsVirtualIbanActivating": "Ihre virtuelle IBAN wird erstellt. Dies kann einige Minuten dauern.",
+  "recipientsVirtualIbanEuResidencyRequired": "Sie müssen in der Europäischen Union ansässig sein, um vertrauliches SEPA zu aktivieren.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Eine persönliche virtuelle IBAN, um Geld privat einzuzahlen",
+  "fundExchangeMethodNewBadge": "NEU",
+  "fundExchangeConfidentialSepaActivateTitle": "Vertrauliches SEPA aktivieren?",
+  "fundExchangeConfidentialSepaActivateDescription": "Zahlen Sie privat auf Ihr Konto ein, mit einer persönlichen virtuellen IBAN auf Ihren Namen. Kostenlos.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Wenn Sie Geld von Ihrer Bank an Bull Bitcoin senden, erscheint es als Überweisung an sich selbst.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Kein Überweisungscode erforderlich.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Wichtig: Namensübereinstimmung erforderlich",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Der Name Ihres Bankkontos muss exakt mit dem Namen Ihrer virtuellen Bull-Bitcoin-IBAN übereinstimmen, sonst wird die Überweisung automatisch zurückgesendet.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Name des Kontoinhabers",
+  "fundExchangeConfidentialSepaNameConfirmation": "Ich bestätige, dass der Name mit meinem Bankkonto übereinstimmt",
+  "fundExchangeConfidentialSepaActivatedTitle": "Vertrauliches SEPA aktiviert",
+  "fundExchangeConfidentialSepaActivatedDescription": "Sie können jetzt Ihre persönliche virtuelle IBAN verwenden, um Geld privat einzuzahlen.",
+  "fundExchangeConfidentialSepaShowDetails": "Meine virtuellen IBAN-Details anzeigen",
+  "fundExchangeConfidentialSepaDescription": "Zahlen Sie privat auf Ihr Konto ein, mit einer persönlichen virtuellen IBAN auf Ihren Namen. Die Einzahlung erscheint als Zahlung an sich selbst, ohne Überweisungscode."
 }

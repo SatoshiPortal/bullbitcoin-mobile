@@ -12405,5 +12405,20 @@
   "recipientsVirtualIbanIntro": "गोपनीय SEPA प्राप्तकर्ता बनाने से पहले अपना व्यक्तिगत वर्चुअल IBAN सक्रिय करें।",
   "recipientsVirtualIbanNameConfirmation": "मैं पुष्टि करता हूँ कि यह मेरा कानूनी नाम है।",
   "recipientsVirtualIbanActivate": "गोपनीय SEPA सक्रिय करें",
-  "recipientsVirtualIbanActivating": "आपका वर्चुअल IBAN बनाया जा रहा है। इसमें कुछ मिनट लग सकते हैं।"
+  "recipientsVirtualIbanActivating": "आपका वर्चुअल IBAN बनाया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsVirtualIbanEuResidencyRequired": "गोपनीय SEPA सक्रिय करने के लिए आपको यूरोपीय संघ का निवासी होना आवश्यक है।",
+  "fundExchangeMethodConfidentialSepaSubtitle": "निजी रूप से पैसा जमा करने के लिए एक व्यक्तिगत वर्चुअल IBAN",
+  "fundExchangeMethodNewBadge": "नया",
+  "fundExchangeConfidentialSepaActivateTitle": "गोपनीय SEPA सक्रिय करें?",
+  "fundExchangeConfidentialSepaActivateDescription": "अपने नाम के व्यक्तिगत वर्चुअल IBAN का उपयोग करके निजी रूप से अपने खाते में धनराशि जमा करें। यह मुफ़्त है।",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "अपने बैंक से Bull Bitcoin को धनराशि भेजने पर यह स्वयं को किया गया ट्रांसफर दिखता है।",
+  "fundExchangeConfidentialSepaBulletNoCode": "किसी ट्रांसफर कोड की आवश्यकता नहीं।",
+  "fundExchangeConfidentialSepaNameMatchTitle": "महत्वपूर्ण: नाम का मिलान आवश्यक है",
+  "fundExchangeConfidentialSepaNameMatchWarning": "आपके बैंक खाते का नाम आपके Bull Bitcoin वर्चुअल IBAN के नाम से बिल्कुल मेल खाना चाहिए, अन्यथा ट्रांसफर स्वतः वापस कर दिया जाएगा।",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "खाता स्वामी का नाम",
+  "fundExchangeConfidentialSepaNameConfirmation": "मैं पुष्टि करता हूँ कि नाम मेरे बैंक खाते से मेल खाता है",
+  "fundExchangeConfidentialSepaActivatedTitle": "गोपनीय SEPA सक्रिय हो गया",
+  "fundExchangeConfidentialSepaActivatedDescription": "अब आप निजी रूप से पैसा जमा करने के लिए अपने व्यक्तिगत वर्चुअल IBAN का उपयोग कर सकते हैं।",
+  "fundExchangeConfidentialSepaShowDetails": "मेरे वर्चुअल IBAN का विवरण दिखाएँ",
+  "fundExchangeConfidentialSepaDescription": "अपने नाम के व्यक्तिगत वर्चुअल IBAN का उपयोग करके निजी रूप से अपने खाते में धनराशि जमा करें। जमा राशि स्वयं को किया गया भुगतान दिखेगी, किसी ट्रांसफर कोड की आवश्यकता नहीं।"
 }

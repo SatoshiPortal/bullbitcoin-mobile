@@ -3615,5 +3615,20 @@
   "recipientsVirtualIbanIntro": "Washa IBAN yako pepe ya binafsi kabla ya kuunda mpokeaji wa SEPA ya siri.",
   "recipientsVirtualIbanNameConfirmation": "Ninathibitisha kuwa hili ndilo jina langu la kisheria.",
   "recipientsVirtualIbanActivate": "Washa SEPA ya siri",
-  "recipientsVirtualIbanActivating": "IBAN yako pepe inaundwa. Hii inaweza kuchukua dakika chache."
+  "recipientsVirtualIbanActivating": "IBAN yako pepe inaundwa. Hii inaweza kuchukua dakika chache.",
+  "recipientsVirtualIbanEuResidencyRequired": "Unahitaji kuwa mkazi wa Umoja wa Ulaya ili kuwasha SEPA ya siri.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN pepe ya binafsi ya kuweka pesa kwa siri",
+  "fundExchangeMethodNewBadge": "MPYA",
+  "fundExchangeConfidentialSepaActivateTitle": "Uwashe SEPA ya siri?",
+  "fundExchangeConfidentialSepaActivateDescription": "Weka pesa kwenye akaunti yako kwa siri ukitumia IBAN pepe ya binafsi kwa jina lako. Ni bure.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Unapotuma pesa kwa Bull Bitcoin kutoka benki yako, inaonekana kama uhamisho kwako mwenyewe.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Hakuna msimbo wa uhamisho unaohitajika.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Muhimu: Majina lazima yafanane",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Jina la akaunti yako ya benki lazima lifanane kabisa na jina la IBAN yako pepe ya Bull Bitcoin, vinginevyo uhamisho utarudishwa kiotomatiki.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Jina la mmiliki wa akaunti",
+  "fundExchangeConfidentialSepaNameConfirmation": "Ninathibitisha kuwa jina linafanana na akaunti yangu ya benki",
+  "fundExchangeConfidentialSepaActivatedTitle": "SEPA ya siri imewashwa",
+  "fundExchangeConfidentialSepaActivatedDescription": "Sasa unaweza kutumia IBAN yako pepe ya binafsi kuweka pesa kwa siri.",
+  "fundExchangeConfidentialSepaShowDetails": "Onyesha maelezo ya IBAN yangu pepe",
+  "fundExchangeConfidentialSepaDescription": "Weka pesa kwenye akaunti yako kwa siri ukitumia IBAN pepe ya binafsi kwa jina lako. Amana itaonekana kama malipo kwako mwenyewe, bila msimbo wa uhamisho."
 }

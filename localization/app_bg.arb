@@ -10216,5 +10216,20 @@
   "recipientsVirtualIbanIntro": "Активирайте личния си виртуален IBAN, преди да създадете поверителен SEPA получател.",
   "recipientsVirtualIbanNameConfirmation": "Потвърждавам, че това е законното ми име.",
   "recipientsVirtualIbanActivate": "Активиране на поверителен SEPA",
-  "recipientsVirtualIbanActivating": "Създаваме вашия виртуален IBAN. Това може да отнеме няколко минути."
+  "recipientsVirtualIbanActivating": "Създаваме вашия виртуален IBAN. Това може да отнеме няколко минути.",
+  "recipientsVirtualIbanEuResidencyRequired": "Трябва да сте жител на Европейския съюз, за да активирате поверителен SEPA.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Личен виртуален IBAN за поверително депозиране на пари",
+  "fundExchangeMethodNewBadge": "НОВО",
+  "fundExchangeConfidentialSepaActivateTitle": "Активиране на поверителен SEPA?",
+  "fundExchangeConfidentialSepaActivateDescription": "Финансирайте акаунта си поверително чрез личен виртуален IBAN на ваше име. Безплатно е.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Когато изпращате средства към Bull Bitcoin от банката си, преводът изглежда като превод към самия вас.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Не се изисква код за превод.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Важно: Изисква се съвпадение на имената",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Името на банковата ви сметка трябва точно да съвпада с името на виртуалния ви IBAN в Bull Bitcoin, иначе преводът ще бъде върнат автоматично.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Име на титуляра на сметката",
+  "fundExchangeConfidentialSepaNameConfirmation": "Потвърждавам, че името съвпада с банковата ми сметка",
+  "fundExchangeConfidentialSepaActivatedTitle": "Поверителен SEPA е активиран",
+  "fundExchangeConfidentialSepaActivatedDescription": "Вече можете да използвате личния си виртуален IBAN, за да депозирате пари поверително.",
+  "fundExchangeConfidentialSepaShowDetails": "Покажи данните на моя виртуален IBAN",
+  "fundExchangeConfidentialSepaDescription": "Финансирайте акаунта си поверително чрез личен виртуален IBAN на ваше име. Депозитът ще изглежда като плащане към самия вас, без код за превод."
 }

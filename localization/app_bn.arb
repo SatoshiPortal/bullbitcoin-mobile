@@ -12425,5 +12425,20 @@
   "recipientsVirtualIbanIntro": "গোপনীয় SEPA প্রাপক তৈরির আগে আপনার ব্যক্তিগত ভার্চুয়াল IBAN সক্রিয় করুন।",
   "recipientsVirtualIbanNameConfirmation": "আমি নিশ্চিত করছি যে এটি আমার আইনি নাম।",
   "recipientsVirtualIbanActivate": "গোপনীয় SEPA সক্রিয় করুন",
-  "recipientsVirtualIbanActivating": "আপনার ভার্চুয়াল IBAN তৈরি হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।"
+  "recipientsVirtualIbanActivating": "আপনার ভার্চুয়াল IBAN তৈরি হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।",
+  "recipientsVirtualIbanEuResidencyRequired": "গোপনীয় SEPA সক্রিয় করতে আপনাকে ইউরোপীয় ইউনিয়নের বাসিন্দা হতে হবে।",
+  "fundExchangeMethodConfidentialSepaSubtitle": "গোপনীয়ভাবে অর্থ জমা করার জন্য একটি ব্যক্তিগত ভার্চুয়াল IBAN",
+  "fundExchangeMethodNewBadge": "নতুন",
+  "fundExchangeConfidentialSepaActivateTitle": "গোপনীয় SEPA সক্রিয় করবেন?",
+  "fundExchangeConfidentialSepaActivateDescription": "আপনার নিজের নামে একটি ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করে গোপনীয়ভাবে আপনার অ্যাকাউন্টে অর্থ জমা করুন। এটি বিনামূল্যে।",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "আপনার ব্যাংক থেকে Bull Bitcoin-এ অর্থ পাঠালে এটি নিজের কাছে স্থানান্তর হিসেবে দেখা যায়।",
+  "fundExchangeConfidentialSepaBulletNoCode": "কোনো স্থানান্তর কোডের প্রয়োজন নেই।",
+  "fundExchangeConfidentialSepaNameMatchTitle": "গুরুত্বপূর্ণ: নাম মিল থাকা আবশ্যক",
+  "fundExchangeConfidentialSepaNameMatchWarning": "আপনার ব্যাংক অ্যাকাউন্টের নাম Bull Bitcoin ভার্চুয়াল IBAN-এর নামের সাথে হুবহু মিলতে হবে, নাহলে স্থানান্তরটি স্বয়ংক্রিয়ভাবে ফেরত পাঠানো হবে।",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "অ্যাকাউন্ট মালিকের নাম",
+  "fundExchangeConfidentialSepaNameConfirmation": "আমি নিশ্চিত করছি যে নামটি আমার ব্যাংক অ্যাকাউন্টের সাথে মিলে যায়",
+  "fundExchangeConfidentialSepaActivatedTitle": "গোপনীয় SEPA সক্রিয় হয়েছে",
+  "fundExchangeConfidentialSepaActivatedDescription": "আপনি এখন গোপনীয়ভাবে অর্থ জমা করতে আপনার ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করতে পারেন।",
+  "fundExchangeConfidentialSepaShowDetails": "আমার ভার্চুয়াল IBAN-এর বিবরণ দেখান",
+  "fundExchangeConfidentialSepaDescription": "আপনার নিজের নামে একটি ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করে গোপনীয়ভাবে আপনার অ্যাকাউন্টে অর্থ জমা করুন। জমাটি নিজের কাছে পরিশোধ হিসেবে দেখা যাবে, কোনো স্থানান্তর কোডের প্রয়োজন নেই।"
 }

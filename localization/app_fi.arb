@@ -4909,5 +4909,20 @@
   "recipientsVirtualIbanIntro": "Aktivoi henkilökohtainen virtuaalinen IBAN ennen luottamuksellisen SEPA-vastaanottajan luomista.",
   "recipientsVirtualIbanNameConfirmation": "Vahvistan, että tämä on virallinen nimeni.",
   "recipientsVirtualIbanActivate": "Aktivoi luottamuksellinen SEPA",
-  "recipientsVirtualIbanActivating": "Virtuaalista IBAN-numeroasi luodaan. Tämä voi kestää muutaman minuutin."
+  "recipientsVirtualIbanActivating": "Virtuaalista IBAN-numeroasi luodaan. Tämä voi kestää muutaman minuutin.",
+  "recipientsVirtualIbanEuResidencyRequired": "Sinun on asuttava Euroopan unionissa aktivoidaksesi luottamuksellisen SEPAn.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Henkilökohtainen virtuaalinen IBAN rahan tallettamiseen yksityisesti",
+  "fundExchangeMethodNewBadge": "UUSI",
+  "fundExchangeConfidentialSepaActivateTitle": "Aktivoidaanko luottamuksellinen SEPA?",
+  "fundExchangeConfidentialSepaActivateDescription": "Rahoita tilisi yksityisesti henkilökohtaisella, omalla nimelläsi olevalla virtuaalisella IBANilla. Se on ilmaista.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Kun lähetät varoja pankistasi Bull Bitcoinille, siirto näkyy siirtona itsellesi.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Siirtokoodia ei tarvita.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Tärkeää: Nimien on täsmättävä",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Pankkitilisi nimen on vastattava täsmälleen Bull Bitcoinin virtuaalisen IBANisi nimeä, muuten siirto palautetaan automaattisesti.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Tilinomistajan nimi",
+  "fundExchangeConfidentialSepaNameConfirmation": "Vahvistan, että nimi vastaa pankkitiliäni",
+  "fundExchangeConfidentialSepaActivatedTitle": "Luottamuksellinen SEPA aktivoitu",
+  "fundExchangeConfidentialSepaActivatedDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBANiasi rahan tallettamiseen yksityisesti.",
+  "fundExchangeConfidentialSepaShowDetails": "Näytä virtuaalisen IBANini tiedot",
+  "fundExchangeConfidentialSepaDescription": "Rahoita tilisi yksityisesti henkilökohtaisella, omalla nimelläsi olevalla virtuaalisella IBANilla. Talletus näkyy maksuna itsellesi, eikä siirtokoodia tarvita."
 }

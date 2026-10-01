@@ -4967,5 +4967,20 @@
   "recipientsVirtualIbanIntro": "Ative o seu IBAN virtual pessoal antes de criar um destinatário SEPA confidencial.",
   "recipientsVirtualIbanNameConfirmation": "Confirmo que este é o meu nome legal.",
   "recipientsVirtualIbanActivate": "Ativar SEPA confidencial",
-  "recipientsVirtualIbanActivating": "A criar o seu IBAN virtual. Isto pode demorar alguns minutos."
+  "recipientsVirtualIbanActivating": "A criar o seu IBAN virtual. Isto pode demorar alguns minutos.",
+  "recipientsVirtualIbanEuResidencyRequired": "Precisa de ser residente na União Europeia para ativar o SEPA confidencial.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Um IBAN virtual pessoal para depositar dinheiro de forma privada",
+  "fundExchangeMethodNewBadge": "NOVO",
+  "fundExchangeConfidentialSepaActivateTitle": "Ativar SEPA confidencial?",
+  "fundExchangeConfidentialSepaActivateDescription": "Financie a sua conta de forma privada com um IBAN virtual pessoal em seu nome. É gratuito.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Ao enviar fundos para a Bull Bitcoin a partir do seu banco, a transferência aparece como uma transferência para si próprio.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Não é necessário código de transferência.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Importante: é necessária a correspondência de nomes",
+  "fundExchangeConfidentialSepaNameMatchWarning": "O nome da sua conta bancária deve corresponder exatamente ao nome do seu IBAN virtual da Bull Bitcoin, caso contrário a transferência será devolvida automaticamente.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Nome do titular da conta",
+  "fundExchangeConfidentialSepaNameConfirmation": "Confirmo que o nome corresponde à(s) minha(s) conta(s) bancária(s)",
+  "fundExchangeConfidentialSepaActivatedTitle": "SEPA confidencial ativado",
+  "fundExchangeConfidentialSepaActivatedDescription": "Agora pode usar o seu IBAN virtual pessoal para depositar dinheiro de forma privada.",
+  "fundExchangeConfidentialSepaShowDetails": "Mostrar os dados do meu IBAN virtual",
+  "fundExchangeConfidentialSepaDescription": "Financie a sua conta de forma privada com um IBAN virtual pessoal em seu nome. O depósito aparecerá como um pagamento a si próprio, sem código de transferência."
 }

@@ -12215,5 +12215,20 @@
   "recipientsVirtualIbanIntro": "Gizli bir SEPA alıcısı oluşturmadan önce kişisel sanal IBAN'ınızı etkinleştirin.",
   "recipientsVirtualIbanNameConfirmation": "Bunun yasal adım olduğunu onaylıyorum.",
   "recipientsVirtualIbanActivate": "Gizli SEPA'yı etkinleştir",
-  "recipientsVirtualIbanActivating": "Sanal IBAN'ınız oluşturuluyor. Bu işlem birkaç dakika sürebilir."
+  "recipientsVirtualIbanActivating": "Sanal IBAN'ınız oluşturuluyor. Bu işlem birkaç dakika sürebilir.",
+  "recipientsVirtualIbanEuResidencyRequired": "Gizli SEPA'yı etkinleştirmek için Avrupa Birliği'nde ikamet ediyor olmanız gerekir.",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Parayı gizlice yatırmak için kişisel bir sanal IBAN",
+  "fundExchangeMethodNewBadge": "YENİ",
+  "fundExchangeConfidentialSepaActivateTitle": "Gizli SEPA etkinleştirilsin mi?",
+  "fundExchangeConfidentialSepaActivateDescription": "Kendi adınıza kişisel bir sanal IBAN kullanarak hesabınıza gizlice para yatırın. Ücretsizdir.",
+  "fundExchangeConfidentialSepaBulletSelfTransfer": "Bankanızdan Bull Bitcoin'e para gönderdiğinizde, kendinize yapılan bir transfer olarak görünür.",
+  "fundExchangeConfidentialSepaBulletNoCode": "Transfer kodu gerekmez.",
+  "fundExchangeConfidentialSepaNameMatchTitle": "Önemli: İsim eşleşmesi gereklidir",
+  "fundExchangeConfidentialSepaNameMatchWarning": "Banka hesabınızın adı, Bull Bitcoin sanal IBAN adınızla tam olarak eşleşmelidir, aksi takdirde transfer otomatik olarak iade edilir.",
+  "fundExchangeConfidentialSepaOwnerNameLabel": "Hesap sahibinin adı",
+  "fundExchangeConfidentialSepaNameConfirmation": "İsmin banka hesabımla eşleştiğini onaylıyorum",
+  "fundExchangeConfidentialSepaActivatedTitle": "Gizli SEPA etkinleştirildi",
+  "fundExchangeConfidentialSepaActivatedDescription": "Artık kişisel sanal IBAN'ınızı kullanarak gizlice para yatırabilirsiniz.",
+  "fundExchangeConfidentialSepaShowDetails": "Sanal IBAN bilgilerimi göster",
+  "fundExchangeConfidentialSepaDescription": "Kendi adınıza kişisel bir sanal IBAN kullanarak hesabınıza gizlice para yatırın. Yatırılan para, transfer kodu gerekmeden kendinize yapılan bir ödeme olarak görünür."
 }
