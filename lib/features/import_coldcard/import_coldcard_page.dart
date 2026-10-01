@@ -3,16 +3,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
@@ -58,9 +56,9 @@ class ImportColdcardPage extends StatelessWidget {
         error: e,
       );
       if (!context.mounted) return;
-      SnackBarUtils.showSnackBar(
+      BullSnackBar.show(
         context,
-        context.loc.importColdcardInvalidWalletData,
+        message: context.loc.importColdcardInvalidWalletData,
       );
     }
   }
@@ -79,7 +77,7 @@ class ImportColdcardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BBText(
+            BullText(
               context.loc.importColdcardConnectDescription(deviceName),
               style: context.font.bodyLarge,
               textAlign: .center,
@@ -96,7 +94,7 @@ class ImportColdcardPage extends StatelessWidget {
             Column(
               children: [
                 if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.importColdcardButtonOpenCamera,
                     onPressed: () => context.pushNamed(
                       ImportWatchOnlyWalletRoutes.scan.name,
@@ -108,7 +106,7 @@ class ImportColdcardPage extends StatelessWidget {
                   ),
                   Gap(Device.screen.height * 0.02),
                 ],
-                BBButton.small(
+                BullButton.small(
                   label: context.loc.scanNfcButton,
                   onPressed: () => NfcBottomSheet.showReadNfc(
                     context: context,
@@ -123,7 +121,7 @@ class ImportColdcardPage extends StatelessWidget {
                   outlined: true,
                 ),
                 Gap(Device.screen.height * 0.02),
-                BBButton.small(
+                BullButton.small(
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed: () {
                     if (signerDevice == SignerDeviceEntity.coldcardQ) {
