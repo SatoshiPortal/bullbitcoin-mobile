@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Toast utility — duplicated from `core/widgets/snackbar_utils.dart` and
-/// **extended** with an optional leading icon and an action (`actionLabel` +
-/// `onAction`) for the unfreeze Undo toast. The core copy is left untouched.
+/// Toast utility shown at the top of the screen, below the status bar, with an
+/// optional leading icon and an action (`actionLabel` + `onAction`), e.g. the
+/// unfreeze Undo toast.
 class BullSnackBar {
   BullSnackBar._();
 
@@ -42,21 +43,26 @@ class BullSnackBar {
     );
   }
 
+  /// Show a toast with custom [content] instead of a plain message.
+  static void showContent(BuildContext context, Widget content) {
+    _show(context, content);
+  }
+
   static void _show(BuildContext context, Widget content) {
     _disposeEntryImmediate();
     _entry = OverlayEntry(
       builder: (_) => Positioned(
-        bottom: 96,
+        top: 0,
         left: 16,
         right: 16,
         child: SafeArea(
-          top: false,
-          minimum: const EdgeInsets.only(bottom: 8),
+          bottom: false,
+          minimum: const EdgeInsets.only(top: 8),
           // Size the bubble to its content and centre it, so the trailing
           // action (e.g. "Undo") hugs the message instead of being stranded at
           // the far edge of a forced full-width bar.
           child: Align(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.topCenter,
             child: _BullSnackBarWidget(content: content),
           ),
         ),
@@ -70,7 +76,7 @@ class BullSnackBar {
   static void dismiss() {
     final state = _activeState;
     if (state != null && !state._dismissing && state.mounted) {
-      state._beginDismiss(direction: const Offset(0, 1));
+      state._beginDismiss(direction: const Offset(0, -1));
     } else {
       _disposeEntryImmediate();
     }
@@ -113,29 +119,32 @@ class _BullSnackBarContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final hasAction = actionLabel != null && onAction != null;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (leadingIcon != null) ...[
-          BullIcon(leadingIcon!, size: 20, color: colors.onSecondaryFixed),
+          BullIcon(leadingIcon!, size: 20, color: colors.text),
           const SizedBox(width: 12),
         ],
         Flexible(
           child: Text(
             message,
+            // Centred in the pill, so a wrapped message stays balanced; with an
+            // action the message keeps to the start, next to it.
+            textAlign: hasAction ? TextAlign.start : TextAlign.center,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: colors.onSecondaryFixed),
+            ).textTheme.bodySmall?.copyWith(color: colors.text),
           ),
         ),
-        if (actionLabel != null && onAction != null) ...[
+        if (hasAction) ...[
           const SizedBox(width: 16),
           GestureDetector(
             onTap: onAction,
             child: Text(
               actionLabel!,
-              // Design coral (#ff8a80); error reads as a warm red on the
-              // fixed-dark toast in both brightnesses.
+              // Error reads as a warm red on both the light and the dark toast.
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.error,
                 fontWeight: FontWeight.w700,
@@ -159,7 +168,7 @@ class _BullSnackBarWidget extends StatefulWidget {
 
 class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
     with SingleTickerProviderStateMixin {
-  static const Offset _enterFromOffset = Offset(0, 120);
+  static const Offset _enterFromOffset = Offset(0, -120);
 
   Offset _offset = _enterFromOffset;
   double _opacity = 0;
@@ -305,15 +314,46 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
           opacity: _opacity,
           child: Material(
             color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              // Fixed-dark toast surface (design #23252b) — secondaryFixed is
-              // the dark ink in both brightnesses, so the toast never inverts.
+            // The shadow sits outside the clip, so the rounded clip below
+            // doesn't cut it off.
+            child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.secondaryFixed,
-                borderRadius: BorderRadius.circular(BullRadius.xs),
+                borderRadius: BorderRadius.circular(BullRadius.xxs),
+                boxShadow: [
+                  BoxShadow(
+                    // Translucent black in both themes, so it never glows.
+                    color: colors.scrim,
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: widget.content,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(BullRadius.xxs),
+                // Frosted glass: whatever is behind the pill is blurred, so it
+                // reads as a soft wash instead of competing with the message.
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    // Follows the theme: a light grey in light mode, a dark
+                    // grey in dark mode — set apart from both the screen
+                    // background and the cards on it.
+                    decoration: BoxDecoration(
+                      // Slightly see-through, over the blurred backdrop.
+                      color: colors.surfaceContainerHighest.withValues(
+                        alpha: 0.85,
+                      ),
+                      borderRadius: BorderRadius.circular(BullRadius.xxs),
+                      border: Border.all(color: colors.secondaryFixedDim),
+                    ),
+                    child: widget.content,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
