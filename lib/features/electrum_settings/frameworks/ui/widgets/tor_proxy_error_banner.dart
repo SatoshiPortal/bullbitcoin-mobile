@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 
 class TorProxyErrorBanner extends StatelessWidget {
   const TorProxyErrorBanner({super.key});
@@ -39,7 +39,7 @@ class TorProxyErrorBanner extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
-      child: InfoCard(
+      child: BullInfoCard(
         description: context.loc.torSettingsDescDisconnected,
         tagColor: context.appColors.error,
         bgColor: context.appColors.errorContainer,
