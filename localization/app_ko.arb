@@ -12179,5 +12179,6 @@
   "autoBuyAccountUnavailableError": "Bull Bitcoin 계정을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
   "autoBuyWalletRequiredError": "기본 Bitcoin, Lightning 또는 Liquid 주소를 하나 이상 추가하세요.",
   "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요."
+  "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
+  "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요."
 }

@@ -12389,5 +12389,6 @@
   "autoBuyAccountUnavailableError": "আপনার Bull Bitcoin অ্যাকাউন্ট উপলব্ধ নয়। পরে আবার চেষ্টা করুন।",
   "autoBuyWalletRequiredError": "অন্তত একটি ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকানা যোগ করুন।",
   "autoBuyUpdateError": "স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।",
-  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।"
+  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ওয়ালেটটি বর্তমানে একটি ভিন্ন Bitcoin নেটওয়ার্ক ব্যবহার করছে। Mainnet এবং Testnet-এর মধ্যে পরিবর্তন করে আবার চেষ্টা করুন।"
 }

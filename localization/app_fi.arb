@@ -4901,5 +4901,6 @@
   "autoBuyAccountUnavailableError": "Bull Bitcoin -tilisi ei ole käytettävissä. Yritä myöhemmin uudelleen.",
   "autoBuyWalletRequiredError": "Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.",
   "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
-  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen."
+  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
+  "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen."
 }

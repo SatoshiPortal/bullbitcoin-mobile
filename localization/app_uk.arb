@@ -4910,5 +4910,6 @@
   "autoBuyAccountUnavailableError": "Ваш рахунок Bull Bitcoin недоступний. Спробуйте пізніше.",
   "autoBuyWalletRequiredError": "Додайте щонайменше одну адресу Bitcoin, Lightning або Liquid за замовчуванням.",
   "autoBuyUpdateError": "Не вдалося оновити автоматичну купівлю. Спробуйте пізніше.",
-  "withdrawUnexpectedError": "Ваше виведення коштів наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки."
+  "withdrawUnexpectedError": "Ваше виведення коштів наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
+  "importWatchOnlyErrorNetworkMismatch": "Цей гаманець зараз використовує іншу мережу Bitcoin. Перемкніться між Mainnet і Testnet та повторіть спробу."
 }

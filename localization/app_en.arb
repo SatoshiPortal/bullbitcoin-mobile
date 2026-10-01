@@ -14750,5 +14750,9 @@
   "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
   "@withdrawUnexpectedError": {
     "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "importWatchOnlyErrorNetworkMismatch": "This wallet is using a different Bitcoin network. Switch between Mainnet and Testnet, then try again.",
+  "@importWatchOnlyErrorNetworkMismatch": {
+    "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
   }
 }
