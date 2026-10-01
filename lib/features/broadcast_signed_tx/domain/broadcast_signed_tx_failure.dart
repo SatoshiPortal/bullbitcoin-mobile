@@ -23,6 +23,10 @@ final class BroadcastFailedFailure extends BroadcastSignedTxFailure {
   const BroadcastFailedFailure();
 }
 
+final class PsbtFinalizationFailure extends BroadcastSignedTxFailure {
+  const PsbtFinalizationFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class BroadcastUnexpectedFailure extends BroadcastSignedTxFailure {
