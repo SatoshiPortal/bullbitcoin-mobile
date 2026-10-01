@@ -12180,5 +12180,7 @@
   "autoBuyWalletRequiredError": "En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.",
   "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
   "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
-  "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin."
+  "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin.",
+  "importWatchOnlyNetworkMainnet": "Ağ: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Ağ: Testnet"
 }

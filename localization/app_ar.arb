@@ -12183,5 +12183,7 @@
   "autoBuyWalletRequiredError": "أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.",
   "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
   "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
-  "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى."
+  "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى.",
+  "importWatchOnlyNetworkMainnet": "الشبكة: الشبكة الرئيسية",
+  "importWatchOnlyNetworkTestnet": "الشبكة: شبكة الاختبار"
 }

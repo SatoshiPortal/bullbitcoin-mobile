@@ -36,14 +36,14 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         .state
         .watchOnlyWallet;
     final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    final networkLabel = entity.network.isMainnet
+        ? context.loc.importWatchOnlyNetworkMainnet
+        : context.loc.importWatchOnlyNetworkTestnet;
 
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
-          'Network: ${entity.network.name}',
-          style: context.font.bodyMedium,
-        ),
+        BBText(networkLabel, style: context.font.bodyMedium),
         const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,

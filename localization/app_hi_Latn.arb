@@ -12568,5 +12568,7 @@
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
   "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
-  "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein."
+  "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
+  "importWatchOnlyNetworkMainnet": "Network: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Network: Testnet"
 }

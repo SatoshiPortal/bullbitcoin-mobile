@@ -12192,5 +12192,7 @@
   "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
   "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
-  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente."
+  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
+  "importWatchOnlyNetworkMainnet": "Rede: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Rede: Testnet"
 }

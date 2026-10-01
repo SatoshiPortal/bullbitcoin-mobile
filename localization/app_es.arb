@@ -4911,5 +4911,7 @@
   "autoBuyWalletRequiredError": "Añade al menos una dirección predeterminada de Bitcoin, Lightning o Liquid.",
   "autoBuyUpdateError": "No se pudo actualizar la compra automática. Inténtalo de nuevo más tarde.",
   "withdrawUnexpectedError": "Su retiro no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
-  "importWatchOnlyErrorNetworkMismatch": "Este monedero está usando una red de Bitcoin diferente. Cambia entre Mainnet y Testnet e inténtalo de nuevo."
+  "importWatchOnlyErrorNetworkMismatch": "Este monedero está usando una red de Bitcoin diferente. Cambia entre Mainnet y Testnet e inténtalo de nuevo.",
+  "importWatchOnlyNetworkMainnet": "Red: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Red: Testnet"
 }

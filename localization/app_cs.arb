@@ -12180,5 +12180,7 @@
   "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
   "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
   "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu."
+  "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu.",
+  "importWatchOnlyNetworkMainnet": "Síť: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Síť: Testnet"
 }

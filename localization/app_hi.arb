@@ -12370,5 +12370,7 @@
   "autoBuyWalletRequiredError": "कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।",
   "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
   "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
-  "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।"
+  "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।",
+  "importWatchOnlyNetworkMainnet": "नेटवर्क: मेननेट",
+  "importWatchOnlyNetworkTestnet": "नेटवर्क: टेस्टनेट"
 }

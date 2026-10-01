@@ -4902,5 +4902,7 @@
   "autoBuyWalletRequiredError": "Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.",
   "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
   "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
-  "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen."
+  "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen.",
+  "importWatchOnlyNetworkMainnet": "Verkko: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Verkko: Testnet"
 }

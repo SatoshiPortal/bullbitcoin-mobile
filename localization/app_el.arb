@@ -12180,5 +12180,7 @@
   "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
   "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
-  "importWatchOnlyErrorNetworkMismatch": "Αυτό το πορτοφόλι χρησιμοποιεί αυτήν τη στιγμή διαφορετικό δίκτυο Bitcoin. Αλλάξτε μεταξύ Mainnet και Testnet και δοκιμάστε ξανά."
+  "importWatchOnlyErrorNetworkMismatch": "Αυτό το πορτοφόλι χρησιμοποιεί αυτήν τη στιγμή διαφορετικό δίκτυο Bitcoin. Αλλάξτε μεταξύ Mainnet και Testnet και δοκιμάστε ξανά.",
+  "importWatchOnlyNetworkMainnet": "Δίκτυο: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Δίκτυο: Testnet"
 }

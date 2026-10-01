@@ -12180,5 +12180,7 @@
   "autoBuyWalletRequiredError": "حداقل یک آدرس پیش‌فرض Bitcoin، Lightning یا Liquid اضافه کنید.",
   "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.",
   "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
-  "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید."
+  "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
+  "importWatchOnlyNetworkMainnet": "شبکه: شبکه اصلی",
+  "importWatchOnlyNetworkTestnet": "شبکه: شبکه آزمایشی"
 }

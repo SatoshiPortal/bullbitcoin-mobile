@@ -10216,5 +10216,7 @@
   "autoBuyWalletRequiredError": "Добавете поне един Bitcoin, Lightning или Liquid адрес по подразбиране.",
   "autoBuyUpdateError": "Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.",
   "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.",
-  "importWatchOnlyErrorNetworkMismatch": "Този портфейл в момента използва друга Bitcoin мрежа. Превключете между Mainnet и Testnet и опитайте отново."
+  "importWatchOnlyErrorNetworkMismatch": "Този портфейл в момента използва друга Bitcoin мрежа. Превключете между Mainnet и Testnet и опитайте отново.",
+  "importWatchOnlyNetworkMainnet": "Мрежа: Основна мрежа",
+  "importWatchOnlyNetworkTestnet": "Мрежа: Тестова мрежа"
 }

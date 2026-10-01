@@ -4952,5 +4952,7 @@
   "autoBuyWalletRequiredError": "Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
   "autoBuyUpdateError": "Auto-Buy konnte nicht aktualisiert werden. Versuchen Sie es später erneut.",
   "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
-  "importWatchOnlyErrorNetworkMismatch": "Diese Wallet verwendet derzeit ein anderes Bitcoin-Netzwerk. Wechseln Sie zwischen Mainnet und Testnet und versuchen Sie es erneut."
+  "importWatchOnlyErrorNetworkMismatch": "Diese Wallet verwendet derzeit ein anderes Bitcoin-Netzwerk. Wechseln Sie zwischen Mainnet und Testnet und versuchen Sie es erneut.",
+  "importWatchOnlyNetworkMainnet": "Netzwerk: Mainnet",
+  "importWatchOnlyNetworkTestnet": "Netzwerk: Testnet"
 }

@@ -14754,5 +14754,13 @@
   "importWatchOnlyErrorNetworkMismatch": "This wallet is using a different Bitcoin network. Switch between Mainnet and Testnet, then try again.",
   "@importWatchOnlyErrorNetworkMismatch": {
     "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
+  },
+  "importWatchOnlyNetworkMainnet": "Network: Mainnet",
+  "@importWatchOnlyNetworkMainnet": {
+    "description": "Network label shown when an imported watch-only wallet uses Bitcoin mainnet"
+  },
+  "importWatchOnlyNetworkTestnet": "Network: Testnet",
+  "@importWatchOnlyNetworkTestnet": {
+    "description": "Network label shown when an imported watch-only wallet uses Bitcoin testnet"
   }
 }

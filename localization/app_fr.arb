@@ -4960,5 +4960,7 @@
   "autoBuyWalletRequiredError": "Ajoutez au moins une adresse Bitcoin, Lightning ou Liquid par défaut.",
   "autoBuyUpdateError": "L'achat automatique n'a pas pu être mis à jour. Réessayez plus tard.",
   "withdrawUnexpectedError": "Votre retrait n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
-  "importWatchOnlyErrorNetworkMismatch": "Ce portefeuille utilise actuellement un autre réseau Bitcoin. Basculez entre Mainnet et Testnet, puis réessayez."
+  "importWatchOnlyErrorNetworkMismatch": "Ce portefeuille utilise actuellement un autre réseau Bitcoin. Basculez entre Mainnet et Testnet, puis réessayez.",
+  "importWatchOnlyNetworkMainnet": "Réseau : Mainnet",
+  "importWatchOnlyNetworkTestnet": "Réseau : Testnet"
 }
