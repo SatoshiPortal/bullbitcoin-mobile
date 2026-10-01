@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
@@ -481,9 +484,21 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           value: state.wallet!.address,
         ),
         const Gap(16),
-        Text(
-          context.loc.limitOrdersTermsNotice,
-          style: Theme.of(context).textTheme.bodySmall,
+        Semantics(
+          link: true,
+          child: GestureDetector(
+            onTap: () => launchUrl(
+              Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
+              mode: LaunchMode.inAppBrowserView,
+            ),
+            child: Text(
+              context.loc.limitOrdersTermsNotice,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: context.bull.primary,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
         ),
         if (state.failure case final failure?) ...[
           const Gap(12),
@@ -522,6 +537,15 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               ),
             ),
             textAlign: TextAlign.center,
+          ),
+          const Gap(32),
+          _primaryButton(
+            context,
+            label: context.loc.limitOrdersViewOrder,
+            onPressed: () => context.pushReplacementNamed(
+              LimitOrdersRoute.details.name,
+              pathParameters: {'orderId': state.createdOrder!.id},
+            ),
           ),
           const Spacer(),
         ],

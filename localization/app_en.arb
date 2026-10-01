@@ -14929,5 +14929,9 @@
         "type": "String"
       }
     }
+  },
+  "limitOrdersViewOrder": "View order details",
+  "@limitOrdersViewOrder": {
+    "description": "Opens the created Limit Order details from the success screen"
   }
 }
