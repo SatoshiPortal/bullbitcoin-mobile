@@ -5315,7 +5315,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "수출 옵션으로 \"Sparrow\"를 선택하십시오",
+  "importQrDeviceSeedsignerStep6": "내보내기 옵션으로 \"Animated\"를 선택하세요. 이전 SeedSigner 펌웨어에서는 \"Sparrow\"를 선택하세요.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

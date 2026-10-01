@@ -1675,7 +1675,7 @@
   "coreScreensNetworkFeesLabel": "Netzwerkgebühren",
   "kruxStep9": "Versuchen Sie, das Gerät etwas weiter weg zu halten",
   "sendReceiveNetworkFee": "Netzwerkgebühren empfangen",
-  "importQrDeviceSeedsignerStep6": "Wählen Sie „Sparrow“ als Exportoption",
+  "importQrDeviceSeedsignerStep6": "Wählen Sie „Animated“ als Exportoption. Wählen Sie bei älterer SeedSigner-Firmware „Sparrow“.",
   "swapValidationMaximumAmount": "Maximaler Betrag ist {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {

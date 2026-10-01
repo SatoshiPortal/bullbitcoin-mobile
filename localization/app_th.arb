@@ -5315,7 +5315,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "เลือก \"ตัวเลือก\" เป็นตัวเลือกการส่งออก",
+  "importQrDeviceSeedsignerStep6": "เลือก \"Animated\" เป็นตัวเลือกการส่งออก สำหรับเฟิร์มแวร์ SeedSigner รุ่นเก่า ให้เลือก \"Sparrow\"",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

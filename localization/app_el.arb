@@ -4510,7 +4510,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "Επιλέξτε \"Sparrow\" ως επιλογή εξαγωγής",
+  "importQrDeviceSeedsignerStep6": "Επιλέξτε «Animated» ως επιλογή εξαγωγής. Σε παλαιότερο υλικολογισμικό SeedSigner, επιλέξτε «Sparrow».",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

@@ -9944,7 +9944,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Select \"Sparrow\" as the export option",
+  "importQrDeviceSeedsignerStep6": "Select \"Animated\" as the export option. On older SeedSigner firmware, select \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

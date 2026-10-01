@@ -2818,7 +2818,7 @@
   "importQrDeviceSeedsignerStep3": "Quét một SeedQR hoặc nhập cụm từ hạt giống 12 hoặc 24 từ của bạn",
   "importQrDeviceSeedsignerStep4": "Chọn \"Export Xpub\"",
   "importQrDeviceSeedsignerStep5": "Chọn \"Single Sig\", sau đó chọn loại script ưa thích của bạn (chọn Native Segwit nếu không chắc chắn).",
-  "importQrDeviceSeedsignerStep6": "Chọn \"Sparrow\" làm tùy chọn xuất",
+  "importQrDeviceSeedsignerStep6": "Chọn \"Animated\" làm tùy chọn xuất. Trên phiên bản firmware SeedSigner cũ hơn, chọn \"Sparrow\".",
   "importQrDeviceSeedsignerStep7": "Trên thiết bị di động của bạn, nhấn Open Camera",
   "importQrDeviceSeedsignerStep8": "Quét mã QR hiển thị trên SeedSigner của bạn",
   "importQrDeviceSeedsignerStep9": "Nhập một nhãn cho ví SeedSigner của bạn và nhấn Import",

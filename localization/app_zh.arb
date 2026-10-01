@@ -1716,7 +1716,7 @@
   "coreScreensNetworkFeesLabel": "网络费",
   "kruxStep9": "   -  device把你的装置退回一小块",
   "sendReceiveNetworkFee": "接待网",
-  "importQrDeviceSeedsignerStep6": "选择“箭”作为出口选择",
+  "importQrDeviceSeedsignerStep6": "选择“Animated”作为导出选项。在较旧的 SeedSigner 固件中，请选择“Sparrow”。",
   "swapValidationMaximumAmount": "最高限额为{amount}{currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {

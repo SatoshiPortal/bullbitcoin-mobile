@@ -4674,7 +4674,7 @@
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "importQrDeviceSeedsignerStep6": "Selecione \"Seta\" como a opção de exportação",
+  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

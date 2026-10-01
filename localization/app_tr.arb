@@ -5287,7 +5287,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "\"Sparrow\"u ihracat seçeneği olarak seçin",
+  "importQrDeviceSeedsignerStep6": "Dışa aktarma seçeneği olarak \"Animated\" seçeneğini belirleyin. Eski SeedSigner aygıt yazılımında \"Sparrow\" seçeneğini belirleyin.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

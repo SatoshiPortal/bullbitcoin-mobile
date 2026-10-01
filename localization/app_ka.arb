@@ -2970,7 +2970,7 @@
   "importQrDeviceSeedsignerStep3": "დაასკანერეთ SeedQR ან შეიყვანეთ თქვენი 12- ან 24-სიტყვიანი სახარის ფრაზა",
   "importQrDeviceSeedsignerStep4": "აირჩიეთ „Export Xpub“",
   "importQrDeviceSeedsignerStep5": "აირჩიეთ „Single Sig“, შემდეგ თქვენთვის სასურველი სკრიპტის ტიპი (თუ არ ხართ დარწმუნებული, აირჩიეთ Native Segwit).",
-  "importQrDeviceSeedsignerStep6": "აირჩიეთ „Sparrow“ ექსპორტის ოფციად",
+  "importQrDeviceSeedsignerStep6": "ექსპორტის ვარიანტად აირჩიეთ „Animated“. SeedSigner-ის ძველ firmware-ზე აირჩიეთ „Sparrow“.",
   "importQrDeviceSeedsignerStep7": "თქვენს მობილურ მოწყობილობაზე შეეხეთ Open Camera-ს",
   "importQrDeviceSeedsignerStep8": "დაასკანერეთ თქვენს SeedSigner-ზე ნაჩვენები QR კოდი",
   "importQrDeviceSeedsignerStep9": "შეიყვანეთ ლეიბლი თქვენი SeedSigner საფულისთვის და დააჭირეთ Import-ს",

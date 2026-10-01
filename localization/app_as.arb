@@ -6444,7 +6444,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Sparrow\" বাছনি কৰক",
+  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Animated\" বাছনি কৰক। পুৰণি SeedSigner firmware-ত \"Sparrow\" বাছনি কৰক।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

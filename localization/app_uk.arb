@@ -2260,7 +2260,7 @@
   "coreScreensNetworkFeesLabel": "Мережеві збори",
   "kruxStep9": "   - Спробуйте перемістити пристрій назад трохи",
   "sendReceiveNetworkFee": "Отримувати Мережі",
-  "importQrDeviceSeedsignerStep6": "Виберіть \"Воронь\" як варіант експорту",
+  "importQrDeviceSeedsignerStep6": "Виберіть «Animated» як варіант експорту. У старіших версіях прошивки SeedSigner виберіть «Sparrow».",
   "swapValidationMaximumAmount": "Максимальна сума {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {

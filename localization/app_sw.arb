@@ -2831,7 +2831,7 @@
   "importQrDeviceSeedsignerStep3": "Changanua SeedQR au weka msemo wako wa maneno 12 au 24",
   "importQrDeviceSeedsignerStep4": "Chagua \"Export Xpub\"",
   "importQrDeviceSeedsignerStep5": "Chagua \"Single Sig\", kisha uchague aina ya script unayopendelea (chagua Native Segwit kama huna uhakika).",
-  "importQrDeviceSeedsignerStep6": "Chagua \"Sparrow\" kama chaguo la kuhamisha",
+  "importQrDeviceSeedsignerStep6": "Chagua \"Animated\" kama chaguo la kuhamisha. Kwenye firmware ya zamani ya SeedSigner, chagua \"Sparrow\".",
   "importQrDeviceSeedsignerStep7": "Kwenye simu yako, gusa Open Camera",
   "importQrDeviceSeedsignerStep8": "Changanua msimbo wa QR unaoonyeshwa kwenye SeedSigner yako",
   "importQrDeviceSeedsignerStep9": "Weka lebo kwa pochi yako ya SeedSigner kisha ugusa Import",

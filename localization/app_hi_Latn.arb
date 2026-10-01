@@ -8526,7 +8526,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Sparrow\" select karo",
+  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Animated\" chunein. Purane SeedSigner firmware par \"Sparrow\" chunein.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },

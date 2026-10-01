@@ -1713,7 +1713,7 @@
   "coreScreensNetworkFeesLabel": "Сетевые сборы",
   "kruxStep9": "   - Попробуйте переместить устройство назад",
   "sendReceiveNetworkFee": "Получение сетевой платы",
-  "importQrDeviceSeedsignerStep6": "Выберите «Спарроу» в качестве варианта экспорта",
+  "importQrDeviceSeedsignerStep6": "Выберите «Animated» в качестве варианта экспорта. В старых версиях прошивки SeedSigner выберите «Sparrow».",
   "swapValidationMaximumAmount": "Максимальная сумма {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {

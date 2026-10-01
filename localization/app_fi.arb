@@ -2944,7 +2944,7 @@
   "importQrDeviceSeedsignerStep3": "Skannaa SeedQR tai syötä 12–24 sanan siemenlause",
   "importQrDeviceSeedsignerStep4": "Valitse \"Export Xpub\"",
   "importQrDeviceSeedsignerStep5": "Valitse \"Single Sig\" ja skriptityyppi (valitse Native Segwit, jos et ole varma)",
-  "importQrDeviceSeedsignerStep6": "Valitse vientitavaksi \"Sparrow\"",
+  "importQrDeviceSeedsignerStep6": "Valitse vientivaihtoehdoksi ”Animated”. Valitse vanhemmassa SeedSigner-laiteohjelmistossa ”Sparrow”.",
   "importQrDeviceSeedsignerStep7": "Napauta mobiililaitteessa \"Avaa kamera\"",
   "importQrDeviceSeedsignerStep8": "Skannaa SeedSigner-laitteessa näkyvä QR-koodi",
   "importQrDeviceSeedsignerStep9": "Anna lompakolle tunniste ja napauta \"Tuo\"",

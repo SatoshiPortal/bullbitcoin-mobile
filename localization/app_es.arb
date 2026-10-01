@@ -2999,7 +2999,7 @@
   "importQrDeviceSeedsignerStep3": "Escanee un SeedQR o ingrese su frase de 12 o 24 palabras",
   "importQrDeviceSeedsignerStep4": "Seleccione \"Exportar Xpub\"",
   "importQrDeviceSeedsignerStep5": "Elija \"Firma Única\", luego seleccione su tipo de script preferido (elija Native Segwit si no está seguro).",
-  "importQrDeviceSeedsignerStep6": "Seleccione \"Sparrow\" como opción de exportación",
+  "importQrDeviceSeedsignerStep6": "Seleccione \"Animated\" como opción de exportación. En versiones anteriores del firmware de SeedSigner, seleccione \"Sparrow\".",
   "importQrDeviceSeedsignerStep7": "En su dispositivo móvil, toque Abrir Cámara",
   "importQrDeviceSeedsignerStep8": "Escanee el código QR que se muestra en su SeedSigner",
   "importQrDeviceSeedsignerStep9": "Ingrese una etiqueta para su billetera SeedSigner y toque Importar",

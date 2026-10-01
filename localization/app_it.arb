@@ -1715,7 +1715,7 @@
   "coreScreensNetworkFeesLabel": "Tasse di rete",
   "kruxStep9": "   - Prova a spostare il dispositivo indietro un po'",
   "sendReceiveNetworkFee": "Ricevi le quote di rete",
-  "importQrDeviceSeedsignerStep6": "Selezionare \"Sparrow\" come opzione di esportazione",
+  "importQrDeviceSeedsignerStep6": "Seleziona \"Animated\" come opzione di esportazione. Con le versioni precedenti del firmware SeedSigner, seleziona \"Sparrow\".",
   "swapValidationMaximumAmount": "Importo massimo è {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {

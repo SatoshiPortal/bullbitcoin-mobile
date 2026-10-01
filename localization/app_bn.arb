@@ -5161,7 +5161,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "\"Sparrow\" কে Export বিকল্প হিসেবে বেছে নিন",
+  "importQrDeviceSeedsignerStep6": "Export বিকল্প হিসেবে \"Animated\" বেছে নিন। SeedSigner-এর পুরোনো ফার্মওয়্যারে \"Sparrow\" বেছে নিন।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
