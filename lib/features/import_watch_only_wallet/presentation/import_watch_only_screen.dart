@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -18,7 +15,8 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSnackBar, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
@@ -39,7 +37,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
       )..init(),
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             onBack: () => context.pop(),
             title: context.loc.importWatchOnlyTitle,
           ),
@@ -52,9 +50,9 @@ class ImportWatchOnlyScreen extends StatelessWidget {
               context.goNamed(WalletRoute.walletHome.name);
             }
             if (state.failure != null) {
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                state.failure!.toTranslated(context),
+                message: state.failure!.toTranslated(context),
               );
             }
           },
@@ -80,7 +78,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                         ),
                         if (state.failure != null)
                           Center(
-                            child: BBText(
+                            child: BullText(
                               state.failure!.toTranslated(context),
                               style: TextStyle(color: context.appColors.error),
                             ),

@@ -2,9 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -38,12 +35,12 @@ class DefaultWalletsEditor extends StatelessWidget {
           (previous.saveError == null && current.saveError != null),
       listener: (context, state) {
         if (state.saveSuccess) {
-          SnackBarUtils.showSnackBar(
+          BullSnackBar.show(
             context,
-            context.loc.exchangeBitcoinWalletsSaveSuccess,
+            message: context.loc.exchangeBitcoinWalletsSaveSuccess,
           );
         } else if (state.saveError != null) {
-          SnackBarUtils.showSnackBar(context, state.saveError!);
+          BullSnackBar.show(context, message: state.saveError!);
         }
       },
       child: _EditorContent(
@@ -96,14 +93,14 @@ class _EditorContent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BBText(
+            BullText(
               state.loadError!,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
             ),
             const SizedBox(height: 16),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () => context.read<DefaultWalletsCubit>().init(),
               bgColor: context.appColors.onSurface,
@@ -122,7 +119,7 @@ class _EditorContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (showDescription ?? true) ...[
-                BBText(
+                BullText(
                   context.loc.exchangeBitcoinWalletsDescription,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.appColors.outline,
@@ -188,7 +185,7 @@ class _WalletAddressField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: BBText(
+              child: BullText(
                 label,
                 style: context.font.labelMedium?.copyWith(
                   color: context.appColors.onSurface,
@@ -199,7 +196,7 @@ class _WalletAddressField extends StatelessWidget {
             if (hasAddress && !isEditing)
               TextButton(
                 onPressed: isSaving ? null : () => cubit.deleteWallet(type),
-                child: BBText(
+                child: BullText(
                   context.loc.delete,
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.error,
@@ -226,7 +223,7 @@ class _WalletAddressField extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: BBButton.big(
+                child: BullButton.big(
                   label: context.loc.cancel,
                   onPressed: () => cubit.cancelEditing(),
                   disabled: isSaving,
@@ -254,7 +251,7 @@ class _WalletAddressField extends StatelessWidget {
                           ),
                         ),
                       )
-                    : BBButton.big(
+                    : BullButton.big(
                         label: context.loc.save,
                         onPressed: () => cubit.saveWallet(type),
                         bgColor: context.appColors.onSurface,
@@ -292,7 +289,7 @@ class _WalletAddressField extends StatelessWidget {
                             ),
                             color: context.appColors.onSurface,
                           )
-                        : BBText(
+                        : BullText(
                             context.loc.exchangeBitcoinWalletsEnterAddressHint,
                             style: context.font.bodyMedium?.copyWith(
                               color: context.appColors.textMuted,

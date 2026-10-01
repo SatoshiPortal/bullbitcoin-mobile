@@ -2,14 +2,12 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInfoCard, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportQrDevicePage extends StatelessWidget {
@@ -35,7 +33,7 @@ class ImportQrDevicePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BBText(
+            BullText(
               context.loc.importQrDeviceScanPrompt(deviceName),
               style: context.font.bodyLarge,
               textAlign: .center,
@@ -44,7 +42,7 @@ class ImportQrDevicePage extends StatelessWidget {
 
             if (device == SignerDeviceEntity.jade) ...[
               Gap(Device.screen.height * 0.03),
-              InfoCard(
+              BullInfoCard(
                 description: context.loc.importQrDeviceJadeFirmwareWarning,
                 tagColor: context.appColors.warning,
                 bgColor: context.appColors.warningContainer,
@@ -60,7 +58,7 @@ class ImportQrDevicePage extends StatelessWidget {
             Gap(Device.screen.height * 0.05),
             Column(
               children: [
-                BBButton.small(
+                BullButton.small(
                   label: context.loc.importQrDeviceButtonOpenCamera,
                   onPressed: () => context.pushNamed(
                     ImportWatchOnlyWalletRoutes.scan.name,
@@ -72,7 +70,7 @@ class ImportQrDevicePage extends StatelessWidget {
                 ),
 
                 Gap(Device.screen.height * 0.02),
-                BBButton.small(
+                BullButton.small(
                   label: context.loc.importQrDeviceButtonInstructions,
                   onPressed: () => DeviceInstructionsBottomSheet.show(
                     context,

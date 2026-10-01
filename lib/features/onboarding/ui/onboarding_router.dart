@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/onboarding_failure_l10n.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 enum OnboardingRoute {
   onboarding('/onboarding'),
@@ -59,9 +59,9 @@ class OnboardingRouter {
                   previous.failure != current.failure &&
                   current.failure != null,
               listener: (context, state) {
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  state.failure!.toTranslated(context),
+                  message: state.failure!.toTranslated(context),
                 );
               },
             ),

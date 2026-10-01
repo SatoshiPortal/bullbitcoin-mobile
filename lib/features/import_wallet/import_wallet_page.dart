@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportWalletPage extends StatelessWidget {
@@ -30,7 +29,7 @@ class ImportWalletPage extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 context.loc.importWalletSectionGeneric,
                 style: context.font.titleMedium,
               ),
@@ -48,7 +47,7 @@ class ImportWalletPage extends StatelessWidget {
                     context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
               ),
               const Gap(24),
-              BBText(
+              BullText(
                 context.loc.importWalletSectionHardware,
                 style: context.font.titleMedium,
               ),
