@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -18,9 +22,14 @@ class MockListActiveLimitOrdersUsecase extends Mock
 class MockCancelAllLimitOrdersUsecase extends Mock
     implements CancelAllLimitOrdersUsecase {}
 
+class MockExchangeNotificationService extends Mock
+    implements ExchangeNotificationService {}
+
 void main() {
   late MockListActiveLimitOrdersUsecase listActive;
   late MockCancelAllLimitOrdersUsecase cancelAll;
+  late MockExchangeNotificationService notifications;
+  late StreamController<NotificationMessage> notificationStream;
   const canCreate = CanCreateLimitOrderUsecase();
 
   List<LimitOrder> orders(int count) =>
@@ -29,13 +38,23 @@ void main() {
   setUp(() {
     listActive = MockListActiveLimitOrdersUsecase();
     cancelAll = MockCancelAllLimitOrdersUsecase();
+    notifications = MockExchangeNotificationService();
+    notificationStream = StreamController<NotificationMessage>.broadcast();
+    when(
+      () => notifications.messageStream,
+    ).thenAnswer((_) => notificationStream.stream);
   });
+
+  tearDown(() => notificationStream.close());
+
+  LimitOrdersCubit buildCubit() =>
+      LimitOrdersCubit(listActive, cancelAll, canCreate, notifications);
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'loads the active orders',
     setUp: () =>
         when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(2))),
-    build: () => LimitOrdersCubit(listActive, cancelAll, canCreate),
+    build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {
       expect(cubit.state.orders, hasLength(2));
@@ -49,7 +68,7 @@ void main() {
     setUp: () => when(() => listActive.execute()).thenAnswer(
       (_) async => Ok(orders(CanCreateLimitOrderUsecase.maximumActiveOrders)),
     ),
-    build: () => LimitOrdersCubit(listActive, cancelAll, canCreate),
+    build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) => expect(cubit.state.canCreate, isFalse),
   );
@@ -59,7 +78,7 @@ void main() {
     setUp: () => when(
       () => listActive.execute(),
     ).thenAnswer((_) async => const Err(LimitOrdersLoadFailure('list'))),
-    build: () => LimitOrdersCubit(listActive, cancelAll, canCreate),
+    build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {
       expect(cubit.state.isLoading, isFalse);
@@ -73,7 +92,7 @@ void main() {
       when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(3)));
       when(() => cancelAll.execute()).thenAnswer((_) async => const Ok([]));
     },
-    build: () => LimitOrdersCubit(listActive, cancelAll, canCreate),
+    build: buildCubit,
     act: (cubit) async {
       await cubit.load();
       await cubit.cancelAll();
@@ -93,7 +112,7 @@ void main() {
         (_) async => const Err(LimitOrderCancellationFailure('cancel all')),
       );
     },
-    build: () => LimitOrdersCubit(listActive, cancelAll, canCreate),
+    build: buildCubit,
     act: (cubit) async {
       await cubit.load();
       await cubit.cancelAll();
@@ -102,5 +121,40 @@ void main() {
       expect(cubit.state.orders, hasLength(3));
       expect(cubit.state.failure, isA<LimitOrderCancellationFailure>());
     },
+  );
+
+  blocTest<LimitOrdersCubit, LimitOrdersState>(
+    'reloads when a limit-order notification arrives',
+    setUp: () =>
+        when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(1))),
+    build: buildCubit,
+    act: (cubit) async {
+      notificationStream.add(
+        const NotificationMessage(
+          kind: NotificationMessageKind.limitOrder,
+          rawData: {},
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+    },
+    verify: (cubit) {
+      verify(() => listActive.execute()).called(1);
+      expect(cubit.state.orders, hasLength(1));
+    },
+  );
+
+  blocTest<LimitOrdersCubit, LimitOrdersState>(
+    'ignores notifications that are not limit-order events',
+    build: buildCubit,
+    act: (cubit) async {
+      notificationStream.add(
+        const NotificationMessage(
+          kind: NotificationMessageKind.balance,
+          rawData: {},
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+    },
+    verify: (_) => verifyNever(() => listActive.execute()),
   );
 }

@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
@@ -9,9 +13,20 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   final ListActiveLimitOrdersUsecase _listActive;
   final CancelAllLimitOrdersUsecase _cancelAll;
   final CanCreateLimitOrderUsecase _canCreate;
+  final ExchangeNotificationService _notifications;
 
-  LimitOrdersCubit(this._listActive, this._cancelAll, this._canCreate)
-    : super(const LimitOrdersState());
+  StreamSubscription<NotificationMessage>? _subscription;
+
+  LimitOrdersCubit(
+    this._listActive,
+    this._cancelAll,
+    this._canCreate,
+    this._notifications,
+  ) : super(const LimitOrdersState()) {
+    _subscription = _notifications.messageStream
+        .where((message) => message.kind == NotificationMessageKind.limitOrder)
+        .listen((_) => load());
+  }
 
   Future<void> load() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
@@ -47,5 +62,11 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
       case Err(:final failure):
         emit(state.copyWith(isCancellingAll: false, failure: failure));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }

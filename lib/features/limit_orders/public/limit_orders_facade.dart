@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
@@ -32,6 +33,7 @@ class LimitOrdersFacade {
   final CancelLimitOrderUsecase _cancelOrder;
   final ResolveWalletAddressUsecase _resolveAddress;
   final ValidateLightningAddressUsecase _validateLnAddress;
+  final ExchangeNotificationService _notifications;
 
   const LimitOrdersFacade(
     this._listActive,
@@ -44,11 +46,13 @@ class LimitOrdersFacade {
     this._cancelOrder,
     this._resolveAddress,
     this._validateLnAddress,
+    this._notifications,
   );
 
   Widget buildDashboardCard() => BlocProvider(
     create: (_) =>
-        LimitOrdersCubit(_listActive, _cancelAll, _canCreate)..load(),
+        LimitOrdersCubit(_listActive, _cancelAll, _canCreate, _notifications)
+          ..load(),
     child: const LimitOrdersDashboardCard(),
   );
 
