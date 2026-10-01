@@ -6696,34 +6696,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -6767,15 +6739,6 @@
   "withdrawConfirmButton": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "ত্ৰুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
   "@fundExchangeFundAccount": {
@@ -8343,21 +8306,13 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawAboveMaxAmountError": "সৰ্বোচ্চ পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
   "@coreScreensPageNotFound": {
@@ -9337,6 +9292,40 @@
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "withdrawInteracSecurityDetailsTitle": "Interac সুৰক্ষা বিৱৰণ",
+  "withdrawInteracSaveAsDefault": "এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক",
+  "withdrawInteracSecurityQuestionLengthError": "সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerLengthError": "সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerFormatError": "খালী ঠাই নিদিয়াকৈ আখৰ, সংখ্যা বা হাইফেন ব্যৱহাৰ কৰক",
+  "autoBuyTitle": "স্বয়ংক্ৰিয় ক্ৰয়",
+  "autoBuyDescription": "আপুনি একাউণ্টত পুঁজি জমা কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনক",
+  "autoBuyActivate": "স্বয়ংক্ৰিয় ক্ৰয় সক্ৰিয় কৰক",
+  "autoBuyDeactivate": "স্বয়ংক্ৰিয় ক্ৰয় নিষ্ক্ৰিয় কৰক",
+  "autoBuyCancelTitle": "স্বয়ংক্ৰিয় ক্ৰয় বাতিল কৰিবনে?",
+  "autoBuyCancelMessage": "পৰৱৰ্তী বাৰ আপুনি একাউণ্টত পুঁজি যোগ কৰিলে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনা নহ'ব।",
+  "autoBuyDeactivateConfirm": "হয়, নিষ্ক্ৰিয় কৰক",
+  "autoBuyHowItWorks": "ই কেনেকৈ কাম কৰে",
+  "autoBuyConnectWallet": "আপোনাৰ Bitcoin, Lightning বা Liquid ৱালেট সংযোগ কৰক",
+  "autoBuyPurchaseCreated": "আপুনি আপোনাৰ Bull Bitcoin একাউণ্টত পুঁজি যোগ কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে এটা Bitcoin ক্ৰয় সৃষ্টি কৰা হয়।",
+  "autoBuyBitcoinSent": "Bitcoin পোনপটীয়াকৈ আপোনাৰ নিজৰ ৱালেটলৈ পঠিওৱা হয়।",
+  "autoBuyRiskDisclaimer": "অৰ্ডাৰ কাৰ্যকৰী হোৱাৰ নিশ্চয়তা দিব নোৱাৰি। জমা আৰু ক্ৰয়ৰ মাজত হোৱা পলম বা দামৰ পৰিৱৰ্তনে প্ৰকৃত হাৰ সলনি কৰিব পাৰে।",
+  "autoBuyGetStarted": "স্বয়ংক্ৰিয় ক্ৰয় আৰম্ভ কৰক",
+  "autoBuyConfirmTitle": "স্বয়ংক্ৰিয় ক্ৰয় নিশ্চিত কৰক",
+  "autoBuyInfoMessage": "আপোনাৰ একাউণ্টত যোগ কৰা যিকোনো পৰিমাণ বৰ্তমানৰ বিনিময় হাৰত Bitcoin-লৈ ৰূপান্তৰ কৰি আপোনাৰ ৱালেটলৈ পঠিওৱা হ'ব।",
+  "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
+  "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
+  "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
+  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
+  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
+  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
+  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
+  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
+  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
+  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
+  "withdrawConfirmError": "ত্ৰুটি: {error}",
+  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsConfidentialSepaSubtitle": "পেআউটবোৰ আপোনাৰ একাউণ্টৰ নামেৰে নিজলৈ স্থানান্তৰ হিচাপে দেখা যায়",
   "recipientsFrPayeeActivatingTitle": "প্ৰাপক সক্ৰিয় কৰি থকা হৈছে",

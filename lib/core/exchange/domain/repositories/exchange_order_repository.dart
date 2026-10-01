@@ -36,7 +36,8 @@ abstract class ExchangeOrderRepository {
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
     String? paymentDescription,
-    bool isETransfer = false,
+    String? securityQuestion,
+    String? securityAnswer,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);

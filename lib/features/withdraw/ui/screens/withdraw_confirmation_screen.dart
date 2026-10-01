@@ -130,7 +130,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
 
   String _getRecipientInfoLabel(
     BuildContext context,
-    RecipientViewModel? recipient,
+    RecipientSelection? recipient,
   ) {
     if (recipient == null) return context.loc.withdrawConfirmBankAccount;
 
@@ -165,7 +165,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     }
   }
 
-  String? _getRecipientInfoValue(RecipientViewModel? recipient) {
+  String? _getRecipientInfoValue(RecipientSelection? recipient) {
     if (recipient == null) return null;
 
     switch (recipient.type) {
@@ -260,19 +260,17 @@ class _ConfirmButton extends StatelessWidget {
           bloc.state is WithdrawConfirmationState &&
           (bloc.state as WithdrawConfirmationState).isConfirmingWithdrawal,
     );
-    final withdrawError = context.select(
+    final withdrawFailure = context.select(
       (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
-          ? (bloc.state as WithdrawConfirmationState).error
+          ? (bloc.state as WithdrawConfirmationState).failure
           : null,
     );
 
     return Column(
       children: [
-        if (withdrawError != null) ...[
+        if (withdrawFailure != null) ...[
           Text(
-            context.loc.withdrawConfirmError(
-              withdrawError.toTranslated(context),
-            ),
+            withdrawFailure.toTranslated(context),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),

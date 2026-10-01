@@ -8782,34 +8782,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "Recipient Select Karo",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "Paisa kahan aur kaise bhejun?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "Naya recipient",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "Mere fiat recipients",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "Sabhi types",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "Withdraw karne ke liye koi recipient nahi mila.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "Withdrawal Confirm Karo",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -8853,15 +8825,6 @@
   "withdrawConfirmButton": "Withdrawal confirm karo",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "Apna account fund karo",
   "@fundExchangeFundAccount": {
@@ -10430,21 +10393,13 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "Aap minimum amount se kam withdraw karne ki koshish kar rahe hain.",
+  "withdrawBelowMinAmountError": "Minimum amount hai {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "Aap maximum amount se zyada withdraw karne ki koshish kar rahe hain.",
+  "withdrawAboveMaxAmountError": "Maximum amount {amount} {currency} hai",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "Withdrawal order nahi mila. Kripya dobara try karo.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Ye withdrawal order pehle se confirm ho chuka hai.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "Page nahi mila",
   "@coreScreensPageNotFound": {
@@ -12589,6 +12544,40 @@
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
+  "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
+  "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
+  "withdrawInteracSecurityAnswerFormatError": "Spaces ke bina letters, numbers ya hyphens use karein",
+  "autoBuyTitle": "Auto Buy",
+  "autoBuyDescription": "Jab bhi aap apne account mein funds deposit karein, automatically Bitcoin khareedein",
+  "autoBuyActivate": "Auto-buy activate karein",
+  "autoBuyDeactivate": "Auto-buy deactivate karein",
+  "autoBuyCancelTitle": "Auto Buy Cancel Karein?",
+  "autoBuyCancelMessage": "Agli baar jab aap apne account mein funds daalenge, Bitcoin automatically nahi khareeda jayega.",
+  "autoBuyDeactivateConfirm": "Haan, deactivate karein",
+  "autoBuyHowItWorks": "Yah kaise kaam karta hai",
+  "autoBuyConnectWallet": "Apna Bitcoin, Lightning ya Liquid wallet connect karein",
+  "autoBuyPurchaseCreated": "Jab bhi aap apne Bull Bitcoin account mein funds daalte hain, ek Bitcoin purchase automatically ban jaati hai.",
+  "autoBuyBitcoinSent": "Bitcoin seedha aapke apne wallet mein bheja jata hai.",
+  "autoBuyRiskDisclaimer": "Order execution ki guarantee nahi di ja sakti. Deposit aur purchase ke beech delay ya price change effective rate ko badal sakta hai.",
+  "autoBuyGetStarted": "Auto-buy ke saath shuru karein",
+  "autoBuyConfirmTitle": "Auto-Buy Confirm Karein",
+  "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
+  "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
+  "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
+  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
+  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
+  "withdrawRecipientsTitle": "Recipient Select Karo",
+  "withdrawRecipientsPrompt": "Paisa kahan aur kaise bhejun?",
+  "withdrawRecipientsNewTab": "Naya recipient",
+  "withdrawRecipientsMyTab": "Mere fiat recipients",
+  "withdrawRecipientsFilterAll": "Sabhi types",
+  "withdrawRecipientsNoRecipients": "Withdraw karne ke liye koi recipient nahi mila.",
+  "withdrawRecipientsContinue": "Continue",
+  "withdrawConfirmError": "Error: {error}",
+  "withdrawOrderNotFoundError": "Withdrawal order nahi mila. Kripya dobara try karo.",
+  "withdrawOrderAlreadyConfirmedError": "Ye withdrawal order pehle se confirm ho chuka hai.",
   "recipientsTypeConfidentialSepa": "Confidential SEPA",
   "recipientsConfidentialSepaSubtitle": "Payouts aapke account name ke saath self-transfer ki tarah dikhte hain",
   "recipientsFrPayeeActivatingTitle": "Recipient activate ho raha hai",

@@ -1,10 +1,10 @@
 part of 'withdraw_bloc.dart';
 
-@freezed
+@Freezed(toStringOverride: false)
 sealed class WithdrawEvent with _$WithdrawEvent {
   const factory WithdrawEvent.started() = WithdrawStarted;
   const factory WithdrawEvent.recipientSelected(
-    RecipientViewModel recipient, {
+    RecipientSelection recipient, {
     required bool isNew,
     String? paymentDescription,
   }) = WithdrawRecipientSelected;
@@ -12,8 +12,10 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     required String amountInput,
     required FiatCurrency fiatCurrency,
   }) = WithdrawAmountInputContinuePressed;
-  /*const factory WithdrawEvent.descriptionInputContinuePressed(
-    String description,
-  ) = WithdrawDescriptionInputContinuePressed;*/
+  const factory WithdrawEvent.interacSecurityDetailsSubmitted({
+    required String securityQuestion,
+    required String securityAnswer,
+    required bool saveAsDefault,
+  }) = WithdrawInteracSecurityDetailsSubmitted;
   const factory WithdrawEvent.confirmed() = WithdrawConfirmed;
 }

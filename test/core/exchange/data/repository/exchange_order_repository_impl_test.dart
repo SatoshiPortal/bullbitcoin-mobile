@@ -2,11 +2,11 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -106,6 +106,64 @@ void main() {
     });
   });
 
+  group('the withdraw paths keep the original stack trace', () {
+    // The use-case logs the trace it catches. If the repository wrapped the
+    // failure with a bare `throw`, every report would point at the catch block
+    // instead of the call that actually failed.
+    void expectTraceReachesTheFailingCall(StackTrace? trace, String frame) {
+      expect(trace, isNotNull);
+      expect(
+        trace.toString(),
+        contains(frame),
+        reason: 'the trace no longer reaches the throwing call',
+      );
+    }
+
+    test('placeWithdrawalOrder', () async {
+      when(
+        () => api.createWithdrawalOrder(
+          apiKey: any(named: 'apiKey'),
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          securityQuestion: any(named: 'securityQuestion'),
+          securityAnswer: any(named: 'securityAnswer'),
+        ),
+      ).thenAnswer((_) async => throw StateError('datasource blew up'));
+
+      StackTrace? trace;
+      try {
+        await repository.placeWithdrawalOrder(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+        );
+        fail('expected the wrapped exception');
+      } catch (_, st) {
+        trace = st;
+      }
+
+      expectTraceReachesTheFailingCall(trace, 'createWithdrawalOrder');
+    });
+
+    test('confirmWithdrawOrder', () async {
+      when(
+        () => api.confirmOrder(
+          apiKey: any(named: 'apiKey'),
+          orderId: any(named: 'orderId'),
+        ),
+      ).thenAnswer((_) async => throw StateError('datasource blew up'));
+
+      StackTrace? trace;
+      try {
+        await repository.confirmWithdrawOrder('order-1');
+        fail('expected the wrapped exception');
+      } catch (_, st) {
+        trace = st;
+      }
+
+      expectTraceReachesTheFailingCall(trace, 'confirmOrder');
+    });
+  });
+
   group('confidential SEPA activation errors', () {
     test('preserves the pay datasource exception for the usecase', () async {
       when(
@@ -160,7 +218,7 @@ void main() {
           fiatAmount: 100,
           recipientId: 'recipient-1',
         ),
-        throwsA(isA<UnauthenticatedWithdrawError>()),
+        throwsA(isA<ApiKeyException>()),
       );
     });
   });

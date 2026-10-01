@@ -156,6 +156,15 @@ class FakeRecipientsGateway
   }) => throw UnimplementedError();
 
   @override
+  Future<void> updateInteracSecurityDetails({
+    required String recipientId,
+    required String email,
+    required String? securityQuestion,
+    required String? securityAnswer,
+    required bool isTestnet,
+  }) async {}
+
+  @override
   Future<String> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,

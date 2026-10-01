@@ -23,3 +23,11 @@ final class VirtualIbanNotAvailableFailure extends RecipientsFailure {
 final class VirtualIbanEuResidencyRequiredFailure extends RecipientsFailure {
   const VirtualIbanEuResidencyRequiredFailure([super.logMessage]);
 }
+
+final class RecipientsUnexpectedFailure extends RecipientsFailure {
+  const RecipientsUnexpectedFailure([super.logMessage]);
+}
+
+final class RecipientsInvalidSecurityDetailsFailure extends RecipientsFailure {
+  const RecipientsInvalidSecurityDetailsFailure([super.logMessage]);
+}

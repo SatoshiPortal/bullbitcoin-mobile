@@ -68,6 +68,23 @@ void main() {
     expect(viewModel.displayName, 'Jorge Borges');
   });
 
+  test('carries Interac security details through to the view model', () {
+    final recipient = _recipient(
+      InteracEmailCadDetails.create(
+        email: 'ada@example.com',
+        name: 'Ada Lovelace',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal',
+      ),
+    );
+
+    final viewModel = recipient.toViewModel();
+
+    expect(viewModel.securityQuestion, 'Favourite city?');
+    expect(viewModel.securityAnswer, 'Montreal');
+    expect(viewModel.email, 'ada@example.com');
+  });
+
   test('maps a bill payment recipient to its payee fields', () {
     final recipient = _recipient(
       BillPaymentCadDetails.create(

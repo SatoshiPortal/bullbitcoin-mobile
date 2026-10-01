@@ -7,13 +7,16 @@ import 'package:bb_mobile/features/recipients/application/usecases/add_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/check_confidential_sepa_eligibility_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_activation_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/usecases/check_confidential_sepa_eligibility_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
@@ -89,9 +92,6 @@ class RecipientsLocator {
     locator.registerFactory<CheckConfidentialSepaEligibilityUsecase>(
       CheckConfidentialSepaEligibilityUsecase.new,
     );
-    locator.registerLazySingleton<RecipientsFacade>(
-      () => RecipientsFacade(locator<WatchVirtualIbanActivationUsecase>()),
-    );
     locator.registerFactory<GetRecipientsUsecase>(
       () => GetRecipientsUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
@@ -108,6 +108,23 @@ class RecipientsLocator {
       () => ListCadBillersUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<UpdateInteracSecurityDetailsUsecase>(
+      () => UpdateInteracSecurityDetailsUsecase(
+        locator<InteracSecurityDetailsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<InteracSecurityDetailsRepository>(
+      () => InteracSecurityDetailsRepositoryImpl(
+        locator<RecipientsGatewayPort>(),
+        locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<RecipientsFacade>(
+      () => RecipientsFacade(
+        locator<UpdateInteracSecurityDetailsUsecase>(),
+        locator<WatchVirtualIbanActivationUsecase>(),
       ),
     );
   }

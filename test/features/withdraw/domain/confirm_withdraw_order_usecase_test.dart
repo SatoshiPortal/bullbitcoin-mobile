@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,92 +15,196 @@ class _MockExchangeOrderRepository extends Mock
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
+
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
 
-void main() {
-  late _MockExchangeOrderRepository mainnet;
-  late _MockExchangeOrderRepository testnet;
-  late _MockSettingsRepository settings;
+/// The value of an [Ok], failing the test on an [Err].
+T _ok<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected Ok, got $failure'),
+};
 
-  ConfirmWithdrawOrderUsecase usecase() => ConfirmWithdrawOrderUsecase(
-    mainnetExchangeOrderRepository: mainnet,
-    testnetExchangeOrderRepository: testnet,
-    settingsRepository: settings,
-  );
+/// The failure of an [Err], failing the test on an [Ok].
+F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => fail('expected Err, got $value'),
+  Err(:final failure) => failure,
+};
+
+void main() {
+  late _MockExchangeOrderRepository mainnetRepository;
+  late _MockExchangeOrderRepository testnetRepository;
+  late _MockSettingsRepository settingsRepository;
+  late _MockRecipientsFacade recipientsFacade;
+  late ConfirmWithdrawOrderUsecase usecase;
+  late InteracSecurityDetails interacSecurityDetails;
 
   setUp(() {
-    mainnet = _MockExchangeOrderRepository();
-    testnet = _MockExchangeOrderRepository();
-    settings = _MockSettingsRepository();
-  });
-
-  for (final environment in [Environment.mainnet, Environment.testnet]) {
-    test('confirms with the $environment repository', () async {
-      when(() => settings.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'EUR',
-        ),
-      );
-      final expectedRepository = environment == Environment.testnet
-          ? testnet
-          : mainnet;
-      when(
-        () => expectedRepository.confirmWithdrawOrder('order-1'),
-      ).thenAnswer((_) async => _MockWithdrawOrder());
-
-      final result = await usecase().execute(orderId: 'order-1');
-
-      expect(result, isA<Ok<WithdrawOrder, WithdrawFailure>>());
-      verify(
-        () => expectedRepository.confirmWithdrawOrder('order-1'),
-      ).called(1);
-    });
-  }
-
-  test('maps a known repository error', () async {
-    when(() => settings.fetch()).thenAnswer(
+    mainnetRepository = _MockExchangeOrderRepository();
+    testnetRepository = _MockExchangeOrderRepository();
+    settingsRepository = _MockSettingsRepository();
+    recipientsFacade = _MockRecipientsFacade();
+    usecase = ConfirmWithdrawOrderUsecase(
+      mainnetExchangeOrderRepository: mainnetRepository,
+      testnetExchangeOrderRepository: testnetRepository,
+      settingsRepository: settingsRepository,
+      recipientsFacade: recipientsFacade,
+    );
+    interacSecurityDetails = _ok(
+      InteracSecurityDetails.create(
+        recipientId: 'recipient-1',
+        email: 'person@example.com',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal',
+      ),
+    );
+    when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'EUR',
+        currencyCode: 'CAD',
       ),
-    );
-    when(
-      () => mainnet.confirmWithdrawOrder('order-1'),
-    ).thenThrow(const WithdrawError.orderAlreadyConfirmed());
-
-    final result = await usecase().execute(orderId: 'order-1');
-
-    expect(result, isA<Err<WithdrawOrder, WithdrawFailure>>());
-    expect(
-      (result as Err<WithdrawOrder, WithdrawFailure>).failure,
-      isA<WithdrawOrderAlreadyConfirmedFailure>(),
     );
   });
 
+  test('confirms the order before saving Interac defaults', () async {
+    final order = _MockWithdrawOrder();
+    when(
+      () => mainnetRepository.confirmWithdrawOrder('order-1'),
+    ).thenAnswer((_) async => order);
+    when(
+      () => recipientsFacade.updateInteracSecurityDetails(
+        recipientId: any(named: 'recipientId'),
+        email: any(named: 'email'),
+        securityQuestion: any(named: 'securityQuestion'),
+        securityAnswer: any(named: 'securityAnswer'),
+      ),
+    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
+
+    final result = await usecase.execute(
+      orderId: 'order-1',
+      interacSecurityDetails: interacSecurityDetails,
+      saveSecurityDetailsAsDefault: true,
+    );
+
+    expect(_ok(result), same(order));
+    verifyInOrder([
+      () => mainnetRepository.confirmWithdrawOrder('order-1'),
+      () => recipientsFacade.updateInteracSecurityDetails(
+        recipientId: 'recipient-1',
+        email: 'person@example.com',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal',
+      ),
+    ]);
+  });
+
+  test('clears saved Interac defaults when save is not selected', () async {
+    final order = _MockWithdrawOrder();
+    when(
+      () => mainnetRepository.confirmWithdrawOrder('order-1'),
+    ).thenAnswer((_) async => order);
+    when(
+      () => recipientsFacade.updateInteracSecurityDetails(
+        recipientId: any(named: 'recipientId'),
+        email: any(named: 'email'),
+        securityQuestion: any(named: 'securityQuestion'),
+        securityAnswer: any(named: 'securityAnswer'),
+      ),
+    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
+
+    final result = await usecase.execute(
+      orderId: 'order-1',
+      interacSecurityDetails: interacSecurityDetails,
+    );
+
+    expect(_ok(result), same(order));
+
+    verify(
+      () => recipientsFacade.updateInteracSecurityDetails(
+        recipientId: 'recipient-1',
+        email: 'person@example.com',
+        securityQuestion: null,
+        securityAnswer: null,
+      ),
+    ).called(1);
+  });
+
   test(
-    'maps an unexpected exception without catching programming errors',
+    'does not fail a confirmed order when updating defaults fails',
     () async {
-      when(() => settings.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'EUR',
+      final order = _MockWithdrawOrder();
+      when(
+        () => mainnetRepository.confirmWithdrawOrder('order-1'),
+      ).thenAnswer((_) async => order);
+      when(
+        () => recipientsFacade.updateInteracSecurityDetails(
+          recipientId: any(named: 'recipientId'),
+          email: any(named: 'email'),
+          securityQuestion: any(named: 'securityQuestion'),
+          securityAnswer: any(named: 'securityAnswer'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<void, RecipientsFailure>(
+          RecipientsUnexpectedFailure('update failed'),
         ),
       );
-      when(
-        () => mainnet.confirmWithdrawOrder('order-1'),
-      ).thenThrow(Exception('offline'));
 
-      final result = await usecase().execute(orderId: 'order-1');
-
-      expect(result, isA<Err<WithdrawOrder, WithdrawFailure>>());
-      expect(
-        (result as Err<WithdrawOrder, WithdrawFailure>).failure,
-        isA<WithdrawUnexpectedFailure>(),
+      final result = await usecase.execute(
+        orderId: 'order-1',
+        interacSecurityDetails: interacSecurityDetails,
+        saveSecurityDetailsAsDefault: true,
       );
+
+      expect(_ok(result), same(order));
     },
   );
+
+  test('does not update recipients for non-Interac withdrawals', () async {
+    final order = _MockWithdrawOrder();
+    when(
+      () => mainnetRepository.confirmWithdrawOrder('order-1'),
+    ).thenAnswer((_) async => order);
+
+    final result = await usecase.execute(orderId: 'order-1');
+
+    expect(_ok(result), same(order));
+    verifyZeroInteractions(recipientsFacade);
+  });
+
+  test('routes testnet confirmation to the testnet repository', () async {
+    final order = _MockWithdrawOrder();
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => testnetRepository.confirmWithdrawOrder('order-1'),
+    ).thenAnswer((_) async => order);
+
+    final result = await usecase.execute(orderId: 'order-1');
+
+    expect(_ok(result), same(order));
+    verifyZeroInteractions(mainnetRepository);
+  });
+
+  test('sanitizes unexpected confirmation failures', () async {
+    when(
+      () => mainnetRepository.confirmWithdrawOrder('order-1'),
+    ).thenThrow(Exception('Montreal'));
+
+    final result = await usecase.execute(orderId: 'order-1');
+
+    expect(
+      _err(result),
+      isA<WithdrawUnexpectedFailure>().having(
+        (failure) => failure.logMessage,
+        'logMessage',
+        isNot(contains('Montreal')),
+      ),
+    );
+  });
 }

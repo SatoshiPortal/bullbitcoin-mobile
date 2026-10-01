@@ -1,10 +1,23 @@
+/// The kinds of exchange notification the app reacts to. The wire strings are
+/// parsed in the data layer so presentation never matches on them.
+enum NotificationMessageKind {
+  balance,
+  group,
+  kyc,
+  userPreferences,
+  message,
+  order,
+  user,
+  unknown,
+}
+
 class NotificationMessage {
-  final String type; // 'user', 'message', 'order'
-  final String? orderId; // For order-specific messages
+  final NotificationMessageKind kind;
+  final String? orderId;
   final Map<String, dynamic> rawData;
 
   const NotificationMessage({
-    required this.type,
+    required this.kind,
     this.orderId,
     required this.rawData,
   });

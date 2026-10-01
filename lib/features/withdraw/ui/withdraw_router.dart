@@ -1,16 +1,14 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_description_screen.dart';
+import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_details_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,6 +17,7 @@ enum WithdrawRoute {
   withdrawRecipients('/withdraw/recipients'),
   withdrawFrPayeeActivation('/withdraw/fr-payee-activation'),
   withdrawPaymentDescription('/withdraw/payment-description'),
+  withdrawPaymentDetails('/withdraw/payment-details'),
   withdrawConfirmation('/withdraw/confirmation'),
   withdrawSuccess('/withdraw/success');
 
@@ -56,6 +55,17 @@ class WithdrawRouter {
             BlocListener<WithdrawBloc, WithdrawState>(
               listenWhen: (previous, current) =>
                   previous is WithdrawRecipientInputState &&
+                  current is WithdrawPaymentDetailsInputState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawPaymentDetails.name,
+                  extra: context.read<WithdrawBloc>(),
+                );
+              },
+            ),
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen: (previous, current) =>
+                  previous is WithdrawRecipientInputState &&
                   current is WithdrawConfirmationState,
               listener: (context, state) {
                 context.pushNamed(
@@ -77,11 +87,7 @@ class WithdrawRouter {
           final bloc = state.extra! as WithdrawBloc;
           return BlocProvider.value(
             value: bloc,
-            child: BlocListener<WithdrawBloc, WithdrawState>(
-              listenWhen: _confidentialSepaWithdrawErrorAppeared,
-              listener: _pushWithdrawActivation,
-              child: const WithdrawRecipientsScreen(),
-            ),
+            child: const WithdrawRecipientsScreen(),
           );
         },
       ),
@@ -103,6 +109,28 @@ class WithdrawRouter {
         builder: (context, state) => WithdrawPaymentDescriptionScreen(
           initialDescription: state.extra as String? ?? '',
         ),
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawPaymentDetails.path,
+        name: WithdrawRoute.withdrawPaymentDetails.name,
+        builder: (context, state) {
+          final bloc = state.extra! as WithdrawBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen: (previous, current) =>
+                  previous is WithdrawPaymentDetailsInputState &&
+                  current is WithdrawConfirmationState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawConfirmation.name,
+                  extra: bloc,
+                );
+              },
+              child: const WithdrawPaymentDetailsScreen(),
+            ),
+          );
+        },
       ),
       GoRoute(
         path: WithdrawRoute.withdrawConfirmation.path,
@@ -138,49 +166,5 @@ class WithdrawRouter {
         },
       ),
     ],
-  );
-}
-
-bool _confidentialSepaWithdrawErrorAppeared(
-  WithdrawState previous,
-  WithdrawState current,
-) {
-  final currentError = current is WithdrawRecipientInputState
-      ? current.selectedRecipientError ?? current.newRecipientError
-      : null;
-  final previousError = previous is WithdrawRecipientInputState
-      ? previous.selectedRecipientError ?? previous.newRecipientError
-      : null;
-  return currentError is WithdrawConfidentialSepaNotActivatedFailure &&
-      previousError is! WithdrawConfidentialSepaNotActivatedFailure;
-}
-
-void _pushWithdrawActivation(BuildContext context, WithdrawState state) {
-  final recipientState = state as WithdrawRecipientInputState;
-  final recipient = recipientState.selectedRecipient;
-  if (recipient == null) return;
-  final isNew = recipientState.newRecipientError != null;
-  final bloc = context.read<WithdrawBloc>();
-  context.pushNamed(
-    WithdrawRoute.withdrawFrPayeeActivation.name,
-    extra: FrPayeeActivationArgs(
-      recipient: recipient,
-      onActivated: (activated) => bloc.add(
-        WithdrawEvent.recipientSelected(
-          activated,
-          isNew: isNew,
-          paymentDescription: recipientState.paymentDescription,
-        ),
-      ),
-      onUseRegularSepa: recipient.supportsRegularSepa
-          ? () => bloc.add(
-              WithdrawEvent.recipientSelected(
-                recipient.copyWith(type: RecipientType.sepaEur),
-                isNew: isNew,
-                paymentDescription: recipientState.paymentDescription,
-              ),
-            )
-          : null,
-    ),
   );
 }

@@ -1438,7 +1438,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "คุณพยายามที่จะถอนเงินข้างต้น.",
+  "withdrawAboveMaxAmountError": "จำนวนสูงสุดคือ {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2091,7 +2091,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
+  "withdrawBelowMinAmountError": "จำนวนขั้นต่ำคือ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3065,10 +3065,6 @@
   "autoswapInfoSettingsButton": "การตั้งค่าการตั้งค่า",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "ผู้รับใหม่",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "แจ็คของคุณตอนนี้เชื่อมต่อและพร้อมที่จะใช้งานด้วยชิป.",
   "@importQrDeviceKeystoneStep10": {
@@ -4214,10 +4210,6 @@
   "receiveInsufficientInboundLiquidity": "ไม่เพียงพอ",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "จดหมายของฉัน",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "ค่าธรรมเนียมค่าธรรมเนียมต่ํา",
   "@sendFeeRateTooLow": {
@@ -5592,10 +5584,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "ไม่มีผู้รับที่จะถอน.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "การชําระเงิน\nผลิตจาก",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6706,10 +6694,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "อ่านต่อ",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "รายการ",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6803,10 +6787,6 @@
   "sendTitle": "ส่ง",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "การถอนเงินไม่ได้พบ กรุณาลองอีกครั้ง.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -8156,10 +8136,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "ประเภททุกประเภท",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "ข้อควรระวัง - แนะนํา",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8494,14 +8470,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "และวิธีการควรส่งเงิน?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "เลือกผู้รับ",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "ผู้รับชําระเงิน",
   "@sellPayoutRecipient": {
@@ -10817,15 +10785,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ข้อผิดพลาด: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ค่าธรรมเนียม",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11207,10 +11166,6 @@
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "การถอนเงินนี้ได้รับการยืนยัน.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
@@ -12205,6 +12160,40 @@
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "withdrawInteracSecurityDetailsTitle": "รายละเอียดความปลอดภัยของ Interac",
+  "withdrawInteracSaveAsDefault": "บันทึกรายละเอียดเหล่านี้เป็นค่าเริ่มต้น",
+  "withdrawInteracSecurityQuestionLengthError": "คำถามความปลอดภัยต้องมี 3–40 อักขระ",
+  "withdrawInteracSecurityAnswerLengthError": "คำตอบความปลอดภัยต้องมี 3–40 อักขระ",
+  "withdrawInteracSecurityAnswerFormatError": "ใช้ตัวอักษร ตัวเลข หรือยัติภังค์โดยไม่เว้นวรรค",
+  "autoBuyTitle": "ซื้ออัตโนมัติ",
+  "autoBuyDescription": "ซื้อ Bitcoin โดยอัตโนมัติทุกครั้งที่คุณฝากเงินเข้าบัญชี",
+  "autoBuyActivate": "เปิดใช้งานการซื้ออัตโนมัติ",
+  "autoBuyDeactivate": "ปิดการซื้ออัตโนมัติ",
+  "autoBuyCancelTitle": "ยกเลิกการซื้ออัตโนมัติหรือไม่",
+  "autoBuyCancelMessage": "ครั้งต่อไปที่คุณเติมเงินเข้าบัญชี ระบบจะไม่ซื้อ Bitcoin ให้โดยอัตโนมัติ",
+  "autoBuyDeactivateConfirm": "ใช่ ปิดการใช้งาน",
+  "autoBuyHowItWorks": "วิธีการทำงาน",
+  "autoBuyConnectWallet": "เชื่อมต่อกระเป๋าเงิน Bitcoin, Lightning หรือ Liquid ของคุณ",
+  "autoBuyPurchaseCreated": "ระบบจะสร้างคำสั่งซื้อ Bitcoin โดยอัตโนมัติทุกครั้งที่คุณเติมเงินเข้าบัญชี Bull Bitcoin ของคุณ",
+  "autoBuyBitcoinSent": "Bitcoin จะถูกส่งตรงไปยังกระเป๋าเงินของคุณเอง",
+  "autoBuyRiskDisclaimer": "ไม่สามารถรับประกันการดำเนินการตามคำสั่งซื้อได้ ความล่าช้าหรือการเปลี่ยนแปลงราคาระหว่างการฝากเงินกับการซื้ออาจทำให้อัตราที่ได้รับจริงเปลี่ยนไป",
+  "autoBuyGetStarted": "เริ่มต้นใช้การซื้ออัตโนมัติ",
+  "autoBuyConfirmTitle": "ยืนยันการซื้ออัตโนมัติ",
+  "autoBuyInfoMessage": "จำนวนเงินใดก็ตามที่เพิ่มเข้าบัญชีของคุณจะถูกแปลงเป็น Bitcoin ตามอัตราแลกเปลี่ยนปัจจุบันและส่งไปยังกระเป๋าเงินของคุณ",
+  "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
+  "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
+  "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
+  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
+  "withdrawRecipientsTitle": "เลือกผู้รับ",
+  "withdrawRecipientsPrompt": "และวิธีการควรส่งเงิน?",
+  "withdrawRecipientsNewTab": "ผู้รับใหม่",
+  "withdrawRecipientsMyTab": "จดหมายของฉัน",
+  "withdrawRecipientsFilterAll": "ประเภททุกประเภท",
+  "withdrawRecipientsNoRecipients": "ไม่มีผู้รับที่จะถอน.",
+  "withdrawRecipientsContinue": "อ่านต่อ",
+  "withdrawConfirmError": "ข้อผิดพลาด: {error}",
+  "withdrawOrderNotFoundError": "การถอนเงินไม่ได้พบ กรุณาลองอีกครั้ง.",
+  "withdrawOrderAlreadyConfirmedError": "การถอนเงินนี้ได้รับการยืนยัน.",
   "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",
   "recipientsConfidentialSepaSubtitle": "การจ่ายเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ",
   "recipientsFrPayeeActivatingTitle": "กำลังเปิดใช้งานผู้รับเงิน",

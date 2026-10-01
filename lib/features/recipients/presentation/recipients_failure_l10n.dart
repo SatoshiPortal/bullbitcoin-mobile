@@ -10,5 +10,8 @@ extension RecipientsFailureL10n on RecipientsFailure {
     VirtualIbanNotAvailableFailure() => context.loc.fundExchangeErrorRcpPo404,
     VirtualIbanEuResidencyRequiredFailure() =>
       context.loc.recipientsVirtualIbanEuResidencyRequired,
+    RecipientsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    RecipientsInvalidSecurityDetailsFailure() =>
+      context.loc.oopsSomethingWentWrong,
   };
 }

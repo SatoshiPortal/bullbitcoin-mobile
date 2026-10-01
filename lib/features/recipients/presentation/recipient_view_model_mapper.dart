@@ -11,6 +11,8 @@ extension RecipientViewModelMapper on Recipient {
       isOwner: d.isOwner,
       email: d.email,
       name: d.name,
+      securityQuestion: d.securityQuestion,
+      securityAnswer: d.securityAnswer,
     ),
     final BillPaymentCadDetails d => RecipientViewModel(
       id: recipientId,
