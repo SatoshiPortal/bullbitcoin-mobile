@@ -19,8 +19,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delega
 import 'package:bb_mobile/features/recipients/presentation/fr_payee_activation_cubit.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -89,6 +88,9 @@ class RecipientsLocator {
     );
     locator.registerFactory<CheckConfidentialSepaEligibilityUsecase>(
       CheckConfidentialSepaEligibilityUsecase.new,
+    );
+    locator.registerLazySingleton<RecipientsFacade>(
+      () => RecipientsFacade(locator<WatchVirtualIbanActivationUsecase>()),
     );
     locator.registerFactory<GetRecipientsUsecase>(
       () => GetRecipientsUsecase(
