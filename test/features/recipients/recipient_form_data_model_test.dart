@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

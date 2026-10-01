@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -16,7 +15,7 @@ class AddRecipientParams {
 }
 
 class AddRecipientResult {
-  final RecipientDto recipient;
+  final Recipient recipient;
   final RecipientsFailure? activationFailure;
 
   AddRecipientResult({required this.recipient, this.activationFailure});
@@ -61,7 +60,7 @@ class AddRecipientUsecase {
     }
 
     return AddRecipientResult(
-      recipient: RecipientDto.fromDomain(recipient),
+      recipient: recipient,
       activationFailure: activationFailure,
     );
   }

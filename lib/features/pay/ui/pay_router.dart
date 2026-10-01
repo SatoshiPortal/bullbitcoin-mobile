@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/pay/ui/screens/pay_sinpe_success_screen.dart'
 import 'package:bb_mobile/features/pay/ui/screens/pay_success_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_wallet_selection_screen.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

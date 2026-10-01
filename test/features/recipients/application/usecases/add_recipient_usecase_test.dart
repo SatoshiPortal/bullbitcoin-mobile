@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,9 +43,9 @@ void main() {
 
     expect(gateway.activateCalls, hasLength(1));
     expect(gateway.activateCalls.single.recipientId, 'created-1');
-    expect(result.recipient.recipientType, RecipientType.confidentialSepaEur);
+    expect(result.recipient.details.type, RecipientType.confidentialSepaEur);
     expect(
-      result.recipient.details.virtualPayeeStatus,
+      (result.recipient.details as SepaEurDetails).virtualPayeeStatus,
       SepaVirtualPayeeStatus.active,
     );
     expect(result.activationFailure, isNull);
@@ -79,9 +80,9 @@ void main() {
 
     expect(gateway.activateCalls, hasLength(1));
     expect(result.recipient.recipientId, 'created-1');
-    expect(result.recipient.recipientType, RecipientType.confidentialSepaEur);
+    expect(result.recipient.details.type, RecipientType.confidentialSepaEur);
     expect(
-      result.recipient.details.virtualPayeeStatus,
+      (result.recipient.details as SepaEurDetails).virtualPayeeStatus,
       SepaVirtualPayeeStatus.absent,
     );
     expect(result.activationFailure, isNotNull);

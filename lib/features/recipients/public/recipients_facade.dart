@@ -17,16 +17,15 @@ export '../domain/value_objects/sepa_virtual_payee_status.dart'
     show SepaVirtualPayeeStatus;
 export '../domain/value_objects/virtual_iban_status.dart'
     show VirtualIbanStatus;
-export '../frameworks/ui/screens/recipients_screen.dart' show RecipientsScreen;
-export '../ui/screens/fr_payee_activation_screen.dart'
-    show FrPayeeActivationArgs, FrPayeeActivationScreen;
 export 'recipient_filter_criteria.dart' show RecipientFilterCriteria;
 export 'recipient_view_model.dart';
 
 /// Public contract of the Recipients feature.
 ///
-/// Other features must import Recipients-owned types and UI through this file
-/// instead of depending on its internal layers directly.
+/// Other features must import Recipients-owned types through this file instead
+/// of depending on its internal layers directly. This surface is Flutter-free
+/// so domain-layer consumers can depend on it; the feature's UI is published
+/// separately through `recipients_ui.dart`.
 class RecipientsFacade {
   final WatchVirtualIbanActivationUsecase _watchVirtualIbanActivationUsecase;
 

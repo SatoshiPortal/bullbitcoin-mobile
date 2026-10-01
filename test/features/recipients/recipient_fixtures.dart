@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -67,27 +66,6 @@ RecipientDetailsDto sepaDetailsDtoFixture({
     lastname: lastname,
     virtualPayeeStatus: _status(virtualPayeeStatus),
     paymentOptions: paymentOptions,
-  );
-}
-
-RecipientDto sepaRecipientDtoFixture({
-  String recipientId = 'r1',
-  RecipientType recipientType = RecipientType.confidentialSepaEur,
-  String? virtualPayeeStatus,
-  Set<SepaPaymentOption> paymentOptions = const {SepaPaymentOption.regular},
-}) {
-  return RecipientDto(
-    recipientId: recipientId,
-    userId: 'user-1',
-    userNbr: 1,
-    isArchived: false,
-    createdAt: DateTime(2026),
-    updatedAt: DateTime(2026),
-    details: sepaDetailsDtoFixture(
-      recipientType: recipientType,
-      virtualPayeeStatus: virtualPayeeStatus,
-      paymentOptions: paymentOptions,
-    ),
   );
 }
 

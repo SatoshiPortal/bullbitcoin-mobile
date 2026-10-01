@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/check_confidential_sepa_eligibility_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -277,8 +277,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         .toList();
   }
 
-  List<RecipientViewModel> _toViewModels(List<RecipientDto> dtos) {
-    return dtos
+  List<RecipientViewModel> _toViewModels(List<Recipient> recipients) {
+    return recipients
         .map((recipient) {
           try {
             return recipient.toViewModel();
