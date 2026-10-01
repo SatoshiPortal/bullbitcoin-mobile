@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -41,6 +42,25 @@ void main() {
   });
 
   group('ImportWatchOnlyXpubUsecase', () {
+    test('maps an existing wallet to WalletAlreadyExistsFailure', () async {
+      when(
+        () => repository.importWatchOnlyXpub(
+          xpub: any(named: 'xpub'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          label: any(named: 'label'),
+        ),
+      ).thenThrow(const WalletAlreadyExistsException('existing-wallet-id'));
+
+      final result = await usecase.execute(watchOnlyXpub: entity);
+
+      expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
+      expect(
+        (result as Err<Wallet, ImportWatchOnlyFailure>).failure,
+        isA<WalletAlreadyExistsFailure>(),
+      );
+    });
+
     test('maps a foreign repository failure to ImportFailedFailure '
         'without leaking the raw exception', () async {
       when(

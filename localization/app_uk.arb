@@ -4913,5 +4913,6 @@
   "withdrawUnexpectedError": "Ваше виведення коштів наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "importWatchOnlyErrorNetworkMismatch": "Цей гаманець зараз використовує іншу мережу Bitcoin. Перемкніться між Mainnet і Testnet та повторіть спробу.",
   "importWatchOnlyNetworkMainnet": "Мережа: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Мережа: Testnet"
+  "importWatchOnlyNetworkTestnet": "Мережа: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Цей гаманець уже імпортовано."
 }

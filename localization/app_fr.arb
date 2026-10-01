@@ -4962,5 +4962,6 @@
   "withdrawUnexpectedError": "Votre retrait n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "importWatchOnlyErrorNetworkMismatch": "Ce portefeuille utilise actuellement un autre réseau Bitcoin. Basculez entre Mainnet et Testnet, puis réessayez.",
   "importWatchOnlyNetworkMainnet": "Réseau : Mainnet",
-  "importWatchOnlyNetworkTestnet": "Réseau : Testnet"
+  "importWatchOnlyNetworkTestnet": "Réseau : Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Ce portefeuille est déjà importé."
 }

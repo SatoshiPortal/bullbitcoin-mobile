@@ -3617,5 +3617,6 @@
   "withdrawUnexpectedError": "Uondoaji wako haukuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "importWatchOnlyErrorNetworkMismatch": "Pochi hii kwa sasa inatumia mtandao tofauti wa Bitcoin. Badilisha kati ya Mainnet na Testnet, kisha ujaribu tena.",
   "importWatchOnlyNetworkMainnet": "Mtandao: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Mtandao: Testnet"
+  "importWatchOnlyNetworkTestnet": "Mtandao: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Pochi hii tayari imeingizwa."
 }

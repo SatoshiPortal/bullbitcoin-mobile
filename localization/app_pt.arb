@@ -4962,5 +4962,6 @@
   "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte.",
   "importWatchOnlyErrorNetworkMismatch": "Esta carteira está a utilizar uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
   "importWatchOnlyNetworkMainnet": "Rede: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Rede: Testnet"
+  "importWatchOnlyNetworkTestnet": "Rede: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada."
 }

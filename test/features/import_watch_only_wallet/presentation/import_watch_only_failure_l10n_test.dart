@@ -25,6 +25,18 @@ Future<String> _translate(
 }
 
 void main() {
+  testWidgets('existing wallet maps to its localized message', (tester) async {
+    final alreadyExists = await _translate(
+      tester,
+      const WalletAlreadyExistsFailure(),
+    );
+    final generic = await _translate(tester, const ImportFailedFailure());
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+    expect(alreadyExists, l10n.importWatchOnlyErrorAlreadyExists);
+    expect(alreadyExists, isNot(generic));
+  });
+
   testWidgets('network mismatch maps to its localized message', (tester) async {
     final mismatch = await _translate(tester, const NetworkMismatchFailure());
     final generic = await _translate(tester, const ImportFailedFailure());

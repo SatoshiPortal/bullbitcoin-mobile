@@ -3605,5 +3605,6 @@
   "withdrawUnexpectedError": "Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "importWatchOnlyErrorNetworkMismatch": "Ví này hiện đang sử dụng một mạng Bitcoin khác. Hãy chuyển đổi giữa Mainnet và Testnet rồi thử lại.",
   "importWatchOnlyNetworkMainnet": "Mạng: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Mạng: Testnet"
+  "importWatchOnlyNetworkTestnet": "Mạng: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Ví này đã được nhập."
 }

@@ -12182,5 +12182,6 @@
   "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
   "importWatchOnlyNetworkMainnet": "شبکه: شبکه اصلی",
-  "importWatchOnlyNetworkTestnet": "شبکه: شبکه آزمایشی"
+  "importWatchOnlyNetworkTestnet": "شبکه: شبکه آزمایشی",
+  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است."
 }

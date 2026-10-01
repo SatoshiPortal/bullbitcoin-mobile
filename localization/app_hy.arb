@@ -3605,5 +3605,6 @@
   "withdrawUnexpectedError": "Ձեր հանումը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "importWatchOnlyErrorNetworkMismatch": "Այս դրամապանակն այժմ օգտագործում է Bitcoin-ի այլ ցանց։ Փոխարկեք Mainnet-ի և Testnet-ի միջև, ապա կրկին փորձեք։",
   "importWatchOnlyNetworkMainnet": "Ցանց՝ Mainnet",
-  "importWatchOnlyNetworkTestnet": "Ցանց՝ Testnet"
+  "importWatchOnlyNetworkTestnet": "Ցանց՝ Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Այս դրամապանակն արդեն ներմուծված է։"
 }

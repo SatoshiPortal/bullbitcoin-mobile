@@ -4916,5 +4916,6 @@
   "withdrawUnexpectedError": "Il suo prelievo non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "importWatchOnlyErrorNetworkMismatch": "Questo portafoglio sta usando una rete Bitcoin diversa. Passa da Mainnet a Testnet o viceversa, quindi riprova.",
   "importWatchOnlyNetworkMainnet": "Rete: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Rete: Testnet"
+  "importWatchOnlyNetworkTestnet": "Rete: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Questo portafoglio è già stato importato."
 }

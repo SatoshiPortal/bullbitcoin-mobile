@@ -12570,5 +12570,6 @@
   "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
   "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
   "importWatchOnlyNetworkMainnet": "Network: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Network: Testnet"
+  "importWatchOnlyNetworkTestnet": "Network: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai."
 }

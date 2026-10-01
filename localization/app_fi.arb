@@ -4904,5 +4904,6 @@
   "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen.",
   "importWatchOnlyNetworkMainnet": "Verkko: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Verkko: Testnet"
+  "importWatchOnlyNetworkTestnet": "Verkko: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Tämä lompakko on jo tuotu."
 }

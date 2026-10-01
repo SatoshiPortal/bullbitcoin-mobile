@@ -4916,5 +4916,6 @@
   "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。",
   "importWatchOnlyErrorNetworkMismatch": "此钱包当前正在使用其他 Bitcoin 网络。请在 Mainnet 和 Testnet 之间切换，然后重试。",
   "importWatchOnlyNetworkMainnet": "网络：主网",
-  "importWatchOnlyNetworkTestnet": "网络：测试网"
+  "importWatchOnlyNetworkTestnet": "网络：测试网",
+  "importWatchOnlyErrorAlreadyExists": "此钱包已导入。"
 }

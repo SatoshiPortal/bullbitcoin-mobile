@@ -4922,5 +4922,6 @@
   "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "importWatchOnlyErrorNetworkMismatch": "Этот кошелёк сейчас использует другую сеть Bitcoin. Переключитесь между Mainnet и Testnet и повторите попытку.",
   "importWatchOnlyNetworkMainnet": "Сеть: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Сеть: Testnet"
+  "importWatchOnlyNetworkTestnet": "Сеть: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Этот кошелёк уже импортирован."
 }

@@ -12392,5 +12392,6 @@
   "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "importWatchOnlyErrorNetworkMismatch": "এই ওয়ালেটটি বর্তমানে একটি ভিন্ন Bitcoin নেটওয়ার্ক ব্যবহার করছে। Mainnet এবং Testnet-এর মধ্যে পরিবর্তন করে আবার চেষ্টা করুন।",
   "importWatchOnlyNetworkMainnet": "নেটওয়ার্ক: মেইননেট",
-  "importWatchOnlyNetworkTestnet": "নেটওয়ার্ক: টেস্টনেট"
+  "importWatchOnlyNetworkTestnet": "নেটওয়ার্ক: টেস্টনেট",
+  "importWatchOnlyErrorAlreadyExists": "এই ওয়ালেটটি ইতিমধ্যে আমদানি করা হয়েছে।"
 }

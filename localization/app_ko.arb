@@ -12182,5 +12182,6 @@
   "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
   "importWatchOnlyNetworkMainnet": "네트워크: 메인넷",
-  "importWatchOnlyNetworkTestnet": "네트워크: 테스트넷"
+  "importWatchOnlyNetworkTestnet": "네트워크: 테스트넷",
+  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다."
 }

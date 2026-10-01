@@ -13,5 +13,7 @@ extension ImportWatchOnlyFailureL10n on ImportWatchOnlyFailure {
     InvalidFormatFailure() => context.loc.importWatchOnlyErrorInvalidFormat,
     ImportFailedFailure() => context.loc.importWatchOnlyErrorImportFailed,
     NetworkMismatchFailure() => context.loc.importWatchOnlyErrorNetworkMismatch,
+    WalletAlreadyExistsFailure() =>
+      context.loc.importWatchOnlyErrorAlreadyExists,
   };
 }

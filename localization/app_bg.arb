@@ -10218,5 +10218,6 @@
   "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "importWatchOnlyErrorNetworkMismatch": "Този портфейл в момента използва друга Bitcoin мрежа. Превключете между Mainnet и Testnet и опитайте отново.",
   "importWatchOnlyNetworkMainnet": "Мрежа: Основна мрежа",
-  "importWatchOnlyNetworkTestnet": "Мрежа: Тестова мрежа"
+  "importWatchOnlyNetworkTestnet": "Мрежа: Тестова мрежа",
+  "importWatchOnlyErrorAlreadyExists": "Този портфейл вече е импортиран."
 }

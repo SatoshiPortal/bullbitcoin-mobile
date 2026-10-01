@@ -3752,5 +3752,6 @@
   "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "importWatchOnlyErrorNetworkMismatch": "ეს საფულე ამჟამად Bitcoin-ის სხვა ქსელს იყენებს. გადართეთ Mainnet-სა და Testnet-ს შორის და ხელახლა სცადეთ.",
   "importWatchOnlyNetworkMainnet": "ქსელი: Mainnet",
-  "importWatchOnlyNetworkTestnet": "ქსელი: Testnet"
+  "importWatchOnlyNetworkTestnet": "ქსელი: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "ეს საფულე უკვე იმპორტირებულია."
 }

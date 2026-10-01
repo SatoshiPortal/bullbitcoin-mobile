@@ -12194,5 +12194,6 @@
   "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
   "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
   "importWatchOnlyNetworkMainnet": "Rede: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Rede: Testnet"
+  "importWatchOnlyNetworkTestnet": "Rede: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada."
 }

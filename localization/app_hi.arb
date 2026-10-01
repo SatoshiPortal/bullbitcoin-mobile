@@ -12372,5 +12372,6 @@
   "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।",
   "importWatchOnlyNetworkMainnet": "नेटवर्क: मेननेट",
-  "importWatchOnlyNetworkTestnet": "नेटवर्क: टेस्टनेट"
+  "importWatchOnlyNetworkTestnet": "नेटवर्क: टेस्टनेट",
+  "importWatchOnlyErrorAlreadyExists": "यह वॉलेट पहले से इम्पोर्ट किया गया है।"
 }

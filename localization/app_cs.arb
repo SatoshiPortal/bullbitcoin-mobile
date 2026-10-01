@@ -12182,5 +12182,6 @@
   "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu.",
   "importWatchOnlyNetworkMainnet": "Síť: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Síť: Testnet"
+  "importWatchOnlyNetworkTestnet": "Síť: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Tato peněženka již byla importována."
 }

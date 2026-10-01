@@ -4913,5 +4913,6 @@
   "withdrawUnexpectedError": "Su retiro no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "importWatchOnlyErrorNetworkMismatch": "Este monedero está usando una red de Bitcoin diferente. Cambia entre Mainnet y Testnet e inténtalo de nuevo.",
   "importWatchOnlyNetworkMainnet": "Red: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Red: Testnet"
+  "importWatchOnlyNetworkTestnet": "Red: Testnet",
+  "importWatchOnlyErrorAlreadyExists": "Esta billetera ya está importada."
 }
