@@ -96,6 +96,7 @@ graph TB
     EXCHANGE --> SETTINGS
     FEES --> NETWORK
     FUNDING --> EXCHANGE
+    FUNDING --> RECIPIENTS
     HW_WALLETS --> CORE
     LABELS --> CORE
     PAY --> RECIPIENTS
@@ -219,7 +220,7 @@ graph TB
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
-- **Recipients**: Used by Pay, Withdrawal
+- **Recipients**: Used by Pay, Withdrawal, Funding
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
 ### Leaf Features (Depend on Many, Few Depend on Them)

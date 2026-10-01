@@ -11,11 +11,13 @@ class FundExchangeDetail extends StatelessWidget {
     required this.label,
     this.helpText,
     this.value,
+    this.copyable = true,
   });
 
   final String label;
   final String? helpText;
   final String? value;
+  final bool copyable;
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +40,17 @@ class FundExchangeDetail extends StatelessWidget {
           title: value != null
               ? BBText(value!, style: theme.textTheme.bodyLarge)
               : const LoadingLineContent(),
-          trailing: IconButton(
-            onPressed: value != null
-                ? () {
-                    final data = ClipboardData(text: value!);
-                    Clipboard.setData(data);
-                  }
-                : null,
-            icon: const Icon(Icons.copy),
-          ),
+          trailing: copyable
+              ? IconButton(
+                  onPressed: value != null
+                      ? () {
+                          final data = ClipboardData(text: value!);
+                          Clipboard.setData(data);
+                        }
+                      : null,
+                  icon: const Icon(Icons.copy),
+                )
+              : null,
         ),
       ],
     );

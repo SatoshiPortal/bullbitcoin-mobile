@@ -12,6 +12,9 @@ import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_email_e_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_instant_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_online_bill_payment_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/bloc/confidential_sepa_cubit.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_confidential_sepa_details_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_confidential_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_regular_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_spei_transfer_screen.dart';
@@ -31,6 +34,10 @@ enum FundExchangeRoute {
   fundExchangeCanadaPost('/fund-exchange-canada-post'),
   fundExchangeInstantSepa('/fund-exchange-instant-sepa'),
   fundExchangeRegularSepa('/fund-exchange-regular-sepa'),
+  fundExchangeConfidentialSepa('/fund-exchange-confidential-sepa'),
+  fundExchangeConfidentialSepaDetails(
+    '/fund-exchange-confidential-sepa-details',
+  ),
   fundExchangeSpeiTransfer('/fund-exchange-spei-transfer'),
   fundExchangeSinpe('/fund-exchange-sinpe'),
   fundExchangeCostaRicaIbanCrc('/fund-exchange-cr-iban-crc'),
@@ -53,6 +60,8 @@ FundExchangeRoute _routeForFundingDetails(
   CanadaPostFundingDetails() => FundExchangeRoute.fundExchangeCanadaPost,
   InstantSepaFundingDetails() => FundExchangeRoute.fundExchangeInstantSepa,
   RegularSepaFundingDetails() => FundExchangeRoute.fundExchangeRegularSepa,
+  ConfidentialSepaFundingDetails() =>
+    FundExchangeRoute.fundExchangeConfidentialSepaDetails,
   SpeiFundingDetails() => FundExchangeRoute.fundExchangeSpeiTransfer,
   SinpeFundingDetails() => FundExchangeRoute.fundExchangeSinpe,
   CrIbanCrcFundingDetails() => FundExchangeRoute.fundExchangeCostaRicaIbanCrc,
@@ -122,6 +131,19 @@ class FundExchangeRouter {
                   } else {
                     _goToFundingScreen(context, bloc, state.fundingDetails);
                   }
+                },
+              ),
+              // Navigate to the Confidential SEPA onboarding when the virtual
+              // IBAN is not active yet. Uses pushNamed so the root route and
+              // its listeners stay alive for the fallback and details actions.
+              BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.virtualIban == null && current.virtualIban != null,
+                listener: (context, state) {
+                  context.pushNamed(
+                    FundExchangeRoute.fundExchangeConfidentialSepa.name,
+                    extra: context.read<FundExchangeBloc>(),
+                  );
                 },
               ),
               // Show the scam warning consent bottom sheet when a method is
@@ -211,6 +233,25 @@ class FundExchangeRouter {
       builder: (context, state) => BlocProvider.value(
         value: state.extra! as FundExchangeBloc,
         child: const FundExchangeRegularSepaScreen(),
+      ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeConfidentialSepa.name,
+      path: FundExchangeRoute.fundExchangeConfidentialSepa.path,
+      builder: (context, state) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: state.extra! as FundExchangeBloc),
+          BlocProvider(create: (_) => locator<ConfidentialSepaCubit>()),
+        ],
+        child: const FundExchangeConfidentialSepaScreen(),
+      ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeConfidentialSepaDetails.name,
+      path: FundExchangeRoute.fundExchangeConfidentialSepaDetails.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeConfidentialSepaDetailsScreen(),
       ),
     ),
     GoRoute(

@@ -69,6 +69,22 @@ class RegularSepaFundingDetails extends FundingDetails {
   });
 }
 
+class ConfidentialSepaFundingDetails extends FundingDetails {
+  final String iban;
+  final String recipientName;
+  final String bankAddress;
+  final String bankAccountCountry;
+  final String bic;
+
+  const ConfidentialSepaFundingDetails({
+    required this.iban,
+    required this.recipientName,
+    required this.bankAddress,
+    required this.bankAccountCountry,
+    required this.bic,
+  });
+}
+
 class WireFundingDetails extends FundingDetails {
   final String code;
   final String beneficiaryName;

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/get_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
@@ -10,6 +11,8 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_in
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/pending_consent_action.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart'
+    show VirtualIban, VirtualIbanStatus;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -22,6 +25,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
     required this._getExchangeUserSummaryUsecase,
     required this._getFundingDetailsUsecase,
+    required this._getVirtualIbanUsecase,
     required this._listFundingInstitutionsUsecase,
     required this._registerResponsibilityConsentUsecase,
   }) : super(const FundExchangeState()) {
@@ -37,6 +41,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetFundingDetailsUsecase _getFundingDetailsUsecase;
+  final GetVirtualIbanUsecase _getVirtualIbanUsecase;
   final ListFundingInstitutionsUsecase _listFundingInstitutionsUsecase;
   final RegisterResponsibilityConsentUsecase
   _registerResponsibilityConsentUsecase;
@@ -117,11 +122,15 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
           getExchangeFundingDetailsException: null,
           isLoadingFundingDetails: true,
           pendingConsentAction: null,
+          virtualIban: null,
         ),
       );
 
       GetFundingDetailsQuery query;
       switch (event.fundingMethod) {
+        case ConfidentialSepa():
+          await _emitConfidentialSepa(emit);
+          return;
         case EmailETransfer():
           query = GetEmailETransferDetails();
           break;
@@ -178,6 +187,25 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       );
     } finally {
       emit(state.copyWith(isLoadingFundingDetails: false));
+    }
+  }
+
+  Future<void> _emitConfidentialSepa(Emitter<FundExchangeState> emit) async {
+    final virtualIban = await _getVirtualIbanUsecase.execute();
+    if (virtualIban.status == VirtualIbanStatus.active) {
+      emit(
+        state.copyWith(
+          fundingDetails: ConfidentialSepaFundingDetails(
+            iban: virtualIban.iban ?? '',
+            recipientName: state.confidentialSepaOwnerName,
+            bankAddress: virtualIban.bankAddress ?? '',
+            bankAccountCountry: virtualIban.ibanCountry ?? '',
+            bic: virtualIban.bicCode ?? '',
+          ),
+        ),
+      );
+    } else {
+      emit(state.copyWith(virtualIban: virtualIban));
     }
   }
 

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class FundExchangeMethodListTile extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String? badgeLabel;
   final void Function()? onTap;
 
   const FundExchangeMethodListTile({
     super.key,
     required this.title,
     required this.subtitle,
+    this.badgeLabel,
     this.onTap,
   });
 
@@ -20,7 +22,31 @@ class FundExchangeMethodListTile extends StatelessWidget {
     return ListTile(
       tileColor: context.appColors.transparent,
       shape: const RoundedRectangleBorder(),
-      title: BBText(title, style: theme.textTheme.bodyLarge),
+      title: badgeLabel == null
+          ? BBText(title, style: theme.textTheme.bodyLarge)
+          : Row(
+              children: [
+                Flexible(
+                  child: BBText(title, style: theme.textTheme.bodyLarge),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.appColors.secondary,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: BBText(
+                    badgeLabel!,
+                    style: theme.textTheme.labelSmall,
+                    color: context.appColors.onSecondary,
+                  ),
+                ),
+              ],
+            ),
       subtitle: BBText(
         subtitle,
         style: theme.textTheme.labelMedium,

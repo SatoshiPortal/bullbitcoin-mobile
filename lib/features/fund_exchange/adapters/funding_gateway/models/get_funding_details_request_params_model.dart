@@ -33,6 +33,9 @@ sealed class GetFundingDetailsRequestParamsModel
       CrIbanUsd() => 'IN_USD_RDV_IBAN',
       ArsBankTransfer() => 'IN_ARS_BITSO',
       CopBankTransfer() => null,
+      ConfidentialSepa() => throw ArgumentError(
+        'Confidential SEPA has no funding gateway processor code',
+      ),
     };
 
     return GetFundingDetailsRequestParamsModel(

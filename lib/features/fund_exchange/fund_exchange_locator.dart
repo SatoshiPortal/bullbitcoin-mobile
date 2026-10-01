@@ -3,12 +3,16 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_environment_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/get_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/settings_exchange_environment_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/delegating_funding_gateway.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/watch_virtual_iban_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/bloc/confidential_sepa_cubit.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -61,6 +65,17 @@ class FundExchangeLocator {
         fundingGateway: locator<FundingGatewayPort>(),
       ),
     );
+
+    locator.registerFactory<GetVirtualIbanUsecase>(
+      () =>
+          GetVirtualIbanUsecase(recipientsFacade: locator<RecipientsFacade>()),
+    );
+
+    locator.registerFactory<WatchVirtualIbanUsecase>(
+      () => WatchVirtualIbanUsecase(
+        recipientsFacade: locator<RecipientsFacade>(),
+      ),
+    );
   }
 
   static void registerDrivingInterfaceAdapters(GetIt locator) {
@@ -70,9 +85,14 @@ class FundExchangeLocator {
         listFundingInstitutionsUsecase:
             locator<ListFundingInstitutionsUsecase>(),
         getFundingDetailsUsecase: locator<GetFundingDetailsUsecase>(),
+        getVirtualIbanUsecase: locator<GetVirtualIbanUsecase>(),
         registerResponsibilityConsentUsecase:
             locator<RegisterResponsibilityConsentUsecase>(),
       ),
+    );
+
+    locator.registerFactory<ConfidentialSepaCubit>(
+      () => ConfidentialSepaCubit(locator<WatchVirtualIbanUsecase>()),
     );
   }
 }
