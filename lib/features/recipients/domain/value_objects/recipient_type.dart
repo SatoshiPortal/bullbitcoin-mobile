@@ -90,7 +90,6 @@ enum RecipientType {
     RecipientType.interacEmailCad ||
     RecipientType.bankTransferCad ||
     RecipientType.sepaEur ||
-    RecipientType.confidentialSepaEur ||
     RecipientType.sinpeIbanUsd ||
     RecipientType.sinpeIbanCrc ||
     RecipientType.sinpeMovilCrc => true,

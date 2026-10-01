@@ -31,16 +31,16 @@ void main() {
       expect(RecipientType.interacEmailCad.supportsPaymentDescription, isTrue);
       expect(RecipientType.bankTransferCad.supportsPaymentDescription, isTrue);
       expect(RecipientType.sepaEur.supportsPaymentDescription, isTrue);
-      expect(
-        RecipientType.confidentialSepaEur.supportsPaymentDescription,
-        isTrue,
-      );
       expect(RecipientType.sinpeMovilCrc.supportsPaymentDescription, isTrue);
       expect(RecipientType.sinpeIbanCrc.supportsPaymentDescription, isTrue);
       expect(RecipientType.sinpeIbanUsd.supportsPaymentDescription, isTrue);
     });
 
     test('rejects recipient types without processor support', () {
+      expect(
+        RecipientType.confidentialSepaEur.supportsPaymentDescription,
+        isFalse,
+      );
       expect(RecipientType.billPaymentCad.supportsPaymentDescription, isFalse);
       expect(RecipientType.speiClabeMxn.supportsPaymentDescription, isFalse);
       expect(
