@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/virtual_iban_status.dart';
@@ -16,7 +17,7 @@ class WatchVirtualIbanActivationUsecase {
     this._pollInterval = const Duration(seconds: 5),
   ]);
 
-  Stream<Result<VirtualIbanStatus, RecipientsFailure>> execute({
+  Stream<Result<VirtualIban, RecipientsFailure>> execute({
     required bool createIfAbsent,
   }) async* {
     final bool isTestnet;
@@ -38,10 +39,10 @@ class WatchVirtualIbanActivationUsecase {
       yield Err(failure);
       return;
     }
-    var status = (result as Ok<VirtualIbanStatus, RecipientsFailure>).value;
-    if (status == VirtualIbanStatus.absent) {
+    var virtualIban = (result as Ok<VirtualIban, RecipientsFailure>).value;
+    if (virtualIban.status == VirtualIbanStatus.absent) {
       if (!createIfAbsent) {
-        yield const Ok(VirtualIbanStatus.absent);
+        yield Ok(virtualIban);
         return;
       }
       result = await _repository.create(isTestnet: isTestnet);
@@ -49,17 +50,17 @@ class WatchVirtualIbanActivationUsecase {
         yield Err(failure);
         return;
       }
-      status = (result as Ok<VirtualIbanStatus, RecipientsFailure>).value;
+      virtualIban = (result as Ok<VirtualIban, RecipientsFailure>).value;
     }
 
-    yield Ok(status);
-    while (status == VirtualIbanStatus.pending) {
+    yield Ok(virtualIban);
+    while (virtualIban.status == VirtualIbanStatus.pending) {
       await Future<void>.delayed(_pollInterval);
       result = await _repository.getStatus(isTestnet: isTestnet);
       switch (result) {
         case Ok(:final value):
-          status = value;
-          yield Ok(status);
+          virtualIban = value;
+          yield Ok(virtualIban);
         case Err(:final failure):
           yield Err(failure);
           return;

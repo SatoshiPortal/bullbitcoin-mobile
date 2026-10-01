@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_activation_usecase.dart';
@@ -33,31 +34,37 @@ void main() {
   test('does not create an absent account during the initial check', () async {
     when(
       () => repository.getStatus(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(VirtualIbanStatus.absent));
+    ).thenAnswer((_) async => const Ok(VirtualIban.absent()));
 
     final results = await usecase.execute(createIfAbsent: false).toList();
 
     expect(
-      (results.single as Ok<VirtualIbanStatus, RecipientsFailure>).value,
+      (results.single as Ok<VirtualIban, RecipientsFailure>).value.status,
       VirtualIbanStatus.absent,
     );
     verifyNever(() => repository.create(isTestnet: false));
   });
 
   test('creates and polls an account until active', () async {
+    const active = VirtualIban(
+      status: VirtualIbanStatus.active,
+      iban: 'FR7612345678901234567890123',
+      bicCode: 'AGRIFRPP',
+      bankAddress: '1 Rue de la Banque, Paris',
+      ibanCountry: 'FR',
+    );
     when(
       () => repository.getStatus(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(VirtualIbanStatus.absent));
+    ).thenAnswer((_) async => const Ok(VirtualIban.absent()));
     when(
       () => repository.create(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(VirtualIbanStatus.active));
+    ).thenAnswer((_) async => const Ok(active));
 
     final results = await usecase.execute(createIfAbsent: true).toList();
 
-    expect(
-      (results.single as Ok<VirtualIbanStatus, RecipientsFailure>).value,
-      VirtualIbanStatus.active,
-    );
+    final result = (results.single as Ok<VirtualIban, RecipientsFailure>).value;
+    expect(result.status, VirtualIbanStatus.active);
+    expect(result.iban, active.iban);
     verify(() => repository.create(isTestnet: false)).called(1);
   });
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/virtual_iban_status.dart';
@@ -12,8 +13,7 @@ part 'virtual_iban_onboarding_state.dart';
 
 class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
   final WatchVirtualIbanActivationUsecase _watchActivationUsecase;
-  StreamSubscription<Result<VirtualIbanStatus, RecipientsFailure>>?
-  _subscription;
+  StreamSubscription<Result<VirtualIban, RecipientsFailure>>? _subscription;
 
   VirtualIbanOnboardingCubit(this._watchActivationUsecase)
     : super(const VirtualIbanOnboardingState());
@@ -44,15 +44,15 @@ class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
         .listen(_onResult, onDone: _onDone);
   }
 
-  void _onResult(Result<VirtualIbanStatus, RecipientsFailure> result) {
+  void _onResult(Result<VirtualIban, RecipientsFailure> result) {
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
         emit(
           state.copyWith(
-            status: value,
-            isLoading: value == VirtualIbanStatus.pending,
-            isCreating: value == VirtualIbanStatus.pending,
+            status: value.status,
+            isLoading: value.status == VirtualIbanStatus.pending,
+            isCreating: value.status == VirtualIbanStatus.pending,
             failure: null,
           ),
         );

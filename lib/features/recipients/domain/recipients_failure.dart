@@ -15,3 +15,11 @@ final class RecipientRefreshFailure extends RecipientsFailure {
 final class VirtualIbanFailure extends RecipientsFailure {
   const VirtualIbanFailure([super.logMessage]);
 }
+
+final class VirtualIbanNotAvailableFailure extends RecipientsFailure {
+  const VirtualIbanNotAvailableFailure([super.logMessage]);
+}
+
+final class VirtualIbanEuResidencyRequiredFailure extends RecipientsFailure {
+  const VirtualIbanEuResidencyRequiredFailure([super.logMessage]);
+}
