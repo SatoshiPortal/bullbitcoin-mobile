@@ -1,0 +1,179 @@
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// A raw reason of the shape the exchange API actually produces — it quotes a
+/// key, so none of it may survive into a user-facing string.
+const _rawReason = 'DioException 500 apikey=secret123 WithdrawOrderException';
+
+final _everyFailure = <WithdrawFailure>[
+  const WithdrawUnauthenticatedFailure(_rawReason),
+  const WithdrawBelowMinAmountFailure(
+    minAmount: 25,
+    currency: 'CAD',
+    logMessage: _rawReason,
+  ),
+  const WithdrawAboveMaxAmountFailure(
+    maxAmount: 5000,
+    currency: 'CAD',
+    logMessage: _rawReason,
+  ),
+  const WithdrawUnexpectedFailure(_rawReason),
+];
+
+Future<String> _translate(
+  WidgetTester tester,
+  WithdrawFailure failure, {
+  Locale? locale,
+}) async {
+  late String message;
+  await tester.pumpWidget(
+    MaterialApp(
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) {
+          message = failure.toTranslated(context);
+          return const SizedBox.shrink();
+        },
+      ),
+    ),
+  );
+  return message;
+}
+
+void main() {
+  group('WithdrawFailureL10n.toTranslated', () {
+    for (final failure in _everyFailure) {
+      testWidgets('${failure.runtimeType} resolves to a user-safe message', (
+        tester,
+      ) async {
+        final message = await _translate(tester, failure);
+
+        expect(
+          message,
+          isNotEmpty,
+          reason: 'the .arb key for ${failure.runtimeType} resolved to nothing',
+        );
+        expect(message, isNot(contains(_rawReason)));
+        expect(message, isNot(contains('Exception')));
+        expect(message, isNot(contains('secret123')));
+      });
+    }
+
+    testWidgets('every variant has a distinct-enough message', (tester) async {
+      final messages = <String>{};
+      for (final failure in _everyFailure) {
+        messages.add(await _translate(tester, failure));
+      }
+
+      // The two amount bounds and the catch-all must not collapse into one
+      // string: a user who sent too little needs different advice.
+      expect(messages.length, greaterThanOrEqualTo(3));
+    });
+
+    testWidgets('an amount bound names the number and its currency', (
+      tester,
+    ) async {
+      // A limit the user cannot act on is barely better than no message, so
+      // the bound carried by the failure has to reach the string.
+      expect(
+        await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 25,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        allOf(contains('25'), contains('CAD')),
+      );
+      expect(
+        await _translate(
+          tester,
+          const WithdrawAboveMaxAmountFailure(
+            maxAmount: 5000,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        allOf(contains('5,000'), contains('CAD')),
+      );
+    });
+
+    testWidgets('a bitcoin-denominated bound keeps its precision', (
+      tester,
+    ) async {
+      // The api picks the denomination, so a bound can arrive in BTC. It must
+      // not be rounded away to "0" by fiat-style formatting.
+      expect(
+        await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 0.0001,
+            currency: 'BTC',
+          ),
+        ),
+        allOf(contains('0.0001'), contains('BTC')),
+      );
+    });
+
+    testWidgets('the bound is formatted in the app locale, not en_US', (
+      tester,
+    ) async {
+      // The number is embedded in a translated sentence, so formatting it as
+      // en_US would put "5,000" in a French string, where a comma is the
+      // decimal separator and it reads as five.
+      const fractional = WithdrawBelowMinAmountFailure(
+        minAmount: 0.0001,
+        currency: 'BTC',
+      );
+      const thousands = WithdrawAboveMaxAmountFailure(
+        maxAmount: 5000,
+        currency: 'CAD',
+      );
+
+      expect(
+        await _translate(tester, fractional, locale: const Locale('fr')),
+        contains('0,0001'),
+      );
+      expect(
+        await _translate(tester, fractional, locale: const Locale('en')),
+        contains('0.0001'),
+      );
+
+      final fr = await _translate(
+        tester,
+        thousands,
+        locale: const Locale('fr'),
+      );
+      expect(fr, isNot(contains('5,000')), reason: 'that reads as five in fr');
+      expect(fr.replaceAll(RegExp(r'[\s\u00a0\u202f]'), ''), contains('5000'));
+    });
+
+    testWidgets('every supported locale can format a bound', (tester) async {
+      // Guards the locales intl may not have number symbols for, such as
+      // hi_Latn and ka: they must fall back, not throw.
+      for (final locale in AppLocalizations.supportedLocales) {
+        final message = await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 1234.5,
+            currency: 'CAD',
+          ),
+          locale: locale,
+        );
+
+        expect(
+          message,
+          isNotEmpty,
+          reason: 'failed to format a bound for $locale',
+        );
+        expect(message, contains('CAD'), reason: 'currency lost for $locale');
+      }
+    });
+  });
+}

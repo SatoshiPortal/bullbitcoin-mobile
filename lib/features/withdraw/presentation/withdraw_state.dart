@@ -2,9 +2,8 @@ part of 'withdraw_bloc.dart';
 
 @freezed
 sealed class WithdrawState with _$WithdrawState {
-  const factory WithdrawState.initial({
-    GetExchangeUserSummaryException? getUserSummaryException,
-  }) = WithdrawInitialState;
+  const factory WithdrawState.initial({WithdrawFailure? failure}) =
+      WithdrawInitialState;
   const factory WithdrawState.amountInput({required UserSummary userSummary}) =
       WithdrawAmountInputState;
   const factory WithdrawState.recipientInput({
@@ -12,26 +11,27 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatAmount amount,
     required FiatCurrency currency,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? newRecipientError,
-    WithdrawError? selectedRecipientError,
+    WithdrawFailure? newRecipientFailure,
+    WithdrawFailure? selectedRecipientFailure,
   }) = WithdrawRecipientInputState;
-  /*onst factory WithdrawState.descriptionInput({
+  const factory WithdrawState.paymentDetailsInput({
     required UserSummary userSummary,
-    required RecipientViewModel recipient,
-    required FiatAmount fiatOrderAmount,
-    required FiatCurrency fiatCurrency,
+    required FiatAmount amount,
+    required FiatCurrency currency,
+    required RecipientSelection recipient,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
-  }) = WithdrawDescriptionInputState;*/
+    WithdrawFailure? failure,
+  }) = WithdrawPaymentDetailsInputState;
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
-    required RecipientViewModel recipient,
-    //required String description,
+    required RecipientSelection recipient,
     required WithdrawOrder order,
+    InteracSecurityDetails? interacSecurityDetails,
+    @Default(false) bool saveSecurityDetailsAsDefault,
     @Default(false) bool isConfirmingWithdrawal,
-    WithdrawError? error,
+    WithdrawFailure? failure,
   }) = WithdrawConfirmationState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
@@ -44,7 +44,8 @@ sealed class WithdrawState with _$WithdrawState {
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,
       recipientInput: (_, _, currency, _, _, _) => currency,
-      confirmation: (_, _, currency, _, _, _, _) => currency,
+      paymentDetailsInput: (_, _, currency, _, _, _) => currency,
+      confirmation: (_, _, currency, _, _, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
   }
@@ -59,9 +60,12 @@ sealed class WithdrawState with _$WithdrawState {
             amount,
             currency,
             isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
+            newRecipientFailure,
+            selectedRecipientFailure,
           ) => WithdrawAmountInputState(userSummary: userSummary),
+      paymentDetailsInput:
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
+              WithdrawAmountInputState(userSummary: userSummary),
       confirmation:
           (
             userSummary,
@@ -69,8 +73,10 @@ sealed class WithdrawState with _$WithdrawState {
             currency,
             recipient,
             order,
+            interacSecurityDetails,
+            saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawAmountInputState(userSummary: userSummary),
     );
   }
@@ -83,16 +89,23 @@ sealed class WithdrawState with _$WithdrawState {
             amount,
             currency,
             isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
+            newRecipientFailure,
+            selectedRecipientFailure,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
             isCreatingWithdrawOrder: false,
-            newRecipientError: null,
-            selectedRecipientError: null,
+            newRecipientFailure: null,
+            selectedRecipientFailure: null,
           ),
+      paymentDetailsInput:
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
+              WithdrawRecipientInputState(
+                userSummary: userSummary,
+                amount: amount,
+                currency: currency,
+              ),
       confirmation:
           (
             userSummary,
@@ -100,8 +113,10 @@ sealed class WithdrawState with _$WithdrawState {
             currency,
             recipient,
             order,
+            interacSecurityDetails,
+            saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
@@ -119,15 +134,49 @@ sealed class WithdrawState with _$WithdrawState {
             currency,
             recipient,
             order,
+            interacSecurityDetails,
+            saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawConfirmationState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
             recipient: recipient,
             order: order,
-            error: null,
+            interacSecurityDetails: interacSecurityDetails,
+            saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
+            failure: null,
+          ),
+    );
+  }
+
+  WithdrawPaymentDetailsInputState? get cleanPaymentDetailsInputState {
+    return whenOrNull(
+      paymentDetailsInput:
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
+              WithdrawPaymentDetailsInputState(
+                userSummary: userSummary,
+                amount: amount,
+                currency: currency,
+                recipient: recipient,
+              ),
+      confirmation:
+          (
+            userSummary,
+            amount,
+            currency,
+            recipient,
+            order,
+            interacSecurityDetails,
+            saveSecurityDetailsAsDefault,
+            isConfirmingWithdrawal,
+            failure,
+          ) => WithdrawPaymentDetailsInputState(
+            userSummary: userSummary,
+            amount: amount,
+            currency: currency,
+            recipient: recipient,
           ),
     );
   }
@@ -156,7 +205,7 @@ extension WithdrawAmountInputStateX on WithdrawAmountInputState {
 
 extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
   WithdrawConfirmationState toConfirmationState({
-    required RecipientViewModel recipient,
+    required RecipientSelection recipient,
     required WithdrawOrder order,
   }) {
     return WithdrawConfirmationState(
@@ -167,42 +216,39 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
       order: order,
     );
   }
-}
 
-/*extension WithdrawDescriptionInputStateX on WithdrawDescriptionInputState {
-  WithdrawAmountInputState toAmountInputState() {
-    return WithdrawAmountInputState(
+  WithdrawPaymentDetailsInputState toPaymentDetailsInputState({
+    required RecipientSelection recipient,
+  }) {
+    return WithdrawPaymentDetailsInputState(
       userSummary: userSummary,
-      recipients: recipients,
+      amount: amount,
+      currency: currency,
       recipient: recipient,
     );
   }
+}
 
+extension WithdrawPaymentDetailsInputStateX
+    on WithdrawPaymentDetailsInputState {
   WithdrawConfirmationState toConfirmationState({
     required WithdrawOrder order,
+    required InteracSecurityDetails interacSecurityDetails,
+    required bool saveSecurityDetailsAsDefault,
   }) {
     return WithdrawConfirmationState(
       userSummary: userSummary,
-      recipients: recipients,
+      amount: amount,
+      currency: currency,
       recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
       order: order,
+      interacSecurityDetails: interacSecurityDetails,
+      saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
     );
   }
-}*/
+}
 
 extension WithdrawConfirmationStateX on WithdrawConfirmationState {
-  /*WithdrawDescriptionInputState toDescriptionInputState() {
-    return WithdrawDescriptionInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
-    );
-  }*/
-
   WithdrawSuccessState toSuccessState({required WithdrawOrder order}) {
     return WithdrawSuccessState(order: order);
   }

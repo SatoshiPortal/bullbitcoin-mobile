@@ -324,7 +324,7 @@
   "bitboxScreenSegwitBip84": "SegWit (BIP84)",
   "bitboxScreenConnectingSubtext": "Sichere Verbindung wird aufgebaut...",
   "receiveShareAddress": "Adresse teilen",
-  "payAboveMaxAmountError": "Du versuchst, einen Betrag zu bezahlen, der über dem Höchstbetrag liegt, der mit dieser Wallet bezahlt werden kann.",
+  "payAboveMaxAmountError": "Der Höchstbetrag, den du mit dieser Wallet zahlen kannst, beträgt {amount}.",
   "sharedWithBullBitcoin": "mit Bull Bitcoin geteilt.",
   "jadeStep7": "   - Halte den QR-Code stabil und zentriert",
   "sendCouldNotBuildTransaction": "Transaktion konnte nicht erstellt werden",
@@ -477,7 +477,7 @@
   "testBackupDefaultWallets": "Standard-Wallets",
   "receiveSendNetworkFee": "Netzwerkgebühr (Senden)",
   "autoswapRecipientWalletInfoText": "Wähle aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich)",
-  "withdrawAboveMaxAmountError": "Du versuchst, einen Betrag abzuheben, der über dem Höchstbetrag liegt.",
+  "withdrawAboveMaxAmountError": "Maximaler Betrag ist {amount} {currency}",
   "psbtFlowScanDeviceQr": "Die Bull Bitcoin-Wallet fordert dich auf, den QR-Code auf dem {device} zu scannen. Scanne ihn.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -677,7 +677,7 @@
   "transactionDetailAccelerate": "Beschleunigen",
   "importQrDevicePassportStep11": "Gib eine Bezeichnung für deine Foundation Passport-Wallet ein und tippe auf „Importieren“.",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
-  "withdrawBelowMinAmountError": "Du versuchst, einen Betrag unterhalb des Mindestbetrags abzuheben.",
+  "withdrawBelowMinAmountError": "Mindestbetrag ist {amount} {currency}",
   "swapYouPay": "Du zahlst",
   "encryptedVaultTitle": "Verschlüsselter Tresor",
   "fundExchangeCrIbanUsdLabelIban": "IBAN-Kontonummer (nur US-Dollar)",
@@ -981,7 +981,6 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Starte deine BitBox Nova neu und versuche die Verbindung erneut.",
   "backupSettingsExportVault": "Tresor exportieren",
   "bitboxActionUnlockDeviceTitle": "BitBox entsperren",
-  "withdrawRecipientsNewTab": "Neuer Empfänger",
   "autoswapRecipientRequired": "*",
   "exchangeLandingFeature4": "Banküberweisungen senden und Rechnungen bezahlen",
   "sellSendPaymentPayFromWallet": "Aus Wallet bezahlen",
@@ -1017,7 +1016,7 @@
   "testCompletedSuccessMessage": "Du kannst den Zugriff zu einer verlorenen Bitcoin-Wallet wiederherstellen.",
   "importWatchOnlyScanQR": "QR-Code scannen",
   "selectAmountTitle": "Betrag auswählen",
-  "buyYouBought": "Du hast {amount} gekauft",
+  "buyYouBought": "Du hast {amount} für {fiatAmount} gekauft",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -1323,7 +1322,6 @@
   "transactionLabelTotalSwapFees": "Gesamt-Swap-Gebühren",
   "errorLabel": "Fehler",
   "receiveInsufficientInboundLiquidity": "Unzureichende Lightning-Kapazität",
-  "withdrawRecipientsMyTab": "Meine Fiat-Empfänger",
   "sendFeeRateTooLow": "Gebührensatz zu niedrig",
   "payLastNameHint": "Nachnamen eingeben",
   "exchangeLandingRestriction": "Der Zugang zu den Exchange-Diensten ist auf Länder beschränkt, in denen Bull Bitcoin legal arbeitet und kann KYC erfordern.",
@@ -1772,7 +1770,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Swap wird in Kürze abgeschlossen",
   "addressViewAddressesTitle": "Adressen",
-  "withdrawRecipientsNoRecipients": "Keine Empfänger zum Abheben gefunden",
   "transactionSwapProgressPaymentMade": "Zahlung\nErfolgt",
   "importQrDeviceSpecterStep4": "Folge den Anweisungen für deine gewählte Methode",
   "coreSwapsChainPending": "Die Überweisung ist noch nicht eingeleitet",
@@ -2109,7 +2106,6 @@
   "coreSwapsChainPaid": "Wir warten auf die Zahlungsbestätigung unseres Zahlungsanbieters. Dies kann einige Zeit dauern",
   "importQrDevicePassportStep6": "Wähle „Single-Sig“",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Fortfahren",
   "enterPinAgainMessage": "Gib deine {pinOrPassword} erneut ein, um fortzufahren.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2137,7 +2133,6 @@
   "appStartupErrorTitle": "Startup-Fehler",
   "transactionLabelTransferId": "Transfer-ID",
   "sendTitle": "Senden",
-  "withdrawOrderNotFoundError": "Die Auszahlung wurde nicht gefunden. Bitte versuch es erneut.",
   "importQrDeviceSeedsignerStep4": "Wähle „Export Xpub“",
   "seedsignerStep6": "   - Halte den QR-Code stabil und zentriert",
   "ledgerHelpStep5": "Stelle sicher, dass dein Ledger die neueste Firmware verwendet. Du kannst die Firmware mit der Ledger Live Desktop-App aktualisieren",
@@ -2596,7 +2591,6 @@
   "payRemoveRecipient": "Empfänger entfernen",
   "pasteInputDefaultHint": "Zahlungsadresse oder Invoice einfügen",
   "sellKycPendingTitle": "KYC-Identitätsprüfung ausstehend",
-  "withdrawRecipientsFilterAll": "Alle Arten",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Empfohlen",
   "fundExchangeSpeiSubtitle": "Überweisung mit CLABE",
   "encryptedVaultRecommendationText": "Du bist dir nicht sicher und benötigst mehr Zeit, um dich über Sicherheitsmaßnahmen für Backups zu informieren.",
@@ -2680,7 +2674,7 @@
   "importQrDevicePassportStep5": "Wähle die Option „Sparrow“",
   "sendInvoicePaid": "Invoice bezahlt",
   "buyKycPendingDescription": "Du musst zuerst die Identitätsprüfung abschließen.",
-  "payBelowMinAmountError": "Du versuchst, einen Betrag zu zahlen, der unter dem Mindestbetrag liegt, der mit dieser Wallet gezahlt werden kann.",
+  "payBelowMinAmountError": "Der Mindestbetrag, den du mit dieser Wallet zahlen kannst, beträgt {amount}.",
   "autoswapRecipientWalletInfo": "Wähle aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich)",
   "importWalletKrux": "Krux",
   "swapContinueButton": "Fortfahren",
@@ -2713,8 +2707,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Wohin und wie sollen wir das Geld schicken?",
-  "withdrawRecipientsTitle": "Empfänger auswählen",
   "sellPayoutRecipient": "Auszahlungsempfänger",
   "backupWalletLastBackupTest": "Letzter Backup-Test:",
   "whatIsWordNumberPrompt": "Was ist Wort Nummer {number}?",
@@ -3494,14 +3486,6 @@
   "buyConfirmExpress": "Express-Zahlung bestätigen",
   "fundExchangeBankTransferWireTimeframe": "Alle Gelder, die du sendest, werden innerhalb von 1-2 Werktagen zu deinem Bull Bitcoin-Guthaben hinzugefügt.",
   "sendDeviceDisconnected": "Gerät getrennt",
-  "withdrawConfirmError": "Fehler: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Gebührenerhöhung fehlgeschlagen",
   "payUnsupportedInvoiceType": "Nicht unterstützter Invoice-Typ",
   "seedsignerStep13": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert.",
@@ -3617,7 +3601,6 @@
   "payPaymentHistory": "Zahlungsverlauf",
   "exchangeFeatureUnifiedHistory": "• Einheitliche Transaktionshistorie",
   "payViewDetails": "Details anzeigen",
-  "withdrawOrderAlreadyConfirmedError": "Diese Auszahlung wurde bereits bestätigt.",
   "autoswapSelectWallet": "Wähle eine Bitcoin-Wallet",
   "walletAutoTransferBlockButton": "Blockieren",
   "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt.",
@@ -4944,5 +4927,29 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server-Einstellungen",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "withdrawInteracSecurityDetailsTitle": "Interac-Sicherheitsdaten",
+  "withdrawInteracSaveAsDefault": "Diese Angaben als Standard speichern",
+  "withdrawInteracSecurityQuestionLengthError": "Die Sicherheitsfrage muss 3-40 Zeichen lang sein",
+  "withdrawInteracSecurityAnswerLengthError": "Die Sicherheitsantwort muss 3-40 Zeichen lang sein",
+  "withdrawInteracSecurityAnswerFormatError": "Verwende Buchstaben, Zahlen oder Bindestriche ohne Leerzeichen",
+  "autoBuyTitle": "Auto-Buy",
+  "autoBuyDescription": "Kaufe automatisch Bitcoin, sobald du Geld auf dein Konto einzahlst",
+  "autoBuyActivate": "Auto-Buy aktivieren",
+  "autoBuyDeactivate": "Auto-Buy deaktivieren",
+  "autoBuyCancelTitle": "Auto-Buy abbrechen?",
+  "autoBuyCancelMessage": "Bei deiner nächsten Kontoeinzahlung wird nicht mehr automatisch Bitcoin gekauft.",
+  "autoBuyDeactivateConfirm": "Ja, deaktivieren",
+  "autoBuyHowItWorks": "So funktioniert es",
+  "autoBuyConnectWallet": "Verbinde deine Bitcoin-, Lightning- oder Liquid-Wallet",
+  "autoBuyPurchaseCreated": "Bei jeder Einzahlung auf dein Bull Bitcoin-Konto wird automatisch ein Bitcoin-Kauf erstellt.",
+  "autoBuyBitcoinSent": "Bitcoin wird direkt an deine eigene Wallet gesendet.",
+  "autoBuyRiskDisclaimer": "Die Ausführung der Order kann nicht garantiert werden. Verzögerungen oder Kursänderungen zwischen Einzahlung und Kauf können den effektiven Kurs verändern.",
+  "autoBuyGetStarted": "Jetzt mit Auto-Buy starten",
+  "autoBuyConfirmTitle": "Auto-Buy bestätigen",
+  "autoBuyInfoMessage": "Jeder deinem Konto hinzugefügte Betrag wird zum aktuellen Wechselkurs in Bitcoin umgewandelt und an deine Wallet gesendet.",
+  "autoBuyAccountUnavailableError": "Dein Bull Bitcoin-Konto ist nicht verfügbar. Versuche es später erneut.",
+  "autoBuyWalletRequiredError": "Füge mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
+  "autoBuyUpdateError": "Auto-Buy konnte nicht aktualisiert werden. Versuche es später erneut.",
+  "withdrawUnexpectedError": "Deine Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuche es erneut oder wende dich an den Support."
 }
