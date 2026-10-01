@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class CreateWalletButton extends StatelessWidget {
   const CreateWalletButton({super.key});
@@ -16,7 +16,7 @@ class CreateWalletButton extends StatelessWidget {
           bloc.state.step == OnboardingStep.create,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.onboardingCreateNewWallet,
       bgColor: context.appColors.secondaryFixed,
       textColor: context.appColors.onSecondaryFixed,

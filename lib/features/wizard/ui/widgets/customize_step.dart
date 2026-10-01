@@ -3,13 +3,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/picker_sheet.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullText;
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
@@ -39,7 +38,7 @@ class CustomizeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             loc.wizardCustomizeBody,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -75,7 +74,7 @@ class CustomizeStep extends StatelessWidget {
             trailing: _TrailingValue(text: defaultCurrency),
             contentPadding: EdgeInsets.zero,
             onTap: () async {
-              final picked = await BlurredBottomSheet.show<String>(
+              final picked = await BullBottomSheet.show<String>(
                 context: context,
                 child: CurrencyBottomSheet(
                   availableCurrencies: CurrencyConstants.supportedFiat,
@@ -101,7 +100,7 @@ class _TrailingValue extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BBText(
+        BullText(
           text,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.onSurface,
@@ -139,7 +138,7 @@ Future<AppThemeMode?> _showThemeSheet(
   BuildContext context,
   AppThemeMode current,
 ) {
-  return BlurredBottomSheet.show<AppThemeMode>(
+  return BullBottomSheet.show<AppThemeMode>(
     context: context,
     child: BBPickerSheet<AppThemeMode>(
       title: context.loc.settingsThemeTitle,
@@ -151,7 +150,7 @@ Future<AppThemeMode?> _showThemeSheet(
 }
 
 Future<Language?> _showLanguageSheet(BuildContext context, Language current) {
-  return BlurredBottomSheet.show<Language>(
+  return BullBottomSheet.show<Language>(
     context: context,
     child: BBPickerSheet<Language>(
       title: context.loc.settingsLanguageTitle,

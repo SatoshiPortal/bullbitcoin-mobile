@@ -1,18 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class SelectScriptTypePage extends StatelessWidget {
@@ -24,7 +21,7 @@ class SelectScriptTypePage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.importMnemonicSelectScriptType,
           color: context.appColors.background,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
@@ -33,9 +30,9 @@ class SelectScriptTypePage extends StatelessWidget {
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
           if (state.failure != null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              state.failure!.toTranslated(context),
+              message: state.failure!.toTranslated(context),
             );
           }
         },
@@ -49,7 +46,7 @@ class SelectScriptTypePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: .spaceEvenly,
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.importMnemonicSyncMessage,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.textMuted,
@@ -83,7 +80,7 @@ class SelectScriptTypePage extends StatelessWidget {
                   ),
                   const Gap(16),
 
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
                     bgColor: context.appColors.onSurface,
@@ -135,7 +132,7 @@ class _WalletTypeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBText(
+                  BullText(
                     title,
                     style: context.font.titleMedium?.copyWith(
                       fontWeight: .w600,
@@ -145,7 +142,7 @@ class _WalletTypeCard extends StatelessWidget {
 
                   if (status != null) ...[
                     const Gap(8),
-                    BBText(
+                    BullText(
                       context.loc.importMnemonicBalanceLabel(
                         status!.satoshis.toString(),
                       ),
@@ -154,7 +151,7 @@ class _WalletTypeCard extends StatelessWidget {
                       ),
                     ),
                     const Gap(4),
-                    BBText(
+                    BullText(
                       context.loc.importMnemonicTransactionsLabel(
                         status!.transactions.toString(),
                       ),
