@@ -1,15 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullButton, Gap;
 
 class PrivacyNoticeBottomSheet extends StatelessWidget {
   const PrivacyNoticeBottomSheet({super.key});
 
   static Future<bool?> show(BuildContext context) {
-    return BlurredBottomSheet.show<bool?>(
+    return BullBottomSheet.show<bool?>(
       context: context,
       child: const PrivacyNoticeBottomSheet(),
     );
@@ -73,7 +71,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.big(
                             label: context.loc.electrumPrivacyNoticeCancel,
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: context.appColors.transparent,
@@ -84,7 +82,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                         ),
                         const Gap(16),
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.big(
                             label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
                             bgColor: context.appColors.secondary,
