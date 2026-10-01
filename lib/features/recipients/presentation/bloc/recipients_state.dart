@@ -7,6 +7,8 @@ sealed class RecipientsState with _$RecipientsState {
     String? jurisdictionFilter,
     @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,
+    @Default(false) bool canUseConfidentialSepa,
+    String? confidentialSepaOwnerName,
     Exception? failedToLoadRecipients,
     required RecipientFilterCriteria allowedRecipientFilters,
     List<RecipientViewModel>? recipients,
@@ -40,12 +42,22 @@ sealed class RecipientsState with _$RecipientsState {
   Set<RecipientType> get selectableRecipientTypes =>
       allowedRecipientFilters.types.toSet();
 
+  Set<RecipientType> get creatableRecipientTypes => selectableRecipientTypes
+      .where(
+        (type) =>
+            type != RecipientType.confidentialSepaEur || canUseConfidentialSepa,
+      )
+      .toSet();
+
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 
   bool get onlyNonOwnerRecipients => allowedRecipientFilters.isOwner == false;
 
   Set<String> get availableJurisdictions =>
       selectableRecipientTypes.map((type) => type.jurisdictionCode).toSet();
+
+  Set<String> get availableCreationJurisdictions =>
+      creatableRecipientTypes.map((type) => type.jurisdictionCode).toSet();
 
   String? get selectedJurisdiction {
     if (preferredJurisdiction != null) {
@@ -65,7 +77,7 @@ sealed class RecipientsState with _$RecipientsState {
   }
 
   Set<RecipientType> recipientTypesForJurisdiction(String jurisdiction) {
-    return selectableRecipientTypes
+    return creatableRecipientTypes
         .where((type) => type.jurisdictionCode == jurisdiction)
         .toSet();
   }
@@ -73,6 +85,10 @@ sealed class RecipientsState with _$RecipientsState {
   List<RecipientViewModel>? get selectableRecipients {
     if (recipients == null) return null;
     final seen = <String>{};
-    return recipients!.where((recipient) => seen.add(recipient.id)).toList();
+    return recipients!
+        .where(
+          (recipient) => seen.add('${recipient.id}:${recipient.type.value}'),
+        )
+        .toList();
   }
 }

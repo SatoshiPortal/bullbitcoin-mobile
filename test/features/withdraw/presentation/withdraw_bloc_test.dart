@@ -84,7 +84,10 @@ void main() {
     confirmWithdrawOrderUsecase: confirmOrder,
   );
 
-  setUpAll(() => registerFallbackValue(_interacSecurityDetails));
+  setUpAll(() {
+    registerFallbackValue(_interacSecurityDetails);
+    registerFallbackValue(RecipientType.sepaEur);
+  });
 
   setUp(() {
     loadContext = _MockLoadWithdrawContextUsecase();
@@ -170,6 +173,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
+          paymentDescription: any(named: 'paymentDescription'),
         ),
       ).thenAnswer(
         (_) async =>
@@ -347,6 +352,8 @@ void main() {
       () => createOrder.execute(
         fiatAmount: any(named: 'fiatAmount'),
         recipientId: any(named: 'recipientId'),
+        recipientType: any(named: 'recipientType'),
+        paymentDescription: any(named: 'paymentDescription'),
         recipientEmail: any(named: 'recipientEmail'),
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
@@ -437,6 +444,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: 125,
           recipientId: 'recipient-1',
+          recipientType: RecipientType.interacEmailCad,
+          paymentDescription: null,
           recipientEmail: 'person@example.com',
           securityQuestion: 'Favourite city?',
           securityAnswer: 'Montreal',
@@ -484,6 +493,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
+          paymentDescription: any(named: 'paymentDescription'),
           recipientEmail: any(named: 'recipientEmail'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
@@ -552,6 +563,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
+          paymentDescription: any(named: 'paymentDescription'),
           recipientEmail: any(named: 'recipientEmail'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
@@ -566,6 +579,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
+          paymentDescription: any(named: 'paymentDescription'),
           recipientEmail: any(named: 'recipientEmail'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
@@ -608,6 +623,8 @@ void main() {
         () => createOrder.execute(
           fiatAmount: 125,
           recipientId: 'recipient-1',
+          recipientType: RecipientType.interacEmailCad,
+          paymentDescription: null,
           recipientEmail: 'person@example.com',
           securityQuestion: 'Favourite city?',
           securityAnswer: 'Montreal',

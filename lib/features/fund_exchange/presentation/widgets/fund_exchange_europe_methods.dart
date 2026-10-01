@@ -37,6 +37,23 @@ class FundExchangeEuropeMethods extends StatelessWidget {
             );
           },
         ),
+        if (context.select(
+          (FundExchangeBloc bloc) => bloc.state.canShowConfidentialSepa,
+        )) ...[
+          const Gap(16.0),
+          FundExchangeMethodListTile(
+            title: context.loc.recipientsTypeConfidentialSepa,
+            subtitle: context.loc.fundExchangeMethodConfidentialSepaSubtitle,
+            badgeLabel: context.loc.fundExchangeMethodNewBadge,
+            onTap: () {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: ConfidentialSepa(),
+                ),
+              );
+            },
+          ),
+        ],
       ],
     );
   }

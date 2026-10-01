@@ -43,6 +43,8 @@ extension RecipientViewModelMapper on Recipient {
       firstname: d.firstname,
       lastname: d.lastname,
       corporateName: d.corporateName,
+      virtualPayeeStatus: d.virtualPayeeStatus,
+      paymentOptions: d.paymentOptions,
     ),
     final SpeiClabeMxnDetails d => RecipientViewModel(
       id: recipientId,

@@ -4,6 +4,26 @@ sealed class RecipientsFailure extends Failure {
   const RecipientsFailure([super.logMessage]);
 }
 
+final class RecipientActivationFailure extends RecipientsFailure {
+  const RecipientActivationFailure([super.logMessage]);
+}
+
+final class RecipientRefreshFailure extends RecipientsFailure {
+  const RecipientRefreshFailure([super.logMessage]);
+}
+
+final class VirtualIbanFailure extends RecipientsFailure {
+  const VirtualIbanFailure([super.logMessage]);
+}
+
+final class VirtualIbanNotAvailableFailure extends RecipientsFailure {
+  const VirtualIbanNotAvailableFailure([super.logMessage]);
+}
+
+final class VirtualIbanEuResidencyRequiredFailure extends RecipientsFailure {
+  const VirtualIbanEuResidencyRequiredFailure([super.logMessage]);
+}
+
 final class RecipientsUnexpectedFailure extends RecipientsFailure {
   const RecipientsUnexpectedFailure([super.logMessage]);
 }

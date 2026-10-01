@@ -66,6 +66,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
+    on<PayRecipientUpdated>(_onRecipientUpdated);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<PayWalletSelected>(_onWalletSelected);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
@@ -184,6 +185,24 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(amountInputState);
   }
 
+  void _onRecipientUpdated(PayRecipientUpdated event, Emitter<PayState> emit) {
+    final current = state;
+    if (current is! PayWalletSelectionState) return;
+    emit(
+      current.copyWith(
+        selectedRecipient: event.recipient,
+        isCreatingPayOrder: false,
+        error: null,
+      ),
+    );
+    if (!event.resumePendingOrder) return;
+    if (current.pendingWallet case final wallet?) {
+      add(PayEvent.walletSelected(wallet: wallet));
+    } else if (current.pendingExternalNetwork case final network?) {
+      add(PayEvent.externalWalletNetworkSelected(network: network));
+    }
+  }
+
   Future<void> _onAmountInputContinuePressed(
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
@@ -241,7 +260,13 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    emit(
+      walletSelectionState.copyWith(
+        isCreatingPayOrder: true,
+        pendingWallet: event.wallet,
+        pendingExternalNetwork: null,
+      ),
+    );
 
     // This builds a brand-new payment state, with its own order, wallet and
     // empty preview cache. A preview still in flight for the previous one would
@@ -260,6 +285,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
           walletSelectionState.copyWith(
             error: failure,
             isCreatingPayOrder: false,
+            pendingWallet: event.wallet,
+            pendingExternalNetwork: null,
           ),
         );
         return;
@@ -267,7 +294,13 @@ class PayBloc extends Bloc<PayEvent, PayState>
         estimate = value;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    emit(
+      walletSelectionState.copyWith(
+        isCreatingPayOrder: true,
+        pendingWallet: event.wallet,
+        pendingExternalNetwork: null,
+      ),
+    );
 
     final FiatPaymentOrder createdPayOrder;
     switch (await _placePayOrderUsecase.execute(
@@ -277,6 +310,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           ? OrderBitcoinNetwork.liquid
           : OrderBitcoinNetwork.bitcoin,
       paymentDescription: walletSelectionState.paymentDescription,
+      recipientType: walletSelectionState.selectedRecipient.type,
       usePayjoin:
           !event.wallet.isLiquid &&
           walletSelectionState.userSummary.payjoinReceiveEnabled,
@@ -286,6 +320,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
           walletSelectionState.copyWith(
             error: failure,
             isCreatingPayOrder: false,
+            pendingWallet: event.wallet,
+            pendingExternalNetwork: null,
           ),
         );
         return;
@@ -356,19 +392,28 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    emit(
+      walletSelectionState.copyWith(
+        isCreatingPayOrder: true,
+        pendingWallet: null,
+        pendingExternalNetwork: event.network,
+      ),
+    );
 
     switch (await _placePayOrderUsecase.execute(
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
       network: event.network,
       paymentDescription: walletSelectionState.paymentDescription,
+      recipientType: walletSelectionState.selectedRecipient.type,
     )) {
       case Err(:final failure):
         emit(
           walletSelectionState.copyWith(
             error: failure,
             isCreatingPayOrder: false,
+            pendingWallet: null,
+            pendingExternalNetwork: event.network,
           ),
         );
       case Ok(:final value):

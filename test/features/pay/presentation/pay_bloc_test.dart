@@ -146,6 +146,7 @@ void main() {
   late _MockPreparePayBitcoinPayin preparePayBitcoinPayin;
   late _MockSignPayPayin signPayPayin;
   late _MockEstimatePayPayinFees estimatePayPayinFees;
+  late _MockPlacePayOrder placePayOrder;
   late _MockBroadcastPayPayin broadcastPayPayin;
   late _MockCalculatePayAbsoluteFees calculateBitcoinFees;
   late _MockLoadPayNetworkFees getNetworkFees;
@@ -226,6 +227,7 @@ void main() {
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
     estimatePayPayinFees = _MockEstimatePayPayinFees();
+    placePayOrder = _MockPlacePayOrder();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
@@ -291,7 +293,7 @@ void main() {
 
     bloc = _SeedablePayBloc(
       loadPayUserSummaryUsecase: _MockLoadPayUserSummary(),
-      placePayOrderUsecase: _MockPlacePayOrder(),
+      placePayOrderUsecase: placePayOrder,
       refreshPayOrderUsecase: refreshPayOrder,
       getPayOrderUsecase: getOrder,
       estimatePayPayinFeesUsecase: estimatePayPayinFees,
@@ -1060,6 +1062,80 @@ void main() {
   });
 
   group('PayBloc — audit reproducers (H6, H7)', () {
+    test('recipient fallback keeps the current payment inputs', () async {
+      final confidential = recipient.copyWith(
+        type: RecipientType.confidentialSepaEur,
+      );
+      bloc.seed(
+        PayState.walletSelection(
+          selectedRecipient: confidential,
+          userSummary: userSummary,
+          amount: const FiatAmount(50),
+          paymentDescription: 'invoice',
+          error: const PayConfidentialSepaNotActivatedFailure(),
+        ),
+      );
+
+      bloc.add(
+        PayEvent.recipientUpdated(
+          confidential.copyWith(type: RecipientType.sepaEur),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final state = bloc.state as PayWalletSelectionState;
+      expect(state.selectedRecipient.type, RecipientType.sepaEur);
+      expect(state.amount, const FiatAmount(50));
+      expect(state.paymentDescription, 'invoice');
+      expect(state.error, isNull);
+    });
+
+    test('recipient activation resumes the pending external order', () async {
+      final confidential = recipient.copyWith(
+        type: RecipientType.confidentialSepaEur,
+      );
+      bloc.seed(
+        PayState.walletSelection(
+          selectedRecipient: confidential,
+          userSummary: userSummary,
+          amount: const FiatAmount(50),
+          paymentDescription: 'invoice',
+          pendingExternalNetwork: OrderBitcoinNetwork.lightning,
+          error: const PayConfidentialSepaNotActivatedFailure(),
+        ),
+      );
+      when(
+        () => placePayOrder.execute(
+          orderAmount: const FiatAmount(50),
+          recipientId: confidential.id,
+          network: OrderBitcoinNetwork.lightning,
+          paymentDescription: 'invoice',
+          recipientType: RecipientType.confidentialSepaEur,
+        ),
+      ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
+
+      bloc.add(
+        PayEvent.recipientUpdated(
+          confidential.copyWith(
+            virtualPayeeStatus: SepaVirtualPayeeStatus.active,
+          ),
+          resumePendingOrder: true,
+        ),
+      );
+      await untilCalled(
+        () => placePayOrder.execute(
+          orderAmount: const FiatAmount(50),
+          recipientId: confidential.id,
+          network: OrderBitcoinNetwork.lightning,
+          paymentDescription: 'invoice',
+          recipientType: RecipientType.confidentialSepaEur,
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(bloc.state, isA<PayPaymentState>());
+    });
+
     test('a wallet selection during confirmation is ignored (H6)', () async {
       bloc.seed(paymentState(isConfirmingPayment: true));
       when(

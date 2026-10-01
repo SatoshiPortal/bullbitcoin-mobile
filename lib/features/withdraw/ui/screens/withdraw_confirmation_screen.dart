@@ -30,6 +30,12 @@ class WithdrawConfirmationScreen extends StatelessWidget {
           : null,
     );
 
+    final paymentDescription = context.select(
+      (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
+          ? (bloc.state as WithdrawConfirmationState).paymentDescription
+          : null,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
@@ -69,6 +75,18 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                     title: context.loc.withdrawConfirmRecipientName,
                     value: recipient?.displayName,
                   ),
+                  if (recipient?.type
+                      case RecipientType.sepaEur ||
+                          RecipientType.confidentialSepaEur) ...[
+                    const _Divider(),
+                    _DetailRow(
+                      title: context.loc.payRecipientType,
+                      value:
+                          recipient?.type == RecipientType.confidentialSepaEur
+                          ? context.loc.recipientsTypeConfidentialSepa
+                          : context.loc.recipientsTypeSepa,
+                    ),
+                  ],
                   const _Divider(),
                   _DetailRow(
                     title: _getRecipientInfoLabel(context, recipient),
@@ -84,6 +102,14 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                             order.payoutCurrency,
                           ),
                   ),
+                  if (paymentDescription != null &&
+                      paymentDescription.isNotEmpty) ...[
+                    const _Divider(),
+                    _DetailRow(
+                      title: context.loc.payPaymentDescription,
+                      value: paymentDescription,
+                    ),
+                  ],
                   const Spacer(),
                   _ConfirmButton(
                     onConfirmPressed: () {
@@ -116,6 +142,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return context.loc.withdrawConfirmAccount;
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return context.loc.withdrawConfirmIban;
       case RecipientType.speiClabeMxn:
         return context.loc.withdrawConfirmClabe;
@@ -151,6 +178,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;

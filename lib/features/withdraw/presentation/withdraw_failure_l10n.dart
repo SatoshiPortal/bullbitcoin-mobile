@@ -21,6 +21,9 @@ extension WithdrawFailureL10n on WithdrawFailure {
         currency,
       ),
 
+    WithdrawConfidentialSepaNotActivatedFailure() =>
+      context.loc.recipientsConfidentialSepaNotActivatedError,
+
     // Never `logMessage`: the raw reason is logged at the boundary and is
     // never fit to show a user. The copy stays actionable — "try again or
     // contact support" — rather than a bare "something went wrong", matching

@@ -5,6 +5,10 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.started() = PayStarted;
   const factory PayEvent.recipientSelected(RecipientViewModel recipient) =
       PayRecipientSelected;
+  const factory PayEvent.recipientUpdated(
+    RecipientViewModel recipient, {
+    @Default(false) bool resumePendingOrder,
+  }) = PayRecipientUpdated;
   const factory PayEvent.amountInputContinuePressed({
     required String amountInput,
     required FiatCurrency fiatCurrency,

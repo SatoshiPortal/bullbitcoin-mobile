@@ -116,6 +116,7 @@ class SepaEurFormDataModel extends RecipientFormDataModel {
   final String? lastname;
   final String? corporateName;
   final bool isOwner;
+  final bool isConfidential;
 
   const SepaEurFormDataModel({
     required this.iban,
@@ -124,20 +125,21 @@ class SepaEurFormDataModel extends RecipientFormDataModel {
     this.firstname,
     this.lastname,
     this.corporateName,
+    this.isConfidential = false,
     super.label,
   }) : super(type: RecipientType.sepaEur);
 
   @override
   RecipientDetailsDto toDto() {
     return RecipientDetailsDto(
-      recipientType: type,
-      isOwner: isOwner,
+      recipientType: isConfidential ? RecipientType.confidentialSepaEur : type,
+      isOwner: isConfidential ? true : isOwner,
       label: label,
       iban: iban,
-      isCorporate: isCorporate,
+      isCorporate: isConfidential ? false : isCorporate,
       firstname: firstname,
       lastname: lastname,
-      corporateName: corporateName,
+      corporateName: isConfidential ? null : corporateName,
     );
   }
 }

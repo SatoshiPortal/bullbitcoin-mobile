@@ -1,11 +1,14 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -69,6 +72,7 @@ void main() {
     orderAmount: const FiatAmount(100),
     recipientId: 'recipient-1',
     network: OrderBitcoinNetwork.bitcoin,
+    recipientType: RecipientType.interacEmailCad,
   );
 
   group('PlacePayOrderUsecase', () {
@@ -81,6 +85,7 @@ void main() {
             recipientId: any(named: 'recipientId'),
             network: any(named: 'network'),
             paymentDescription: any(named: 'paymentDescription'),
+            paymentProcessor: any(named: 'paymentProcessor'),
             usePayjoin: any(named: 'usePayjoin'),
           ),
         ).thenThrow(ApiKeyException(_rawReason));
@@ -100,6 +105,7 @@ void main() {
           recipientId: any(named: 'recipientId'),
           network: any(named: 'network'),
           paymentDescription: any(named: 'paymentDescription'),
+          paymentProcessor: any(named: 'paymentProcessor'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
       ).thenThrow(
@@ -114,6 +120,34 @@ void main() {
       expect(failure.currency, 'CAD');
     });
 
+    test(
+      'an inactive Confidential SEPA recipient is a typed failure',
+      () async {
+        when(
+          () => mainnet.placePayOrder(
+            orderAmount: any(named: 'orderAmount'),
+            recipientId: any(named: 'recipientId'),
+            network: any(named: 'network'),
+            paymentDescription: any(named: 'paymentDescription'),
+            paymentProcessor: SepaPaymentProcessor.confidential,
+            usePayjoin: any(named: 'usePayjoin'),
+          ),
+        ).thenThrow(const ConfidentialSepaNotActivatedException());
+
+        final result = await buildPlace().execute(
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          recipientType: RecipientType.confidentialSepaEur,
+        );
+
+        expect(
+          (result as Err<FiatPaymentOrder, PayFailure>).failure,
+          isA<PayConfidentialSepaNotActivatedFailure>(),
+        );
+      },
+    );
+
     test('any other reason is sanitized into the catch-all', () async {
       when(
         () => mainnet.placePayOrder(
@@ -121,6 +155,7 @@ void main() {
           recipientId: any(named: 'recipientId'),
           network: any(named: 'network'),
           paymentDescription: any(named: 'paymentDescription'),
+          paymentProcessor: any(named: 'paymentProcessor'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
       ).thenThrow(Exception(_rawReason));

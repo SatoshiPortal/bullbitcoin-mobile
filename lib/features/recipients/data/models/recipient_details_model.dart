@@ -1,12 +1,14 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_payment_option.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_details_model.freezed.dart';
 part 'recipient_details_model.g.dart';
 
-/// Flat structure for JSON serialization/deserialization of all recipient types
+/// Wire model for JSON serialization/deserialization of all recipient types
 /// that doesn't include null values when serialized so the API only receives relevant fields.
 /// Maps directly to the API's JSON structure
 @freezed
@@ -38,6 +40,8 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? firstname,
     String? lastname,
     String? corporateName,
+    @JsonKey(name: 'virtualPayeeStatus') String? virtualPayeeStatus,
+    @JsonKey(includeToJson: false) List<String>? paymentProcessors,
     String? clabe,
     String? institutionCode,
     String? phone,
@@ -105,10 +109,10 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
 
-      RecipientType.sepaEur => () {
+      RecipientType.sepaEur || RecipientType.confidentialSepaEur => () {
         final d = details as SepaEurDetails;
         return RecipientDetailsModel(
-          recipientTypeFiat: type.value,
+          recipientTypeFiat: _recipientTypeToApi(type),
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -117,6 +121,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           firstname: d.firstname,
           lastname: d.lastname,
           corporateName: d.corporateName,
+          virtualPayeeStatus: _virtualPayeeStatusToApi(d.virtualPayeeStatus),
         );
       }(),
 
@@ -261,6 +266,8 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       firstname: firstname,
       lastname: lastname,
       corporateName: corporateName,
+      virtualPayeeStatus: _virtualPayeeStatusFromApi(virtualPayeeStatus),
+      paymentOptions: _sepaPaymentOptionsFromApi(paymentProcessors),
       clabe: clabe,
       institutionCode: institutionCode,
       phone: phone,
@@ -278,4 +285,42 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
 
     return dto.toDomain();
   }
+}
+
+String _recipientTypeToApi(RecipientType type) => switch (type) {
+  RecipientType.confidentialSepaEur => RecipientType.sepaEur.value,
+  _ => type.value,
+};
+
+SepaVirtualPayeeStatus _virtualPayeeStatusFromApi(String? value) =>
+    switch (value) {
+      null => SepaVirtualPayeeStatus.absent,
+      'CREATED' => SepaVirtualPayeeStatus.created,
+      'PROCESSING' => SepaVirtualPayeeStatus.processing,
+      'ACTIVE' => SepaVirtualPayeeStatus.active,
+      _ => SepaVirtualPayeeStatus.unknown,
+    };
+
+String? _virtualPayeeStatusToApi(SepaVirtualPayeeStatus status) =>
+    switch (status) {
+      SepaVirtualPayeeStatus.absent => null,
+      SepaVirtualPayeeStatus.created => 'CREATED',
+      SepaVirtualPayeeStatus.processing => 'PROCESSING',
+      SepaVirtualPayeeStatus.active => 'ACTIVE',
+      SepaVirtualPayeeStatus.unknown => null,
+    };
+
+Set<SepaPaymentOption> _sepaPaymentOptionsFromApi(List<String>? values) {
+  if (values == null) return const {SepaPaymentOption.regular};
+  return values
+      .map(
+        (value) => switch (value) {
+          'REGULAR_SEPA' => SepaPaymentOption.regular,
+          'CONFIDENTIAL_SEPA' => SepaPaymentOption.confidential,
+          'LARGE_VALUE_SEPA' => SepaPaymentOption.largeValue,
+          _ => null,
+        },
+      )
+      .whereType<SepaPaymentOption>()
+      .toSet();
 }

@@ -1,8 +1,10 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
+import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_description_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_details_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
@@ -13,6 +15,8 @@ import 'package:go_router/go_router.dart';
 enum WithdrawRoute {
   withdraw('/withdraw'),
   withdrawRecipients('/withdraw/recipients'),
+  withdrawFrPayeeActivation('/withdraw/fr-payee-activation'),
+  withdrawPaymentDescription('/withdraw/payment-description'),
   withdrawPaymentDetails('/withdraw/payment-details'),
   withdrawConfirmation('/withdraw/confirmation'),
   withdrawSuccess('/withdraw/success');
@@ -86,6 +90,25 @@ class WithdrawRouter {
             child: const WithdrawRecipientsScreen(),
           );
         },
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawFrPayeeActivation.path,
+        name: WithdrawRoute.withdrawFrPayeeActivation.name,
+        builder: (context, state) {
+          final args = state.extra! as FrPayeeActivationArgs;
+          return FrPayeeActivationScreen(
+            recipient: args.recipient,
+            onActivated: args.onActivated,
+            onUseRegularSepa: args.onUseRegularSepa,
+          );
+        },
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawPaymentDescription.path,
+        name: WithdrawRoute.withdrawPaymentDescription.name,
+        builder: (context, state) => WithdrawPaymentDescriptionScreen(
+          initialDescription: state.extra as String? ?? '',
+        ),
       ),
       GoRoute(
         path: WithdrawRoute.withdrawPaymentDetails.path,

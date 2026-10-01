@@ -21,6 +21,7 @@ sealed class WithdrawState with _$WithdrawState {
     required RecipientSelection recipient,
     @Default(false) bool isCreatingWithdrawOrder,
     WithdrawFailure? failure,
+    String? paymentDescription,
   }) = WithdrawPaymentDetailsInputState;
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
@@ -32,6 +33,7 @@ sealed class WithdrawState with _$WithdrawState {
     @Default(false) bool saveSecurityDetailsAsDefault,
     @Default(false) bool isConfirmingWithdrawal,
     WithdrawFailure? failure,
+    String? paymentDescription,
   }) = WithdrawConfirmationState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
@@ -44,8 +46,8 @@ sealed class WithdrawState with _$WithdrawState {
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,
       recipientInput: (_, _, currency, _, _, _) => currency,
-      paymentDetailsInput: (_, _, currency, _, _, _) => currency,
-      confirmation: (_, _, currency, _, _, _, _, _, _) => currency,
+      paymentDetailsInput: (_, _, currency, _, _, _, _) => currency,
+      confirmation: (_, _, currency, _, _, _, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
   }
@@ -64,8 +66,15 @@ sealed class WithdrawState with _$WithdrawState {
             selectedRecipientFailure,
           ) => WithdrawAmountInputState(userSummary: userSummary),
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, failure) =>
-              WithdrawAmountInputState(userSummary: userSummary),
+          (
+            userSummary,
+            amount,
+            currency,
+            recipient,
+            isCreating,
+            failure,
+            paymentDescription,
+          ) => WithdrawAmountInputState(userSummary: userSummary),
       confirmation:
           (
             userSummary,
@@ -77,6 +86,7 @@ sealed class WithdrawState with _$WithdrawState {
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
             failure,
+            paymentDescription,
           ) => WithdrawAmountInputState(userSummary: userSummary),
     );
   }
@@ -100,12 +110,19 @@ sealed class WithdrawState with _$WithdrawState {
             selectedRecipientFailure: null,
           ),
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, failure) =>
-              WithdrawRecipientInputState(
-                userSummary: userSummary,
-                amount: amount,
-                currency: currency,
-              ),
+          (
+            userSummary,
+            amount,
+            currency,
+            recipient,
+            isCreating,
+            failure,
+            paymentDescription,
+          ) => WithdrawRecipientInputState(
+            userSummary: userSummary,
+            amount: amount,
+            currency: currency,
+          ),
       confirmation:
           (
             userSummary,
@@ -117,6 +134,7 @@ sealed class WithdrawState with _$WithdrawState {
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
             failure,
+            paymentDescription,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
@@ -138,6 +156,7 @@ sealed class WithdrawState with _$WithdrawState {
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
             failure,
+            paymentDescription,
           ) => WithdrawConfirmationState(
             userSummary: userSummary,
             amount: amount,
@@ -147,6 +166,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails: interacSecurityDetails,
             saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
             failure: null,
+            paymentDescription: paymentDescription,
           ),
     );
   }
@@ -154,13 +174,21 @@ sealed class WithdrawState with _$WithdrawState {
   WithdrawPaymentDetailsInputState? get cleanPaymentDetailsInputState {
     return whenOrNull(
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, failure) =>
-              WithdrawPaymentDetailsInputState(
-                userSummary: userSummary,
-                amount: amount,
-                currency: currency,
-                recipient: recipient,
-              ),
+          (
+            userSummary,
+            amount,
+            currency,
+            recipient,
+            isCreating,
+            failure,
+            paymentDescription,
+          ) => WithdrawPaymentDetailsInputState(
+            userSummary: userSummary,
+            amount: amount,
+            currency: currency,
+            recipient: recipient,
+            paymentDescription: paymentDescription,
+          ),
       confirmation:
           (
             userSummary,
@@ -172,11 +200,13 @@ sealed class WithdrawState with _$WithdrawState {
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
             failure,
+            paymentDescription,
           ) => WithdrawPaymentDetailsInputState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
             recipient: recipient,
+            paymentDescription: paymentDescription,
           ),
     );
   }
@@ -207,6 +237,7 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
   WithdrawConfirmationState toConfirmationState({
     required RecipientSelection recipient,
     required WithdrawOrder order,
+    String? paymentDescription,
   }) {
     return WithdrawConfirmationState(
       userSummary: userSummary,
@@ -214,17 +245,20 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
       currency: currency,
       recipient: recipient,
       order: order,
+      paymentDescription: paymentDescription,
     );
   }
 
   WithdrawPaymentDetailsInputState toPaymentDetailsInputState({
     required RecipientSelection recipient,
+    String? paymentDescription,
   }) {
     return WithdrawPaymentDetailsInputState(
       userSummary: userSummary,
       amount: amount,
       currency: currency,
       recipient: recipient,
+      paymentDescription: paymentDescription,
     );
   }
 }
@@ -244,6 +278,7 @@ extension WithdrawPaymentDetailsInputStateX
       order: order,
       interacSecurityDetails: interacSecurityDetails,
       saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
+      paymentDescription: paymentDescription,
     );
   }
 }

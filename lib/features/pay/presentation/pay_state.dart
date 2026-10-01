@@ -17,6 +17,8 @@ sealed class PayState with _$PayState {
     required UserSummary userSummary,
     required FiatAmount amount,
     String? paymentDescription,
+    Wallet? pendingWallet,
+    OrderBitcoinNetwork? pendingExternalNetwork,
     @Default(false) bool isCreatingPayOrder,
     PayFailure? error,
   }) = PayWalletSelectionState;

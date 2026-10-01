@@ -50,6 +50,13 @@ class RegularSepa extends FundingMethod {
   FundingJurisdiction get jurisdiction => FundingJurisdiction.europe;
 }
 
+class ConfidentialSepa extends FundingMethod {
+  const ConfidentialSepa();
+
+  @override
+  FundingJurisdiction get jurisdiction => FundingJurisdiction.europe;
+}
+
 class SpeiTransfer extends FundingMethod {
   const SpeiTransfer();
 

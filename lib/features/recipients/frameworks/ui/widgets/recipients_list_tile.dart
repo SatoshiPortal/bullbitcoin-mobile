@@ -96,6 +96,10 @@ class RecipientsListTile extends StatelessWidget {
                 label: context.loc.recipientsFieldIban,
                 value: recipient.iban,
               ),
+              RecipientType.confidentialSepaEur => _InfoRow(
+                label: context.loc.recipientsFieldIban,
+                value: recipient.iban,
+              ),
               RecipientType.speiClabeMxn => _InfoRow(
                 label: context.loc.recipientsFieldClabe,
                 value: recipient.clabe,

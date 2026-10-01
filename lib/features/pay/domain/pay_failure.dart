@@ -70,6 +70,12 @@ final class PayFeesUnavailableFailure extends PayFailure {
   const PayFeesUnavailableFailure([super.logMessage]);
 }
 
+/// The selected Confidential SEPA recipient does not have an active virtual
+/// payee yet.
+final class PayConfidentialSepaNotActivatedFailure extends PayFailure {
+  const PayConfidentialSepaNotActivatedFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

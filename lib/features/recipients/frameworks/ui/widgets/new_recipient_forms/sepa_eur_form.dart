@@ -9,9 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SepaEurForm extends StatefulWidget {
-  const SepaEurForm({super.key, this.hookError});
+  const SepaEurForm({super.key, this.hookError, this.isConfidential = false});
 
   final String? hookError;
+  final bool isConfidential;
 
   @override
   SepaEurFormState createState() => SepaEurFormState();
@@ -40,7 +41,7 @@ class SepaEurFormState extends State<SepaEurForm> {
         .read<RecipientsBloc>()
         .state
         .onlyOwnerRecipients;
-    if (_onlyOwnerPermitted) {
+    if (_onlyOwnerPermitted || widget.isConfidential) {
       _isMyAccount = true;
     }
   }
@@ -59,12 +60,15 @@ class SepaEurFormState extends State<SepaEurForm> {
     if (_formKey.currentState?.validate() ?? false) {
       final formData = SepaEurFormDataModel(
         iban: _iban,
-        isCorporate: _isCorporate,
-        isOwner: _isMyAccount,
-        firstname: _isCorporate ? null : _firstname,
-        lastname: _isCorporate ? null : _lastname,
-        corporateName: _isCorporate ? _corporateName : null,
+        isCorporate: widget.isConfidential ? false : _isCorporate,
+        isOwner: widget.isConfidential ? true : _isMyAccount,
+        firstname: _isCorporate && !widget.isConfidential ? null : _firstname,
+        lastname: _isCorporate && !widget.isConfidential ? null : _lastname,
+        corporateName: _isCorporate && !widget.isConfidential
+            ? _corporateName
+            : null,
         label: _label.isEmpty ? null : _label,
+        isConfidential: widget.isConfidential,
       );
 
       context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
@@ -103,25 +107,27 @@ class SepaEurFormState extends State<SepaEurForm> {
             },
           ),
           const Gap(16.0),
-          CheckboxListTile(
-            title: Text(context.loc.recipientsFieldCorporateAccount),
-            value: _isCorporate,
-            onChanged: (value) {
-              setState(() {
-                _isCorporate = value ?? false;
-                // Clear opposite fields when toggling
-                if (_isCorporate) {
-                  _firstname = '';
-                  _lastname = '';
-                } else {
-                  _corporateName = '';
-                }
-              });
-            },
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: .leading,
-          ),
-          const Gap(12.0),
+          if (!widget.isConfidential) ...[
+            CheckboxListTile(
+              title: Text(context.loc.recipientsFieldCorporateAccount),
+              value: _isCorporate,
+              onChanged: (value) {
+                setState(() {
+                  _isCorporate = value ?? false;
+                  // Clear opposite fields when toggling
+                  if (_isCorporate) {
+                    _firstname = '';
+                    _lastname = '';
+                  } else {
+                    _corporateName = '';
+                  }
+                });
+              },
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: .leading,
+            ),
+            const Gap(12.0),
+          ],
           if (!_isCorporate) ...[
             BBTextFormField(
               labelText: context.loc.recipientsFieldFirstName,
@@ -187,43 +193,45 @@ class SepaEurFormState extends State<SepaEurForm> {
               });
             },
           ),
-          const Gap(16.0),
-          Text(
-            context.loc.recipientsAccountOwnerQuestion,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: .w500,
-              color: context.appColors.onSurface,
+          if (!widget.isConfidential) ...[
+            const Gap(16.0),
+            Text(
+              context.loc.recipientsAccountOwnerQuestion,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: .w500,
+                color: context.appColors.onSurface,
+              ),
             ),
-          ),
-          const Gap(8.0),
-          RadioGroup<bool>(
-            groupValue: _isMyAccount,
-            onChanged: (value) {
-              if (!_onlyOwnerPermitted) {
-                setState(() {
-                  _isMyAccount = value ?? false;
-                });
-              }
-            },
-            child: Column(
-              children: [
-                RadioListTile<bool>(
-                  title: Text(context.loc.recipientsAccountOwnerMine),
-                  value: true,
-                  contentPadding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                ),
-                const Gap(8.0),
-                RadioListTile<bool>(
-                  title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
-                  value: false,
-                  contentPadding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
+            const Gap(8.0),
+            RadioGroup<bool>(
+              groupValue: _isMyAccount,
+              onChanged: (value) {
+                if (!_onlyOwnerPermitted) {
+                  setState(() {
+                    _isMyAccount = value ?? false;
+                  });
+                }
+              },
+              child: Column(
+                children: [
+                  RadioListTile<bool>(
+                    title: Text(context.loc.recipientsAccountOwnerMine),
+                    value: true,
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  const Gap(8.0),
+                  RadioListTile<bool>(
+                    title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
+                    value: false,
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
           const Gap(24.0),
           RecipientFormContinueButton(
             onPressed: _submitForm,

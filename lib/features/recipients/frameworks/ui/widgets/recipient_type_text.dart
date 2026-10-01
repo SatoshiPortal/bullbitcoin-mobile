@@ -19,6 +19,8 @@ class RecipientTypeText extends StatelessWidget {
       RecipientType.bankTransferCad => context.loc.recipientsTypeBankTransfer,
       // EUROPE types
       RecipientType.sepaEur => context.loc.recipientsTypeSepa,
+      RecipientType.confidentialSepaEur =>
+        context.loc.recipientsTypeConfidentialSepa,
       // MEXICO types
       RecipientType.speiClabeMxn => context.loc.recipientsTypeSpeiClabe,
       RecipientType.speiSmsMxn => context.loc.recipientsTypeSpeiSms,

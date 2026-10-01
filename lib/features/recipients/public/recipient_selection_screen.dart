@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_typ
 import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_selection.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:flutter/widgets.dart';
 
 /// Public recipients picker that does not expose recipients feature internals.
@@ -29,33 +28,13 @@ class RecipientSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return RecipientsScreen(
       filter: RecipientFilterCriteria(types: types, isOwner: isOwner),
-      onRecipientSelected: (recipient, {required isNew}) =>
-          onRecipientSelected(_toSelection(recipient), isNew: isNew),
+      onRecipientSelected: (recipient, {required isNew}) => onRecipientSelected(
+        RecipientSelection.fromViewModel(recipient),
+        isNew: isNew,
+      ),
       isHookRunning: isHookRunning,
       onRecipientAddedHookError: onRecipientAddedHookError,
       onRecipientSelectedHookError: onRecipientSelectedHookError,
-    );
-  }
-
-  RecipientSelection _toSelection(RecipientViewModel recipient) {
-    return RecipientSelection(
-      id: recipient.id,
-      type: recipient.type,
-      displayName: recipient.displayName,
-      email: recipient.email,
-      securityQuestion: recipient.securityQuestion,
-      securityAnswer: recipient.securityAnswer,
-      payeeName: recipient.payeeName,
-      payeeCode: recipient.payeeCode,
-      payeeAccountNumber: recipient.payeeAccountNumber,
-      institutionNumber: recipient.institutionNumber,
-      transitNumber: recipient.transitNumber,
-      accountNumber: recipient.accountNumber,
-      iban: recipient.iban,
-      clabe: recipient.clabe,
-      phoneNumber: recipient.phoneNumber,
-      debitcard: recipient.debitcard,
-      bankAccount: recipient.bankAccount,
     );
   }
 }

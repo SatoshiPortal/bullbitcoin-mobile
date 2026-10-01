@@ -112,6 +112,9 @@ sealed class GetFundingDetailsResponseModel
       CopBankTransfer() => CopBankTransferFundingDetails(
         paymentLink: paymentLink!,
       ),
+      ConfidentialSepa() => throw ArgumentError(
+        'Confidential SEPA details are not served by the funding gateway',
+      ),
     };
   }
 }

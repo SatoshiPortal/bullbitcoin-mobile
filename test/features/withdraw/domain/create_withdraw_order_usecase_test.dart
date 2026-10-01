@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -52,21 +55,31 @@ void main() {
     );
   });
 
-  test('validates and submits trimmed Interac security details', () async {
-    final order = _MockWithdrawOrder();
+  void stubPlaceOrder(
+    _MockExchangeOrderRepository repository,
+    WithdrawOrder order,
+  ) {
     when(
-      () => mainnetRepository.placeWithdrawalOrder(
+      () => repository.placeWithdrawalOrder(
         fiatAmount: any(named: 'fiatAmount'),
         recipientId: any(named: 'recipientId'),
+        paymentProcessor: any(named: 'paymentProcessor'),
+        paymentDescription: any(named: 'paymentDescription'),
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
       ),
     ).thenAnswer((_) async => order);
+  }
+
+  test('validates and submits trimmed Interac security details', () async {
+    final order = _MockWithdrawOrder();
+    stubPlaceOrder(mainnetRepository, order);
 
     final result = _ok(
       await usecase.execute(
         fiatAmount: 125,
         recipientId: 'recipient-1',
+        recipientType: RecipientType.interacEmailCad,
         recipientEmail: 'person@example.com',
         securityQuestion: '  Favourite city?  ',
         securityAnswer: '  Montreal  ',
@@ -80,6 +93,8 @@ void main() {
       () => mainnetRepository.placeWithdrawalOrder(
         fiatAmount: 125,
         recipientId: 'recipient-1',
+        paymentProcessor: null,
+        paymentDescription: null,
         securityQuestion: 'Favourite city?',
         securityAnswer: 'Montreal',
       ),
@@ -88,17 +103,14 @@ void main() {
 
   test('keeps non-Interac withdrawal payload unchanged', () async {
     final order = _MockWithdrawOrder();
-    when(
-      () => mainnetRepository.placeWithdrawalOrder(
-        fiatAmount: any(named: 'fiatAmount'),
-        recipientId: any(named: 'recipientId'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => order);
+    stubPlaceOrder(mainnetRepository, order);
 
     final result = _ok(
-      await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
+      await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientType: RecipientType.bankTransferCad,
+      ),
     );
 
     expect(result.order, same(order));
@@ -107,6 +119,8 @@ void main() {
       () => mainnetRepository.placeWithdrawalOrder(
         fiatAmount: 125,
         recipientId: 'recipient-1',
+        paymentProcessor: null,
+        paymentDescription: null,
         securityQuestion: null,
         securityAnswer: null,
       ),
@@ -119,6 +133,7 @@ void main() {
       final result = await usecase.execute(
         fiatAmount: 125,
         recipientId: 'recipient-1',
+        recipientType: RecipientType.interacEmailCad,
         recipientEmail: 'person@example.com',
         securityQuestion: 'Favourite city?',
       );
@@ -135,6 +150,7 @@ void main() {
       final result = await usecase.execute(
         fiatAmount: 125,
         recipientId: 'recipient-1',
+        recipientType: RecipientType.interacEmailCad,
         recipientEmail: 'person@example.com',
         securityQuestion: 'Favourite city?',
         securityAnswer: 'Montreal!',
@@ -155,17 +171,14 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => testnetRepository.placeWithdrawalOrder(
-        fiatAmount: any(named: 'fiatAmount'),
-        recipientId: any(named: 'recipientId'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => order);
+    stubPlaceOrder(testnetRepository, order);
 
     final result = _ok(
-      await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
+      await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientType: RecipientType.bankTransferCad,
+      ),
     );
 
     expect(result.order, same(order));
@@ -178,6 +191,7 @@ void main() {
     final result = await usecase.execute(
       fiatAmount: 125,
       recipientId: 'recipient-1',
+      recipientType: RecipientType.bankTransferCad,
     );
 
     expect(
@@ -188,5 +202,75 @@ void main() {
         isNot(contains('Montreal')),
       ),
     );
+  });
+
+  group('SEPA payment processor', () {
+    test('maps confidential SEPA to the confidential processor', () async {
+      final order = _MockWithdrawOrder();
+      stubPlaceOrder(mainnetRepository, order);
+
+      final result = await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientType: RecipientType.confidentialSepaEur,
+      );
+
+      expect(_ok(result).order, same(order));
+      verify(
+        () => mainnetRepository.placeWithdrawalOrder(
+          fiatAmount: 125,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+          paymentDescription: null,
+          securityQuestion: null,
+          securityAnswer: null,
+        ),
+      ).called(1);
+    });
+
+    test('maps regular SEPA and forwards the description', () async {
+      final order = _MockWithdrawOrder();
+      stubPlaceOrder(mainnetRepository, order);
+
+      final result = await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientType: RecipientType.sepaEur,
+        paymentDescription: 'invoice 42',
+      );
+
+      expect(_ok(result).order, same(order));
+      verify(
+        () => mainnetRepository.placeWithdrawalOrder(
+          fiatAmount: 125,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.regular,
+          paymentDescription: 'invoice 42',
+          securityQuestion: null,
+          securityAnswer: null,
+        ),
+      ).called(1);
+    });
+
+    test('maps an inactive confidential payee to the typed failure', () async {
+      when(
+        () => mainnetRepository.placeWithdrawalOrder(
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
+          securityQuestion: any(named: 'securityQuestion'),
+          securityAnswer: any(named: 'securityAnswer'),
+        ),
+      ).thenThrow(const ConfidentialSepaNotActivatedException());
+
+      final result = await usecase.execute(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        recipientType: RecipientType.confidentialSepaEur,
+      );
+
+      expect(_err(result), isA<WithdrawConfidentialSepaNotActivatedFailure>());
+    });
   });
 }

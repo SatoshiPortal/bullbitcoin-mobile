@@ -15,6 +15,7 @@ sealed class FundExchangeState with _$FundExchangeState {
     @Default(false) bool isSubmittingScamWarningConsent,
     FundExchangePresentationError? submitScamWarningConsentException,
     PendingConsentAction? pendingConsentAction,
+    VirtualIban? virtualIban,
   }) = _FundExchangeState;
   const FundExchangeState._();
 
@@ -22,6 +23,14 @@ sealed class FundExchangeState with _$FundExchangeState {
       getExchangeFundingDetailsException != null;
 
   bool get isFundingRestricted => userSummary?.isFundingRestricted ?? false;
+
+  bool get canShowConfidentialSepa => !(userSummary?.isCorporate ?? true);
+
+  String get confidentialSepaOwnerName {
+    final profile = userSummary?.profile;
+    if (profile == null) return '';
+    return '${profile.firstName} ${profile.lastName}'.trim();
+  }
 
   FundingJurisdiction get initialFundingJurisdiction {
     // Map preffered currency to jurisdiction

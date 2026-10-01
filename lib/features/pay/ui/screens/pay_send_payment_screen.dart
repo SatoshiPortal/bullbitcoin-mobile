@@ -161,7 +161,9 @@ class PaySendPaymentScreen extends StatelessWidget {
                       RecipientType.billPaymentCad => 'Bill Payment',
                       RecipientType.bankTransferCad => 'Bank Transfer',
                       // EUROPE types
-                      RecipientType.sepaEur => 'SEPA Transfer',
+                      RecipientType.sepaEur => context.loc.recipientsTypeSepa,
+                      RecipientType.confidentialSepaEur =>
+                        context.loc.recipientsTypeConfidentialSepa,
                       // MEXICO types
                       RecipientType.speiClabeMxn => 'SPEI CLABE',
                       RecipientType.speiSmsMxn => 'SPEI SMS',
@@ -284,6 +286,7 @@ class PaySendPaymentScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;

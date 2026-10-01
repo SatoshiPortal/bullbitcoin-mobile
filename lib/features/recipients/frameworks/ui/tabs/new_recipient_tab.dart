@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/confidential_sepa_onboarding.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_account_cop_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_transfer_cad_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bill_payment_cad_form.dart';
@@ -70,6 +71,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
       crossAxisAlignment: .start,
       children: [
         JurisdictionsDropdown(
+          creationOnly: true,
           selectedJurisdiction: _selectedJurisdiction,
           onChanged: (newJurisdiction) {
             if (newJurisdiction == null) return;
@@ -112,7 +114,19 @@ class NewRecipientTabState extends State<NewRecipientTab> {
             hookError: widget.hookError,
           ),
           // EUROPE types
-          RecipientType.sepaEur => SepaEurForm(hookError: widget.hookError),
+          RecipientType.sepaEur => SepaEurForm(
+            key: ValueKey(_selectedRecipientType),
+            hookError: widget.hookError,
+          ),
+          RecipientType.confidentialSepaEur => ConfidentialSepaOnboarding(
+            key: ValueKey(_selectedRecipientType),
+            hookError: widget.hookError,
+            onUseRegularSepa: () {
+              setState(() {
+                _selectedRecipientType = RecipientType.sepaEur;
+              });
+            },
+          ),
           // MEXICO types
           RecipientType.speiClabeMxn => SpeiClabeMxnForm(
             hookError: widget.hookError,

@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -19,6 +21,23 @@ Response<dynamic> _order(Map<String, dynamic> order) => Response(
   requestOptions: RequestOptions(path: '/ak/api-orders'),
   statusCode: 200,
   data: {'result': order},
+);
+
+Response<dynamic> _confidentialSepaNotActivated() => Response(
+  requestOptions: RequestOptions(path: '/ak/api-orders'),
+  statusCode: 200,
+  data: {
+    'error': {
+      'code': -32602,
+      'message': 'Invalid method parameter(s)',
+      'data': {
+        'apiError': {
+          'code': 'ERR_ORD_CSRCP400',
+          'message': 'Please activate virtual payment option',
+        },
+      },
+    },
+  },
 );
 
 void main() {
@@ -135,6 +154,84 @@ void main() {
           'securityAnswer': 'Montreal',
         },
       });
+    });
+
+    test('sends the payment processor and trimmed description', () async {
+      when(
+        () => dio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => _order(orderJsonFixture()));
+
+      await datasource.createWithdrawalOrder(
+        apiKey: 'key',
+        fiatAmount: 100,
+        recipientId: 'recipient-1',
+        paymentProcessor: SepaPaymentProcessor.regular,
+        paymentDescription: '  invoice 42  ',
+      );
+
+      final request =
+          verify(
+                () => dio.post(
+                  '/ak/api-orders',
+                  data: captureAny(named: 'data'),
+                  options: any(named: 'options'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
+      expect(request['params']['paymentProcessor'], 'REGULAR_SEPA');
+      expect(request['params']['paymentDescription'], 'invoice 42');
+    });
+  });
+
+  group('confidential SEPA activation errors', () {
+    setUp(() {
+      when(
+        () => dio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => _confidentialSepaNotActivated());
+    });
+
+    test('sellToRecipient reads the nested api error code', () async {
+      expect(
+        datasource.createPayOrder(
+          apiKey: 'key',
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<ConfidentialSepaNotActivatedApiException>()),
+      );
+
+      final request =
+          verify(
+                () => dio.post(
+                  any(),
+                  data: captureAny(named: 'data'),
+                  options: any(named: 'options'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
+      expect(request['params']['paymentProcessor'], 'CONFIDENTIAL_SEPA');
+    });
+
+    test('createWithdrawalOrder reads the nested api error code', () async {
+      expect(
+        datasource.createWithdrawalOrder(
+          apiKey: 'key',
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<ConfidentialSepaNotActivatedApiException>()),
+      );
     });
   });
 }

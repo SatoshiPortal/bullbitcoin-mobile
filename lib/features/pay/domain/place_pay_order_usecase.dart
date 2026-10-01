@@ -1,8 +1,11 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
@@ -29,6 +32,7 @@ class PlacePayOrderUsecase {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    required RecipientType recipientType,
     bool usePayjoin = false,
   }) async {
     try {
@@ -47,6 +51,7 @@ class PlacePayOrderUsecase {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        paymentProcessor: _paymentProcessor(recipientType),
         usePayjoin:
             usePayjoin &&
             payjoinEnabled &&
@@ -85,9 +90,18 @@ class PlacePayOrderUsecase {
           logMessage: e.message,
         ),
       );
-    } catch (e, st) {
+    } on ConfidentialSepaNotActivatedException catch (e) {
+      log.info('Confidential SEPA recipient is not active: ${e.message}');
+      return Err(PayConfidentialSepaNotActivatedFailure(e.message));
+    } on Exception catch (e, st) {
       log.severe(message: 'Failed to place the pay order', error: e, trace: st);
       return Err(PayUnexpectedFailure('$e'));
     }
   }
+
+  SepaPaymentProcessor? _paymentProcessor(RecipientType type) => switch (type) {
+    RecipientType.confidentialSepaEur => SepaPaymentProcessor.confidential,
+    RecipientType.sepaEur => SepaPaymentProcessor.regular,
+    _ => null,
+  };
 }

@@ -97,9 +97,13 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     }
 
     final recipient = event.recipient;
+    final paymentDescription = event.paymentDescription?.trim();
     if (recipient.requiresInteracSecurityDetails) {
       emit(
-        recipientInputState.toPaymentDetailsInputState(recipient: recipient),
+        recipientInputState.toPaymentDetailsInputState(
+          recipient: recipient,
+          paymentDescription: paymentDescription,
+        ),
       );
       return;
     }
@@ -110,12 +114,15 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       switch (await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.id,
+        recipientType: recipient.type,
+        paymentDescription: paymentDescription,
       )) {
         case Ok(:final value):
           emit(
             recipientInputState.toConfirmationState(
               recipient: recipient,
               order: value.order,
+              paymentDescription: paymentDescription,
             ),
           );
         case Err(:final failure):
@@ -185,6 +192,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       switch (await _createWithdrawOrderUsecase.execute(
         fiatAmount: securityDetailsState.amount.amount,
         recipientId: recipient.id,
+        recipientType: recipient.type,
+        paymentDescription: securityDetailsState.paymentDescription,
         recipientEmail: recipient.email,
         securityQuestion: event.securityQuestion,
         securityAnswer: event.securityAnswer,

@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_payment_option.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -27,6 +29,8 @@ class RecipientDetailsDto {
   final String? firstname;
   final String? lastname;
   final String? corporateName;
+  final SepaVirtualPayeeStatus virtualPayeeStatus;
+  final Set<SepaPaymentOption> paymentOptions;
   final String? clabe;
   final String? institutionCode;
   final String? phone;
@@ -62,6 +66,8 @@ class RecipientDetailsDto {
     this.firstname,
     this.lastname,
     this.corporateName,
+    this.virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    this.paymentOptions = const {SepaPaymentOption.regular},
     this.clabe,
     this.institutionCode,
     this.phone,
@@ -149,6 +155,7 @@ class RecipientDetailsDto {
 
       // EUROPE
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         if (iban == null) throw StateError('iban is required for SEPA_EUR.');
         final inferredIsCorporate =
             isCorporate ??
@@ -162,6 +169,9 @@ class RecipientDetailsDto {
           firstname: firstname,
           lastname: lastname,
           corporateName: corporateName,
+          virtualPayeeStatus: virtualPayeeStatus,
+          paymentOptions: paymentOptions,
+          isConfidential: recipientType == RecipientType.confidentialSepaEur,
         );
 
       // MEXICO

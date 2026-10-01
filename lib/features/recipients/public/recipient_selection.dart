@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 
 /// Recipient data published for cross-feature selection flows.
 final class RecipientSelection {
@@ -39,6 +40,28 @@ final class RecipientSelection {
   final String? phoneNumber;
   final String? debitcard;
   final String? bankAccount;
+
+  factory RecipientSelection.fromViewModel(RecipientViewModel recipient) {
+    return RecipientSelection(
+      id: recipient.id,
+      type: recipient.type,
+      displayName: recipient.displayName,
+      email: recipient.email,
+      securityQuestion: recipient.securityQuestion,
+      securityAnswer: recipient.securityAnswer,
+      payeeName: recipient.payeeName,
+      payeeCode: recipient.payeeCode,
+      payeeAccountNumber: recipient.payeeAccountNumber,
+      institutionNumber: recipient.institutionNumber,
+      transitNumber: recipient.transitNumber,
+      accountNumber: recipient.accountNumber,
+      iban: recipient.iban,
+      clabe: recipient.clabe,
+      phoneNumber: recipient.phoneNumber,
+      debitcard: recipient.debitcard,
+      bankAccount: recipient.bankAccount,
+    );
+  }
 
   bool get requiresInteracSecurityDetails =>
       type == RecipientType.interacEmailCad;

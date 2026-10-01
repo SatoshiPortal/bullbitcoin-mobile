@@ -39,6 +39,11 @@ final class WithdrawAboveMaxAmountFailure extends WithdrawFailure {
   }) : super(logMessage);
 }
 
+final class WithdrawConfidentialSepaNotActivatedFailure
+    extends WithdrawFailure {
+  const WithdrawConfidentialSepaNotActivatedFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

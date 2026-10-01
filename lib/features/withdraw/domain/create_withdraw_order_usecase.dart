@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -33,6 +35,8 @@ class CreateWithdrawOrderUsecase {
   Future<Result<CreateWithdrawOrderResult, WithdrawFailure>> execute({
     required double fiatAmount,
     required String recipientId,
+    required RecipientType recipientType,
+    String? paymentDescription,
     String? recipientEmail,
     String? securityQuestion,
     String? securityAnswer,
@@ -59,6 +63,8 @@ class CreateWithdrawOrderUsecase {
       final order = await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
+        paymentProcessor: _paymentProcessor(recipientType),
+        paymentDescription: paymentDescription,
         securityQuestion: interacSecurityDetails?.securityQuestion,
         securityAnswer: interacSecurityDetails?.securityAnswer,
       );
@@ -69,6 +75,9 @@ class CreateWithdrawOrderUsecase {
           interacSecurityDetails: interacSecurityDetails,
         ),
       );
+    } on ConfidentialSepaNotActivatedException catch (e) {
+      log.info('Confidential SEPA recipient is not active: ${e.message}');
+      return Err(WithdrawConfidentialSepaNotActivatedFailure(e.message));
     } on ApiKeyException catch (e, st) {
       log.severe(
         message: 'Withdrawal order rejected: not authenticated',
@@ -110,6 +119,12 @@ class CreateWithdrawOrderUsecase {
       );
     }
   }
+
+  SepaPaymentProcessor? _paymentProcessor(RecipientType type) => switch (type) {
+    RecipientType.confidentialSepaEur => SepaPaymentProcessor.confidential,
+    RecipientType.sepaEur => SepaPaymentProcessor.regular,
+    _ => null,
+  };
 
   @useResult
   Result<InteracSecurityDetails?, WithdrawFailure>

@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/confidential_sepa_not_activated_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -261,6 +263,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   }) async {
     try {
@@ -282,6 +285,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        paymentProcessor: paymentProcessor,
         usePayjoin: usePayjoin,
       );
 
@@ -293,6 +297,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on BullBitcoinApiMaxAmountException {
       rethrow;
+    } on ConfidentialSepaNotActivatedApiException {
+      throw const ConfidentialSepaNotActivatedException();
     } on ApiKeyException {
       rethrow;
     } catch (e, st) {
@@ -535,6 +541,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
+    String? paymentDescription,
     String? securityQuestion,
     String? securityAnswer,
   }) async {
@@ -555,6 +563,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
         fiatAmount: fiatAmount,
         recipientId: recipientId,
+        paymentProcessor: paymentProcessor,
+        paymentDescription: paymentDescription,
         securityQuestion: securityQuestion,
         securityAnswer: securityAnswer,
       );
@@ -568,6 +578,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
+    } on ConfidentialSepaNotActivatedApiException {
+      throw const ConfidentialSepaNotActivatedException();
     } catch (_, st) {
       // Keep the original trace: see confirmWithdrawOrder. The error itself
       // is dropped because the request carries the Interac security answer.

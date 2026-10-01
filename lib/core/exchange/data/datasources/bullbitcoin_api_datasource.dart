@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:dio/dio.dart';
@@ -330,6 +331,7 @@ class BullbitcoinApiDatasource {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   }) async {
     final params = <String, dynamic>{
@@ -346,6 +348,12 @@ class BullbitcoinApiDatasource {
 
     if (paymentDescription != null && paymentDescription.isNotEmpty) {
       params['paymentDescription'] = paymentDescription;
+    }
+
+    if (paymentProcessor != null) {
+      params['paymentProcessor'] = _serializeSepaPaymentProcessor(
+        paymentProcessor,
+      );
     }
 
     final requestData = {
@@ -376,18 +384,28 @@ class BullbitcoinApiDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
+    String? paymentDescription,
     String? securityQuestion,
     String? securityAnswer,
   }) async {
     final params = <String, dynamic>{
       'fiatAmount': fiatAmount,
       'recipientId': recipientId,
+      if (paymentDescription?.trim().isNotEmpty == true)
+        'paymentDescription': paymentDescription!.trim(),
       if (securityQuestion != null && securityAnswer != null)
         'paymentProcessorData': {
           'securityQuestion': securityQuestion,
           'securityAnswer': securityAnswer,
         },
     };
+
+    if (paymentProcessor != null) {
+      params['paymentProcessor'] = _serializeSepaPaymentProcessor(
+        paymentProcessor,
+      );
+    }
 
     final resp = await _http.post(
       _ordersPath,
@@ -809,6 +827,12 @@ class _OrderLimit {
   }
 }
 
+String _serializeSepaPaymentProcessor(SepaPaymentProcessor processor) =>
+    switch (processor) {
+      SepaPaymentProcessor.regular => 'REGULAR_SEPA',
+      SepaPaymentProcessor.confidential => 'CONFIDENTIAL_SEPA',
+    };
+
 /// Translates a JSON-RPC `error` object from the orders api into a typed
 /// exception. Always throws: an error response must never fall through to
 /// parsing `result`.
@@ -866,6 +890,17 @@ Never _throwOrderApiError(dynamic error, String contextMessage) {
     }
   }
 
+  final apiError = dataMap['apiError'];
+  final apiErrorMap = apiError is Map ? apiError : const <dynamic, dynamic>{};
+  final code = apiErrorMap['code'] ?? errorMap['code'];
+  if (code == 'ERR_ORD_CSRCP400') {
+    throw const ConfidentialSepaNotActivatedApiException();
+  }
+
   final message = errorMap['message'];
   throw Exception('$contextMessage${message is String ? ': $message' : ''}');
+}
+
+class ConfidentialSepaNotActivatedApiException implements Exception {
+  const ConfidentialSepaNotActivatedApiException();
 }

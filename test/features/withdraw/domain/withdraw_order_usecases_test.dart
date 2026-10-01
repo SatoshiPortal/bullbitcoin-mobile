@@ -75,7 +75,11 @@ void main() {
     );
 
     Future<Result<CreateWithdrawOrderResult, WithdrawFailure>> execute() =>
-        build().execute(fiatAmount: 100, recipientId: 'recipient-1');
+        build().execute(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          recipientType: RecipientType.bankTransferCad,
+        );
 
     test('returns the placed order', () async {
       final order = _MockWithdrawOrder();
@@ -83,6 +87,10 @@ void main() {
         () => mainnet.placeWithdrawalOrder(
           fiatAmount: 100,
           recipientId: 'recipient-1',
+          paymentProcessor: null,
+          paymentDescription: null,
+          securityQuestion: null,
+          securityAnswer: null,
         ),
       ).thenAnswer((_) async => order);
 
@@ -94,6 +102,8 @@ void main() {
         () => mainnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
@@ -133,6 +143,8 @@ void main() {
         () => mainnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
@@ -152,6 +164,8 @@ void main() {
         () => mainnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
@@ -176,6 +190,8 @@ void main() {
         () => testnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
@@ -189,6 +205,8 @@ void main() {
         () => mainnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          paymentDescription: any(named: 'paymentDescription'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
