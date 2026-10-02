@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -43,7 +42,7 @@ class PaySuccessScreen extends StatelessWidget {
             ),
       actions: [
         if (order != null)
-          BBButton.big(
+          BullButton.big(
             label: context.loc.payViewDetails,
             onPressed: () {
               final txId = order.payjoin?.txid;

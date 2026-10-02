@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
 class BuyAccelerateScreen extends StatelessWidget {
   const BuyAccelerateScreen({super.key});
@@ -134,7 +133,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                 if (isAcceleratingOrder)
                   const Center(child: CircularProgressIndicator())
                 else
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.buyWaitForFreeWithdrawal,
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -143,7 +142,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                     textColor: context.appColors.secondary,
                   ),
                 const Gap(16),
-                BBButton.big(
+                BullButton.big(
                   label: context.loc.buyConfirmExpress,
                   disabled: isAcceleratingOrder || !hasOrder,
                   onPressed: () {
