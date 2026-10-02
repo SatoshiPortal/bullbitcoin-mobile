@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:go_router/go_router.dart';
 
 class ShowPsbtScreen extends StatelessWidget {
@@ -45,7 +44,7 @@ class ShowPsbtScreen extends StatelessWidget {
                 ],
 
                 if (canSignViaNfc) ...[
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.psbtFlowSignViaNfc,
                     onPressed: () => NfcBottomSheet.showWriteNfc(
                       context: context,
@@ -78,7 +77,7 @@ class ShowPsbtScreen extends StatelessWidget {
                   SignerDeviceEntity.seedsigner,
                   SignerDeviceEntity.specter,
                 ].contains(signerDevice))
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.psbtFlowInstructions,
                     onPressed: () {
                       switch (signerDevice) {
@@ -119,7 +118,7 @@ class ShowPsbtScreen extends StatelessWidget {
               ],
             ),
 
-            BBButton.big(
+            BullButton.big(
               label: context.loc.psbtFlowDone,
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,

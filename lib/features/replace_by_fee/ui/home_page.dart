@@ -1,16 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -52,7 +50,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: BBText(
+                  child: BullText(
                     state.failure!.toTranslated(context),
                     style: context.font.bodyMedium,
                     color: context.appColors.error,
@@ -85,7 +83,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                     ),
                     if (state.failure != null) ...[
                       const Gap(16),
-                      BBText(
+                      BullText(
                         state.failure!.toTranslated(context),
                         style: context.font.bodyMedium,
                         color: context.appColors.error,
@@ -93,7 +91,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       const Gap(16),
                     ],
 
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.replaceByFeeBroadcastButton,
                       onPressed: () => cubit.broadcast(),
                       bgColor: context.appColors.secondary,
@@ -124,12 +122,12 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BBText(
+            BullText(
               context.loc.replaceByFeeOriginalTransactionTitle,
               style: context.font.headlineLarge,
             ),
             const Gap(16),
-            BBText(
+            BullText(
               context.loc.replaceByFeeFeeRateDisplay(
                 originalFeeRate.toStringAsFixed(1),
               ),

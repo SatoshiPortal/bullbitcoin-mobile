@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCheckbox;
+import 'package:bull_ui/bull_ui.dart' show BullCheckbox, BullText;
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -73,7 +72,7 @@ class CoinSelectTile extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
-                        BBText(
+                        BullText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.onSurface,
@@ -82,7 +81,7 @@ class CoinSelectTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    subtitle: BBText(
+                    subtitle: BullText(
                       label,
                       style: context.font.labelMedium?.copyWith(
                         color: context.appColors.onSurfaceVariant,
@@ -94,7 +93,7 @@ class CoinSelectTile extends StatelessWidget {
                     ),
                   ),
                   // const SizedBox(height: 4),
-                  BBText(
+                  BullText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -106,7 +105,7 @@ class CoinSelectTile extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.sendAddress,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
@@ -119,13 +118,13 @@ class CoinSelectTile extends StatelessWidget {
                           color: context.appColors.onSurface,
                         ),
                       ),
-                      BBText(
+                      BullText(
                         context.loc.sendType,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),
-                      BBText(
+                      BullText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
                           color: context.appColors.onSurface,

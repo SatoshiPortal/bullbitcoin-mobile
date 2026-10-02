@@ -10,17 +10,12 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
@@ -34,7 +29,6 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -47,7 +41,16 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInfoCard,
+        BullInputText,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,7 +87,7 @@ class SendAddressScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           color: context.appColors.background,
           onBack: () => context.pop(),
@@ -135,7 +138,7 @@ class SendAddressScreen extends StatelessWidget {
                             mainAxisSize: .min,
                             children: [
                               const Gap(32),
-                              BBText(
+                              BullText(
                                 context.loc.sendRecipientAddress,
                                 style: context.font.bodyMedium,
                                 color: context.appColors.secondary,
@@ -179,7 +182,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
@@ -238,7 +241,7 @@ class AddressErrorSection extends StatelessWidget {
     if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BBText(
+        child: BullText(
           failure.toTranslated(
             context,
             formattedFrozenBalance: frozenBalanceHint,
@@ -307,7 +310,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
@@ -466,7 +469,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   if (suggestsInstantPayments)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6),
-                                      child: BBText(
+                                      child: BullText(
                                         context
                                             .loc
                                             .sendErrorAmountBelowSwapLimitsBitcoin,
@@ -506,14 +509,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              BBText(
+                                              BullText(
                                                 '${context.loc.receiveNote} (optional)',
                                                 style: context.font.bodyLarge,
                                                 color:
                                                     context.appColors.secondary,
                                               ),
                                               const Gap(4),
-                                              BBText(
+                                              BullText(
                                                 state.label.isEmpty
                                                     ? context
                                                           .loc
@@ -627,7 +630,7 @@ class SendAmountConfirmButton extends StatelessWidget {
     final inputAmountSat = context.select(
       (SendCubit cubit) => cubit.state.inputAmountSat,
     );
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
         final cubit = context.read<SendCubit>();
@@ -696,7 +699,7 @@ class SendConfirmScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
@@ -771,7 +774,7 @@ class _SendError extends StatelessWidget {
     if (buildError) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BBText(
+        child: BullText(
           failure!.toTranslated(context),
           style: context.font.bodyLarge,
           color: context.appColors.error,
@@ -785,7 +788,7 @@ class _SendError extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            BBText(
+            BullText(
               context.loc.sendErrorConfirmationFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
@@ -794,7 +797,7 @@ class _SendError extends StatelessWidget {
             ),
             if (broadcastError) ...[
               const Gap(8),
-              BBText(
+              BullText(
                 context.loc.sendErrorBroadcastFailed,
                 style: context.font.bodyMedium,
                 color: context.appColors.error,
@@ -809,7 +812,7 @@ class _SendError extends StatelessWidget {
     if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BBText(
+        child: BullText(
           // Same frozen-coins hint the address and amount steps pass, so a
           // shortfall reads identically wherever it surfaces.
           failure.toTranslated(
@@ -834,7 +837,7 @@ class _HighFeeWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return BullInfoCard(
       title: context.loc.sendHighFeeWarning,
       description: context.loc.sendHighFeeWarningDescription(
         feePercent.toStringAsFixed(2),
@@ -850,7 +853,7 @@ class _SlowPaymentWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return BullInfoCard(
       title: context.loc.sendSlowPaymentWarning,
       description: context.loc.sendSlowPaymentWarningDescription,
       tagColor: context.appColors.error,
@@ -880,10 +883,10 @@ class _BottomButtons extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           if (isBitcoinWallet && !hasFinalizedTx) ...[
-            BBButton.big(
+            BullButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
-                BlurredBottomSheet.show(
+                BullBottomSheet.show(
                   context: context,
                   child: BlocProvider.value(
                     value: context.read<SendCubit>(),
@@ -923,7 +926,7 @@ class ConfirmSendButton extends StatelessWidget {
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BBButton.big(
+    return BullButton.big(
       label: hasFinalizedTx
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
@@ -1004,7 +1007,7 @@ class _OnchainTransactionReview extends StatelessWidget {
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();
-                  final selected = await BlurredBottomSheet.show<String>(
+                  final selected = await BullBottomSheet.show<String>(
                     context: context,
                     child: FeeOptionsModal(
                       viewState: sendCubit,
@@ -1094,7 +1097,7 @@ class _UnconfidentialLiquidWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return BullInfoCard(
       title: context.loc.sendUnconfidentialLiquidWarning,
       description: context.loc.sendUnconfidentialLiquidWarningDescription,
       tagColor: context.appColors.error,
@@ -1143,7 +1146,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
         children: [
           InfoRow(
             title: context.loc.sendFrom,
-            details: BBText(
+            details: BullText(
               selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
@@ -1157,7 +1160,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     swap!.order!.orderNumber.toString(),
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
@@ -1215,7 +1218,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           if (label.isNotEmpty) ...[
             InfoRow(
               title: context.loc.receiveNote,
-              details: BBText(
+              details: BullText(
                 label,
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,
@@ -1308,7 +1311,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
@@ -1346,7 +1349,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               },
               child: Row(
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.sendTransferFee,
                     style: context.font.bodySmall,
                     color: context.appColors.onSurfaceVariant,
@@ -1375,7 +1378,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 const Gap(4),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: BBText(
+                  child: BullText(
                     context.loc.sendTransferFeeDescription,
                     style: context.font.labelSmall,
                     color: context.appColors.onSurfaceVariant,
@@ -1445,7 +1448,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
         children: [
           InfoRow(
             title: context.loc.sendFrom,
-            details: BBText(
+            details: BullText(
               selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
@@ -1459,7 +1462,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     swapId,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
@@ -1603,7 +1606,7 @@ class InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          BBText(
+          BullText(
             title,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
@@ -1643,13 +1646,13 @@ class SendConfirmTopArea extends StatelessWidget {
           ),
         ),
         const Gap(16),
-        BBText(
+        BullText(
           context.loc.sendConfirmSend,
           style: context.font.bodyMedium,
           color: context.appColors.secondary,
         ),
         const Gap(4),
-        BBText(
+        BullText(
           amountBitcoin,
           style: context.font.displaySmall,
           color: context.appColors.secondary,
@@ -1698,7 +1701,7 @@ class SendSendingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: context.loc.sendTitle),
+        flexibleSpace: BullTopBar(title: context.loc.sendTitle),
         actions: [
           CloseButton(
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
@@ -1718,12 +1721,12 @@ class SendSendingScreen extends StatelessWidget {
               ),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
-                BBText(
+                BullText(
                   context.loc.sendSending,
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
-                BBText(
+                BullText(
                   context.loc.sendBroadcastingTransaction,
                   style: context.font.bodyMedium,
                   maxLines: 4,
@@ -1732,20 +1735,20 @@ class SendSendingScreen extends StatelessWidget {
               ],
               if (isLnSwap && !isLnPaid) ...[
                 const Gap(8),
-                BBText(
+                BullText(
                   context.loc.sendSending,
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
                 if (isLiquid)
-                  BBText(
+                  BullText(
                     context.loc.sendSwapInProgressInvoice,
                     style: context.font.bodyMedium,
                     maxLines: 4,
                     textAlign: .center,
                   )
                 else
-                  BBText(
+                  BullText(
                     context.loc.sendSwapInProgressBitcoin,
                     style: context.font.bodyMedium,
                     maxLines: 4,
@@ -1754,12 +1757,12 @@ class SendSendingScreen extends StatelessWidget {
               ],
               if (isPayjoin) ...[
                 const Gap(8),
-                BBText(
+                BullText(
                   context.loc.sendSending,
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
-                BBText(
+                BullText(
                   context.loc.sendCoordinatingPayjoinTransaction,
                   style: context.font.bodyMedium,
                   maxLines: 4,
@@ -1772,7 +1775,7 @@ class SendSendingScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.sendPayjoinFallbackCountdown,
                         style: context.font.bodyMedium,
                         color: context.appColors.secondary,
@@ -1796,7 +1799,7 @@ class SendSendingScreen extends StatelessWidget {
       ),
 
       // const Spacer(flex: 2),
-      // BBButton.big(
+      // BullButton.big(
       //   label: 'Go home',
       //   onPressed: () {},
       //   bgColor: context.colour.secondary,
@@ -1856,7 +1859,7 @@ class SendSucessScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
@@ -1874,12 +1877,12 @@ class SendSucessScreen extends StatelessWidget {
                 children: [
                   const Gap(8),
                   if (expiredBeforePayin) ...[
-                    BBText(
+                    BullText(
                       context.loc.sendSwapExpiredTitle,
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                    BBText(
+                    BullText(
                       context.loc.sendSwapExpiredMessage,
                       style: context.font.headlineLarge,
                       textAlign: .center,
@@ -1890,12 +1893,12 @@ class SendSucessScreen extends StatelessWidget {
                       chainSwap?.status == SwapStatus.failed ||
                       chainSwap?.status == SwapStatus.expired ||
                       chainSwap?.status == SwapStatus.refundable) ...[
-                    BBText(
+                    BullText(
                       context.loc.sendSwapRefundInProgress,
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                    BBText(
+                    BullText(
                       context.loc.sendSwapFailed,
                       style: context.font.headlineLarge,
                       textAlign: .center,
@@ -1906,12 +1909,12 @@ class SendSucessScreen extends StatelessWidget {
                       (chainSwap != null &&
                           chainSwap.status == SwapStatus.completed &&
                           chainSwap.refundTxid != null)) ...[
-                    BBText(
+                    BullText(
                       context.loc.sendSwapRefundCompleted,
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                    BBText(
+                    BullText(
                       context.loc.sendRefundProcessed,
                       style: context.font.headlineLarge,
                       textAlign: .center,
@@ -1926,34 +1929,34 @@ class SendSucessScreen extends StatelessWidget {
                       width: 100,
                     ),
                     const Gap(20),
-                    BBText(
+                    BullText(
                       context.loc.sendInvoicePaid,
                       style: context.font.headlineLarge,
                     ),
                   ] else if (isLnSwap &&
                       !isBitcoin &&
                       orderSwap.localStatus != OrderSwapLocalStatus.completed)
-                    BBText(
+                    BullText(
                       context.loc.sendPaymentProcessing,
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     )
                   else if (isLnSwap && isBitcoin)
-                    BBText(
+                    BullText(
                       context.loc.sendPaymentWillTakeTime,
                       style: context.font.headlineLarge,
                     )
                   else if (isChainSwap) ...[
-                    BBText(
+                    BullText(
                       context.loc.sendSwapInitiated,
                       style: context.font.bodyLarge,
                     ),
-                    BBText(
+                    BullText(
                       context.loc.sendSwapWillTakeTime,
                       style: context.font.labelSmall,
                     ),
                   ] else ...[
-                    BBText(
+                    BullText(
                       context.loc.sendSuccessfullySent,
                       style: context.font.bodyLarge,
                     ),
@@ -1965,7 +1968,7 @@ class SendSucessScreen extends StatelessWidget {
                     // successful payjoin.
                     if (payjoin != null && payjoin.isAborted) ...[
                       const Gap(8),
-                      BBText(
+                      BullText(
                         context.loc.sendSentWithoutPayjoin,
                         style: context.font.bodyMedium,
                         color: context.appColors.secondary,
@@ -1975,14 +1978,14 @@ class SendSucessScreen extends StatelessWidget {
                     ],
                   ],
                   const Gap(8),
-                  BBText(
+                  BullText(
                     amount,
                     style: context.font.displaySmall,
                     maxLines: 4,
                     textAlign: .center,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     '~$fiatEquivalent',
                     style: context.font.bodyMedium,
                     color: context.appColors.secondary,
@@ -1998,7 +2001,7 @@ class SendSucessScreen extends StatelessWidget {
             ],
             const Spacer(flex: 2),
             if (hasDetails)
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.sendViewDetails,
                 onPressed: () {
                   if (walletTransaction != null) {
@@ -2076,7 +2079,7 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendShowPsbt,
       onPressed: () {
         context.pushNamed(
@@ -2111,7 +2114,7 @@ class SignLedgerButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -2131,9 +2134,9 @@ class SignLedgerButton extends StatelessWidget {
               .read<SendCubit>()
               .updateSignedBitcoinTx(result);
           if (accepted && context.mounted) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.sendTransactionSignedLedger,
+              message: context.loc.sendTransactionSignedLedger,
             );
           }
         }
@@ -2165,7 +2168,7 @@ class SignBitBoxButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -2186,9 +2189,9 @@ class SignBitBoxButton extends StatelessWidget {
             finalizedTx = await _finalizePsbt(result);
           } catch (_) {
             if (!context.mounted) return;
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.sendErrorConfirmationFailed,
+              message: context.loc.sendErrorConfirmationFailed,
             );
             return;
           }

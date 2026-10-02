@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 /// A reusable transaction confirm/review screen that displays transaction
 /// details before broadcasting.
@@ -133,7 +132,7 @@ class _ErrorView extends StatelessWidget {
           children: [
             Icon(Icons.error_outline, color: context.appColors.error, size: 48),
             const Gap(16),
-            BBText(
+            BullText(
               failure.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
@@ -229,7 +228,7 @@ class _SummarySection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              BBText(
+              BullText(
                 transaction.sendAmountSat != null
                     ? '${_formatSats(transaction.sendAmountSat!)} sats'
                     : '${_formatSats(transaction.totalOutputsSat)} sats',
@@ -237,7 +236,7 @@ class _SummarySection extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               if (fiatAmount != null)
-                BBText(
+                BullText(
                   fiatAmount!,
                   style: context.font.labelSmall,
                   color: context.appColors.onSurfaceVariant,
@@ -250,7 +249,7 @@ class _SummarySection extends StatelessWidget {
         // --- Network fees row ---
         _InfoRow(
           label: context.loc.coreScreensNetworkFeesLabel,
-          child: BBText(
+          child: BullText(
             transaction.feeSat != null
                 ? '${_formatSats(transaction.feeSat!)} sats'
                 : context.loc.mempoolServerStatusUnknown,
@@ -265,7 +264,7 @@ class _SummarySection extends StatelessWidget {
           _divider(context),
           _InfoRow(
             label: context.loc.coreScreensFeeRateLabel,
-            child: BBText(
+            child: BullText(
               context.loc.coreScreensFeeRateValue(
                 transaction.feeRate!.toStringAsFixed(1),
               ),
@@ -296,7 +295,7 @@ class _SummarySection extends StatelessWidget {
                 ),
                 const Gap(4),
                 Expanded(
-                  child: BBText(
+                  child: BullText(
                     context.loc.coreScreensChangeOutputUnknown,
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -318,7 +317,7 @@ class _SummarySection extends StatelessWidget {
       // Wallet name provided — simple row
       return _InfoRow(
         label: context.loc.coreScreensFromLabel,
-        child: BBText(
+        child: BullText(
           fromLabel!,
           style: context.font.bodyLarge,
           color: context.appColors.secondary,
@@ -332,7 +331,7 @@ class _SummarySection extends StatelessWidget {
     if (inputs.isEmpty) {
       return _InfoRow(
         label: context.loc.coreScreensFromLabel,
-        child: BBText(
+        child: BullText(
           context.loc.coreScreensUnknown,
           style: context.font.bodyLarge,
           color: context.appColors.onSurfaceVariant,
@@ -346,7 +345,7 @@ class _SummarySection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             context.loc.coreScreensFromLabel,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -394,7 +393,7 @@ class _SummarySection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             context.loc.coreScreensToLabel,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -440,7 +439,7 @@ class _InputAddressRow extends StatelessWidget {
               color: context.appColors.secondary,
             ),
           ),
-          BBText(
+          BullText(
             '${_formatSats(input.valueSat)} sats',
             style: context.font.labelSmall,
             color: context.appColors.onSurfaceVariant,
@@ -475,7 +474,7 @@ class _OutputAddressRow extends StatelessWidget {
               color: context.appColors.secondary,
             ),
           ),
-          BBText(
+          BullText(
             '${_formatSats(output.valueSat)} sats',
             style: context.font.labelSmall,
             color: context.appColors.onSurfaceVariant,
@@ -503,7 +502,7 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,

@@ -3,11 +3,8 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
@@ -19,7 +16,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, BullTopBar, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,7 +30,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.broadcastSignedTxPageTitle,
           onBack: () => context.pop(),
         ),
@@ -69,7 +67,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   if (state.failure != null) ...[
                     const Gap(16),
-                    BBText(
+                    BullText(
                       state.failure!.toTranslated(context),
                       style: context.font.bodyMedium,
                       color: context.appColors.error,
@@ -77,7 +75,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ],
 
                   const Gap(16),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.broadcastSignedTxCameraButton,
                     onPressed: () {
                       cubit.resetState();
@@ -91,7 +89,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     outlined: true,
                   ),
                   const Gap(32),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.broadcastSignedTxNfcButton,
                     onPressed: () => NfcBottomSheet.showReadNfc(
                       context: context,
@@ -104,7 +102,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     outlined: true,
                   ),
                   const Gap(32),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.broadcastSignedTxPushTxButton,
                     onPressed: () => context.pushNamed(
                       BroadcastSignedTxRoute.broadcastScanNfc.name,
@@ -142,7 +140,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BBButton.big(
+                    child: BullButton.big(
                       label: context.loc.broadcastSignedTxDoneButton,
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
@@ -179,7 +177,7 @@ class _BroadcastActions extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: BBButton.big(
+              child: BullButton.big(
                 label: context.loc.broadcastSignedTxPushTxButton,
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
@@ -191,7 +189,7 @@ class _BroadcastActions extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: BBButton.big(
+            child: BullButton.big(
               label: context.loc.broadcastSignedTxBroadcast,
               bgColor: context.appColors.primary,
               textColor: context.appColors.onPrimary,
@@ -224,7 +222,7 @@ class _BroadcastError extends StatelessWidget {
           Icon(Icons.error_outline, color: context.appColors.error, size: 20),
           const Gap(8),
           Expanded(
-            child: BBText(
+            child: BullText(
               failure.toTranslated(context),
               style: context.font.bodyMedium,
               color: context.appColors.error,

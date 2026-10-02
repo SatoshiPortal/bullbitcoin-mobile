@@ -1,15 +1,13 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInfoCard, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -158,14 +156,14 @@ class SwapInProgressPage extends StatelessWidget {
                   const Gap(16),
                 ],
                 if (!(swap?.status.isTerminal ?? false)) ...[
-                  InfoCard(
+                  BullInfoCard(
                     description: context.loc.swapDoNotUninstallWarning,
                     tagColor: context.appColors.tertiary,
                     bgColor: context.appColors.warningContainer,
                     boldDescription: true,
                   ),
                   const Gap(12),
-                  InfoCard(
+                  BullInfoCard(
                     description: context.loc.transactionSwapOpenWithin24h,
                     tagColor: context.appColors.tertiary,
                     bgColor: context.appColors.warningContainer,
@@ -173,7 +171,7 @@ class SwapInProgressPage extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                BBButton.big(
+                BullButton.big(
                   label: context.loc.swapGoHomeButton,
                   onPressed: () => context.goNamed(WalletRoute.walletHome.name),
                   bgColor: context.appColors.secondary,
