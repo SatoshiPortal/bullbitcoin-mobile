@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog, BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullShimmerLine, BullSnackBar, Gap;
 
 class CopyInput extends StatelessWidget {
   const CopyInput({
@@ -85,7 +85,10 @@ class CopyInput extends StatelessWidget {
               icon: Icon(Icons.copy_sharp, color: context.appColors.secondary),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
-                SnackBarUtils.showCopiedSnackBar(context);
+                BullSnackBar.show(
+                  context,
+                  message: context.loc.copiedToClipboard,
+                );
               },
             ),
           const Gap(8),

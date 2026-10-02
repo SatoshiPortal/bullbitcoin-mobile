@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptionsBottomSheet extends StatelessWidget {
@@ -30,7 +28,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Center(
-                child: BBText(
+                child: BullText(
                   "Advanced options",
                   style: context.font.headlineMedium,
                 ),
@@ -49,7 +47,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              BBText(
+              BullText(
                 "Replace-by-fee activated",
                 style: context.font.headlineMedium,
               ),
@@ -62,13 +60,13 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           ListTile(
-            title: BBText(
+            title: BullText(
               "Select coins manually",
               style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
             ),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {
-              BlurredBottomSheet.show(
+              BullBottomSheet.show(
                 context: context,
                 child: BlocProvider.value(
                   value: context.read<SendCubit>(),
@@ -78,7 +76,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             },
           ),
           const Gap(24),
-          BBButton.big(
+          BullButton.big(
             label: "Done",
             onPressed: context.pop,
             bgColor: context.appColors.secondary,

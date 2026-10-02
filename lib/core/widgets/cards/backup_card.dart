@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class BackupCard extends StatelessWidget {
   const BackupCard({super.key, required this.onTap});
@@ -36,12 +35,12 @@ class BackupCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.backupCardTitle,
                     style: context.font.bodyMedium,
                     color: context.appColors.onSecondary,
                   ),
-                  BBText(
+                  BullText(
                     context.loc.backupCardSubtitle,
                     style: context.font.bodyMedium,
                     color: context.appColors.onSecondary,
