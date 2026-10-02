@@ -1,18 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -23,7 +20,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullSnackBar, Gap;
 
 class SellSendPaymentScreen extends StatelessWidget {
   const SellSendPaymentScreen({super.key});
@@ -249,7 +247,7 @@ class _FeePriorityRow extends StatelessWidget {
       onTap: canEditFees
           ? () async {
               final bloc = context.read<SellBloc>();
-              final selected = await BlurredBottomSheet.show<String>(
+              final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
                   viewState: bloc,
@@ -336,7 +334,10 @@ class _DetailRow extends StatelessWidget {
                                   Clipboard.setData(
                                     ClipboardData(text: copyValue!),
                                   );
-                                  SnackBarUtils.showCopiedSnackBar(context);
+                                  BullSnackBar.show(
+                                    context,
+                                    message: context.loc.copiedToClipboard,
+                                  );
                                 },
                                 child: Icon(
                                   Icons.copy,
@@ -414,13 +415,13 @@ class _BottomButtons extends StatelessWidget {
         const _SellError(),
         const _PaymentInFlightStatus(),
         if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
+          BullButton.big(
             label: context.loc.sellAdvancedSettings,
             // Changing coin selection or RBF mid-confirmation would rebuild the
             // transaction under the payment being sent.
             disabled: isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
-              BlurredBottomSheet.show(
+              BullBottomSheet.show(
                 context: context,
                 child: BlocProvider.value(
                   value: context.read<SellBloc>(),
@@ -435,7 +436,7 @@ class _BottomButtons extends StatelessWidget {
           ),
           const Gap(16),
         ],
-        BBButton.big(
+        BullButton.big(
           label: context.loc.sellSendPaymentContinue,
           disabled: isConfirmingPayment || isPayinBroadcast,
           onPressed: onContinuePressed,

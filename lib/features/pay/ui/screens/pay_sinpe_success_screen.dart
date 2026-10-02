@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:go_router/go_router.dart';
 
 class PaySinpeSuccessScreen extends StatefulWidget {
@@ -95,7 +94,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
               const Spacer(),
               SizedBox(
                 width: double.infinity,
-                child: BBButton.big(
+                child: BullButton.big(
                   label: context.loc.payDone,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);

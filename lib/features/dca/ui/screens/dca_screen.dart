@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -14,7 +12,7 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart'
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInfoCard, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -75,7 +73,7 @@ class _DcaScreenState extends State<DcaScreen> {
                       const Gap(24),
                       if (!_hasFunds) ...[
                         const Spacer(),
-                        InfoCard(
+                        BullInfoCard(
                           title: context.loc.dcaSetupInsufficientBalance,
                           description:
                               context.loc.dcaSetupInsufficientBalanceMessage,
@@ -85,7 +83,7 @@ class _DcaScreenState extends State<DcaScreen> {
                           tagColor: context.appColors.onTertiary,
                         ),
                         const Gap(16.0),
-                        BBButton.big(
+                        BullButton.big(
                           label: context.loc.dcaSetupFundAccount,
                           onPressed: () {
                             context.pushReplacementNamed(
@@ -135,7 +133,7 @@ class _DcaScreenState extends State<DcaScreen> {
                           },
                         ),
                         const Spacer(),
-                        BBButton.big(
+                        BullButton.big(
                           label: context.loc.dcaSetupContinue,
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -190,7 +188,7 @@ class _DcaInitialContent extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const Gap(16),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<DcaBloc>().add(const DcaEvent.started()),
