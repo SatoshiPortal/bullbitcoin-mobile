@@ -10738,7 +10738,7 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "importQrDeviceSeedsignerStep6": "گزینه “Sparrow” را به عنوان گزینه صادرات انتخاب کنید",
+  "importQrDeviceSeedsignerStep6": "گزینه «Animated» را برای خروجی انتخاب کنید. در نسخه‌های قدیمی‌تر میان‌افزار SeedSigner، «Sparrow» را انتخاب کنید.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12179,5 +12179,10 @@
   "autoBuyAccountUnavailableError": "حساب Bull Bitcoin شما در دسترس نیست. بعداً دوباره تلاش کنید.",
   "autoBuyWalletRequiredError": "حداقل یک آدرس پیش‌فرض Bitcoin، Lightning یا Liquid اضافه کنید.",
   "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.",
-  "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید."
+  "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
+  "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
+  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است.",
+  "importWatchOnlyNetworkBitcoinMainnet": "شبکه: شبکه اصلی بیت‌کوین",
+  "importWatchOnlyNetworkBitcoinTestnet": "شبکه: شبکه آزمایشی بیت‌کوین",
+  "broadcastSignedTxErrorPsbtFinalization": "تراکنش امضاشده نهایی نشد. مطمئن شوید همه امضاهای لازم را دارد و دوباره تلاش کنید."
 }

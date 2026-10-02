@@ -1716,7 +1716,7 @@
   "coreScreensNetworkFeesLabel": "网络费",
   "kruxStep9": "   -  device把你的装置退回一小块",
   "sendReceiveNetworkFee": "接待网",
-  "importQrDeviceSeedsignerStep6": "选择“箭”作为出口选择",
+  "importQrDeviceSeedsignerStep6": "选择“Animated”作为导出选项。在较旧的 SeedSigner 固件中，请选择“Sparrow”。",
   "swapValidationMaximumAmount": "最高限额为{amount}{currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {
@@ -4913,5 +4913,10 @@
   "autoBuyAccountUnavailableError": "您的 Bull Bitcoin 账户不可用。请稍后重试。",
   "autoBuyWalletRequiredError": "请至少添加一个默认的 Bitcoin、Lightning 或 Liquid 地址。",
   "autoBuyUpdateError": "无法更新自动买入。请稍后重试。",
-  "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。"
+  "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。",
+  "importWatchOnlyErrorNetworkMismatch": "此钱包当前正在使用其他 Bitcoin 网络。请在 Mainnet 和 Testnet 之间切换，然后重试。",
+  "importWatchOnlyErrorAlreadyExists": "此钱包已导入。",
+  "importWatchOnlyNetworkBitcoinMainnet": "网络：比特币主网",
+  "importWatchOnlyNetworkBitcoinTestnet": "网络：比特币测试网",
+  "broadcastSignedTxErrorPsbtFinalization": "无法完成已签名交易。请确认其中包含所有必需的签名，然后重试。"
 }

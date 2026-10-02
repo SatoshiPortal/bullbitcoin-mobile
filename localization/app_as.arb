@@ -6444,7 +6444,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Sparrow\" বাছনি কৰক",
+  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Animated\" বাছনি কৰক। পুৰণি SeedSigner firmware-ত \"Sparrow\" বাছনি কৰক।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -9315,5 +9315,10 @@
   "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
   "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
   "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
-  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।"
+  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ৱালেটটোৱে বৰ্তমান বেলেগ Bitcoin নেটৱৰ্ক ব্যৱহাৰ কৰি আছে। Mainnet আৰু Testnet-ৰ মাজত সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "importWatchOnlyErrorAlreadyExists": "এই ৱালেটটো ইতিমধ্যে আমদানি কৰা হৈছে।",
+  "importWatchOnlyNetworkBitcoinMainnet": "নেটৱৰ্ক: Bitcoin মূল নেটৱৰ্ক",
+  "importWatchOnlyNetworkBitcoinTestnet": "নেটৱৰ্ক: Bitcoin পৰীক্ষামূলক নেটৱৰ্ক",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষৰিত লেনদেনটো চূড়ান্ত কৰিব পৰা নগ'ল। ইয়াত সকলো প্ৰয়োজনীয় স্বাক্ষৰ আছে বুলি নিশ্চিত কৰি পুনৰ চেষ্টা কৰক।"
 }

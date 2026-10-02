@@ -1675,7 +1675,7 @@
   "coreScreensNetworkFeesLabel": "Netzwerkgebühren",
   "kruxStep9": "Versuchen Sie, das Gerät etwas weiter weg zu halten",
   "sendReceiveNetworkFee": "Netzwerkgebühren empfangen",
-  "importQrDeviceSeedsignerStep6": "Wählen Sie „Sparrow“ als Exportoption",
+  "importQrDeviceSeedsignerStep6": "Wählen Sie „Animated“ als Exportoption. Wählen Sie bei älterer SeedSigner-Firmware „Sparrow“.",
   "swapValidationMaximumAmount": "Maximaler Betrag ist {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {
@@ -4951,5 +4951,10 @@
   "autoBuyAccountUnavailableError": "Ihr Bull Bitcoin-Konto ist nicht verfügbar. Versuchen Sie es später erneut.",
   "autoBuyWalletRequiredError": "Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
   "autoBuyUpdateError": "Auto-Buy konnte nicht aktualisiert werden. Versuchen Sie es später erneut.",
-  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
+  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
+  "importWatchOnlyErrorNetworkMismatch": "Diese Wallet verwendet derzeit ein anderes Bitcoin-Netzwerk. Wechseln Sie zwischen Mainnet und Testnet und versuchen Sie es erneut.",
+  "importWatchOnlyErrorAlreadyExists": "Diese Wallet wurde bereits importiert.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Netzwerk: Bitcoin-Mainnet",
+  "importWatchOnlyNetworkBitcoinTestnet": "Netzwerk: Bitcoin-Testnet",
+  "broadcastSignedTxErrorPsbtFinalization": "Die signierte Transaktion konnte nicht finalisiert werden. Stelle sicher, dass sie alle erforderlichen Signaturen enthält, und versuche es erneut."
 }

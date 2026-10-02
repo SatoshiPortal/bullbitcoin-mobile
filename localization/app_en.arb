@@ -9944,7 +9944,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Select \"Sparrow\" as the export option",
+  "importQrDeviceSeedsignerStep6": "Select \"Animated\" as the export option. On older SeedSigner firmware, select \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -14750,5 +14750,25 @@
   "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
   "@withdrawUnexpectedError": {
     "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "importWatchOnlyErrorNetworkMismatch": "This wallet is using a different Bitcoin network. Switch between Mainnet and Testnet, then try again.",
+  "@importWatchOnlyErrorNetworkMismatch": {
+    "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
+  },
+  "importWatchOnlyErrorAlreadyExists": "This wallet is already imported.",
+  "@importWatchOnlyErrorAlreadyExists": {
+    "description": "Shown when the user tries to import a watch-only wallet that already exists"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin Mainnet",
+  "@importWatchOnlyNetworkBitcoinMainnet": {
+    "description": "Bitcoin mainnet label shown when reviewing a watch-only wallet"
+  },
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin Testnet",
+  "@importWatchOnlyNetworkBitcoinTestnet": {
+    "description": "Bitcoin testnet label shown when reviewing a watch-only wallet"
+  },
+  "broadcastSignedTxErrorPsbtFinalization": "The signed transaction could not be finalized. Make sure it contains all required signatures and try again.",
+  "@broadcastSignedTxErrorPsbtFinalization": {
+    "description": "Shown when a signed PSBT cannot be finalized before broadcast"
   }
 }

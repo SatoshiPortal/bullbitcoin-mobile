@@ -1713,7 +1713,7 @@
   "coreScreensNetworkFeesLabel": "Сетевые сборы",
   "kruxStep9": "   - Попробуйте переместить устройство назад",
   "sendReceiveNetworkFee": "Получение сетевой платы",
-  "importQrDeviceSeedsignerStep6": "Выберите «Спарроу» в качестве варианта экспорта",
+  "importQrDeviceSeedsignerStep6": "Выберите «Animated» в качестве варианта экспорта. В старых версиях прошивки SeedSigner выберите «Sparrow».",
   "swapValidationMaximumAmount": "Максимальная сумма {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {
@@ -4919,5 +4919,10 @@
   "autoBuyAccountUnavailableError": "Ваш счёт Bull Bitcoin недоступен. Попробуйте позже.",
   "autoBuyWalletRequiredError": "Добавьте хотя бы один адрес Bitcoin, Lightning или Liquid по умолчанию.",
   "autoBuyUpdateError": "Не удалось обновить автопокупку. Попробуйте позже.",
-  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку."
+  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
+  "importWatchOnlyErrorNetworkMismatch": "Этот кошелёк сейчас использует другую сеть Bitcoin. Переключитесь между Mainnet и Testnet и повторите попытку.",
+  "importWatchOnlyErrorAlreadyExists": "Этот кошелёк уже импортирован.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Сеть: основная сеть Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Сеть: тестовая сеть Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Не удалось финализировать подписанную транзакцию. Убедитесь, что она содержит все необходимые подписи, и повторите попытку."
 }

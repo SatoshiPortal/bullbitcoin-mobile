@@ -1713,7 +1713,7 @@
   "coreScreensNetworkFeesLabel": "Taxas de rede",
   "kruxStep9": "   - Tente mover seu dispositivo para trás um pouco",
   "sendReceiveNetworkFee": "Receber Taxas de Rede",
-  "importQrDeviceSeedsignerStep6": "Selecione \"Seta\" como a opção de exportação",
+  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
   "swapValidationMaximumAmount": "A quantidade máxima é {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "placeholders": {
@@ -4959,5 +4959,10 @@
   "autoBuyAccountUnavailableError": "A sua conta Bull Bitcoin não está disponível. Tente novamente mais tarde.",
   "autoBuyWalletRequiredError": "Adicione pelo menos um endereço Bitcoin, Lightning ou Liquid predefinido.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
-  "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte."
+  "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte.",
+  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está a utilizar uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Rede: rede principal do Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Rede: rede de teste do Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Não foi possível finalizar a transação assinada. Confirme que contém todas as assinaturas necessárias e tente novamente."
 }

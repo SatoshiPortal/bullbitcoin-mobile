@@ -5315,7 +5315,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "เลือก \"ตัวเลือก\" เป็นตัวเลือกการส่งออก",
+  "importQrDeviceSeedsignerStep6": "เลือก \"Animated\" เป็นตัวเลือกการส่งออก สำหรับเฟิร์มแวร์ SeedSigner รุ่นเก่า ให้เลือก \"Sparrow\"",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12183,5 +12183,10 @@
   "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
   "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
   "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
-  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน"
+  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
+  "importWatchOnlyErrorNetworkMismatch": "กระเป๋าเงินนี้กำลังใช้เครือข่าย Bitcoin อื่น โปรดสลับระหว่าง Mainnet และ Testnet แล้วลองอีกครั้ง",
+  "importWatchOnlyErrorAlreadyExists": "นำเข้ากระเป๋าเงินนี้แล้ว",
+  "importWatchOnlyNetworkBitcoinMainnet": "เครือข่าย: เครือข่ายหลักของ Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "เครือข่าย: เครือข่ายทดสอบของ Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "ไม่สามารถสรุปธุรกรรมที่ลงนามแล้วได้ โปรดตรวจสอบว่ามีลายเซ็นที่จำเป็นครบถ้วนแล้วลองอีกครั้ง"
 }

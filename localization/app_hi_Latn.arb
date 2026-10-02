@@ -8526,7 +8526,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Sparrow\" select karo",
+  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Animated\" chunein. Purane SeedSigner firmware par \"Sparrow\" chunein.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12567,5 +12567,10 @@
   "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
-  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein."
+  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
+  "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
+  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin mainnet",
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin testnet",
+  "broadcastSignedTxErrorPsbtFinalization": "Signed transaction ko final nahin kiya ja saka. Pakka karen ki ismein sabhi zaroori signatures hain, phir dobara koshish karen."
 }
