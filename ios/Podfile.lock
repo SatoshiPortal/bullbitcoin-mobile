@@ -11,8 +11,6 @@ PODS:
   - universal_ble (0.0.1):
     - Flutter
     - FlutterMacOS
-  - webview_cookie_manager (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
   - bull_tor (from `.symlinks/plugins/bull_tor/ios`)
@@ -21,7 +19,6 @@ DEPENDENCIES:
   - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
   - onion (from `.symlinks/plugins/onion/ios`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
-  - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
 
 EXTERNAL SOURCES:
   bull_tor:
@@ -36,8 +33,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/onion/ios"
   universal_ble:
     :path: ".symlinks/plugins/universal_ble/darwin"
-  webview_cookie_manager:
-    :path: ".symlinks/plugins/webview_cookie_manager/ios"
 
 SPEC CHECKSUMS:
   bull_tor: effca429a77cc1dd71ee148fa65903a325d79d33
@@ -46,7 +41,6 @@ SPEC CHECKSUMS:
   rust_lib_bull_sdk: 6bdd9a2254b376e910a31340e03bf2db56c637db
   onion: 4876b9b0120d40a2817eac0903dfb9bd59832755
   universal_ble: 65e1257dffc557cc7991a93d253beeddc7c1dc92
-  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
 
 PODFILE CHECKSUM: b9aa080c2a42d4d61d216015adddd3850778d844
 
