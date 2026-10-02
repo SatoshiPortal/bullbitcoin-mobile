@@ -25,9 +25,8 @@ class LimitOrdersApiDatasource {
       path: '/ak/api-ordertrigger',
       method: 'listLimitOrders',
       params: {
-        'paginator': {'page': 1, 'pageSize': 10},
+        'paginator': {'page': 1, 'pageSize': 50},
         'sortBy': {'id': 'createdAt', 'sort': 'desc'},
-        'filters': {'status': 'ACTIVE'},
       },
     );
     final elements = result['elements'] as List<dynamic>? ?? const [];

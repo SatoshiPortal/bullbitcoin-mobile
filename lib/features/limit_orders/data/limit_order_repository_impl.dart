@@ -33,8 +33,10 @@ final class LimitOrderRepositoryImpl implements LimitOrderRepository {
   Future<Result<List<LimitOrder>, LimitOrdersFailure>> listActive() => _guard(
     'list the active limit orders',
     LimitOrdersLoadFailure.new,
-    (datasource) async =>
-        (await datasource.listActive()).map((m) => m.toEntity()).toList(),
+    (datasource) async => (await datasource.listActive())
+        .map((m) => m.toEntity())
+        .where((order) => order.isActive)
+        .toList(),
   );
 
   @override
