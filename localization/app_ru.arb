@@ -4919,5 +4919,6 @@
   "autoBuyAccountUnavailableError": "Ваш счёт Bull Bitcoin недоступен. Попробуйте позже.",
   "autoBuyWalletRequiredError": "Добавьте хотя бы один адрес Bitcoin, Lightning или Liquid по умолчанию.",
   "autoBuyUpdateError": "Не удалось обновить автопокупку. Попробуйте позже.",
-  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку."
+  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
+  "copiedToClipboard": "Скопировано в буфер обмена"
 }

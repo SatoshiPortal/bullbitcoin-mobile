@@ -3749,5 +3749,6 @@
   "autoBuyAccountUnavailableError": "თქვენი Bull Bitcoin ანგარიში მიუწვდომელია. სცადეთ მოგვიანებით.",
   "autoBuyWalletRequiredError": "დაამატეთ სულ მცირე ერთი ნაგულისხმევი Bitcoin, Lightning ან Liquid მისამართი.",
   "autoBuyUpdateError": "ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.",
-  "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას."
+  "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
+  "copiedToClipboard": "დაკოპირდა ბუფერში"
 }

@@ -12182,5 +12182,6 @@
   "autoBuyAccountUnavailableError": "حسابك في Bull Bitcoin غير متاح. حاول مرة أخرى لاحقًا.",
   "autoBuyWalletRequiredError": "أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.",
   "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
-  "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم."
+  "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+  "copiedToClipboard": "تم النسخ إلى الحافظة"
 }
