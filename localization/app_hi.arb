@@ -12371,7 +12371,8 @@
   "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
   "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।",
-  "importWatchOnlyNetworkMainnet": "नेटवर्क: मेननेट",
-  "importWatchOnlyNetworkTestnet": "नेटवर्क: टेस्टनेट",
-  "importWatchOnlyErrorAlreadyExists": "यह वॉलेट पहले से इम्पोर्ट किया गया है।"
+  "importWatchOnlyErrorAlreadyExists": "यह वॉलेट पहले से इम्पोर्ट किया गया है।",
+  "importWatchOnlyNetworkBitcoinMainnet": "नेटवर्क: Bitcoin मेननेट",
+  "importWatchOnlyNetworkBitcoinTestnet": "नेटवर्क: Bitcoin टेस्टनेट",
+  "broadcastSignedTxErrorPsbtFinalization": "हस्ताक्षरित लेनदेन को अंतिम रूप नहीं दिया जा सका। सुनिश्चित करें कि इसमें सभी आवश्यक हस्ताक्षर हैं और फिर से प्रयास करें।"
 }

@@ -3604,7 +3604,8 @@
   "autoBuyUpdateError": "Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։",
   "withdrawUnexpectedError": "Ձեր հանումը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "importWatchOnlyErrorNetworkMismatch": "Այս դրամապանակն այժմ օգտագործում է Bitcoin-ի այլ ցանց։ Փոխարկեք Mainnet-ի և Testnet-ի միջև, ապա կրկին փորձեք։",
-  "importWatchOnlyNetworkMainnet": "Ցանց՝ Mainnet",
-  "importWatchOnlyNetworkTestnet": "Ցանց՝ Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Այս դրամապանակն արդեն ներմուծված է։"
+  "importWatchOnlyErrorAlreadyExists": "Այս դրամապանակն արդեն ներմուծված է։",
+  "importWatchOnlyNetworkBitcoinMainnet": "Ցանց՝ Bitcoin հիմնական ցանց",
+  "importWatchOnlyNetworkBitcoinTestnet": "Ցանց՝ Bitcoin փորձնական ցանց",
+  "broadcastSignedTxErrorPsbtFinalization": "Չհաջողվեց վերջնականացնել ստորագրված գործարքը։ Համոզվեք, որ այն պարունակում է բոլոր անհրաժեշտ ստորագրությունները և կրկին փորձեք։"
 }

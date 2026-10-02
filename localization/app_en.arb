@@ -14755,16 +14755,20 @@
   "@importWatchOnlyErrorNetworkMismatch": {
     "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
   },
-  "importWatchOnlyNetworkMainnet": "Network: Mainnet",
-  "@importWatchOnlyNetworkMainnet": {
-    "description": "Network label shown when an imported watch-only wallet uses Bitcoin mainnet"
-  },
-  "importWatchOnlyNetworkTestnet": "Network: Testnet",
-  "@importWatchOnlyNetworkTestnet": {
-    "description": "Network label shown when an imported watch-only wallet uses Bitcoin testnet"
-  },
   "importWatchOnlyErrorAlreadyExists": "This wallet is already imported.",
   "@importWatchOnlyErrorAlreadyExists": {
     "description": "Shown when the user tries to import a watch-only wallet that already exists"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin Mainnet",
+  "@importWatchOnlyNetworkBitcoinMainnet": {
+    "description": "Bitcoin mainnet label shown when reviewing a watch-only wallet"
+  },
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin Testnet",
+  "@importWatchOnlyNetworkBitcoinTestnet": {
+    "description": "Bitcoin testnet label shown when reviewing a watch-only wallet"
+  },
+  "broadcastSignedTxErrorPsbtFinalization": "The signed transaction could not be finalized. Make sure it contains all required signatures and try again.",
+  "@broadcastSignedTxErrorPsbtFinalization": {
+    "description": "Shown when a signed PSBT cannot be finalized before broadcast"
   }
 }

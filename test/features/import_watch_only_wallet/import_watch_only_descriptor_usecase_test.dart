@@ -14,22 +14,46 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 class _MockWatchOnlyDescriptor extends Mock
     implements satoshifier.WatchOnlyDescriptor {}
 
+class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
+
 void main() {
   late _MockWalletRepository repository;
   late ImportWatchOnlyDescriptorUsecase usecase;
   late WatchOnlyDescriptorEntity entity;
+  late _MockDescriptor descriptor;
 
   setUp(() {
     repository = _MockWalletRepository();
     usecase = ImportWatchOnlyDescriptorUsecase(walletRepository: repository);
-    entity =
-        WatchOnlyWalletEntity.descriptor(
-              watchOnlyDescriptor: _MockWatchOnlyDescriptor(),
-            )
-            as WatchOnlyDescriptorEntity;
+    descriptor = _MockDescriptor();
+    when(
+      () => descriptor.network,
+    ).thenReturn(satoshifier.Network.bitcoinMainnet);
+    final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
+    when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
+    entity = WatchOnlyDescriptorEntity(
+      watchOnlyDescriptor: watchOnlyDescriptor,
+    );
   });
 
   group('ImportWatchOnlyDescriptorUsecase', () {
+    test('rejects Liquid descriptors before persistence', () async {
+      when(
+        () => descriptor.network,
+      ).thenReturn(satoshifier.Network.liquidMainnet);
+
+      final result = await usecase.execute(watchOnlyDescriptor: entity);
+
+      expect(result, isA<Err<Wallet, ImportWatchOnlyFailure>>());
+      expect(
+        (result as Err<Wallet, ImportWatchOnlyFailure>).failure,
+        isA<InvalidFormatFailure>(),
+      );
+      verifyNever(
+        () => repository.importDescriptor(watchOnlyDescriptor: entity),
+      );
+    });
+
     test('maps an existing wallet to WalletAlreadyExistsFailure', () async {
       when(
         () => repository.importDescriptor(watchOnlyDescriptor: entity),

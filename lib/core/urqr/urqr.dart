@@ -249,7 +249,11 @@ class CryptoHdKey {
             ? HdKeyNetwork.mainnet
             : HdKeyNetwork.testnet;
       } else {
-        network = keypath != null && keypath!.length > 1 && keypath![1].key == 1
+        network =
+            keypath != null &&
+                keypath!.length > 1 &&
+                keypath![1].key == 1 &&
+                keypath![1].hardened
             ? HdKeyNetwork.testnet
             : HdKeyNetwork.mainnet;
       }

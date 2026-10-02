@@ -4961,7 +4961,8 @@
   "autoBuyUpdateError": "L'achat automatique n'a pas pu être mis à jour. Réessayez plus tard.",
   "withdrawUnexpectedError": "Votre retrait n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "importWatchOnlyErrorNetworkMismatch": "Ce portefeuille utilise actuellement un autre réseau Bitcoin. Basculez entre Mainnet et Testnet, puis réessayez.",
-  "importWatchOnlyNetworkMainnet": "Réseau : Mainnet",
-  "importWatchOnlyNetworkTestnet": "Réseau : Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Ce portefeuille est déjà importé."
+  "importWatchOnlyErrorAlreadyExists": "Ce portefeuille est déjà importé.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Réseau : réseau principal Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Réseau : réseau de test Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "La transaction signée n’a pas pu être finalisée. Vérifiez qu’elle contient toutes les signatures requises, puis réessayez."
 }

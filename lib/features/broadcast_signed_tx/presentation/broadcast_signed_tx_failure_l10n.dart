@@ -10,7 +10,7 @@ extension BroadcastSignedTxFailureL10n on BroadcastSignedTxFailure {
     InvalidTransactionFailure() =>
       context.loc.broadcastSignedTxErrorInvalidTransaction,
     PsbtFinalizationFailure() =>
-      context.loc.broadcastSignedTxErrorInvalidTransaction,
+      context.loc.broadcastSignedTxErrorPsbtFinalization,
     InvalidPushTxFailure() => context.loc.broadcastSignedTxErrorInvalidPushTx,
     BroadcastFailedFailure() => context.loc.broadcastSignedTxBroadcastError,
     BroadcastUnexpectedFailure() => context.loc.oopsSomethingWentWrong,

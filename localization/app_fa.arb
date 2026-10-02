@@ -12181,7 +12181,8 @@
   "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.",
   "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
-  "importWatchOnlyNetworkMainnet": "شبکه: شبکه اصلی",
-  "importWatchOnlyNetworkTestnet": "شبکه: شبکه آزمایشی",
-  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است."
+  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است.",
+  "importWatchOnlyNetworkBitcoinMainnet": "شبکه: شبکه اصلی بیت‌کوین",
+  "importWatchOnlyNetworkBitcoinTestnet": "شبکه: شبکه آزمایشی بیت‌کوین",
+  "broadcastSignedTxErrorPsbtFinalization": "تراکنش امضاشده نهایی نشد. مطمئن شوید همه امضاهای لازم را دارد و دوباره تلاش کنید."
 }

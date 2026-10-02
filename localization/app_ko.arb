@@ -12181,7 +12181,8 @@
   "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
   "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
-  "importWatchOnlyNetworkMainnet": "네트워크: 메인넷",
-  "importWatchOnlyNetworkTestnet": "네트워크: 테스트넷",
-  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다."
+  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다.",
+  "importWatchOnlyNetworkBitcoinMainnet": "네트워크: 비트코인 메인넷",
+  "importWatchOnlyNetworkBitcoinTestnet": "네트워크: 비트코인 테스트넷",
+  "broadcastSignedTxErrorPsbtFinalization": "서명된 거래를 완료할 수 없습니다. 필요한 모든 서명이 포함되어 있는지 확인한 후 다시 시도하세요."
 }

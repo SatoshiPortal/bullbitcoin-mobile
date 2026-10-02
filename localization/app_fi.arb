@@ -4903,7 +4903,8 @@
   "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
   "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen.",
-  "importWatchOnlyNetworkMainnet": "Verkko: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Verkko: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Tämä lompakko on jo tuotu."
+  "importWatchOnlyErrorAlreadyExists": "Tämä lompakko on jo tuotu.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Verkko: Bitcoin-pääverkko",
+  "importWatchOnlyNetworkBitcoinTestnet": "Verkko: Bitcoin-testiverkko",
+  "broadcastSignedTxErrorPsbtFinalization": "Allekirjoitettua tapahtumaa ei voitu viimeistellä. Varmista, että se sisältää kaikki vaaditut allekirjoitukset, ja yritä uudelleen."
 }

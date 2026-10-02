@@ -12184,7 +12184,8 @@
   "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
   "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى.",
-  "importWatchOnlyNetworkMainnet": "الشبكة: الشبكة الرئيسية",
-  "importWatchOnlyNetworkTestnet": "الشبكة: شبكة الاختبار",
-  "importWatchOnlyErrorAlreadyExists": "هذه المحفظة مستوردة بالفعل."
+  "importWatchOnlyErrorAlreadyExists": "هذه المحفظة مستوردة بالفعل.",
+  "importWatchOnlyNetworkBitcoinMainnet": "الشبكة: شبكة Bitcoin الرئيسية",
+  "importWatchOnlyNetworkBitcoinTestnet": "الشبكة: شبكة Bitcoin التجريبية",
+  "broadcastSignedTxErrorPsbtFinalization": "تعذّر إنهاء المعاملة الموقّعة. تأكد من أنها تحتوي على جميع التوقيعات المطلوبة، ثم حاول مرة أخرى."
 }

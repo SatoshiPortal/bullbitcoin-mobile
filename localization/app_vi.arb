@@ -3604,7 +3604,8 @@
   "autoBuyUpdateError": "Không thể cập nhật mua tự động. Vui lòng thử lại sau.",
   "withdrawUnexpectedError": "Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "importWatchOnlyErrorNetworkMismatch": "Ví này hiện đang sử dụng một mạng Bitcoin khác. Hãy chuyển đổi giữa Mainnet và Testnet rồi thử lại.",
-  "importWatchOnlyNetworkMainnet": "Mạng: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Mạng: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Ví này đã được nhập."
+  "importWatchOnlyErrorAlreadyExists": "Ví này đã được nhập.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Mạng: mạng chính Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Mạng: mạng thử nghiệm Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Không thể hoàn tất giao dịch đã ký. Hãy bảo đảm giao dịch có đủ tất cả chữ ký bắt buộc rồi thử lại."
 }

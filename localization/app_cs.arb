@@ -12181,7 +12181,8 @@
   "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
   "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu.",
-  "importWatchOnlyNetworkMainnet": "Síť: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Síť: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Tato peněženka již byla importována."
+  "importWatchOnlyErrorAlreadyExists": "Tato peněženka již byla importována.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Síť: hlavní síť Bitcoinu",
+  "importWatchOnlyNetworkBitcoinTestnet": "Síť: testovací síť Bitcoinu",
+  "broadcastSignedTxErrorPsbtFinalization": "Podepsanou transakci se nepodařilo dokončit. Zkontrolujte, zda obsahuje všechny požadované podpisy, a zkuste to znovu."
 }

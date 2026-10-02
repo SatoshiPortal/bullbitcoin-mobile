@@ -12181,7 +12181,8 @@
   "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
   "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin.",
-  "importWatchOnlyNetworkMainnet": "Ağ: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Ağ: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Bu cüzdan zaten içe aktarıldı."
+  "importWatchOnlyErrorAlreadyExists": "Bu cüzdan zaten içe aktarıldı.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Ağ: Bitcoin ana ağı",
+  "importWatchOnlyNetworkBitcoinTestnet": "Ağ: Bitcoin test ağı",
+  "broadcastSignedTxErrorPsbtFinalization": "İmzalanmış işlem sonlandırılamadı. Gerekli tüm imzaları içerdiğinden emin olup tekrar deneyin."
 }

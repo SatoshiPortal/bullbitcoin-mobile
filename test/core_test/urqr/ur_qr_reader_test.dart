@@ -49,5 +49,22 @@ void main() {
       expect(account.hdKey!.network, HdKeyNetwork.testnet);
       expect(account.hdKey!.xpub, startsWith('tpub'));
     });
+
+    test('keeps the mainnet fallback for an unhardened child index', () {
+      final key = CryptoHdKey.fromCborMap({
+        3: CborBytes(Uint8List(33)),
+        4: CborBytes(Uint8List(32)),
+        6: CborMap({
+          const CborSmallInt(1): CborList(const [
+            CborSmallInt(84),
+            CborBool(true),
+            CborSmallInt(1),
+            CborBool(false),
+          ]),
+        }),
+      });
+
+      expect(key.network, HdKeyNetwork.mainnet);
+    });
   });
 }

@@ -3751,7 +3751,8 @@
   "autoBuyUpdateError": "ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.",
   "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "importWatchOnlyErrorNetworkMismatch": "ეს საფულე ამჟამად Bitcoin-ის სხვა ქსელს იყენებს. გადართეთ Mainnet-სა და Testnet-ს შორის და ხელახლა სცადეთ.",
-  "importWatchOnlyNetworkMainnet": "ქსელი: Mainnet",
-  "importWatchOnlyNetworkTestnet": "ქსელი: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "ეს საფულე უკვე იმპორტირებულია."
+  "importWatchOnlyErrorAlreadyExists": "ეს საფულე უკვე იმპორტირებულია.",
+  "importWatchOnlyNetworkBitcoinMainnet": "ქსელი: Bitcoin-ის მთავარი ქსელი",
+  "importWatchOnlyNetworkBitcoinTestnet": "ქსელი: Bitcoin-ის სატესტო ქსელი",
+  "broadcastSignedTxErrorPsbtFinalization": "ხელმოწერილი ტრანზაქციის დასრულება ვერ მოხერხდა. დარწმუნდით, რომ ის ყველა საჭირო ხელმოწერას შეიცავს და ხელახლა სცადეთ."
 }

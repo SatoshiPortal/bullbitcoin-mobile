@@ -70,7 +70,7 @@ void main() {
       network: satoshifier.Network.bitcoinMainnet,
     );
 
-    expect(find.text('Network: Mainnet'), findsOneWidget);
+    expect(find.text('Network: Bitcoin Mainnet'), findsOneWidget);
     expect(find.text('Descriptor'), findsOneWidget);
     expect(find.text('wpkh(test)'), findsOneWidget);
     expect(find.text('Type'), findsOneWidget);
@@ -98,9 +98,13 @@ void main() {
     verify(() => cubit.import()).called(1);
   });
 
-  testWidgets('shows the localized testnet network label', (tester) async {
-    await _pumpDetails(tester, network: satoshifier.Network.bitcoinTestnet);
+  for (final (network, label) in [
+    (satoshifier.Network.bitcoinTestnet, 'Network: Bitcoin Testnet'),
+  ]) {
+    testWidgets('shows the localized ${network.name} label', (tester) async {
+      await _pumpDetails(tester, network: network);
 
-    expect(find.text('Network: Testnet'), findsOneWidget);
-  });
+      expect(find.text(label), findsOneWidget);
+    });
+  }
 }

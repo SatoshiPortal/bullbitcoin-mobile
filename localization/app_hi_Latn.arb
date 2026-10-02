@@ -12569,7 +12569,8 @@
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
   "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
   "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
-  "importWatchOnlyNetworkMainnet": "Network: Mainnet",
-  "importWatchOnlyNetworkTestnet": "Network: Testnet",
-  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai."
+  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin mainnet",
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin testnet",
+  "broadcastSignedTxErrorPsbtFinalization": "Signed transaction ko final nahin kiya ja saka. Pakka karen ki ismein sabhi zaroori signatures hain, phir dobara koshish karen."
 }

@@ -8,6 +8,8 @@ void main() {
         'wpkh([86241f88/84h/0h/0h]xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7/<0;1>/*)#n8txaeah';
     const xpub =
         'xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7';
+    const liquidDescriptor =
+        'wpkh([86241f88/84h/1776h/0h]xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7/<0;1>/*)';
 
     test('attaches signerDevice to descriptor imports', () async {
       final entity = await WatchOnlyWalletEntity.parse(
@@ -29,6 +31,13 @@ void main() {
       );
 
       expect(entity, isA<WatchOnlyXpubEntity>());
+    });
+
+    test('rejects Liquid descriptors', () async {
+      await expectLater(
+        WatchOnlyWalletEntity.parse(liquidDescriptor),
+        throwsA(isA<FormatException>()),
+      );
     });
   });
 }
