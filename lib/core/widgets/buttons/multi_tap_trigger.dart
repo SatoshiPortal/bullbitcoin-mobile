@@ -8,8 +8,6 @@ class MultiTapTrigger extends StatefulWidget {
   final Duration maxTimeBetweenTaps;
   final Widget child;
   final String? tapsReachedMessage;
-  final Color? tapsReachedMessageBackgroundColor;
-  final Color? tapsReachedMessageTextColor;
 
   const MultiTapTrigger({
     super.key,
@@ -17,8 +15,6 @@ class MultiTapTrigger extends StatefulWidget {
     required this.onRequiredTaps,
     this.maxTimeBetweenTaps = const Duration(seconds: 2),
     this.tapsReachedMessage,
-    this.tapsReachedMessageBackgroundColor,
-    this.tapsReachedMessageTextColor,
     required this.child,
   });
 

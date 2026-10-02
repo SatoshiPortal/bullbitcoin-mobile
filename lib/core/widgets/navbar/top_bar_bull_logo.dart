@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,6 @@ class TopBarBullLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return enableSuperuserTapUnlocker
         ? SuperuserTapUnlocker(
-            tapsReachedMessageBackgroundColor: context.appColors.primary,
             child: _BullLogo(onTap: onTap, playAnimation: playAnimation),
           )
         : _BullLogo(onTap: onTap, playAnimation: playAnimation);
