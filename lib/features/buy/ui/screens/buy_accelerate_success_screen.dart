@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class BuyAccelerateSuccessScreen extends StatelessWidget {
   const BuyAccelerateSuccessScreen({super.key});
@@ -85,7 +85,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                 ],
                 if (buyOrder != null)
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.buyViewDetails,
                     onPressed: () {
                       context.pushNamed(

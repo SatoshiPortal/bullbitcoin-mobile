@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class SellInProgressScreen extends StatelessWidget {
   const SellInProgressScreen({super.key});
@@ -46,7 +46,7 @@ class SellInProgressScreen extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                BBButton.big(
+                BullButton.big(
                   label: context.loc.sellGoHome,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
