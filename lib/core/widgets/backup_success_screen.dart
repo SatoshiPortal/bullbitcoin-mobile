@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,9 +42,9 @@ class BackupSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(8),
-                BBText(title, style: context.font.headlineLarge),
+                BullText(title, style: context.font.headlineLarge),
                 const Gap(8),
-                BBText(
+                BullText(
                   message,
                   style: context.font.bodyMedium,
                   textAlign: .center,
@@ -58,7 +56,7 @@ class BackupSuccessScreen extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
-              child: BBButton.big(
+              child: BullButton.big(
                 label: buttonLabel,
                 bgColor: context.appColors.secondary,
                 textColor: context.appColors.onSecondary,

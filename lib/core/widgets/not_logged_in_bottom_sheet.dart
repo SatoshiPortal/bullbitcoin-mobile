@@ -1,16 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText;
 
 class NotLoggedInBottomSheet extends StatelessWidget {
   const NotLoggedInBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: const NotLoggedInBottomSheet(),
     );
@@ -43,13 +42,13 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 color: context.appColors.primary,
               ),
               const SizedBox(height: 16),
-              BBText(
+              BullText(
                 'You Are Not Logged in',
                 style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
-              BBText(
+              BullText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
@@ -59,7 +58,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
-              BBButton.big(
+              BullButton.big(
                 label: 'LOGIN',
                 onPressed: () {
                   Navigator.of(context).pop();

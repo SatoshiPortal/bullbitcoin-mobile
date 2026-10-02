@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 enum _ButtonPosition { first, last, middle }
@@ -181,7 +180,7 @@ class _ActionButton extends StatelessWidget {
                 width: 24,
                 color: context.appColors.secondary,
               ),
-              BBText(
+              BullText(
                 label,
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,

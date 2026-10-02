@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:gif/gif.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class NfcScannerWidget extends StatefulWidget {
   final FutureOr<void> Function(NFCTag tag) onScanned;
@@ -82,7 +82,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
         if (_tag == null) loadingWidget,
 
         if (_tag != null)
-          BBButton.big(
+          BullButton.big(
             label: context.loc.scanNfcButton,
             onPressed: _scan,
             bgColor: context.appColors.onPrimary,

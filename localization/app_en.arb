@@ -14750,5 +14750,9 @@
   "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
   "@withdrawUnexpectedError": {
     "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
   }
 }

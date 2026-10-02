@@ -12179,5 +12179,6 @@
   "autoBuyAccountUnavailableError": "Bull Bitcoin hesabınız kullanılamıyor. Daha sonra tekrar deneyin.",
   "autoBuyWalletRequiredError": "En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.",
   "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
-  "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin."
+  "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
+  "copiedToClipboard": "Panoya kopyalandı"
 }

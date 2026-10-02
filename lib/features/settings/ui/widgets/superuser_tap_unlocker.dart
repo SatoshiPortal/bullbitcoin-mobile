@@ -5,15 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SuperuserTapUnlocker extends StatelessWidget {
-  const SuperuserTapUnlocker({
-    super.key,
-    this.tapsReachedMessageBackgroundColor,
-    this.tapsReachedMessageTextColor,
-    required this.child,
-  });
+  const SuperuserTapUnlocker({super.key, required this.child});
 
-  final Color? tapsReachedMessageBackgroundColor;
-  final Color? tapsReachedMessageTextColor;
   final Widget child;
 
   @override
@@ -28,8 +21,6 @@ class SuperuserTapUnlocker extends StatelessWidget {
       tapsReachedMessage: isSuperuser
           ? context.loc.settingsSuperuserModeDisabledMessage
           : context.loc.settingsSuperuserModeUnlockedMessage,
-      tapsReachedMessageBackgroundColor: tapsReachedMessageBackgroundColor,
-      tapsReachedMessageTextColor: tapsReachedMessageTextColor,
       child: child,
     );
   }

@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:gif/gif.dart' show Autostart, Gif;
 
 class ProgressScreen extends StatelessWidget {
@@ -34,7 +33,7 @@ class ProgressScreen extends StatelessWidget {
             ),
           if (title != null) ...[
             const Gap(16),
-            BBText(
+            BullText(
               title!,
               textAlign: .center,
               style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
@@ -42,7 +41,7 @@ class ProgressScreen extends StatelessWidget {
           ],
           if (description != null) ...[
             const Gap(16),
-            BBText(
+            BullText(
               description!,
               textAlign: .center,
               style: context.font.bodySmall,

@@ -4,13 +4,11 @@ import 'package:bb_mobile/core/failures/mnemonic_entry_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/bip39.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -239,7 +237,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (errorMessage != null) ...[
                     const Gap(16),
-                    BBText(
+                    BullText(
                       errorMessage,
                       style: context.font.bodyMedium,
                       color: context.appColors.error,
@@ -247,7 +245,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   ],
 
                   const Gap(16),
-                  BBButton.big(
+                  BullButton.big(
                     label: widget.submitLabel,
                     onPressed: onSubmit,
                     bgColor: context.appColors.onSurface,
@@ -343,7 +341,7 @@ class MnemonicWord extends StatelessWidget {
                       : context.appColors.error,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: BBText(
+                child: BullText(
                   displayIndex,
                   style: context.font.headlineMedium,
                   color: context.appColors.surface,
@@ -913,7 +911,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           crossAxisAlignment: .start,
           children: [
             if (predicting && !completed) ...[
-              BBText(
+              BullText(
                 context.loc.mnemonicPossibleLastWords(pool.length),
                 style: context.font.labelSmall,
                 color: context.appColors.textMuted,
@@ -1005,7 +1003,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
           .map(
             (length) => DropdownMenuItem(
               value: length,
-              child: BBText(
+              child: BullText(
                 '${length.words} words',
                 style: context.font.bodyMedium?.copyWith(
                   fontWeight: .w600,
@@ -1040,7 +1038,7 @@ class _HintChip extends StatelessWidget {
           color: context.appColors.surface,
           border: Border.all(color: context.appColors.border),
         ),
-        child: Center(child: BBText(word, style: context.font.bodyLarge)),
+        child: Center(child: BullText(word, style: context.font.bodyLarge)),
       ),
     );
   }

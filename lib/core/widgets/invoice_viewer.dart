@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullText, Gap;
 
 /// Displays a Lightning invoice truncated to fit the available width.
 ///
@@ -46,7 +44,7 @@ class InvoiceViewer extends StatelessWidget {
           showDetail(context, data: data, clipboardText: clipboardText),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
-        SnackBarUtils.showCopiedSnackBar(context);
+        BullSnackBar.show(context, message: context.loc.copiedToClipboard);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -55,7 +53,7 @@ class InvoiceViewer extends StatelessWidget {
             effectiveStyle,
             constraints.maxWidth,
           );
-          return BBText(
+          return BullText(
             truncated,
             style: effectiveStyle,
             maxLines: 1,
@@ -133,7 +131,7 @@ class _InvoiceDetailSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BBText(
+          BullText(
             context.loc.invoiceViewerTitle,
             style: context.font.titleSmall,
             color: context.appColors.onSurface,
@@ -155,7 +153,10 @@ class _InvoiceDetailSheet extends StatelessWidget {
             onTap: () {
               Clipboard.setData(ClipboardData(text: clipboardText));
               Navigator.of(dialogContext).pop();
-              SnackBarUtils.showCopiedSnackBar(dialogContext);
+              BullSnackBar.show(
+                dialogContext,
+                message: dialogContext.loc.copiedToClipboard,
+              );
             },
           ),
         ],

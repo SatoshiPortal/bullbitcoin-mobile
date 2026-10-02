@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/tag_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class ProviderCard extends StatefulWidget {
   final VaultProvider provider;
@@ -74,7 +73,7 @@ class _ProviderCardState extends State<ProviderCard>
                     child: Column(
                       crossAxisAlignment: .start,
                       children: [
-                        BBText(
+                        BullText(
                           widget.provider.displayName(context),
                           style: context.font.headlineMedium,
                         ),

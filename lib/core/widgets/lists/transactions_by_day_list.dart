@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:intl/intl.dart';
 
 class TransactionsByDayList extends StatelessWidget {
@@ -41,7 +40,7 @@ class TransactionsByDayList extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 errorMessage!,
                 maxLines: 2,
                 textAlign: .center,
@@ -59,7 +58,7 @@ class TransactionsByDayList extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 'Loading transactions...',
                 maxLines: 2,
                 textAlign: .center,
@@ -78,7 +77,7 @@ class TransactionsByDayList extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 'No transactions yet.',
                 maxLines: 2,
                 textAlign: .center,
@@ -117,7 +116,7 @@ class TransactionsByDayList extends StatelessWidget {
         return Column(
           crossAxisAlignment: .start,
           children: [
-            BBText(
+            BullText(
               date.compareTo(today) > 0
                   ? 'Pending'
                   : date.isAtSameMomentAs(today)

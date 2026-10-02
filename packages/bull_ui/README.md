@@ -92,7 +92,6 @@ until the dependency is abstracted out of the widget:
 
 | Widget | Blocker |
 | --- | --- |
-| `MultiTapTrigger` | `package:bb_mobile/core/widgets/snackbar_utils.dart` — its public `tapsReachedMessageTextColor` / `tapsReachedMessageBackgroundColor` API can't be honoured by `BullSnackBar.show` (String-only), so migrating would lose API. |
 | `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
 | `BBButton` (`buttons/button.dart`) | already superseded by `BullButton`; not a 1:1 copy. |
 | Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |

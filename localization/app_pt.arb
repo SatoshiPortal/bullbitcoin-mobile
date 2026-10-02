@@ -4959,5 +4959,6 @@
   "autoBuyAccountUnavailableError": "A sua conta Bull Bitcoin não está disponível. Tente novamente mais tarde.",
   "autoBuyWalletRequiredError": "Adicione pelo menos um endereço Bitcoin, Lightning ou Liquid predefinido.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
-  "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte."
+  "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte.",
+  "copiedToClipboard": "Copiado para a área de transferência"
 }
