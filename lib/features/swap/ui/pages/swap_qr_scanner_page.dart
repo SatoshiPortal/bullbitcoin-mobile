@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class SwapQrScannerPage extends StatefulWidget {
   const SwapQrScannerPage({super.key});
@@ -58,7 +58,7 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
               right: 24,
-              child: BBButton.big(
+              child: BullButton.big(
                 iconData: Icons.check_circle,
                 textStyle: context.font.labelMedium,
                 textColor: context.appColors.onPrimary,
