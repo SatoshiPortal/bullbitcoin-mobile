@@ -14825,7 +14825,7 @@
   "@limitOrdersBalancePayment": {"description": "Fiat balance used to fund the order", "placeholders": {"currency": {"type": "String"}}},
   "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
   "@limitOrdersTermsNotice": {"description": "Terms and spread notice before creating a Limit Order"},
-  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersConfirm": "Confirm",
   "@limitOrdersConfirm": {"description": "Creates the Limit Order"},
   "limitOrdersCreatedTitle": "Limit order active",
   "@limitOrdersCreatedTitle": {"description": "Title shown after a Limit Order is created"},

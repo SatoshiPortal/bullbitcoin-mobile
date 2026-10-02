@@ -67,6 +67,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<CreateLimitOrderCubit>().state;
+    final isDone = state.step == CreateLimitOrderStep.done;
     return BullScaffold(
       body: SafeArea(
         bottom: false,
@@ -74,13 +75,15 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           children: [
             BullTopBar(
               title: context.loc.limitOrdersTitle,
-              onBack: () {
-                if (state.step == CreateLimitOrderStep.intro) {
-                  context.pop();
-                } else {
-                  context.read<CreateLimitOrderCubit>().goBack();
-                }
-              },
+              onBack: isDone
+                  ? null
+                  : () {
+                      if (state.step == CreateLimitOrderStep.intro) {
+                        context.pop();
+                      } else {
+                        context.read<CreateLimitOrderCubit>().goBack();
+                      }
+                    },
             ),
             SizedBox(
               height: 3,
@@ -131,16 +134,37 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         disabled: state.isSubmitting,
         onPressed: cubit.submit,
       ),
-      CreateLimitOrderStep.done => _primaryButton(
-        context,
-        label: context.loc.limitOrdersBackToExchange,
-        onPressed: () {
-          if (context.canPop()) {
-            context.pop(true);
-          } else {
-            context.go('/exchange');
-          }
-        },
+      CreateLimitOrderStep.done => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _hollowButton(
+            context,
+            label: context.loc.limitOrdersViewOrder,
+            onPressed: () {
+              final router = GoRouter.of(context);
+              final orderId = state.createdOrder!.id;
+              if (context.canPop()) {
+                router.pop(true);
+              }
+              router.pushNamed(
+                LimitOrdersRoute.details.name,
+                pathParameters: {'orderId': orderId},
+              );
+            },
+          ),
+          const Gap(12),
+          _primaryButton(
+            context,
+            label: context.loc.limitOrdersBackToExchange,
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop(true);
+              } else {
+                context.go('/exchange');
+              }
+            },
+          ),
+        ],
       ),
     };
 
@@ -337,7 +361,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         Text(context.loc.limitOrdersWalletDescription),
         const Gap(24),
         if (state.wallets.isNotEmpty) ...[
-          for (final wallet in state.wallets)
+          for (final wallet in state.wallets) ...[
             ListTile(
               onTap: () => cubit.selectWallet(wallet),
               leading: Icon(
@@ -349,7 +373,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               title: Text(_walletName(context, wallet.type)),
               subtitle: Text(wallet.address, maxLines: 2),
             ),
-          const Gap(16),
+            const Gap(8),
+          ],
+          const Gap(8),
         ],
         if (state.appWallets.isNotEmpty) ...[
           Text(
@@ -357,7 +383,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const Gap(8),
-          for (final appWallet in state.appWallets)
+          for (final appWallet in state.appWallets) ...[
             ListTile(
               onTap: state.isResolvingAddress
                   ? null
@@ -383,7 +409,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                     )
                   : null,
             ),
-          const Gap(16),
+            const Gap(8),
+          ],
+          const Gap(8),
         ],
         Text(
           context.loc.limitOrdersLightningAddressLabel,
@@ -538,15 +566,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          const Gap(32),
-          _primaryButton(
-            context,
-            label: context.loc.limitOrdersViewOrder,
-            onPressed: () => context.pushReplacementNamed(
-              LimitOrdersRoute.details.name,
-              pathParameters: {'orderId': state.createdOrder!.id},
-            ),
-          ),
           const Spacer(),
         ],
       );
@@ -570,6 +589,19 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     disabled: disabled,
     bgColor: context.bull.secondary,
     textColor: context.bull.onSecondary,
+  );
+
+  Widget _hollowButton(
+    BuildContext context, {
+    required String label,
+    required VoidCallback onPressed,
+  }) => BullButton.big(
+    label: label,
+    onPressed: onPressed,
+    bgColor: context.bull.surface,
+    textColor: context.bull.text,
+    outlined: true,
+    borderColor: context.bull.border,
   );
 }
 
