@@ -3602,5 +3602,6 @@
   "autoBuyAccountUnavailableError": "Tài khoản Bull Bitcoin của bạn hiện không khả dụng. Vui lòng thử lại sau.",
   "autoBuyWalletRequiredError": "Hãy thêm ít nhất một địa chỉ Bitcoin, Lightning hoặc Liquid mặc định.",
   "autoBuyUpdateError": "Không thể cập nhật mua tự động. Vui lòng thử lại sau.",
-  "withdrawUnexpectedError": "Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ."
+  "withdrawUnexpectedError": "Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm"
 }
