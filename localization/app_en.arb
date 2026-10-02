@@ -15651,5 +15651,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.",
   "@recipientsConfidentialSepaNameMustMatchHint": {
     "description": "Hint under the read-only account owner name on the Confidential SEPA recipient form"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
   }
 }
