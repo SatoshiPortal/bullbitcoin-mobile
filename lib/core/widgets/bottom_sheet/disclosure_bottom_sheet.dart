@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullText, Gap;
 
 class DisclosureLink extends StatelessWidget {
   const DisclosureLink({
@@ -40,7 +38,7 @@ class DisclosureLink extends StatelessWidget {
                 Icon(Icons.info_outline, size: 16, color: color),
                 const Gap(6),
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     label,
                     style: context.font.labelSmall,
                     color: color,
@@ -70,7 +68,7 @@ class DisclosureBottomSheet extends StatelessWidget {
     required String title,
     required String body,
   }) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: DisclosureBottomSheet(title: title, body: body),
     );
@@ -96,7 +94,7 @@ class DisclosureBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: BBText(title, style: context.font.headlineMedium),
+                  child: BullText(title, style: context.font.headlineMedium),
                 ),
                 IconButton(
                   tooltip: context.loc.closeDialogButton,
@@ -152,7 +150,7 @@ class _DisclosureBody extends StatelessWidget {
     if (block.startsWith('## ')) {
       return Semantics(
         header: true,
-        child: BBText(
+        child: BullText(
           block.substring(3),
           style: context.font.titleMedium?.copyWith(fontWeight: .w600),
           color: context.appColors.text,
@@ -163,7 +161,7 @@ class _DisclosureBody extends StatelessWidget {
     if (block.startsWith('### ')) {
       return Semantics(
         header: true,
-        child: BBText(
+        child: BullText(
           block.substring(4),
           style: context.font.bodyLarge?.copyWith(fontWeight: .w600),
           color: context.appColors.text,
@@ -187,7 +185,7 @@ class _DisclosureBody extends StatelessWidget {
       );
     }
 
-    return BBText(
+    return BullText(
       block,
       style: context.font.bodyMedium,
       color: context.appColors.text,
@@ -219,13 +217,13 @@ class _DisclosureBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   title,
                   style: context.font.bodyLarge?.copyWith(fontWeight: .w600),
                   color: context.appColors.text,
                 ),
                 const Gap(6),
-                BBText(
+                BullText(
                   body,
                   style: context.font.bodyMedium,
                   color: context.appColors.text,
@@ -249,7 +247,7 @@ class _DisclosureBody extends StatelessWidget {
             children: [
               SizedBox(
                 width: 18,
-                child: BBText(
+                child: BullText(
                   '•',
                   style: context.font.bodyMedium,
                   color: context.appColors.text,

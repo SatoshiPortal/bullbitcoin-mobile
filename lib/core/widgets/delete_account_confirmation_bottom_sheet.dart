@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText;
 
 class DeleteAccountConfirmationBottomSheet extends StatelessWidget {
   final Future<void> Function() onConfirm;
@@ -17,7 +16,7 @@ class DeleteAccountConfirmationBottomSheet extends StatelessWidget {
     BuildContext context, {
     required Future<void> Function() onConfirm,
   }) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: DeleteAccountConfirmationBottomSheet(onConfirm: onConfirm),
     );
@@ -50,13 +49,13 @@ class DeleteAccountConfirmationBottomSheet extends StatelessWidget {
                 color: context.appColors.primary,
               ),
               const SizedBox(height: 16),
-              BBText(
+              BullText(
                 context.loc.deleteAccountConfirmationTitle,
                 style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
-              BBText(
+              BullText(
                 context.loc.deleteAccountConfirmationDescription,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
@@ -69,7 +68,7 @@ class DeleteAccountConfirmationBottomSheet extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: BBButton.small(
+                    child: BullButton.small(
                       label: context.loc.deleteAccountConfirmationCancel,
                       onPressed: () => Navigator.of(context).pop(),
                       outlined: true,
@@ -80,7 +79,7 @@ class DeleteAccountConfirmationBottomSheet extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: BBButton.small(
+                    child: BullButton.small(
                       label: context.loc.deleteAccountConfirmationDelete,
                       onPressed: () async {
                         Navigator.of(context).pop();

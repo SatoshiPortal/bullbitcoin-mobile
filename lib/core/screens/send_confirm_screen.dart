@@ -3,13 +3,11 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 
 enum SendType { send, swap }
 
@@ -42,35 +40,35 @@ class CommonSendConfirmTopArea extends StatelessWidget {
         ),
         const Gap(16),
         if (_sendType == SendType.send)
-          BBText(
+          BullText(
             context.loc.coreScreensConfirmSend,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.secondary,
             ),
           )
         else if (_sendToExternal == true)
-          BBText(
+          BullText(
             context.loc.coreScreensExternalTransfer,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.secondary,
             ),
           )
         else if (_sendToExternal == false)
-          BBText(
+          BullText(
             context.loc.coreScreensInternalTransfer,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.secondary,
             ),
           )
         else
-          BBText(
+          BullText(
             context.loc.coreScreensConfirmTransfer,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.secondary,
             ),
           ),
         const Gap(4),
-        BBText(
+        BullText(
           _formattedConfirmedAmountBitcoin,
           style: context.font.displaySmall?.copyWith(
             color: context.appColors.secondary,
@@ -93,7 +91,7 @@ class CommonInfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          BBText(
+          BullText(
             title,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -150,7 +148,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
         children: [
           CommonInfoRow(
             title: context.loc.coreScreensFromLabel,
-            details: BBText(
+            details: BullText(
               _sendWalletLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -198,7 +196,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
             _divider(context),
             CommonInfoRow(
               title: context.loc.receiveNote,
-              details: BBText(
+              details: BullText(
                 _note,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.appColors.secondary,
@@ -213,13 +211,13 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                BBText(
+                BullText(
                   _formattedBitcoinAmount,
                   style: context.font.bodyLarge?.copyWith(
                     color: context.appColors.secondary,
                   ),
                 ),
-                BBText(
+                BullText(
                   _formattedFiatEquivalent,
                   style: context.font.labelSmall?.copyWith(
                     color: context.appColors.secondary,
@@ -231,7 +229,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensNetworkFeesLabel,
-            details: BBText(
+            details: BullText(
               _absoluteFees,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -248,7 +246,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: .end,
                   children: [
-                    BBText(
+                    BullText(
                       _selectedFeeOptionTitle,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.appColors.primary,
@@ -302,7 +300,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
         children: [
           CommonInfoRow(
             title: context.loc.coreScreensFromLabel,
-            details: BBText(
+            details: BullText(
               _sendWalletLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -344,7 +342,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensTransferIdLabel,
-            details: BBText(
+            details: BullText(
               _swapId,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -358,13 +356,13 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                BBText(
+                BullText(
                   _formattedBitcoinAmount,
                   style: context.font.bodyLarge?.copyWith(
                     color: context.appColors.secondary,
                   ),
                 ),
-                BBText(
+                BullText(
                   _formattedFiatEquivalent,
                   style: context.font.labelSmall?.copyWith(
                     color: context.appColors.secondary,
@@ -376,7 +374,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensTotalFeesLabel,
-            details: BBText(
+            details: BullText(
               _totalSwapFees,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -406,7 +404,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.secondary,
@@ -445,7 +443,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               },
               child: Row(
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.coreScreensTransferFeeLabel,
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -475,7 +473,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 const Gap(4),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: BBText(
+                  child: BullText(
                     context.loc.coreScreensFeeDeductionExplanation,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.secondary,
@@ -539,7 +537,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
         children: [
           CommonInfoRow(
             title: context.loc.coreScreensFromLabel,
-            details: BBText(
+            details: BullText(
               sendWalletLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.secondary,
@@ -584,7 +582,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                     ],
                   )
                 : receiveWalletLabel != null && receiveWalletLabel!.isNotEmpty
-                ? BBText(
+                ? BullText(
                     receiveWalletLabel!,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.secondary,
@@ -601,7 +599,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: .min,
               children: [
                 Expanded(
-                  child: BBText(
+                  child: BullText(
                     swap.id,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.secondary,
@@ -648,7 +646,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                     ),
                   )
                 else
-                  BBText(
+                  BullText(
                     formattedBitcoinAmount,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.secondary,
@@ -731,7 +729,7 @@ class CommonConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.coreScreensConfirmButton,
       onPressed: () {
         _onPressed();
@@ -755,7 +753,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            BBText(
+            BullText(
               context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
@@ -763,7 +761,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
               textAlign: .center,
             ),
             const Gap(8),
-            BBText(
+            BullText(
               errorMessage!,
               style: context.font.bodyMedium,
               color: context.appColors.error,

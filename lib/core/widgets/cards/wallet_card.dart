@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -62,7 +61,7 @@ class WalletCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: .spaceBetween,
                               children: [
-                                BBText(
+                                BullText(
                                   title,
                                   style: context.font.bodyLarge,
                                   color: context.appColors.secondary,
@@ -80,7 +79,7 @@ class WalletCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: .spaceBetween,
                               children: [
-                                BBText(
+                                BullText(
                                   description,
                                   style: context.font.labelMedium,
                                   color: context.appColors.onSurfaceVariant,
