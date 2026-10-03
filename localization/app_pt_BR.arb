@@ -4674,7 +4674,7 @@
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "importQrDeviceSeedsignerStep6": "Selecione \"Seta\" como a opção de exportação",
+  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12192,6 +12192,11 @@
   "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
   "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
+  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Rede: rede principal do Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Rede: rede de teste do Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Não foi possível finalizar a transação assinada. Confirme se ela contém todas as assinaturas necessárias e tente novamente.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
   "limitOrdersOpen": "Open a limit order",

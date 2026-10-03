@@ -4510,7 +4510,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "Επιλέξτε \"Sparrow\" ως επιλογή εξαγωγής",
+  "importQrDeviceSeedsignerStep6": "Επιλέξτε «Animated» ως επιλογή εξαγωγής. Σε παλαιότερο υλικολογισμικό SeedSigner, επιλέξτε «Sparrow».",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12180,6 +12180,11 @@
   "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
   "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "importWatchOnlyErrorNetworkMismatch": "Αυτό το πορτοφόλι χρησιμοποιεί αυτήν τη στιγμή διαφορετικό δίκτυο Bitcoin. Αλλάξτε μεταξύ Mainnet και Testnet και δοκιμάστε ξανά.",
+  "importWatchOnlyErrorAlreadyExists": "Αυτό το πορτοφόλι έχει ήδη εισαχθεί.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Δίκτυο: Κύριο δίκτυο Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Δίκτυο: Δοκιμαστικό δίκτυο Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Δεν ήταν δυνατή η οριστικοποίηση της υπογεγραμμένης συναλλαγής. Βεβαιωθείτε ότι περιέχει όλες τις απαιτούμενες υπογραφές και δοκιμάστε ξανά.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
   "limitOrdersOpen": "Open a limit order",

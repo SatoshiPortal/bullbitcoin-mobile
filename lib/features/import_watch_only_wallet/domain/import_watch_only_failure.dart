@@ -27,3 +27,7 @@ final class ImportFailedFailure extends ImportWatchOnlyFailure {
 final class NetworkMismatchFailure extends ImportWatchOnlyFailure {
   const NetworkMismatchFailure();
 }
+
+final class WalletAlreadyExistsFailure extends ImportWatchOnlyFailure {
+  const WalletAlreadyExistsFailure();
+}
