@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, Gap;
 
 class SwapConfirmPage extends StatelessWidget {
   const SwapConfirmPage({super.key});
@@ -104,7 +103,7 @@ class SwapConfirmPage extends StatelessWidget {
                         selectedFeeOptionTitle: selectedFeeOptionTitle,
                         onFeePriorityTap: () {
                           final bloc = context.read<TransferBloc>();
-                          BlurredBottomSheet.show(
+                          BullBottomSheet.show(
                             context: context,
                             child: FeeOptionsModal(
                               viewState: bloc,

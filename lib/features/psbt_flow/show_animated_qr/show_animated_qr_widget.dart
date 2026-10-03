@@ -4,14 +4,13 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_flow/presentation/psbt_flow_failure_l10n.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_cubit.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final String psbt;
@@ -140,7 +139,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
               ],
 
               if (state.parts.length > 1) ...[
-                BBText(
+                BullText(
                   context.loc.psbtFlowPartProgress(
                     (state.currentIndex + 1).toString(),
                     state.parts.length.toString(),

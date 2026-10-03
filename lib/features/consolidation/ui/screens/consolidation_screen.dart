@@ -1,17 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, BullTopBar, Gap;
 
 /// Confirmation + progress screen for consolidating a Liquid wallet. Styled to
 /// match the Send confirm screen (top bar, header, info rows, primary button).
@@ -32,7 +30,7 @@ class ConsolidationScreen extends StatelessWidget {
           appBar: AppBar(
             forceMaterialTransparency: true,
             automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
+            flexibleSpace: BullTopBar(
               title: context.loc.consolidationScreenTitle,
               onBack: () => Navigator.of(context).maybePop(),
             ),
@@ -113,7 +111,7 @@ class _ReviewView extends StatelessWidget {
           const Gap(16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: BBText(
+            child: BullText(
               context.loc.consolidationScreenDescription,
               style: context.font.bodyMedium,
               color: context.appColors.onSurfaceVariant,
@@ -171,7 +169,7 @@ class _ReviewView extends StatelessWidget {
           const Gap(40),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BBButton.big(
+            child: BullButton.big(
               label: context.loc.consolidationScreenTitle,
               onPressed: () => context.read<ConsolidationCubit>().consolidate(),
               bgColor: context.appColors.secondary,
@@ -183,7 +181,7 @@ class _ReviewView extends StatelessWidget {
     );
   }
 
-  Widget _valueText(BuildContext context, String value) => BBText(
+  Widget _valueText(BuildContext context, String value) => BullText(
     value,
     style: context.font.bodyLarge,
     color: context.appColors.secondary,
@@ -207,7 +205,7 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          BBText(
+          BullText(
             title,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
@@ -240,13 +238,13 @@ class _Header extends StatelessWidget {
           child: Icon(Icons.sync, size: 32, color: context.appColors.secondary),
         ),
         const Gap(16),
-        BBText(
+        BullText(
           context.loc.consolidationScreenTitle,
           style: context.font.bodyMedium,
           color: context.appColors.secondary,
         ),
         const Gap(4),
-        BBText(
+        BullText(
           FormatAmount.sats(balanceSat),
           style: context.font.displaySmall,
           color: context.appColors.secondary,
@@ -267,7 +265,7 @@ class _BroadcastingView extends StatelessWidget {
         children: [
           CircularProgressIndicator(color: context.appColors.primary),
           const Gap(24),
-          BBText(
+          BullText(
             context.loc.consolidationInProgress,
             style: context.font.headlineLarge,
             color: context.appColors.secondary,
@@ -289,14 +287,14 @@ class _SuccessView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BBText(
+            BullText(
               context.loc.consolidationSuccessTitle,
               style: context.font.headlineLarge,
               color: context.appColors.secondary,
               textAlign: TextAlign.center,
             ),
             const Gap(8),
-            BBText(
+            BullText(
               context.loc.consolidationSuccessBody,
               style: context.font.bodyMedium,
               color: context.appColors.onSurfaceVariant,
@@ -304,7 +302,7 @@ class _SuccessView extends StatelessWidget {
               maxLines: 4,
             ),
             const Gap(24),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.consolidationDone,
               onPressed: () => Navigator.of(context).maybePop(),
               bgColor: context.appColors.secondary,
