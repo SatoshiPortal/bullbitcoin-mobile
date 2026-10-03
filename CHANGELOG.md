@@ -8,6 +8,70 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## [6.14.0] - 2026-10-04
+
+_Update from the 6.13.2–6.13.4 internal prereleases and the public 6.13.1 release._
+
+### New Features
+
+- **AutoBuy**: automatic recurring buys can be activated from the Exchange home screen, paying out to the default Bitcoin, Lightning, or Liquid wallet, with eligibility checks before activation. ([#2855](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2855), [#2876](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2876))
+- **Limit orders**: Exchange orders can be placed at a target price and tracked or cancelled from the order list. ([#2857](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2857))
+
+### Reliability And UX
+
+- Replaced raw developer errors with clear, translated messages across the status check, onboarding, recurring buy, hardware-wallet signing, Send, Sell, Buy, Pay, and Withdraw flows. ([#2501](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2501), [#2507](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2507), [#2537](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2537), [#2514](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2514), [#2781](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2781), [#2784](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2784), [#2792](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2792), [#2795](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2795), [#2799](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2799))
+- Withdrawal limit errors name the exact bound in the app locale, and a failed withdrawal summary can be retried in place. ([#2799](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2799))
+- Improved log diagnostics and the in-app log viewer. ([#2753](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2753))
+- Updated German translations. ([#2810](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2810))
+
+### Bug Fixes
+
+- Fixed Interac e-transfer withdrawals overriding the security question and answer. ([#2829](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2829))
+- Send reports insufficient funds when the fee does not fit, and rejects coins that became unavailable before broadcast. ([#2741](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2741), [#2782](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2782))
+- Corrected RBF fee handling and improved the Electrum connectivity check in Settings. ([#2736](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2736))
+- Fixed Lightning address validation in Send. ([#2125](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2125))
+- Kept keyboard focus on the recovery phrase entry on desktop. ([#2750](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2750))
+
+### Under The Hood
+
+- Extracted public feature boundaries for recipients and default wallets, and moved the bitcoin price into its own core module. ([#2831](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2831), [#2835](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2835), [#2846](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2846))
+
+### Important Upgrade Note
+
+- The support-assisted swap-rescue changes that shipped only in the 6.13.2–6.13.4 internal builds are not part of this release; they ship with the upcoming swap engine release. If you were given an internal build by the Bull Bitcoin team, check with support before updating.
+
+---
+
+## [6.13.4] - 2026-09-04
+
+_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
+
+### Bug Fixes
+
+- Hardened swap refund-evidence checks and the Electrum fallback for support-assisted rescue of stuck chain swaps. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.4%2B219))
+
+---
+
+## [6.13.3] - 2026-09-03
+
+_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
+
+### Bug Fixes
+
+- Enabled local swap refunds over Electrum without the swap API, for support-assisted rescue. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.3))
+
+---
+
+## [6.13.2] - 2026-09-02
+
+_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
+
+### Bug Fixes
+
+- Added rescue handling for chain swaps stranded by server-side refunds. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.2))
+
+---
+
 ## 6.13.1 - 2026-08-27
 
 ### Fixed
