@@ -14770,5 +14770,188 @@
   "broadcastSignedTxErrorPsbtFinalization": "The signed transaction could not be finalized. Make sure it contains all required signatures and try again.",
   "@broadcastSignedTxErrorPsbtFinalization": {
     "description": "Shown when a signed PSBT cannot be finalized before broadcast"
+  },
+  "limitOrdersTitle": "Limit orders",
+  "@limitOrdersTitle": {"description": "Title for the Limit Orders feature"},
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "@limitOrdersDashboardDescription": {"description": "Description on the Exchange dashboard Limit Orders card"},
+  "limitOrdersOpen": "Open a limit order",
+  "@limitOrdersOpen": {"description": "Action that starts the Limit Order creation flow"},
+  "limitOrdersActiveTitle": "Active limit orders",
+  "@limitOrdersActiveTitle": {"description": "Heading above active Limit Orders"},
+  "limitOrdersCreateNew": "Create new",
+  "@limitOrdersCreateNew": {"description": "Action to create another Limit Order"},
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "@limitOrdersMaximumActiveHint": {"description": "Shown when the five-active-Limit-Order cap has been reached"},
+  "limitOrdersBuyAt": "Buy at {price}",
+  "@limitOrdersBuyAt": {"description": "Summary of a Limit Order target price", "placeholders": {"price": {"type": "String"}}},
+  "limitOrdersCancelAll": "Cancel all",
+  "@limitOrdersCancelAll": {"description": "Action to cancel all active Limit Orders"},
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "@limitOrdersCancelAllTitle": {"description": "Title of the cancel-all Limit Orders confirmation"},
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "@limitOrdersCancelAllMessage": {"description": "Warning shown before all active Limit Orders are cancelled"},
+  "limitOrdersDialogConfirm": "Confirm",
+  "@limitOrdersDialogConfirm": {"description": "Confirmation action in Limit Order dialogs"},
+  "limitOrdersDone": "Done",
+  "@limitOrdersDone": {"description": "Closes a completed Limit Order screen"},
+  "limitOrdersIntroTitle": "Open a limit order",
+  "@limitOrdersIntroTitle": {"description": "Title of the Limit Order introduction step"},
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "@limitOrdersIntroDescription": {"description": "Description of how Limit Orders work"},
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "@limitOrdersIntroBulletPrice": {"description": "Limit Order introduction bullet about the target price"},
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "@limitOrdersIntroBulletBalance": {"description": "Limit Order introduction bullet about account balance"},
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "@limitOrdersIntroBulletExecution": {"description": "Limit Order introduction bullet about payout"},
+  "limitOrdersTargetTitle": "Choose your target price",
+  "@limitOrdersTargetTitle": {"description": "Title of the Limit Order target-price step"},
+  "limitOrdersPaymentMethod": "Payment method",
+  "@limitOrdersPaymentMethod": {"description": "Label for the fiat balance used by a Limit Order"},
+  "limitOrdersCurrentPrice": "Current index price",
+  "@limitOrdersCurrentPrice": {"description": "Label for the current Bitcoin index price"},
+  "limitOrdersTargetPrice": "Target price",
+  "@limitOrdersTargetPrice": {"description": "Label for the Limit Order target price"},
+  "limitOrdersDiscount": "Discount from current price",
+  "@limitOrdersDiscount": {"description": "Label for the Limit Order discount percentage"},
+  "limitOrdersAmountTitle": "Set the amount",
+  "@limitOrdersAmountTitle": {"description": "Title of the Limit Order fiat-amount step"},
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "@limitOrdersAvailableBalance": {"description": "Available fiat balance", "placeholders": {"amount": {"type": "String"}}},
+  "limitOrdersFiatAmount": "Amount",
+  "@limitOrdersFiatAmount": {"description": "Label for the Limit Order fiat amount"},
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "@limitOrdersEstimatedBitcoin": {"description": "Estimated bitcoin amount for a Limit Order", "placeholders": {"amount": {"type": "String"}}},
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "@limitOrdersWalletTitle": {"description": "Title of the Limit Order wallet-selection step"},
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "@limitOrdersWalletDescription": {"description": "Explains the Limit Order payout wallet"},
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "@limitOrdersNoDefaultWallets": {"description": "Shown when no default payout wallet is configured"},
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "@limitOrdersManageDefaultWallets": {"description": "Opens default-wallet settings from Limit Orders"},
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "@limitOrdersWalletBitcoin": {"description": "Bitcoin on-chain Limit Order payout option"},
+  "limitOrdersWalletLightning": "Lightning address",
+  "@limitOrdersWalletLightning": {"description": "Lightning Limit Order payout option"},
+  "limitOrdersWalletLiquid": "Liquid address",
+  "@limitOrdersWalletLiquid": {"description": "Liquid Limit Order payout option"},
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "@limitOrdersConfirmationTitle": {"description": "Title of the Limit Order confirmation step"},
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "@limitOrdersEstimatedBuyPrice": {"description": "Estimated user buy price after spread"},
+  "limitOrdersBalancePayment": "{currency} balance",
+  "@limitOrdersBalancePayment": {"description": "Fiat balance used to fund the order", "placeholders": {"currency": {"type": "String"}}},
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "@limitOrdersTermsNotice": {"description": "Terms and spread notice before creating a Limit Order"},
+  "limitOrdersConfirm": "Confirm",
+  "@limitOrdersConfirm": {"description": "Creates the Limit Order"},
+  "limitOrdersCreatedTitle": "Limit order active",
+  "@limitOrdersCreatedTitle": {"description": "Title shown after a Limit Order is created"},
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "@limitOrdersCreatedMessage": {"description": "Success summary after creating a Limit Order", "placeholders": {"amount": {"type": "String"}, "price": {"type": "String"}}},
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "@limitOrdersBackToExchange": {"description": "Returns from Limit Order success to the Exchange dashboard"},
+  "limitOrderDetailsTitle": "Limit order details",
+  "@limitOrderDetailsTitle": {"description": "Title of the Limit Order details screen"},
+  "limitOrderDetailsStatus": "Status",
+  "@limitOrderDetailsStatus": {"description": "Limit Order status label"},
+  "limitOrderDetailsNumber": "Order number",
+  "@limitOrderDetailsNumber": {"description": "Limit Order number label"},
+  "limitOrderDetailsAddress": "Payout address",
+  "@limitOrderDetailsAddress": {"description": "Limit Order payout address label"},
+  "limitOrderDetailsCreated": "Created",
+  "@limitOrderDetailsCreated": {"description": "Limit Order creation date label"},
+  "limitOrderDetailsExpires": "Expires",
+  "@limitOrderDetailsExpires": {"description": "Limit Order expiry date label"},
+  "limitOrderCancel": "Cancel limit order",
+  "@limitOrderCancel": {"description": "Action to cancel one active Limit Order"},
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "@limitOrderCancelTitle": {"description": "Title of the single Limit Order cancellation dialog"},
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "@limitOrderCancelMessage": {"description": "Warning before one Limit Order is cancelled"},
+  "limitOrderStatusActive": "Active",
+  "@limitOrderStatusActive": {"description": "Active Limit Order status"},
+  "limitOrderStatusExecuted": "Executed",
+  "@limitOrderStatusExecuted": {"description": "Executed Limit Order status"},
+  "limitOrderStatusCancelled": "Cancelled",
+  "@limitOrderStatusCancelled": {"description": "Cancelled Limit Order status"},
+  "limitOrderStatusExpired": "Expired",
+  "@limitOrderStatusExpired": {"description": "Expired Limit Order status"},
+  "limitOrderStatusFailed": "Failed",
+  "@limitOrderStatusFailed": {"description": "Failed or unknown Limit Order status"},
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "@limitOrdersAccountUnavailableError": {"description": "Shown when Limit Order account data is unavailable"},
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "@limitOrdersMaximumActiveError": {"description": "Shown when the backend rejects a sixth active Limit Order"},
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "@limitOrderNotFoundError": {"description": "Shown when a Limit Order no longer exists"},
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "@limitOrderInvalidAddressError": {"description": "Shown when the backend rejects a Limit Order payout address"},
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "@limitOrderInvalidTargetError": {"description": "Shown for an invalid Limit Order target price"},
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "@limitOrderInvalidAmountError": {"description": "Shown for an invalid Limit Order fiat amount"},
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "@limitOrdersLoadError": {"description": "Shown when Limit Orders cannot be loaded"},
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "@limitOrderCreationError": {"description": "Shown when a Limit Order cannot be created"},
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"},
+  "limitOrdersYourWalletsTitle": "Your wallets",
+  "@limitOrdersYourWalletsTitle": {
+    "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
+  },
+  "limitOrdersLightningAddressLabel": "Lightning address",
+  "@limitOrdersLightningAddressLabel": {
+    "description": "Label for the manual lightning-address field in the limit-order destination step"
+  },
+  "limitOrdersLightningAddressHint": "you@domain.com",
+  "@limitOrdersLightningAddressHint": {
+    "description": "Hint for the lightning-address field showing the expected lightning address format"
+  },
+  "limitOrdersLightningAddressError": "Enter a valid lightning address, not an invoice",
+  "@limitOrdersLightningAddressError": {
+    "description": "Error shown when the entered lightning destination is not a valid lightning address"
+  },
+  "limitOrdersResolvingAddress": "Getting address…",
+  "@limitOrdersResolvingAddress": {
+    "description": "Shown while deriving a receive address for the selected in-app wallet"
+  },
+  "limitOrderDetailsEstimatedBitcoin": "Estimated bitcoin",
+  "@limitOrderDetailsEstimatedBitcoin": {
+    "description": "Label for the estimated bitcoin amount row on the limit order details screen"
+  },
+  "limitOrdersAmountBelowOnchainMin": "Amount is below the on-chain minimum of {amount}",
+  "@limitOrdersAmountBelowOnchainMin": {
+    "description": "Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountBelowLiquidMin": "Amount is below the Liquid minimum of {amount}",
+  "@limitOrdersAmountBelowLiquidMin": {
+    "description": "Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountAboveLightningMax": "Amount is above the Lightning maximum of {amount}",
+  "@limitOrdersAmountAboveLightningMax": {
+    "description": "Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersViewOrder": "View order details",
+  "@limitOrdersViewOrder": {
+    "description": "Opens the created Limit Order details from the success screen"
   }
 }
