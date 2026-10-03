@@ -10,8 +10,6 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [6.14.0] - 2026-10-04
 
-_Update from the 6.13.2–6.13.4 internal prereleases and the public 6.13.1 release._
-
 ### New Features
 
 - **AutoBuy**: automatic recurring buys can be activated from the Exchange home screen, paying out to the default Bitcoin, Lightning, or Liquid wallet, with eligibility checks before activation. ([#2855](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2855), [#2876](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2876))
@@ -39,36 +37,6 @@ _Update from the 6.13.2–6.13.4 internal prereleases and the public 6.13.1 rele
 ### Important Upgrade Note
 
 - The support-assisted swap-rescue changes that shipped only in the 6.13.2–6.13.4 internal builds are not part of this release; they ship with the upcoming swap engine release. If you were given an internal build by the Bull Bitcoin team, check with support before updating.
-
----
-
-## [6.13.4] - 2026-09-04
-
-_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
-
-### Bug Fixes
-
-- Hardened swap refund-evidence checks and the Electrum fallback for support-assisted rescue of stuck chain swaps. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.4%2B219))
-
----
-
-## [6.13.3] - 2026-09-03
-
-_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
-
-### Bug Fixes
-
-- Enabled local swap refunds over Electrum without the swap API, for support-assisted rescue. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.3))
-
----
-
-## [6.13.2] - 2026-09-02
-
-_Internal prerelease for users explicitly assisted by the Bull Bitcoin team._
-
-### Bug Fixes
-
-- Added rescue handling for chain swaps stranded by server-side refunds. This build was not intended as a general update. ([release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/tag/v6.13.2))
 
 ---
 
