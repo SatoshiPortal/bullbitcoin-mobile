@@ -15,8 +15,7 @@ sealed class AppStartupState with _$AppStartupState {
   /// screen reads it itself.
   const factory AppStartupState.legacyBackupRequired() =
       AppStartupLegacyBackupRequired;
-  const factory AppStartupState.failure(
-    Object? e, {
-    @Default(false) bool hasBackup,
-  }) = AppStartupFailure;
+
+  const factory AppStartupState.failure(AppStartupFailure failure) =
+      AppStartupFailureState;
 }

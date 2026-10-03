@@ -1,8 +1,12 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
+import 'package:meta/meta.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
@@ -15,7 +19,23 @@ class CheckForExistingDefaultWalletsUsecase {
     required this._seedRepository,
   });
 
-  Future<bool> execute() async {
+  @useResult
+  Future<Result<bool, AppStartupFailure>> execute() async {
+    try {
+      return Ok(await _check());
+    } on KeychainLockedException {
+      return const Err(AppStartupKeychainLockedFailure());
+    } on Object catch (e, st) {
+      log.severe(
+        message: 'Default wallet check failed at startup',
+        error: e,
+        trace: st,
+      );
+      return const Err(AppStartupWalletCheckFailure());
+    }
+  }
+
+  Future<bool> _check() async {
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
 
