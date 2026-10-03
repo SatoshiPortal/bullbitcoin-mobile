@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
+import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -184,6 +185,7 @@ class AppRouter {
       ...BitBoxRouter.routes,
       DcaRouter.route,
       AutoBuyRouter.route,
+      ...LimitOrdersRouter.routes,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ElectrumSettingsRouter.route,
