@@ -1167,7 +1167,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
+  "payAboveMaxAmountError": "Maximální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -1387,10 +1387,6 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payOrderAlreadyConfirmed": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "Přihlášení Transakce",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1592,10 +1588,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "payOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
@@ -1672,7 +1664,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "Pokuste se odstoupit nad maximálním množstvím.",
+  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2110,10 +2102,6 @@
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
   },
-  "payOrderNotFound": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
   "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
@@ -2152,10 +2140,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "buyOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "Bankovní převod",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2313,7 +2297,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Pokuste se odstoupit nad minimálním množstvím.",
+  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -2408,10 +2392,6 @@
   "sellOrderPlaced": "Prodejní objednávka byla úspěšně dokončena",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "Nedostatečné prostředky ve vašem účtu Bull Bitcoin k dokončení této objednávky.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "Ujistěte se, že jste nainstalovali nejnovější verzi aplikace Bitcoin z aplikace Ledger Live.",
   "@ledgerHelpStep4": {
@@ -2786,10 +2766,6 @@
   "payAccountNumberHint": "Zadejte číslo účtu",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "Kupní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "ne ",
   "@backupWalletGoogleDrivePrivacyMessage2": {
@@ -3254,10 +3230,6 @@
   "autoswapInfoSettingsButton": "Konfigurace nastavení",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "Nový příjemce",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "Váš Keystone je nyní připojen a připraven k použití s BULL Peněženka.",
   "@importQrDeviceKeystoneStep10": {
@@ -4327,10 +4299,6 @@
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
   },
-  "withdrawRecipientsMyTab": "Moje příjemci fiatu",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
   "sendFeeRateTooLow": "Poplatek za poplatek",
   "@sendFeeRateTooLow": {
     "description": "Error for insufficient fee"
@@ -5375,7 +5343,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "Zvolte možnost \"Sparrow\" jako možnost exportu",
+  "importQrDeviceSeedsignerStep6": "Jako možnost exportu vyberte „Animated“. U staršího firmwaru SeedSigner vyberte „Sparrow“.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -5635,10 +5603,6 @@
   "coreSwapsLnReceiveCanCoop": "Swap bude dokončit momentálně.",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
-  },
-  "withdrawRecipientsNoRecipients": "Žádné příjemce, které nejsou k dispozici.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
   },
   "transactionSwapProgressPaymentMade": "Platba\nČeština",
   "@transactionSwapProgressPaymentMade": {
@@ -6790,10 +6754,6 @@
   "sendTitle": "Odeslat",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "Odstoupení nebyla nalezena. Prosím, zkuste to znovu.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "Zvolte \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -8086,10 +8046,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Všechny typy",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Nativní SegWit - Doporučené",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8348,7 +8304,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
+  "payBelowMinAmountError": "Minimální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -8404,14 +8360,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "Kde a jak bychom měli poslat peníze?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Vyberte příjemce",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Výplatní příjemce",
   "@sellPayoutRecipient": {
@@ -8903,10 +8851,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "Referenční číslo",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -9385,10 +9329,6 @@
   "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
   "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
   "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
-  "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "Prosíme o potvrzení adresy ve vašem zařízení Ledger.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9726,10 +9666,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
   "@jadeStep12": {
@@ -10253,10 +10189,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "payInsufficientBalance": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "Zobrazit protokoly",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10546,10 +10478,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
   "receiveNetworkUnavailable": "{network} je v současné době nedostupná",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10642,15 +10570,6 @@
   "sendDeviceDisconnected": "Odpojení zařízení",
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
-  },
-  "withdrawConfirmError": "Chyba: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payFeeBumpFailed": "Pohotovostní náraz selhal",
   "@payFeeBumpFailed": {
@@ -11026,10 +10945,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "withdrawOrderAlreadyConfirmedError": "Tato objednávka výběru byla již potvrzena.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
-  },
   "autoswapSelectWallet": "Vyberte peněženku Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
@@ -11194,10 +11109,6 @@
   "confirmButtonLabel": "Potvrdit",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
-  },
-  "withdrawRecipientsContinue": "Pokračovat",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "pinConfirmHeadline": "Potvrdit nový PIN",
   "@pinConfirmHeadline": {
@@ -12241,5 +12152,101 @@
   "psbtFlowQrEncodingError": "Tuto transakci nelze převést na QR kód.",
   "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
-  "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu."
+  "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
+  "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje Interac",
+  "withdrawInteracSaveAsDefault": "Uložit tyto údaje jako výchozí",
+  "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
+  "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",
+  "withdrawInteracSecurityAnswerFormatError": "Použijte písmena, číslice nebo spojovníky bez mezer",
+  "autoBuyTitle": "Automatický nákup",
+  "autoBuyDescription": "Kupujte Bitcoin automaticky pokaždé, když vložíte prostředky na svůj účet",
+  "autoBuyActivate": "Aktivovat automatický nákup",
+  "autoBuyDeactivate": "Deaktivovat automatický nákup",
+  "autoBuyCancelTitle": "Zrušit automatický nákup?",
+  "autoBuyCancelMessage": "Při příštím vložení prostředků na účet se Bitcoin automaticky nenakoupí.",
+  "autoBuyDeactivateConfirm": "Ano, deaktivovat",
+  "autoBuyHowItWorks": "Jak to funguje",
+  "autoBuyConnectWallet": "Připojte svou Bitcoin, Lightning nebo Liquid peněženku",
+  "autoBuyPurchaseCreated": "Pokaždé, když vložíte prostředky na svůj účet Bull Bitcoin, se automaticky vytvoří nákup Bitcoinu.",
+  "autoBuyBitcoinSent": "Bitcoin je odeslán přímo do vaší vlastní peněženky.",
+  "autoBuyRiskDisclaimer": "Provedení příkazu nelze zaručit. Prodlevy nebo změny ceny mezi vkladem a nákupem mohou změnit skutečný kurz.",
+  "autoBuyGetStarted": "Začněte s automatickým nákupem",
+  "autoBuyConfirmTitle": "Potvrdit automatický nákup",
+  "autoBuyInfoMessage": "Jakákoli částka přidaná na váš účet bude převedena na Bitcoin aktuálním směnným kurzem a odeslána do vaší peněženky.",
+  "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
+  "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
+  "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
+  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu.",
+  "importWatchOnlyErrorAlreadyExists": "Tato peněženka již byla importována.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Síť: hlavní síť Bitcoinu",
+  "importWatchOnlyNetworkBitcoinTestnet": "Síť: testovací síť Bitcoinu",
+  "broadcastSignedTxErrorPsbtFinalization": "Podepsanou transakci se nepodařilo dokončit. Zkontrolujte, zda obsahuje všechny požadované podpisy, a zkuste to znovu.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

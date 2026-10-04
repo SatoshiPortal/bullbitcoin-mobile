@@ -2343,13 +2343,23 @@
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "payAboveMaxAmountError": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "payAboveMaxAmountError": "The maximum you can pay with this wallet is {amount}.",
   "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
+    "description": "Error message for amount above maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-  "payBelowMinAmountError": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "payBelowMinAmountError": "The minimum you can pay with this wallet is {amount}.",
   "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
+    "description": "Error message for amount below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "payInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this pay order.",
   "@payInsufficientBalanceError": {
@@ -2358,14 +2368,6 @@
   "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
-  },
-  "payOrderNotFoundError": "The pay order was not found. Please try again.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "payOrderAlreadyConfirmedError": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "paySelectNetwork": "Select Network",
   "@paySelectNetwork": {
@@ -2559,26 +2561,6 @@
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
-  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
-  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
-  "payOrderNotFound": "The pay order was not found. Please try again.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "payPaymentInProgress": "Payment In Progress!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -2650,10 +2632,6 @@
   "payExternalWalletDescription": "Pay from another Bitcoin wallet",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
   },
   "payRbfActivated": "Replace-by-fee activated",
   "@payRbfActivated": {
@@ -9966,7 +9944,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Select \"Sparrow\" as the export option",
+  "importQrDeviceSeedsignerStep6": "Select \"Animated\" as the export option. On older SeedSigner firmware, select \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -10305,34 +10283,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "Select recipient",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "Where and how should we send the money?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "New recipient",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "My fiat recipients",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "All types",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "No recipients found to withdraw to.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "Confirm withdrawal",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -10376,15 +10326,6 @@
   "withdrawConfirmButton": "Confirm withdrawal",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "Fund your account",
   "@fundExchangeFundAccount": {
@@ -12051,18 +11992,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "buyInsufficientFundsError": "Insufficient funds in your Bull Bitcoin account to complete this buy order.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
-  "buyOrderNotFoundError": "The buy order was not found. Please try again.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
-  "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
   "@buyUnexpectedError": {
     "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
@@ -12071,21 +12000,29 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "You are trying to withdraw below the minimum amount.",
+  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
   "@withdrawBelowMinAmountError": {
-    "description": "Error message for amount below minimum during withdraw"
+    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
-  "withdrawAboveMaxAmountError": "You are trying to withdraw above the maximum amount.",
+  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
+    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
   "coreScreensPageNotFound": "Page not found",
   "@coreScreensPageNotFound": {
@@ -14693,6 +14630,418 @@
   "sendErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sendErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched. Blocking: the send cannot be built without them, so the message tells the user what to do rather than showing a generic error."
+  },
+  "sellUnexpectedError": "Your sell order could not be completed right now. Please try again or contact support.",
+  "@sellUnexpectedError": {
+    "description": "Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895)."
+  },
+  "sellErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@sellErrorFeeBelowRelayFloor": {
+    "description": "Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent."
+  },
+  "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@sellErrorFeesUnavailable": {
+    "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
+  "@payUnexpectedError": {
+    "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
+  },
+  "payErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@payErrorFeeBelowRelayFloor": {
+    "description": "Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
+  },
+  "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@payErrorFeesUnavailable": {
+    "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "@withdrawInteracSecurityDetailsTitle": {
+    "description": "Title for the Interac security question and answer screen."
+  },
+  "withdrawInteracSaveAsDefault": "Save these details as default",
+  "@withdrawInteracSaveAsDefault": {
+    "description": "Checkbox label for saving Interac security details on the recipient."
+  },
+  "withdrawInteracSecurityQuestionLengthError": "Security question must be 3-40 characters",
+  "@withdrawInteracSecurityQuestionLengthError": {
+    "description": "Validation error for an Interac security question outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerLengthError": "Security answer must be 3-40 characters",
+  "@withdrawInteracSecurityAnswerLengthError": {
+    "description": "Validation error for an Interac security answer outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerFormatError": "Use letters, numbers, or hyphens without spaces",
+  "@withdrawInteracSecurityAnswerFormatError": {
+    "description": "Validation error for unsupported Interac security answer characters."
+  },
+  "autoBuyTitle": "Auto-Buy",
+  "@autoBuyTitle": {
+    "description": "Title for the AutoBuy dashboard card and screen"
+  },
+  "autoBuyDescription": "Automatically buy bitcoin each time you deposit funds into your account",
+  "@autoBuyDescription": {
+    "description": "Short description of AutoBuy"
+  },
+  "autoBuyActivate": "Activate Auto-Buy",
+  "@autoBuyActivate": {
+    "description": "Button label to open the AutoBuy activation flow"
+  },
+  "autoBuyDeactivate": "Deactivate Auto-Buy",
+  "@autoBuyDeactivate": {
+    "description": "Button label to deactivate AutoBuy"
+  },
+  "autoBuyCancelTitle": "Cancel Auto-Buy?",
+  "@autoBuyCancelTitle": {
+    "description": "Title of the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyCancelMessage": "You will not automatically buy bitcoin next time you fund your account.",
+  "@autoBuyCancelMessage": {
+    "description": "Message in the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyDeactivateConfirm": "Yes, deactivate",
+  "@autoBuyDeactivateConfirm": {
+    "description": "Confirmation button for deactivating AutoBuy"
+  },
+  "autoBuyHowItWorks": "How it works",
+  "@autoBuyHowItWorks": {
+    "description": "Heading above the AutoBuy explanation"
+  },
+  "autoBuyConnectWallet": "Connect your Bitcoin, Lightning, or Liquid wallet",
+  "@autoBuyConnectWallet": {
+    "description": "First AutoBuy explanation step"
+  },
+  "autoBuyPurchaseCreated": "A Bitcoin purchase is automatically created each time you fund your Bull Bitcoin account.",
+  "@autoBuyPurchaseCreated": {
+    "description": "Second AutoBuy explanation step"
+  },
+  "autoBuyBitcoinSent": "Bitcoin is sent directly to your own wallet.",
+  "@autoBuyBitcoinSent": {
+    "description": "Third AutoBuy explanation step"
+  },
+  "autoBuyRiskDisclaimer": "Order execution cannot be guaranteed. Delays or price changes between the deposit and purchase can change the effective rate.",
+  "@autoBuyRiskDisclaimer": {
+    "description": "Risk notice shown before an AutoBuy is enabled"
+  },
+  "autoBuyGetStarted": "Get started with Auto-Buy",
+  "@autoBuyGetStarted": {
+    "description": "Button label to start AutoBuy setup"
+  },
+  "autoBuyConfirmTitle": "Confirm Auto-Buy",
+  "@autoBuyConfirmTitle": {
+    "description": "Title of the AutoBuy confirmation screen"
+  },
+  "autoBuyInfoMessage": "Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.",
+  "@autoBuyInfoMessage": {
+    "description": "Explanation on the AutoBuy confirmation screen"
+  },
+  "autoBuyAccountUnavailableError": "Your Bull Bitcoin account is not available. Try again later.",
+  "@autoBuyAccountUnavailableError": {
+    "description": "Error shown when AutoBuy cannot load the exchange account"
+  },
+  "autoBuyWalletRequiredError": "Add at least one default Bitcoin, Lightning, or Liquid address.",
+  "@autoBuyWalletRequiredError": {
+    "description": "Error shown when AutoBuy is enabled without a default wallet"
+  },
+  "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
+  "@autoBuyUpdateError": {
+    "description": "Error shown when enabling or disabling AutoBuy fails"
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "importWatchOnlyErrorNetworkMismatch": "This wallet is using a different Bitcoin network. Switch between Mainnet and Testnet, then try again.",
+  "@importWatchOnlyErrorNetworkMismatch": {
+    "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
+  },
+  "importWatchOnlyErrorAlreadyExists": "This wallet is already imported.",
+  "@importWatchOnlyErrorAlreadyExists": {
+    "description": "Shown when the user tries to import a watch-only wallet that already exists"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin Mainnet",
+  "@importWatchOnlyNetworkBitcoinMainnet": {
+    "description": "Bitcoin mainnet label shown when reviewing a watch-only wallet"
+  },
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin Testnet",
+  "@importWatchOnlyNetworkBitcoinTestnet": {
+    "description": "Bitcoin testnet label shown when reviewing a watch-only wallet"
+  },
+  "broadcastSignedTxErrorPsbtFinalization": "The signed transaction could not be finalized. Make sure it contains all required signatures and try again.",
+  "@broadcastSignedTxErrorPsbtFinalization": {
+    "description": "Shown when a signed PSBT cannot be finalized before broadcast"
+  },
+  "limitOrdersTitle": "Limit orders",
+  "@limitOrdersTitle": {"description": "Title for the Limit Orders feature"},
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "@limitOrdersDashboardDescription": {"description": "Description on the Exchange dashboard Limit Orders card"},
+  "limitOrdersOpen": "Open a limit order",
+  "@limitOrdersOpen": {"description": "Action that starts the Limit Order creation flow"},
+  "limitOrdersActiveTitle": "Active limit orders",
+  "@limitOrdersActiveTitle": {"description": "Heading above active Limit Orders"},
+  "limitOrdersCreateNew": "Create new",
+  "@limitOrdersCreateNew": {"description": "Action to create another Limit Order"},
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "@limitOrdersMaximumActiveHint": {"description": "Shown when the five-active-Limit-Order cap has been reached"},
+  "limitOrdersBuyAt": "Buy at {price}",
+  "@limitOrdersBuyAt": {"description": "Summary of a Limit Order target price", "placeholders": {"price": {"type": "String"}}},
+  "limitOrdersCancelAll": "Cancel all",
+  "@limitOrdersCancelAll": {"description": "Action to cancel all active Limit Orders"},
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "@limitOrdersCancelAllTitle": {"description": "Title of the cancel-all Limit Orders confirmation"},
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "@limitOrdersCancelAllMessage": {"description": "Warning shown before all active Limit Orders are cancelled"},
+  "limitOrdersDialogConfirm": "Confirm",
+  "@limitOrdersDialogConfirm": {"description": "Confirmation action in Limit Order dialogs"},
+  "limitOrdersDone": "Done",
+  "@limitOrdersDone": {"description": "Closes a completed Limit Order screen"},
+  "limitOrdersIntroTitle": "Open a limit order",
+  "@limitOrdersIntroTitle": {"description": "Title of the Limit Order introduction step"},
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "@limitOrdersIntroDescription": {"description": "Description of how Limit Orders work"},
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "@limitOrdersIntroBulletPrice": {"description": "Limit Order introduction bullet about the target price"},
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "@limitOrdersIntroBulletBalance": {"description": "Limit Order introduction bullet about account balance"},
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "@limitOrdersIntroBulletExecution": {"description": "Limit Order introduction bullet about payout"},
+  "limitOrdersTargetTitle": "Choose your target price",
+  "@limitOrdersTargetTitle": {"description": "Title of the Limit Order target-price step"},
+  "limitOrdersPaymentMethod": "Payment method",
+  "@limitOrdersPaymentMethod": {"description": "Label for the fiat balance used by a Limit Order"},
+  "limitOrdersCurrentPrice": "Current index price",
+  "@limitOrdersCurrentPrice": {"description": "Label for the current Bitcoin index price"},
+  "limitOrdersTargetPrice": "Target price",
+  "@limitOrdersTargetPrice": {"description": "Label for the Limit Order target price"},
+  "limitOrdersDiscount": "Discount from current price",
+  "@limitOrdersDiscount": {"description": "Label for the Limit Order discount percentage"},
+  "limitOrdersAmountTitle": "Set the amount",
+  "@limitOrdersAmountTitle": {"description": "Title of the Limit Order fiat-amount step"},
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "@limitOrdersAvailableBalance": {"description": "Available fiat balance", "placeholders": {"amount": {"type": "String"}}},
+  "limitOrdersFiatAmount": "Amount",
+  "@limitOrdersFiatAmount": {"description": "Label for the Limit Order fiat amount"},
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "@limitOrdersEstimatedBitcoin": {"description": "Estimated bitcoin amount for a Limit Order", "placeholders": {"amount": {"type": "String"}}},
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "@limitOrdersWalletTitle": {"description": "Title of the Limit Order wallet-selection step"},
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "@limitOrdersWalletDescription": {"description": "Explains the Limit Order payout wallet"},
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "@limitOrdersNoDefaultWallets": {"description": "Shown when no default payout wallet is configured"},
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "@limitOrdersManageDefaultWallets": {"description": "Opens default-wallet settings from Limit Orders"},
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "@limitOrdersWalletBitcoin": {"description": "Bitcoin on-chain Limit Order payout option"},
+  "limitOrdersWalletLightning": "Lightning address",
+  "@limitOrdersWalletLightning": {"description": "Lightning Limit Order payout option"},
+  "limitOrdersWalletLiquid": "Liquid address",
+  "@limitOrdersWalletLiquid": {"description": "Liquid Limit Order payout option"},
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "@limitOrdersConfirmationTitle": {"description": "Title of the Limit Order confirmation step"},
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "@limitOrdersEstimatedBuyPrice": {"description": "Estimated user buy price after spread"},
+  "limitOrdersBalancePayment": "{currency} balance",
+  "@limitOrdersBalancePayment": {"description": "Fiat balance used to fund the order", "placeholders": {"currency": {"type": "String"}}},
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "@limitOrdersTermsNotice": {"description": "Terms and spread notice before creating a Limit Order"},
+  "limitOrdersConfirm": "Confirm",
+  "@limitOrdersConfirm": {"description": "Creates the Limit Order"},
+  "limitOrdersCreatedTitle": "Limit order active",
+  "@limitOrdersCreatedTitle": {"description": "Title shown after a Limit Order is created"},
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "@limitOrdersCreatedMessage": {"description": "Success summary after creating a Limit Order", "placeholders": {"amount": {"type": "String"}, "price": {"type": "String"}}},
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "@limitOrdersBackToExchange": {"description": "Returns from Limit Order success to the Exchange dashboard"},
+  "limitOrderDetailsTitle": "Limit order details",
+  "@limitOrderDetailsTitle": {"description": "Title of the Limit Order details screen"},
+  "limitOrderDetailsStatus": "Status",
+  "@limitOrderDetailsStatus": {"description": "Limit Order status label"},
+  "limitOrderDetailsNumber": "Order number",
+  "@limitOrderDetailsNumber": {"description": "Limit Order number label"},
+  "limitOrderDetailsAddress": "Payout address",
+  "@limitOrderDetailsAddress": {"description": "Limit Order payout address label"},
+  "limitOrderDetailsCreated": "Created",
+  "@limitOrderDetailsCreated": {"description": "Limit Order creation date label"},
+  "limitOrderDetailsExpires": "Expires",
+  "@limitOrderDetailsExpires": {"description": "Limit Order expiry date label"},
+  "limitOrderCancel": "Cancel limit order",
+  "@limitOrderCancel": {"description": "Action to cancel one active Limit Order"},
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "@limitOrderCancelTitle": {"description": "Title of the single Limit Order cancellation dialog"},
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "@limitOrderCancelMessage": {"description": "Warning before one Limit Order is cancelled"},
+  "limitOrderStatusActive": "Active",
+  "@limitOrderStatusActive": {"description": "Active Limit Order status"},
+  "limitOrderStatusExecuted": "Executed",
+  "@limitOrderStatusExecuted": {"description": "Executed Limit Order status"},
+  "limitOrderStatusCancelled": "Cancelled",
+  "@limitOrderStatusCancelled": {"description": "Cancelled Limit Order status"},
+  "limitOrderStatusExpired": "Expired",
+  "@limitOrderStatusExpired": {"description": "Expired Limit Order status"},
+  "limitOrderStatusFailed": "Failed",
+  "@limitOrderStatusFailed": {"description": "Failed or unknown Limit Order status"},
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "@limitOrdersAccountUnavailableError": {"description": "Shown when Limit Order account data is unavailable"},
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "@limitOrdersMaximumActiveError": {"description": "Shown when the backend rejects a sixth active Limit Order"},
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "@limitOrderNotFoundError": {"description": "Shown when a Limit Order no longer exists"},
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "@limitOrderInvalidAddressError": {"description": "Shown when the backend rejects a Limit Order payout address"},
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "@limitOrderInvalidTargetError": {"description": "Shown for an invalid Limit Order target price"},
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "@limitOrderInvalidAmountError": {"description": "Shown for an invalid Limit Order fiat amount"},
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "@limitOrdersLoadError": {"description": "Shown when Limit Orders cannot be loaded"},
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "@limitOrderCreationError": {"description": "Shown when a Limit Order cannot be created"},
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"},
+  "limitOrdersYourWalletsTitle": "Your wallets",
+  "@limitOrdersYourWalletsTitle": {
+    "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
+  },
+  "limitOrdersLightningAddressLabel": "Lightning address",
+  "@limitOrdersLightningAddressLabel": {
+    "description": "Label for the manual lightning-address field in the limit-order destination step"
+  },
+  "limitOrdersLightningAddressHint": "you@domain.com",
+  "@limitOrdersLightningAddressHint": {
+    "description": "Hint for the lightning-address field showing the expected lightning address format"
+  },
+  "limitOrdersLightningAddressError": "Enter a valid lightning address, not an invoice",
+  "@limitOrdersLightningAddressError": {
+    "description": "Error shown when the entered lightning destination is not a valid lightning address"
+  },
+  "limitOrdersResolvingAddress": "Getting address…",
+  "@limitOrdersResolvingAddress": {
+    "description": "Shown while deriving a receive address for the selected in-app wallet"
+  },
+  "limitOrderDetailsEstimatedBitcoin": "Estimated bitcoin",
+  "@limitOrderDetailsEstimatedBitcoin": {
+    "description": "Label for the estimated bitcoin amount row on the limit order details screen"
+  },
+  "limitOrdersAmountBelowOnchainMin": "Amount is below the on-chain minimum of {amount}",
+  "@limitOrdersAmountBelowOnchainMin": {
+    "description": "Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountBelowLiquidMin": "Amount is below the Liquid minimum of {amount}",
+  "@limitOrdersAmountBelowLiquidMin": {
+    "description": "Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountAboveLightningMax": "Amount is above the Lightning maximum of {amount}",
+  "@limitOrdersAmountAboveLightningMax": {
+    "description": "Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersViewOrder": "View order details",
+  "@limitOrdersViewOrder": {
+    "description": "Opens the created Limit Order details from the success screen"
+  },
+  "payOrderNotFoundError": "The pay order was not found. Please try again.",
+  "@payOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payOrderAlreadyConfirmedError": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "@payAboveMaxAmount": {
+    "description": "Error message when payment amount exceeds maximum"
+  },
+  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "@payBelowMinAmount": {
+    "description": "Error message when payment amount is below minimum"
+  },
+  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
+  "@payNotAuthenticated": {
+    "description": "Error message when user is not authenticated"
+  },
+  "payOrderNotFound": "The pay order was not found. Please try again.",
+  "@payOrderNotFound": {
+    "description": "Error message when pay order is not found"
+  },
+  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Error message when pay order is already confirmed"
+  },
+  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalance": {
+    "description": "Error message for insufficient balance"
+  },
+  "withdrawRecipientsTitle": "Select recipient",
+  "@withdrawRecipientsTitle": {
+    "description": "AppBar title for recipients screen"
+  },
+  "withdrawRecipientsPrompt": "Where and how should we send the money?",
+  "@withdrawRecipientsPrompt": {
+    "description": "Instructions on recipients screen"
+  },
+  "withdrawRecipientsNewTab": "New recipient",
+  "@withdrawRecipientsNewTab": {
+    "description": "Tab label for new recipient"
+  },
+  "withdrawRecipientsMyTab": "My fiat recipients",
+  "@withdrawRecipientsMyTab": {
+    "description": "Tab label for existing recipients"
+  },
+  "withdrawRecipientsFilterAll": "All types",
+  "@withdrawRecipientsFilterAll": {
+    "description": "Filter option for all recipient types"
+  },
+  "withdrawRecipientsNoRecipients": "No recipients found to withdraw to.",
+  "@withdrawRecipientsNoRecipients": {
+    "description": "Empty state message"
+  },
+  "withdrawRecipientsContinue": "Continue",
+  "@withdrawRecipientsContinue": {
+    "description": "Continue button on recipients screen"
+  },
+  "withdrawConfirmError": "Error: {error}",
+  "@withdrawConfirmError": {
+    "description": "Error message on confirmation screen",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInsufficientFundsError": "Insufficient funds in your Bull Bitcoin account to complete this buy order.",
+  "@buyInsufficientFundsError": {
+    "description": "Error message for insufficient funds during buy"
+  },
+  "buyOrderNotFoundError": "The buy order was not found. Please try again.",
+  "@buyOrderNotFoundError": {
+    "description": "Error message for order not found during buy"
+  },
+  "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
+  "@buyOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed buy order"
+  },
+  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
+  "@withdrawOrderNotFoundError": {
+    "description": "Error message for order not found during withdraw"
+  },
+  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
+  "@withdrawOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed withdrawal order"
   },
   "spFailureRequiresSuperuser": "Silent Payments requires superuser mode.",
   "@spFailureRequiresSuperuser": {

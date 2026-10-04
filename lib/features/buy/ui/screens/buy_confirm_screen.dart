@@ -6,7 +6,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -58,6 +60,9 @@ class BuyConfirmScreen extends StatelessWidget {
 
     final isConfirmingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isConfirmingOrder,
+    );
+    final BuyFailure? confirmFailure = context.select(
+      (BuyBloc bloc) => bloc.state.confirmFailure,
     );
     final isRefreshingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isRefreshingOrder,
@@ -148,6 +153,16 @@ class BuyConfirmScreen extends StatelessWidget {
                       ),
                   ],
                 ),
+              if (confirmFailure != null) ...[
+                const Gap(16),
+                Text(
+                  confirmFailure.toTranslated(context),
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
               const Gap(16),
               BBButton.big(
                 label: context.loc.buyConfirmPurchase,

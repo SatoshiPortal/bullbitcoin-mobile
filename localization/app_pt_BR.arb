@@ -978,7 +978,7 @@
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
   },
-  "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
+  "payAboveMaxAmountError": "O valor máximo que você pode pagar com esta carteira é {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -1142,10 +1142,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "fundExchangeWarningTactic5": "Eles pedem para enviar Bitcoin em outra plataforma",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1165,10 +1161,6 @@
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
-  },
-  "payOrderAlreadyConfirmed": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
   "@recipientsSearchHint": {
@@ -1259,7 +1251,7 @@
   "@fundExchangeWarningTactic1": {
     "description": "First scammer tactic warning"
   },
-  "withdrawAboveMaxAmountError": "Você está tentando retirar acima da quantidade máxima.",
+  "withdrawAboveMaxAmountError": "A quantidade máxima é {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -1782,10 +1774,6 @@
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
   },
-  "payOrderNotFound": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
   "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
@@ -2104,7 +2092,7 @@
   "@payBillerName": {
     "description": "Label for biller name field"
   },
-  "withdrawBelowMinAmountError": "Você está tentando retirar abaixo do valor mínimo.",
+  "withdrawBelowMinAmountError": "Quantidade mínima é {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3007,10 +2995,6 @@
   "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
-  },
-  "withdrawRecipientsNewTab": "Novo destinatário",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "sellPayFromWallet": "Pagar da carteira",
   "@sellPayFromWallet": {
@@ -3974,10 +3958,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "withdrawRecipientsMyTab": "Os meus destinatários fiat",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transferir fundos em dólares americanos (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
     "description": "Subtitle description for IBAN USD payment method"
@@ -4694,7 +4674,7 @@
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "importQrDeviceSeedsignerStep6": "Selecione \"Seta\" como a opção de exportação",
+  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -5041,10 +5021,6 @@
         "type": "int"
       }
     }
-  },
-  "withdrawRecipientsNoRecipients": "Nenhum destinatário encontrado para se retirar.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
   },
   "buyInputCompleteKyc": "KYC completo",
   "@buyInputCompleteKyc": {
@@ -5854,10 +5830,6 @@
   "@importColdcardError": {
     "description": "Error message"
   },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -6092,10 +6064,6 @@
   "payDecodeFailed": "Falhado para decodificar fatura",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "withdrawOrderNotFoundError": "A ordem de retirada não foi encontrada. Por favor, tente novamente.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
   "@bitboxActionVerifyAddressProcessing": {
@@ -7309,10 +7277,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "withdrawRecipientsFilterAll": "Todos os tipos",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
@@ -7728,7 +7692,7 @@
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
   },
-  "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
+  "payBelowMinAmountError": "O valor mínimo que você pode pagar com esta carteira é {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -8298,10 +8262,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "withdrawRecipientsTitle": "Selecione o destinatário",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
   "testBackupWalletTitle": "Teste {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
@@ -8372,10 +8332,6 @@
   "pinSecurityTitle": "PIN de segurança",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "withdrawRecipientsPrompt": "Onde e como devemos enviar o dinheiro?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
   },
   "fundExchangeLabelIbanUsdOnly": "Número da conta IBAN (apenas para dólares americanos)",
   "@fundExchangeLabelIbanUsdOnly": {
@@ -8961,10 +8917,6 @@
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
   },
-  "payInsufficientBalance": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "sellAccountNumber": "Número de conta",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -9112,15 +9064,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "withdrawConfirmError": "Erro: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
@@ -9149,17 +9092,9 @@
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
   },
-  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
   "doneButton": "Feito",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
-  },
-  "payNotAuthenticated": "Não és autenticado. Faça login para continuar.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
   },
   "exchangeFeatureBankTransfers": "• Enviar transferências bancárias e pagar contas",
   "@exchangeFeatureBankTransfers": {
@@ -9855,10 +9790,6 @@
   "@mempoolCustomServerEdit": {
     "description": "Button text to edit custom mempool server"
   },
-  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
@@ -10022,10 +9953,6 @@
   "bitboxActionSignTransactionButton": "Começar a assinar",
   "@bitboxActionSignTransactionButton": {
     "description": "Button text for sign transaction"
-  },
-  "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
@@ -10349,10 +10276,6 @@
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Esta ordem de retirada já foi confirmada.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {
@@ -11251,10 +11174,6 @@
   "@withdrawOwnershipQuestion": {
     "description": "Question asking about account ownership"
   },
-  "buyOrderNotFoundError": "A ordem de compra não foi encontrada. Por favor, tente novamente.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "navigationTabExchange": "Troca",
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
@@ -11291,14 +11210,6 @@
     "description": "Error message for amount above maximum during buy"
   },
   "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
-  "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
-  "buyInsufficientFundsError": "Fundos insuficientes em sua conta Bull Bitcoin para completar esta ordem de compra.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
   "appInitErrorTitle": "Falha ao iniciar o aplicativo",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -12253,5 +12164,101 @@
   "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR.",
   "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
-  "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente."
+  "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
+  "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
+  "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "withdrawInteracSecurityDetailsTitle": "Dados de segurança do Interac",
+  "withdrawInteracSaveAsDefault": "Salvar estes dados como padrão",
+  "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
+  "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",
+  "withdrawInteracSecurityAnswerFormatError": "Use letras, números ou hifens sem espaços",
+  "autoBuyTitle": "Compra automática",
+  "autoBuyDescription": "Compre bitcoin automaticamente sempre que depositar fundos na sua conta",
+  "autoBuyActivate": "Ativar compra automática",
+  "autoBuyDeactivate": "Desativar compra automática",
+  "autoBuyCancelTitle": "Cancelar compra automática?",
+  "autoBuyCancelMessage": "Na próxima vez que você adicionar fundos à sua conta, o bitcoin não será comprado automaticamente.",
+  "autoBuyDeactivateConfirm": "Sim, desativar",
+  "autoBuyHowItWorks": "Como funciona",
+  "autoBuyConnectWallet": "Conecte sua carteira Bitcoin, Lightning ou Liquid",
+  "autoBuyPurchaseCreated": "Uma compra de Bitcoin é criada automaticamente sempre que você adiciona fundos à sua conta Bull Bitcoin.",
+  "autoBuyBitcoinSent": "O Bitcoin é enviado diretamente para a sua própria carteira.",
+  "autoBuyRiskDisclaimer": "A execução da ordem não pode ser garantida. Atrasos ou variações de preço entre o depósito e a compra podem alterar a taxa efetiva.",
+  "autoBuyGetStarted": "Comece com a compra automática",
+  "autoBuyConfirmTitle": "Confirmar compra automática",
+  "autoBuyInfoMessage": "Qualquer valor adicionado à sua conta será convertido em Bitcoin pela taxa de câmbio atual e enviado para a sua carteira.",
+  "autoBuyAccountUnavailableError": "Sua conta Bull Bitcoin não está disponível. Tente novamente mais tarde.",
+  "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
+  "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
+  "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
+  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Rede: rede principal do Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Rede: rede de teste do Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "Não foi possível finalizar a transação assinada. Confirme se ela contém todas as assinaturas necessárias e tente novamente.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

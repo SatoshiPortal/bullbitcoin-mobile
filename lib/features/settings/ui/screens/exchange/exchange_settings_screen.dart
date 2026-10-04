@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
@@ -97,7 +98,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeBitcoinWallets.name,
+                          DefaultWalletsRoute.defaultWallets.name,
                         );
                       }
                     },

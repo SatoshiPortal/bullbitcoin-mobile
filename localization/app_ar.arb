@@ -870,7 +870,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
+  "payAboveMaxAmountError": "الحد الأقصى الذي يمكنك دفعه بهذه المحفظة هو {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -1078,10 +1078,6 @@
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
   },
-  "payOrderAlreadyConfirmed": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "التوقيع على المعاملات",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1280,10 +1276,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "payOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
@@ -1356,7 +1348,7 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "withdrawAboveMaxAmountError": "أنت تحاول الانسحاب فوق الحد الأقصى للمبلغ.",
+  "withdrawAboveMaxAmountError": "المبلغ الأقصى هو {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -1774,10 +1766,6 @@
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
   },
-  "payOrderNotFound": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
   "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
@@ -1816,10 +1804,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "لم نتمكن من إنشاء طلبك في الوقت الحالي. يُرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
-  "buyOrderAlreadyConfirmedError": "تم تأكيد أمر الشراء هذا.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "التحويل المصرفي",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1977,7 +1961,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "أنت تحاول أن تنسحب دون الحد الأدنى.",
+  "withdrawBelowMinAmountError": "الحد الأدنى للمبلغ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -2066,10 +2050,6 @@
   "sellOrderPlaced": "أمر البيع",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "عدم كفاية الأموال في حساب (بول بيتكوين) لإكمال أمر الشراء.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "recoverbullPleaseWait": "من فضلك انتظر بينما نقيم علاقة آمنة.",
   "@recoverbullPleaseWait": {
@@ -2435,10 +2415,6 @@
   "payAccountNumberHint": "رقم حساب الدخول",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "طلب الشراء لم يعثر عليه أرجوك حاول مرة أخرى.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "لن ",
   "@backupWalletGoogleDrivePrivacyMessage2": {
@@ -2895,10 +2871,6 @@
   "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
   "@bitboxActionUnlockDeviceTitle": {
     "description": "Title for unlock device action"
-  },
-  "withdrawRecipientsNewTab": "مستفيد جديد",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "autoswapRecipientRequired": "♪",
   "@autoswapRecipientRequired": {
@@ -3977,10 +3949,6 @@
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
   },
-  "withdrawRecipientsMyTab": "متلقيي المخلص",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
   "sendFeeRateTooLow": "انخفاض معدل الرسوم",
   "@sendFeeRateTooLow": {
     "description": "Error for insufficient fee"
@@ -5006,7 +4974,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "اختيار \"سبار\" كخيار التصدير",
+  "importQrDeviceSeedsignerStep6": "اختر \"Animated\" كخيار التصدير. في إصدارات SeedSigner الأقدم، اختر \"Sparrow\".",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -5242,10 +5210,6 @@
   "addressViewAddressesTitle": "العناوين",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
-  },
-  "withdrawRecipientsNoRecipients": "لم يعثر على متلقين لسحبهم.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
   },
   "transactionSwapProgressPaymentMade": "المدفوعات\nمصنوعة",
   "@transactionSwapProgressPaymentMade": {
@@ -6279,10 +6243,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "استمر",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "إحصاءات البيع",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6350,10 +6310,6 @@
   "sendTitle": "إرسال",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "ولم يعثر على أمر الانسحاب. أرجوك حاول مرة أخرى.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "\"اختار \"إكسبورت",
   "@importQrDeviceSeedsignerStep4": {
@@ -7642,10 +7598,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "جميع الأنواع",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommended",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -7887,7 +7839,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
+  "payBelowMinAmountError": "الحد الأدنى الذي يمكنك دفعه بهذه المحفظة هو {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
@@ -7951,14 +7903,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "أين وكيف نرسل المال؟?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "مستفيد مختار",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "مستفيد من مدفوعات",
   "@sellPayoutRecipient": {
@@ -8423,10 +8367,6 @@
   "kruxInstructionsTitle": "التعليمات الكيروية",
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
-  },
-  "payNotAuthenticated": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
   },
   "paySinpeNumeroComprobante": "رقم المرجع",
   "@paySinpeNumeroComprobante": {
@@ -8908,10 +8848,6 @@
   "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
   "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
   "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
-  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9249,10 +9185,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
   "@jadeStep12": {
@@ -9756,10 +9688,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "سجلات المراقبة",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10044,10 +9972,6 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
   "receiveNetworkUnavailable": "{network} غير متاح حالياً",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10144,15 +10068,6 @@
   "sendDeviceDisconnected": "جهاز مقطع",
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
-  },
-  "withdrawConfirmError": "الخطأ: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payFeeBumpFailed": "مطب الأطعمة فشلت",
   "@payFeeBumpFailed": {
@@ -10503,10 +10418,6 @@
   "payViewDetails": "تفاصيل الرؤية",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الانسحاب هذا.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "اختيار محفظة بيتكوين",
   "@autoswapSelectWallet": {
@@ -12244,5 +12155,101 @@
   "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
-  "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد."
+  "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
+  "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+  "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان Interac",
+  "withdrawInteracSaveAsDefault": "حفظ هذه التفاصيل كإعداد افتراضي",
+  "withdrawInteracSecurityQuestionLengthError": "يجب أن يتكون سؤال الأمان من 3 إلى 40 حرفًا",
+  "withdrawInteracSecurityAnswerLengthError": "يجب أن تتكون إجابة الأمان من 3 إلى 40 حرفًا",
+  "withdrawInteracSecurityAnswerFormatError": "استخدم أحرفًا أو أرقامًا أو شرطات من دون مسافات",
+  "autoBuyTitle": "الشراء التلقائي",
+  "autoBuyDescription": "اشترِ Bitcoin تلقائيًا في كل مرة تودع فيها أموالًا في حسابك",
+  "autoBuyActivate": "تفعيل الشراء التلقائي",
+  "autoBuyDeactivate": "إيقاف الشراء التلقائي",
+  "autoBuyCancelTitle": "إلغاء الشراء التلقائي؟",
+  "autoBuyCancelMessage": "لن تشتري Bitcoin تلقائيًا في المرة القادمة التي تموّل فيها حسابك.",
+  "autoBuyDeactivateConfirm": "نعم، أوقِف التفعيل",
+  "autoBuyHowItWorks": "كيف يعمل",
+  "autoBuyConnectWallet": "اربط محفظة Bitcoin أو Lightning أو Liquid الخاصة بك",
+  "autoBuyPurchaseCreated": "يتم إنشاء عملية شراء Bitcoin تلقائيًا في كل مرة تموّل فيها حسابك في Bull Bitcoin.",
+  "autoBuyBitcoinSent": "يُرسَل Bitcoin مباشرة إلى محفظتك الخاصة.",
+  "autoBuyRiskDisclaimer": "لا يمكن ضمان تنفيذ الأمر. قد تؤدي التأخيرات أو تغيّرات السعر بين الإيداع والشراء إلى تغيير السعر الفعلي.",
+  "autoBuyGetStarted": "ابدأ مع الشراء التلقائي",
+  "autoBuyConfirmTitle": "تأكيد الشراء التلقائي",
+  "autoBuyInfoMessage": "سيتم تحويل أي مبلغ يُضاف إلى حسابك إلى Bitcoin بسعر الصرف الحالي وإرساله إلى محفظتك.",
+  "autoBuyAccountUnavailableError": "حسابك في Bull Bitcoin غير متاح. حاول مرة أخرى لاحقًا.",
+  "autoBuyWalletRequiredError": "أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.",
+  "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
+  "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+  "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى.",
+  "importWatchOnlyErrorAlreadyExists": "هذه المحفظة مستوردة بالفعل.",
+  "importWatchOnlyNetworkBitcoinMainnet": "الشبكة: شبكة Bitcoin الرئيسية",
+  "importWatchOnlyNetworkBitcoinTestnet": "الشبكة: شبكة Bitcoin التجريبية",
+  "broadcastSignedTxErrorPsbtFinalization": "تعذّر إنهاء المعاملة الموقّعة. تأكد من أنها تحتوي على جميع التوقيعات المطلوبة، ثم حاول مرة أخرى.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

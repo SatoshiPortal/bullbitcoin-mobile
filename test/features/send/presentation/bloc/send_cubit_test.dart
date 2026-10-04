@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -1023,6 +1023,42 @@ void main() {
       expect(stored.label, 'coffee');
     });
   });
+
+  test(
+    'does not broadcast when a selected coin becomes unavailable during validation',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final selected = _utxo(amountSat: 10000);
+      when(
+        () => validateBitcoinSelectionUsecase.execute(
+          walletId: 'w-bitcoin',
+          selectedInputs: [selected],
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.confirm,
+          selectedWallet: SendWalletBitcoin(_bitcoinWallet(balanceSat: 20000)),
+          selectedUtxos: [selected],
+          unsignedPsbt: 'unsigned-psbt',
+          signedBitcoinPsbt: 'signed-psbt',
+        ),
+      );
+
+      await cubit.broadcastTransaction();
+
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      verifyNever(
+        () => broadcastBitcoinTxUsecase.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+        ),
+      );
+    },
+  );
 
   group('SendCubit payment request input', () {
     test('stores sanitized input while parsing it', () async {

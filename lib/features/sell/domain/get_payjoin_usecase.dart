@@ -1,4 +1,7 @@
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 /// Discrete lookup of a persisted Payjoin session by its id (a sender's id
@@ -17,16 +20,17 @@ class GetPayjoinUsecase {
 
   const GetPayjoinUsecase(this._sessions);
 
-  /// Returns the persisted session, or null when none exists. A storage
-  /// read failure also returns null: the caller falls back to the plain
-  /// error path, where any retry is fail-closed anyway — with payjoin
-  /// storage unreadable, coin selection refuses to build a transaction at
-  /// all rather than risk double-spending reserved inputs.
-  Future<PayjoinSession?> execute(String sessionId) async {
-    final result = await _sessions.byId(sessionId);
-    return switch (result) {
-      Ok(:final value) => value,
-      Err() => null,
-    };
+  @useResult
+  Future<Result<PayjoinSession?, SellFailure>> execute(String sessionId) async {
+    switch (await _sessions.byId(sessionId)) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err(:final failure):
+        log.warning(
+          'Could not read the Payjoin session',
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+        );
+        return Err(SellUnexpectedFailure(failure.logMessage));
+    }
   }
 }

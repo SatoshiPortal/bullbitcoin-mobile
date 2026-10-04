@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -63,16 +64,22 @@ void main() {
       () => receiver.cancel('receiver-1'),
     ).thenAnswer((_) async => const Ok(null));
 
-    await usecase.execute(
-      _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
+    expect(
+      await usecase.execute(
+        _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
+      ),
+      isA<Ok<void, BuyFailure>>(),
     );
 
     verify(() => receiver.cancel('receiver-1')).called(1);
   });
 
   test('does not cancel a receiver for a completed order', () async {
-    await usecase.execute(
-      _order(payinStatus: OrderPayinStatus.completed, bip21URI: uri),
+    expect(
+      await usecase.execute(
+        _order(payinStatus: OrderPayinStatus.completed, bip21URI: uri),
+      ),
+      isA<Ok<void, BuyFailure>>(),
     );
 
     verifyNever(() => sessions.list(any()));
@@ -87,7 +94,10 @@ void main() {
     test(
       'does not cancel a receiver when the payin is ${status.value}',
       () async {
-        await usecase.execute(_order(payinStatus: status, bip21URI: uri));
+        expect(
+          await usecase.execute(_order(payinStatus: status, bip21URI: uri)),
+          isA<Ok<void, BuyFailure>>(),
+        );
 
         verifyNever(() => sessions.list(any()));
         verifyNever(() => receiver.cancel(any()));
@@ -107,8 +117,11 @@ void main() {
     );
     when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
 
-    await usecase.execute(
-      _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
+    expect(
+      await usecase.execute(
+        _order(payinStatus: OrderPayinStatus.awaitingPayment, bip21URI: uri),
+      ),
+      isA<Ok<void, BuyFailure>>(),
     );
 
     verifyNever(() => receiver.cancel(any()));
@@ -137,11 +150,14 @@ void main() {
         () => receiver.cancel('receiver-1'),
       ).thenAnswer((_) async => const Ok(null));
 
-      await usecase.execute(
-        _order(
-          payinStatus: OrderPayinStatus.awaitingPayment,
-          bip21URI: rewrittenOrderUri,
+      expect(
+        await usecase.execute(
+          _order(
+            payinStatus: OrderPayinStatus.awaitingPayment,
+            bip21URI: rewrittenOrderUri,
+          ),
         ),
+        isA<Ok<void, BuyFailure>>(),
       );
 
       verify(() => receiver.cancel('receiver-1')).called(1);

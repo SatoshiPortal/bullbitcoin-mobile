@@ -111,7 +111,7 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 |---|---|---|
 | Use case | `<verb>_<noun>_usecase.dart` | `broadcast_bitcoin_transaction_usecase.dart` |
 | Repository interface (abstract) | `<noun>_repository.dart` in `domain/repositories/` | `bitcoin_wallet_repository.dart` |
-| Repository impl | `<noun>_repository_impl.dart` **or** `<tech>_<noun>_repository.dart`, in `data/` | `exchange_rate_repository_impl.dart`, `drift_electrum_server_repository.dart` |
+| Repository impl | `<noun>_repository_impl.dart` **or** `<tech>_<noun>_repository.dart`, in `data/` | `bitcoin_price_repository_impl.dart`, `drift_electrum_server_repository.dart` |
 | Datasource | `<noun>_datasource.dart` **or** `<tech>_<noun>_datasource.dart`, in `data/datasources/` | `electrum_remote_datasource.dart`, `bdk_wallet_datasource.dart` |
 | Entity / value object | `<noun>.dart` | `wallet.dart`, `auto_swap.dart` |
 | Model (wire/persistence) | `<noun>_model.dart` in `data/models/` | `wallet_utxo_model.dart` |

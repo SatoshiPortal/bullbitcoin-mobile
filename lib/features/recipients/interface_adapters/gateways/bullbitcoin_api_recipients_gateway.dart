@@ -59,6 +59,38 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
+  Future<void> updateInteracSecurityDetails({
+    required String recipientId,
+    required String email,
+    required String? securityQuestion,
+    required String? securityAnswer,
+    required bool isTestnet,
+  }) async {
+    final resp = await _authenticatedApiClient.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'updateMyRecipient',
+        'params': {
+          'element': {
+            'recipientId': recipientId,
+            'recipientType': 'OUT_INTERAC_EMAIL',
+            'email': email,
+            'securityQuestion': securityQuestion,
+            'securityAnswer': securityAnswer,
+          },
+        },
+      },
+      options: Options(headers: {'x-api-version': _apiVersion}),
+    );
+
+    if (resp.statusCode != 200 || resp.data['error'] != null) {
+      throw Exception('Failed to update Interac recipient security details');
+    }
+  }
+
+  @override
   Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
@@ -121,7 +153,6 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
           // doesn't support yet, which without does would cause the user not
           // to see any recipients at all.
           try {
-            log.info('Parsing recipient: $e');
             return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
           } catch (err, stackTrace) {
             log.severe(

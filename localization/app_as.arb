@@ -829,12 +829,10 @@
   "payWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWallet": "বাহ্যিক wallet",
   "payFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
-  "payAboveMaxAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
+  "payAboveMaxAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা সৰ্বাধিক পৰিমাণ হ'ল {amount}।",
+  "payBelowMinAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা নূন্যতম পৰিমাণ হ'ল {amount}।",
   "payInsufficientBalanceError": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
   "payUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFoundError": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmedError": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
   "paySelectNetwork": "নেটৱৰ্ক বাছক",
   "payHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
   "payBitcoinOnChain": "Bitcoin অন-চেইন",
@@ -881,11 +879,6 @@
   "paySinpeOrigen": "উৎস",
   "payNotAvailable": "N/A",
   "payBitcoinOnchain": "Bitcoin অন-চেইন",
-  "payAboveMaxAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payNotAuthenticated": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFound": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmed": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
   "payPaymentInProgress": "পৰিশোধ চলি আছে!",
   "payPaymentInProgressDescription": "আপোনাৰ পৰিশোধ আৰম্ভ কৰা হৈছে আৰু আপোনাৰ লেনদেনে অনচেইন 1 নিশ্চিতকৰণ পোৱাৰ পিছত প্ৰাপকে ধন পাব।",
   "payPriceRefreshIn": "মূল্য পুনৰ নবীকৰণ হ'ব ",
@@ -899,7 +892,6 @@
   "payCopied": "কপি হৈছে!",
   "payWhichWallet": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
-  "payInsufficientBalance": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
   "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
   "transactionTitle": "লেনদেনসমূহ",
   "transactionError": "ভুল - {error}",
@@ -6452,7 +6444,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Sparrow\" বাছনি কৰক",
+  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Animated\" বাছনি কৰক। পুৰণি SeedSigner firmware-ত \"Sparrow\" বাছনি কৰক।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -6704,34 +6696,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -6775,15 +6739,6 @@
   "withdrawConfirmButton": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "ত্ৰুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
   "@fundExchangeFundAccount": {
@@ -8346,38 +8301,18 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "buyInsufficientFundsError": "এই ক্ৰয় অৰ্ডাৰ সম্পন্ন কৰিবলৈ আপোনাৰ Bull Bitcoin account-ত পৰ্যাপ্ত পুঁজি নাই।",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
-  "buyOrderNotFoundError": "ক্ৰয় অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
-  "buyOrderAlreadyConfirmedError": "এই ক্ৰয় অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "withdrawUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawAboveMaxAmountError": "সৰ্বোচ্চ পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
   "@coreScreensPageNotFound": {
@@ -9353,5 +9288,101 @@
   "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।"
+  "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
+  "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "withdrawInteracSecurityDetailsTitle": "Interac সুৰক্ষা বিৱৰণ",
+  "withdrawInteracSaveAsDefault": "এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক",
+  "withdrawInteracSecurityQuestionLengthError": "সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerLengthError": "সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerFormatError": "খালী ঠাই নিদিয়াকৈ আখৰ, সংখ্যা বা হাইফেন ব্যৱহাৰ কৰক",
+  "autoBuyTitle": "স্বয়ংক্ৰিয় ক্ৰয়",
+  "autoBuyDescription": "আপুনি একাউণ্টত পুঁজি জমা কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনক",
+  "autoBuyActivate": "স্বয়ংক্ৰিয় ক্ৰয় সক্ৰিয় কৰক",
+  "autoBuyDeactivate": "স্বয়ংক্ৰিয় ক্ৰয় নিষ্ক্ৰিয় কৰক",
+  "autoBuyCancelTitle": "স্বয়ংক্ৰিয় ক্ৰয় বাতিল কৰিবনে?",
+  "autoBuyCancelMessage": "পৰৱৰ্তী বাৰ আপুনি একাউণ্টত পুঁজি যোগ কৰিলে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনা নহ'ব।",
+  "autoBuyDeactivateConfirm": "হয়, নিষ্ক্ৰিয় কৰক",
+  "autoBuyHowItWorks": "ই কেনেকৈ কাম কৰে",
+  "autoBuyConnectWallet": "আপোনাৰ Bitcoin, Lightning বা Liquid ৱালেট সংযোগ কৰক",
+  "autoBuyPurchaseCreated": "আপুনি আপোনাৰ Bull Bitcoin একাউণ্টত পুঁজি যোগ কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে এটা Bitcoin ক্ৰয় সৃষ্টি কৰা হয়।",
+  "autoBuyBitcoinSent": "Bitcoin পোনপটীয়াকৈ আপোনাৰ নিজৰ ৱালেটলৈ পঠিওৱা হয়।",
+  "autoBuyRiskDisclaimer": "অৰ্ডাৰ কাৰ্যকৰী হোৱাৰ নিশ্চয়তা দিব নোৱাৰি। জমা আৰু ক্ৰয়ৰ মাজত হোৱা পলম বা দামৰ পৰিৱৰ্তনে প্ৰকৃত হাৰ সলনি কৰিব পাৰে।",
+  "autoBuyGetStarted": "স্বয়ংক্ৰিয় ক্ৰয় আৰম্ভ কৰক",
+  "autoBuyConfirmTitle": "স্বয়ংক্ৰিয় ক্ৰয় নিশ্চিত কৰক",
+  "autoBuyInfoMessage": "আপোনাৰ একাউণ্টত যোগ কৰা যিকোনো পৰিমাণ বৰ্তমানৰ বিনিময় হাৰত Bitcoin-লৈ ৰূপান্তৰ কৰি আপোনাৰ ৱালেটলৈ পঠিওৱা হ'ব।",
+  "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
+  "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
+  "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
+  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ৱালেটটোৱে বৰ্তমান বেলেগ Bitcoin নেটৱৰ্ক ব্যৱহাৰ কৰি আছে। Mainnet আৰু Testnet-ৰ মাজত সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "importWatchOnlyErrorAlreadyExists": "এই ৱালেটটো ইতিমধ্যে আমদানি কৰা হৈছে।",
+  "importWatchOnlyNetworkBitcoinMainnet": "নেটৱৰ্ক: Bitcoin মূল নেটৱৰ্ক",
+  "importWatchOnlyNetworkBitcoinTestnet": "নেটৱৰ্ক: Bitcoin পৰীক্ষামূলক নেটৱৰ্ক",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষৰিত লেনদেনটো চূড়ান্ত কৰিব পৰা নগ'ল। ইয়াত সকলো প্ৰয়োজনীয় স্বাক্ষৰ আছে বুলি নিশ্চিত কৰি পুনৰ চেষ্টা কৰক।",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

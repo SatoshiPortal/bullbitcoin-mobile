@@ -3,22 +3,25 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
@@ -37,19 +40,18 @@ class ExchangeHomeScreen extends StatelessWidget {
     );
     final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
     final hasDcaActive = dca?.isActive ?? false;
+    final autoBuy = context.select(
+      (ExchangeCubit cubit) => cubit.state.userSummary?.autoBuy,
+    );
+    final isFundingRestricted = context.select(
+      (ExchangeCubit cubit) =>
+          cubit.state.userSummary?.isFundingRestricted ?? true,
+    );
 
     if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // The transparent app bar floats over the scrollable content (the
-    // colored top section extends behind it). A static overlay is almost
-    // identical to the previous pinned SliverAppBar inside a SliverStack:
-    // the bar never scrolls away, and the theme pins scrolledUnderElevation
-    // to 0 so no tint appears on scroll. One accepted difference: a drag
-    // starting on the bar's buttons no longer scrolls the list, since the
-    // bar is now a Stack sibling above the scroll view instead of a sliver
-    // inside it.
     return Stack(
       children: [
         BBPullableBody(
@@ -57,23 +59,40 @@ class ExchangeHomeScreen extends StatelessWidget {
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate([
-                const ExchangeHomeTopSection(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    children: [
+            const PinnedHeaderSliver(child: ExchangeHomeTopSection()),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  children: [
+                    const Gap(12),
+                    if (!isFullyVerified) ...[
+                      const ExchangeHomeKycCard(),
                       const Gap(12),
-                      if (!isFullyVerified) const ExchangeHomeKycCard(),
-                      const Gap(12),
-                      DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
-                      const Gap(12),
-                      if (!notLoggedIn) const AnnouncementBanner(),
                     ],
-                  ),
+                    DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
+                    const Gap(12),
+                    locator<AutoBuyFacade>().buildHomeCard(
+                      isActive: autoBuy?.isActive ?? false,
+                      isRestricted: isFundingRestricted,
+                      onActivate: () async {
+                        await context.pushNamed(AutoBuyRoute.autoBuy.name);
+                        if (context.mounted) {
+                          await context
+                              .read<ExchangeCubit>()
+                              .fetchUserSummary();
+                        }
+                      },
+                      onStatusChanged: () =>
+                          context.read<ExchangeCubit>().fetchUserSummary(),
+                    ),
+                    const Gap(12),
+                    locator<LimitOrdersFacade>().buildDashboardCard(),
+                    const Gap(12),
+                    if (!notLoggedIn) const AnnouncementBanner(),
+                  ],
                 ),
-              ]),
+              ),
             ),
           ],
           bottomChild: Padding(
