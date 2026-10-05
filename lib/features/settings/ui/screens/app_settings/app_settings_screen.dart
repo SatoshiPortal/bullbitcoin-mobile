@@ -45,7 +45,7 @@ class AppSettingsScreen extends StatelessWidget {
         context.loc.settingsDevModeSpRevokeFailed,
       ),
       child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
+        appBar: AppBar(title: Text(context.loc.settingsAppAndDeviceTitle)),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(

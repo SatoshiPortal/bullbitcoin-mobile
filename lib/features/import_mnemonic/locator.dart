@@ -1,6 +1,10 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/features/import_mnemonic/router.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
@@ -12,6 +16,17 @@ import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.
 
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
+    locator<SettingsFacade>().registerEntry(
+      SettingsEntryContribution(
+        id: 'import-seed',
+        section: SettingsEntrySection.wallet,
+        title: (loc) => loc.importWalletSeedTitle,
+        keywords: (loc) => loc.settingsSearchImportSeedKeywords,
+        icon: Icons.password_outlined,
+        open: (context) =>
+            context.pushNamed(ImportMnemonicRoute.importMnemonicHome.name),
+      ),
+    );
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
       () => CheckDuplicateMnemonicUsecase(secrets: locator<Secrets>()),
     );
