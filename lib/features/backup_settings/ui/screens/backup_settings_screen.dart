@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
@@ -8,10 +7,9 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -39,9 +37,9 @@ class _Screen extends StatelessWidget {
     return BlocListener<BackupSettingsCubit, BackupSettingsState>(
       listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
       listener: (context, state) {
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          state.failure!.toTranslated(context),
+          message: state.failure!.toTranslated(context),
         );
       },
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
@@ -51,7 +49,7 @@ class _Screen extends StatelessWidget {
             appBar: AppBar(
               forceMaterialTransparency: true,
               automaticallyImplyLeading: false,
-              flexibleSpace: TopBar(
+              flexibleSpace: BullTopBar(
                 title: context.loc.settingsBackupTitle,
                 onBack: () => context.pop(),
               ),

@@ -1,18 +1,15 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/event.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/recoverbull_google_drive_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -33,7 +30,7 @@ class DriveVaultsListPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           onBack: () => context.pop(),
           title: context.loc.recoverbullGoogleDriveScreenTitle,
         ),
@@ -90,7 +87,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
 
   void _showActionsBottomSheet(BuildContext context) {
     final bloc = context.read<RecoverBullGoogleDriveBloc>();
-    BlurredBottomSheet.show(
+    BullBottomSheet.show(
       context: context,
       child: Container(
         constraints: BoxConstraints(
@@ -108,7 +105,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: .spaceEvenly,
                 children: [
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveExportButton,
                     onPressed: () {
                       context.pop();
@@ -119,7 +116,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,
                   ),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();
@@ -139,7 +136,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
 
   void _showDeleteConfirmationBottomSheet(BuildContext context) {
     final bloc = context.read<RecoverBullGoogleDriveBloc>();
-    BlurredBottomSheet.show(
+    BullBottomSheet.show(
       context: context,
       child: Container(
         constraints: BoxConstraints(
@@ -154,12 +151,12 @@ class _DriveFileMetadataItem extends StatelessWidget {
           child: Column(
             mainAxisSize: .min,
             children: [
-              BBText(
+              BullText(
                 context.loc.recoverbullGoogleDriveDeleteVaultTitle,
                 style: context.font.headlineMedium,
               ),
               const Gap(16),
-              BBText(
+              BullText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
                 style: context.font.bodyMedium,
                 textAlign: .center,
@@ -168,13 +165,13 @@ class _DriveFileMetadataItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: .spaceEvenly,
                 children: [
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveCancelButton,
                     onPressed: () => context.pop(),
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,
                   ),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();

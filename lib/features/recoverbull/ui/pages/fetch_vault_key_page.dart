@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 class FetchVaultKeyPage extends StatefulWidget {
   final String input;
@@ -92,9 +92,9 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               router.pushNamed(const TorSettingsFacade().settingsRouteName);
               return;
             }
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              state.failure!.toTranslated(context),
+              message: state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();

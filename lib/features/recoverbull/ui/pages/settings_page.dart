@@ -3,13 +3,11 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -104,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
         ),
-        title: BBText(
+        title: BullText(
           context.loc.recoverbullSettingsTitle,
           style: context.font.headlineMedium,
           color: context.appColors.onSurface,
@@ -131,7 +129,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     Row(
                       mainAxisAlignment: .spaceBetween,
                       children: [
-                        BBText(
+                        BullText(
                           context.loc.recoverbullSettingsKeyServerUrl,
                           style: context.font.titleMedium,
                           color: context.appColors.onSurface,
@@ -171,7 +169,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: context.appColors.border),
                         ),
-                        child: BBText(
+                        child: BullText(
                           _originalUrl,
                           style: context.font.bodyMedium,
                           color: context.appColors.onSurface,
@@ -183,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Row(
                         children: [
                           Expanded(
-                            child: BBButton.big(
+                            child: BullButton.big(
                               label: context.loc.recoverbullSettingsCancel,
                               onPressed: _cancelEdit,
                               bgColor: context.appColors.cardBackground,
@@ -192,7 +190,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                           const Gap(8),
                           Expanded(
-                            child: BBButton.big(
+                            child: BullButton.big(
                               label: context.loc.recoverbullSettingsSave,
                               onPressed: _saveUrl,
                               bgColor: context.appColors.onSurface,
@@ -215,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: context.appColors.primary,
                           ),
                           const Gap(8),
-                          BBText(
+                          BullText(
                             context.loc.recoverbullLearnMore,
                             style: context.font.bodyMedium,
                             color: context.appColors.primary,

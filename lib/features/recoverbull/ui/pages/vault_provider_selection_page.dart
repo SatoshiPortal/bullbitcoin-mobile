@@ -1,11 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_created_page.dart';
@@ -13,7 +10,8 @@ import 'package:bb_mobile/features/recoverbull/ui/pages/vault_selected_page.dart
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullSnackBar, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
@@ -48,9 +46,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
             current.vault != null && previous.vault != current.vault,
         listener: (context, state) {
           if (state.failure != null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              state.failure!.toTranslated(context),
+              message: state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
           }
@@ -58,9 +56,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
           if (state.vault != null && state.vaultProvider != null) {
             switch (state.flow) {
               case RecoverBullFlow.secureVault:
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  context.loc.recoverbullVaultCreatedSuccess,
+                  message: context.loc.recoverbullVaultCreatedSuccess,
                 );
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -116,12 +114,12 @@ class VaultProviderSelectionPage extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          BlurredBottomSheet.show(
+                          BullBottomSheet.show(
                             context: context,
                             child: const HowToDecideVaultLocation(),
                           );
                         },
-                        child: BBText(
+                        child: BullText(
                           context.loc.backupWalletHowToDecide,
                           style: context.font.headlineLarge?.copyWith(
                             color: context.appColors.primary,
@@ -162,7 +160,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   const Spacer(),
-                  BBText(
+                  BullText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
                     style: context.font.headlineMedium,
                     textAlign: .center,
@@ -186,7 +184,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultCloudSecurity,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,
@@ -195,7 +193,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                         maxLines: 16,
                       ),
                       const Gap(32),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultCustomLocation,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,
@@ -248,7 +246,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                         ),
                       ),
                       const Gap(12),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultMoreInfo,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,
