@@ -29,7 +29,6 @@ class TransactionViewer extends StatelessWidget {
     this.color,
     this.clipboardText,
     required this._isTestnet,
-    this.explorerUrlFragment,
   }) : _network = _TransactionNetwork.bitcoin,
        _unblindedUrl = null;
 
@@ -41,8 +40,7 @@ class TransactionViewer extends StatelessWidget {
     this.clipboardText,
     required this._isTestnet,
     this._unblindedUrl,
-  }) : explorerUrlFragment = null,
-       _network = _TransactionNetwork.liquid;
+  }) : _network = _TransactionNetwork.liquid;
 
   final String data;
   final TextStyle? style;
@@ -54,7 +52,6 @@ class TransactionViewer extends StatelessWidget {
   final _TransactionNetwork _network;
   final bool _isTestnet;
   final String? _unblindedUrl;
-  final String? explorerUrlFragment;
 
   @override
   Widget build(BuildContext context) {
@@ -125,11 +122,7 @@ class TransactionViewer extends StatelessWidget {
     switch (_network) {
       case _TransactionNetwork.bitcoin:
         final builder = locator<MempoolUrlBuilder>();
-        return builder.bitcoinTxid(
-          data,
-          isTestnet: _isTestnet,
-          fragment: explorerUrlFragment,
-        );
+        return builder.bitcoinTxid(data, isTestnet: _isTestnet);
       case _TransactionNetwork.liquid:
         final builder = locator<MempoolUrlBuilder>();
         return builder.liquidTxid(
