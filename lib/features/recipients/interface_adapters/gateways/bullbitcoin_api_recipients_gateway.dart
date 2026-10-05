@@ -83,7 +83,10 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         options: Options(headers: {'x-api-version': _apiVersion}),
       );
 
-      final rejection = _rejectionOf(resp);
+      // Redacted: this payload carries the security answer, the secret that
+      //  lets anyone claim the e-transfer, and the on-device log can be shared
+      //  from the logs screen.
+      final rejection = _rejectionOf(resp, redactPayload: true);
       if (rejection != null) {
         _logRejection('update Interac security details', rejection);
         return const Err(RecipientsUnexpectedFailure());
@@ -279,10 +282,19 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   /// Covers both refusal shapes in one place: a non-200 status, and a 200
   /// carrying a JSON-RPC `error` object. The returned string is for logs
   /// only — the `error` object holds server internals.
-  String? _rejectionOf(Response<dynamic> resp) {
+  ///
+  /// With [redactPayload], only the error `code` is kept: the API quotes the
+  /// rejected payload back in the error object, so stringifying it would log
+  /// whatever the request carried.
+  String? _rejectionOf(Response<dynamic> resp, {bool redactPayload = false}) {
     if (resp.statusCode != 200) return 'HTTP ${resp.statusCode}';
     final error = resp.data is Map ? resp.data['error'] : null;
-    return error == null ? null : 'JSON-RPC error: $error';
+    if (error == null) return null;
+    if (redactPayload) {
+      final code = error is Map ? error['code'] : null;
+      return 'JSON-RPC error code ${code ?? 'unknown'}';
+    }
+    return 'JSON-RPC error: $error';
   }
 
   void _logRejection(String operation, String rejection) {
@@ -313,8 +325,12 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         return const RecipientsNetworkFailure();
       }
     }
-    // warning, not severe: a Dio error carries the request body, and for this
-    // API that body is the recipient's bank details.
+    // warning, not severe: a Dio error holds the request body (the recipient's
+    // bank details, or the Interac security answer) in requestOptions.data.
+    // Logging it here is safe only because the log writes error.toString(),
+    // and DioException.toString() prints the type, message and inner error,
+    // never the request body (dio 5.11). Never log requestOptions or the
+    // response data from this path.
     log.warning('Failed to $operation', error: e, trace: st);
     return onApiFailure();
   }
