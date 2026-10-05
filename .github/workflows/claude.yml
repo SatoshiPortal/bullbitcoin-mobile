@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 0 # Fetch full history for branch operations
           persist-credentials: true # Keep credentials for subsequent git commands
 
-      - uses: anthropics/claude-code-action@16b3b310c3d7b5279df73130324d5205aeea8eac # v1.0.205
+      - uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           # Use Claude Fable 5.1 for PR reviews. The model ID is passed
