@@ -52,7 +52,7 @@ void main() {
         securityAnswer: any(named: 'securityAnswer'),
         isTestnet: any(named: 'isTestnet'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
 
     final result = await repository.update(details);
 
@@ -84,7 +84,7 @@ void main() {
         securityAnswer: any(named: 'securityAnswer'),
         isTestnet: any(named: 'isTestnet'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
 
     await repository.update(details);
 
@@ -99,7 +99,7 @@ void main() {
     ).called(1);
   });
 
-  test('maps gateway exceptions to a sanitized failure', () async {
+  test('forwards a gateway failure untouched', () async {
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,
@@ -115,12 +115,40 @@ void main() {
         securityAnswer: any(named: 'securityAnswer'),
         isTestnet: any(named: 'isTestnet'),
       ),
-    ).thenThrow(Exception('Montreal'));
+    ).thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
 
     final result = await repository.update(details);
 
-    expect(result, isA<Err<void, RecipientsFailure>>());
-    final failure = (result as Err<void, RecipientsFailure>).failure;
-    expect(failure.logMessage, isNot(contains('Montreal')));
+    switch (result) {
+      case Ok():
+        fail('a gateway failure must not be reported as an update');
+      case Err(:final failure):
+        expect(failure, isA<RecipientsNetworkFailure>());
+        expect(failure.logMessage, isNull);
+    }
+  });
+
+  test('maps a thrown settings read to a sanitized failure', () async {
+    // The answer is user-supplied and must not survive into the failure.
+    when(() => settingsRepository.fetch()).thenThrow(Exception('Montreal'));
+
+    final result = await repository.update(details);
+
+    switch (result) {
+      case Ok():
+        fail('a failed settings read must not be reported as an update');
+      case Err(:final failure):
+        expect(failure, isA<RecipientsUnexpectedFailure>());
+        expect(failure.logMessage, isNull);
+    }
+    verifyNever(
+      () => recipientsGateway.updateInteracSecurityDetails(
+        recipientId: any(named: 'recipientId'),
+        email: any(named: 'email'),
+        securityQuestion: any(named: 'securityQuestion'),
+        securityAnswer: any(named: 'securityAnswer'),
+        isTestnet: any(named: 'isTestnet'),
+      ),
+    );
   });
 }

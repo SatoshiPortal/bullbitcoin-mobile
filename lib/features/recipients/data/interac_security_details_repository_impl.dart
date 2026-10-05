@@ -8,32 +8,34 @@ import 'package:bull_logger/bull_logger.dart';
 
 final class InteracSecurityDetailsRepositoryImpl
     implements InteracSecurityDetailsRepository {
+  final RecipientsGatewayPort _recipientsGateway;
+  final SettingsRepository _settingsRepository;
+
   const InteracSecurityDetailsRepositoryImpl(
     this._recipientsGateway,
     this._settingsRepository,
   );
 
-  final RecipientsGatewayPort _recipientsGateway;
-  final SettingsRepository _settingsRepository;
-
   @override
   Future<Result<void, RecipientsFailure>> update(
     InteracSecurityDetails details,
   ) async {
+    // The shared settings repository still throws, so this is the boundary
+    // for it. The gateway call below already returns a Result.
+    final bool isTestnet;
     try {
-      final settings = await _settingsRepository.fetch();
-      await _recipientsGateway.updateInteracSecurityDetails(
-        recipientId: details.recipientId,
-        email: details.email,
-        securityQuestion: details.securityQuestion,
-        securityAnswer: details.securityAnswer,
-        isTestnet: settings.environment.isTestnet,
-      );
-      return const Ok(null);
-    } catch (_) {
-      const message = 'Failed to update Interac recipient security details';
-      log.warning(message);
-      return const Err(RecipientsUnexpectedFailure(message));
+      isTestnet = (await _settingsRepository.fetch()).environment.isTestnet;
+    } on Object catch (e, st) {
+      log.warning('Could not read the environment', error: e, trace: st);
+      return const Err(RecipientsUnexpectedFailure());
     }
+
+    return _recipientsGateway.updateInteracSecurityDetails(
+      recipientId: details.recipientId,
+      email: details.email,
+      securityQuestion: details.securityQuestion,
+      securityAnswer: details.securityAnswer,
+      isTestnet: isTestnet,
+    );
   }
 }

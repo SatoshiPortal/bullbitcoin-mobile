@@ -38,4 +38,20 @@ void main() {
     expect(result, isA<Ok<void, RecipientsFailure>>());
     verify(() => repository.update(details)).called(1);
   });
+
+  test('forwards a repository failure untouched', () async {
+    when(
+      () => repository.update(details),
+    ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+
+    final result = await usecase.execute(details);
+
+    switch (result) {
+      case Ok():
+        fail('a repository failure must not be reported as an update');
+      case Err(:final failure):
+        expect(failure, isA<RecipientsUnexpectedFailure>());
+        expect(failure.logMessage, isNull);
+    }
+  });
 }

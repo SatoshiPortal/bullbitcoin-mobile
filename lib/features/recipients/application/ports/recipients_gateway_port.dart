@@ -17,7 +17,8 @@ abstract class RecipientsGatewayPort {
     required bool isTestnet,
   });
 
-  Future<void> updateInteracSecurityDetails({
+  @useResult
+  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,

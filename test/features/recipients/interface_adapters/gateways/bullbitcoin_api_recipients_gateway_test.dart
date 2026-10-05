@@ -211,6 +211,46 @@ void main() {
     });
   });
 
+  group('updateInteracSecurityDetails failures are sanitized', () {
+    Future<Result<void, RecipientsFailure>> update() =>
+        gateway.updateInteracSecurityDetails(
+          recipientId: 'recipient-1',
+          email: 'person@example.com',
+          securityQuestion: 'Favourite city?',
+          securityAnswer: 'Montreal',
+          isTestnet: false,
+        );
+
+    test('a JSON-RPC error is logged, not carried', () async {
+      stub(_response(_errorBody));
+
+      switch (await update()) {
+        case Ok():
+          fail('a JSON-RPC error must not be reported as an update');
+        case Err(:final failure):
+          expect(failure, isA<RecipientsUnexpectedFailure>());
+          expect(failure.logMessage, isNull);
+      }
+    });
+
+    test('a timeout is reported as a network failure', () async {
+      stub(
+        DioException(
+          requestOptions: RequestOptions(path: '/ak/api-recipients'),
+          type: DioExceptionType.connectionTimeout,
+        ),
+      );
+
+      switch (await update()) {
+        case Ok():
+          fail('a timeout must not be reported as an update');
+        case Err(:final failure):
+          expect(failure, isA<RecipientsNetworkFailure>());
+          expect(failure.logMessage, isNull);
+      }
+    });
+  });
+
   group('updateInteracSecurityDetails', () {
     setUp(() => stub(_response({'result': <String, dynamic>{}})));
 

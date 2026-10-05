@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
+import 'package:meta/meta.dart';
 
 export '../domain/value_objects/recipient_type.dart' show RecipientType;
 export 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
@@ -22,6 +23,7 @@ class RecipientsFacade {
 
   RecipientsFacade(this._updateInteracSecurityDetailsUsecase);
 
+  @useResult
   Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,

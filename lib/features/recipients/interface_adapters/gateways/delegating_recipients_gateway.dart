@@ -37,7 +37,7 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<void> updateInteracSecurityDetails({
+  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,
