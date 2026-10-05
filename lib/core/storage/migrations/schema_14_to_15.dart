@@ -11,8 +11,6 @@ import 'package:drift/drift.dart';
 /// - `screen_capture_protection_enabled` — gates screenshot/recording blocking
 ///   on sensitive screens (defaults to true so installs keep protection until
 ///   the user opts out).
-/// - `mempool_servers.validate_domain` — stores certificate validation per
-///   custom mempool server (defaults to true for existing and default servers).
 class Schema14To15 {
   static Future<void> migrate(Migrator m, Schema15 schema15) async {
     await _addColumnIfNotExists(
@@ -50,10 +48,6 @@ Future<void> _addColumnIfNotExists(
     log.warning(
       'Schema14To15: $description already exists — skipping add',
       error: e,
-    );
-    await m.addColumn(
-      schema15.mempoolServers,
-      schema15.mempoolServers.validateDomain,
     );
   }
 }
