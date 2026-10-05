@@ -387,6 +387,9 @@ class WalletRepository
       throw WalletError.notFound(walletId);
     }
 
+    // The same legacy field records availability before the first test.
+    // Once tested, creation must not replace evidence of that successful test.
+    if (metadata.isEncryptedVaultTested) return;
     await _walletMetadataDatasource.store(
       metadata.copyWith(latestEncryptedBackup: time.millisecondsSinceEpoch),
     );

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -164,8 +165,12 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
-            featureWarningsBuilder: (context, wallets) =>
+            featureWarningsBuilder: (context, wallets) => Column(
+              children: [
+                BackupReminderHomeContribution(wallets: wallets),
                 BullVaultHomeContribution(wallets: wallets),
+              ],
+            ),
           ),
           ...ExchangeRouter.routes,
         ],
