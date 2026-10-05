@@ -17464,5 +17464,27 @@
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
   "@bullVaultRestoreCompleteTitle": {},
   "bullVaultRestoreCompleteTitle": "BullVault restored",
-  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "@signingKeyUsedSign": {},
+  "signingKeyUsedTitle": "Keys already used",
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyUsedNoDescription": {},
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "@signingKeyUsedTitle": {},
+  "signingKeyUsedNoDescription": "No description"
 }

@@ -207,6 +207,8 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        onRegisterDescriptor: (context) =>
+            context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
         walletDetailsActionsBuilder: (context, wallet) => [
           BullVaultWalletSettingsContribution(wallet: wallet),
         ],

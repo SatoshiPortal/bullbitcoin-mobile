@@ -49,6 +49,16 @@ final class SigningKeyAccountSession {
             coinType: coinType,
             account: account,
           );
+    if (markUsed && _committedSelection == selection) {
+      final claim = _activeClaim;
+      if (claim != null) {
+        return Ok((
+          account: claim.account,
+          isReserved: false,
+          markedAccount: account,
+        ));
+      }
+    }
     if (markUsed && _committedSelection != selection) {
       final claim = _activeClaim;
       if (account == null ||
@@ -157,7 +167,6 @@ final class SigningKeyAccountSession {
     required String fingerprint,
     required int coinType,
   }) {
-    _committedSelection = null;
     _activeClaim = claim;
     _activeFingerprint = fingerprint;
     _activeCoinType = coinType;
