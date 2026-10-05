@@ -17214,5 +17214,81 @@
   "@bitboxErrorWalletNameInUse": {
     "description": "BitBox policy registration failed because another policy has the same name."
   },
-  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name."
+  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name.",
+  "@backupReminderLater365Days": {
+    "description": "Action to snooze the physical-backup test reminder for 365 days"
+  },
+  "backupReminderAddPhysical": "ADD A PHYSICAL BACKUP",
+  "@backupReminderDismissForever": {
+    "description": "Wallet Recovery setting that suppresses every backup reminder on this device"
+  },
+  "backupReminderTestVault": "TEST ENCRYPTED VAULT",
+  "backupReminderLater180Days": "REMIND ME IN 180 DAYS",
+  "backupReminderDismissForeverConfirm": "Dismiss forever",
+  "backupReminderAddPhysicalBody": "Your tested encrypted vault still depends on the backup server. Add and test a physical backup so you can recover without it.",
+  "@backupReminderAddPhysical": {
+    "description": "Action to create and test a physical wallet backup"
+  },
+  "backupReminderDismissForeverConfirmBody": "The app will not show these backup reminders on this device until you turn them back on in Wallet Recovery.",
+  "@backupReminderTestVaultBody": {
+    "description": "Explanation for the annual encrypted vault test reminder"
+  },
+  "backupReminderAddPhysicalTitle": "ADD A PHYSICAL BACKUP",
+  "backupReminderTestVaultTitle": "TEST YOUR ENCRYPTED VAULT",
+  "@backupReminderDismissForeverConfirmBody": {
+    "description": "Confirmation explanation for permanently suppressing backup reminders"
+  },
+  "backupReminderTestVaultBody": "Your last successful encrypted vault test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestPhysicalTitle": {
+    "description": "Title for the annual physical backup test reminder"
+  },
+  "@backupReminderLater180Days": {
+    "description": "Action to snooze the add-physical-backup reminder for 180 days"
+  },
+  "@backupReminderDismissRisk": {
+    "description": "Permanent dismissal for the one-time large-balance warning"
+  },
+  "@backupReminderTestPhysicalBody": {
+    "description": "Explanation for the annual physical backup test reminder"
+  },
+  "@backupReminderAddPhysicalTitle": {
+    "description": "Title for the periodic physical backup recommendation"
+  },
+  "backupReminderTestPhysical": "TEST PHYSICAL BACKUP",
+  "backupReminderDismissRisk": "DISMISS WARNING — I UNDERSTAND THE RISKS",
+  "@backupReminderAddPhysicalBody": {
+    "description": "Explanation for the periodic physical backup recommendation"
+  },
+  "@backupReminderDismissForeverConfirmTitle": {
+    "description": "Confirmation title before permanently suppressing backup reminders"
+  },
+  "@backupReminderLargeBalanceTitle": {
+    "description": "Title for the one-time large-balance physical backup warning"
+  },
+  "@backupReminderTestPhysical": {
+    "description": "Action to test a physical wallet backup"
+  },
+  "backupReminderDismissForeverConfirmTitle": "Dismiss all backup reminders?",
+  "@backupReminderLater366Days": {
+    "description": "Action to snooze the encrypted-vault test reminder for 366 days"
+  },
+  "backupReminderLargeBalanceTitle": "YOUR ENCRYPTED VAULT IS YOUR ONLY BACKUP",
+  "@backupReminderLargeBalanceBody": {
+    "description": "Risk explanation for relying only on an encrypted vault at a large balance"
+  },
+  "backupReminderLargeBalanceBody": "Your encrypted vault is tested, but recovery still depends on the backup server being available. Add and test a physical backup for independent recovery.",
+  "backupReminderTestPhysicalBody": "Your last successful physical backup test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderDismissForeverConfirm": {
+    "description": "Confirmation action that permanently suppresses backup reminders"
+  },
+  "@backupReminderTestVault": {
+    "description": "Action to test the encrypted vault"
+  },
+  "@backupReminderTestVaultTitle": {
+    "description": "Title for the annual encrypted vault test reminder"
+  },
+  "backupReminderDismissForever": "Dismiss backup reminders forever",
+  "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
+  "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS"
 }

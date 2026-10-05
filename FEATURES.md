@@ -124,7 +124,7 @@ graph TB
     APP_STARTUP --> RECOVERBULL
     WALLETS --> RECOVERBULL
     STATUS --> RECOVERBULL
-    BACKUPS --> RECOVERBULL
+    BACKUPS -->|Certification status and recovery flows| RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BACKUPS --> SECRETS
@@ -242,6 +242,8 @@ graph TB
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
