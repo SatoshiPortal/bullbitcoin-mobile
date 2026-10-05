@@ -91,7 +91,7 @@ class EmptyNetworkWallets extends StatelessWidget {
                     ],
                   ],
                   BullButton.big(
-                    label: context.loc.importWalletImportMnemonic,
+                    label: context.loc.importWalletSeedTitle,
                     onPressed: onImport,
                     disabled: state.working,
                     bgColor: context.bull.surface,

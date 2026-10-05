@@ -1,3 +1,5 @@
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSupportButton;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -102,6 +104,42 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     Clipboard.setData(ClipboardData(text: appVersion));
                   },
                 ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Row(
+                  mainAxisAlignment: .spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () =>
+                          items.byId(SettingsItemId.sourceCode).open(context),
+                      child: Column(
+                        mainAxisSize: .min,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/github.svg',
+                            width: 24,
+                            height: 24,
+                            colorFilter: ColorFilter.mode(
+                              context.appColors.onSurface,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          const Gap(8),
+                          Text(
+                            context.loc.settingsSourceCodeTitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    BullSupportButton.tile(
+                      label: context.loc.appInitErrorContactSupportButton,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
