@@ -86,7 +86,9 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
 
-    await repository.update(details);
+    final result = await repository.update(details);
+
+    expect(result, isA<Ok<void, RecipientsFailure>>());
 
     verify(
       () => recipientsGateway.updateInteracSecurityDetails(

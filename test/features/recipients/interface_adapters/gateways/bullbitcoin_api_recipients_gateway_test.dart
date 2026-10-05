@@ -257,13 +257,15 @@ void main() {
     test(
       'updates an Interac recipient with supplied security details',
       () async {
-        await gateway.updateInteracSecurityDetails(
+        final result = await gateway.updateInteracSecurityDetails(
           recipientId: 'recipient-1',
           email: 'person@example.com',
           securityQuestion: 'Favourite city?',
           securityAnswer: 'Montreal',
           isTestnet: false,
         );
+
+        expect(result, isA<Ok<void, RecipientsFailure>>());
 
         final request =
             verify(
@@ -295,13 +297,15 @@ void main() {
     test(
       'sends null security details when the saved default is cleared',
       () async {
-        await gateway.updateInteracSecurityDetails(
+        final result = await gateway.updateInteracSecurityDetails(
           recipientId: 'recipient-1',
           email: 'person@example.com',
           securityQuestion: null,
           securityAnswer: null,
           isTestnet: false,
         );
+
+        expect(result, isA<Ok<void, RecipientsFailure>>());
 
         final request =
             verify(
