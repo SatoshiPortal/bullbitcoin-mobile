@@ -22,6 +22,8 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ### Security And Privacy
 
+- Enabled asynchronous Memory Tagging Extension (MTE) on supported Android devices as an additional native heap memory-safety mitigation. ([#2894](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2894))
+
 - Kept Interac security answers out of recipient rejection logs. ([#2812](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2812))
 - Kept the recovery phrase out of presentation state during the backup test. ([#2562](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2562))
 - Added server domain validation, disabled for custom servers by design. ([#2427](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2427))
