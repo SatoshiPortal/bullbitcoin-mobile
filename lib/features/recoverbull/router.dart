@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/recoverbull/ui/pages/local_vault_key_page.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -23,7 +24,8 @@ import 'package:go_router/go_router.dart';
 import 'package:bull_tor/tor.dart';
 
 enum RecoverBullRoute {
-  recoverbullFlows('/recoverbull-flows');
+  recoverbullFlows('/recoverbull-flows'),
+  localVaultKey('/recoverbull/local-key');
 
   final String path;
 
@@ -54,6 +56,12 @@ void openRecoverBullFlow(
 );
 
 class RecoverBullRouter {
+  static final localKeyRoute = GoRoute(
+    name: RecoverBullRoute.localVaultKey.name,
+    path: RecoverBullRoute.localVaultKey.path,
+    builder: (context, state) => const LocalVaultKeyPage(),
+  );
+
   static final route = GoRoute(
     name: RecoverBullRoute.recoverbullFlows.name,
     path: RecoverBullRoute.recoverbullFlows.path,

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
@@ -154,6 +156,77 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  for (final flow in [
+    RecoverBullFlow.viewVaultKey,
+    RecoverBullFlow.testVault,
+  ]) {
+    test(
+      '$flow only records a backup test for the explicit test action',
+      () async {
+        final encrypted = _MockEncryptedVault();
+        const decrypted = DecryptedVault();
+        when(
+          () => decrypt.execute(vault: encrypted, vaultKey: 'fixture-key'),
+        ).thenReturn(const Ok(decrypted));
+        when(
+          () => updateLatest.execute(decryptedVault: decrypted),
+        ).thenAnswer((_) async => const Ok(null));
+        final bloc = buildBloc(flow: flow, preSelectedVault: encrypted);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnVaultDecryption(vaultKey: 'fixture-key'));
+        await pumpEventQueue();
+
+        expect(bloc.state.failure, isNull);
+        expect(bloc.state.decryptedVault, decrypted);
+        if (flow == RecoverBullFlow.testVault) {
+          verify(
+            () => updateLatest.execute(decryptedVault: decrypted),
+          ).called(1);
+        } else {
+          verifyNever(() => updateLatest.execute(decryptedVault: decrypted));
+        }
+      },
+    );
+  }
+
+  test('failed decryption cannot record an encrypted backup test', () async {
+    final encrypted = _MockEncryptedVault();
+    when(
+      () => decrypt.execute(vault: encrypted, vaultKey: 'fixture-key'),
+    ).thenReturn(const Err(core.RecoverBullUnexpectedCoreFailure()));
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.testVault,
+      preSelectedVault: encrypted,
+    );
+    addTearDown(bloc.close);
+    bloc.add(const OnVaultDecryption(vaultKey: 'fixture-key'));
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+    expect(bloc.state.decryptedVault, isNull);
+    verifyZeroInteractions(updateLatest);
+  });
+
+  test('failed date persistence cannot report test completion', () async {
+    final encrypted = _MockEncryptedVault();
+    const decrypted = DecryptedVault();
+    when(
+      () => decrypt.execute(vault: encrypted, vaultKey: 'fixture-key'),
+    ).thenReturn(const Ok(decrypted));
+    when(() => updateLatest.execute(decryptedVault: decrypted)).thenAnswer(
+      (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
+    );
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.testVault,
+      preSelectedVault: encrypted,
+    );
+    addTearDown(bloc.close);
+    bloc.add(const OnVaultDecryption(vaultKey: 'fixture-key'));
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+    expect(bloc.state.decryptedVault, isNull);
+  });
 
   test('retains the caller-return mode through the recovery flow', () async {
     final bloc = buildBloc(
