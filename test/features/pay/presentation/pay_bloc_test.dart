@@ -2019,7 +2019,7 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 60)));
     test('reports an unavailable manual coin selection', () async {
       when(
-        () => prepareBitcoinSend.execute(
+        () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
