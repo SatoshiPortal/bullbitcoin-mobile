@@ -3543,6 +3543,10 @@
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
   "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "exchangeErrorSigningOut": "Չհաջողվեց ամբողջությամբ դուրս գալ համակարգից։ Խնդրում ենք փորձել կրկին։",
+  "exchangeErrorSavingPreferences": "Չհաջողվեց պահպանել ձեր նախապատվությունները։ Խնդրում ենք փորձել կրկին։",
+  "exchangeErrorLoadingAnnouncements": "Չհաջողվեց բեռնել հայտարարությունները։",
+  "exchangeErrorRequestingAccountDeletion": "Չհաջողվեց ուղարկել հաշվի ջնջման ձեր հարցումը։ Խնդրում ենք փորձել կրկին։",
   "exchangeSettingsErrorLoadingStatistics": "Չհաջողվեց բեռնել ձեր առևտրի վիճակագրությունը։ Խնդրում ենք փորձել կրկին։",
   "exchangeSettingsErrorLoadingAccount": "Չհաջողվեց բեռնել ձեր հաշվի տվյալները։ Խնդրում ենք փորձել կրկին։",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Փաստաթուղթն արդեն ներկայացվել է։",
@@ -3670,5 +3674,6 @@
   "receiveErrorNoteNotSaved": "Ձեր նշումը չհաջողվեց պահել։ Փորձեք կրկին։",
   "receiveErrorAddressUnavailable": "Չհաջողվեց պատրաստել ստացման հասցե։ Փորձեք կրկին։",
   "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
-  "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
+  "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
+  "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
 }

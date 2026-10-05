@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
@@ -13,7 +14,13 @@ class AutoBuyLocator {
       () => SetAutoBuyUsecase(
         locator<GetExchangeUserSummaryUsecase>(),
         locator<GetDefaultWalletsUsecase>(),
-        locator<SaveUserPreferencesUsecase>(),
+        locator<SettingsRepository>(),
+        locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
+        ),
       ),
     );
     locator.registerLazySingleton<GetAutoBuyStatusUsecase>(

@@ -4781,6 +4781,10 @@
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
   "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "exchangeErrorSigningOut": "Не вдалося повністю вийти з облікового запису. Будь ласка, спробуйте ще раз.",
+  "exchangeErrorSavingPreferences": "Не вдалося зберегти ваші налаштування. Будь ласка, спробуйте ще раз.",
+  "exchangeErrorLoadingAnnouncements": "Не вдалося завантажити оголошення.",
+  "exchangeErrorRequestingAccountDeletion": "Не вдалося надіслати запит на видалення облікового запису. Будь ласка, спробуйте ще раз.",
   "exchangeSettingsErrorLoadingStatistics": "Не вдалося завантажити вашу торгову статистику. Будь ласка, спробуйте ще раз.",
   "exchangeSettingsErrorLoadingAccount": "Не вдалося завантажити дані вашого облікового запису. Будь ласка, спробуйте ще раз.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Документ уже надіслано.",
@@ -4908,5 +4912,6 @@
   "receiveErrorNoteNotSaved": "Не вдалося зберегти примітку. Спробуйте ще раз.",
   "receiveErrorAddressUnavailable": "Не вдалося підготувати адресу для отримання. Спробуйте ще раз.",
   "receiveErrorBroadcastOriginal": "Не вдалося надіслати транзакцію. Перевірте підключення до Інтернету та спробуйте ще раз.",
-  "fundExchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз."
+  "fundExchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
+  "exchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз."
 }

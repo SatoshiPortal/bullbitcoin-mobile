@@ -14455,6 +14455,22 @@
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
   },
+  "exchangeErrorSigningOut": "You could not be fully signed out. Please try again.",
+  "@exchangeErrorSigningOut": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
+  "@exchangeErrorSavingPreferences": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorLoadingAnnouncements": "Announcements could not be loaded.",
+  "@exchangeErrorLoadingAnnouncements": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
+  "@exchangeErrorRequestingAccountDeletion": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
   "exchangeSettingsErrorLoadingStatistics": "Your trading statistics could not be loaded. Please try again.",
   "@exchangeSettingsErrorLoadingStatistics": {
     "description": "exchange_settings user-facing failure message (#1895)."
@@ -15675,5 +15691,9 @@
   "fundExchangeErrorNetwork": "Check your internet connection and try again.",
   "@fundExchangeErrorNetwork": {
     "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "exchangeErrorNetwork": "Check your internet connection and try again.",
+  "@exchangeErrorNetwork": {
+    "description": "Shown when the exchange API could not be reached or timed out. Same wording as recipientsErrorNetwork."
   }
 }

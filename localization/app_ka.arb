@@ -3690,6 +3690,10 @@
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
   "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "exchangeErrorSigningOut": "სისტემიდან სრულად გამოსვლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeErrorSavingPreferences": "თქვენი პარამეტრების შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeErrorLoadingAnnouncements": "განცხადებების ჩატვირთვა ვერ მოხერხდა.",
+  "exchangeErrorRequestingAccountDeletion": "თქვენი ანგარიშის წაშლის მოთხოვნის გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeSettingsErrorLoadingStatistics": "თქვენი ვაჭრობის სტატისტიკის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeSettingsErrorLoadingAccount": "თქვენი ანგარიშის დეტალების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "დოკუმენტი უკვე გაგზავნილია.",
@@ -3817,5 +3821,6 @@
   "receiveErrorNoteNotSaved": "თქვენი შენიშვნა ვერ შეინახა. სცადეთ ხელახლა.",
   "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
   "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
-  "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
+  "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
+  "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
 }

@@ -10040,6 +10040,10 @@
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "exchangeErrorSigningOut": "Не можахте да излезете напълно от профила си. Моля, опитайте отново.",
+  "exchangeErrorSavingPreferences": "Вашите предпочитания не можаха да бъдат запазени. Моля, опитайте отново.",
+  "exchangeErrorLoadingAnnouncements": "Съобщенията не можаха да бъдат заредени.",
+  "exchangeErrorRequestingAccountDeletion": "Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново.",
   "exchangeSettingsErrorLoadingStatistics": "Вашата търговска статистика не можа да бъде заредена. Моля, опитайте отново.",
   "exchangeSettingsErrorLoadingAccount": "Данните за акаунта ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Вече е подаден документ.",
@@ -10167,5 +10171,6 @@
   "receiveErrorNoteNotSaved": "Бележката ви не можа да бъде запазена. Опитайте отново.",
   "receiveErrorAddressUnavailable": "Не можа да бъде подготвен адрес за получаване. Опитайте отново.",
   "receiveErrorBroadcastOriginal": "Не успяхме да излъчим транзакцията. Проверете интернет връзката си и опитайте отново.",
-  "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново."
+  "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
+  "exchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново."
 }

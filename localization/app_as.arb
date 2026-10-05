@@ -9156,6 +9156,10 @@
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorSigningOut": "আপোনাক সম্পূৰ্ণৰূপে ছাইন আউট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorSavingPreferences": "আপোনাৰ পছন্দসমূহ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorLoadingAnnouncements": "ঘোষণাসমূহ ল'ড কৰিব পৰা নগ'ল।",
+  "exchangeErrorRequestingAccountDeletion": "আপোনাৰ একাউণ্ট মচাৰ অনুৰোধ পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSettingsErrorLoadingStatistics": "আপোনাৰ ট্ৰেডিং পৰিসংখ্যা ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSettingsErrorLoadingAccount": "আপোনাৰ একাউণ্টৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে এখন নথি দাখিল কৰা হৈছে।",
@@ -9283,5 +9287,6 @@
   "receiveErrorNoteNotSaved": "আপোনাৰ টোকা সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
 }

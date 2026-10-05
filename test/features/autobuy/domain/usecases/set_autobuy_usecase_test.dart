@@ -2,7 +2,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
@@ -15,8 +18,10 @@ class MockGetExchangeUserSummaryUsecase extends Mock
 class MockGetDefaultWalletsUsecase extends Mock
     implements GetDefaultWalletsUsecase {}
 
-class MockSaveUserPreferencesUsecase extends Mock
-    implements SaveUserPreferencesUsecase {}
+class MockExchangeUserRepository extends Mock
+    implements ExchangeUserRepository {}
+
+class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 UserSummary _summaryWithGroups(List<String> groups) => UserSummary(
   userNumber: 1,
@@ -54,29 +59,43 @@ const _noWallets = DefaultWallets();
 void main() {
   late MockGetExchangeUserSummaryUsecase getUserSummary;
   late MockGetDefaultWalletsUsecase getDefaultWallets;
-  late MockSaveUserPreferencesUsecase savePreferences;
+  // The mainnet repository, which the settings below select.
+  late MockExchangeUserRepository savePreferences;
+  late MockExchangeUserRepository testnetUsers;
+  late MockSettingsRepository settings;
   late SetAutoBuyUsecase usecase;
 
   void stubSaveSucceeds() {
     when(
-      () => savePreferences.execute(
+      () => savePreferences.saveUserPreference(
         language: any(named: 'language'),
         currency: any(named: 'currency'),
         dcaEnabled: any(named: 'dcaEnabled'),
         autoBuyEnabled: any(named: 'autoBuyEnabled'),
         emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
   }
 
   setUp(() {
     getUserSummary = MockGetExchangeUserSummaryUsecase();
     getDefaultWallets = MockGetDefaultWalletsUsecase();
-    savePreferences = MockSaveUserPreferencesUsecase();
+    savePreferences = MockExchangeUserRepository();
+    testnetUsers = MockExchangeUserRepository();
+    settings = MockSettingsRepository();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
     usecase = SetAutoBuyUsecase(
       getUserSummary,
       getDefaultWallets,
+      settings,
       savePreferences,
+      testnetUsers,
     );
   });
 
@@ -142,7 +161,7 @@ void main() {
 
     expect(result, isA<Ok<void, AutoBuyFailure>>());
     verify(
-      () => savePreferences.execute(
+      () => savePreferences.saveUserPreference(
         language: 'FR',
         currency: 'CAD',
         dcaEnabled: true,
@@ -161,7 +180,7 @@ void main() {
 
     expect(result, isA<Ok<void, AutoBuyFailure>>());
     verify(
-      () => savePreferences.execute(
+      () => savePreferences.saveUserPreference(
         language: 'FR',
         currency: 'CAD',
         dcaEnabled: true,
@@ -218,14 +237,14 @@ void main() {
   test('maps a rejected preference update to a typed failure', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
     when(
-      () => savePreferences.execute(
+      () => savePreferences.saveUserPreference(
         language: any(named: 'language'),
         currency: any(named: 'currency'),
         dcaEnabled: any(named: 'dcaEnabled'),
         autoBuyEnabled: any(named: 'autoBuyEnabled'),
         emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
       ),
-    ).thenThrow(Exception('preference request failed'));
+    ).thenAnswer((_) async => const Err(ExchangeUserPreferencesSaveFailure()));
 
     final result = await usecase.execute(enabled: false);
 

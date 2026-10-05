@@ -3543,6 +3543,10 @@
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
   "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "exchangeErrorSigningOut": "Không thể đăng xuất hoàn toàn. Vui lòng thử lại.",
+  "exchangeErrorSavingPreferences": "Không thể lưu tùy chọn của bạn. Vui lòng thử lại.",
+  "exchangeErrorLoadingAnnouncements": "Không thể tải thông báo.",
+  "exchangeErrorRequestingAccountDeletion": "Không thể gửi yêu cầu xóa tài khoản của bạn. Vui lòng thử lại.",
   "exchangeSettingsErrorLoadingStatistics": "Không thể tải thống kê giao dịch của bạn. Vui lòng thử lại.",
   "exchangeSettingsErrorLoadingAccount": "Không thể tải thông tin tài khoản của bạn. Vui lòng thử lại.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Một tài liệu đã được gửi.",
@@ -3670,5 +3674,6 @@
   "receiveErrorNoteNotSaved": "Không thể lưu ghi chú của bạn. Vui lòng thử lại.",
   "receiveErrorAddressUnavailable": "Không thể tạo địa chỉ nhận. Vui lòng thử lại.",
   "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại.",
-  "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại."
+  "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
+  "exchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại."
 }
