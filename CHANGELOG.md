@@ -30,6 +30,8 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ### Reliability And UX
 
+- Completed the release-wide error-message sanitization with translated wallet failures across wallet creation, loading, deletion and synchronization, and updated consumers in backup/recovery, BIP85, swaps and background tasks. ([#2836](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2836))
+
 - Added translated, sanitized error messages for transaction history and details, notes and labels, CSV export, and Payjoin original-transaction broadcast. ([#2828](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2828))
 
 - Added translated, sanitized failure messages to startup, Receive, backup verification, recipients, labels, Exchange funding, Exchange settings, Exchange, and Settings. ([#2813](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2813), [#2806](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2806), [#2807](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2807), [#2812](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2812), [#2817](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2817), [#2820](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2820), [#2822](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2822), [#2825](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2825), [#2827](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2827))
