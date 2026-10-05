@@ -17,6 +17,8 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   final ResolveWalletAddressUsecase _resolveAddress;
   final ValidateLightningAddressUsecase _validateLnAddress;
 
+  int _destinationRequestId = 0;
+
   CreateLimitOrderCubit(
     this._loadCreation,
     this._getRate,
@@ -112,10 +114,12 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   }
 
   void selectWallet(LimitOrderWallet wallet) {
+    _destinationRequestId++;
     emit(
       state.copyWith(
         wallet: wallet,
         clearSelectedAppWallet: true,
+        isResolvingAddress: false,
         lightningAddressInvalid: false,
         clearFailure: true,
       ),
@@ -123,6 +127,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   }
 
   Future<void> selectAppWallet(Wallet appWallet) async {
+    final requestId = ++_destinationRequestId;
     emit(
       state.copyWith(
         isResolvingAddress: true,
@@ -133,7 +138,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
       ),
     );
     final result = await _resolveAddress.execute(appWallet.id);
-    if (isClosed) return;
+    if (isClosed || requestId != _destinationRequestId) return;
     switch (result) {
       case Ok(:final value):
         emit(
@@ -159,6 +164,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
   }
 
   Future<void> setLightningAddress(String input) async {
+    final requestId = ++_destinationRequestId;
     emit(
       state.copyWith(
         lightningAddressInput: input,
@@ -170,7 +176,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
       ),
     );
     final address = await _validateLnAddress.execute(input);
-    if (isClosed) return;
+    if (isClosed || requestId != _destinationRequestId) return;
     if (address == null) {
       emit(
         state.copyWith(

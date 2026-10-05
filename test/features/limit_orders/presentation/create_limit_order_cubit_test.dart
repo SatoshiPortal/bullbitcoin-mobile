@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -297,6 +299,122 @@ void main() {
     when(() => wallet.network).thenReturn(network);
     return wallet;
   }
+
+  for (final fails in [false, true]) {
+    test('keeps the confirmed default destination after a stale app-wallet '
+        '${fails ? 'failure' : 'success'}', () async {
+      final pending = Completer<Result<String, LimitOrdersFailure>>();
+      when(
+        () => loadCreation.execute(),
+      ).thenAnswer((_) async => Ok(creationContext));
+      when(
+        () => resolveAddress.execute('w-btc'),
+      ).thenAnswer((_) => pending.future);
+      when(
+        () => create.execute(
+          limitPrice: 99000,
+          fiatAmount: 100,
+          currency: FiatCurrency.cad,
+          address: bitcoinWallet.address,
+        ),
+      ).thenAnswer((_) async => Ok(limitOrder()));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.load();
+      cubit.setAmount(100);
+      cubit.continueFromAmount();
+      final resolving = cubit.selectAppWallet(
+        appWallet('w-btc', Network.bitcoinMainnet),
+      );
+      cubit.selectWallet(bitcoinWallet);
+      cubit.continueFromWallet();
+      expect(cubit.state.step, CreateLimitOrderStep.confirmation);
+      pending.complete(
+        fails
+            ? const Err(LimitOrdersUnexpectedFailure('stale failure'))
+            : const Ok('bc1qstale'),
+      );
+      await resolving;
+      expect(cubit.state.wallet, bitcoinWallet);
+      expect(cubit.state.selectedAppWalletId, isNull);
+      expect(cubit.state.isResolvingAddress, isFalse);
+      expect(cubit.state.failure, isNull);
+      await cubit.submit();
+      verify(
+        () => create.execute(
+          limitPrice: 99000,
+          fiatAmount: 100,
+          currency: FiatCurrency.cad,
+          address: bitcoinWallet.address,
+        ),
+      ).called(1);
+    });
+  }
+
+  for (final staleAddress in ['old@example.com', null]) {
+    test('keeps a default wallet after stale Lightning validation '
+        'returns $staleAddress', () async {
+      final pending = Completer<String?>();
+      when(
+        () => validateLnAddress.execute('old@example.com'),
+      ).thenAnswer((_) => pending.future);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final validating = cubit.setLightningAddress('old@example.com');
+      cubit.selectWallet(bitcoinWallet);
+      pending.complete(staleAddress);
+      await validating;
+      expect(cubit.state.wallet, bitcoinWallet);
+      expect(cubit.state.isResolvingAddress, isFalse);
+      expect(cubit.state.lightningAddressInvalid, isFalse);
+    });
+  }
+
+  test('a stale app-wallet result does not finish the latest Lightning '
+      'validation', () async {
+    final pendingWallet = Completer<Result<String, LimitOrdersFailure>>();
+    final pendingLightning = Completer<String?>();
+    when(
+      () => resolveAddress.execute('w-btc'),
+    ).thenAnswer((_) => pendingWallet.future);
+    when(
+      () => validateLnAddress.execute('new@example.com'),
+    ).thenAnswer((_) => pendingLightning.future);
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final resolving = cubit.selectAppWallet(
+      appWallet('w-btc', Network.bitcoinMainnet),
+    );
+    final validating = cubit.setLightningAddress('new@example.com');
+    pendingWallet.complete(const Ok('bc1qstale'));
+    await resolving;
+    expect(cubit.state.wallet, isNull);
+    expect(cubit.state.isResolvingAddress, isTrue);
+    pendingLightning.complete('new@example.com');
+    await validating;
+    expect(cubit.state.wallet?.address, 'new@example.com');
+    expect(cubit.state.isResolvingAddress, isFalse);
+  });
+
+  test('keeps the latest Lightning address when validations finish '
+      'out of order', () async {
+    final pending = Completer<String?>();
+    when(
+      () => validateLnAddress.execute('old@example.com'),
+    ).thenAnswer((_) => pending.future);
+    when(
+      () => validateLnAddress.execute('new@example.com'),
+    ).thenAnswer((_) async => 'new@example.com');
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final oldValidation = cubit.setLightningAddress('old@example.com');
+    await cubit.setLightningAddress('new@example.com');
+    pending.complete('old@example.com');
+    await oldValidation;
+    expect(cubit.state.wallet?.address, 'new@example.com');
+    expect(cubit.state.lightningAddressInput, 'new@example.com');
+    expect(cubit.state.isResolvingAddress, isFalse);
+  });
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'selectAppWallet derives a receive address and sets the destination',
