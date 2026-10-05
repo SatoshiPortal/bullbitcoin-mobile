@@ -14953,5 +14953,9 @@
   "limitOrdersViewOrder": "View order details",
   "@limitOrdersViewOrder": {
     "description": "Opens the created Limit Order details from the success screen"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
   }
 }

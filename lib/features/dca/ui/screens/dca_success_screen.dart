@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaSuccessScreen extends StatelessWidget {
@@ -75,7 +74,7 @@ class DcaSuccessScreen extends StatelessWidget {
                 textAlign: .center,
               ),
               const Spacer(),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.dcaBackToHomeButton,
                 onPressed: () {
                   context.goNamed(ExchangeRoute.exchangeHome.name);

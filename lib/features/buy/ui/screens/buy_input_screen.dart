@@ -4,8 +4,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -18,7 +16,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInfoCard, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Renders whichever error the order creation failed with. Amount limits get
@@ -182,7 +180,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                   const Gap(16),
                   if (isStarted) ...[
                     if (needsKycUpgrade) ...[
-                      InfoCard(
+                      BullInfoCard(
                         title: context.loc.buyInputKycPending,
                         description: context.loc.buyInputKycMessage,
                         bgColor: context.appColors.tertiary.withValues(
@@ -191,7 +189,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BBButton.big(
+                      BullButton.big(
                         label: context.loc.buyInputCompleteKyc,
                         onPressed: () {
                           context.pushReplacementNamed(
@@ -202,7 +200,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         textColor: context.appColors.onPrimary,
                       ),
                     ] else if (showInsufficientBalanceError) ...[
-                      InfoCard(
+                      BullInfoCard(
                         title: context.loc.buyInputInsufficientBalance,
                         description:
                             context.loc.buyInputInsufficientBalanceMessage,
@@ -212,7 +210,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BBButton.big(
+                      BullButton.big(
                         label: context.loc.buyInputFundAccount,
                         onPressed: () {
                           context.pushReplacementNamed(
@@ -223,7 +221,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         textColor: context.appColors.onPrimary,
                       ),
                     ] else
-                      BBButton.big(
+                      BullButton.big(
                         label: context.loc.buyInputContinue,
                         disabled: !canCreateOrder || isCreatingOrder,
                         onPressed: () {

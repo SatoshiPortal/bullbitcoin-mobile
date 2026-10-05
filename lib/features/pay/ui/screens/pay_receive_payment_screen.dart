@@ -4,22 +4,20 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_qr_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
@@ -70,7 +68,15 @@ class PayReceivePaymentScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: '', bullLogo: true, onBack: context.pop),
+        flexibleSpace: BullTopBar(
+          title: '',
+          titleWidget: Image.asset(
+            Assets.logos.bbLogoSmall.path,
+            height: 32,
+            width: 32,
+          ),
+          onBack: context.pop,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -78,7 +84,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           crossAxisAlignment: .start,
           children: [
             Center(
-              child: BBText(
+              child: BullText(
                 context.loc.payPleasePayInvoice,
                 style: context.font.headlineMedium,
                 color: context.appColors.secondary,
@@ -88,7 +94,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: .center,
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.payPriceRefreshIn,
                     style: context.font.bodyMedium,
                     color: context.appColors.outline,
@@ -196,14 +202,17 @@ class PayReceivePaymentScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: context.loc.payCopyInvoice,
                     onPressed: () {
                       if (bip21InvoiceData.isNotEmpty) {
                         Clipboard.setData(
                           ClipboardData(text: bip21InvoiceData),
                         );
-                        SnackBarUtils.showCopiedSnackBar(context);
+                        BullSnackBar.show(
+                          context,
+                          message: context.loc.copiedToClipboard,
+                        );
                       }
                     },
                     bgColor: context.appColors.transparent,
@@ -214,7 +223,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 ),
                 const Gap(16),
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: context.loc.payShowQrCode,
                     bgColor: context.appColors.transparent,
                     textColor: context.appColors.secondary,
@@ -246,7 +255,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .start,
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -258,7 +267,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               mainAxisAlignment: .end,
               children: [
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     value,
                     textAlign: .end,
                     maxLines: 2,
@@ -274,7 +283,10 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: copyValue));
-                      SnackBarUtils.showCopiedSnackBar(context);
+                      BullSnackBar.show(
+                        context,
+                        message: context.loc.copiedToClipboard,
+                      );
                     },
                     child: Icon(
                       Icons.copy,
