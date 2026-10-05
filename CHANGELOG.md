@@ -21,6 +21,8 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ### Security And Privacy
 
+- Cleared the Android launcher activity's task affinity to reduce affinity-based task-hijacking exposure while retaining its existing isolated launch mode. This hardening does not replace Android OS security patches. ([#2895](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2895))
+
 - Kept the recovery phrase out of presentation state during the backup test. ([#2562](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2562))
 - Added server domain validation, disabled for custom servers by design. ([#2427](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2427))
 
