@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_de
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/pending_consent_action.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -55,10 +54,11 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     switch (result) {
       case Ok(:final value):
         emit(state.copyWith(userSummary: value));
-      case Err(:final failure):
+      case Err():
         // Not surfaced: the screen degrades to the unrestricted, consent-less
-        // default rather than blocking on a summary it can do without.
-        log.warning(failure.logMessage ?? 'Failed to load user summary');
+        // default rather than blocking on a summary it can do without. The
+        // use-case has already logged it.
+        break;
     }
 
     emit(state.copyWith(isStarted: true));

@@ -10,6 +10,15 @@ sealed class FundingDatasourceException implements Exception {
   final String? logMessage;
 
   const FundingDatasourceException([this.logMessage]);
+
+  /// What the gateway's `log.warning(..., error: e)` writes, since the log
+  /// stores `error.toString()`. Without this it printed `Instance of
+  /// 'FundingRpcException'` and every refusal reached the log with no reason.
+  ///
+  /// Safe for the transport and response subclasses: their [logMessage] is
+  /// always text the gateway wrote itself (an HTTP status, a shape problem).
+  @override
+  String toString() => '$runtimeType($logMessage)';
 }
 
 /// The call did not come back with a usable HTTP response.
@@ -31,6 +40,12 @@ final class FundingRpcException extends FundingDatasourceException {
 
   const FundingRpcException({this.apiCode, String? logMessage})
     : super(logMessage);
+
+  /// The code only. [logMessage] is the backend's own sentence, and for
+  /// `ERR_ORD_CSRCP400` it can name the user's IBAN; the on-device log can be
+  /// shared from the logs screen, so that sentence is not written to it.
+  @override
+  String toString() => 'FundingRpcException(apiCode: $apiCode)';
 
   factory FundingRpcException.fromJson(Map<String, dynamic> json) {
     final data = json['data'];
