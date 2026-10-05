@@ -29,6 +29,7 @@ final _everyFailure = <RecipientsFailure>[
   const RecipientsNetworkFailure(_rawReason),
   const RecipientsSelectionFailure(_rawReason),
   const RecipientsSavedButNotSelectedFailure(_rawReason),
+  const RecipientsInvalidSecurityDetailsFailure(_rawReason),
   const RecipientsUnexpectedFailure(_rawReason),
 ];
 

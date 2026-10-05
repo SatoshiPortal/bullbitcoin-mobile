@@ -108,7 +108,13 @@ void main() {
             ),
           );
 
-      expect(result, isA<Err<AddRecipientResult, RecipientsFailure>>());
+      switch (result) {
+        case Ok():
+          fail('a gateway failure must not be reported as a saved recipient');
+        case Err(:final failure):
+          expect(failure, isA<RecipientsSaveFailure>());
+          expect(failure.logMessage, isNull);
+      }
     });
 
     test('CheckSinpeUsecase', () async {
@@ -129,6 +135,7 @@ void main() {
           fail('a gateway failure must not be reported as an owner name');
         case Err(:final failure):
           expect(failure, isA<RecipientsSinpeLookupFailure>());
+          expect(failure.logMessage, isNull);
       }
     });
 
@@ -145,7 +152,13 @@ void main() {
         getRecipientsEnvironmentUsecase: environment,
       ).execute(ListCadBillersParams(searchTerm: 'hydro'));
 
-      expect(result, isA<Err<ListCadBillersResult, RecipientsFailure>>());
+      switch (result) {
+        case Ok():
+          fail('a gateway failure must not be reported as a biller list');
+        case Err(:final failure):
+          expect(failure, isA<RecipientsCadBillerSearchFailure>());
+          expect(failure.logMessage, isNull);
+      }
     });
   });
 
