@@ -47,10 +47,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "transactionLabelSwapId": "스왑 ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "비트코인 지갑 선택",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -323,10 +319,6 @@
   "onboardingEncryptedVaultDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "transactionOrderLabelPayoutStatus": "Payout 상태",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "transactionSwapStatusSwapStatus": "Swap 상태",
   "@transactionSwapStatusSwapStatus": {
@@ -749,15 +741,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "송금 {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "전송 금액에서 공제 된 총 수수료입니다",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -770,10 +753,6 @@
   "seedsignerStep12": "Bull Bitcoin 지갑은 SeedSigner에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "전송 상태",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "최대 금액 이상 구매하려고합니다.",
   "@buyAboveMaxAmountError": {
@@ -873,10 +852,6 @@
   "translationWarningDescription": "이 앱의 대부분의 번역은 AI를 사용하여 생성되었으며 부정확할 수 있습니다. 오류를 발견하거나 번역 개선에 도움을 주고 싶으시다면, GitHub 저장소에서 수정 사항을 제출할 수 있습니다.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "확인 시간",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "* 이름",
   "@languageSettingsScreenTitle": {
@@ -1066,10 +1041,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "주요연혁",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "transactionSwapDescLnSendDefault": "교환은 진행 중입니다. 이 프로세스는 자동화되어 완료할 수 있습니다.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
@@ -1081,10 +1052,6 @@
   "coreScreensReceiveNetworkFeeLabel": "네트워크 수수료",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "지원하다",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "견적 요청",
   "@payEstimatedFee": {
@@ -1605,10 +1572,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "Bump 수수료",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "클립보드에 복사된 주소",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1743,10 +1706,6 @@
   "payLastName": "이름 *",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "구매하기",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "은행 송금 (전선 또는 EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -1989,10 +1948,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "전송 금액",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "패스phrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2016,10 +1971,6 @@
   "sellAmount": "판매 수수료",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "Swap 상태",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "이름 *",
   "@walletDeletionConfirmationCancelButton": {
@@ -2216,10 +2167,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "지원되지 않는 QR 코드 형식",
-  "transactionLabelAmountReceived": "지불 방법",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "Recoverbull vault 복구",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2309,10 +2256,6 @@
   "payPaymentConfirmed": "지불 확인",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "주문 번호",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "금액",
   "@buyEnterAmount": {
@@ -2420,15 +2363,6 @@
   "ledgerConnectingSubtext": "보안 연결 설정 ...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "오류 - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "이름 *",
   "@electrumPrivacyNoticeCancel": {
@@ -2616,10 +2550,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "지갑에서",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "가격 제한. 다시 시도 {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2775,10 +2705,6 @@
       }
     }
   },
-  "transactionNoteSaveButton": "제품 정보",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "공식 법인 이름을 사용하십시오. \"Bull Bitcoin\"을 사용하지 마십시오.",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2830,10 +2756,6 @@
   "payLightningInvoice": "Lightning 청구서",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "결제 금액",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "백업 키를 수동으로 입력 >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2910,10 +2832,6 @@
   "receiveSwapId": "스왑 ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "관련 기사",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "새 핀 만들기",
   "@pinCodeCreateTitle": {
@@ -3303,10 +3221,6 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "transactionStatusConfirmed": "이름 *",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
   "transactionLabelSendAmount": "결제하기",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3438,10 +3352,6 @@
   "importColdcardInstructionsStep1": "Coldcard Q 장치에 로그인",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "결제하기",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "연락처",
   "@receiveLightningInvoice": {
@@ -3741,10 +3651,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "송금 수수료",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "자세한 내용은 recoverbull.com 방문.",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3786,10 +3692,6 @@
   "importQrDevicePassportStep2": "PIN을 입력하세요",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "Payout 방법",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "당신은 적어도 사야한다",
   "@buyShouldBuyAtLeast": {
@@ -4144,10 +4046,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "총 스왑 수수료",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "계정 정보",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4215,15 +4113,6 @@
   "sendContinue": "계속하기",
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
-  },
-  "transactionDetailRetrySwap": "리트리 스왑 {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorSwapCreationFailed": "스왑을 생성하는 실패.",
   "sendErrorInvoiceMustContainAmount": "인보이스에는 금액이 포함되어야 합니다",
@@ -4857,10 +4746,6 @@
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
   },
-  "transactionLabelCreatedAt": "계정 만들기",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "bip329LabelsExportSuccess": "상표는 성공적으로 수출했습니다",
   "@bip329LabelsExportSuccess": {
     "description": "Success message after exporting labels"
@@ -5431,10 +5316,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionLabelBitcoinTransactionId": "Bitcoin 거래 ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
   "sellPayinAmount": "Payin 금액",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
@@ -5552,10 +5433,6 @@
   "autoswapInfoTitle": "Autoswap은 활성",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin 상태",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
   },
   "passportStep2": "QR Code로 로그인하기",
   "@passportStep2": {
@@ -5694,10 +5571,6 @@
   "importQrDevicePassportStep1": "Passport 기기의 전원을 켜세요",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
-  },
-  "transactionOrderLabelExchangeRate": "환율",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "아래 Bull Bitcoin의 은행 세부 정보를 사용하여 은행 계좌에서 송금하십시오. 귀하의 은행은이 세부 사항의 일부 부분을 필요로 할 수 있습니다.",
   "@fundExchangeBankTransferWireDescription": {
@@ -6412,10 +6285,6 @@
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
   },
-  "transactionLabelPayjoinCreationTime": "Payjoin 생성 시간",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
   "payRBFDisabled": "RBF 사용 가능",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
@@ -6534,10 +6403,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "네트워크 요금",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "Keystone 지갑에 라벨을 입력하고 \"Import\"를 탭하십시오",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6549,10 +6414,6 @@
   "payEnterAmountTitle": "자주 묻는 질문",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "Payin 방법",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "더 이상 살 수 없습니다",
   "@buyInputMaxAmountError": {
@@ -6675,10 +6536,6 @@
   "appStartupErrorTitle": "시작 오류",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "전송 ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "지원하다",
   "@sendTitle": {
@@ -6932,7 +6789,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "거래 내역",
-  "transactionHistoryHeading": "거래 내역",
   "exportTransactionsDescription": "지갑의 모든 거래(Bitcoin, Liquid, Lightning, 스왑)를 CSV 파일로 내보냅니다. 선택적으로 날짜 범위로 필터링할 수 있습니다.",
   "exportTransactionsStartDate": "시작일",
   "exportTransactionsEndDate": "종료일",
@@ -6995,10 +6851,6 @@
   "buyUpgradeKYC": "업그레이드 KYC 1 단계",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "주문 유형",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "Enable 자동 이동",
   "@autoswapEnableToggleLabel": {
@@ -7327,10 +7179,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "주문 상태",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "에 게시:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7371,10 +7219,6 @@
   "transactionLabelSendNetworkFees": "네트워크 수수료",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelAddress": "이름 *",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
   },
   "testBackupConfirm": "제품정보",
   "@testBackupConfirm": {
@@ -7546,10 +7390,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "transactionLabelAddressNotes": "회사 소개",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
   "bitboxScreenTroubleshootingStep3": "BitBox02 장치를 제거하고 다시 연결하여 복원하십시오.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
@@ -7685,10 +7525,6 @@
   "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
-  },
-  "transactionLabelTransactionFee": "거래 수수료",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
   },
   "importWatchOnlyRequired": "견적 요청",
   "@importWatchOnlyRequired": {
@@ -7987,10 +7823,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "Payin 상태",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "Bitcoin 지갑 보안",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8123,10 +7955,6 @@
   "backupBestPracticesTitle": "백업 모범 사례",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "자주 묻는 질문",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "Google 드라이브",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -8884,10 +8712,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "거래 ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "Bitcoin 네트워크 수수료는 Bitcoin 광부에 의해 수신 및 수집 한 금액에서 공제됩니다",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9194,10 +9018,6 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "transactionLabelLiquidTransactionId": "액체 거래 ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
   "payNotAvailable": "사이트맵",
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
@@ -9438,10 +9258,6 @@
   "payViewTransaction": "거래보기",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "지갑에",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "다른 문서를 보낼 필요가 있다면, 여기에 업로드.",
   "@exchangeFileUploadInstructions": {
@@ -9789,10 +9605,6 @@
   "payBatchPayment": "일괄 결제",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz 교환 수수료",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
   },
   "transactionSwapDescLnReceiveFailed": "교환에 문제가 있습니다. 자금이 24 시간 이내에 반환되지 않은 경우 지원에 문의하십시오.",
   "@transactionSwapDescLnReceiveFailed": {
@@ -10147,10 +9959,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "총 송금 수수료",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "이름 *",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10182,10 +9990,6 @@
   "googleDriveSignInMessage": "Google Drive에 로그인해야 합니다",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "transactionNoteEditTitle": "관련 기사",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
   },
   "transactionDetailLabelCompletedAt": "관련 기사",
   "@transactionDetailLabelCompletedAt": {
@@ -10529,10 +10333,6 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionNoteUpdateButton": "(주)",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
-  },
   "receiveNetworkUnavailable": "{network}는 현재 사용할 수 없습니다",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10601,10 +10401,6 @@
   "buyGetConfirmedFaster": "더 빠른 확인",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "Payin 금액",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "SSL 사용",
   "@electrumEnableSsl": {
@@ -11591,7 +11387,6 @@
   "transactionFilterFunding": "입금",
   "transactionFilterReward": "보상",
   "transactionFilterRefund": "환불",
-  "transactionFilterBalanceAdjustment": "조정",
   "transactionListLoadingFailed": "거래 내역을 불러올 수 없습니다.",
   "transactionLabelNetworkFees": "네트워크 수수료",
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
@@ -11957,6 +11752,10 @@
   "sellUnexpectedError": "판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "sellErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "transactionDetailLoadError": "거래 세부 정보를 불러올 수 없습니다.",
+  "transactionPayjoinBroadcastFailed": "원본 거래를 브로드캐스트할 수 없습니다. 다시 시도해 주세요.",
+  "transactionPayjoinOriginalUnavailable": "원본 거래를 더 이상 브로드캐스트할 수 없습니다.",
+  "transactionLabelLimitReached": "라벨은 최대 10개까지 추가할 수 있습니다.",
   "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
   "settingsErrorConsentNotGiven": "이 설정을 변경하려면 확인이 필요합니다.",
   "settingsErrorLoadingLogs": "진단 로그를 준비할 수 없습니다. 다시 시도해 주세요.",

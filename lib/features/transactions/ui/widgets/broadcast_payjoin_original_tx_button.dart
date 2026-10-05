@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
@@ -67,11 +67,8 @@ class _BroadcastPayjoinOriginalTxButtonState
       (TransactionDetailsCubit bloc) =>
           bloc.state.isBroadcastingPayjoinOriginalTx,
     );
-    final broadcastOriginalTransactionException = context.select(
-      (TransactionDetailsCubit bloc) =>
-          bloc.state.err is BroadcastOriginalTransactionException
-          ? bloc.state.err! as BroadcastOriginalTransactionException
-          : null,
+    final broadcastFailure = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.payjoinBroadcastFailure,
     );
     final isSender = context.select(
       (TransactionDetailsCubit cubit) =>
@@ -100,9 +97,9 @@ class _BroadcastPayjoinOriginalTxButtonState
           textColor: context.appColors.onSecondary,
         ),
         const Gap(16),
-        if (broadcastOriginalTransactionException != null) ...[
+        if (broadcastFailure != null) ...[
           Text(
-            context.loc.oopsSomethingWentWrong,
+            broadcastFailure.toTranslated(context),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),

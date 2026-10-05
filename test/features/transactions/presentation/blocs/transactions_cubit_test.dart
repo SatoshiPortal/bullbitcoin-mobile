@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -137,7 +138,7 @@ void main() {
           walletId: any(named: 'walletId'),
           sync: any(named: 'sync'),
         ),
-      ).thenAnswer((_) async => [freshlySynced]);
+      ).thenAnswer((_) async => Ok([freshlySynced]));
 
       final refresh = cubit.refreshLabels();
       await cubit.loadTxs();
