@@ -3,6 +3,9 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+
 /// Reads the swap master key (the "swap mnemonic") for the current
 /// environment's default bitcoin wallet, for display in the seed viewer.
 /// Returns null when no default bitcoin wallet exists or no swap key has been
@@ -21,14 +24,25 @@ class GetSwapMasterKeyUsecase {
 
   Future<SwapMasterKeyInfo?> execute() async {
     final settings = await _settingsRepository.fetch();
-    final wallets = await _walletRepository.getWallets(
+    final wallets = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
       environment: settings.environment,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw GetSwapMasterKeyException(
+        'default wallets read failed: ${failure.runtimeType}',
+      ),
+    };
     if (wallets.isEmpty) return null;
     final fingerprint = wallets.first.masterFingerprint;
     if (fingerprint.isEmpty) return null;
     return _swapRepository.getSwapMasterKeyInfo(walletFingerprint: fingerprint);
   }
+}
+
+/// Thrown when the default wallet the swap master key belongs to cannot be
+/// read. The message carries the failure type only.
+class GetSwapMasterKeyException extends BullException {
+  GetSwapMasterKeyException(super.message);
 }

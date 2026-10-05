@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
@@ -22,7 +23,7 @@ void main() {
     );
     when(
       () => settingsRepository.setTorTransportMode(TorTransportMode.snowflake),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => embeddedTor.setMode(TorTransportMode.snowflake),
     ).thenAnswer((_) async => ready);

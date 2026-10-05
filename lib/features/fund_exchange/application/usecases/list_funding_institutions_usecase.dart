@@ -1,13 +1,14 @@
-import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 class ListFundingInstitutionsQuery {
-  final String jurisdictionCode;
+  final FundingJurisdiction jurisdiction;
 
-  const ListFundingInstitutionsQuery({required this.jurisdictionCode});
+  const ListFundingInstitutionsQuery({required this.jurisdiction});
 }
 
 class ListFundingInstitutionsResult {
@@ -21,25 +22,17 @@ class ListFundingInstitutionsUsecase {
 
   const ListFundingInstitutionsUsecase({required this._fundingGateway});
 
-  Future<ListFundingInstitutionsResult> execute(
+  @useResult
+  Future<Result<ListFundingInstitutionsResult, FundExchangeFailure>> execute(
     ListFundingInstitutionsQuery query,
   ) async {
-    try {
-      final jurisdiction = FundingJurisdiction.fromString(
-        query.jurisdictionCode,
-      );
+    final result = await _fundingGateway.listInstitutions(
+      jurisdiction: query.jurisdiction,
+    );
 
-      final institutions = await _fundingGateway.listInstitutions(
-        jurisdiction: jurisdiction,
-      );
-
-      return ListFundingInstitutionsResult(institutions: institutions);
-    } on FundExchangeDomainError catch (e) {
-      throw FundExchangeApplicationError.fromDomainError(e);
-    } on FundExchangeApplicationError {
-      rethrow;
-    } catch (e) {
-      throw FundExchangeUnknownError(message: '$e');
-    }
+    return result.map(
+      (institutions) =>
+          ListFundingInstitutionsResult(institutions: institutions),
+    );
   }
 }

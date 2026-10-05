@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
@@ -31,10 +32,25 @@ class CreateEncryptedVaultUsecase {
   >
   execute() async {
     try {
-      final defaultBitcoinWallets = await _walletRepository.getWallets(
+      final List<Wallet> defaultBitcoinWallets;
+      switch (await _walletRepository.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
-      );
+      )) {
+        case Ok(:final value):
+          defaultBitcoinWallets = value;
+        // Deliberately NOT collapsed into the empty-list branch below. This is
+        // the backup path: telling a user "no default Bitcoin wallet found"
+        // when the wallet store merely failed to read would suggest there is
+        // nothing to back up, or that a wallet is gone.
+        case Err(:final failure):
+          log.warning('create vault: ${failure.logMessage}');
+          return Err(
+            RecoverBullUnexpectedCoreFailure(
+              'Could not read the wallets: ${failure.runtimeType}',
+            ),
+          );
+      }
 
       if (defaultBitcoinWallets.isEmpty) {
         return const Err(

@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/app_startup/domain/legacy_seed.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/get_legacy_seeds_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -87,25 +89,29 @@ class _SealedLegacySeedsBackup extends StatefulWidget {
 }
 
 class _SealedLegacySeedsBackupState extends State<_SealedLegacySeedsBackup> {
-  late final Future<List<LegacySeed>> _seeds = locator<GetLegacySeedsUsecase>()
-      .execute();
+  late final Future<Result<List<LegacySeed>, AppStartupFailure>> _seeds =
+      locator<GetLegacySeedsUsecase>().execute();
   bool _confirmed = false;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<LegacySeed>>(
+    return FutureBuilder<Result<List<LegacySeed>, AppStartupFailure>>(
       future: _seeds,
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          // Reading secure storage failed on exactly the kind of old install
-          // this screen targets — same recourse as the no-seeds case.
-          return const _ContactSupportCard();
-        }
+        if (snapshot.hasError) return const _ContactSupportCard();
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final seeds = snapshot.data!;
+        final List<LegacySeed> seeds;
+        switch (snapshot.data!) {
+          case Ok(:final value):
+            seeds = value;
+          case Err():
+            // Reading secure storage failed on exactly the kind of old
+            // install this screen targets — same recourse as no seeds at all.
+            return const _ContactSupportCard();
+        }
         if (seeds.isEmpty) {
           return const _ContactSupportCard();
         }

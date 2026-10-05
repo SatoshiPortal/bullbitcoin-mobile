@@ -43,63 +43,76 @@ void main() {
     updatedAt: DateTime(2026),
   );
 
+  // payjoinAttemptSettled defaults to true — "the bloc has finished deciding".
+  // Tests about the QR's composition are not about the loading gate, and a
+  // false default would make paymentRequest empty for a reason unrelated to
+  // what each of them names. The gate's own tests set it explicitly.
   ReceiveState buildState({
     required bool? payjoinGloballyEnabled,
     BigInt? balanceSat,
     PayjoinReceiverSession? payjoin,
+    bool payjoinAttemptSettled = true,
   }) => ReceiveState(
     type: ReceiveType.bitcoin,
     wallet: localWallet(balanceSat: balanceSat),
     bitcoinAddress: address(),
     payjoinGloballyEnabled: payjoinGloballyEnabled,
     payjoin: payjoin,
+    payjoinAttemptSettled: payjoinAttemptSettled,
   );
 
-  group('ReceiveState.isPayjoinLoading payjoin-disabled gate', () {
-    test('not loading when payjoin is globally disabled — no session will ever '
-        'be created, so nothing must wait for one', () {
-      final state = buildState(payjoinGloballyEnabled: false);
-
-      expect(state.isPayjoinLoading, isFalse);
-    });
-
-    test('still loading while the setting has not been read yet (null): the QR '
-        'must not flash an address-only URI and then swap to a pj= BIP21', () {
-      final state = buildState(payjoinGloballyEnabled: null);
-
-      expect(state.isPayjoinLoading, isTrue);
-    });
-
-    test('loading when enabled and no session or exception exists yet', () {
-      final state = buildState(payjoinGloballyEnabled: true);
-
-      expect(state.isPayjoinLoading, isTrue);
-    });
-
-    test('not loading when enabled but the wallet has no confirmed balance '
-        'to contribute — no session will ever be created for it either, so '
-        'nothing must wait for one', () {
+  // The gate is now a single fact recorded by ReceiveBloc
+  // ([ReceiveState.payjoinAttemptSettled]) instead of a derivation over the
+  // reasons a session might never arrive. That the bloc actually sets it on
+  // every path — payjoin disabled, watch-only wallet, empty wallet, creation
+  // failure — is what receive_bloc_test.dart's "payjoin loading gate" group
+  // asserts; those cases are no longer expressible here, and must not be
+  // re-derived here either, or this getter grows the guards back.
+  group('ReceiveState.isPayjoinLoading', () {
+    test('loading while the payjoin question is still open: the QR must not '
+        'flash an address-only URI and then swap to a pj= BIP21', () {
       final state = buildState(
         payjoinGloballyEnabled: true,
-        balanceSat: BigInt.zero,
+        payjoinAttemptSettled: false,
       );
+
+      expect(state.isPayjoinLoading, isTrue);
+    });
+
+    test('not loading once settled with no session — whatever the reason '
+        'there is none, nothing must keep waiting for one', () {
+      final state = buildState(payjoinGloballyEnabled: true);
+
+      expect(state.isPayjoinLoading, isFalse);
+      expect(state.payjoin, isNull);
+    });
+
+    test('never loading for a non-bitcoin receive, even while unsettled', () {
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        payjoinAttemptSettled: false,
+      ).copyWith(type: ReceiveType.lightning);
 
       expect(state.isPayjoinLoading, isFalse);
     });
   });
 
-  group('ReceiveState.paymentRequest with payjoin disabled', () {
-    test('resolves to the plain address instead of waiting forever', () {
+  group('ReceiveState.paymentRequest payjoin loading gate', () {
+    test('stays empty while the payjoin question is still open', () {
+      final state = buildState(
+        payjoinGloballyEnabled: null,
+        payjoinAttemptSettled: false,
+      );
+
+      expect(state.paymentRequest, isEmpty);
+    });
+
+    test('resolves to the plain address once settled without a session, '
+        'instead of waiting forever', () {
       final state = buildState(payjoinGloballyEnabled: false);
 
       expect(state.paymentRequest, 'bc1qtestaddress');
       expect(state.qrData, 'bc1qtestaddress');
-    });
-
-    test('stays empty (still loading) while the setting is unknown', () {
-      final state = buildState(payjoinGloballyEnabled: null);
-
-      expect(state.paymentRequest, isEmpty);
     });
   });
 
@@ -368,6 +381,8 @@ void main() {
   });
 
   group('ReceiveState requested-amount payjoin suppression', () {
+    // Settled: these tests are about amount-based suppression of an existing
+    // session, not about the loading gate.
     ReceiveState payjoinState({int? confirmedAmountSat}) => ReceiveState(
       type: ReceiveType.bitcoin,
       wallet: localWallet(),
@@ -376,6 +391,7 @@ void main() {
       payjoinMinAmountSat: 10000,
       payjoin: payjoinWith(status: PayjoinStatus.requested),
       confirmedAmountSat: confirmedAmountSat,
+      payjoinAttemptSettled: true,
     );
 
     test('canPayjoin stays true with no amount entered', () {

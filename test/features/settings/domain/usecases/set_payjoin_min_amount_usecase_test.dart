@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok, Sats;
@@ -21,7 +22,7 @@ void main() {
   });
 
   test('persists a value within bounds', () async {
-    await usecase.execute(50000);
+    expect(await usecase.execute(50000), isA<Ok<void, SettingsFailure>>());
 
     verify(() => policy.setMinimumAmount(Sats.fromInt(50000))).called(1);
   });
@@ -29,7 +30,7 @@ void main() {
   test('persists the exact lower bound', () async {
     final amount = PayjoinPolicy.minimumAllowedAmount.value.toInt();
 
-    await usecase.execute(amount);
+    expect(await usecase.execute(amount), isA<Ok<void, SettingsFailure>>());
 
     verify(() => policy.setMinimumAmount(Sats.fromInt(amount))).called(1);
   });
@@ -37,7 +38,7 @@ void main() {
   test('persists the exact upper bound', () async {
     final amount = PayjoinPolicy.maximumAllowedAmount.value.toInt();
 
-    await usecase.execute(amount);
+    expect(await usecase.execute(amount), isA<Ok<void, SettingsFailure>>());
 
     verify(() => policy.setMinimumAmount(Sats.fromInt(amount))).called(1);
   });

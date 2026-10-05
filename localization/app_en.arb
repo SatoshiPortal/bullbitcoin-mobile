@@ -320,10 +320,6 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
-  "electrumServerSettingsLabel": "Electrum server (Bitcoin node)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "fiatCurrencySettingsLabel": "Fiat currency",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
@@ -449,10 +445,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
@@ -464,10 +456,6 @@
   "settingsServiceStatusTitle": "Service Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {
@@ -1589,14 +1577,26 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
+  "receiveErrorAmountAboveProtocolLimit": "Amount is above the maximum possible Bitcoin amount of {max}",
+  "@receiveErrorAmountAboveProtocolLimit": {
+    "description": "Shown under the receive amount field when the entered amount exceeds the total Bitcoin supply.",
     "placeholders": {
-      "error": {
+      "max": {
         "type": "String"
       }
     }
+  },
+  "receiveErrorNoteNotSaved": "Your note could not be saved. Please try again.",
+  "@receiveErrorNoteNotSaved": {
+    "description": "Shown when persisting the receive note as an address label fails."
+  },
+  "receiveErrorAddressUnavailable": "Could not prepare a receiving address. Please try again.",
+  "@receiveErrorAddressUnavailable": {
+    "description": "Shown when no receive address could be derived for the selected wallet."
+  },
+  "receiveErrorBroadcastOriginal": "We could not broadcast the transaction. Check your internet connection and try again.",
+  "@receiveErrorBroadcastOriginal": {
+    "description": "Shown when broadcasting the sender original non-payjoin transaction fails."
   },
   "receiveFeeExplanation": "This fee will be deducted from the amount sent",
   "@receiveFeeExplanation": {
@@ -2641,15 +2641,6 @@
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Transaction details",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -2662,31 +2653,9 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "transactionDetailRetryTransfer": "Retry Transfer {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Add note",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
-  },
-  "transactionDetailBumpFees": "Bump fees",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
   },
   "transactionFilterAll": "All",
   "@transactionFilterAll": {
@@ -2736,10 +2705,6 @@
   "@transactionFilterRefund": {
     "description": "Filter option to show only refund orders"
   },
-  "transactionFilterBalanceAdjustment": "Adjustment",
-  "@transactionFilterBalanceAdjustment": {
-    "description": "Filter option to show only balance adjustment orders"
-  },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -2767,10 +2732,6 @@
   "transactionStatusPending": "Pending",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "transactionStatusConfirmed": "Confirmed",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "transactionStatusTransferCompleted": "Transfer Completed",
   "@transactionStatusTransferCompleted": {
@@ -2808,162 +2769,6 @@
   "@transactionStatusPayjoinRequested": {
     "description": "Status label for payjoin transaction requests"
   },
-  "transactionLabelTransactionId": "Transaction ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
-  "transactionLabelToWallet": "To wallet",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
-  "transactionLabelFromWallet": "From wallet",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
-  "transactionLabelRecipientAddress": "Recipient Address",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
-  },
-  "transactionLabelAddress": "Address",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
-  "transactionLabelAddressNotes": "Address notes",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
-  "transactionLabelAmountReceived": "Amount received",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
-  "transactionLabelAmountSent": "Amount sent",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
-  "transactionLabelTransactionFee": "Transaction Fee",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
-  "transactionLabelStatus": "Status",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
-  "transactionLabelConfirmationTime": "Confirmation time",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
-  },
-  "transactionLabelTransferId": "Transfer ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
-  },
-  "transactionLabelSwapId": "Swap ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
-  "transactionLabelTransferStatus": "Transfer status",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
-  },
-  "transactionLabelSwapStatus": "Swap status",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
-  },
-  "transactionLabelSwapStatusRefunded": "Refunded",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
-  },
-  "transactionLabelLiquidTransactionId": "Liquid transaction ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
-  "transactionLabelBitcoinTransactionId": "Bitcoin transaction ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
-  "transactionLabelTotalTransferFees": "Total Transfer fees",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
-  "transactionLabelTotalSwapFees": "Total Swap fees",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
-  "transactionLabelNetworkFee": "Network Fee",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
-  "transactionLabelTransferFee": "Transfer Fee",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
-  "transactionLabelCreatedAt": "Created at",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
-  "transactionLabelCompletedAt": "Completed at",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin status",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
-  "transactionLabelPayjoinCreationTime": "Payjoin creation time",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
-  "transactionPayjoinStatusCompleted": "Completed",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
-  },
-  "transactionPayjoinStatusExpired": "Expired",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
-  },
-  "transactionOrderLabelOrderType": "Order Type",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
-  },
-  "transactionOrderLabelOrderNumber": "Order Number",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
-  },
-  "transactionOrderLabelPayinAmount": "Payin amount",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
-  },
-  "transactionOrderLabelPayoutAmount": "Payout amount",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
-  },
-  "transactionOrderLabelExchangeRate": "Exchange rate",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
-  },
-  "transactionOrderLabelPayinMethod": "Payin method",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
-  },
-  "transactionOrderLabelPayoutMethod": "Payout method",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
-  },
-  "transactionOrderLabelPayinStatus": "Payin Status",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
-  "transactionOrderLabelOrderStatus": "Order Status",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
-  "transactionOrderLabelPayoutStatus": "Payout Status",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
-  },
   "transactionNotesLabel": "Transaction notes",
   "@transactionNotesLabel": {
     "description": "Label for transaction notes section"
@@ -2972,21 +2777,9 @@
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
   },
-  "transactionNoteEditTitle": "Edit note",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionNoteHint": "Note",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionNoteSaveButton": "Save",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
-  "transactionNoteUpdateButton": "Update",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "transactionPayjoinSendWithout": "Send without payjoin",
   "@transactionPayjoinSendWithout": {
@@ -3416,54 +3209,6 @@
   "@liquidRiskDisclosureBody": {
     "description": "Long-form disclosure explaining Liquid Bitcoin and Instant Payments wallet risks. Preserve lightweight formatting markers: ## section headings, ### subsection headings, > callouts, - bullets, and **bold bullet labels**."
   },
-  "walletTypeWatchOnly": "Watch-Only",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin network",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
-  "walletTypeLiquidLightningNetwork": "Liquid and Lightning network",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
-  },
-  "walletNetworkBitcoin": "Bitcoin Network",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
-  },
-  "walletNetworkLiquid": "Liquid Network",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
-  },
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
-  },
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
-  },
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
-  },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
-  "walletAddressTypeLegacy": "Legacy",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "walletBalanceUnconfirmedIncoming": "In Progress",
   "@walletBalanceUnconfirmedIncoming": {
     "description": "Label for unconfirmed incoming balance"
@@ -3627,46 +3372,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
-  },
-  "fundExchangeMethodSpeiTransferSubtitle": "Transfer funds using your CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Transfer Colones using SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Transfer funds in Costa Rican Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Transfer funds in US Dollars (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
-  },
-  "fundExchangeMethodArsBankTransfer": "Bank Transfer",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "Send a bank transfer from your bank account",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
   },
   "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
   "@fundExchangeBankTransferWireTitle": {
@@ -3912,42 +3617,6 @@
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
   },
-  "fundExchangeCrBankTransferDescription1": "Send a bank transfer from your bank account using the details below ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
-  "fundExchangeCrBankTransferDescriptionExactly": "exactly",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
-  "fundExchangeCrBankTransferDescription2": ". The funds will be added to your account balance.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
-  "fundExchangeLabelIbanCrcOnly": "IBAN account number (for Colones only)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
-  "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
-  "fundExchangeLabelPaymentDescription": "Payment description",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
-  "fundExchangeHelpPaymentDescription": "Your transfer code.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
-  "fundExchangeInfoTransferCodeRequired": "You must add the transfer code as the \"message\" or \"reason\" or \"description\" when making the payment. If you forget to put this code your payment may be rejected.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
-  },
   "fundExchangeArsBankTransferTitle": "Bank Transfer",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -3996,40 +3665,29 @@
   "@fundExchangeErrorTitleOrdKyc400": {
     "description": "bb-exchange errorTitleOrdKyc400"
   },
-  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action: {missingFields}",
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action",
   "@fundExchangeErrorOrdKyc400": {
-    "description": "bb-exchange errorMsgOrdKyc400",
-    "placeholders": {
-      "missingFields": {
-        "type": "String"
-      }
-    }
+    "description": "bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895)."
   },
   "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
   "@fundExchangeErrorTitleOrdCop400": {
     "description": "bb-exchange errorTitleOrdCop400"
   },
-  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding: {error}",
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
   "@fundExchangeErrorOrdCop400": {
-    "description": "bb-exchange errorMsgOrdCop400",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
+    "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOpeningPaymentLink": "The payment link could not be opened. Please try again.",
+  "@fundExchangeErrorOpeningPaymentLink": {
+    "description": "bb-exchange: shown when the COP payment link cannot be handed to a browser (#1895)."
   },
   "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
   "@fundExchangeErrorTitleOrdCsrcp400": {
     "description": "bb-exchange errorTitleOrdCsrcp400"
   },
-  "fundExchangeErrorOrdCsrcp400": "Please activate virtual payment option for the SEPA recipient with IBAN: {iban}",
+  "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
   "@fundExchangeErrorOrdCsrcp400": {
-    "description": "bb-exchange errorMsgOrdCsrcp400",
-    "placeholders": {
-      "iban": {
-        "type": "String"
-      }
-    }
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Copy deliberately omits the IBAN, so it carries no placeholder."
   },
   "fundExchangeErrorTitleRcp400": "Invalid Request",
   "@fundExchangeErrorTitleRcp400": {
@@ -5899,10 +5557,6 @@
   "optionalPassphraseHint": "Optional Passphrase",
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
-  },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
   },
   "requiredHint": "Required",
   "@requiredHint": {
@@ -7930,24 +7584,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorVerificationFailed": "Verification failed: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Failed to fetch backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Invalid file content",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -7959,42 +7595,6 @@
   "testBackupErrorWalletMismatch": "Backup does not match existing wallet",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "testBackupErrorWriteFailed": "Write to storage failed: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Failed to test backup: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Failed to load wallets: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Failed to load mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveCancelButton": "Cancel",
   "@recoverbullGoogleDriveCancelButton": {
@@ -9493,10 +9093,6 @@
   "@transactionHistoryTitle": {
     "description": "Title for the transaction history page and settings entry"
   },
-  "transactionHistoryHeading": "Transaction History",
-  "@transactionHistoryHeading": {
-    "description": "Main heading on the transaction history page"
-  },
   "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
   "@exportTransactionsDescription": {
     "description": "Description of the CSV export functionality"
@@ -10327,14 +9923,6 @@
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
   },
-  "fundExchangeFundAccount": "Fund your account",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "Select your country and payment method",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
@@ -10390,10 +9978,6 @@
   "fundExchangeCopOpenPaymentLink": "Open Payment Link",
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
-  },
-  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
   },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {
@@ -10856,10 +10440,6 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "If no protocol is specified, ssl will be used by default.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "electrumLiquidSslInfo": "No protocol should be specified, SSL will be used automatically.",
   "@electrumLiquidSslInfo": {
     "description": "Info text for Liquid server protocol"
@@ -11121,14 +10701,6 @@
   "appStartupErrorMessage": "App failed to start up. Try completely stopping the app and restarting it. If the error persists, contact support and share your logs.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
-  },
-  "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "Could not initialize. Delete and reinstall to fix. If your seed is not backed up, you can view it under Settings->Bitcoin Settings->View Seeds after reinstall.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "appStartupContactSupportButton": "Contact Support",
   "@appStartupContactSupportButton": {
@@ -11945,33 +11517,6 @@
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
   },
-  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
-  "walletAutoTransferAllowButton": "Allow",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
-  },
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
@@ -12679,10 +12224,6 @@
   "recipientsListEmpty": "No recipients found.",
   "@recipientsListEmpty": {
     "description": "Empty state message when no recipients match the current filters."
-  },
-  "recipientsListLoadError": "Could not load recipients. Pull down to retry.",
-  "@recipientsListLoadError": {
-    "description": "Shown when loading the recipients list fails. Prompts the user to pull to refresh."
   },
   "recipientsContinue": "Continue",
   "@recipientsContinue": {
@@ -13412,37 +12953,6 @@
         "type": "String"
       }
     }
-  },
-  "labelErrorNotFound": "Label \"{label}\" not found.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
   },
   "logsShareOptionExport": "Export",
   "@logsShareOptionExport": {
@@ -14643,6 +14153,157 @@
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
   },
+  "exchangeErrorSigningOut": "You could not be fully signed out. Please try again.",
+  "@exchangeErrorSigningOut": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
+  "@exchangeErrorSavingPreferences": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorLoadingAnnouncements": "Announcements could not be loaded.",
+  "@exchangeErrorLoadingAnnouncements": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
+  "@exchangeErrorRequestingAccountDeletion": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingStatistics": "Your trading statistics could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingStatistics": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingAccount": "Your account details could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingAccount": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "A document has already been submitted.",
+  "@exchangeSettingsErrorDocumentAlreadySubmitted": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentEmpty": "That file is empty. Choose another one.",
+  "@exchangeSettingsErrorDocumentEmpty": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTooLarge": "That file is too large. Choose a smaller one.",
+  "@exchangeSettingsErrorDocumentTooLarge": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "That file type is not accepted. Choose another one.",
+  "@exchangeSettingsErrorDocumentTypeNotAllowed": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentUnreadable": "That file could not be read. Choose another one.",
+  "@exchangeSettingsErrorDocumentUnreadable": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorUploadingDocument": "The document could not be uploaded. Please try again.",
+  "@exchangeSettingsErrorUploadingDocument": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "labelsErrorNoteTooLong": "Note must be {max} characters or fewer",
+  "@labelsErrorNoteTooLong": {
+    "description": "Shown under the note field when the typed note exceeds the maximum length.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "labelsErrorNoteForbiddenCharacter": "Note cannot contain the character {character}",
+  "@labelsErrorNoteForbiddenCharacter": {
+    "description": "Shown when the typed note contains a character that cannot be carried in a BIP21 URI.",
+    "placeholders": {
+      "character": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileTooLarge": "That file is too large. Labels files must be under {max}.",
+  "@labelsErrorFileTooLarge": {
+    "description": "Shown when the chosen labels file exceeds the import size limit.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileUnreadable": "This does not look like a BIP-329 labels file. Check you picked the right file.",
+  "@labelsErrorFileUnreadable": {
+    "description": "Shown when the chosen labels file cannot be parsed as BIP-329."
+  },
+  "labelsErrorFileEmpty": "That file contains no labels to import.",
+  "@labelsErrorFileEmpty": {
+    "description": "Shown when the labels file parses correctly but holds no labels."
+  },
+  "labelsErrorExportFailed": "Your labels could not be saved. Please try again.",
+  "@labelsErrorExportFailed": {
+    "description": "Shown when writing the exported labels file fails. Not used when the user cancels the save dialog."
+  },
+  "labelsErrorFileReservedName": "That file uses a label name reserved by the app. Rename it in the file and try again.",
+  "@labelsErrorFileReservedName": {
+    "description": "Shown when an imported labels file contains a label matching one of the app's system label names."
+  },
+  "labelsErrorNoteForbiddenWhitespace": "Note cannot contain line breaks or tabs",
+  "@labelsErrorNoteForbiddenWhitespace": {
+    "description": "Shown when the note contains a control character. Used instead of the forbidden-character message, which would render the character itself and so show nothing visible."
+  },
+  "labelsErrorFileInvalidEntry": "Some entries in that file could not be read. Check the file and try again.",
+  "@labelsErrorFileInvalidEntry": {
+    "description": "Shown when an imported labels file is structurally valid BIP-329 but an entry carries an invalid reference (txid, outpoint or xpub)."
+  },
+  "recipientsErrorLoadFailed": "Your recipients could not be loaded. Please try again.",
+  "@recipientsErrorLoadFailed": {
+    "description": "Shown when the recipient list cannot be loaded from the API."
+  },
+  "recipientsErrorSaveFailed": "This recipient could not be saved. Please check the details and try again.",
+  "@recipientsErrorSaveFailed": {
+    "description": "Shown when creating a recipient fails."
+  },
+  "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
+  "@recipientsErrorSinpeLookupFailed": {
+    "description": "Shown when the SINPE phone number lookup fails."
+  },
+  "recipientsErrorBillerSearchFailed": "Billers could not be searched. Please try again.",
+  "@recipientsErrorBillerSearchFailed": {
+    "description": "Shown when searching the CAD biller directory fails."
+  },
+  "recipientsErrorNetwork": "Check your internet connection and try again.",
+  "@recipientsErrorNetwork": {
+    "description": "Shown when a recipients request could not reach the server or timed out."
+  },
+  "recipientsListPullToRetry": "Pull down to retry.",
+  "@recipientsListPullToRetry": {
+    "description": "Hint under a recipients load failure. A pull-to-refresh affordance of the list screen, kept separate from the failure message itself."
+  },
+  "recipientsErrorSavedButNotSelected": "This recipient was saved, but we could not continue. Find them in your list to carry on.",
+  "@recipientsErrorSavedButNotSelected": {
+    "description": "Shown when a recipient saved successfully but the calling flow could not continue. Must not imply the save failed, or the user retries and creates a duplicate."
+  },
+  "testBackupErrorWalletsUnavailable": "Your wallets could not be loaded. Please try again.",
+  "@testBackupErrorWalletsUnavailable": {
+    "description": "Shown when the wallet list cannot be read while starting a backup test."
+  },
+  "testBackupErrorNoWallets": "There is no wallet to test a backup for.",
+  "@testBackupErrorNoWallets": {
+    "description": "Shown when no wallet exists to run a backup test against."
+  },
+  "testBackupErrorNoWalletSelected": "Select a wallet before testing its backup.",
+  "@testBackupErrorNoWalletSelected": {
+    "description": "Shown when a backup verification is requested before a wallet was selected."
+  },
+  "testBackupErrorSeedUnavailable": "Your recovery phrase could not be read. Please try again.",
+  "@testBackupErrorSeedUnavailable": {
+    "description": "Shown when the stored seed for the selected wallet cannot be read."
+  },
+  "testBackupErrorSeedNotMnemonic": "This wallet has no recovery phrase to test.",
+  "@testBackupErrorSeedNotMnemonic": {
+    "description": "Shown when the stored seed is not a mnemonic, so a physical backup test does not apply."
+  },
+  "testBackupErrorCompletionFailed": "Your recovery phrase was correct, but we could not save the result. Please try again.",
+  "@testBackupErrorCompletionFailed": {
+    "description": "Shown when the mnemonic matched but recording the successful verification failed."
+  },
   "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
   "@payUnexpectedError": {
     "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
@@ -14654,6 +14315,54 @@
   "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
+  "@walletLoadFailed": {
+    "description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."
+  },
+  "walletWarningElectrumBitcoinDown": "Bitcoin server unavailable",
+  "@walletWarningElectrumBitcoinDown": {
+    "description": "Wallet home warning when the bitcoin electrum server fails to sync (#1895)."
+  },
+  "walletWarningElectrumLiquidDown": "Liquid server unavailable",
+  "@walletWarningElectrumLiquidDown": {
+    "description": "Wallet home warning when the liquid electrum server fails to sync (#1895)."
+  },
+  "walletWarningElectrumBothDown": "Bitcoin and Liquid servers unavailable",
+  "@walletWarningElectrumBothDown": {
+    "description": "Wallet home warning when both electrum servers fail to sync (#1895)."
+  },
+  "walletWarningElectrumAction": "Tap to configure your server settings",
+  "@walletWarningElectrumAction": {
+    "description": "Wallet home warning description pointing at electrum server settings (#1895)."
+  },
+  "walletLoadFailedRetryHint": "Pull down to refresh and try again",
+  "@walletLoadFailedRetryHint": {
+    "description": "Description under the wallet-home load-failure card for local read failures, where the electrum server settings are not the remedy (#1895)."
+  },
+  "transactionPayjoinBroadcastFailed": "The original transaction could not be broadcast. Please try again.",
+  "@transactionPayjoinBroadcastFailed": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionPayjoinOriginalUnavailable": "The original transaction is no longer available to broadcast.",
+  "@transactionPayjoinOriginalUnavailable": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionLabelLimitReached": "You can only have up to 10 labels.",
+  "@transactionLabelLimitReached": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
+  "@settingsErrorSavingSetting": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "settingsErrorConsentNotGiven": "This setting needs your confirmation before it can be changed.",
+  "@settingsErrorConsentNotGiven": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "settingsErrorLoadingLogs": "The diagnostic logs could not be prepared. Please try again.",
+  "@settingsErrorLoadingLogs": {
+    "description": "settings user-facing failure message (#1895)."
   },
   "withdrawInteracSecurityDetailsTitle": "Interac security details",
   "@withdrawInteracSecurityDetailsTitle": {
@@ -14953,5 +14662,788 @@
   "limitOrdersViewOrder": "View order details",
   "@limitOrdersViewOrder": {
     "description": "Opens the created Limit Order details from the success screen"
+  },
+  "payOrderNotFoundError": "The pay order was not found. Please try again.",
+  "@payOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payOrderAlreadyConfirmedError": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "@payAboveMaxAmount": {
+    "description": "Error message when payment amount exceeds maximum"
+  },
+  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "@payBelowMinAmount": {
+    "description": "Error message when payment amount is below minimum"
+  },
+  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
+  "@payNotAuthenticated": {
+    "description": "Error message when user is not authenticated"
+  },
+  "payOrderNotFound": "The pay order was not found. Please try again.",
+  "@payOrderNotFound": {
+    "description": "Error message when pay order is not found"
+  },
+  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Error message when pay order is already confirmed"
+  },
+  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalance": {
+    "description": "Error message for insufficient balance"
+  },
+  "withdrawRecipientsTitle": "Select recipient",
+  "@withdrawRecipientsTitle": {
+    "description": "AppBar title for recipients screen"
+  },
+  "withdrawRecipientsPrompt": "Where and how should we send the money?",
+  "@withdrawRecipientsPrompt": {
+    "description": "Instructions on recipients screen"
+  },
+  "withdrawRecipientsNewTab": "New recipient",
+  "@withdrawRecipientsNewTab": {
+    "description": "Tab label for new recipient"
+  },
+  "withdrawRecipientsMyTab": "My fiat recipients",
+  "@withdrawRecipientsMyTab": {
+    "description": "Tab label for existing recipients"
+  },
+  "withdrawRecipientsFilterAll": "All types",
+  "@withdrawRecipientsFilterAll": {
+    "description": "Filter option for all recipient types"
+  },
+  "withdrawRecipientsNoRecipients": "No recipients found to withdraw to.",
+  "@withdrawRecipientsNoRecipients": {
+    "description": "Empty state message"
+  },
+  "withdrawRecipientsContinue": "Continue",
+  "@withdrawRecipientsContinue": {
+    "description": "Continue button on recipients screen"
+  },
+  "withdrawConfirmError": "Error: {error}",
+  "@withdrawConfirmError": {
+    "description": "Error message on confirmation screen",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInsufficientFundsError": "Insufficient funds in your Bull Bitcoin account to complete this buy order.",
+  "@buyInsufficientFundsError": {
+    "description": "Error message for insufficient funds during buy"
+  },
+  "buyOrderNotFoundError": "The buy order was not found. Please try again.",
+  "@buyOrderNotFoundError": {
+    "description": "Error message for order not found during buy"
+  },
+  "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
+  "@buyOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed buy order"
+  },
+  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
+  "@withdrawOrderNotFoundError": {
+    "description": "Error message for order not found during withdraw"
+  },
+  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
+  "@withdrawOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed withdrawal order"
+  },
+  "spFailureRequiresSuperuser": "Silent Payments requires superuser mode.",
+  "@spFailureRequiresSuperuser": {
+    "description": "Silent Payments failure: superuser mode is not enabled"
+  },
+  "spFailureRequiresDevMode": "Silent Payments requires developer mode.",
+  "@spFailureRequiresDevMode": {
+    "description": "Silent Payments failure: developer mode is not enabled"
+  },
+  "spFailureNotSetUp": "Your Silent Payments wallet is not set up.",
+  "@spFailureNotSetUp": {
+    "description": "Silent Payments failure: no wallet is set up"
+  },
+  "spFailureAlreadySetUp": "A Silent Payments wallet is already set up.",
+  "@spFailureAlreadySetUp": {
+    "description": "Silent Payments failure: a wallet already exists"
+  },
+  "spFailureSessionBusy": "The Silent Payments wallet is busy. Please try again.",
+  "@spFailureSessionBusy": {
+    "description": "Silent Payments failure: the session is busy tearing down"
+  },
+  "spFailureScanBusy": "A scan is already running.",
+  "@spFailureScanBusy": {
+    "description": "Silent Payments failure: a scan is already in progress"
+  },
+  "spFailureSimulationDrifted": "The transaction changed since you confirmed it. Please review and try again.",
+  "@spFailureSimulationDrifted": {
+    "description": "Silent Payments failure: the coin set drifted from the confirmed simulation"
+  },
+  "spFailureBackendUnreachable": "Could not reach the Silent Payments server.",
+  "@spFailureBackendUnreachable": {
+    "description": "Silent Payments failure: a backend could not be reached"
+  },
+  "spFailureConfigInvalid": "The Silent Payments server settings are invalid.",
+  "@spFailureConfigInvalid": {
+    "description": "Silent Payments failure: the backend config is invalid"
+  },
+  "spFailureSetupCleanupFailed": "Could not clear the previous Silent Payments wallet state.",
+  "@spFailureSetupCleanupFailed": {
+    "description": "Silent Payments failure: clearing stale on-disk state failed"
+  },
+  "spFailureAmountBelowMinimum": "Enter an amount greater than zero.",
+  "@spFailureAmountBelowMinimum": {
+    "description": "Silent Payments send failure: amount must be greater than zero"
+  },
+  "spFailureAmountExceedsBalance": "Amount exceeds your available balance.",
+  "@spFailureAmountExceedsBalance": {
+    "description": "Silent Payments send failure: amount exceeds the available balance"
+  },
+  "spFailureAddressNetworkMismatch": "This silent payment address is for a different network than your wallet.",
+  "@spFailureAddressNetworkMismatch": {
+    "description": "Silent Payments send failure: SP address network does not match the wallet"
+  },
+  "walletSpTitle": "Silent Payments",
+  "@walletSpTitle": {
+    "description": "Title for the Silent Payments wallet card"
+  },
+  "walletSpExperimental": "Experimental",
+  "@walletSpExperimental": {
+    "description": "Label on the Silent Payments wallet card indicating experimental status"
+  },
+  "spReceive": "Receive",
+  "@spReceive": {
+    "description": "Silent Payments: receive action label"
+  },
+  "spSend": "Send",
+  "@spSend": {
+    "description": "Silent Payments: send action label"
+  },
+  "spScan": "Scan",
+  "@spScan": {
+    "description": "Silent Payments: scan action label, on the scan screen title and the scan buttons"
+  },
+  "spBlockLabel": "Block {height}",
+  "@spBlockLabel": {
+    "description": "Silent Payments: block height label",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spUnconfirmed": "Unconfirmed",
+  "@spUnconfirmed": {
+    "description": "Silent Payments: unconfirmed status"
+  },
+  "spConfirmed": "Confirmed",
+  "@spConfirmed": {
+    "description": "Silent Payments: confirmed status"
+  },
+  "spVerifying": "Verifying",
+  "@spVerifying": {
+    "description": "Silent Payments: confirmed but still verifying status"
+  },
+  "spVerificationFailed": "Verification failed",
+  "@spVerificationFailed": {
+    "description": "Silent Payments: failed transaction verification status"
+  },
+  "spHeaderValidationTitle": "Header validation",
+  "@spHeaderValidationTitle": {
+    "description": "Silent Payments: header validation screen title"
+  },
+  "spHeaderValidationDescription": "Bitcoin headers and transaction inclusion proofs are being verified. Payments remain in Verifying until this process completes.",
+  "@spHeaderValidationDescription": {
+    "description": "Silent Payments: header validation process explanation"
+  },
+  "spHeaderValidationReplay": "Checking saved headers",
+  "@spHeaderValidationReplay": {
+    "description": "Silent Payments: header validation replay phase"
+  },
+  "spHeaderValidationInitialSync": "Syncing headers",
+  "@spHeaderValidationInitialSync": {
+    "description": "Silent Payments: header validation initial sync phase"
+  },
+  "spHeaderValidationValid": "Headers are verified",
+  "@spHeaderValidationValid": {
+    "description": "Silent Payments: header validation valid state"
+  },
+  "spHeaderValidationFailed": "Header verification failed",
+  "@spHeaderValidationFailed": {
+    "description": "Silent Payments: header validation failed state"
+  },
+  "spHeaderValidationIdle": "Waiting for header validation",
+  "@spHeaderValidationIdle": {
+    "description": "Silent Payments: header validation idle state"
+  },
+  "spAddressLabel": "Address",
+  "@spAddressLabel": {
+    "description": "Silent Payments: address label"
+  },
+  "spSent": "Sent",
+  "@spSent": {
+    "description": "Silent Payments: sent status"
+  },
+  "spReceived": "Received",
+  "@spReceived": {
+    "description": "Silent Payments: received status"
+  },
+  "spSelfSend": "Self-send",
+  "@spSelfSend": {
+    "description": "Silent Payments: self-send status"
+  },
+  "spWalletDetailTitle": "Silent Payment Wallet",
+  "@spWalletDetailTitle": {
+    "description": "Silent Payments wallet detail screen title"
+  },
+  "spScanBlockProgress": "Block {current} / {total}",
+  "@spScanBlockProgress": {
+    "description": "Silent Payments: block progress during a scan or header validation",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spActivityEmpty": "Tap Scan to look for incoming silent payments",
+  "@spActivityEmpty": {
+    "description": "Silent Payments: empty activity hint"
+  },
+  "spReceiveTabTaproot": "Taproot",
+  "@spReceiveTabTaproot": {
+    "description": "Silent Payments: receive tab for the taproot address"
+  },
+  "spReceiveManualScanRequired": "Manual scan required",
+  "@spReceiveManualScanRequired": {
+    "description": "Silent Payments: reusable address manual scan notice title"
+  },
+  "spReceiveReusableInfo": "This address is reusable. Funds arrive after you tap Scan.",
+  "@spReceiveReusableInfo": {
+    "description": "Silent Payments: reusable address info"
+  },
+  "spReceiveReusableUnavailable": "Reusable address unavailable. Pull to refresh or reopen the wallet.",
+  "@spReceiveReusableUnavailable": {
+    "description": "Silent Payments: reusable address unavailable message"
+  },
+  "spReceiveTaprootInfo": "Standard Bitcoin address. Funds appear immediately on-chain. Generate a new one for each payment to avoid address reuse.",
+  "@spReceiveTaprootInfo": {
+    "description": "Silent Payments: taproot address info"
+  },
+  "spReceiveTaprootEmpty": "Tap below to generate a fresh taproot receive address.",
+  "@spReceiveTaprootEmpty": {
+    "description": "Silent Payments: taproot address empty hint"
+  },
+  "spReceiveGenerateNewAddress": "Generate new address",
+  "@spReceiveGenerateNewAddress": {
+    "description": "Silent Payments: generate a new taproot address button"
+  },
+  "spReceiveGenerateAddress": "Generate address",
+  "@spReceiveGenerateAddress": {
+    "description": "Silent Payments: generate the first taproot address button"
+  },
+  "spScanStopButton": "Stop",
+  "@spScanStopButton": {
+    "description": "Silent Payments: stop scan button"
+  },
+  "spScanScannedIn": "Scanned in {duration}",
+  "@spScanScannedIn": {
+    "description": "Silent Payments: scan duration message",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanStartButton": "Start scan",
+  "@spScanStartButton": {
+    "description": "Silent Payments: start scan button"
+  },
+  "spScanBlocksBehind": "{count, plural, =1{1 block behind} other{{count} blocks behind}}",
+  "@spScanBlocksBehind": {
+    "description": "Silent Payments: how many blocks behind the chain tip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spScanApproxDuration": "~{duration}",
+  "@spScanApproxDuration": {
+    "description": "Silent Payments: approximate scan duration",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanEtaRemaining": "~{duration} remaining",
+  "@spScanEtaRemaining": {
+    "description": "Silent Payments: estimated time remaining",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanReadyMessage": "Ready to scan for incoming silent payments.",
+  "@spScanReadyMessage": {
+    "description": "Silent Payments: first scan ready message"
+  },
+  "spScanChooseStartMessage": "Choose where to start scanning. Earlier means a longer scan; pick after the wallet first received funds.",
+  "@spScanChooseStartMessage": {
+    "description": "Silent Payments: start-height chooser message"
+  },
+  "spScanBlockHeightLabel": "Block height",
+  "@spScanBlockHeightLabel": {
+    "description": "Silent Payments: block height field label"
+  },
+  "spScanStartFromButton": "Start scan from {height}",
+  "@spScanStartFromButton": {
+    "description": "Silent Payments: start scan from a chosen height button",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanPhaseReceiving": "Receiving",
+  "@spScanPhaseReceiving": {
+    "description": "Silent Payments: scan receive phase label"
+  },
+  "spScanPhaseCheckingSpends": "Checking spends",
+  "@spScanPhaseCheckingSpends": {
+    "description": "Silent Payments: scan spend phase label"
+  },
+  "spScanStep": "Step {step} of {total}: {phase}",
+  "@spScanStep": {
+    "description": "Silent Payments: two-step scan phase header",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanPercent": "{percent}%",
+  "@spScanPercent": {
+    "description": "Silent Payments: percent progress during a scan or header validation",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanProgressCount": "{current} / {total}",
+  "@spScanProgressCount": {
+    "description": "Silent Payments: scan block count progress",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanScanning": "Scanning",
+  "@spScanScanning": {
+    "description": "Silent Payments: scanning label when counts are unknown"
+  },
+  "spScanBlocksLabel": "blocks",
+  "@spScanBlocksLabel": {
+    "description": "Silent Payments: blocks unit label under the scan count"
+  },
+  "spScanElapsed": "Elapsed {duration}",
+  "@spScanElapsed": {
+    "description": "Silent Payments: elapsed scan time",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanTickEarliest": "Earliest",
+  "@spScanTickEarliest": {
+    "description": "Silent Payments: earliest scan-start ruler stop"
+  },
+  "spDurationYears": "{count, plural, =1{1 year} other{{count} years}}",
+  "@spDurationYears": {
+    "description": "Silent Payments: duration in years",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@spDurationMonths": {
+    "description": "Silent Payments: duration in months",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationWeeks": "{count, plural, =1{1 week} other{{count} weeks}}",
+  "@spDurationWeeks": {
+    "description": "Silent Payments: duration in weeks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@spDurationDays": {
+    "description": "Silent Payments: duration in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@spDurationHours": {
+    "description": "Silent Payments: duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spDurationLessThanHour": "less than an hour",
+  "@spDurationLessThanHour": {
+    "description": "Silent Payments: duration under one hour"
+  },
+  "spDurationHoursMinutes": "{hours}h {minutes}m",
+  "@spDurationHoursMinutes": {
+    "description": "Silent Payments: compact hours and minutes",
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "spDurationMinutesSeconds": "{minutes}m {seconds}s",
+  "@spDurationMinutesSeconds": {
+    "description": "Silent Payments: compact minutes and seconds",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "spDurationSeconds": "{seconds}s",
+  "@spDurationSeconds": {
+    "description": "Silent Payments: compact seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "spAddressTypeSilentPayment": "Silent Payment",
+  "@spAddressTypeSilentPayment": {
+    "description": "Silent Payments: label for a silent payment address, on the badge and the receive tab"
+  },
+  "spAddressTypeBitcoin": "Bitcoin Address",
+  "@spAddressTypeBitcoin": {
+    "description": "Silent Payments: address type badge for a Bitcoin address"
+  },
+  "spAddressTypeUnrecognized": "Unrecognized",
+  "@spAddressTypeUnrecognized": {
+    "description": "Silent Payments: address type badge for an unrecognized address"
+  },
+  "spFeeLabel": "Fee",
+  "@spFeeLabel": {
+    "description": "Silent Payments: fee label"
+  },
+  "spCoinSourceSp": "SP",
+  "@spCoinSourceSp": {
+    "description": "Silent Payments: coin source badge for silent payment coins"
+  },
+  "spCoinSourceSegwit": "SW",
+  "@spCoinSourceSegwit": {
+    "description": "Silent Payments: coin source badge for segwit coins"
+  },
+  "spCoinSourceTaproot": "TR",
+  "@spCoinSourceTaproot": {
+    "description": "Silent Payments: coin source badge for taproot coins"
+  },
+  "spCoinSourceOther": "OTHER",
+  "@spCoinSourceOther": {
+    "description": "Silent Payments: coin source badge for other coins"
+  },
+  "spCoinsEmpty": "No coins yet",
+  "@spCoinsEmpty": {
+    "description": "Silent Payments: empty coins message"
+  },
+  "spCoinSubtitle": "{outpoint} · {status}",
+  "@spCoinSubtitle": {
+    "description": "Silent Payments: coin list subtitle",
+    "placeholders": {
+      "outpoint": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "spCoinStatusUnspent": "Unspent",
+  "@spCoinStatusUnspent": {
+    "description": "Silent Payments: unspent coin status"
+  },
+  "spCoinStatusSpent": "Spent",
+  "@spCoinStatusSpent": {
+    "description": "Silent Payments: spent coin status"
+  },
+  "spTransactionTitle": "Transaction",
+  "@spTransactionTitle": {
+    "description": "Silent Payments: transaction details screen title"
+  },
+  "spDirectionLabel": "Direction",
+  "@spDirectionLabel": {
+    "description": "Silent Payments: transaction direction label"
+  },
+  "spTransactionDateLabel": "Date",
+  "@spTransactionDateLabel": {
+    "description": "Silent Payments: transaction date label"
+  },
+  "spTransactionIdLabel": "Transaction ID",
+  "@spTransactionIdLabel": {
+    "description": "Silent Payments: transaction id label"
+  },
+  "spSettingsTitle": "Silent Payments Wallet Settings",
+  "@spSettingsTitle": {
+    "description": "Silent Payments: settings screen title"
+  },
+  "spSettingsBackendConfig": "Server settings",
+  "@spSettingsBackendConfig": {
+    "description": "Silent Payments: backend config section title"
+  },
+  "spNetworkLabel": "Network",
+  "@spNetworkLabel": {
+    "description": "Silent Payments: network field label"
+  },
+  "spSettingsNetworkHelper": "Network is fixed after wallet creation",
+  "@spSettingsNetworkHelper": {
+    "description": "Silent Payments: network field helper text"
+  },
+  "spFetchRegtestDefaults": "Fetch regtest defaults",
+  "@spFetchRegtestDefaults": {
+    "description": "Silent Payments: fetch regtest backend defaults button"
+  },
+  "spBlindbitUrlLabel": "Blindbit URL",
+  "@spBlindbitUrlLabel": {
+    "description": "Silent Payments: blindbit URL field label"
+  },
+  "spElectrumUrlLabel": "Electrum URL",
+  "@spElectrumUrlLabel": {
+    "description": "Silent Payments: electrum URL field label"
+  },
+  "spSaveBackendConfigTitle": "Save server settings?",
+  "@spSaveBackendConfigTitle": {
+    "description": "Silent Payments: save backend config dialog title"
+  },
+  "spSaveBackendConfigContent": "The Silent Payments wallet will be recreated with the selected server settings.",
+  "@spSaveBackendConfigContent": {
+    "description": "Silent Payments: save backend config dialog content"
+  },
+  "spSaveBackendConfigButton": "Save server settings",
+  "@spSaveBackendConfigButton": {
+    "description": "Silent Payments: save backend config button"
+  },
+  "spWalletManagement": "Wallet management",
+  "@spWalletManagement": {
+    "description": "Silent Payments: wallet management section title"
+  },
+  "spOpenWallet": "Open wallet",
+  "@spOpenWallet": {
+    "description": "Silent Payments: open wallet settings entry"
+  },
+  "spClearScanStateEntry": "Clear scan state",
+  "@spClearScanStateEntry": {
+    "description": "Silent Payments: clear scan state settings entry"
+  },
+  "spClearScanStateTitle": "Clear scan state?",
+  "@spClearScanStateTitle": {
+    "description": "Silent Payments: clear scan state confirmation title"
+  },
+  "spClearScanStateContent": "This keeps your wallet data, payments, and settings. The next scan will start from a height you choose.",
+  "@spClearScanStateContent": {
+    "description": "Silent Payments: clear scan state confirmation content"
+  },
+  "spClearScanStateSuccess": "Scan state cleared.",
+  "@spClearScanStateSuccess": {
+    "description": "Silent Payments: clear scan state success message"
+  },
+  "spDeleteWalletEntry": "Delete Silent Payments wallet",
+  "@spDeleteWalletEntry": {
+    "description": "Silent Payments: delete wallet settings entry"
+  },
+  "spDeleteWalletTitle": "Delete Silent Payments wallet?",
+  "@spDeleteWalletTitle": {
+    "description": "Silent Payments: delete wallet dialog title"
+  },
+  "spDeleteWalletContent": "This removes the local Silent Payments wallet and revokes its secret.",
+  "@spDeleteWalletContent": {
+    "description": "Silent Payments: delete wallet dialog content"
+  },
+  "spBackendOnline": "Server online",
+  "@spBackendOnline": {
+    "description": "Silent Payments: backend reachable status"
+  },
+  "spBackendOffline": "Server offline",
+  "@spBackendOffline": {
+    "description": "Silent Payments: backend unreachable status"
+  },
+  "spNotificationsDebug": "Notifications (debug)",
+  "@spNotificationsDebug": {
+    "description": "Silent Payments: notifications debug console title"
+  },
+  "spClearButton": "Clear",
+  "@spClearButton": {
+    "description": "Silent Payments: clear notifications console button"
+  },
+  "spNoNotifications": "No notifications yet.",
+  "@spNoNotifications": {
+    "description": "Silent Payments: empty notifications console message"
+  },
+  "spSetupTitle": "Create Silent Payments Wallet",
+  "@spSetupTitle": {
+    "description": "Silent Payments: create wallet screen title"
+  },
+  "spCreateButton": "Create",
+  "@spCreateButton": {
+    "description": "Silent Payments: create wallet button"
+  },
+  "spTestButton": "Test",
+  "@spTestButton": {
+    "description": "Silent Payments: test backend connection button"
+  },
+  "spTestingConnection": "Testing connection...",
+  "@spTestingConnection": {
+    "description": "Silent Payments: backend connection testing status"
+  },
+  "spConnected": "Connected",
+  "@spConnected": {
+    "description": "Silent Payments: backend connection success status"
+  },
+  "spConnectionFailed": "Connection failed",
+  "@spConnectionFailed": {
+    "description": "Silent Payments: backend connection failure status"
+  },
+  "spBlockRowLabel": "Block",
+  "@spBlockRowLabel": {
+    "description": "Silent Payments: block row label on the transaction details screen"
+  },
+  "spSetupScanStartLabel": "Wallet history",
+  "@spSetupScanStartLabel": {
+    "description": "Section label above the setup choice between a brand new SP wallet and importing one that already has history"
+  },
+  "spSetupScanFromNowTitle": "New wallet",
+  "@spSetupScanFromNowTitle": {
+    "description": "Setup option: create a fresh SP wallet with no history to scan"
+  },
+  "spSetupScanFromNowSubtitle": "Starts watching from the current block. No scan needed.",
+  "@spSetupScanFromNowSubtitle": {
+    "description": "Explains the new wallet setup option"
+  },
+  "spSetupScanEarlierTitle": "Import existing wallet",
+  "@spSetupScanEarlierTitle": {
+    "description": "Setup option: the SP wallet already received funds, so its history must be scanned"
+  },
+  "spSetupScanEarlierSubtitle": "Choose where scanning starts on the next screen.",
+  "@spSetupScanEarlierSubtitle": {
+    "description": "Explains the import setup option"
+  },
+  "spHeaderValidationReconnecting": "Reconnecting",
+  "@spHeaderValidationReconnecting": {
+    "description": "Shown while a dropped header sync connection is being retried, before it is treated as a real verification failure"
+  },
+  "spScanAutoScanOn": "Automatic scanning is on",
+  "@spScanAutoScanOn": {
+    "description": "Shown on the scan screen when the wallet is caught up: further scanning happens on its own, no tap needed"
+  },
+  "spAutoScanEntry": "Automatic scanning",
+  "@spAutoScanEntry": {
+    "description": "Settings row with a switch that turns automatic Silent Payments scanning on or off"
+  },
+  "spAutoScanOffSubtitle": "Off, you start every scan",
+  "@spAutoScanOffSubtitle": {
+    "description": "Subtitle on the automatic scanning row when the switch is off"
+  },
+  "spAutoScanOnSubtitle": "On, new blocks are scanned as they arrive",
+  "@spAutoScanOnSubtitle": {
+    "description": "Subtitle on the automatic scanning row when the switch is on"
+  },
+  "spScanCaughtUpManualDetail": "Automatic scanning is off, so you start each scan.",
+  "@spScanCaughtUpManualDetail": {
+    "description": "Explains that scanning will not resume by itself because the user turned it off"
+  },
+  "spScanSyncedAutoOn": "Auto scan enabled, synced",
+  "@spScanSyncedAutoOn": {
+    "description": "Scan screen message when the wallet is up to date and scanning continues on its own"
+  },
+  "spScanSyncedManual": "Synced, automatic scanning is off",
+  "@spScanSyncedManual": {
+    "description": "Scan screen message when the wallet is up to date but the user starts each scan"
+  },
+  "spLastScannedAgo": "Last scanned {ago}",
+  "@spLastScannedAgo": {
+    "description": "Nudge label showing how long ago the SP wallet was scanned, next to a Scan button",
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "spFailureInvalidAddress": "This is not a valid bitcoin or silent payment address.",
+  "@spFailureInvalidAddress": {
+    "description": "Silent Payments send failure: the recipient address is not recognized"
+  },
+  "sendErrorAddressNetworkMismatch": "This address is for a different network than your wallet.",
+  "@sendErrorAddressNetworkMismatch": {
+    "description": "Send failure: the recipient address belongs to another network"
+  },
+  "transactionListPending": "Pending",
+  "@transactionListPending": {
+    "description": "Date label for the pending transactions group"
+  },
+  "spFailureBroadcastUncertain": "Your transaction may already have been sent. Check your transaction history before trying again.",
+  "@spFailureBroadcastUncertain": {
+    "description": "Silent Payments send failure: the broadcast outcome is unknown, so the user must check before retrying"
+  },
+  "settingsDevModeSpRevokeFailed": "Could not fully delete the Silent Payments wallet. It is disabled and cannot be reloaded. Turn developer mode off again to retry.",
+  "@settingsDevModeSpRevokeFailed": {
+    "description": "Shown when turning developer mode off could not remove the Silent Payments wallet from disk."
+  },
+  "fundExchangeErrorNetwork": "Check your internet connection and try again.",
+  "@fundExchangeErrorNetwork": {
+    "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "exchangeErrorNetwork": "Check your internet connection and try again.",
+  "@exchangeErrorNetwork": {
+    "description": "Shown when the exchange API could not be reached or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "walletBalancesMayBeStale": "Your balances could not be updated and may be out of date.",
+  "@walletBalancesMayBeStale": {
+    "description": "Shown on the home screen when a refresh could not sync the wallets: the list is loaded but balances may be stale. Not a failed load. Non-English values are machine generated and want review."
   }
 }

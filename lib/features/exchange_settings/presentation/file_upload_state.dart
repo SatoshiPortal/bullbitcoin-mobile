@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'file_upload_state.freezed.dart';
@@ -23,7 +24,7 @@ abstract class FileUploadState with _$FileUploadState {
   const factory FileUploadState({
     @Default(false) bool isUploading,
     @Default(false) bool isLoadingUser,
-    String? error,
+    ExchangeSettingsFailure? failure,
     @Default(false) bool uploadComplete,
 
     /// Whether user data was successfully loaded from the API

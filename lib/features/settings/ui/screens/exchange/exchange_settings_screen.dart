@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -171,14 +172,14 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       DeleteAccountConfirmationBottomSheet.show(
                         context,
                         onConfirm: () async {
-                          final requested = await cubit.deleteAccount();
+                          final failure = await cubit.deleteAccount();
                           if (!context.mounted) return;
-                          if (requested) {
+                          if (failure == null) {
                             await DeleteAccountSuccessBottomSheet.show(context);
                           } else {
                             SnackBarUtils.showSnackBar(
                               context,
-                              context.loc.oopsSomethingWentWrong,
+                              failure.toTranslated(context),
                             );
                           }
                         },
@@ -196,7 +197,17 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         LogoutConfirmationBottomSheet.show(
                           context,
                           onConfirm: () async {
-                            await context.read<ExchangeCubit>().logout();
+                            final failure = await context
+                                .read<ExchangeCubit>()
+                                .logout();
+                            if (!context.mounted || failure == null) return;
+                            // The session survived, so the user is still
+                            // signed in — say so rather than letting the UI
+                            // imply the account is gone from this device.
+                            SnackBarUtils.showSnackBar(
+                              context,
+                              failure.toTranslated(context),
+                            );
                           },
                         );
                       }

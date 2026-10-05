@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -48,7 +50,7 @@ void main() {
         mnemonic: _mnemonicWords,
       );
 
-      expect(result, isTrue);
+      expect((result as Ok<bool, TestWalletBackupFailure>).value, isTrue);
     });
 
     test('returns false when the word order differs', () async {
@@ -66,7 +68,7 @@ void main() {
         mnemonic: shuffled,
       );
 
-      expect(result, isFalse);
+      expect((result as Ok<bool, TestWalletBackupFailure>).value, isFalse);
     });
 
     test('returns false when the word count differs', () async {
@@ -83,24 +85,55 @@ void main() {
         mnemonic: _mnemonicWords.sublist(0, 11),
       );
 
-      expect(result, isFalse);
+      expect((result as Ok<bool, TestWalletBackupFailure>).value, isFalse);
     });
 
-    test('throws when the stored seed is not a mnemonic seed', () async {
-      when(() => seedRepository.get(_fingerprint)).thenAnswer(
-        (_) async => BytesSeed(
-          bytes: Uint8List.fromList([1, 2, 3]),
-          masterFingerprint: _fingerprint,
-        ),
-      );
+    test(
+      'returns a typed failure when the stored seed is not a mnemonic',
+      () async {
+        when(() => seedRepository.get(_fingerprint)).thenAnswer(
+          (_) async => BytesSeed(
+            bytes: Uint8List.fromList([1, 2, 3]),
+            masterFingerprint: _fingerprint,
+          ),
+        );
 
-      expect(
-        () => usecase.execute(
+        final result = await usecase.execute(
           fingerprint: _fingerprint,
           mnemonic: _mnemonicWords,
-        ),
-        throwsA(isA<Exception>()),
+        );
+
+        switch (result) {
+          case Ok():
+            fail('a non-mnemonic seed must not be reported as a comparison');
+          case Err(:final failure):
+            expect(failure, isA<TestWalletBackupSeedNotMnemonicFailure>());
+            expect(failure.logMessage, isNull);
+        }
+      },
+    );
+
+    test('maps a thrown seed read to a typed failure, keeping the raw reason '
+        'in logMessage only — this is the seed path', () async {
+      // Shaped like a leak: the reason itself contains mnemonic words.
+      when(
+        () => seedRepository.get(_fingerprint),
+      ).thenThrow(Exception('keychain read failed: legal winner thank year'));
+
+      final result = await usecase.execute(
+        fingerprint: _fingerprint,
+        mnemonic: _mnemonicWords,
       );
+
+      switch (result) {
+        case Ok():
+          fail('a thrown seed read must not be reported as a comparison');
+        case Err(:final failure):
+          expect(failure, isA<TestWalletBackupSeedUnavailableFailure>());
+          // Carries NO reason: this failure is stored in bloc state, and the
+          // thrown reason came from the seed path. It is logged, not carried.
+          expect(failure.logMessage, isNull);
+      }
     });
   });
 }

@@ -5,24 +5,22 @@ import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_ke
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -142,6 +140,12 @@ class ExchangeLocator {
   }
 
   static void registerRepositories(GetIt locator) {
+    locator.registerLazySingleton<ExchangeNotificationRepository>(
+      () => ExchangeNotificationRepositoryImpl(
+        exchangeNotificationService: locator<ExchangeNotificationService>(),
+      ),
+    );
+
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
       () => ExchangeApiKeyRepositoryImpl(
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
@@ -220,34 +224,8 @@ class ExchangeLocator {
   }
 
   static void registerUseCases(GetIt locator) {
-    locator.registerFactory<SaveExchangeApiKeyUsecase>(
-      () => SaveExchangeApiKeyUsecase(
-        exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<DeleteExchangeApiKeyUsecase>(
-      () => DeleteExchangeApiKeyUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
-      ),
-    );
-
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<GetAnnouncementsUsecase>(
-      () => GetAnnouncementsUsecase(
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),
@@ -277,18 +255,6 @@ class ExchangeLocator {
         ),
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<SaveUserPreferencesUsecase>(
-      () => SaveUserPreferencesUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),

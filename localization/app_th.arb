@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "แผนที่",
-  "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
@@ -47,10 +46,6 @@
   "translationWarningContributeButton": "ความช่วยเหลือ",
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
-  },
-  "transactionLabelSwapId": "รหัส",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
   },
   "dcaChooseWalletTitle": "เลือก Bitcoin Wallet",
   "@dcaChooseWalletTitle": {
@@ -325,10 +320,6 @@
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
   },
-  "transactionOrderLabelPayoutStatus": "สถานะการชําระเงิน",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
-  },
   "transactionSwapStatusSwapStatus": "สถานะ",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
@@ -517,10 +508,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "ป้ายฉลาก",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "เริ่มต้นคู่",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -665,22 +652,9 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "โหลดกระเป๋าสตางค์ไม่สำเร็จ: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "ธนาคารธนาคาร",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
-  },
-  "walletAddressTypeNestedSegwit": "พระราชวัง",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
   },
   "exchangeLandingFeature2": "DCA, คําสั่งและคําสั่งซื้ออัตโนมัติ",
   "@exchangeLandingFeature2": {
@@ -759,19 +733,6 @@
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
   },
-  "walletAddressTypeConfidentialSegwit": "สอดคล้อง",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
-  },
-  "transactionDetailRetryTransfer": "โอนเงิน {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "นี่เป็นค่าธรรมเนียมรวมจากจํานวนเงิน",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -784,10 +745,6 @@
   "seedsignerStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนเมล็ดพันธุ์ การสแกน.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "การโอนเงิน",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "คุณพยายามที่จะซื้อข้างต้น.",
   "@buyAboveMaxAmountError": {
@@ -887,10 +844,6 @@
   "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้สร้างขึ้นโดยใช้ AI และอาจมีข้อผิดพลาด หากคุณพบข้อผิดพลาดหรือต้องการช่วยปรับปรุงการแปล คุณสามารถส่งการแก้ไขได้ที่คลัง GitHub ของเรา",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "การยืนยัน",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "ภาษา",
   "@languageSettingsScreenTitle": {
@@ -1080,10 +1033,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "สถานะ",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "transactionSwapDescLnSendDefault": "บันทึกของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
@@ -1095,10 +1044,6 @@
   "coreScreensReceiveNetworkFeeLabel": "รับค่าธรรมเนียมเครือข่าย",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "สมบูรณ์",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "ค่าธรรมเนียม",
   "@payEstimatedFee": {
@@ -1342,10 +1287,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "โซเชียลมีเดีย",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "ลบ",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1377,10 +1318,6 @@
   "importQrDeviceKruxStep4": "คลิก \"เปิดกล้อง\"",
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "appStartupErrorMessageWithBackup": "ไม่สามารถเริ่มต้น ลบและติดตั้งง่าย.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
   },
   "payPasteInvoice": "พิธีการศุลกากร",
   "@payPasteInvoice": {
@@ -1627,10 +1564,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "ค่าธรรมเนียม",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "ที่อยู่ไปยังคลิปบอร์ด",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1765,10 +1698,6 @@
   "payLastName": "ชื่อ",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "วันหมดอายุ",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "โอนธนาคาร (สายไฟหรือ EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -2011,10 +1940,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "จํานวน",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "บัตร",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2035,17 +1960,9 @@
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
-  "fundExchangeCrBankTransferDescription2": ". เงินทุนจะเพิ่มยอดเงินในบัญชีของคุณ.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
   "sellAmount": "จํานวนขาย",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "สถานะ",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "ยกเลิก",
   "@walletDeletionConfirmationCancelButton": {
@@ -2242,10 +2159,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "รูปแบบรหัส QR ที่ไม่รองรับ",
-  "transactionLabelAmountReceived": "จํานวน",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "การกู้คืนข้อผิดพลาด",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2335,10 +2248,6 @@
   "payPaymentConfirmed": "การชําระเงิน",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "ราคา",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "ใส่จํานวน",
   "@buyEnterAmount": {
@@ -2439,22 +2348,9 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "ดูวิดีโอ",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "ระบบเชื่อมต่อที่ปลอดภัย ...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "ข้อผิดพลาด - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "ยกเลิก",
   "@electrumPrivacyNoticeCancel": {
@@ -2642,10 +2538,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "จากกระเป๋าเงิน",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "ถูกจำกัดอัตราการใช้งาน กรุณาลองใหม่อีกครั้งใน {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2740,10 +2632,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "การโอนเงินโดยใช้เคาน์เตอร์ของคุณ",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "ติดตามอุปกรณ์เพื่อปลดล็อค ปักกิ่ง",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2805,14 +2693,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescription1": "ส่งธนาคารจากบัญชีธนาคารของคุณโดยใช้รายละเอียดด้านล่าง ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
-  "transactionNoteSaveButton": "บันทึก",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "ใช้ชื่อบริษัทอย่างเป็นทางการ อย่าใช้ \"Bull Bitcoin\".",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2864,10 +2744,6 @@
   "payLightningInvoice": "พิธีการศุลกากร",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "จํานวนเงิน",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "ใส่การสํารองข้อมูลด้วยตนเอง >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2944,10 +2820,6 @@
   "receiveSwapId": "รหัส",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "เสร็จสมบูรณ์",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "สร้างเข็มใหม่",
   "@pinCodeCreateTitle": {
@@ -3261,15 +3133,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "ดึงข้อมูลสำรองไม่สำเร็จ: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "หากคุณมีปัญหา:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -3334,10 +3197,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "เครือข่าย Bitcoin",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3345,10 +3204,6 @@
   "autoswapWarningCardSubtitle": "ยอดเงินจะถูกระงับหากชําระเงินทันที.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
-  },
-  "transactionStatusConfirmed": "ยืนยัน",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "transactionLabelSendAmount": "ราคา",
   "@transactionLabelSendAmount": {
@@ -3398,10 +3253,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "เลือกประเทศและการชําระเงิน",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "การโอนเงินโดยใช้ SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3429,10 +3280,6 @@
   "allSeedViewSecurityWarningMessage": "แสดงวลีเมล็ดพันธุ์เป็นความเสี่ยง ทุกคนที่เห็นวลีเมล็ดพันธุ์ของคุณสามารถเข้าถึงเงินของคุณ ตรวจสอบให้แน่ใจว่าคุณอยู่ในสถานที่ส่วนตัวและไม่มีหน้าจอของคุณ.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "การทดสอบ Bitcoin",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "ดูเพิ่มเติม",
   "@recoverbullSeeMoreVaults": {
@@ -3485,10 +3332,6 @@
   "importColdcardInstructionsStep1": "ลงชื่อเข้าใช้อุปกรณ์ของคุณเย็น",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "การคืนเงิน",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "ใบแจ้งหนี้",
   "@receiveLightningInvoice": {
@@ -3686,10 +3529,6 @@
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
   },
-  "fundExchangeMethodSinpeTransferSubtitle": "การโอนเงินโดยใช้ SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
   "sendEstimatedDelivery": "ราคาโดยประมาณ ~ ",
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
@@ -3792,10 +3631,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "ค่าธรรมเนียม",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3837,10 +3672,6 @@
   "importQrDevicePassportStep2": "ใส่ PIN ของคุณ",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "วิธีการชําระเงิน",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "คุณควรซื้ออย่างน้อย",
   "@buyShouldBuyAtLeast": {
@@ -4047,10 +3878,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "จํานวนบัญชี (สําหรับประชากร)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "เขียน 12 คําบนกระดาษ เพื่อให้ปลอดภัยและให้แน่ใจว่าไม่สูญเสียพวกเขา.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4199,10 +4026,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "ค่าธรรมเนียม",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "ข้อผิดพลาด",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4271,15 +4094,6 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
   "sendErrorInvoiceMustContainAmount": "ใบแจ้งหนี้ต้องมีจำนวนเงิน",
   "@sendErrorSwapCreationFailed": {
@@ -4325,10 +4139,6 @@
   "sellBitcoinOnChain": "Bitcoin บนโซ่",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurdica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "ตารางเวลา - มาถึงเร็ว",
   "@exchangeRecipientsComingSoon": {
@@ -4378,10 +4188,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "การกู้คืน",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "สําเนารหัส",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4389,10 +4195,6 @@
   "importWatchOnlySelectDerivation": "เลือก",
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
-  },
-  "walletAddressTypeLegacy": "การลงโทษ",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
   },
   "hwPassport": "หนังสือเดินทาง",
   "@hwPassport": {
@@ -4410,10 +4212,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "settingsTelegramLabel": "จดหมาย",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
   },
   "walletDetailsSignerDeviceNotSupported": "ไม่สนับสนุน",
   "@walletDetailsSignerDeviceNotSupported": {
@@ -4491,15 +4289,6 @@
   "replaceByFeeScreenTitle": "แทนที่ค่าธรรมเนียม",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "เขียนข้อมูลลงที่จัดเก็บไม่สำเร็จ: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "เครือข่ายไร้สาย",
   "@exchangeDcaNetworkLightning": {
@@ -4797,10 +4586,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "หากโปรโตคอลจะถูกระบุตามค่าเริ่มต้น.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "การทําธุรกรรม",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4824,10 +4609,6 @@
   "buyKYCLevel3": "ระดับ 3 - เต็ม",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "ไม่สามารถเริ่มต้น ลบและติดตั้งง่าย หากเมล็ดของคุณไม่ได้ปิดคุณสามารถดูตามการตั้งค่า -> การตั้งค่าเซิร์ฟเวอร์ -> ดู เมล็ดหลังจากติดตั้ง.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "กลับบ้าน",
   "@sellGoHome": {
@@ -4936,10 +4717,6 @@
   "exchangeKycLevelLight": "แสง",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "transactionLabelCreatedAt": "สร้าง",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
   },
   "bip329LabelsExportSuccess": "ส่งออก",
   "@bip329LabelsExportSuccess": {
@@ -5133,14 +4910,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "บัญชีบัญชีของคุณ",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "electrumServerSettingsLabel": "เซิร์ฟเวอร์ไฟฟ้า (Bitcoin ไม่)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "กด",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5185,10 +4954,6 @@
   "gotItButton": "ดู",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "เครือข่ายภายนอกและเครือข่าย",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "ค่าธรรมเนียม",
   "@sendFeePriority": {
@@ -5363,21 +5128,6 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
-  "walletAutoTransferBlockedMessage": "กำลังพยายามโอน {amount} BTC ค่าธรรมเนียมปัจจุบันอยู่ที่ {currentFee}% ของจำนวนเงินที่โอน และเกณฑ์ค่าธรรมเนียมถูกตั้งไว้ที่ {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "คลิกที่ปุ่มไปยังการทําธุรกรรมในญาติของคุณ.",
   "@kruxStep11": {
     "description": "Krux instruction for signing"
@@ -5486,10 +5236,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "รายละเอียดการชําระเงิน",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "จํานวนจํานวนสูงสุด",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5518,10 +5264,6 @@
   "replaceByFeeFastestTitle": "รวดเร็ว",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
-  },
-  "transactionLabelBitcoinTransactionId": "รหัส Bitcoin",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
   },
   "sellPayinAmount": "จํานวนเงิน",
   "@sellPayinAmount": {
@@ -5641,10 +5383,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "transactionLabelPayjoinStatus": "ชําระเงิน",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "passportStep2": "คลิกที่รหัส QR",
   "@passportStep2": {
     "description": "Passport instruction step 2"
@@ -5735,10 +5473,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "ดูวิดีโอ",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "ถอดรหัส",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5782,14 +5516,6 @@
   "importQrDevicePassportStep1": "เปิดเครื่อง Passport ของคุณ",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "ส่งธนาคารจากบัญชีธนาคารของคุณ",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "อัตราแลกเปลี่ยน",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "ส่งสายสายจากบัญชีธนาคารของคุณโดยใช้ข้อมูลธนาคาร Bitcoin บัญชีธนาคารของคุณอาจจําเป็นต้องใช้ชิ้นส่วนเหล่านี้.",
   "@fundExchangeBankTransferWireDescription": {
@@ -5914,10 +5640,6 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "fundExchangeMethodSinpeTransfer": "SINPE โอน",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
   "payFromAnotherWallet": "ชําระเงินจากกระเป๋าสตางค์ Bitcoin",
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
@@ -5990,10 +5712,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "การทดสอบของเหลว",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "ลบเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
   "@electrumDeleteFailedError": {
@@ -6508,17 +6226,9 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "คุณต้องเพิ่มรหัสเป็น \"ข้อมูล\" หรือ \"ข้อความ\" หรือ \"ข้อความ\" เมื่อทําการชําระเงิน หากคุณลืมรหัสการชําระเงินของคุณอาจปฏิเสธ.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ชั่วโมง",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
-  },
-  "transactionLabelPayjoinCreationTime": "ประหยัดเวลา",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
   },
   "payRBFDisabled": "RBF ปิดการใช้งาน",
   "@payRBFDisabled": {
@@ -6638,10 +6348,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "ค่าธรรมเนียมเครือข่าย",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์และแตะ \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6653,10 +6359,6 @@
   "payEnterAmountTitle": "กรอก",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "วิธีการชําระเงิน",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "คุณสามารถซื้อมากกว่า",
   "@buyInputMaxAmountError": {
@@ -6779,10 +6481,6 @@
   "appStartupErrorTitle": "ข้อผิดพลาด",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "การโอนเงิน",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "ส่ง",
   "@sendTitle": {
@@ -7023,10 +6721,6 @@
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
   },
-  "fundExchangeHelpPaymentDescription": "รหัสของคุณ.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
   "sellSendPaymentFastest": "รวดเร็ว",
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
@@ -7040,7 +6734,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "ประวัติธุรกรรม",
-  "transactionHistoryHeading": "ประวัติธุรกรรม",
   "exportTransactionsDescription": "ส่งออกธุรกรรมทั้งหมดของกระเป๋าเงิน (Bitcoin, Liquid, Lightning และ swaps) เป็นไฟล์ CSV เลือกกรองตามช่วงวันที่ได้",
   "exportTransactionsStartDate": "วันที่เริ่มต้น",
   "exportTransactionsEndDate": "วันที่สิ้นสุด",
@@ -7059,10 +6752,6 @@
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "คุณสามารถเข้าถึง",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
   "@autoswapSelectWalletRequired": {
@@ -7103,10 +6792,6 @@
   "buyUpgradeKYC": "อัพเกรด ระดับระดับ",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "ประเภทการสั่งซื้อ",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "เปิดใช้งานการถ่ายโอนข้อมูลอัตโนมัติ",
   "@autoswapEnableToggleLabel": {
@@ -7435,10 +7120,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "ข้อมูล",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "สร้าง:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7480,10 +7161,6 @@
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
   },
-  "transactionLabelAddress": "ที่อยู่",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
   "testBackupConfirm": "ยืนยัน",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
@@ -7499,15 +7176,6 @@
   "receiveCopyAddressOnly": "สําเนาหรือรหัสผ่านเท่านั้น",
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "testBackupErrorTestFailed": "ทดสอบข้อมูลสำรองไม่สำเร็จ: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payLightningFee": "ค่าธรรมเนียม",
   "@payLightningFee": {
@@ -7599,15 +7267,6 @@
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
   },
-  "testBackupErrorLoadMnemonic": "โหลด mnemonic ไม่สำเร็จ: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
@@ -7668,10 +7327,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "transactionLabelAddressNotes": "ที่อยู่",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
   "bitboxScreenTroubleshootingStep3": "เริ่มต้นอุปกรณ์ BitBox02 โดยถอดปลั๊กและเชื่อมต่อ.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
@@ -7685,11 +7340,12 @@
   "fundExchangeErrorTitleRcpPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleOrdKyc400": "ขาดข้อกำหนด KYC",
-  "fundExchangeErrorOrdKyc400": "คุณไม่มีข้อกำหนด KYC ที่จำเป็นสำหรับการดำเนินการนี้: {missingFields}",
+  "fundExchangeErrorOrdKyc400": "คุณไม่มีข้อกำหนด KYC ที่จำเป็นสำหรับการดำเนินการนี้",
+  "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA รายนี้",
+  "fundExchangeErrorOpeningPaymentLink": "ไม่สามารถเปิดลิงก์ชำระเงินได้ โปรดลองอีกครั้ง",
   "fundExchangeErrorTitleOrdCop400": "ข้อมูลการเติมเงิน COP ไม่ถูกต้อง",
-  "fundExchangeErrorOrdCop400": "ข้อมูลคำขอไม่ถูกต้องสำหรับการเติมเงิน COP: {error}",
+  "fundExchangeErrorOrdCop400": "ข้อมูลคำขอไม่ถูกต้องสำหรับการเติมเงิน COP",
   "fundExchangeErrorTitleOrdCsrcp400": "ยังไม่ได้เปิดใช้งานการชำระเงินเสมือน",
-  "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA ที่มี IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "คำขอไม่ถูกต้อง",
   "fundExchangeErrorRcp400": "คำขอไม่ถูกต้อง",
   "fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
@@ -7722,10 +7378,6 @@
   "transactionFilterSell": "ขาย",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "การโอนเงิน",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " คําว่า \"Bitcoin\" หรือ \"Crypto\" ในคําอธิบายการชําระเงิน นี่คือบล็อกการชําระเงินของคุณ.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -7810,10 +7462,6 @@
   "exchangeAmountInputValidationZero": "จํานวนเงินที่ต้องการมากกว่าศูนย์",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
-  },
-  "transactionLabelTransactionFee": "ค่าธรรมเนียม",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
   },
   "importWatchOnlyRequired": "ข้อกําหนดที่จําเป็น",
   "@importWatchOnlyRequired": {
@@ -8112,10 +7760,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "สถานะการชําระเงิน",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "ลายนิ้วมือ Bitcoin",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8248,10 +7892,6 @@
   "backupBestPracticesTitle": "การสํารองข้อมูลที่ดีที่สุด",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "ที่อยู่",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "Google ไดรฟ์",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -8520,10 +8160,6 @@
   "logSettingsErrorLoadingMessage": "บันทึกข้อผิดพลาด: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "เครือข่ายของเหลว",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "แม็กซ์",
   "@swapMaxButton": {
@@ -9009,10 +8645,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "รหัส",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "ค่าธรรมเนียมเครือข่าย Bitcoin จะหักจากจํานวนเงินที่คุณได้รับและเก็บรวบรวมโดย Bitcoin นาที",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9307,15 +8939,6 @@
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
-  "testBackupErrorVerificationFailed": "การตรวจสอบล้มเหลว: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "รายละเอียด",
   "@sendViewDetails": {
     "description": "Button to view transaction details"
@@ -9327,10 +8950,6 @@
   "sendSubmarineSwap": "ทางด่วน",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
-  },
-  "transactionLabelLiquidTransactionId": "การทําธุรกรรม",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
   },
   "payNotAvailable": "N/A",
   "@payNotAvailable": {
@@ -9572,10 +9191,6 @@
   "payViewTransaction": "ดูธุรกรรม",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "ไปยังกระเป๋าสตางค์",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "หากคุณต้องการส่งเอกสารอื่น ๆ อัปโหลดพวกเขาที่นี่.",
   "@exchangeFileUploadInstructions": {
@@ -9826,10 +9441,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "จํานวนบัญชี (สําหรับสหรัฐเท่านั้น)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "รายละเอียดรายละเอียด",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -9839,15 +9450,6 @@
   "fundExchangeWarningTitle": "ดูวิดีโอ",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "receiveError": "ข้อผิดพลาด: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumRetryCount": "ระยะเวลา",
   "@electrumRetryCount": {
@@ -9936,10 +9538,6 @@
   "payBatchPayment": "การชําระเงิน",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
-  },
-  "transactionLabelBoltzSwapFee": "กลอง",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
   },
   "transactionSwapDescLnReceiveFailed": "มีปัญหากับรหัสของคุณ โปรดติดต่อหากเงินจะส่งคืนภายใน 24 ชั่วโมง.",
   "@transactionSwapDescLnReceiveFailed": {
@@ -10278,10 +9876,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "การโอนเงินในคอสตาตาซา (HM)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "รายละเอียด",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10298,10 +9892,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "ค่าธรรมเนียม",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "ปรึกษา",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10313,10 +9903,6 @@
   "exchangeAccountInfoLastNameLabel": "ชื่อ",
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
-  },
-  "walletAutoTransferBlockedTitle": "การถ่ายโอนอัตโนมัติ",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "บล็อก",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -10334,10 +9920,6 @@
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
   },
-  "transactionNoteEditTitle": "หมายเหตุ",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionDetailLabelCompletedAt": "เสร็จสมบูรณ์",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
@@ -10345,10 +9927,6 @@
   "passportStep9": "คลิกที่ปุ่มไปยังการทําธุรกรรมในหนังสือเดินทางของคุณ.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "เครือข่าย Bitcoin",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "คุณต้องลบเซิร์ฟเวอร์นี้?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10362,10 +9940,6 @@
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "โอนธนาคาร",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "พลังงานบนแม่เหล็กของคุณ",
   "@importQrDeviceKeystoneStep1": {
@@ -10659,10 +10233,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "walletAddressTypeNativeSegwit": "Ative",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
-  },
   "payOpenInvoice": "เปิดใบแจ้งหนี้",
   "@payOpenInvoice": {
     "description": "Button to open invoice"
@@ -10683,10 +10253,6 @@
   "transactionSwapDescLnReceivePaid": "ชําระเงิน เราเพิ่งออกอากาศในการทําธุรกรรมไปยังกระเป๋าสตางค์ของคุณ.",
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
-  },
-  "transactionNoteUpdateButton": "ปรับปรุง",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "receiveNetworkUnavailable": "{network} สามารถใช้งานได้",
   "@receiveNetworkUnavailable": {
@@ -10756,10 +10322,6 @@
   "buyGetConfirmedFaster": "รับการยืนยันได้เร็วขึ้น",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "จํานวนเงิน",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "เปิดใช้งาน SSL",
   "@electrumEnableSsl": {
@@ -10857,10 +10419,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "ทั้งหมด",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "การเข้ารหัส",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10913,10 +10471,6 @@
   "torSettingsPortValidationRange": "พอร์ตจะต้องอยู่ระหว่าง 1 และ 65",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "การโอนเงินใน ดอลลาร์สหรัฐอเมริกา (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "เวลาในการว่าง",
   "@electrumTimeoutEmptyError": {
@@ -11114,10 +10668,6 @@
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
   },
-  "fundExchangeMethodCrIbanUsd": "โซเชียลมีเดีย",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
   "recoverbullErrorSelectVault": "ค้นหาเลือก vault",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
@@ -11170,10 +10720,6 @@
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "บล็อก",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "ค้นหาเลือก vault จาก Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -11436,40 +10982,9 @@
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
   "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
   "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง",
-  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "ไม่พบป้ายชื่อ \"{label}\"",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "ชั่วโมง",
   "@sendEstimatedDeliveryHours": {
@@ -11790,7 +11305,6 @@
   "transactionFilterFunding": "เติมเงิน",
   "transactionFilterReward": "รางวัล",
   "transactionFilterRefund": "คืนเงิน",
-  "transactionFilterBalanceAdjustment": "การปรับยอด",
   "transactionListLoadingFailed": "ไม่สามารถโหลดธุรกรรมได้",
   "transactionLabelNetworkFees": "ค่าธรรมเนียมเครือข่าย",
   "walletLiquidRiskDisclosureLabel": "เงินจำนวนนี้เป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
@@ -11898,7 +11412,6 @@
   "fundExchangeCopGeneratePaymentLink": "สร้างลิงก์ชำระเงิน",
   "fundExchangeCopRedirectMessage": "คุณจะถูกนำไปยังหน้าเว็บภายนอกเพื่อทำการชำระเงิน",
   "fundExchangeCopOpenPaymentLink": "เปิดลิงก์ชำระเงิน",
-  "fundExchangeCopFailedToOpenLink": "ไม่สามารถเปิดลิงก์ชำระเงินได้ กรุณาลองใหม่อีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "priceChartFailedToLoad": "โหลดประวัติราคาไม่สำเร็จ",
   "priceFailedToLoad": "โหลดราคาไม่สำเร็จ",
   "statusScreenTryAgain": "ลองใหม่อีกครั้ง",
@@ -12160,6 +11673,53 @@
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "walletWarningElectrumBitcoinDown": "เซิร์ฟเวอร์ Bitcoin ไม่พร้อมใช้งาน",
+  "walletWarningElectrumLiquidDown": "เซิร์ฟเวอร์ Liquid ไม่พร้อมใช้งาน",
+  "walletWarningElectrumBothDown": "เซิร์ฟเวอร์ Bitcoin และ Liquid ไม่พร้อมใช้งาน",
+  "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์",
+  "walletLoadFailedRetryHint": "ดึงลงเพื่อรีเฟรชแล้วลองอีกครั้ง",
+  "transactionDetailLoadError": "ไม่สามารถโหลดรายละเอียดธุรกรรมได้",
+  "transactionPayjoinBroadcastFailed": "ไม่สามารถเผยแพร่ธุรกรรมต้นฉบับได้ โปรดลองอีกครั้ง",
+  "transactionPayjoinOriginalUnavailable": "ธุรกรรมต้นฉบับไม่สามารถเผยแพร่ได้อีกต่อไป",
+  "transactionLabelLimitReached": "คุณสามารถมีป้ายกำกับได้สูงสุด 10 รายการ",
+  "settingsErrorSavingSetting": "ไม่สามารถบันทึกการตั้งค่านี้ได้ โปรดลองอีกครั้ง",
+  "settingsErrorConsentNotGiven": "การตั้งค่านี้ต้องได้รับการยืนยันจากคุณก่อนจึงจะเปลี่ยนได้",
+  "settingsErrorLoadingLogs": "ไม่สามารถเตรียมบันทึกการวินิจฉัยได้ โปรดลองอีกครั้ง",
+  "exchangeErrorSigningOut": "ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง",
+  "exchangeErrorSavingPreferences": "ไม่สามารถบันทึกการตั้งค่าของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeErrorLoadingAnnouncements": "ไม่สามารถโหลดประกาศได้",
+  "exchangeErrorRequestingAccountDeletion": "ไม่สามารถส่งคำขอลบบัญชีของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSettingsErrorLoadingStatistics": "ไม่สามารถโหลดสถิติการซื้อขายของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSettingsErrorLoadingAccount": "ไม่สามารถโหลดรายละเอียดบัญชีของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "มีการส่งเอกสารแล้ว",
+  "exchangeSettingsErrorDocumentEmpty": "ไฟล์นี้ว่างเปล่า โปรดเลือกไฟล์อื่น",
+  "exchangeSettingsErrorDocumentTooLarge": "ไฟล์นี้มีขนาดใหญ่เกินไป โปรดเลือกไฟล์ที่เล็กกว่า",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "ไม่รองรับไฟล์ประเภทนี้ โปรดเลือกไฟล์อื่น",
+  "exchangeSettingsErrorDocumentUnreadable": "ไม่สามารถอ่านไฟล์นี้ได้ โปรดเลือกไฟล์อื่น",
+  "exchangeSettingsErrorUploadingDocument": "ไม่สามารถอัปโหลดเอกสารได้ โปรดลองอีกครั้ง",
+  "labelsErrorNoteTooLong": "หมายเหตุต้องมีความยาวไม่เกิน {max} ตัวอักษร",
+  "labelsErrorNoteForbiddenCharacter": "หมายเหตุไม่สามารถมีอักขระ {character} ได้",
+  "labelsErrorFileTooLarge": "ไฟล์นี้ใหญ่เกินไป ไฟล์ป้ายกำกับต้องมีขนาดน้อยกว่า {max}",
+  "labelsErrorFileUnreadable": "ไฟล์นี้ดูเหมือนจะไม่ใช่ไฟล์ป้ายกำกับ BIP-329 โปรดตรวจสอบว่าคุณเลือกไฟล์ถูกต้อง",
+  "labelsErrorFileEmpty": "ไฟล์นี้ไม่มีป้ายกำกับให้นำเข้า",
+  "labelsErrorExportFailed": "ไม่สามารถบันทึกป้ายกำกับของคุณได้ โปรดลองอีกครั้ง",
+  "labelsErrorFileReservedName": "ไฟล์นี้ใช้ชื่อป้ายกำกับที่แอปสงวนไว้ โปรดเปลี่ยนชื่อในไฟล์แล้วลองอีกครั้ง",
+  "labelsErrorNoteForbiddenWhitespace": "หมายเหตุไม่สามารถมีการขึ้นบรรทัดใหม่หรือแท็บได้",
+  "labelsErrorFileInvalidEntry": "ไม่สามารถอ่านบางรายการในไฟล์นี้ได้ โปรดตรวจสอบไฟล์แล้วลองอีกครั้ง",
+  "recipientsErrorLoadFailed": "ไม่สามารถโหลดผู้รับของคุณได้ โปรดลองอีกครั้ง",
+  "recipientsErrorSaveFailed": "ไม่สามารถบันทึกผู้รับรายนี้ได้ โปรดตรวจสอบข้อมูลแล้วลองอีกครั้ง",
+  "recipientsErrorSinpeLookupFailed": "เราไม่สามารถยืนยันหมายเลขโทรศัพท์นี้ได้ โปรดตรวจสอบแล้วลองอีกครั้ง",
+  "recipientsErrorBillerSearchFailed": "ไม่สามารถค้นหาผู้เรียกเก็บเงินได้ โปรดลองอีกครั้ง",
+  "recipientsErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "recipientsListPullToRetry": "ดึงลงเพื่อลองอีกครั้ง",
+  "recipientsErrorSavedButNotSelected": "บันทึกผู้รับรายนี้แล้ว แต่เราไม่สามารถดำเนินการต่อได้ ค้นหาในรายการของคุณเพื่อดำเนินการต่อ",
+  "testBackupErrorWalletsUnavailable": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorNoWallets": "ไม่มีกระเป๋าเงินที่จะทดสอบข้อมูลสำรอง",
+  "testBackupErrorNoWalletSelected": "เลือกกระเป๋าเงินก่อนทดสอบข้อมูลสำรอง",
+  "testBackupErrorSeedUnavailable": "ไม่สามารถอ่านวลีกู้คืนของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
+  "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง",
   "withdrawInteracSecurityDetailsTitle": "รายละเอียดความปลอดภัยของ Interac",
   "withdrawInteracSaveAsDefault": "บันทึกรายละเอียดเหล่านี้เป็นค่าเริ่มต้น",
   "withdrawInteracSecurityQuestionLengthError": "คำถามความปลอดภัยต้องมี 3–40 อักขระ",
@@ -12252,5 +11812,12 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "จำนวนเงินสูงกว่าจำนวนบิตคอยน์สูงสุดที่เป็นไปได้ {max}",
+  "receiveErrorNoteNotSaved": "ไม่สามารถบันทึกหมายเหตุของคุณได้ โปรดลองอีกครั้ง",
+  "receiveErrorAddressUnavailable": "ไม่สามารถเตรียมที่อยู่รับได้ โปรดลองอีกครั้ง",
+  "receiveErrorBroadcastOriginal": "เราไม่สามารถกระจายธุรกรรมได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "fundExchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "walletBalancesMayBeStale": "ไม่สามารถอัปเดตยอดคงเหลือของคุณได้ และยอดอาจไม่เป็นปัจจุบัน"
 }
