@@ -41,6 +41,8 @@ export 'src/domain/payjoin_session.dart'
         PayjoinSession,
         PayjoinSenderSession,
         PayjoinReceiverSession,
+        PayjoinOwnership,
+        PayjoinParty,
         PayjoinStatus;
 export 'src/domain/payjoin_session_window.dart' show PayjoinSessionWindow;
 export 'src/public/payjoin.dart' show Payjoin;
