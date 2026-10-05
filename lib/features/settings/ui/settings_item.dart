@@ -124,6 +124,7 @@ class SettingsItem {
       iconColor: iconColor,
       textColor: textColor,
       title: title,
+      titleMaxLines: null,
       isSuperUser: isSuperuser,
       trailing: trailing,
       onTap: isInlineControl ? null : () => open(context),

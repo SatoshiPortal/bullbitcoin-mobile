@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -42,6 +43,7 @@ void main() {
     when(() => wallets.stream).thenAnswer((_) => changes.stream);
     when(() => settings.state).thenReturn(const SettingsState());
     when(() => settings.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settings.checkSpWalletSetup()).thenAnswer((_) async {});
     final routes = SettingsRouter.route().routes.whereType<GoRoute>();
     final router = GoRouter(
       routes: [
@@ -86,9 +88,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text(loc.walletsListNoWalletsMessage), findsNothing);
 
-    state = WalletState(
+    state = const WalletState(
       status: WalletStatus.failure,
-      error: Exception('Wallet storage unavailable'),
+      failure: WalletStorageFailure('Wallet storage unavailable'),
     );
     changes.add(state);
     await tester.pumpAndSettle();

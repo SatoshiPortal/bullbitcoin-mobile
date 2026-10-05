@@ -47,110 +47,137 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                const Gap(16),
-                SettingsSearchBar(
-                  key: const Key('settings-search-bar'),
-                  onTap: () => context.pushNamed(SettingsRoute.search.name),
-                ),
-                const Gap(8),
-                for (final item in items.inSection(SettingsItemSection.root))
-                  item.buildTile(
-                    context,
-                    iconColor: item.id == SettingsItemId.servicesStatus
-                        ? serviceStatusLoading
-                              ? context.appColors.textMuted
-                              : serviceStatus.allServicesOnline
-                              ? context.appColors.success
-                              : context.appColors.error
-                        : null,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        height: 150,
-        padding: EdgeInsets.zero,
-        color: context.appColors.transparent,
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              if (appVersion != null)
-                ListTile(
-                  tileColor: context.appColors.surfaceContainerHighest,
-                  title: Center(
-                    child: Text(
-                      '${context.loc.settingsAppVersionLabel}$appVersion',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        const Gap(16),
+                        SettingsSearchBar(
+                          key: const Key('settings-search-bar'),
+                          onTap: () =>
+                              context.pushNamed(SettingsRoute.search.name),
+                        ),
+                        const Gap(8),
+                        for (final item in items.inSection(
+                          SettingsItemSection.root,
+                        ))
+                          item.buildTile(
+                            context,
+                            iconColor: item.id == SettingsItemId.servicesStatus
+                                ? serviceStatusLoading
+                                      ? context.appColors.textMuted
+                                      : serviceStatus.allServicesOnline
+                                      ? context.appColors.success
+                                      : context.appColors.error
+                                : null,
+                          ),
+                      ],
                     ),
                   ),
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: appVersion));
-                  },
-                ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    InkWell(
-                      onTap: () =>
-                          items.byId(SettingsItemId.github).open(context),
+                  Material(
+                    color: context.appColors.transparent,
+                    child: SafeArea(
+                      top: false,
+                      minimum: const EdgeInsets.only(bottom: 16),
                       child: Column(
                         mainAxisSize: .min,
+                        crossAxisAlignment: .stretch,
                         children: [
-                          SvgPicture.asset(
-                            'assets/icons/github.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              context.appColors.onSurface,
-                              BlendMode.srcIn,
+                          if (appVersion != null)
+                            ListTile(
+                              tileColor:
+                                  context.appColors.surfaceContainerHighest,
+                              title: Center(
+                                child: Text(
+                                  '${context.loc.settingsAppVersionLabel}$appVersion',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: context.appColors.onSurface,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: appVersion),
+                                );
+                              },
                             ),
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: Wrap(
+                              alignment: .spaceEvenly,
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: [
+                                InkWell(
+                                  onTap: () => items
+                                      .byId(SettingsItemId.github)
+                                      .open(context),
+                                  child: Column(
+                                    mainAxisSize: .min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/github.svg',
+                                        width: 24,
+                                        height: 24,
+                                        colorFilter: ColorFilter.mode(
+                                          context.appColors.onSurface,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      const Gap(8),
+                                      Text(
+                                        context.loc.settingsGithubLabel,
+                                        textAlign: .center,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  context.appColors.onSurface,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () => items
+                                      .byId(SettingsItemId.supportChat)
+                                      .open(context),
+                                  child: Column(
+                                    mainAxisSize: .min,
+                                    children: [
+                                      Icon(
+                                        Icons.headset_mic,
+                                        color: context.appColors.onSurface,
+                                      ),
+                                      const Gap(8),
+                                      Text(
+                                        context.loc.settingsGetHelpLabel,
+                                        textAlign: .center,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  context.appColors.onSurface,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () =>
-                          items.byId(SettingsItemId.supportChat).open(context),
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(
-                            Icons.headset_mic,
-                            color: context.appColors.onSurface,
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGetHelpLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
