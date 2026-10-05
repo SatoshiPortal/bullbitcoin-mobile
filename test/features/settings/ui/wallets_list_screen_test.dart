@@ -44,6 +44,7 @@ void main() {
     when(() => wallets.stream).thenAnswer((_) => changes.stream);
     when(() => settings.state).thenReturn(const SettingsState());
     when(() => settings.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settings.checkSpWalletSetup()).thenAnswer((_) async {});
     final routes = SettingsRouter.route(
       buildPriceHistory: (_) => const SizedBox(),
     ).routes.whereType<GoRoute>();
@@ -90,9 +91,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text(loc.walletsListNoWalletsMessage), findsNothing);
 
-    state = WalletState(
+    state = const WalletState(
       status: WalletStatus.failure,
-      failure: const WalletStorageFailure('Wallet storage unavailable'),
+      failure: WalletStorageFailure('Wallet storage unavailable'),
     );
     changes.add(state);
     await tester.pumpAndSettle();
