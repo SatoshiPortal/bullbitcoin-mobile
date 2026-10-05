@@ -53,6 +53,7 @@
         android:icon="@mipmap/launcher_icon"
         android:enableOnBackInvokedCallback="true"
         android:allowBackup="false"
+        android:memtagMode="async"
     >
         <activity
             android:name="com.bullbitcoin.mobile.MainActivity"
