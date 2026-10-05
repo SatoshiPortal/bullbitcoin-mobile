@@ -1,20 +1,19 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
-import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 class RecreateSpWalletUsecase {
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetSpScanKeyUsecase _getSpScanKeyUsecase;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
@@ -22,7 +21,7 @@ class RecreateSpWalletUsecase {
   final SpSessionGuard _guard;
 
   RecreateSpWalletUsecase({
-    required this._getDefaultSeedUsecase,
+    required this._getSpScanKeyUsecase,
     required this._repository,
     required this._files,
     required this._configRepository,
@@ -40,20 +39,18 @@ class RecreateSpWalletUsecase {
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) => _guard.exclusive(() async {
-    // Outer boundary: any Exception from the seed/dispose/backup/discardBackup
-    // work becomes an Err so execute() is total. A non-mnemonic seed still
-    // throws a StateError (a programmer bug, never caught) per
-    // spMnemonicFromSeed.
+    // Outer boundary: any Exception from the dispose/backup/discardBackup work
+    // becomes an Err so execute() is total.
     try {
-      // Same fixed text as the catch below: the seed path never logs a reason.
-      final Seed seed;
-      switch (await _getDefaultSeedUsecase.execute()) {
+      // Derived before the teardown bracket, so a missing default wallet or a
+      // locked keystore aborts while the session is still up.
+      final SilentPaymentDescriptors scanKey;
+      switch (await _getSpScanKeyUsecase.execute(network: network)) {
+        case Err(:final failure):
+          return Err(failure);
         case Ok(:final value):
-          seed = value;
-        case Err():
-          return const Err(SpUnexpected('SP wallet recreate failed'));
+          scanKey = value;
       }
-      final mnemonic = spMnemonicFromSeed(seed);
 
       // Read before the teardown bracket, so a failed read aborts with nothing
       // to unwind. It must not read as "no previous config": the rollback would
@@ -102,9 +99,8 @@ class RecreateSpWalletUsecase {
         // no live session yet, so there is nothing to roll back.
         final saved = await _configRepository.save(config);
         if (saved case Err(:final failure)) return Err(failure);
-        final created = await _repository.createFromMnemonic(
-          network: config.network,
-          mnemonic: mnemonic,
+        final created = await _repository.createFromScanKey(
+          scanKey: scanKey,
           blindbitUrl: config.blindbitUrl,
           electrumUrl: config.electrumUrl,
           fetchConcurrencyFactor: config.fetchConcurrencyFactor,
@@ -112,7 +108,7 @@ class RecreateSpWalletUsecase {
         );
         if (created case Err(:final failure)) {
           await _rollback(previousConfig);
-          // Forwarded as-is: no SP failure text is derived from the mnemonic.
+          // Forwarded as-is: no SP failure text is derived from the scan key.
           return Err(failure);
         }
 
@@ -130,8 +126,8 @@ class RecreateSpWalletUsecase {
         _repository.endTeardown();
       }
     } on Exception catch (_) {
-      // Fixed text: this block reads the seed and derives the mnemonic, so the
-      // caught exception never reaches a log.
+      // Fixed text: this block handles the scan key, so the caught exception
+      // never reaches a log.
       return const Err(SpUnexpected('SP wallet recreate failed'));
     }
   });

@@ -23,10 +23,16 @@ extension SpFailureToSendFailure on SpFailure {
     SpSessionBusy() ||
     SpScanBusy() ||
     SpSimulationDrifted() ||
+    SpNoDefaultWallet() ||
+    SpKeystoreLocked() ||
     SpBackendUnreachable() ||
     SpConfigInvalid() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
+    SpSignedTransactionMismatch() ||
+    SpCredentialRefused() ||
+    SpSigningRefused() ||
+    SpVerificationFailed() ||
     SpUnexpected() => null,
   };
 }

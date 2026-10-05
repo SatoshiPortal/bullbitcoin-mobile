@@ -50,6 +50,8 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpSessionBusy,
         SpScanBusy,
         SpSimulationDrifted,
+        SpNoDefaultWallet,
+        SpKeystoreLocked,
         SpBackendUnreachable,
         SpConfigInvalid,
         SpSetupCleanupFailed,
@@ -58,6 +60,10 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpAddressNetworkMismatch,
         SpInvalidAddress,
         SpBroadcastUncertain,
+        SpSignedTransactionMismatch,
+        SpCredentialRefused,
+        SpSigningRefused,
+        SpVerificationFailed,
         SpUnexpected;
 // Raised by the composition root when a sync tick failed, so the sync
 // coordinator sees a failure without importing the feature's internals.

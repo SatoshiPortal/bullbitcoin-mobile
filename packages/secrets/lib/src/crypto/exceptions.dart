@@ -43,3 +43,9 @@ class LiquidSigningFailed implements Exception {
   @internal
   const LiquidSigningFailed();
 }
+
+/// bwk refused to sign a silent payments PSBT. Carries nothing: bwk's reason describes the PSBT it refused. Reported by type as `UseSecretFailure`.
+class SilentPaymentSigningFailed implements Exception {
+  @internal
+  const SilentPaymentSigningFailed();
+}

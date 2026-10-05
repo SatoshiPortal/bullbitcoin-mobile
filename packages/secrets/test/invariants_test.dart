@@ -321,6 +321,7 @@ void main() {
       'liquidDescriptor': 'derived',
       'signPsbt': 'derived',
       'signPset': 'derived',
+      'signSilentPayment': 'derived',
       'verifyWords': 'derived',
       'verifySeed': 'derived',
       // material by design: children this feature was asked to create, for use elsewhere

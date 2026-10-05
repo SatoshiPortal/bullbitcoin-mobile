@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:convert/convert.dart' as convert;
 import 'package:primitives/primitives.dart';
@@ -50,6 +52,32 @@ final class Bip352Deriver {
       taproot: 'tr([${fingerprint.hex}/$origin]$account/<0;1>/*)',
       network: network,
       fingerprint: fingerprint,
+    );
+  }
+
+  /// The spend authority of the account [scanKey] watches, for one signing
+  /// call: the BIP352 spend private key, as the 32 bytes bwk's signer takes,
+  /// and the extended private key of the BIP86 taproot account — never the
+  /// master key, so a key that outlives the call can spend this account and
+  /// nothing else of the wallet.
+  ///
+  /// Package-internal: only `SilentPaymentSigner` calls it, and the record
+  /// never leaves the signing call. [spendPrivateKey] is a fresh copy, which
+  /// the caller wipes once it is done.
+  ({Uint8List spendPrivateKey, String taprootAccountXprv}) spendKeys(
+    SecretMaterial secret, {
+    required BitcoinNetwork network,
+  }) {
+    final root = bip32.Bip32Keys.fromSeed(
+      secret.seedBytes,
+      network: _networkType(network),
+    );
+    final coin = network.coinType;
+    final spend = root.derivePath("m/352'/$coin'/0'/0'/0");
+    final account = root.derivePath("m/86'/$coin'/0'");
+    return (
+      spendPrivateKey: Uint8List.fromList(spend.private!),
+      taprootAccountXprv: account.toBase58(),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/features/sp/domain/ports/sp_scan_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_auto_scan_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
@@ -52,12 +52,7 @@ void main() {
     locator = GetIt.asNewInstance();
     locator.allowReassignment = true;
 
-    // External collaborators SpLocator's use cases resolve. The seed is never
-    // read on this path (the fake reports a live session, so EnsureSpSession
-    // returns the snapshot without reconstructing), but the graph resolves it.
-    locator.registerSingleton<GetDefaultSeedUsecase>(
-      MockGetDefaultSeedUsecase(),
-    );
+    // External collaborators SpLocator's use cases resolve.
     settingsRepo = _MockSettingsRepository();
     // The sync tick reads GetSpWalletUsecase, which checks the feature gate.
     when(() => settingsRepo.fetch()).thenAnswer(
@@ -84,6 +79,10 @@ void main() {
       FakeSpBackendConfigRepository(),
     );
     locator.registerSingleton<SpAutoScanRepository>(FakeSpAutoScanRepository());
+    // The scan credential is never derived on this path (the fake reports a
+    // live session, so EnsureSpSession returns the snapshot without
+    // reconstructing), but the graph resolves it.
+    locator.registerSingleton<GetSpScanKeyUsecase>(MockGetSpScanKeyUsecase());
 
     cubit = locator<SpCubit>();
   });

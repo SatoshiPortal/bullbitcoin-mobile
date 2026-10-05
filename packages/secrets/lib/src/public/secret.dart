@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     show Language, MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
@@ -206,6 +208,18 @@ final class Secret extends SecretEntry {
       network: network,
       scratchDirectory: _scratchDirectory,
     ),
+  );
+
+  /// Signs [psbt], the unsigned PSBTv2 of a silent payments spend that a watch-only account built from [silentPaymentDescriptors] prepared, and returns the signed PSBTv2.
+  ///
+  /// The spend authority is lent to bwk's stateless signer for this call only: the BIP352 spend key and the BIP86 taproot account key — never the words, the seed or the master key. No account is handed to the package; the caller's account verifies the result and extracts the transaction (`finalize`), which is where a drifted coin set or a PSBT that no longer matches its simulation is refused. See doc/design.md, § Silent payments.
+  @internal
+  Future<Result<Uint8List, SecretFailure>> signSilentPayment(
+    Uint8List psbt, {
+    required BitcoinNetwork network,
+  }) => _repository.useMnemonic(
+    info,
+    (m) => Signer.silentPayment.signPsbt(m, psbt, network: network),
   );
 
   // ---------------------------------------------------------------- backup

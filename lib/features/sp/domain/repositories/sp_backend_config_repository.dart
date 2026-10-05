@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Persists the [SpBackendConfig] so the live session can be reconstructed via
-/// `createFromMnemonic` on every load, instead of relying on `SpAccount.load`
+/// `createFromScanKey` on every load, instead of relying on `SpAccount.load`
 /// reading a config file the FFI create path never writes.
 abstract interface class SpBackendConfigRepository {
   /// Synchronous view of "the SP wallet is set up", for the GoRouter redirect

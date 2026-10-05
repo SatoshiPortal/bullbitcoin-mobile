@@ -15,6 +15,8 @@ extension SpFailureL10n on SpFailure {
     SpSessionBusy() => context.loc.spFailureSessionBusy,
     SpScanBusy() => context.loc.spFailureScanBusy,
     SpSimulationDrifted() => context.loc.spFailureSimulationDrifted,
+    SpNoDefaultWallet() => context.loc.spFailureNoDefaultWallet,
+    SpKeystoreLocked() => context.loc.spFailureKeystoreLocked,
     SpBackendUnreachable() => context.loc.spFailureBackendUnreachable,
     SpConfigInvalid() => context.loc.spFailureConfigInvalid,
     SpSetupCleanupFailed() => context.loc.spFailureSetupCleanupFailed,
@@ -23,6 +25,11 @@ extension SpFailureL10n on SpFailure {
     SpAddressNetworkMismatch() => context.loc.spFailureAddressNetworkMismatch,
     SpInvalidAddress() => context.loc.spFailureInvalidAddress,
     SpBroadcastUncertain() => context.loc.spFailureBroadcastUncertain,
+    SpSignedTransactionMismatch() =>
+      context.loc.spFailureSignedTransactionMismatch,
+    SpCredentialRefused() => context.loc.spFailureCredentialRefused,
+    SpSigningRefused() => context.loc.spFailureSigningRefused,
+    SpVerificationFailed() => context.loc.spFailureVerificationFailed,
     SpUnexpected() => context.loc.oopsSomethingWentWrong,
   };
 }

@@ -44,7 +44,8 @@ Secret
 |   `-- swapKey(network:) -> SwapMasterKey
 |-- sign
 |   |-- psbt(psbt, network:, scriptType:, [accountIndex: 0]) -> String
-|   `-- pset(pset, network:) -> String
+|   |-- pset(pset, network:) -> String
+|   `-- silentPayment(psbt, network:) -> Uint8List
 |-- backup
 |   `-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
 |-- verify
@@ -113,7 +114,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `derive.xpub` | account xpub | reveals addresses |
 | `derive.descriptors.bitcoin` | receive/change public descriptors | reveals addresses |
 | `derive.descriptors.liquid` | confidential descriptor with its SLIP-77 blinding key | reveals amounts and assets, without spend authority |
-| `sign.psbt`, `sign.pset` | signed serialized transaction data | authority for the signed transaction |
+| `sign.psbt`, `sign.pset`, `sign.silentPayment` | signed serialized transaction data | authority for the signed transaction |
 | `verify.mnemonic`, `verify.seed` | match or mismatch | no stored material returned |
 | `info`, `id` | fingerprint and shape | no key material |
 | `derive.bip85.hex`, `derive.bip85.mnemonic` | child entropy or words | spending authority over what the child controls |
@@ -131,7 +132,7 @@ Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or
 
 Account xpub derivation, Bitcoin signing, BIP85, swap credentials and the silent payment scan key honor the stored passphrase. Liquid descriptors and signatures derive from words alone and ignore it. A Liquid-network xpub therefore does not necessarily describe the keys in the Liquid descriptor, especially with a passphrase or a different script type. BIP85 can export other languages; stored mnemonic import currently validates English words.
 
-Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
+Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. `sign.silentPayment` takes and returns PSBTv2 bytes: the unsigned PSBT a watch-only bwk account prepared, signed by bwk's stateless signer with the spend key and the BIP86 account xprv lent for that call; the caller's account then verifies it and extracts the transaction. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
 
 `verify.mnemonic(words)` compares words only. `verify.seed(hex)` compares seed bytes, including the stored passphrase in the derivation for a mnemonic secret. A seed-only secret supports seed verification; mnemonic verification returns `MnemonicRequiredFailure`. A match is `Ok(true)`; a different seed or malformed candidate hex is `Ok(false)`; inability to read or check stored material is an `Err`.
 

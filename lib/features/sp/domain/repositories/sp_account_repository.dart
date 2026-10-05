@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 /// The Silent Payments account: the single live session, the read-only views of
 /// what it holds, and the event streams other layers observe.
@@ -16,22 +17,25 @@ import 'package:primitives/primitives.dart';
 /// The public surface uses domain types only; the wire/FFI view types stay in
 /// `data/` behind the mappers.
 abstract interface class SpAccountRepository {
-  /// Create an account from the mnemonic, reusing any existing on-disk sqlite
-  /// stores. Establishes the live session. Used both for first-time setup and
-  /// to reconstruct the session on load (see `EnsureSpSessionUsecase`).
+  /// Open the watch-only account [scanKey] describes, reusing any existing
+  /// on-disk sqlite stores. Establishes the live session on [scanKey]'s
+  /// network. Used both for first-time setup and to reconstruct the session on
+  /// load (see `EnsureSpSessionUsecase`).
+  ///
+  /// The account scans, simulates and derives addresses; it holds no spend
+  /// authority. Spending borrows it from the custody package per call.
   ///
   /// Returns `Err(SpSessionBusy)` when a session is already live: exactly one
   /// `SpAccount` exists, so callers must `dispose()` first. Every legitimate
   /// path (recreate, revoke, ensure) tears the session down before establishing
   /// a new one, so that guard only fires on a real programmer error.
   ///
-  /// This is the only call that carries the mnemonic across the FFI boundary,
-  /// so its failures carry fixed text: no error string derived from the
-  /// arguments is ever interpolated into the returned failure.
+  /// This call carries the scan private key across the FFI boundary, so its
+  /// failures carry fixed text: no error string derived from the arguments is
+  /// ever interpolated into the returned failure.
   @useResult
-  Future<Result<void, SpFailure>> createFromMnemonic({
-    required BitcoinNetwork network,
-    required String mnemonic,
+  Future<Result<void, SpFailure>> createFromScanKey({
+    required SilentPaymentDescriptors scanKey,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -118,7 +122,7 @@ abstract interface class SpAccountRepository {
 
   /// Emit a setup-changed event on [updates]. Called by the revoke use case
   /// after it tears the wallet down, so observers (the wallet home) re-evaluate
-  /// setup state. `createFromMnemonic` emits the same event internally on setup.
+  /// setup state. `createFromScanKey` emits the same event internally on setup.
   void notifySetupChanged();
 
   /// Emit a balance-changed event with the current unified balance. Used by SP

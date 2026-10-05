@@ -34,10 +34,12 @@ library;
 
 import 'package:secrets/src/crypto/signers/bitcoin_signer.dart';
 import 'package:secrets/src/crypto/signers/liquid_signer.dart';
+import 'package:secrets/src/crypto/signers/silent_payment_signer.dart';
 import 'package:secrets/src/domain/domain.dart';
 
 export 'bitcoin_signer.dart' show BitcoinSigner;
 export 'liquid_signer.dart' show LiquidSigner;
+export 'silent_payment_signer.dart' show SilentPaymentSigner;
 
 /// The BIP39 sentence every signer signs from.
 ///
@@ -63,4 +65,8 @@ abstract final class Signer {
 
   /// PSET, through lwk.
   static const liquid = LiquidSigner();
+
+  /// Silent payments PSBTs, through bwk's stateless signer, with keys lent
+  /// for one call.
+  static const silentPayment = SilentPaymentSigner();
 }

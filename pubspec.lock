@@ -329,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1462,9 +1462,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
   package_config:
@@ -1769,9 +1769,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:

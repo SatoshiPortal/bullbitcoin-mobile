@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:io';
 
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
@@ -27,7 +25,10 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 /// Shared mocktail doubles + builders for the SP domain use case tests. The use
 /// case tests need `verify()` on collaborator calls, so they mock these two
@@ -41,13 +42,40 @@ class MockSpAccountRepository extends Mock
         SpScanControlPort,
         SpPaymentsPort {}
 
-class MockGetDefaultSeedUsecase extends Mock implements GetDefaultSeedUsecase {}
+class MockGetSpScanKeyUsecase extends Mock implements GetSpScanKeyUsecase {}
 
-MnemonicSeed spMnemonicSeed() => MnemonicSeed(
-  mnemonicWords: List.filled(12, 'abandon'),
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
+/// The BIP39 test vector `abandon … about`.
+const spTestWords = [
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'about',
+];
+
+/// A real scan credential, derived by the custody package from [spTestWords]
+/// stored in an in-memory keystore. `SilentPaymentDescriptors` cannot be built or
+/// faked outside the package, so tests derive one; call it once per file
+/// (`setUpAll`), it costs a PBKDF2 pass.
+Future<SilentPaymentDescriptors> deriveSpScanKey({
+  BitcoinNetwork network = BitcoinNetwork.regtest,
+}) async {
+  FakeSecureStoragePlatform().install();
+  final secrets = Secrets(
+    scratchDirectory: () async => Directory.systemTemp.path,
+  );
+  final stored = await secrets.import(words: spTestWords);
+  final secret = (stored as Ok<Secret, SecretFailure>).value;
+  final key = await secret.derive.descriptors.silentPayment(network: network);
+  return (key as Ok<SilentPaymentDescriptors, SecretFailure>).value;
+}
 
 SpBackendConfig spBackendConfig({
   BitcoinNetwork network = BitcoinNetwork.regtest,
@@ -146,10 +174,12 @@ class FakeSpAccountRepository
     await _notifLog.close();
   }
 
+  /// The credential of the most recent successful create.
+  SilentPaymentDescriptors? lastScanKey;
+
   @override
-  Future<Result<void, SpFailure>> createFromMnemonic({
-    required BitcoinNetwork network,
-    required String mnemonic,
+  Future<Result<void, SpFailure>> createFromScanKey({
+    required SilentPaymentDescriptors scanKey,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -159,6 +189,7 @@ class FakeSpAccountRepository
       return const Err(SpUnexpected('SP account create failed'));
     }
     createCount++;
+    lastScanKey = scanKey;
     hasSessionValue = true;
     return const Ok(null);
   }

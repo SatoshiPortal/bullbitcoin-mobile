@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -10,6 +7,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 import '../../sp_fakes.dart';
 
@@ -25,29 +23,16 @@ SettingsEntity _settings({
   isSuperuser: null,
 ).copyWith(isSuperuser: isSuperuser, isDevModeEnabled: isDevModeEnabled);
 
-Seed _mnemonicSeed() => Seed.mnemonic(
-  mnemonicWords:
-      'abandon abandon abandon abandon abandon abandon abandon '
-              'abandon abandon abandon abandon about'
-          .split(' '),
-  bytes: Uint8List.fromList(List<int>.filled(64, 1)),
-  masterFingerprint: '00000000',
-);
-
-Seed _bytesSeed() => Seed.bytes(
-  bytes: Uint8List.fromList(List<int>.filled(32, 2)),
-  masterFingerprint: '11111111',
-);
-
 void main() {
-  late MockGetDefaultSeedUsecase seedUsecase;
+  late SilentPaymentDescriptors spScanKey;
+  late MockGetSpScanKeyUsecase scanKeyUsecase;
   late _MockSettingsRepository settingsRepo;
   late FakeSpAccountRepository accountRepo;
   late FakeSpBackendConfigRepository configRepo;
   late CreateSpWalletUsecase usecase;
 
   CreateSpWalletUsecase build() => CreateSpWalletUsecase(
-    getDefaultSeedUsecase: seedUsecase,
+    getSpScanKeyUsecase: scanKeyUsecase,
     settingsRepository: settingsRepo,
     repository: accountRepo,
     files: accountRepo,
@@ -63,17 +48,22 @@ void main() {
         scanFromNow: scanFromNow,
       );
 
+  setUpAll(() async {
+    registerFallbackValue(BitcoinNetwork.regtest);
+    spScanKey = await deriveSpScanKey();
+  });
+
   setUp(() {
-    seedUsecase = MockGetDefaultSeedUsecase();
+    scanKeyUsecase = MockGetSpScanKeyUsecase();
     settingsRepo = _MockSettingsRepository();
-    // hasSessionValue false so create actually reaches createFromMnemonic.
+    // hasSessionValue false so create actually reaches createFromScanKey.
     accountRepo = FakeSpAccountRepository(hasSessionValue: false);
     configRepo = FakeSpBackendConfigRepository();
 
     when(() => settingsRepo.fetch()).thenAnswer((_) async => _settings());
     when(
-      () => seedUsecase.execute(),
-    ).thenAnswer((_) async => Ok(_mnemonicSeed()));
+      () => scanKeyUsecase.execute(network: any(named: 'network')),
+    ).thenAnswer((_) async => Ok(spScanKey));
     usecase = build();
   });
 
@@ -206,20 +196,28 @@ void main() {
     );
   });
 
-  group('CreateSpWalletUsecase seed + create failures', () {
-    test(
-      'a non-mnemonic seed throws StateError (programmer-bug path)',
-      () async {
+  group('CreateSpWalletUsecase scan credential + create failures', () {
+    for (final failure in const <SpFailure>[
+      SpNoDefaultWallet('no default'),
+      SpKeystoreLocked('KeystoreLockedFailure'),
+    ]) {
+      test('a ${failure.runtimeType} from the scan credential is forwarded and '
+          'nothing is saved or created', () async {
         when(
-          () => seedUsecase.execute(),
-        ).thenAnswer((_) async => Ok(_bytesSeed()));
+          () => scanKeyUsecase.execute(network: any(named: 'network')),
+        ).thenAnswer((_) async => Err(failure));
 
-        await expectLater(run(), throwsA(isA<StateError>()));
+        final result = await run();
+
+        expect((result as Err).failure, same(failure));
         expect(accountRepo.createCount, 0);
-      },
-    );
+        final stored =
+            (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
+        expect(stored.value, isNull, reason: 'derived before any save');
+      });
+    }
 
-    test('maps a createFromMnemonic throw to SpUnexpected', () async {
+    test('maps a createFromScanKey throw to SpUnexpected', () async {
       accountRepo.createShouldFail = true;
 
       final result = await run();
@@ -227,7 +225,7 @@ void main() {
       expect((result as Err).failure, isA<SpUnexpected>());
     });
 
-    test('rolls the config back on a createFromMnemonic throw so retry is not '
+    test('rolls the config back on a createFromScanKey throw so retry is not '
         'wedged by SpAlreadySetUp', () async {
       accountRepo.createShouldFail = true;
 
@@ -255,11 +253,11 @@ void main() {
     });
 
     test(
-      'a seed read throw returns Err (execute is total, does not throw)',
+      'a scan credential throw returns Err (execute is total, does not throw)',
       () async {
         when(
-          () => seedUsecase.execute(),
-        ).thenThrow(Exception('seed read failed'));
+          () => scanKeyUsecase.execute(network: any(named: 'network')),
+        ).thenThrow(Exception('scan key read failed'));
 
         final result = await run();
 
@@ -269,7 +267,7 @@ void main() {
           failure.logMessage,
           'SP wallet create failed',
           reason:
-              'the block derives the mnemonic, so nothing caught may be '
+              'the block handles the scan key, so nothing caught may be '
               'written to the exportable log',
         );
         expect(accountRepo.createCount, 0);
@@ -281,6 +279,14 @@ void main() {
 
       expect(result, isA<Ok<void, SpFailure>>());
       expect(accountRepo.createCount, 1);
+      expect(
+        accountRepo.lastScanKey,
+        same(spScanKey),
+        reason: 'the account is opened from the derived scan credential',
+      );
+      verify(
+        () => scanKeyUsecase.execute(network: BitcoinNetwork.regtest),
+      ).called(1);
       final stored =
           (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
       expect(stored.value?.network, BitcoinNetwork.regtest);

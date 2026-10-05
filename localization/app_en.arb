@@ -15502,5 +15502,29 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "spFailureNoDefaultWallet": "Silent Payments needs a default Bitcoin wallet on this network.",
+  "@spFailureNoDefaultWallet": {
+    "description": "Silent Payments failure: no default Bitcoin wallet exists for the Silent Payments network"
+  },
+  "spFailureKeystoreLocked": "Your wallet is unavailable while the device is locked. Unlock it and try again.",
+  "@spFailureKeystoreLocked": {
+    "description": "Silent Payments failure: the device keystore is locked so the wallet secret cannot be read"
+  },
+  "spFailureSignedTransactionMismatch": "The signed transaction did not match the one you confirmed, so it was not sent. Please review and try again.",
+  "@spFailureSignedTransactionMismatch": {
+    "description": "Silent Payments send failure: the signed transaction differs from the confirmed simulation, so nothing was broadcast"
+  },
+  "spFailureCredentialRefused": "The Silent Payments wallet could not be opened with this wallet's keys.",
+  "@spFailureCredentialRefused": {
+    "description": "Silent Payments setup failure: the watch-only account refused the descriptors derived from the default wallet"
+  },
+  "spFailureSigningRefused": "The payment could not be signed, so it was not sent. Please review and try again.",
+  "@spFailureSigningRefused": {
+    "description": "Silent Payments send failure: the signer refused the prepared transaction, so nothing was broadcast"
+  },
+  "spFailureVerificationFailed": "The signed payment failed verification, so it was not sent. Please review and try again.",
+  "@spFailureVerificationFailed": {
+    "description": "Silent Payments send failure: the signed transaction failed the silent payments verification (shares, proofs, output scripts or signatures), so nothing was broadcast"
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -152,6 +154,15 @@ extension type const SecretSigning._(Secret _secret) {
     String pset, {
     required LiquidNetwork network,
   }) => _secret.signPset(pset, network: network);
+
+  /// Signs the unsigned PSBTv2 of a silent payments spend with keys lent for
+  /// this call only, and returns the signed PSBTv2. See
+  /// [Secret.signSilentPayment].
+  @useResult
+  Future<Result<Uint8List, SecretFailure>> silentPayment(
+    Uint8List psbt, {
+    required BitcoinNetwork network,
+  }) => _secret.signSilentPayment(psbt, network: network);
 }
 
 /// Verdicts only: comparison never hands the stored material to the caller.

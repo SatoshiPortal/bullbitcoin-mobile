@@ -42,10 +42,22 @@ final class SpScanBusy extends SpFailure {
 }
 
 /// The coin set drifted from the confirmed simulation, so the pinned tx can no
-/// longer be built. Mapped from the bwk "inputs changed" signal at the adapter
-/// boundary.
+/// longer be sent. Mapped from bwk's `SimulationDrifted`, which the account's
+/// finalize reports, at the adapter boundary.
 final class SpSimulationDrifted extends SpFailure {
   const SpSimulationDrifted([super.logMessage]);
+}
+
+/// Setup/load gate: no default Bitcoin wallet exists for the network the SP
+/// wallet runs on, so there is no secret to derive its scan credential from.
+final class SpNoDefaultWallet extends SpFailure {
+  const SpNoDefaultWallet([super.logMessage]);
+}
+
+/// The device keystore is locked (or otherwise unreadable right now), so the
+/// wallet's secret cannot be used. Retrying after unlocking may succeed.
+final class SpKeystoreLocked extends SpFailure {
+  const SpKeystoreLocked([super.logMessage]);
 }
 
 /// A backend (blindbit / electrum) could not be reached.
@@ -91,6 +103,36 @@ final class SpInvalidAddress extends SpFailure {
 /// sent, so the user must check before retrying.
 final class SpBroadcastUncertain extends SpFailure {
   const SpBroadcastUncertain([super.logMessage]);
+}
+
+/// The signed transaction differs from the confirmed simulation (inputs,
+/// outputs, amounts or fee), so it was not broadcast. Mapped from bwk's
+/// `SignedPsbtMismatch`. Nothing was sent; the user can review the payment and
+/// try again.
+final class SpSignedTransactionMismatch extends SpFailure {
+  const SpSignedTransactionMismatch([super.logMessage]);
+}
+
+/// The watch-only account refused the descriptors derived from the default
+/// wallet (a malformed credential, or one for another network), so it was not
+/// opened. Mapped from bwk's `InvalidDescriptor`.
+final class SpCredentialRefused extends SpFailure {
+  const SpCredentialRefused([super.logMessage]);
+}
+
+/// The signer refused the prepared transaction (an input the wallet's keys do
+/// not own, an unsupported script, a transaction already signed), so nothing
+/// was signed or sent.
+final class SpSigningRefused extends SpFailure {
+  const SpSigningRefused([super.logMessage]);
+}
+
+/// The signed transaction failed the account's silent payments verification
+/// (BIP375 shares, DLEQ proofs, output scripts) or its signature checks, so
+/// it was not extracted and nothing was sent. Mapped from bwk's
+/// `Verification`.
+final class SpVerificationFailed extends SpFailure {
+  const SpVerificationFailed([super.logMessage]);
 }
 
 /// Catch-all. [Failure.logMessage] is for logs ONLY and MUST never reach the
