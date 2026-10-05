@@ -17464,5 +17464,29 @@
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
   "@bullVaultRestoreCompleteTitle": {},
   "bullVaultRestoreCompleteTitle": "BullVault restored",
-  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "recoverbullKeySeedUnavailable": "The wallet seed needed to derive this key is not available. Unlock the matching wallet and try again, or use this file and its backup PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file. BULL will use its original backup path and the wallet seeds on this device to find the matching key, then check that it opens the file. No backup PIN or server connection is needed. This does not test your PIN or server recovery.",
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. It may belong to another wallet, or the file may be damaged. No key has been revealed. Try another copy or use the server.",
+  "recoverbullKeyPathUnavailable": "This backup’s original key-derivation path is missing or unsupported. BULL cannot safely guess it. Try another saved copy, or use the server if it still has the matching record."
 }
