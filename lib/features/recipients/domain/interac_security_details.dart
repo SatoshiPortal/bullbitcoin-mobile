@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 final class InteracSecurityDetails {
   const InteracSecurityDetails._({
@@ -14,6 +15,7 @@ final class InteracSecurityDetails {
   final String? securityQuestion;
   final String? securityAnswer;
 
+  @useResult
   static Result<InteracSecurityDetails, RecipientsFailure> create({
     required String recipientId,
     required String email,
