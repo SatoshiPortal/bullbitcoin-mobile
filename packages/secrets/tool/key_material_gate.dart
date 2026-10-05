@@ -278,14 +278,6 @@ bool _isException(String path, AstNode node, String symbol) {
       'Descriptor.newBip84',
     }.contains(member);
   }
-  // Temporary: silent payments still reads its seed through the legacy model
-  // until it derives its keys through this package. Removed with that
-  // migration; nothing else may reach the legacy seed module.
-  if (path == 'lib/core/seed/data/models/seed_model.dart' &&
-      owner == 'SeedModel' &&
-      {'bytes', 'masterFingerprint', 'toEntity'}.contains(function)) {
-    return {'Mnemonic.seed', 'Bip32Keys.fromSeed'}.contains(member);
-  }
   // The exported swap master key is a documented, independent child secret.
   if (path == 'lib/core/swaps/data/models/swap_master_key_model.dart' &&
       owner == 'SwapMasterKeyModel') {

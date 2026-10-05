@@ -22,7 +22,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/core/seed/seed_locator.dart';
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -119,8 +118,6 @@ class CoreLocator {
   }
 
   static void registerUsecases(GetIt locator) {
-    // Silent payments still reads its seed through the legacy module.
-    SeedLocator.setup(locator);
     bull_tor.TorLocator.registerUsecases(locator);
     LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);

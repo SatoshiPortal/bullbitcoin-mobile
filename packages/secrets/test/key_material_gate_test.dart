@@ -364,29 +364,6 @@ class SwapMasterKeyModel {
 ''';
   const swapPath = 'lib/core/swaps/data/models/swap_master_key_model.dart';
 
-  const legacySeed = '''
-import 'dart:typed_data';
-import 'package:bip32_keys/bip32_keys.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart';
-class SeedModel {
-  List<int> get bytes => Mnemonic.fromSentence('', Language.english).seed;
-  String get masterFingerprint =>
-      Bip32Keys.fromSeed(Uint8List(0)).fingerprint.toString();
-  Object toEntity() => Bip32Keys.fromSeed(Uint8List(0));
-  Object other() => Bip32Keys.fromSeed(Uint8List(0));
-}
-''';
-  const legacySeedPath = 'lib/core/seed/data/models/seed_model.dart';
-
-  test('legacy seed exemption permits only the named model reads', () async {
-    expect(
-      await inspect('legacy_seed', legacySeed, policyPath: legacySeedPath),
-      hasLength(1),
-      reason: 'other() is not one of the named members',
-    );
-    expect(await inspect('wrong_legacy_seed_file', legacySeed), hasLength(2));
-  });
-
   test('swap exemption permits only the named model operations', () async {
     expect(await inspect('swap', swaps, policyPath: swapPath), isEmpty);
     expect(await inspect('wrong_swap_file', swaps), hasLength(3));
