@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/fund_exchange/application/usecases/open_fundi
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import '../result_helpers.dart';
 
 /// Records what it was asked to open, and answers with [result].
 class _RecordingExternalLink implements ExternalLinkPort {
@@ -69,7 +70,7 @@ void main() {
           reason: '"$bad" should not reach the launcher',
         );
         expect(
-          (result as Err).failure,
+          failureOf(result),
           isA<FundExchangePaymentLinkUnavailableFailure>(),
         );
         expect(link.opened, isEmpty);
@@ -106,7 +107,7 @@ void main() {
       ),
     );
 
-    final failure = (result as Err).failure as FundExchangeFailure;
+    final failure = failureOf(result);
     expect(failure, isA<FundExchangePaymentLinkUnavailableFailure>());
     expect(failure.logMessage, 'PlatformException');
   });

@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_me
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import '../result_helpers.dart';
 
 /// The IBAN the API echoes back in `messageData` for ERR_ORD_CSRCP400.
 const _iban = 'DE89370400440532013000';
@@ -68,7 +69,7 @@ void main() {
 
         expect(result, isA<Err<dynamic, FundExchangeFailure>>());
         expect(
-          (result as Err).failure.runtimeType,
+          failureOf(result).runtimeType,
           entry.value,
           reason: '${entry.key} mapped to the wrong variant',
         );
@@ -86,7 +87,7 @@ void main() {
         fundingMethod: RegularSepa(),
       );
 
-      expect((result as Err).failure, isA<FundExchangeUnexpectedFailure>());
+      expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
     });
 
     test('keeps the backend sentence and IBAN in logMessage only', () async {
@@ -99,7 +100,7 @@ void main() {
       final result = await gateway.getFundingDetails(
         fundingMethod: RegularSepa(),
       );
-      final failure = (result as Err).failure as FundExchangeFailure;
+      final failure = failureOf(result);
 
       // The reason survives for diagnosis...
       expect(failure.logMessage, contains(_backendSentence));
@@ -126,7 +127,7 @@ void main() {
         final result = await gateway.getFundingDetails(
           fundingMethod: RegularSepa(),
         );
-        final failure = (result as Err).failure as FundExchangeFailure;
+        final failure = failureOf(result);
 
         expect(failure, isA<FundExchangeUnexpectedFailure>());
         expect(failure.logMessage, 'HTTP 503');
@@ -209,7 +210,7 @@ void main() {
         final result = await gateway.getFundingDetails(
           fundingMethod: RegularSepa(),
         );
-        final failure = (result as Err).failure as FundExchangeFailure;
+        final failure = failureOf(result);
 
         // Like every converted feature, the catch-all keeps the stringified
         // exception for diagnosis. That is safe because it lands in
@@ -235,7 +236,7 @@ void main() {
         jurisdiction: FundingJurisdiction.colombia,
       );
 
-      expect((result as Err).failure, isA<FundExchangeNoInstitutionsFailure>());
+      expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
     });
 
     test('unparseable elements are skipped, not surfaced raw', () async {
@@ -261,7 +262,7 @@ void main() {
       );
 
       expect(result, isA<Ok<dynamic, FundExchangeFailure>>());
-      final institutions = (result as Ok).value;
+      final institutions = valueOf(result);
       expect(institutions, hasLength(1));
       expect(institutions.single.code, 'BC01');
     });
@@ -278,7 +279,7 @@ void main() {
       );
 
       final result = await gateway.registerResponsibilityConsent();
-      final failure = (result as Err).failure as FundExchangeFailure;
+      final failure = failureOf(result);
 
       expect(failure, isA<FundExchangeConsentRegistrationFailure>());
     });
@@ -361,7 +362,7 @@ void main() {
       final result = await gateway.getFundingDetails(
         fundingMethod: RegularSepa(),
       );
-      final failure = (result as Err).failure as FundExchangeFailure;
+      final failure = failureOf(result);
 
       // 400 is not a code we map, so the catch-all is correct here — what
       // matters is that parsing did not blow up on the way.
@@ -387,7 +388,7 @@ void main() {
         fundingMethod: RegularSepa(),
       );
 
-      expect((result as Err).failure, isA<FundExchangeKycIncompleteFailure>());
+      expect(failureOf(result), isA<FundExchangeKycIncompleteFailure>());
     });
 
     test('a non-object error keeps the raw value out of logMessage', () async {
@@ -402,7 +403,7 @@ void main() {
       final result = await gateway.getFundingDetails(
         fundingMethod: RegularSepa(),
       );
-      final failure = (result as Err).failure as FundExchangeFailure;
+      final failure = failureOf(result);
 
       expect(failure, isA<FundExchangeUnexpectedFailure>());
       expect(

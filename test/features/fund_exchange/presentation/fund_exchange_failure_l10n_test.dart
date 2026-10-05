@@ -21,6 +21,7 @@ final _everyFailure = <FundExchangeFailure>[
   const FundExchangeRequestInvalidFailure(_rawReason),
   const FundExchangeNoInstitutionsFailure(_rawReason),
   const FundExchangeConsentRegistrationFailure(_rawReason),
+  const FundExchangePaymentLinkUnavailableFailure(_rawReason),
   const FundExchangeNetworkFailure(_rawReason),
   const FundExchangeUnexpectedFailure(_rawReason),
 ];

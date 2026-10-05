@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.da
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import '../result_helpers.dart';
 
 /// The shared core use-case stringifies its cause, so its message carries
 /// whatever the exchange API or Dio produced.
@@ -40,7 +41,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect((result as Ok).value, _summary);
+    expect(valueOf(result), _summary);
   });
 
   test('converts the foreign exception into a sanitized failure', () async {
@@ -49,7 +50,7 @@ void main() {
     final result = await usecase.execute();
 
     expect(result, isA<Err<UserSummary, FundExchangeFailure>>());
-    final failure = (result as Err).failure as FundExchangeFailure;
+    final failure = failureOf(result);
     expect(failure, isA<FundExchangeUnexpectedFailure>());
     expect(
       failure.logMessage,
@@ -63,7 +64,7 @@ void main() {
 
     await expectLater(usecase.execute(), completes);
     expect(
-      ((await usecase.execute()) as Err).failure,
+      failureOf(await usecase.execute()),
       isA<FundExchangeUnexpectedFailure>(),
     );
   });

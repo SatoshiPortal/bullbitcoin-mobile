@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_in
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import '../result_helpers.dart';
 
 const _rawReason =
     'DioException [bad response]: {"error":{"data":{"apiError":'
@@ -28,7 +29,7 @@ void main() {
       final result = await usecase.execute(const GetRegularSepaDetails());
 
       expect(result, isA<Err<GetFundingDetailsResult, FundExchangeFailure>>());
-      expect((result as Err).failure, isA<FundExchangeKycIncompleteFailure>());
+      expect(failureOf(result), isA<FundExchangeKycIncompleteFailure>());
     });
 
     test('never throws for a failing gateway', () async {
@@ -58,7 +59,7 @@ void main() {
         const GetCopBankTransferDetails(bankCode: 'BC01', amountCop: 100000),
       );
 
-      expect((result as Ok).value.fundingDetails, details);
+      expect(valueOf(result).fundingDetails, details);
     });
   });
 
@@ -78,7 +79,7 @@ void main() {
         ),
       );
 
-      expect((result as Err).failure, isA<FundExchangeNoInstitutionsFailure>());
+      expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
     });
 
     test('wraps a successful payload', () async {
@@ -98,7 +99,7 @@ void main() {
         ),
       );
 
-      expect((result as Ok).value.institutions, [institution]);
+      expect(valueOf(result).institutions, [institution]);
     });
   });
 
@@ -116,10 +117,7 @@ void main() {
         const RegisterResponsibilityConsentCommand(),
       );
 
-      expect(
-        (result as Err).failure,
-        isA<FundExchangeConsentRegistrationFailure>(),
-      );
+      expect(failureOf(result), isA<FundExchangeConsentRegistrationFailure>());
     });
 
     test('wraps success', () async {
