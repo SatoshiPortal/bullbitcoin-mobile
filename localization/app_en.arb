@@ -4453,7 +4453,7 @@
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
   },
-  "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2...",
+  "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2…",
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
@@ -6888,7 +6888,7 @@
   "@consolidationFailedBody": {
     "description": "Body of the error banner shown when a consolidation attempt fails"
   },
-  "consolidationInProgress": "Consolidating...",
+  "consolidationInProgress": "Consolidating…",
   "@consolidationInProgress": {
     "description": "Shown while the consolidation transactions are being broadcast"
   },
@@ -8430,7 +8430,7 @@
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
   },
-  "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions...",
+  "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions…",
   "@recoverbullRecoveryLoadingMessage": {
     "description": "Loading message while checking wallet balance and transactions"
   },
@@ -10701,11 +10701,11 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "sellSendingPayment": "Sending payment...",
+  "sellSendingPayment": "Sending payment…",
   "@sellSendingPayment": {
     "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
   },
-  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order...",
+  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
   "@sellPaymentSentRefreshingOrder": {
     "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
@@ -14172,7 +14172,7 @@
   "@mempoolErrorNetworkMismatch": {
     "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
   },
-  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction...",
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
   "@transactionPayjoinFallbackProcessing": {
     "description": "Status shown while broadcasting a payjoin fallback transaction"
   },
@@ -14184,7 +14184,7 @@
   "@torSettingsDescCensored": {
     "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
   },
-  "torSettingsBootstrapProgress": "Connecting... {percent}%",
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
   "@torSettingsBootstrapProgress": {
     "description": "Bootstrap progress percentage while Tor is connecting.",
     "placeholders": {
