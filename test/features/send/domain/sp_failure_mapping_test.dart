@@ -64,6 +64,10 @@ void main() {
       expect(const SpSessionBusy().toSendFailure(), isNull);
       expect(const SpBackendUnreachable('down').toSendFailure(), isNull);
       expect(const SpSimulationDrifted('drift').toSendFailure(), isNull);
+      expect(const SpSignedTransactionMismatch('fee').toSendFailure(), isNull);
+      expect(const SpSigningRefused('input').toSendFailure(), isNull);
+      expect(const SpVerificationFailed('dleq').toSendFailure(), isNull);
+      expect(const SpCredentialRefused('network').toSendFailure(), isNull);
     });
   });
 

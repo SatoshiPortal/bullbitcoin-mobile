@@ -599,6 +599,7 @@ void main() {
           signedPsbt: any(named: 'signedPsbt'),
         ),
       ).thenAnswer((_) => answer());
+      _stubOwned(account, _recognisedChange());
     }
 
     void verifyNeverFinalized(_MockSpAccount a) => verifyNever(
@@ -764,6 +765,293 @@ void main() {
       expect(ffi.broadcastHex, isNull);
     });
   });
+
+  group('finalizeSignBroadcast checks the signed transaction against the '
+      'simulation', () {
+    final draft = SpTxDraft(
+      id: 'draft-1',
+      inputs: [],
+      outputs: [],
+      feeSat: Sats.zero,
+      changeSat: Sats.zero,
+    );
+
+    late _MockSpAccount account;
+    late _FakeFfiDatasource ffi;
+
+    Future<BwkSpAccountRepository> signing(
+      Uint8List tx, {
+      TxSimulation? simulation,
+      Future<List<SpOwnedOutput>> Function()? owned,
+    }) async {
+      account = _MockSpAccount();
+      ffi = _FakeFfiDatasource(session: false, account: account);
+      ffi.simulations[draft.id] = simulation ?? _simulation();
+      final repo = makeRepo(ffi: ffi);
+      expect(await createOn(repo), isA<Ok<void, SpFailure>>());
+      when(
+        () => account.finalize(
+          simulation: any(named: 'simulation'),
+          signedPsbt: any(named: 'signedPsbt'),
+        ),
+      ).thenAnswer((_) async => tx);
+      if (owned != null) {
+        when(
+          () => account.ownedOutputs(txBytes: any(named: 'txBytes')),
+        ).thenAnswer((_) => owned());
+      } else {
+        _stubOwned(account, _recognisedChange());
+      }
+      return repo;
+    }
+
+    Future<void> expectRefused(BwkSpAccountRepository repo) async {
+      final result = await repo.finalizeSignBroadcast(draft: draft);
+
+      expect((result as Err).failure, isA<SpSignedTransactionMismatch>());
+      expect(ffi.broadcastHex, isNull, reason: 'nothing is broadcast');
+    }
+
+    test('a transaction that matches is broadcast, its outputs matched by '
+        'index whatever order the simulation lists them in', () async {
+      final signed = _signedTx();
+      final repo = await signing(
+        signed,
+        simulation: _simulation(reversed: true),
+      );
+
+      final result = await repo.finalizeSignBroadcast(draft: draft);
+
+      expect((result as Ok<String, SpFailure>).value, 'txid-1');
+      expect(ffi.broadcastHex, _hex(signed));
+    });
+
+    test('an extra input is refused', () async {
+      final repo = await signing(
+        _signedTx(inputs: [..._simulatedInputs, ('c' * 64, 2)]),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a missing input is refused', () async {
+      final repo = await signing(_signedTx(inputs: [_simulatedInputs.first]));
+
+      await expectRefused(repo);
+    });
+
+    test('a different input is refused', () async {
+      final repo = await signing(
+        _signedTx(inputs: [_simulatedInputs.first, ('b' * 64, 0)]),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a wrong amount is refused', () async {
+      final repo = await signing(
+        _signedTx(
+          outputs: [
+            (_standardSat, _standardScript()),
+            (_spSat - 500, _p2tr(0x22)),
+            (_changeSat, _p2tr(0x33)),
+          ],
+        ),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('the standard recipient amount moved to another output is refused '
+        'even though the amounts are unchanged', () async {
+      final repo = await signing(
+        _signedTx(
+          outputs: [
+            (_spSat, _standardScript()),
+            (_standardSat, _p2tr(0x22)),
+            (_changeSat, _p2tr(0x33)),
+          ],
+        ),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('the standard recipient paid to another script is refused', () async {
+      final repo = await signing(
+        _signedTx(
+          outputs: [
+            (_standardSat, _p2tr(0x44)),
+            (_spSat, _p2tr(0x22)),
+            (_changeSat, _p2tr(0x33)),
+          ],
+        ),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a fee other than the simulated one is refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        simulation: _simulation(feeSat: _feeSat - 100),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('an extra output is refused', () async {
+      final repo = await signing(
+        _signedTx(outputs: [..._simulatedOutputs(), (546, _p2tr(0x55))]),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a missing change output is refused', () async {
+      final repo = await signing(
+        _signedTx(outputs: _simulatedOutputs().take(2).toList()),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a silent payment output that is not taproot is refused', () async {
+      final repo = await signing(
+        _signedTx(
+          outputs: [
+            (_standardSat, _standardScript()),
+            (_spSat, _standardScript()),
+            (_changeSat, _p2tr(0x33)),
+          ],
+        ),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a simulation that pays another silent payment address than the '
+        'confirmed recipient is refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        simulation: _simulation(paidSpAddress: 'sp1-someone-else'),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('a simulation whose change does not add up is refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        simulation: _simulation(changeSat: _changeSat, statedChangeSat: 1),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('bytes that are not a transaction are refused', () async {
+      final repo = await signing(Uint8List.fromList([0x02, 0x00, 0xab]));
+
+      await expectRefused(repo);
+    });
+
+    test('the receiving path is asked about the extracted transaction, on '
+        'the account that finalized it', () async {
+      final signed = _signedTx();
+      final repo = await signing(signed);
+
+      await repo.finalizeSignBroadcast(draft: draft);
+
+      final captured = verify(
+        () => account.ownedOutputs(txBytes: captureAny(named: 'txBytes')),
+      ).captured;
+      expect(captured.single, signed);
+    });
+
+    test('change the receiving path does not recognise is refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        owned: () async => [
+          SpOwnedOutput(
+            vout: 2,
+            amountSat: BigInt.from(_changeSat),
+            isChange: false,
+          ),
+        ],
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('change of another amount is refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        owned: () async => _recognisedChange(sat: _changeSat - 1),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('two change outputs are refused', () async {
+      final repo = await signing(
+        _signedTx(),
+        owned: () async => [
+          ..._recognisedChange(),
+          ..._recognisedChange(vout: 1),
+        ],
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('change found where none was simulated is refused', () async {
+      final simulation = _simulation(
+        changeSat: 0,
+        feeSat: _feeSat + _changeSat,
+      );
+      final repo = await signing(
+        _signedTx(outputs: _simulatedOutputs().take(2).toList()),
+        simulation: simulation,
+        owned: () async => _recognisedChange(sat: 546),
+      );
+
+      await expectRefused(repo);
+    });
+
+    test('without change, a transaction whose owned outputs hold no change '
+        'is broadcast', () async {
+      final simulation = _simulation(
+        changeSat: 0,
+        feeSat: _feeSat + _changeSat,
+      );
+      final signed = _signedTx(outputs: _simulatedOutputs().take(2).toList());
+      final repo = await signing(
+        signed,
+        simulation: simulation,
+        owned: () async => const [],
+      );
+
+      final result = await repo.finalizeSignBroadcast(draft: draft);
+
+      expect((result as Ok<String, SpFailure>).value, 'txid-1');
+      expect(ffi.broadcastHex, _hex(signed));
+    });
+
+    test('a receiving path that fails is refused with fixed text', () async {
+      final repo = await signing(
+        _signedTx(),
+        owned: () async =>
+            throw const SpError.other(message: 'input not owned: secret'),
+      );
+
+      final result = await repo.finalizeSignBroadcast(draft: draft);
+
+      final failure = (result as Err).failure;
+      expect(failure, isA<SpSignedTransactionMismatch>());
+      expect(failure.logMessage, isNot(contains('secret')));
+      expect(ffi.broadcastHex, isNull, reason: 'nothing is broadcast');
+    });
+  });
 }
 
 // A pinned simulation and the transaction bwk would extract for it: two inputs,
@@ -782,7 +1070,17 @@ final _simulatedInputs = <(String, int)>[('a' * 64, 0), ('b' * 64, 1)];
 final _unsignedPsbt = Uint8List.fromList([0x70, 0x73, 0x62, 0x74, 0xff, 0x01]);
 final _signedPsbt = Uint8List.fromList([0x70, 0x73, 0x62, 0x74, 0xff, 0x02]);
 
-TxSimulation _simulation() {
+/// [reversed] lists the simulated outputs last vout first; [paidSpAddress] is
+/// the silent payment address the simulation resolved for the confirmed
+/// recipient; [statedChangeSat] is the change the simulation states, by
+/// default the amount of its change output.
+TxSimulation _simulation({
+  int feeSat = _feeSat,
+  int changeSat = _changeSat,
+  int? statedChangeSat,
+  bool reversed = false,
+  String paidSpAddress = _spAddress,
+}) {
   final txOutputs = [
     SimulatedOutput(
       vout: 0,
@@ -794,23 +1092,24 @@ TxSimulation _simulation() {
       vout: 1,
       amountSat: BigInt.from(_spSat),
       destination: OutputDestination.silentPayment(
-        address: _spAddress,
+        address: paidSpAddress,
         scanKey: '02${'1' * 64}',
         spendKey: '03${'2' * 64}',
       ),
       isChange: false,
     ),
-    SimulatedOutput(
-      vout: 2,
-      amountSat: BigInt.from(_changeSat),
-      destination: OutputDestination.silentPayment(
-        address: 'sp1-own-change',
-        scanKey: '02${'3' * 64}',
-        spendKey: '03${'4' * 64}',
-        label: 0,
+    if (changeSat > 0)
+      SimulatedOutput(
+        vout: 2,
+        amountSat: BigInt.from(changeSat),
+        destination: OutputDestination.silentPayment(
+          address: 'sp1-own-change',
+          scanKey: '02${'3' * 64}',
+          spendKey: '03${'4' * 64}',
+          label: 0,
+        ),
+        isChange: true,
       ),
-      isChange: true,
-    ),
   ];
   return TxSimulation(
     inputs: [
@@ -839,13 +1138,22 @@ TxSimulation _simulation() {
         isMax: false,
       ),
     ],
-    txOutputs: txOutputs,
-    feeSat: BigInt.from(_feeSat),
-    changeSat: BigInt.from(_changeSat),
+    txOutputs: reversed ? txOutputs.reversed.toList() : txOutputs,
+    feeSat: BigInt.from(feeSat),
+    changeSat: BigInt.from(statedChangeSat ?? changeSat),
     feeRateSatVb: BigInt.two,
     psbt: _unsignedPsbt,
   );
 }
+
+/// What bwk's receiving path reports for [_signedTx]: the change it found.
+List<SpOwnedOutput> _recognisedChange({int sat = _changeSat, int vout = 2}) => [
+  SpOwnedOutput(vout: vout, amountSat: BigInt.from(sat), isChange: true),
+];
+
+void _stubOwned(SpAccount account, List<SpOwnedOutput> owned) => when(
+  () => account.ownedOutputs(txBytes: any(named: 'txBytes')),
+).thenAnswer((_) async => owned);
 
 Uint8List _standardScript() => bdk.Address(
   address: _standardAddress,

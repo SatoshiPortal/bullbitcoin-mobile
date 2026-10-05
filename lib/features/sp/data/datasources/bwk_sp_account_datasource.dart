@@ -115,8 +115,9 @@ class BwkSpAccountDatasource {
 
   /// The live account, for a send pinned to it: the repository takes it
   /// before the custody package signs, checks it is still the live one
-  /// afterwards, and has that same account verify the signed PSBT and extract
-  /// the transaction ([SpAccount.finalize]). It holds no spend authority.
+  /// afterwards, and has that same account verify the signed PSBT
+  /// ([SpAccount.finalize]) and report which outputs of the transaction it owns
+  /// ([SpAccount.ownedOutputs]). It holds no spend authority.
   SpAccount get liveAccount => _live;
 
   Future<void> broadcast({required String txHex}) =>

@@ -106,9 +106,10 @@ final class SpBroadcastUncertain extends SpFailure {
 }
 
 /// The signed transaction differs from the confirmed simulation (inputs,
-/// outputs, amounts or fee), so it was not broadcast. Mapped from bwk's
-/// `SignedPsbtMismatch`. Nothing was sent; the user can review the payment and
-/// try again.
+/// outputs, amounts or fee, or change the receiving path does not recognise),
+/// so it was not broadcast. Mapped from bwk's `SignedPsbtMismatch` and from
+/// the app's own check of the extracted transaction. Nothing was sent; the
+/// user can review the payment and try again.
 final class SpSignedTransactionMismatch extends SpFailure {
   const SpSignedTransactionMismatch([super.logMessage]);
 }

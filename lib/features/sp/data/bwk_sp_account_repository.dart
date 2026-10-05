@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/sp/data/mappers/sp_payment_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_recipient_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_tx_draft_mapper.dart';
 import 'package:bb_mobile/features/sp/data/sp_payment_join.dart';
+import 'package:bb_mobile/features/sp/data/sp_signed_transaction_check.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart'
     as dom;
@@ -419,7 +420,10 @@ class BwkSpAccountRepository
   /// has the live account finalize it: bwk refuses a signed PSBT that differs
   /// from the confirmed simulation, a coin store that drifted since, and any
   /// failed BIP375 verification, so a tx other than the one the Confirm page
-  /// showed is never extracted.
+  /// showed is never extracted. The extracted tx is then checked against the
+  /// simulation here as well (inputs, each output, the recipients, fee, and
+  /// the change as bwk's receiving path finds it), and a tx that differs is
+  /// refused before it can reach the broadcast.
   Future<Result<String, SpFailure>> _sign(TxSimulation simulation) async {
     final fingerprint = sessionFingerprint;
     if (fingerprint == null) {
@@ -430,10 +434,12 @@ class BwkSpAccountRepository
     // finalize must run on the account the simulation was pinned to or not at
     // all.
     final SpAccount account;
+    final SpNetwork ffiNetwork;
     final BitcoinNetwork network;
     try {
       account = _ffi.liveAccount;
-      network = SpNetworkMapper.toDomain(_ffi.network());
+      ffiNetwork = _ffi.network();
+      network = SpNetworkMapper.toDomain(ffiNetwork);
     } catch (e) {
       return Err(_mapFfiError(e));
     }
@@ -478,13 +484,50 @@ class BwkSpAccountRepository
       );
       return Err(failure);
     }
-    return Ok(tx.map((b) => b.toRadixString(16).padLeft(2, '0')).join());
+    return _checkSigned(account, tx, simulation, ffiNetwork);
   }
 
   // Whether [account] is still the live session's account, opened from the
   // secret [fingerprint] names.
   bool _isLiveAccount(SpAccount account, Fingerprint fingerprint) =>
       sessionFingerprint == fingerprint && identical(_ffi.liveAccount, account);
+
+  // The extracted tx as hex for the broadcast, or a refusal when it differs
+  // from the simulation the user confirmed. The structure is compared first;
+  // the change is then looked for through bwk's receiving path on the account
+  // that finalized, independently of the sending code that derived it.
+  Future<Result<String, SpFailure>> _checkSigned(
+    SpAccount account,
+    Uint8List tx,
+    TxSimulation simulation,
+    SpNetwork network,
+  ) async {
+    var mismatch = SpSignedTransactionCheck.mismatch(
+      signed: tx,
+      simulation: simulation,
+      network: network,
+    );
+    if (mismatch == null) {
+      try {
+        mismatch = SpSignedTransactionCheck.change(
+          owned: await account.ownedOutputs(txBytes: tx),
+          simulation: simulation,
+        );
+      } catch (_) {
+        // Fixed text: the receiving path reads the scan key, so its message is
+        // never carried along.
+        mismatch = 'the receiving path could not read the signed transaction';
+      }
+    }
+    if (mismatch != null) {
+      log.warning(
+        'SpAccountRepository: signed transaction refused, it differs from '
+        'its simulation: $mismatch',
+      );
+      return Err(SpSignedTransactionMismatch(mismatch));
+    }
+    return Ok(tx.map((b) => b.toRadixString(16).padLeft(2, '0')).join());
+  }
 
   // A custody failure becomes an SP failure by type. The text is fixed: a
   // signing error comes from bwk handling the lent keys, so its message is
