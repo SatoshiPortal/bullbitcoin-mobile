@@ -19,7 +19,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class StorageLocator {
-  static const _prewarmKey = '__bull_secure_storage_prewarm__';
+  static const _probeKey = '__bull_secure_storage_prewarm__';
   static const _fss10Storage = fss10.FlutterSecureStorage(
     aOptions: fss10.AndroidOptions(
       resetOnError: false,
@@ -46,10 +46,11 @@ class StorageLocator {
       final priorInstall = await _inspectPriorInstallData();
       if (priorInstall.hasDatabase || priorInstall.hasLegacyHiveBoxes) return;
 
-      await _fss10Storage.containsKey(key: _prewarmKey);
+      await _fss10Storage.containsKey(key: _probeKey);
     } catch (_) {
-      // Fail closed. The startup probe repeats initialization and remains the
-      // only path allowed to select FSS10 or route an install through FSS9.
+      // A failed init can leave the native plugin cached without a cipher,
+      // so the probe's next readAll succeeds on an empty store. The probe's
+      // write roundtrip is what surfaces that state and routes it to FSS9.
     }
   }
 
@@ -80,7 +81,7 @@ class StorageLocator {
 
     late final KeyValueStorageDatasource<String> secureStorageDatasource;
 
-    if (Platform.isAndroid) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
       // The FSS9/FSS10 hybrid fallback chain below exists solely to
       // recover 6.5.2 Android users whose wallet data lives in Jetpack
       // Security's EncryptedSharedPreferences (ESP, Tink-backed). ESP
@@ -145,6 +146,15 @@ class StorageLocator {
                 'StorageLocator: readAll empty + no database or hive boxes = '
                 'fresh install',
               );
+              // readAll on an empty store never touches the cipher. Prove a
+              // write decrypts back before committing the flag, rather than
+              // learning it on the first seed write.
+              await storage.write(key: _probeKey, value: _probeKey);
+              final echo = await storage.read(key: _probeKey);
+              await storage.delete(key: _probeKey);
+              if (echo != _probeKey) {
+                throw Exception('FSS10 write roundtrip failed');
+              }
             }
 
             secureStorageDatasource = SecureStorageDatasourceImpl(storage);
@@ -238,7 +248,7 @@ class StorageLocator {
       }
     } else {
       // Non-Android: fss10 direct, no probe, no fallback. See the
-      // `if (Platform.isAndroid)` comment above for the rationale.
+      // Android branch comment above for the rationale.
       // Normalize any stray `fss9` flag (practically unreachable here
       // but cheap to enforce) so the cohort-based "legacy storage" UI
       // warning in `wallet_bloc.dart` / `home_errors.dart` doesn't
