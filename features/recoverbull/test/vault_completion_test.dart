@@ -46,6 +46,8 @@ void main() {
     fingerprint: Fingerprint('73c5da0a'),
     network: BitcoinNetwork.testnet,
   );
+  late FakeSecureStoragePlatform storage;
+  late custody.Secrets secrets;
   late RecoverBullDatabase database;
   late BackupMetadataRepositoryImpl metadata;
   late AttemptMonitoringRepositoryImpl monitoring;
@@ -58,8 +60,8 @@ void main() {
   late CompleteVaultUsecase complete;
 
   setUp(() async {
-    FakeSecureStoragePlatform().install();
-    final secrets = custody.Secrets(scratchDirectory: () async => '.');
+    storage = FakeSecureStoragePlatform()..install();
+    secrets = custody.Secrets(scratchDirectory: () async => '.');
     // Published BIP39 test vector.
     ok(await secrets.import(words: '${'abandon ' * 11}about'.split(' ')));
     vaults = SecretsVaultRepository(secrets);
@@ -95,6 +97,57 @@ void main() {
     provider: VaultProvider.customLocation,
     password: 'public test password',
   );
+
+  for (final passphrase in ['', 'TREZOR']) {
+    for (final valid in [false, true]) {
+      test(
+        'server key reveal authenticates the file without certifying or restoring it ($passphrase, $valid)',
+        () async {
+          final revealContext = passphrase.isEmpty
+              ? context
+              : VaultContext(
+                  fingerprint: ok(
+                    await secrets.import(
+                      words: '${'abandon ' * 11}about'.split(' '),
+                      passphrase: passphrase,
+                    ),
+                  ).id,
+                  network: BitcoinNetwork.testnet,
+                );
+          final backup = ok(await vaults.create(revealContext));
+          storage.entries.clear();
+          storage.locked = true;
+          storage.writesFail = true;
+          final flow = ManageVaultSessionUsecase(
+            metadata,
+            OpenKeyServerUsecase(metadata, _Sessions(server)),
+            FetchVaultKeyUsecase(monitoring),
+            create,
+            complete,
+            vaults,
+          );
+          final pending = flow.reveal(
+            vault: backup.vault,
+            password: 'test password',
+          );
+          await server.fetchStarted.future;
+          server.pendingFetch.complete(
+            Ok(VaultKeyFetch(valid ? backup.key : VaultKey('11' * 32), null)),
+          );
+          final result = await pending;
+          if (valid) {
+            expect(ok(result).hex, backup.key.hex);
+          } else {
+            expect(result, isA<Err<VaultKey, RecoverBullFailure>>());
+          }
+          expect(ok(await metadata.status(revealContext)).isVerified, isFalse);
+          expect(storage.entries, isEmpty);
+          expect(wallets.restores, 0);
+          await flow.close();
+        },
+      );
+    }
+  }
 
   test('pending provider save rejects a replacement password', () async {
     final first = save();
@@ -150,6 +203,7 @@ void main() {
         FetchVaultKeyUsecase(monitoring),
         create,
         complete,
+        vaults,
       );
       final cubit = VaultFlowCubit(
         ManageBackupSettingsUsecase(metadata, const VaultStorageFailure()),
@@ -376,6 +430,7 @@ void main() {
         FetchVaultKeyUsecase(monitoring),
         create,
         complete,
+        vaults,
       );
       expect(sessions.opens, 0, reason: 'construction must remain idle');
       final fetching = flow.verify(

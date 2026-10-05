@@ -1,7 +1,8 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/crypto.dart' show InvalidVault;
+import 'package:secrets/src/crypto/crypto.dart'
+    show InvalidVault, InvalidVaultPath;
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 
@@ -36,6 +37,8 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return const Err(VaultIdentityMismatchFailure());
   } on FingerprintConflictException catch (e) {
     return Err(StoreSecretFailure(e.message));
+  } on InvalidVaultPath {
+    return const Err(InvalidVaultPathFailure());
   } on InvalidVault catch (e) {
     return Err(InvalidVaultFailure(e.message));
   } on MnemonicException catch (e) {

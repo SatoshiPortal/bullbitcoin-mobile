@@ -10,6 +10,8 @@ Consent belongs to the current server URL. Changing that URL resets permission a
 
 Before any counted fetch or trash, a durable own-operation marker must commit, even with monitoring disabled. FULL/ENOSPC, corrupt/unreadable metadata and other write failures produce distinct typed failures. Failed admission sends no counted request. Manual vault-key recovery remains available without opening this database; a successful import and a failed metadata write are reported separately. Corrupt or future-schema files are preserved, never silently replaced. If opening the database fails at startup, restart after correcting the storage problem; ordinary write failures on an open database can be retried in the flow.
 
+Viewing a backup key derives and authenticates it inside Secrets using the selected file and local seeds. It works without the server or certification database; the server fallback authenticates the same file before displaying its key. Viewing a key never marks a backup tested.
+
 Telemetry is advisory. Only unexplained activity or targeted lockout creates an alarm. Outages, stale projections, window changes and unresolved own requests produce unknown coverage. Alerts survive restart, contain no identifiers or counters, and require no automatic action. Delayed replies and cancellation never erase durable own-operation allowances.
 
 Run the pinned SDK through root make targets: `make deps`, `make recoverbull-build-runner`, `make recoverbull-translations`, `make recoverbull-drift-migrations`, and `make checks`. Generated Dart and localizations follow the repository's existing ignore policy; the v1 JSON schema snapshot is versioned. Only a full Xcode build validates iOS integration.

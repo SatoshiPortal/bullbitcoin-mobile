@@ -113,6 +113,7 @@ void main() {
               fetch,
             ),
             complete,
+            vaults,
           );
           presentation = VaultFlowPresentation(
             VaultFlowCubit(
