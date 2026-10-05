@@ -34,11 +34,9 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
       context.loc.fundExchangeScamConsentError,
     FundExchangePaymentLinkUnavailableFailure() =>
       context.loc.fundExchangeErrorOpeningPaymentLink,
-    // Never `logMessage`. That arm used to carry the API's `apiError.en`
-    // string — and, for COP and SEPA, its `messageData` payload — straight to
-    // the funding screens.
-    FundExchangeUnexpectedFailure() =>
-      context.loc.fundExchangeErrorLoadingDetails,
+    // Never `logMessage`: it can hold the API's own sentence. A screen that
+    // knows its context can say more, as the details card does.
+    FundExchangeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 
   /// Optional headline shown above [toTranslated]. `null` means the message

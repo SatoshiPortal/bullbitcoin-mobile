@@ -120,6 +120,16 @@ void main() {
       }
     });
 
+    testWidgets('the catch-all is the shared generic message', (tester) async {
+      expect(
+        await _translate(
+          tester,
+          const FundExchangeUnexpectedFailure(_rawReason),
+        ),
+        'Oops! Something went wrong',
+      );
+    });
+
     testWidgets('the message never depends on the raw reason', (tester) async {
       final withReason = await _translate(
         tester,

@@ -134,6 +134,21 @@ void main() {
     expect(card.description, isNotEmpty);
   });
 
+  testWidgets('the catch-all names the details load, not the shared generic', (
+    tester,
+  ) async {
+    final card = await _pumpCard(
+      tester,
+      _blocFor(const FundExchangeUnexpectedFailure(_rawReason)),
+    );
+
+    expect(card.title, isNull);
+    expect(
+      card.description,
+      startsWith('The payment details could not be loaded'),
+    );
+  });
+
   testWidgets('never renders the raw reason', (tester) async {
     final card = await _pumpCard(
       tester,
