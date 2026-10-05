@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
 
 enum LabelSystem {
   swaps,
@@ -40,17 +38,6 @@ enum LabelSystem {
     } catch (_) {
       return false;
     }
-  }
-
-  String toTranslatedLabel(BuildContext context) {
-    return switch (this) {
-      LabelSystem.swaps => context.loc.systemLabelSwaps,
-      LabelSystem.autoSwap => context.loc.systemLabelAutoSwap,
-      LabelSystem.payjoin => context.loc.systemLabelPayjoin,
-      LabelSystem.selfSpend => context.loc.systemLabelSelfSpend,
-      LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
-      LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,
-    };
   }
 
   bool isExchangeRelated() {
