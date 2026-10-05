@@ -56,6 +56,32 @@ final class RecoverBullBackup {
     return convert.hex.encode(derived.sublist(0, 32));
   }
 
+  /// Derives at the file's recorded BIP85 path and authenticates its mnemonic payload before releasing the key.
+  String verifiedKey({required String masterXprv, required String file}) {
+    final BullBackup backup;
+    try {
+      backup = BullBackup.fromJson(file);
+    } on Exception {
+      throw const InvalidVault('file is not a RecoverBull vault');
+    }
+    final path = backup.path;
+    final match = path == null
+        ? null
+        : RegExp(r"^(?:m/)?1608'/0'/([0-9]{1,10})'?$").firstMatch(path);
+    final index = int.tryParse(match?.group(1) ?? '');
+    if (path == null ||
+        match == null ||
+        match.end != path.length ||
+        index == null ||
+        index >= 1 << 31) {
+      throw const InvalidVaultPath();
+    }
+    // Preserve hardened versus unhardened indices: they produce different keys.
+    final key = backupKey(masterXprv: masterXprv, path: path);
+    open(file: file, backupKey: key);
+    return key;
+  }
+
   /// Seals [words] together with [metadata] under [backupKey].
   ///
   /// [metadata] is whatever the caller wants restored alongside the

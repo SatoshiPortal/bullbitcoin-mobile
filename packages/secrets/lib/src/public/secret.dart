@@ -309,6 +309,20 @@ final class Secret extends SecretEntry {
     });
   }
 
+  /// Returns the recorded vault's key only after it opens a valid mnemonic payload. The stored passphrase participates in derivation; no words or private keys leave this call.
+  @internal
+  Future<Result<VaultKey, SecretFailure>> recoverbullKey({
+    required EncryptedVault vault,
+  }) => _repository.useMnemonic(
+    info,
+    (m) => VaultKey(
+      Backup.recoverbull.verifiedKey(
+        masterXprv: Deriver.bip85.root(m),
+        file: vault.json,
+      ),
+    ),
+  );
+
   /// Caller misuse is an [ArgumentError], raised *before* the boundary: the
   /// caller then reads this package's own message, not a redacted type name.
   /// Inside the boundary an `Error` is a bug and leaves with its type only.

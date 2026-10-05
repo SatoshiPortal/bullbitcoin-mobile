@@ -16,6 +16,9 @@ abstract interface class VaultRepository {
   @useResult
   Future<Result<VaultBackup, RecoverBullFailure>> create(VaultContext context);
 
+  @useResult
+  Future<Result<VaultKey, RecoverBullFailure>> deriveKey(EncryptedVault vault);
+
   /// Stateless inspection: never imports a temporary secret.
   @useResult
   Future<Result<Fingerprint, RecoverBullFailure>> fingerprint(

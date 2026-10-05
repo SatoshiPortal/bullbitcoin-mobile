@@ -7,6 +7,12 @@ library;
 
 import 'package:meta/meta.dart';
 
+/// The vault has no supported recorded path for local key derivation.
+class InvalidVaultPath implements Exception {
+  @internal
+  const InvalidVaultPath();
+}
+
 /// Thrown by `RecoverBullBackup.open` for anything that is not a vault this
 /// key opens. Translated to `InvalidVaultFailure` by the façade. The
 /// message is always one of `RecoverBullBackup`'s own fixed strings, so it

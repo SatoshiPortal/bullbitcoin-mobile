@@ -71,3 +71,15 @@ final class RecoverBullStorageDamagedFailure extends RecoverBullFailure {
 final class RecoverBullJournalFailure extends RecoverBullFailure {
   const RecoverBullJournalFailure();
 }
+
+final class VaultKeyPathUnavailableFailure extends RecoverBullFailure {
+  const VaultKeyPathUnavailableFailure();
+}
+
+final class VaultSeedUnavailableFailure extends RecoverBullFailure {
+  const VaultSeedUnavailableFailure();
+}
+
+final class VaultLocalKeyMismatchFailure extends RecoverBullFailure {
+  const VaultLocalKeyMismatchFailure();
+}

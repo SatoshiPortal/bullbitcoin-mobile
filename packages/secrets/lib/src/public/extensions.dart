@@ -202,6 +202,12 @@ extension type const SecretBackup._(Secret _secret) {
   Future<Result<({EncryptedVault vault, VaultKey key}), SecretFailure>>
   recoverbull({Map<String, dynamic> metadata = const {}}) =>
       _secret.backupRecoverbull(metadata: metadata);
+
+  /// Derives and verifies the key for an existing vault locally, without importing its words or changing storage.
+  @useResult
+  Future<Result<VaultKey, SecretFailure>> recoverbullKey({
+    required EncryptedVault vault,
+  }) => _secret.recoverbullKey(vault: vault);
 }
 
 /// The Silent Payments account, opened inside the package.

@@ -10,6 +10,7 @@ import '../entities/vault_provider.dart';
 import '../recoverbull_failure.dart';
 import '../repositories/backup_metadata_repository.dart';
 import '../repositories/key_server_repository.dart';
+import '../repositories/vault_repository.dart';
 import 'complete_vault_usecase.dart';
 import 'create_and_store_vault_usecase.dart';
 import 'fetch_vault_key_usecase.dart';
@@ -23,6 +24,7 @@ final class ManageVaultSessionUsecase {
   final FetchVaultKeyUsecase _fetch;
   final CreateAndStoreVaultUsecase _create;
   final CompleteVaultUsecase _complete;
+  final VaultRepository _vaults;
   KeyServerRepository? _server;
   BackupSettings? _settings;
   Completer<void>? _active;
@@ -35,6 +37,7 @@ final class ManageVaultSessionUsecase {
     this._fetch,
     this._create,
     this._complete,
+    this._vaults,
   );
 
   bool get hasPendingProviderSave => _create.hasPendingProviderSave;
@@ -119,7 +122,14 @@ final class ManageVaultSessionUsecase {
       return const Err(VaultContextChangedFailure());
     }
     if (_closed) return const Err(VaultCancelledFailure());
-    return fetched.map((value) => value.key);
+    switch (fetched) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final inspected = await _vaults.fingerprint(vault, value.key);
+        if (_closed) return const Err(VaultCancelledFailure());
+        return inspected.map((_) => value.key);
+    }
   });
 
   Future<bool> _current(BackupSettings expected) async =>

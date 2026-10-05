@@ -61,6 +61,40 @@ final class SecretsVaultRepository implements VaultRepository {
   }
 
   @override
+  Future<Result<custody.VaultKey, RecoverBullFailure>> deriveKey(
+    EncryptedVault vault,
+  ) async {
+    final List<custody.SecretEntry> entries;
+    switch (await _secrets.list()) {
+      case Ok(:final value):
+        entries = value;
+      case Err():
+        return const Err(VaultSeedUnavailableFailure());
+    }
+    var unavailable = entries.any((entry) => entry is custody.UnreadableSecret);
+    var attempted = false;
+    for (final secret in entries.whereType<custody.Secret>()) {
+      if (!secret.info.isMnemonic) continue;
+      attempted = true;
+      switch (await secret.backup.recoverbullKey(
+        vault: custody.EncryptedVault(json: encode(vault)),
+      )) {
+        case Ok(:final value):
+          return Ok(value);
+        case Err(failure: custody.InvalidVaultPathFailure()):
+          return const Err(VaultKeyPathUnavailableFailure());
+        case Err(failure: custody.InvalidVaultFailure()):
+          continue;
+        case Err():
+          unavailable = true;
+      }
+    }
+    return unavailable || !attempted
+        ? const Err(VaultSeedUnavailableFailure())
+        : const Err(VaultLocalKeyMismatchFailure());
+  }
+
+  @override
   Future<Result<Fingerprint, RecoverBullFailure>> fingerprint(
     EncryptedVault vault,
     custody.VaultKey key,

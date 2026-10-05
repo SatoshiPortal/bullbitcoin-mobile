@@ -48,6 +48,7 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
   DriveFileMetadata? _deleting;
   bool _manual = false;
   bool _keyWarningAccepted = false;
+  bool _serverKey = false;
   bool? _protected;
   late Future<bool> _protection;
   int _privacyGeneration = 0;
@@ -133,6 +134,15 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
           textColor: context.bull.onPrimary,
         ),
       );
+
+  Future<void> _deriveKey(VaultFlowCubit cubit) async {
+    if (_protected != true) return;
+    final generation = _privacyGeneration;
+    final key = await cubit.deriveKey();
+    if (mounted && _protected == true && generation == _privacyGeneration) {
+      setState(() => _key = key);
+    }
+  }
 
   Future<void> _submit(VaultFlowPresentation presentation) async {
     final cubit = presentation.cubit;
@@ -308,7 +318,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
               ),
             _text(context.loc.recoverbullHistoricalUnknown),
           ],
-          if (settings != null && !settings.permissionGranted) ...[
+          if (settings != null &&
+              !settings.permissionGranted &&
+              (widget.flow != RecoverBullFlow.viewVaultKey || _serverKey)) ...[
             _text(context.loc.recoverbullServerConfirmTitle),
             _text(settings.server.toString()),
             _text(context.loc.recoverbullServerCustomWarning),
@@ -346,7 +358,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                     ? context.loc.recoverbullSelectGoogleDrive
                     : context.loc.recoverbullSelectCustomLocationProvider,
               ),
-            ] else if (state.vault == null) ...[
+            ] else if (state.vault == null ||
+                (widget.flow == RecoverBullFlow.viewVaultKey &&
+                    !_serverKey)) ...[
               _button(
                 context.loc.recoverbullSelectCustomLocationProvider,
                 cubit.pick,
@@ -391,8 +405,30 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                 ),
               ],
             ],
-            if (state.vault != null ||
-                widget.flow == RecoverBullFlow.secureVault) ...[
+            if (widget.flow == RecoverBullFlow.viewVaultKey && !_serverKey) ...[
+              _text(context.loc.recoverbullKeyLocalInstructions),
+              if (state.vault != null)
+                BullScreenPrivacyGate(
+                  protection: _protection,
+                  unavailableMessage: context.loc.recoverbullUnexpectedError,
+                  retryLabel: context.loc.recoverbullRetry,
+                  onRetry: _acquirePrivacy,
+                  builder: (_) => _button(
+                    context.loc.recoverbullVaultKey,
+                    () => _deriveKey(cubit),
+                    disabled: state.busy || _protected != true,
+                  ),
+                ),
+              _button(
+                context.loc.recoverbullKeyUseServer,
+                () => setState(() => _serverKey = true),
+                disabled: state.busy,
+              ),
+            ],
+            if ((state.vault != null ||
+                    widget.flow == RecoverBullFlow.secureVault) &&
+                (widget.flow != RecoverBullFlow.viewVaultKey ||
+                    _serverKey)) ...[
               if (state.vault != null)
                 _text(context.loc.recoverbullVaultSelected),
               if (widget.flow == RecoverBullFlow.testVault)
@@ -485,7 +521,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                   ),
                 ),
             ],
-            if (settings?.permissionGranted == true) ...[
+            if (settings?.permissionGranted == true &&
+                (widget.flow != RecoverBullFlow.viewVaultKey ||
+                    _serverKey)) ...[
               _button(
                 context.loc.recoverbullRetry,
                 cubit.connect,
