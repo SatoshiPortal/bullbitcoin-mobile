@@ -721,10 +721,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -9204,17 +9200,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Import watch-only",
   "@importWalletImportWatchOnly": {
@@ -14483,10 +14471,6 @@
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
   },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
   "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
   "@settingsSearchBroadcastTransactionKeywords": {
     "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
@@ -16791,5 +16775,61 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsAppAndDeviceTitle": "App and device",
+  "@settingsAppAndDeviceTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsToolsTitle": "Tools",
+  "@settingsToolsTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "@settingsSearchToolsKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "importWalletHardwareTitle": "Hardware wallet",
+  "@importWalletHardwareTitle": {
+    "description": "Settings entry and import page for hardware and watch-only wallets"
+  },
+  "importWalletSeedTitle": "Import seed",
+  "@importWalletSeedTitle": {
+    "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  },
+  "walletsListTitle": "Wallet details",
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  },
+  "settingsDataExportTitle": "Data export",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
+  },
+  "settingsSearchImportSeedKeywords": "add wallet|recover wallet|import mnemonic|seed|recovery words",
+  "@settingsSearchImportSeedKeywords": {
+    "description": "Search aliases for importing a wallet seed"
+  }
 }
