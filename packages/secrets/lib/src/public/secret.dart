@@ -31,11 +31,11 @@ final class UnreadableSecret extends SecretEntry {
 ///
 /// Obtained from `Secrets` — `generate`, `import` or `fetch` — and holds no key material of its own: [info] describes the secret, and every operation asks the repository to run a closure on material that exists only for that call.
 ///
-/// **This class is the audit surface.** Implementations stay together here behind `@internal`; callers use only the grouped API, such as `secret.sign.psbt(…)`. Its extensions forward calls without handling material or errors. The four implementations that hand back material ([revealMnemonic], [bip85Hex], [bip85Mnemonic], [swapKey]) can be audited together.
+/// **This class is the audit surface.** Implementations stay together here behind `@internal`; callers use only the grouped API, such as `secret.sign.psbt(…)`. Its extensions forward calls without handling material or errors. The five implementations that hand back material ([revealMnemonic], [bip85Hex], [bip85Mnemonic], [swapKey], [silentPaymentDescriptors]) can be audited together.
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
-/// A passphrase is honoured by Bitcoin derivation and signing and by the swap key. Liquid descriptors and signatures use words alone. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
+/// A passphrase is honoured by Bitcoin derivation and signing, by the swap key and by the silent payment scan key. Liquid descriptors and signatures use words alone. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
 final class Secret extends SecretEntry {
   /// Fingerprint and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
@@ -154,6 +154,18 @@ final class Secret extends SecretEntry {
     log.info('SECRET_DERIVE: swap key for ${info.id}');
     return key;
   });
+
+  /// The BIP352 silent payment scan credential of account 0, as the two descriptors a watch-only bwk account is opened from: `sp(scan private key, spend public key)` and the BIP86 taproot account descriptor. **Returns key material** — a scoped one: it detects incoming silent payments and reveals their amounts, with no spend authority. The spend private key never leaves the package.
+  ///
+  /// The passphrase is part of the derivation, as for every Bitcoin derivation here. A seed-only secret is refused although BIP352 needs only the seed: the wallet this credential watches must also be spendable, and spending goes through a signer, which takes words. See doc/design.md, § The exits.
+  @internal
+  Future<Result<SilentPaymentDescriptors, SecretFailure>>
+  silentPaymentDescriptors({required BitcoinNetwork network}) =>
+      _repository.useMnemonic(info, (m) {
+        final key = Deriver.bip352.scanKey(m, network: network);
+        log.info('SECRET_DERIVE: silent payment scan key for ${info.id}');
+        return key;
+      });
 
   // --------------------------------------------------------------- signing
 

@@ -242,6 +242,7 @@ void main() {
       // what operations hand back
       'Descriptors',
       'SwapMasterKey',
+      'SilentPaymentDescriptors',
       'EncryptedVault',
       'VaultKey',
       'DatabaseKey',
@@ -326,6 +327,8 @@ void main() {
       'bip85Hex': 'material',
       'bip85Mnemonic': 'material',
       'swapKey': 'material',
+      // a watch-only credential: reveals incoming payments, cannot spend
+      'silentPaymentDescriptors': 'material',
       // material: the stored secret itself, and `@internal` — only the
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
@@ -416,9 +419,10 @@ void main() {
         'bip85Hex',
         'bip85Mnemonic',
         'swapKey',
+        'silentPaymentDescriptors',
         'revealMnemonic',
       ]),
-      reason: 'the four that hand back key material; README must match',
+      reason: 'the five that hand back key material; README must match',
     );
   });
 }

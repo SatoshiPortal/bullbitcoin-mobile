@@ -26,7 +26,7 @@ import 'package:secrets/src/widgets/widgets.dart' show SecretWidgets;
 /// below carries only its one-line summary, any ⚠️ that must not be
 /// missed, and a link to the real doc.
 extension SecretExtension on Secret {
-  /// Public keys, descriptors and BIP85 children.
+  /// Public keys, descriptors, BIP85 children and scoped credentials.
   SecretDerivation get derive => SecretDerivation._(this);
 
   /// Signatures.
@@ -72,7 +72,8 @@ extension type const SecretDerivation._(Secret _secret) {
   }) => _secret.swapKey(network: network);
 }
 
-/// Public descriptors for a wallet, per chain.
+/// Descriptors for a wallet, per chain. All are public except
+/// [silentPayment]'s `sp` descriptor, which carries the BIP352 scan private key.
 extension type const SecretDescriptors._(Secret _secret) {
   /// External and internal keychains. See [Secret.bitcoinDescriptors].
   @useResult
@@ -93,6 +94,14 @@ extension type const SecretDescriptors._(Secret _secret) {
   Future<Result<String, SecretFailure>> liquid({
     required LiquidNetwork network,
   }) => _secret.liquidDescriptor(network: network);
+
+  /// The two descriptors a watch-only BIP352 silent payment account is
+  /// opened from. Returns key material: `sp` reveals incoming payments, it
+  /// cannot spend. See [Secret.silentPaymentDescriptors].
+  @useResult
+  Future<Result<SilentPaymentDescriptors, SecretFailure>> silentPayment({
+    required BitcoinNetwork network,
+  }) => _secret.silentPaymentDescriptors(network: network);
 }
 
 /// BIP85 children.

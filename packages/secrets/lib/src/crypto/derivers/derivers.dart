@@ -18,12 +18,14 @@
 /// below, and a `static const` on [Deriver].
 library;
 
+import 'package:secrets/src/crypto/derivers/bip352_deriver.dart';
 import 'package:secrets/src/crypto/derivers/bip85_deriver.dart';
 import 'package:secrets/src/crypto/derivers/bitcoin_deriver.dart';
 import 'package:secrets/src/crypto/derivers/fingerprint_deriver.dart';
 import 'package:secrets/src/crypto/derivers/boltz_deriver.dart';
 import 'package:secrets/src/crypto/derivers/liquid_deriver.dart';
 
+export 'bip352_deriver.dart' show Bip352Deriver;
 export 'bip85_deriver.dart' show Bip85Deriver;
 export 'bitcoin_deriver.dart' show BitcoinDeriver, Descriptors;
 export 'fingerprint_deriver.dart' show FingerprintDeriver;
@@ -46,4 +48,7 @@ abstract final class Deriver {
 
   /// The swap key, through boltz.
   static const boltz = BoltzDeriver();
+
+  /// The BIP352 silent payment scan credential.
+  static const bip352 = Bip352Deriver();
 }

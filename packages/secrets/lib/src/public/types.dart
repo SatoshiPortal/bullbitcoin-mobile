@@ -24,6 +24,7 @@ export 'package:secrets/src/domain/domain.dart'
         SecretKind,
         SecretAlreadyExistsFailure,
         SecretNotFoundFailure,
+        SilentPaymentDescriptors,
         StoreSecretFailure,
         SwapMasterKey,
         TrashSecretFailure,

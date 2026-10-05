@@ -26,7 +26,7 @@ Run `make secrets-api-docs` after changing the public API and include the README
 
 ## Passphrase
 
-Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words only; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
+Account xpub derivation, Bitcoin signing, BIP85, the swap key and the silent payment scan key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words only; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
 
 These methods return their values directly. There is no passphrase wrapper or refusal: the behavior is part of each operation's contract. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
 
@@ -59,13 +59,14 @@ The public vocabulary does not change persisted key names. Give the key to SQLCi
 
 ## The exits
 
-The README's operation table is the full inventory — every output, whether it can spend, and what it reveals. Three derivation operations return key material, and none returns the stored mnemonic. Backup keys and database keys are separate outputs in the same inventory:
+The README's operation table is the full inventory — every output, whether it can spend, and what it reveals. Four derivation operations return key material, and none returns the stored mnemonic. Backup keys and database keys are separate outputs in the same inventory:
 
 | | |
 |---|---|
 | `secret.derive.bip85.hex(…)` | BIP85 child entropy the caller asked this feature to create |
 | `secret.derive.bip85.mnemonic(…)` | the same child as words |
 | `secret.derive.swapKey(network:)` | the swap-scoped credential boltz takes on every call |
+| `secret.derive.descriptors.silentPayment(network:)` | the two descriptors a watch-only silent payment account opens from, `sp(scan private key, spend public key)` and the BIP86 taproot `tr()` — they reveal incoming payments and their amounts, and cannot spend |
 
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`
@@ -85,8 +86,8 @@ capture protection handles. The package's own tests read the painted text
 through `debugPaintedTextOf`, `@internal` and reachable only from `src/`.
 To *compare* words, `verify.mnemonic` answers without exposing anything.
 
-Do not grep for the three — `test/invariants_test.dart` pins the set, so
-adding a fourth turns the suite red and names it.
+Do not grep for the four — `test/invariants_test.dart` pins the set, so
+adding a fifth turns the suite red and names it.
 
 `derive.descriptors.liquid` is not on it, but it is not public either:
 lwk's confidential descriptor embeds the SLIP-77 master blinding key, so
@@ -94,6 +95,8 @@ whoever holds it sees every amount and asset of that Liquid wallet — a
 view key, with no spend authority. The package treats the same string as
 secret when lwk writes it to disk (§ The package owns the keystore);
 hosts should store and log it as private data.
+
+The silent payment scan key is on it for the same reason the Liquid descriptor is sensitive: BIP352's scan private key detects every silent payment the wallet receives and reveals its amount, and the spend public key links them to the wallet's address. It has no spend authority — compromise costs privacy, not funds — and the spend private key never leaves the package. A seed-only entry is refused although BIP352 derives from the seed alone: a wallet this credential watches must also be spendable, and signers take words.
 
 `backup.recoverbull` is not on this list, but note that its result pairs
 ciphertext with the key that opens it: hold both and you hold the
@@ -128,7 +131,7 @@ lib/secrets.dart          the package: the surface, explicit `show` lists — wh
 lib/src/
   public/                 what you call          Secrets, Secret, the grouped operations, the export lists (types.dart, widgets.dart) — forwards Results, catches nothing
   crypto/crypto.dart      what it computes       derivers/, signers/, backups/, generator
-    derivers/derivers.dart one deriver per library  fingerprint, bitcoin, liquid, bip85, boltz — a static namespace
+    derivers/derivers.dart one deriver per library  fingerprint, bitcoin, liquid, bip85, bip352, boltz — a static namespace
     signers/signers.dart  one signer per chain   bitcoin_signer, liquid_signer, and pset_sighash (the Liquid sighash guard)
     backups/backups.dart  one backup per format  recoverbull — a static namespace
   data/data.dart          where it is kept       the keystore, the two repositories, the one try/catch (boundary.dart)
@@ -194,7 +197,7 @@ The boundary has structural checks in `test/invariants_test.dart` and `test/inte
 |---|---|
 | every failure is built in the data layer | no `SecretFailure` is constructed outside `src/data/boundary.dart`, `src/data/secret_repository.dart` and `src/data/database_key_repository.dart`; `public/` catches nothing |
 | the grouped API adds nothing | `src/public/extensions.dart` contains no `await`, no collaborator, no statement body |
-| material leaves at four named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey}` — and `revealMnemonic` is `@internal` |
+| material leaves at five named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey, silentPaymentDescriptors}` — and `revealMnemonic` is `@internal` |
 | the public surface is a literal list | the export graph is walked and compared name for name |
 | modules are fronted by their entry point | every cross-module import targets `<module>/<module>.dart` |
 | foreign dependencies stay in their module | bdk/lwk/boltz/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, nothing foreign under `domain/` |

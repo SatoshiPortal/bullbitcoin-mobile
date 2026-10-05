@@ -35,7 +35,8 @@ Secret
 |-- derive
 |   |-- descriptors
 |   |   |-- bitcoin(network:, scriptType:, [accountIndex: 0]) -> Descriptors
-|   |   `-- liquid(network:) -> String
+|   |   |-- liquid(network:) -> String
+|   |   `-- silentPayment(network:) -> SilentPaymentDescriptors
 |   |-- bip85
 |   |   |-- hex(numBytes:, index:) -> String
 |   |   `-- mnemonic(wordCount:, index:, [language: Language.english]) -> List<String>
@@ -117,23 +118,24 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `info`, `id` | fingerprint and shape | no key material |
 | `derive.bip85.hex`, `derive.bip85.mnemonic` | child entropy or words | spending authority over what the child controls |
 | `derive.swapKey` | `SwapMasterKey`, an independent swap credential | spending authority over swaps |
+| `derive.descriptors.silentPayment` | `SilentPaymentDescriptors`: the `sp(scan private key, spend public key)` descriptor and the BIP86 `tr()` descriptor a watch-only bwk account opens from | reveals incoming silent payments and their amounts, without spend authority |
 | `backup.recoverbull` | encrypted vault and its separate key | together recover the words; store them apart |
 | `databaseKeys(module:).getOrCreate` | module database key | opens the encrypted database |
 | `widgets.mnemonicView`, `widgets.mnemonicChallenge` | sealed widgets and events | words rendered on the protected screen |
 
-The stored words, passphrase, seed and master xprv have no public getter. The grouped interface is the only public spelling. Flat implementation methods and widget constructors are internal; applications cannot call them without an analyzer diagnostic. The three derivation operations returning key material are BIP85 hex, BIP85 mnemonic and the swap master key. Backup keys and database keys are listed separately above.
+The stored words, passphrase, seed and master xprv have no public getter. The grouped interface is the only public spelling. Flat implementation methods and widget constructors are internal; applications cannot call them without an analyzer diagnostic. The four derivation operations returning key material are BIP85 hex, BIP85 mnemonic, the swap master key and the silent payment scan key. The silent payment spend private key has no exit. Backup keys and database keys are listed separately above.
 
 ## Derivation, signing and verification
 
 Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or `LiquidNetwork`. Descriptors and signatures remain chain-specific. `accountIndex` defaults to zero and selects the same Bitcoin account for xpub derivation, descriptors and signing. Mnemonic generation and BIP85 mnemonic derivation both use `MnemonicWordCount` through `wordCount`. BIP85 is independent of the network; the application allocates child indices.
 
-Account xpub derivation, Bitcoin signing, BIP85 and swap credentials honor the stored passphrase. Liquid descriptors and signatures derive from words alone and ignore it. A Liquid-network xpub therefore does not necessarily describe the keys in the Liquid descriptor, especially with a passphrase or a different script type. BIP85 can export other languages; stored mnemonic import currently validates English words.
+Account xpub derivation, Bitcoin signing, BIP85, swap credentials and the silent payment scan key honor the stored passphrase. Liquid descriptors and signatures derive from words alone and ignore it. A Liquid-network xpub therefore does not necessarily describe the keys in the Liquid descriptor, especially with a passphrase or a different script type. BIP85 can export other languages; stored mnemonic import currently validates English words.
 
 Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
 
 `verify.mnemonic(words)` compares words only. `verify.seed(hex)` compares seed bytes, including the stored passphrase in the derivation for a mnemonic secret. A seed-only secret supports seed verification; mnemonic verification returns `MnemonicRequiredFailure`. A match is `Ok(true)`; a different seed or malformed candidate hex is `Ok(false)`; inability to read or check stored material is an `Err`.
 
-Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivation. Operations requiring mnemonic words — the current signers, Liquid descriptors, swap credentials, vault backup and word widgets — return `MnemonicRequiredFailure` for those entries. This is an adapter capability, not a claim that raw seeds cannot sign cryptographically.
+Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivation. Operations requiring mnemonic words — the current signers, Liquid descriptors, swap credentials, vault backup and word widgets — return `MnemonicRequiredFailure` for those entries. The silent payment scan key does too, although BIP352 needs only the seed: a wallet it watches must remain spendable through a signer. This is an adapter capability, not a claim that raw seeds cannot sign cryptographically.
 
 ## Recovery and module keys
 
@@ -155,7 +157,7 @@ Every asynchronous operation returns `Result<T, SecretFailure>`. Handle failure 
 
 `make custody-check` checks keystore access and the internal seal, then resolves production Dart symbols to reject private-key derivation and vault decryption outside this package. Pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter have explicit named exceptions. BIP85 child formatting and public-key operations remain allowed. This detects forbidden library operations; it is not a complete information-flow proof.
 
-RecoverBull creation, restoration and backup inspection use the package. Decrypted vaults and their mnemonic no longer reach app presentation state. Pre-import scanning remains in the wallet code until the sync extraction; it is outside the stored-secret lifecycle. The app still receives the documented BIP85 children, swap credential, recovery key and database keys.
+RecoverBull creation, restoration and backup inspection use the package. Decrypted vaults and their mnemonic no longer reach app presentation state. Pre-import scanning remains in the wallet code until the sync extraction; it is outside the stored-secret lifecycle. The app still receives the documented BIP85 children, swap credential, silent payment scan credential, recovery key and database keys.
 
 ## Read next
 
