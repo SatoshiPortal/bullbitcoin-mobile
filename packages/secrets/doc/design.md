@@ -96,7 +96,7 @@ view key, with no spend authority. The package treats the same string as
 secret when lwk writes it to disk (§ The package owns the keystore);
 hosts should store and log it as private data.
 
-The silent payment scan key is on it for the same reason the Liquid descriptor is sensitive: BIP352's scan private key detects every silent payment the wallet receives and reveals its amount, and the spend public key links them to the wallet's address. It has no spend authority — compromise costs privacy, not funds — and the spend private key never leaves the package. A seed-only entry is refused although BIP352 derives from the seed alone: a wallet this credential watches must also be spendable, and signers take words.
+The silent payment scan key is on it for the same reason the Liquid descriptor is sensitive: BIP352's scan private key detects every silent payment the wallet receives and reveals its amount, and the spend public key links them to the wallet's address. It has no spend authority — compromise costs privacy, not funds — and the spend private key never leaves the package. A seed-only entry is refused although BIP352 derives from the seed alone: a wallet this credential watches must also be spendable, and signers take words. § Silent payments states the rest of the design.
 
 `backup.recoverbull` is not on this list, but note that its result pairs
 ciphertext with the key that opens it: hold both and you hold the
@@ -120,6 +120,20 @@ always derives from the mainnet encoding, which is also the only one
 `bip85_entropy` accepts. The app used to pass the wallet's
 network-encoded xprv, so BIP85 and vault creation failed on every
 non-mainnet wallet.
+
+## Silent payments
+
+A BIP352 wallet needs two keys under `m/352'/coin'/0'`: the scan key at `/1'/0`, which finds the wallet's payments, and the spend key at `/0'/0`, which spends them. bwk opens a watch-only silent payment account from two descriptors: BIP392's `sp(scan private key, spend public key)` — the scan key as a compressed WIF, the spend key as its compressed public point — and the public descriptor of its BIP86 taproot sub-account, `tr([fingerprint/86'/coin'/0']xpub/<0;1>/*)`. It refuses an `sp()` descriptor that carries the spend private key and a `tr()` descriptor that carries a private key, and writes neither to disk. `secret.derive.descriptors.silentPayment(network:)` returns exactly those two strings, as a `SilentPaymentDescriptors`, spelled as bwk-dart's own fixtures spell them, and nothing more.
+
+That is the exit, and the reason it exists: scanning runs continuously, against chain data, across a whole session, so it cannot be one call inside the package the way a signature is. What leaves is a scoped credential. The scan private key reveals every silent payment the wallet receives and its amount; it signs nothing. Whoever obtains it loses the wallet's privacy, not its funds. The spend public key is already published in every silent payment address, and the taproot descriptor is public like any account descriptor.
+
+**The spend private key never leaves the package, and no account ever holds it.** Spending will go through a one-shot signer, like every other signature here: one call, which derives the spend private key and the BIP86 account xprv, lends them to bwk's stateless PSBT signer for that call alone, and drops them before returning. Those two keys are what bwk's signer needs and all it receives — never the mnemonic, the seed or the master xprv. The watch-only account simulates the spend and verifies the signed result; it never receives a key.
+
+**The signed transaction is not trusted on the signer's word.** The app must compare the transaction the signer returns with the one it simulated — inputs, outputs, amounts and fee — and refuse to broadcast on any difference. This is the same rule as for PSBTs (§ The package owns the keystore): the package signs, deciding what is acceptable to sign stays with the caller.
+
+**The passphrase takes part**, as in every Bitcoin derivation of this package. The silent payment feature on `develop` built its account from the words alone — bwk's mnemonic constructor derives with an empty passphrase — so a passphrase-protected default wallet would have received a different silent payment wallet there than here. Nothing has to be migrated: default wallets are passphrase-less by construction on this branch (§ Passphrase), and for them the two derivations agree.
+
+**Re-derive the scan credential per session; do not store it.** It is cheap to derive, and holding it only while a session scans keeps it out of the app's databases and backups. The swap key is stored because boltz needs it outside any wallet session; the scan credential has no such constraint.
 
 ## Modules
 
