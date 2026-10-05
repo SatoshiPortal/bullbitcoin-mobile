@@ -40,7 +40,9 @@ class WalletCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallets = context.select(
       (WalletBloc bloc) => localSignersOnly
-          ? bloc.state.wallets.where((w) => w.signsLocally)
+          ? bloc.state.wallets.where(
+              (wallet) => wallet.isStandardLocalSingleSignatureWallet,
+            )
           : bloc.state.wallets,
     );
     final syncStatus = context.select(

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/record_encrypted_backup_created_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
@@ -32,8 +33,15 @@ enum RecoverBullRoute {
 class RecoverBullFlowsExtra {
   final RecoverBullFlow flow;
   final EncryptedVault? vault;
+  final bool returnToCaller;
+  final String? seedFingerprint;
 
-  RecoverBullFlowsExtra({required this.flow, required this.vault});
+  RecoverBullFlowsExtra({
+    required this.flow,
+    required this.vault,
+    this.returnToCaller = false,
+    this.seedFingerprint,
+  });
 }
 
 void openRecoverBullFlow(
@@ -55,21 +63,19 @@ class RecoverBullRouter {
       return BlocProvider(
         create: (context) => RecoverBullBloc(
           flow: extra.flow,
+          returnToCaller: extra.returnToCaller,
+          seedFingerprint: extra.seedFingerprint,
           preSelectedVault: extra.vault,
           pickVaultUsecase: locator<PickVaultUsecase>(),
           saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
           createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
           storeVaultKeyIntoServerUsecase:
               locator<StoreVaultKeyIntoServerUsecase>(),
+          recordEncryptedBackupCreatedUsecase:
+              locator<RecordEncryptedBackupCreatedUsecase>(),
           checkKeyServerConnectionUsecase:
               locator<CheckServerConnectionUsecase>(),
-          // Composed here rather than registered: this feature has no
-          // locator of its own, and the use case is a thin retry policy
-          // over registered core use cases.
-          connectToKeyServerUsecase: ConnectToKeyServerUsecase(
-            locator<CheckServerConnectionUsecase>(),
-            locator<EnsureRecoverBullTorSessionUsecase>(),
-          ),
+          connectToKeyServerUsecase: locator<ConnectToKeyServerUsecase>(),
           fetchVaultKeyFromServerUsecase:
               locator<FetchVaultKeyFromServerUsecase>(),
           decryptVaultUsecase: locator<DecryptVaultUsecase>(),

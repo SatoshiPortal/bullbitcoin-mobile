@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/bitcoin_chain_tip_port.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -26,6 +28,9 @@ class BlockchainLocator {
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
       ),
+    );
+    locator.registerLazySingleton<BitcoinChainTipPort>(
+      () => locator<BitcoinBlockchainRepository>(),
     );
 
     locator.registerLazySingleton<LiquidBlockchainRepository>(
@@ -49,6 +54,10 @@ class BlockchainLocator {
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+
+    locator.registerFactory<GetBitcoinChainTipUsecase>(
+      () => GetBitcoinChainTipUsecase(locator<BitcoinChainTipPort>()),
     );
   }
 }

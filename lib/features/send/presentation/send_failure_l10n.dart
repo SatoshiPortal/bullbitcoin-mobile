@@ -15,8 +15,7 @@ extension SendFailureL10n on SendFailure {
     SendInvoiceExpiredFailure() => context.loc.sendErrorInvoiceExpired,
     SendInvoiceAmountRequiredFailure() =>
       context.loc.sendErrorInvoiceMustContainAmount,
-    SendHardwareWalletFailure() =>
-      context.loc.sendErrorHardwareWalletCannotSwap,
+    SendSwapWalletFailure() => context.loc.sendErrorHardwareWalletCannotSwap,
     SendInsufficientBalanceFailure() =>
       formattedFrozenBalance == null
           ? context.loc.sendErrorInsufficientBalanceForPayment
@@ -50,10 +49,18 @@ extension SendFailureL10n on SendFailure {
     SendFeesUnavailableFailure() => context.loc.sendErrorFeesUnavailable,
     SendExchangeOrderMismatchFailure() =>
       context.loc.sendErrorExchangeOrderMismatch,
+    SendTransactionSigningFailure() => context.loc.sendErrorConfirmationFailed,
+    SendSignerPassphraseMismatchFailure() =>
+      context.loc.sendBullVaultPassphraseIncorrect,
+    SendUnsupportedPolicyPathFailure() =>
+      context.loc.sendErrorUnsupportedPolicyPath,
     SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed
           : context.loc.sendErrorConfirmationFailed,
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    SendPersistenceFailure() ||
+    SendPendingTransactionChangedFailure() ||
+    SendStoredTransactionInvalidFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

@@ -120,7 +120,8 @@ sealed class BuyState with _$BuyState {
   bool get canOfferPayjoin =>
       payjoinGloballyEnabled &&
       userSummary?.payjoinReceiveEnabled == true &&
-      selectedWallet?.network.isBitcoin == true;
+      selectedWallet?.isBitcoin == true &&
+      selectedWallet?.isStandardLocalSingleSignatureWallet == true;
 
   bool get shouldUsePayjoin =>
       canOfferPayjoin && isPayjoinEnabled && amountSat != null;

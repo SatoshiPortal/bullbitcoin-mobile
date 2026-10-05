@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/record_encrypted_backup_created_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
@@ -34,6 +35,9 @@ class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
+
+class _MockRecordBackupCreated extends Mock
+    implements RecordEncryptedBackupCreatedUsecase {}
 
 class _MockCheckConnection extends Mock
     implements CheckServerConnectionUsecase {}
@@ -69,6 +73,7 @@ void main() {
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
   late _MockStoreKey storeKey;
+  late _MockRecordBackupCreated recordBackupCreated;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
   late _MockDecrypt decrypt;
@@ -90,6 +95,7 @@ void main() {
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
     storeKey = _MockStoreKey();
+    recordBackupCreated = _MockRecordBackupCreated();
     checkConnection = _MockCheckConnection();
     when(
       () => checkConnection.execute(),
@@ -118,14 +124,19 @@ void main() {
   // test drives the matching flow — the Tor subscription above excepted.
   RecoverBullBloc buildBloc({
     required RecoverBullFlow flow,
+    bool returnToCaller = false,
+    String? seedFingerprint,
     EncryptedVault? preSelectedVault,
   }) => RecoverBullBloc(
     flow: flow,
+    returnToCaller: returnToCaller,
+    seedFingerprint: seedFingerprint,
     preSelectedVault: preSelectedVault,
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
     storeVaultKeyIntoServerUsecase: storeKey,
+    recordEncryptedBackupCreatedUsecase: recordBackupCreated,
     checkKeyServerConnectionUsecase: checkConnection,
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
       checkConnection,
@@ -143,6 +154,39 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  test('retains the caller-return mode through the recovery flow', () async {
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.secureVault,
+      returnToCaller: true,
+    );
+
+    expect(bloc.state.returnToCaller, isTrue);
+
+    await bloc.close();
+  });
+
+  test('backs up the BullVault seed selected by fingerprint', () async {
+    when(() => createVault.execute(fingerprint: 'deadbeef')).thenAnswer(
+      (_) async =>
+          const Err(core.RecoverBullUnexpectedCoreFailure('not configured')),
+    );
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.secureVault,
+      seedFingerprint: 'deadbeef',
+    );
+
+    bloc.add(
+      const OnVaultCreation(
+        provider: VaultProvider.customLocation,
+        password: 'pw',
+      ),
+    );
+    await pumpEventQueue();
+
+    verify(() => createVault.execute(fingerprint: 'deadbeef')).called(1);
+    await bloc.close();
+  });
 
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '
@@ -202,9 +246,10 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async =>
+              Ok((vault: vault, vaultKey: 'deadbeef', walletId: 'wallet-id')),
+        );
         when(
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
@@ -279,9 +324,9 @@ void main() {
     'maps external failure while storing without announcing creation',
     () async {
       final vault = _MockEncryptedVault();
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async => Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+      );
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));
@@ -309,8 +354,45 @@ void main() {
       verify(
         () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
       ).called(1);
+      verifyNever(
+        () => recordBackupCreated.execute(walletId: any(named: 'walletId')),
+      );
     },
   );
+
+  test('records backup only after the vault and key are stored', () async {
+    final vault = _MockEncryptedVault();
+    when(() => vault.toFile()).thenReturn('{}');
+    when(() => vault.filename).thenReturn('vault.json');
+    when(() => createVault.execute()).thenAnswer(
+      (_) async => Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+    );
+    when(
+      () => saveFile.execute(
+        content: any(named: 'content'),
+        filename: any(named: 'filename'),
+      ),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => recordBackupCreated.execute(walletId: 'wallet-id'),
+    ).thenAnswer((_) async => const Ok(null));
+    final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+    addTearDown(bloc.close);
+
+    bloc.add(
+      const OnVaultCreation(
+        provider: VaultProvider.customLocation,
+        password: 'pw',
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(bloc.state.vault, vault);
+    verify(() => recordBackupCreated.execute(walletId: 'wallet-id')).called(1);
+  });
 
   group('Tor retry concurrency', () {
     test('drops a second retry while the first one is in flight', () async {

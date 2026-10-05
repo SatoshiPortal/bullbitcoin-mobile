@@ -27,60 +27,74 @@ class CreateEncryptedVaultUsecase {
   // repo. The local try/catch is the boundary for the wallet/seed calls; the
   // recoverbull repo already returns a Result that we forward.
   Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
+    Result<
+      ({EncryptedVault vault, String vaultKey, String walletId}),
+      RecoverBullCoreFailure
+    >
   >
-  execute() async {
+  execute({String? fingerprint}) async {
     try {
-      final defaultBitcoinWallets = await _walletRepository.getWallets(
+      final bitcoinWallets = await _walletRepository.getWallets(
         onlyBitcoin: true,
-        onlyDefaults: true,
+        onlyDefaults: fingerprint == null ? true : null,
       );
 
-      if (defaultBitcoinWallets.isEmpty) {
+      if (bitcoinWallets.isEmpty) {
         return const Err(
-          RecoverBullUnexpectedCoreFailure('No default Bitcoin wallet found'),
+          RecoverBullUnexpectedCoreFailure('No Bitcoin wallet found'),
         );
       }
 
-      // The default wallet is used to derive the backup key
-      final defaultWallet = defaultBitcoinWallets.first;
-      await _walletRepository.updateEncryptedBackupTime(
-        time: DateTime.now(),
-        walletId: defaultWallet.id,
-      );
-      final defaultSeed = await _seedRepository.get(
-        defaultWallet.masterFingerprint,
-      );
-      final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final mnemonic = switch (defaultSeedModel) {
+      final matchingWallets = fingerprint == null
+          ? bitcoinWallets
+          : bitcoinWallets.where(
+              (wallet) =>
+                  wallet.singleLocalSeedFingerprint ==
+                  fingerprint.toLowerCase(),
+            );
+      if (matchingWallets.isEmpty) {
+        return const Err(
+          RecoverBullUnexpectedCoreFailure(
+            'No single-seed Bitcoin wallet found for the selected seed',
+          ),
+        );
+      }
+      final wallet = matchingWallets.first;
+      final seedFingerprint =
+          fingerprint?.toLowerCase() ?? wallet.singleLocalSeedFingerprint;
+      if (seedFingerprint == null) {
+        return const Err(
+          RecoverBullUnexpectedCoreFailure('No local seed selected'),
+        );
+      }
+      final seed = await _seedRepository.get(seedFingerprint);
+      final seedModel = SeedModel.fromEntity(seed);
+      final mnemonic = switch (seedModel) {
         MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
         _ => null,
       };
       if (mnemonic == null) {
         return const Err(
           RecoverBullUnexpectedCoreFailure(
-            'Default seed is not a mnemonic seed',
+            'Selected seed is not a mnemonic seed',
           ),
         );
       }
-      final defaultXprv = Bip32Derivation.getXprvFromSeed(
-        defaultSeed.bytes,
-        defaultWallet.network,
-      );
+      final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, wallet.network);
 
       final toBackup = DecryptedVault(
         mnemonic: mnemonic,
-        masterFingerprint: defaultWallet.masterFingerprint,
-        isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
-        isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
-        latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
-        latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
+        masterFingerprint: seedFingerprint,
+        isEncryptedVaultTested: wallet.isEncryptedVaultTested,
+        isPhysicalBackupTested: wallet.isPhysicalBackupTested,
+        latestEncryptedBackup: wallet.latestEncryptedBackup,
+        latestPhysicalBackup: wallet.latestPhysicalBackup,
       );
       final plaintext = json.encode(toBackup.toJson());
       // Derive the backup key using BIP85
       final derivationPath = RecoverbullBip85Utils.generateBackupKeyPath();
       final backupKey = RecoverbullBip85Utils.deriveBackupKey(
-        defaultXprv,
+        xprv,
         derivationPath,
       );
 
@@ -90,7 +104,9 @@ class CreateEncryptedVaultUsecase {
             plaintext: plaintext,
             derivationPath: derivationPath,
           )
-          .map((vault) => (vault: vault, vaultKey: backupKey));
+          .map(
+            (vault) => (vault: vault, vaultKey: backupKey, walletId: wallet.id),
+          );
     } catch (e, st) {
       log.severe(message: 'createEncryptedVault failed', error: e, trace: st);
       return Err(RecoverBullUnexpectedCoreFailure(e.toString()));

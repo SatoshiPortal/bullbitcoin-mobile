@@ -9,12 +9,14 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -77,6 +79,9 @@ class _MockGetReceivePayjoinPolicyUsecase extends Mock
 
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
+
+class _MockCheckReceiveBullVaultUsecase extends Mock
+    implements CheckReceiveBullVaultUsecase {}
 
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
@@ -162,13 +167,19 @@ Wallet _testWallet({
 }) => Wallet(
   origin: origin,
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
   balanceSat: balanceSat ?? BigInt.from(50000),
   confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );
@@ -216,6 +227,7 @@ void main() {
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
   late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
+  late _MockCheckReceiveBullVaultUsecase checkBullVault;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
@@ -242,6 +254,7 @@ void main() {
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
     getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
     setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
+    checkReceiveBullVaultUsecase: checkBullVault,
     wallet: wallet ?? _testWallet(),
   );
 
@@ -260,6 +273,7 @@ void main() {
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
     watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
+    checkBullVault = _MockCheckReceiveBullVaultUsecase();
     labels = _MockLabelsFacade();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
     getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
@@ -305,6 +319,7 @@ void main() {
     when(
       () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => _testAddress());
+    when(() => checkBullVault.execute(any())).thenAnswer((_) async => false);
     when(
       () => receiveWithPayjoin.execute(
         walletId: any(named: 'walletId'),
@@ -327,6 +342,25 @@ void main() {
   tearDown(() async {
     await payjoinEnabledChangeController.close();
     await payjoinMinAmountChangeController.close();
+  });
+
+  test('identifies a BullVault receive wallet', () async {
+    when(() => checkBullVault.execute('w1')).thenAnswer((_) async => true);
+    final bloc = buildBloc();
+
+    bloc.add(ReceiveEvent.receiveBitcoinStarted(_testWallet()));
+    await expectLater(
+      bloc.stream,
+      emitsThrough(
+        isA<ReceiveState>().having(
+          (state) => state.isBullVault,
+          'isBullVault',
+          isTrue,
+        ),
+      ),
+    );
+
+    await bloc.close();
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {

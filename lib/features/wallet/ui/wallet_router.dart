@@ -15,7 +15,9 @@ enum WalletRoute {
 }
 
 class WalletRouter {
-  static final walletHomeRoute = GoRoute(
+  static GoRoute walletHomeRoute({
+    WalletHomeFeatureWarningsBuilder? featureWarningsBuilder,
+  }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
     pageBuilder: (context, state) {
@@ -29,18 +31,25 @@ class WalletRouter {
             //  to allow the user to create or restore a wallet.
             context.goNamed(OnboardingRoute.onboarding.name);
           },
-          child: const WalletHomeScreen(),
+          child: WalletHomeScreen(
+            featureWarningsBuilder: featureWarningsBuilder,
+          ),
         ),
       );
     },
   );
 
-  static final walletDetailRoute = GoRoute(
+  static GoRoute walletDetailRoute({
+    WalletDetailFeatureSliverBuilder? featureSliverBuilder,
+  }) => GoRoute(
     name: WalletRoute.walletDetail.name,
     path: WalletRoute.walletDetail.path,
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
-      return WalletDetailScreen(walletId: walletId);
+      return WalletDetailScreen(
+        walletId: walletId,
+        featureSliverBuilder: featureSliverBuilder,
+      );
     },
   );
 }

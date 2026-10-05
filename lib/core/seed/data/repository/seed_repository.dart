@@ -2,15 +2,37 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
-class SeedRepository {
+class SeedRepository implements SeedVerificationPort {
   final SeedDatasource _source;
 
   const SeedRepository({required this._source});
+
+  /// Ensures the passphrase-free seed has its own durable storage identity.
+  Future<String> ensureCanonicalSeed(Seed seed) async {
+    final canonical = switch (seed) {
+      MnemonicSeed(:final mnemonicWords) => SeedModel.mnemonic(
+        mnemonicWords: mnemonicWords,
+      ),
+      BytesSeed(:final bytes) => SeedModel.bytes(bytes: bytes),
+    };
+    final fingerprint = canonical.masterFingerprint;
+    if (await _source.exists(fingerprint)) {
+      final stored = await _source.get(fingerprint);
+      if (!listEquals(stored.bytes, canonical.bytes)) {
+        throw const FormatException('Stored seed does not match its owner');
+      }
+    } else {
+      await _source.store(fingerprint: fingerprint, seed: canonical);
+    }
+    return fingerprint;
+  }
 
   Future<MnemonicSeed> createFromMnemonic({
     required List<String> mnemonicWords,
@@ -88,6 +110,22 @@ class SeedRepository {
       );
       rethrow;
     }
+  }
+
+  @override
+  Future<bool> matchesXpubs({
+    required String fingerprint,
+    required List<({String derivationPath, String xpub})> keys,
+  }) async {
+    if (keys.isEmpty || !await exists(fingerprint)) return false;
+    final seed = await get(fingerprint);
+    return keys.every(
+      (key) => Bip32Derivation.seedMatchesXpub(
+        seedBytes: seed.bytes,
+        derivationPath: key.derivationPath,
+        xpub: key.xpub,
+      ),
+    );
   }
 
   @useResult

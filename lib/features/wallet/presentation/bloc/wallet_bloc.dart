@@ -40,6 +40,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._getExternalTorProxyStatusUsecase,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
+    on<WalletUpdated>(_onUpdated);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
@@ -136,6 +137,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } catch (e) {
       emit(WalletState(status: WalletStatus.failure, error: e));
     }
+  }
+
+  void _onUpdated(WalletUpdated event, Emitter<WalletState> emit) {
+    final index = state.wallets.indexWhere(
+      (wallet) => wallet.id == event.wallet.id,
+    );
+    if (index == -1) return;
+
+    final wallets = [...state.wallets];
+    wallets[index] = event.wallet;
+    emit(state.copyWith(wallets: wallets));
   }
 
   /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered

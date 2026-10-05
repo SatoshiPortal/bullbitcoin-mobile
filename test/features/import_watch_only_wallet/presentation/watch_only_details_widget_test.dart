@@ -1,4 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
@@ -14,26 +17,23 @@ import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class _MockImportWatchOnlyCubit extends Mock implements ImportWatchOnlyCubit {}
 
-class _MockWatchOnlyDescriptor extends Mock
-    implements satoshifier.WatchOnlyDescriptor {}
-
-class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
-
 Future<_MockImportWatchOnlyCubit> _pumpDetails(
   WidgetTester tester, {
-  required satoshifier.Network network,
+  required Network network,
 }) async {
-  final descriptor = _MockDescriptor();
-  when(() => descriptor.network).thenReturn(network);
-  when(() => descriptor.combined).thenReturn('wpkh(test)');
-  when(() => descriptor.derivation).thenReturn(satoshifier.Derivation.bip84);
-
-  final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
-  when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
-
   final wallet = WatchOnlyWalletEntity.descriptor(
-    watchOnlyDescriptor: watchOnlyDescriptor,
-    signerDevice: SignerDeviceEntity.seedsigner,
+    descriptor: 'wpkh(test)',
+    network: network,
+    scriptType: ScriptType.bip84,
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: '',
+        xpubFingerprint: '',
+        xpub: 'xpub',
+        signer: SignerEntity.remote,
+        signerDevice: SignerDeviceEntity.seedsigner,
+      ),
+    ],
   );
   final cubit = _MockImportWatchOnlyCubit();
   when(
@@ -65,17 +65,14 @@ void main() {
   testWidgets('reviews descriptor details and delegates import actions', (
     tester,
   ) async {
-    final cubit = await _pumpDetails(
-      tester,
-      network: satoshifier.Network.bitcoinMainnet,
-    );
+    final cubit = await _pumpDetails(tester, network: Network.bitcoinMainnet);
 
     expect(find.text('Network: Bitcoin Mainnet'), findsOneWidget);
     expect(find.text('Descriptor'), findsOneWidget);
     expect(find.text('wpkh(test)'), findsOneWidget);
     expect(find.text('Type'), findsOneWidget);
     expect(find.text(satoshifier.Derivation.bip84.label), findsOneWidget);
-    expect(find.text('Signing Device'), findsOneWidget);
+    expect(find.text('Signer 1'), findsOneWidget);
     expect(
       find.text(SignerDeviceEntity.seedsigner.displayName),
       findsOneWidget,
@@ -99,7 +96,7 @@ void main() {
   });
 
   for (final (network, label) in [
-    (satoshifier.Network.bitcoinTestnet, 'Network: Bitcoin Testnet'),
+    (Network.bitcoinTestnet, 'Network: Bitcoin Testnet'),
   ]) {
     testWidgets('shows the localized ${network.name} label', (tester) async {
       await _pumpDetails(tester, network: network);

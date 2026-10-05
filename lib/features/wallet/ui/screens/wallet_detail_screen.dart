@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
@@ -25,10 +26,18 @@ import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
 
+typedef WalletDetailFeatureSliverBuilder =
+    Widget Function(BuildContext context, Wallet wallet);
+
 class WalletDetailScreen extends StatelessWidget {
-  const WalletDetailScreen({super.key, required this.walletId});
+  const WalletDetailScreen({
+    super.key,
+    required this.walletId,
+    this.featureSliverBuilder,
+  });
 
   final String walletId;
+  final WalletDetailFeatureSliverBuilder? featureSliverBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +90,11 @@ class WalletDetailScreen extends StatelessWidget {
                       child: WalletDetailBalanceCard(
                         balanceSat: wallet.balanceSat.toInt(),
                         isLiquid: wallet.isLiquid,
-                        signer: wallet.signer,
+                        signer: wallet.hasLocalSigner
+                            ? SignerEntity.local
+                            : wallet.hasRemoteSigner
+                            ? SignerEntity.remote
+                            : SignerEntity.none,
                       ),
                     ),
                     if (wallet.isLiquid)
@@ -108,6 +121,8 @@ class WalletDetailScreen extends StatelessWidget {
                         ),
                       ),
                     const SliverToBoxAdapter(child: Gap(16)),
+                    if (featureSliverBuilder case final builder?)
+                      builder(context, wallet),
                     const WalletDetailTxsList(sliver: true),
                   ],
                 ),

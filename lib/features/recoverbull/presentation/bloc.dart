@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/record_encrypted_backup_created_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
@@ -40,6 +41,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
+  final RecordEncryptedBackupCreatedUsecase
+  _recordEncryptedBackupCreatedUsecase;
 
   /// Single-shot: the pre-flight check before storing a vault key, where the
   /// user is already committed and a retry budget would only delay the error.
@@ -65,11 +68,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
+    bool returnToCaller = false,
+    String? seedFingerprint,
     EncryptedVault? preSelectedVault,
     required this._pickVaultUsecase,
     required this._saveFileToSystemUsecase,
     required this._createEncryptedVaultUsecase,
     required this._storeVaultKeyIntoServerUsecase,
+    required this._recordEncryptedBackupCreatedUsecase,
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
@@ -82,7 +88,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._fetchLatestGoogleDriveVaultUsecase,
     required this._updateLatestEncryptedVaultTestUsecase,
     required this._watchTorConnectionUsecase,
-  }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
+  }) : super(
+         RecoverBullState(
+           flow: flow,
+           returnToCaller: returnToCaller,
+           seedFingerprint: seedFingerprint,
+           vault: preSelectedVault,
+         ),
+       ) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
     on<OnVaultPasswordSet>(_onVaultPasswordSet);
@@ -386,10 +399,17 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       final EncryptedVault vault;
       final String vaultKey;
-      switch (await _createEncryptedVaultUsecase.execute()) {
+      final String walletId;
+      final creation = state.seedFingerprint == null
+          ? await _createEncryptedVaultUsecase.execute()
+          : await _createEncryptedVaultUsecase.execute(
+              fingerprint: state.seedFingerprint,
+            );
+      switch (creation) {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
+          walletId = value.walletId;
         case Err():
           emit(state.copyWith(failure: const VaultCreationFailure()));
           return;
@@ -440,6 +460,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         // Keep the typed key-server detail (rate-limit cooldown, invalid
         // credentials) instead of collapsing it to the generic creation error.
         emit(state.copyWith(failure: _storeKeyFailure(failure)));
+        return;
+      }
+
+      final recorded = await _recordEncryptedBackupCreatedUsecase.execute(
+        walletId: walletId,
+      );
+      if (recorded case Err()) {
+        emit(state.copyWith(failure: const VaultCreationFailure()));
         return;
       }
 

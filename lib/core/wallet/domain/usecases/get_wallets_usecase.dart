@@ -16,6 +16,7 @@ class GetWalletsUsecase {
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
+    bool includeHidden = false,
     bool sync = false,
   }) async {
     try {
@@ -29,13 +30,17 @@ class GetWalletsUsecase {
         sync: sync,
       );
 
-      if (wallets.isEmpty) {
+      final visibleWallets = includeHidden
+          ? wallets
+          : wallets.where((wallet) => !wallet.isHidden).toList();
+
+      if (visibleWallets.isEmpty) {
         throw NoWalletsFoundException(
           "No wallets found for the current environment: $environment",
         );
       }
 
-      return wallets;
+      return visibleWallets;
     } on NoWalletsFoundException {
       rethrow;
     } catch (e) {

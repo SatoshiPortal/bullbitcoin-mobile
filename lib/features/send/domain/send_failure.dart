@@ -1,8 +1,19 @@
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
+
+  factory SendFailure.fromBitcoinSigning(BitcoinSigningFailure failure) =>
+      switch (failure.kind) {
+        BitcoinSigningFailureKind.passphraseMismatch =>
+          SendSignerPassphraseMismatchFailure(failure.logMessage),
+        BitcoinSigningFailureKind.unexpected => SendUnexpectedFailure(
+          failure.logMessage,
+        ),
+        _ => SendTransactionSigningFailure(failure.logMessage),
+      };
 }
 
 final class SendInvalidPaymentRequestFailure extends SendFailure {
@@ -22,8 +33,8 @@ final class SendInvoiceAmountRequiredFailure extends SendFailure {
   const SendInvoiceAmountRequiredFailure([super.logMessage]);
 }
 
-final class SendHardwareWalletFailure extends SendFailure {
-  const SendHardwareWalletFailure([super.logMessage]);
+final class SendSwapWalletFailure extends SendFailure {
+  const SendSwapWalletFailure([super.logMessage]);
 }
 
 final class SendInsufficientBalanceFailure extends SendFailure {
@@ -103,6 +114,18 @@ final class SendExchangeOrderMismatchFailure extends SendFailure {
   const SendExchangeOrderMismatchFailure([super.logMessage]);
 }
 
+final class SendTransactionSigningFailure extends SendFailure {
+  const SendTransactionSigningFailure([super.logMessage]);
+}
+
+final class SendSignerPassphraseMismatchFailure extends SendFailure {
+  const SendSignerPassphraseMismatchFailure([super.logMessage]);
+}
+
+final class SendUnsupportedPolicyPathFailure extends SendFailure {
+  const SendUnsupportedPolicyPathFailure([super.logMessage]);
+}
+
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
 
@@ -114,4 +137,16 @@ final class SendTransactionConfirmationFailure extends SendFailure {
 
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
+}
+
+final class SendPersistenceFailure extends SendFailure {
+  const SendPersistenceFailure([super.logMessage]);
+}
+
+final class SendPendingTransactionChangedFailure extends SendFailure {
+  const SendPendingTransactionChangedFailure([super.logMessage]);
+}
+
+final class SendStoredTransactionInvalidFailure extends SendFailure {
+  const SendStoredTransactionInvalidFailure([super.logMessage]);
 }
