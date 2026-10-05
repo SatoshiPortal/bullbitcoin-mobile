@@ -1,19 +1,23 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/settings/presentation/wallet_deletion_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Wallet-deletion failure sheet, built on [BullBottomSheet] to match
 /// [WalletDeletionConfirmationSheet].
 class WalletDeletionFailedSheet extends StatelessWidget {
-  const WalletDeletionFailedSheet({super.key, required this.error});
+  const WalletDeletionFailedSheet({super.key, required this.failure});
 
-  final WalletError error;
+  final WalletFailure failure;
 
   /// Present the sheet via [BullBottomSheet].
-  static Future<void> show(BuildContext context, {required WalletError error}) {
+  static Future<void> show(
+    BuildContext context, {
+    required WalletFailure failure,
+  }) {
     return BullBottomSheet.show<void>(
       context: context,
-      child: WalletDeletionFailedSheet(error: error),
+      child: WalletDeletionFailedSheet(failure: failure),
     );
   }
 
@@ -22,13 +26,7 @@ class WalletDeletionFailedSheet extends StatelessWidget {
     final colors = context.bull;
     final loc = context.loc;
     final text = context.bullText;
-    final message = switch (error) {
-      CannotDeleteDefaultWalletError() => loc.walletDeletionErrorDefaultWallet,
-      CannotDeleteWalletWithOngoingSwapsError() =>
-        loc.walletDeletionErrorOngoingSwaps,
-      WalletNotFound() => loc.walletDeletionErrorWalletNotFound,
-      _ => loc.walletDeletionErrorGeneric,
-    };
+    final message = failure.toDeletionTranslated(context);
 
     return SafeArea(
       child: Padding(

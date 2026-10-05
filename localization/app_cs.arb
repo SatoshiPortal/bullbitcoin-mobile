@@ -916,10 +916,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, Limitní objednávky a Auto-buy",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -996,10 +992,6 @@
   "buyDocumentUpload": "Nahrát dokumenty",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Konfigurace Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "sendTransferFeeDescription": "To je celkový poplatek odečtený z výše uvedené částky",
   "@sendTransferFeeDescription": {
@@ -2542,10 +2534,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Sledovat",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "Nastavení zabezpečeného připojení...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3354,10 +3342,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Bitcoin sítě",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "Pokročilé možnosti",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3437,10 +3421,6 @@
   "allSeedViewSecurityWarningMessage": "Zobrazení seed frází je bezpečnostní riziko. Každý, kdo vidí své semeno fráze, může získat přístup k vašim prostředkům. Ujistěte se, že jste v soukromém místě a že nikdo nemůže vidět svou obrazovku.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "Zobrazit více klenbami",
   "@recoverbullSeeMoreVaults": {
@@ -4301,10 +4281,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Čeština",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "Nadace pas",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4663,10 +4639,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "Pokud není uvedeno žádný protokol, ssl bude použit ve výchozím nastavení.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "Transakce",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4983,10 +4955,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "electrumServerSettingsLabel": "Electrum server (Bitcoin uzel)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "Zadejte adresu blesku",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5027,10 +4995,6 @@
   "gotItButton": "Chci to",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "Tekutina a blesková síť",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "Prioritní priority",
   "@sendFeePriority": {
@@ -5204,21 +5168,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Navštivte obnovitbull.com pro více informací.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "Pokus o převod {amount} BTC. Aktuální poplatek je {currentFee}% částky převodu a prahu poplatku je nastaven na {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Kliknutím na tlačítko pro přihlášení do Vaší Kruxu.",
   "@kruxStep11": {
@@ -5549,10 +5498,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Sledovat",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "Decrypt klenba",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5784,10 +5729,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "Tekutý testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "Vymazat vlastní server",
   "@electrumDeleteFailedError": {
@@ -6779,10 +6720,6 @@
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "Povolit",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "Vyberte peněženku Bitcoin *",
   "@autoswapSelectWalletRequired": {
@@ -8126,10 +8063,6 @@
   "logSettingsErrorLoadingMessage": "Protokoly načítání chyb: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "Tekutý síť",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "ČEŠTINA",
   "@swapMaxButton": {
@@ -9782,10 +9715,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "Auto Transfer blokované",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blokstream Jade instrukce",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -9809,10 +9738,6 @@
   "passportStep9": "Kliknutím na tlačítko pro přihlášení do pasu.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin síť",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "Přejete-li si tento server odstranit?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10110,10 +10035,6 @@
   "payInstitutionCodeHint": "Zadejte kód instituce",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Nativní Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "Otevřená faktura",
   "@payOpenInvoice": {
@@ -10590,10 +10511,6 @@
   "autoswapSelectWallet": "Vyberte peněženku Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "Čeština",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Zvolil vybrat klenbu z Disku Google",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -11752,6 +11669,12 @@
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "walletWarningElectrumBitcoinDown": "Server Bitcoin není dostupný",
+  "walletWarningElectrumLiquidDown": "Server Liquid není dostupný",
+  "walletWarningElectrumBothDown": "Servery Bitcoin a Liquid nejsou dostupné",
+  "walletWarningElectrumAction": "Klepnutím nastavíte server",
+  "walletLoadFailedRetryHint": "Přetažením dolů obnovte a zkuste to znovu",
   "transactionDetailLoadError": "Podrobnosti transakce se nepodařilo načíst.",
   "transactionPayjoinBroadcastFailed": "Původní transakci se nepodařilo odeslat. Zkuste to prosím znovu.",
   "transactionPayjoinOriginalUnavailable": "Původní transakce již není k dispozici k odeslání.",
@@ -11891,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "Nepodařilo se připravit přijímací adresu. Zkuste to prosím znovu.",
   "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
-  "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu."
+  "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální."
 }

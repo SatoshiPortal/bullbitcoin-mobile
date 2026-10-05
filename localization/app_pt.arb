@@ -237,7 +237,6 @@
     }
   },
   "fundExchangeLabelBankAccountCountry": "País de conta bancária",
-  "walletAddressTypeNestedSegwit": "Segwit aninhado",
   "exchangeLandingFeature2": "DCA, Limite de ordens e Auto-compra",
   "payPaymentPending": "Pagamento pendente",
   "payConfirmHighFee": "A taxa para este pagamento é {percentage}% do valor. Continua?",
@@ -263,7 +262,6 @@
   "fundExchangeLabelTransitNumber": "Número de trânsito",
   "buyConfirmYouReceive": "Você recebe",
   "buyDocumentUpload": "Carregar documentos",
-  "walletAddressTypeConfidentialSegwit": "Segwit confidencial",
   "sendTransferFeeDescription": "Esta é a taxa total deduzida do montante enviado",
   "seedsignerStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no SeedSigner. Analisa-o.",
   "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
@@ -779,7 +777,6 @@
   "ledgerHelpStep1": "Reinicie seu dispositivo Ledger.",
   "swapAvailableBalance": "Balanço disponível",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Descrição do pagamento",
-  "walletTypeWatchSigner": "Sinalizador de relógio",
   "ledgerConnectingSubtext": "Estabelecer uma ligação segura...",
   "electrumPrivacyNoticeCancel": "Cancelar",
   "coreSwapsLnSendPending": "Swap ainda não é inicializado.",
@@ -1050,7 +1047,6 @@
   "testBackupVerify": "Verificar",
   "transactionDetailLabelCreatedAt": "Criado em",
   "fundExchangeJurisdictionArgentina": "Argentina",
-  "walletNetworkBitcoin": "Rede de Bitcoin",
   "electrumAdvancedOptions": "Opções avançadas",
   "autoswapWarningCardSubtitle": "Uma troca será acionada se o saldo dos pagamentos instantâneos exceder 0,02 BTC.",
   "transactionLabelSendAmount": "Enviar valor",
@@ -1072,7 +1068,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "Digite o endereço",
   "withdrawAmountContinue": "Continue",
   "allSeedViewSecurityWarningMessage": "Exibir frases de sementes é um risco de segurança. Qualquer pessoa que veja sua frase de sementes pode acessar seus fundos. Certifique-se de que você está em um local privado e que ninguém pode ver sua tela.",
-  "walletNetworkBitcoinTestnet": "Teste de Bitcoin",
   "recoverbullSeeMoreVaults": "Ver mais cofres",
   "sellPayFromWallet": "Pagar da carteira",
   "pinProtectionDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
@@ -1336,7 +1331,6 @@
   "importQrDeviceSpecterStep9": "Digitalize o código QR exibido no seu Specter",
   "buyInputKycPending": "Pendente de Verificação de ID KYC",
   "importWatchOnlySelectDerivation": "Selecione a derivação",
-  "walletAddressTypeLegacy": "Legado",
   "hwPassport": "Passaporte da Fundação",
   "electrumInvalidStopGapError": "Paragem inválida Valor Gap: {value}",
   "@electrumInvalidStopGapError": {
@@ -1469,7 +1463,6 @@
     }
   },
   "payReviewPayment": "Revisão Pagamento",
-  "electrumBitcoinSslInfo": "Se nenhum protocolo for especificado, o ssl será usado por padrão.",
   "transactionTitle": "Transações",
   "sellQrCode": "Código QR",
   "walletDetailsUnnamedWalletFallback": "Carteira sem nome",
@@ -1573,7 +1566,6 @@
   "ledgerHelpStep2": "Certifique-se de que seu telefone tem Bluetooth ligado e permitido.",
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "O teu código de transferência.",
   "recoverVia12WordsDescription": "Recupere sua carteira através de 12 palavras.",
-  "electrumServerSettingsLabel": "Servidor Electrum (nodo de Bitcoin)",
   "dcaEnterLightningAddressLabel": "Entrar Lightning Endereço",
   "statusCheckOnline": "Online",
   "buyPayoutMethod": "Método de pagamento",
@@ -1591,7 +1583,6 @@
   "fundExchangeLabelRecipientNameArs": "Nome do destinatário",
   "sendTo": "Para",
   "gotItButton": "Entendido",
-  "walletTypeLiquidLightningNetwork": "Rede Líquida e Relâmpago",
   "sendFeePriority": "Prioridade de Taxas",
   "transactionPayjoinSendWithout": "Enviar sem pagamento",
   "paySelectCountry": "Selecione o país",
@@ -1748,7 +1739,6 @@
   },
   "sendBroadcastTransaction": "Transação de transmissão",
   "receiveBitcoinConfirmationMessage": "Bitcoin transação levará um tempo para confirmar.",
-  "walletTypeWatchOnly": "Só com cuidado",
   "recoverbullDecryptVault": "Descriptografar cofre",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "A transferência está pronta para ser reembolsada.",
@@ -1826,7 +1816,6 @@
       }
     }
   },
-  "walletNetworkLiquidTestnet": "Testnet líquido",
   "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
   "@electrumDeleteFailedError": {
     "placeholders": {
@@ -2649,7 +2638,6 @@
   "bitboxActionSignTransactionTitle": "Transação de Sinais",
   "testBackupGoogleDrivePrivacyPart3": "deixar seu telefone e é ",
   "logSettingsErrorLoadingMessage": "Registros de carregamento de erros: ",
-  "walletNetworkLiquid": "Rede líquida",
   "swapMaxButton": "MAX",
   "transactionSwapStatusTransferStatus": "Status de transferência",
   "importQrDeviceSeedsignerStep8": "Digitalize o código QR exibido no SeedSigner",
@@ -3235,7 +3223,6 @@
   "googleDriveSignInMessage": "Você precisará se inscrever no Google Drive",
   "transactionDetailLabelCompletedAt": "Completa em",
   "passportStep9": "Clique nos botões para assinar a transação no seu Passaporte.",
-  "walletTypeBitcoinNetwork": "Rede de Bitcoin",
   "electrumDeleteConfirmation": "Tem a certeza de que deseja excluir este servidor?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "placeholders": {
@@ -3339,7 +3326,6 @@
   },
   "fundExchangeWarningTacticsTitle": "Táticas comuns do scammer",
   "payInstitutionCodeHint": "Digite o código da instituição",
-  "walletAddressTypeNativeSegwit": "Nativo Segwit",
   "payOpenInvoice": "Fatura aberta",
   "payMaximumAmount": "Máximo: {amount}",
   "@payMaximumAmount": {
@@ -3555,28 +3541,9 @@
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
-  "walletAutoTransferBlockedMessage": "Tentando transferir {amount} BTC. A taxa atual é {currentFee}% do valor da transferência e o limite de taxa está definido para {thresholdFee}%.",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoTitle": "Autoswap está ativo.",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
-  },
-  "walletAutoTransferAllowButton": "Permitir",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "navigationTabExchange": "Troca",
   "@navigationTabExchange": {
@@ -3593,14 +3560,6 @@
   "buyUnauthenticatedError": "Você não está autenticado. Por favor, faça login para continuar.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "walletAutoTransferBlockedTitle": "Transferência automática bloqueada.",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockButton": "Bloquear",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "exchangeFileUploadInstructionsWithParams": "Carregar até {maxFiles} arquivos. Formatos permitidos: PDF, JPG, PNG, GIF, HEIC. Tamanho máximo do arquivo: 10MB por arquivo.",
   "@exchangeFileUploadInstructionsWithParams": {
@@ -4758,6 +4717,12 @@
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
   "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "walletLoadFailed": "Não foi possível carregar as suas carteiras. Verifique a sua ligação e tente novamente.",
+  "walletWarningElectrumBitcoinDown": "Servidor Bitcoin indisponível",
+  "walletWarningElectrumLiquidDown": "Servidor Liquid indisponível",
+  "walletWarningElectrumBothDown": "Servidores Bitcoin e Liquid indisponíveis",
+  "walletWarningElectrumAction": "Toque para configurar as definições do servidor",
+  "walletLoadFailedRetryHint": "Puxe para baixo para atualizar e tente novamente",
   "transactionDetailLoadError": "Não foi possível carregar os detalhes da transação.",
   "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
   "transactionPayjoinOriginalUnavailable": "A transação original já não está disponível para transmissão.",
@@ -4897,5 +4862,6 @@
   "receiveErrorAddressUnavailable": "Não foi possível preparar um endereço de receção. Tente novamente.",
   "receiveErrorBroadcastOriginal": "Não foi possível transmitir a transação. Verifique a sua ligação à Internet e tente novamente.",
   "fundExchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
-  "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente."
+  "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
+  "walletBalancesMayBeStale": "Não foi possível atualizar os seus saldos e podem estar desatualizados."
 }

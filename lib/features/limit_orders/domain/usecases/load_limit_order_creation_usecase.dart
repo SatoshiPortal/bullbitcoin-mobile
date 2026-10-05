@@ -105,10 +105,19 @@ class LoadLimitOrderCreationUsecase {
 
     List<Wallet> appWallets;
     try {
-      final all = await _getWalletsUsecase.execute();
-      appWallets = all
-          .where((w) => w.network.isBitcoin || w.network.isLiquid)
-          .toList();
+      switch (await _getWalletsUsecase.execute()) {
+        case Ok(:final value):
+          appWallets = value
+              .where((w) => w.network.isBitcoin || w.network.isLiquid)
+              .toList();
+        // Same degrade as the catch below; the wallet repository already
+        // logged the raw reason.
+        case Err(:final failure):
+          log.warning(
+            'Failed to list wallets for a limit order: ${failure.runtimeType}',
+          );
+          appWallets = const [];
+      }
     } on Error {
       rethrow;
     } catch (e, st) {

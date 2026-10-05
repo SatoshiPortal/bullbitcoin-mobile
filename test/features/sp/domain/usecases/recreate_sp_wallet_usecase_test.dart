@@ -61,7 +61,7 @@ void main() {
 
     when(
       () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => spMnemonicSeed());
+    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));

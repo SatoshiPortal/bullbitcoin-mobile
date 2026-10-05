@@ -5,6 +5,9 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+
 /// Derives and persists the swap master key from the default bitcoin wallet's
 /// seed so it exists before any swap needs it. Run when wallets become ready
 /// (on `WalletStarted`), which fires on every wallet-ready path: app startup,
@@ -28,11 +31,16 @@ class EnsureSwapMasterKeyUsecase {
 
   Future<void> execute() async {
     final settings = await _settingsRepository.fetch();
-    final wallets = await _walletRepository.getWallets(
+    final wallets = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
       environment: settings.environment,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw EnsureSwapMasterKeyException(
+        'default wallets read failed: ${failure.runtimeType}',
+      ),
+    };
     if (wallets.isEmpty) {
       return;
     }
@@ -59,4 +67,10 @@ class EnsureSwapMasterKeyUsecase {
     );
     log.fine('SWAP_KEY: swap master key derived for wallet $fingerprint');
   }
+}
+
+/// Thrown when the default wallet the swap master key belongs to cannot be
+/// read. The message carries the failure type only.
+class EnsureSwapMasterKeyException extends BullException {
+  EnsureSwapMasterKeyException(super.message);
 }

@@ -170,7 +170,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     try {
       final settings = await _getSettingsUsecase.execute();
       final (
-        wallets,
+        walletsResult,
         liquidNetworkFees,
         bitcoinNetworkFees,
         exchangeRate,
@@ -182,6 +182,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           currencyCode: settings.currencyCode,
         ),
       ).wait;
+      final List<Wallet> wallets;
+      switch (walletsResult) {
+        case Ok(:final value):
+          wallets = value;
+        // Reported the same way as every other start failure in this handler,
+        // with the failure type only; `finally` still clears isStarting.
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              startError: Exception(
+                'wallets read failed: ${failure.runtimeType}',
+              ),
+            ),
+          );
+          return;
+      }
       final liquidWallets = wallets
           .where(
             (wallet) =>

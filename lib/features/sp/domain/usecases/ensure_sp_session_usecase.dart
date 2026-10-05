@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 
 /// Establishes the live SP session, reconstructing it via `createFromMnemonic`
 /// from the persisted backend config (the FFI create path never writes a
@@ -108,7 +109,14 @@ class EnsureSpSessionUsecase {
 
     final String mnemonic;
     try {
-      mnemonic = spMnemonicFromSeed(await _getDefaultSeedUsecase.execute());
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute()) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(SpUnexpected('SP session establish failed'));
+      }
+      mnemonic = spMnemonicFromSeed(seed);
     } on Exception catch (_) {
       // Fixed text: this block reads the seed and derives the mnemonic, so the
       // caught exception never reaches a log.

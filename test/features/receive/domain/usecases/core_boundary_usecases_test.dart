@@ -73,7 +73,7 @@ void main() {
           onlyLiquid: any(named: 'onlyLiquid'),
           sync: any(named: 'sync'),
         ),
-      ).thenAnswer((_) async => [_wallet()]);
+      ).thenAnswer((_) async => Ok([_wallet()]));
 
       final result = await GetReceiveWalletsUsecase(
         inner,
