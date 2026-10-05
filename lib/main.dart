@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'dart:async';
 import 'dart:io' show InternetAddress, Platform;
 
@@ -463,7 +464,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
+                      final app = BackupReminderScope(
+                        child: AppStartupWidget(app: child!),
+                      );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
                       // banner, so this is how testers tell beta from production.

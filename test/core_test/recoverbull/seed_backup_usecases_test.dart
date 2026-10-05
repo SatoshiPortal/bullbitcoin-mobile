@@ -183,6 +183,32 @@ void main() {
       expect(wallets.updatedBackupTimes[restored.id], isNotNull);
     },
   );
+  test(
+    'an unrelated encrypted file cannot mark the default wallet tested',
+    () async {
+      final wallets = _WalletRepository([defaultWallet]);
+      final settings = _MockSettingsRepository();
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      final result =
+          await UpdateLatestEncryptedVaultTestUsecase(
+            walletRepository: wallets,
+            settingsRepository: settings,
+          ).execute(
+            decryptedVault: DecryptedVault(
+              mnemonic: seed.mnemonicWords,
+              masterFingerprint: defaultWallet.masterFingerprint,
+            ),
+          );
+      expect(result, isA<Ok>());
+      expect(wallets.updatedBackupTimes, isEmpty);
+    },
+  );
 }
 
 Wallet _wallet(
