@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -16,13 +15,12 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -35,10 +33,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     required this._getWalletsUsecase,
     required this._checkWalletSyncingUsecase,
-    required this._watchStartedWalletSyncsUsecase,
-    required this._watchFinishedWalletSyncsUsecase,
-    required this._watchElectrumSyncResultsUsecase,
-    required this._syncCoordinator,
+    required this._watchWalletSyncEventsUsecase,
+    required this._syncWalletsUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
     required this._deleteWalletUsecase,
     required this._checkLegacySeedStorageUsecase,
@@ -65,10 +61,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   final GetWalletsUsecase _getWalletsUsecase;
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
-  final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
-  final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
-  final WatchElectrumSyncResultsUsecase _watchElectrumSyncResultsUsecase;
-  final SyncCoordinator _syncCoordinator;
+  final WatchWalletSyncEventsUsecase _watchWalletSyncEventsUsecase;
+  final SyncWalletsUsecase _syncWalletsUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
@@ -104,75 +98,103 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletStarted event,
     Emitter<WalletState> emit,
   ) async {
-    try {
-      await _spUpdatesSubscription?.cancel();
-      _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
-        switch (update) {
-          case SpBalanceChanged(:final totalUnified):
-            add(SetSpWalletBalance(totalUnified.value.toInt()));
-          case SpSetupChanged():
-            add(const RefreshSpWallet());
-          case SpChainTipChanged():
-            // Only the SP scan policy cares about the tip; the wallet card
-            // shows a balance, which SpBalanceChanged already covers.
-            break;
-        }
-      });
+    await _spUpdatesSubscription?.cancel();
+    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
+      switch (update) {
+        case SpBalanceChanged(:final totalUnified):
+          add(SetSpWalletBalance(totalUnified.value.toInt()));
+        case SpSetupChanged():
+          add(const RefreshSpWallet());
+        case SpChainTipChanged():
+          // Only the SP scan policy cares about the tip; the wallet card
+          // shows a balance, which SpBalanceChanged already covers.
+          break;
+      }
+    });
 
-      // Don't sync the wallets here so the wallet list is shown immediately
-      // and the sync is done after that
-      final wallets = await _getWalletsUsecase.execute();
-      final isSyncing = _checkWalletSyncingUsecase.execute();
-
-      // Initialize sync status map with all wallets
-      final syncStatus = {
-        for (final wallet in wallets)
-          wallet.id:
-              isSyncing, // If global sync is true, all wallets are syncing
-      };
-
-      final isOnLegacyStorage = await _checkLegacySeedStorageUsecase.execute();
-
-      emit(
-        state.copyWith(
-          status: WalletStatus.success,
-          wallets: wallets,
-          syncStatus: syncStatus,
-          noWalletsFoundException: null,
-          error: null,
-          isOnLegacyStorage: isOnLegacyStorage,
-        ),
-      );
-
-      add(const RefreshSpWallet());
-
-      // Now that the wallets are loaded, we can sync them as done by the refresh
-      add(const WalletRefreshed());
-
-      // Now subscribe to syncs starts and finishes to update the UI with the syncing indicator
-      await _startedSyncsSubscription?.cancel();
-      await _finishedSyncsSubscription?.cancel();
-      await _electrumSyncResultsSubscription?.cancel();
-      _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
-          .execute()
-          .listen((wallet) => add(WalletSyncStarted(wallet)));
-      _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
-          .execute()
-          .listen((wallet) => add(WalletSyncFinished(wallet)));
-      _electrumSyncResultsSubscription = _watchElectrumSyncResultsUsecase
-          .execute()
-          .listen((result) => add(ElectrumSyncResultChanged(result)));
-    } on NoWalletsFoundException catch (e) {
-      emit(
-        state.copyWith(
-          noWalletsFoundException: e,
-          status: WalletStatus.failure,
-          error: e,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(status: WalletStatus.failure, error: e));
+    final List<Wallet> wallets;
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        wallets = value;
+      case Err(:final failure):
+        emit(state.copyWith(status: WalletStatus.failure, failure: failure));
+        return;
     }
+
+    // Both reads below only decorate the list, so each falls back to its safe
+    // default rather than discarding wallets the user can already be shown.
+    final isSyncing = switch (_checkWalletSyncingUsecase.execute()) {
+      Ok(:final value) => value,
+      Err() => false,
+    };
+    // Keep the last known value rather than assuming "not legacy": a user who
+    // really is on legacy storage would otherwise silently lose the migration
+    // warning because of a transient shared-preferences read.
+    final bool isOnLegacyStorage;
+    switch (await _checkLegacySeedStorageUsecase.execute()) {
+      case Ok(:final value):
+        isOnLegacyStorage = value;
+      case Err(:final failure):
+        log.warning('Seed store read: ${failure.logMessage}');
+        isOnLegacyStorage = state.isOnLegacyStorage;
+    }
+
+    // copyWith, not a fresh WalletState: the Silent Payments fields are owned
+    // by their own events and must survive a reload.
+    emit(
+      state.copyWith(
+        status: WalletStatus.success,
+        wallets: wallets,
+        failure: null,
+        // If a global sync is running, every wallet is syncing.
+        syncStatus: {for (final wallet in wallets) wallet.id: isSyncing},
+        isOnLegacyStorage: isOnLegacyStorage,
+      ),
+    );
+
+    add(const RefreshSpWallet());
+
+    // Now that the wallets are loaded, we can sync them as done by the refresh
+    add(const WalletRefreshed());
+
+    // Now subscribe to syncs starts and finishes to update the UI with the
+    // syncing indicator. A dead watcher degrades the screen to its last loaded
+    // state, so its failure is logged rather than shown.
+    await _startedSyncsSubscription?.cancel();
+    await _finishedSyncsSubscription?.cancel();
+    await _electrumSyncResultsSubscription?.cancel();
+    _startedSyncsSubscription = _watchWalletSyncEventsUsecase.started().listen((
+      result,
+    ) {
+      switch (result) {
+        case Ok(:final value):
+          add(WalletSyncStarted(value));
+        case Err(:final failure):
+          log.warning('Wallet sync-started watcher: ${failure.logMessage}');
+      }
+    });
+    _finishedSyncsSubscription = _watchWalletSyncEventsUsecase
+        .finished()
+        .listen((result) {
+          switch (result) {
+            case Ok(:final value):
+              add(WalletSyncFinished(value));
+            case Err(:final failure):
+              log.warning(
+                'Wallet sync-finished watcher: ${failure.logMessage}',
+              );
+          }
+        });
+    _electrumSyncResultsSubscription = _watchWalletSyncEventsUsecase
+        .electrumResults()
+        .listen((result) {
+          switch (result) {
+            case Ok(:final value):
+              add(ElectrumSyncResultChanged(value));
+            case Err(:final failure):
+              log.warning('Electrum results watcher: ${failure.logMessage}');
+          }
+        });
   }
 
   /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
@@ -190,11 +212,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   /// RefreshIndicator callback must not complete with an error.
   Future<void> refresh() async {
     add(const WalletRefreshed(trigger: SyncTrigger.user));
-    try {
-      await _syncCoordinator.sync(trigger: SyncTrigger.user);
-    } catch (e) {
-      log.fine('[WalletBloc] pull-to-refresh sync failed: ${e.runtimeType}');
-    }
+    // The result is dropped here because the event dispatched above runs the
+    // same sync and puts its failure into WalletState; this await exists only
+    // to hold the RefreshIndicator spinner, and its callback must not complete
+    // with an error.
+    final _ = await _syncWalletsUsecase.execute(trigger: SyncTrigger.user);
   }
 
   Future<void> _onRefreshed(
@@ -202,86 +224,92 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     emit(state.copyWith(isRefreshing: true));
-    try {
-      // SyncCoordinator schedules bitcoin → liquid → swaps → sp sequentially
-      // with per-kind dedup, throttling, and a lifecycle gate. A user-triggered
-      // refresh (pull-to-refresh) bypasses the throttle; route-driven
-      // navigation triggers use SyncTrigger.automatic.
-      await _syncCoordinator.sync(trigger: event.trigger);
 
-      final wallets = await _getWalletsUsecase.execute();
-      final syncStatus = {for (final wallet in wallets) wallet.id: false};
-
-      add(const RefreshSpWallet());
-
-      emit(
-        state.copyWith(
-          status: WalletStatus.success,
-          wallets: wallets,
-          noWalletsFoundException: null,
-          error: null,
-          syncStatus: syncStatus,
-          isRefreshing: false,
-        ),
-      );
-    } on NoWalletsFoundException catch (e) {
-      emit(
-        state.copyWith(
-          noWalletsFoundException: e,
-          status: WalletStatus.failure,
-          error: e,
-          isRefreshing: false,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: WalletStatus.failure,
-          error: e,
-          isRefreshing: false,
-        ),
-      );
+    // The sync schedules bitcoin → liquid → swaps → sp sequentially with per-kind dedup,
+    // throttling, and a lifecycle gate. A user-triggered refresh
+    // (pull-to-refresh) bypasses the throttle; route-driven navigation
+    // triggers use SyncTrigger.automatic.
+    //
+    // A failed round is not fatal: the wallets are re-read below either way,
+    // so the list stays correct and only the balances are stale. It is still
+    // reported — a refresh that silently did nothing reads as a frozen screen.
+    WalletFailure? syncFailure;
+    if (await _syncWalletsUsecase.execute(trigger: event.trigger) case Err(
+      :final failure,
+    )) {
+      log.warning('Wallet refresh sync: ${failure.logMessage}');
+      syncFailure = failure;
     }
+
+    final List<Wallet> wallets;
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        wallets = value;
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            status: WalletStatus.failure,
+            failure: failure,
+            isRefreshing: false,
+          ),
+        );
+        return;
+    }
+
+    add(const RefreshSpWallet());
+
+    emit(
+      state.copyWith(
+        status: WalletStatus.success,
+        wallets: wallets,
+        // Carries the sync failure, or clears a previous one. The wallets
+        // themselves loaded, so this is a stale-balance warning on top of a
+        // correct list, not a failed load.
+        failure: syncFailure,
+        syncStatus: {for (final wallet in wallets) wallet.id: false},
+        isRefreshing: false,
+      ),
+    );
   }
 
   Future<void> _onWalletSyncStarted(
     WalletSyncStarted event,
     Emitter<WalletState> emit,
   ) async {
-    try {
-      // Update sync status for the wallet that started syncing
-      final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-      newSyncStatus[event.wallet.id] = true;
+    // Update sync status for the wallet that started syncing
+    final newSyncStatus = Map<String, bool>.from(state.syncStatus);
+    newSyncStatus[event.wallet.id] = true;
 
-      emit(state.copyWith(syncStatus: newSyncStatus));
-      final wallets = await _getWalletsUsecase.execute();
+    emit(state.copyWith(syncStatus: newSyncStatus));
 
-      if (wallets.isNotEmpty) {
-        final walletIds = wallets.map((w) => w.id).toList();
-        final unconfirmedIncomingBalance =
-            await _getUnconfirmedIncomingBalanceUsecase.execute(
-              walletIds: walletIds,
-            );
+    // Only _onStarted and _onRefreshed own `failure`. These per-wallet sync
+    // events fire constantly (including from a `finally` after a failed sync),
+    // so writing it here would wipe a refresh failure before anyone saw it.
+    // A failed read here is logged and the list already on screen is kept.
+    final List<Wallet> wallets;
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        wallets = value;
+      case Err(:final failure):
+        log.warning('Wallets read on sync start: ${failure.runtimeType}');
+        return;
+    }
 
-        emit(
-          state.copyWith(
-            unconfirmedIncomingBalance: unconfirmedIncomingBalance,
-            status: WalletStatus.success,
-            error: null,
-            noWalletsFoundException: null,
-          ),
-        );
-      }
-    } on NoWalletsFoundException catch (e) {
+    if (wallets.isNotEmpty) {
+      final walletIds = wallets.map((w) => w.id).toList();
+      // A failed read leaves the previous figure in place rather than
+      // zeroing a balance the user is looking at.
+      final unconfirmedIncomingBalance =
+          switch (await _getUnconfirmedIncomingBalanceUsecase.execute(
+            walletIds: walletIds,
+          )) {
+            Ok(:final value) => value,
+            Err() => state.unconfirmedIncomingBalance,
+          };
+
       emit(
-        state.copyWith(
-          noWalletsFoundException: e,
-          status: WalletStatus.failure,
-          error: e,
-        ),
+        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
       );
-    } catch (e) {
-      emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
   }
 
@@ -289,44 +317,51 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletSyncFinished event,
     Emitter<WalletState> emit,
   ) async {
-    try {
-      final wallets = await _getWalletsUsecase.execute();
-      if (wallets.isNotEmpty) {
-        final walletIds = wallets.map((w) => w.id).toList();
-        final unconfirmedIncomingBalance =
-            await _getUnconfirmedIncomingBalanceUsecase.execute(
-              walletIds: walletIds,
-            );
-        emit(
-          state.copyWith(
-            unconfirmedIncomingBalance: unconfirmedIncomingBalance,
-          ),
-        );
-      }
-      // Set sync status to false for the wallet that finished syncing
-      final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-      newSyncStatus[event.wallet.id] = false;
-
-      emit(
-        state.copyWith(
-          status: WalletStatus.success,
-          wallets: wallets,
-          error: null,
-          noWalletsFoundException: null,
-          syncStatus: newSyncStatus,
-        ),
-      );
-    } on NoWalletsFoundException catch (e) {
-      emit(
-        state.copyWith(
-          noWalletsFoundException: e,
-          status: WalletStatus.failure,
-          error: e,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(status: WalletStatus.failure, error: e));
+    // See _onWalletSyncStarted: `failure` is not this handler's to write.
+    final List<Wallet> wallets;
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        wallets = value;
+      case Err(:final failure):
+        log.warning('Wallets read on sync finish: ${failure.runtimeType}');
+        // Still clear this wallet's spinner: its sync has ended either way.
+        final syncStatus = Map<String, bool>.from(state.syncStatus);
+        syncStatus[event.wallet.id] = false;
+        emit(state.copyWith(syncStatus: syncStatus));
+        return;
     }
+
+    if (wallets.isNotEmpty) {
+      final walletIds = wallets.map((w) => w.id).toList();
+      // A failed read leaves the previous figure in place rather than
+      // zeroing a balance the user is looking at.
+      final unconfirmedIncomingBalance =
+          switch (await _getUnconfirmedIncomingBalanceUsecase.execute(
+            walletIds: walletIds,
+          )) {
+            Ok(:final value) => value,
+            Err() => state.unconfirmedIncomingBalance,
+          };
+      emit(
+        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
+      );
+    }
+    // Set sync status to false for the wallet that finished syncing
+    final newSyncStatus = Map<String, bool>.from(state.syncStatus);
+    newSyncStatus[event.wallet.id] = false;
+
+    // A successful read resolves a failed load (status failure), so that one
+    // is cleared. A sync failure from a refresh leaves status success and is
+    // deliberately kept: it is the refresh's to clear, not this event's.
+    final recoversFailedLoad = state.status == WalletStatus.failure;
+    emit(
+      state.copyWith(
+        wallets: wallets,
+        syncStatus: newSyncStatus,
+        status: recoversFailedLoad ? WalletStatus.success : state.status,
+        failure: recoversFailedLoad ? null : state.failure,
+      ),
+    );
   }
 
   Future<void> _onElectrumSyncResultChanged(
@@ -346,19 +381,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final liquidServerDown = _lastLiquidSyncSuccess == false;
 
     if (bitcoinServerDown || liquidServerDown) {
-      final title = switch ((bitcoinServerDown, liquidServerDown)) {
-        (true, true) => 'Bitcoin & Liquid electrum server failure',
-        (true, false) => 'Bitcoin electrum server failure',
-        (false, true) => 'Liquid electrum server failure',
-        _ => '',
+      final reason = switch ((bitcoinServerDown, liquidServerDown)) {
+        (true, true) => ElectrumServerDown.both,
+        (true, false) => ElectrumServerDown.bitcoin,
+        _ => ElectrumServerDown.liquid,
       };
       final externalTorStatus = bitcoinServerDown
           ? await _getExternalTorProxyStatusUsecase.execute()
           : ExternalTorProxyStatus.disabled;
       if (isClosed || generation != _electrumWarningGeneration) return;
       final warning = WalletWarning(
-        title: title,
-        description: 'Click to configure electrum server settings',
+        reason: reason,
         action:
             bitcoinServerDown &&
                 externalTorStatus == ExternalTorProxyStatus.unavailable
@@ -377,32 +410,31 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     final walletId = event.walletId;
-    try {
-      emit(state.copyWith(isDeletingWallet: true, walletDeletionError: null));
-      await _deleteWalletUsecase.execute(walletId: event.walletId);
-      log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
-      // Remove the wallet from the state to directly update the UI
-      // without needing to refresh the wallets again
+    emit(state.copyWith(isDeletingWallet: true, walletDeletionFailure: null));
 
-      emit(
-        state.copyWith(
-          wallets: state.wallets.where((w) => w.id != walletId).toList(),
-        ),
-      );
-
-      // Refresh the wallets to ensure everything is up to date
-      // and also trigger other things.
-      add(const WalletRefreshed());
-    } on WalletError catch (e) {
-      emit(state.copyWith(walletDeletionError: e));
-    } catch (e) {
-      log.severe(
-        message: '[WalletBloc] Failed to delete wallet',
-        error: e,
-        trace: StackTrace.current,
-      );
-    } finally {
-      emit(state.copyWith(isDeletingWallet: false));
+    switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
+      case Ok():
+        log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
+        // Remove the wallet from the state to directly update the UI
+        // without needing to refresh the wallets again
+        emit(
+          state.copyWith(
+            wallets: state.wallets.where((w) => w.id != walletId).toList(),
+            isDeletingWallet: false,
+          ),
+        );
+        // Refresh the wallets to ensure everything is up to date
+        // and also trigger other things.
+        add(const WalletRefreshed());
+      case Err(:final failure):
+        // Every refusal reaches the sheet as a type, so each one keeps its own
+        // wording instead of collapsing into a generic message.
+        emit(
+          state.copyWith(
+            walletDeletionFailure: failure,
+            isDeletingWallet: false,
+          ),
+        );
     }
   }
 
@@ -501,9 +533,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     VerifyBackupStatus event,
     Emitter<WalletState> emit,
   ) async {
-    final dbBackupNeeded = await _checkBackupNeededUsecase.execute();
+    // A failed check leaves the badge as it is: guessing either way would
+    // either nag a user who is backed up or hide a real warning.
+    final bool dbBackupNeeded;
+    switch (await _checkBackupNeededUsecase.execute()) {
+      case Ok(:final value):
+        dbBackupNeeded = value;
+      case Err(:final failure):
+        log.warning('Backup status check: ${failure.logMessage}');
+        return;
+    }
     if (dbBackupNeeded == state.hasNoBackup()) return;
-    final wallets = await _getWalletsUsecase.execute();
-    emit(state.copyWith(wallets: wallets));
+    // Refreshing the backup badge only: a failed read leaves the current list
+    // on screen rather than replacing it with an error.
+    if (await _getWalletsUsecase.execute() case Ok(:final value)) {
+      emit(state.copyWith(wallets: value));
+    }
   }
 }

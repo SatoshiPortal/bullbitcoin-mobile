@@ -61,7 +61,7 @@ void main() {
     when(
       () => getAllSeedsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSeed]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => []);
+    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
     when(
       () => processAndSeparateSeedsUsecase.execute(
         seeds: any(named: 'seeds'),

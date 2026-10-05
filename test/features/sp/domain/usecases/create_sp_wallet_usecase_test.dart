@@ -71,7 +71,9 @@ void main() {
     configRepo = FakeSpBackendConfigRepository();
 
     when(() => settingsRepo.fetch()).thenAnswer((_) async => _settings());
-    when(() => seedUsecase.execute()).thenAnswer((_) async => _mnemonicSeed());
+    when(
+      () => seedUsecase.execute(),
+    ).thenAnswer((_) async => Ok(_mnemonicSeed()));
     usecase = build();
   });
 
@@ -208,7 +210,9 @@ void main() {
     test(
       'a non-mnemonic seed throws StateError (programmer-bug path)',
       () async {
-        when(() => seedUsecase.execute()).thenAnswer((_) async => _bytesSeed());
+        when(
+          () => seedUsecase.execute(),
+        ).thenAnswer((_) async => Ok(_bytesSeed()));
 
         await expectLater(run(), throwsA(isA<StateError>()));
         expect(accountRepo.createCount, 0);

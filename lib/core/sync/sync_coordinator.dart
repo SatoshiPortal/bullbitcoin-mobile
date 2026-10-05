@@ -4,6 +4,9 @@ import 'dart:collection';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:flutter/widgets.dart'
@@ -201,7 +204,14 @@ class SyncCoordinator {
         _enqueued.remove(kind);
         _running = kind;
         try {
-          await _runTask(kind);
+          // A wallet read failure fails the round without being thrown: it is
+          // settled as the error and, like a throw, never stamps
+          // _lastSuccessAt.
+          final failure = await _runTask(kind);
+          if (failure != null) {
+            _settle(kind, failure);
+            continue;
+          }
           _lastSuccessAt[kind] = DateTime.now();
           _settle(kind, null);
         } catch (e) {
@@ -228,18 +238,36 @@ class SyncCoordinator {
     }
   }
 
-  Future<void> _runTask(SyncKind kind) async {
+  /// Syncs every wallet the read returns, or returns the read's failure so
+  /// the round fails.
+  ///
+  /// Deliberately not degraded to an empty list: `_drainOnce` stamps
+  /// `_lastSuccessAt` for any round that completes normally, so a swallowed
+  /// read failure would both report a successful sync to pull-to-refresh and
+  /// count toward the throttle — suppressing the retries that would recover
+  /// from a transient failure.
+  Future<WalletFailure?> _syncAll(
+    Future<Result<List<Wallet>, WalletFailure>> read,
+  ) async {
+    switch (await read) {
+      case Ok(:final value):
+        for (final wallet in value) {
+          await _syncWallet.execute(wallet);
+        }
+        return null;
+      case Err(:final failure):
+        return failure;
+    }
+  }
+
+  /// The wallet read failure that failed the round, or null. Any other failure
+  /// is thrown, as before.
+  Future<WalletFailure?> _runTask(SyncKind kind) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        final wallets = await _getWallets.execute(onlyBitcoin: true);
-        for (final wallet in wallets) {
-          await _syncWallet.execute(wallet);
-        }
+        return _syncAll(_getWallets.execute(onlyBitcoin: true));
       case SyncKind.liquid:
-        final wallets = await _getWallets.execute(onlyLiquid: true);
-        for (final wallet in wallets) {
-          await _syncWallet.execute(wallet);
-        }
+        return _syncAll(_getWallets.execute(onlyLiquid: true));
       case SyncKind.swaps:
         final outcomeCallback = _syncSwapsOutcome;
         if (outcomeCallback != null) {
@@ -252,6 +280,7 @@ class SyncCoordinator {
       case SyncKind.sp:
         await _syncSp?.call();
     }
+    return null;
   }
 
   void _onLifecycleChange(AppLifecycleState state) {

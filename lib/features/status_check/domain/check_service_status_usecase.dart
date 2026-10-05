@@ -5,6 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -33,10 +34,17 @@ class CheckServiceStatusUsecase {
   }) async {
     try {
       final List<Wallet> wallets;
-      try {
-        wallets = await _getWalletsUsecase.execute();
-      } on NoWalletsFoundException {
-        return const Err(NoDefaultWalletFailure());
+      switch (await _getWalletsUsecase.execute()) {
+        case Ok(:final value):
+          wallets = value;
+        // "No wallets yet" is not a service outage, it is onboarding state.
+        case Err(failure: NoWalletsFoundFailure()):
+          return const Err(NoDefaultWalletFailure());
+        case Err(:final failure):
+          log.warning('status check: ${failure.logMessage}');
+          return Err(
+            StatusCheckUnexpectedFailure('wallets: ${failure.runtimeType}'),
+          );
       }
 
       final defaultWallet = wallets.firstWhereOrNull((w) => w.isDefault);

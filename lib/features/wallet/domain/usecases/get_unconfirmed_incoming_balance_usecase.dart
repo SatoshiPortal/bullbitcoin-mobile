@@ -1,13 +1,34 @@
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
+/// Sats inbound but not yet confirmed, from swaps that have been paid but not
+/// claimed.
+///
+/// [BoltzSwapRepository] is a shared core repository that still throws and is
+/// not this change's to convert, so this use case — the first layer the wallet
+/// feature owns — is the boundary for it (#1895).
 class GetUnconfirmedIncomingBalanceUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
   GetUnconfirmedIncomingBalanceUsecase({required this._boltzSwapRepository});
 
-  Future<int> execute({required List<String> walletIds}) async {
-    final allSwaps = await _boltzSwapRepository.getAllSwaps();
+  @useResult
+  Future<Result<int, WalletFailure>> execute({
+    required List<String> walletIds,
+  }) async {
+    final List<Swap> allSwaps;
+    try {
+      allSwaps = await _boltzSwapRepository.getAllSwaps();
+    } catch (e, st) {
+      log.warning('Unconfirmed incoming balance', error: e, trace: st);
+      return Err(
+        WalletUnexpectedFailure('unconfirmed balance: ${e.runtimeType}'),
+      );
+    }
 
     final filtered = allSwaps.where(
       (s) =>
@@ -21,6 +42,6 @@ class GetUnconfirmedIncomingBalanceUsecase {
       return sum + receiveable;
     });
 
-    return total;
+    return Ok(total);
   }
 }

@@ -731,25 +731,6 @@
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
   },
-  "walletAutoTransferBlockedTitle": "انتقال خودکار",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "تلاش برای انتقال {amount} BTC. هزینه‌ی فعلی {currentFee}% از مبلغ انتقال است و آستانه‌ی هزینه روی {thresholdFee}% تنظیم شده است",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "torSettingsPortValidationEmpty": "لطفا شماره پورت را وارد کنید",
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
@@ -786,10 +767,6 @@
   "@torSettingsStatusUnknown": {
     "description": "Status title when Tor status is unknown"
   },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
   "torSettingsDescConnected": "Tor پروکسی در حال اجرا و آماده است",
   "@torSettingsDescConnected": {
     "description": "Description when Tor is connected"
@@ -801,10 +778,6 @@
   "torSettingsDescDisconnected": "Tor پروکسی در حال اجرا نیست",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  },
-  "walletAutoTransferAllowButton": "اجازه دادن",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "withdrawSuccessTitle": "خروج اجباری",
   "@withdrawSuccessTitle": {
@@ -1534,10 +1507,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "دانلود بازی نستله",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA، سفارشات محدودیت و خرید خودکار",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -1614,10 +1583,6 @@
   "buyDocumentUpload": "آپلود اسناد",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "sendTransferFeeDescription": "این کل هزینه ای است که از مبلغ ارسال شده کسر می شود",
   "@sendTransferFeeDescription": {
@@ -2931,10 +2896,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "electrumPrivacyNoticeCancel": "لغو",
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
@@ -3659,10 +3620,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "شبکه Bitcoin Network",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "گزینه های پیشرفته",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3730,10 +3687,6 @@
   "withdrawAmountContinue": "ادامه",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "نگاهی به خزانه های بیشتر",
   "@recoverbullSeeMoreVaults": {
@@ -4508,10 +4461,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "میراث",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "پایه گذرنامه",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4815,10 +4764,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "اگر هیچ پروتکلی مشخص نشود، sl به طور پیش فرض استفاده می شود.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "معاملات",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -5103,10 +5048,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "electrumServerSettingsLabel": "سرور Electrum (نود Bitcoin)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "ورود به آدرس Lightning",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5143,10 +5084,6 @@
   "gotItButton": "آن را",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "شبکه مایع و رعد و برق",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "اولویت هزینه",
   "@sendFeePriority": {
@@ -5586,10 +5523,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Watch- Only",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "آرشیوهای برچسب: Decrypt",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5791,10 +5724,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "تست نقدینگی",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "حذف سرور سفارشی ممکن نشد",
   "@electrumDeleteFailedError": {
@@ -7796,10 +7725,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "walletNetworkLiquid": "شبکه نقدینگی",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
-  },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
@@ -9301,10 +9226,6 @@
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
-  "walletTypeBitcoinNetwork": "شبکه Bitcoin",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
   "electrumDeleteConfirmation": "آیا مطمئن هستید که می خواهید این سرور را حذف کنید؟\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
@@ -9580,10 +9501,6 @@
   "payInstitutionCodeHint": "کد Enter Institute code",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "بومی Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "باز فاکتور",
   "@payOpenInvoice": {
@@ -11752,6 +11669,12 @@
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "walletLoadFailed": "کیف‌پول‌های شما بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "walletWarningElectrumBitcoinDown": "سرور Bitcoin در دسترس نیست",
+  "walletWarningElectrumLiquidDown": "سرور Liquid در دسترس نیست",
+  "walletWarningElectrumBothDown": "سرورهای Bitcoin و Liquid در دسترس نیستند",
+  "walletWarningElectrumAction": "برای پیکربندی تنظیمات سرور ضربه بزنید",
+  "walletLoadFailedRetryHint": "برای به‌روزرسانی به پایین بکشید و دوباره تلاش کنید",
   "transactionDetailLoadError": "جزئیات تراکنش بارگذاری نشد.",
   "transactionPayjoinBroadcastFailed": "تراکنش اصلی منتشر نشد. لطفاً دوباره تلاش کنید.",
   "transactionPayjoinOriginalUnavailable": "تراکنش اصلی دیگر برای انتشار در دسترس نیست.",
@@ -11891,5 +11814,6 @@
   "receiveErrorAddressUnavailable": "آدرس دریافت آماده نشد. لطفاً دوباره تلاش کنید.",
   "receiveErrorBroadcastOriginal": "نتوانستیم تراکنش را ارسال کنیم. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "fundExchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
-  "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید."
+  "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
+  "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند."
 }
