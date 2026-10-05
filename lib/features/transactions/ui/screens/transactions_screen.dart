@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
@@ -46,7 +47,9 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final err = context.select((TransactionsCubit cubit) => cubit.state.err);
+    final failure = context.select(
+      (TransactionsCubit cubit) => cubit.state.failure,
+    );
     return BBPullableBody(
       onRefresh: () async {
         // Wait for the chain sync (bitcoin + liquid + swaps) to actually
@@ -58,15 +61,12 @@ class _Screen extends StatelessWidget {
       slivers: [
         const SliverToBoxAdapter(child: TxsFilterRow()),
         const SliverToBoxAdapter(child: TxsSyncingIndicator()),
-        if (err != null)
+        if (failure != null)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBText(
-                // `err` is a domain failure whose `toString()` is the Dart
-                // default ("Instance of '…'"). Never interpolate it into a
-                // user-facing string; the raw reason belongs in the logs.
-                context.loc.oopsSomethingWentWrong,
+                failure.toTranslated(context),
                 style: context.font.bodyLarge,
                 color: context.appColors.error,
               ),

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 
 class TxList extends StatelessWidget {
   const TxList({super.key, this.sliver = false});
@@ -22,18 +23,20 @@ class TxList extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.ongoingSwaps,
     );
 
-    final err = context.select((TransactionsCubit cubit) => cubit.state.err);
+    final failure = context.select(
+      (TransactionsCubit cubit) => cubit.state.failure,
+    );
 
     final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
 
-    if (err != null) {
+    if (failure != null) {
       return TransactionsByDayList<Transaction>(
         itemsByDay: const {},
         itemBuilder: (context, tx) =>
             TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
         loadingMessage: context.loc.transactionListLoadingTransactions,
         emptyMessage: context.loc.transactionListNoTransactions,
-        errorMessage: context.loc.transactionListLoadingFailed,
+        errorMessage: failure.toTranslated(context),
         sliver: sliver,
       );
     }

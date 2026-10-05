@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/application/application_errors.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -110,8 +111,19 @@ void main() {
   });
 
   void stub(List<Transaction> txs) {
-    when(() => getTransactions.execute()).thenAnswer((_) async => txs);
+    when(
+      () => getTransactions.execute(),
+    ).thenAnswer((_) async => Ok<List<Transaction>, TransactionFailure>(txs));
   }
+
+  /// Unwraps the `Result` for the tests that assert on CSV content: there a
+  /// failure is a broken test, not a case under test. The failure cases have
+  /// their own tests below and switch on the result themselves.
+  Future<String> buildCsv({DateTime? start, DateTime? end}) async =>
+      switch (await usecase.execute(start: start, end: end)) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('expected a CSV, got $failure'),
+      };
 
   test('emits a header and one row per transaction', () async {
     stub([
@@ -124,7 +136,7 @@ void main() {
       ),
     ]);
 
-    final csv = await usecase.execute();
+    final csv = await buildCsv();
     final lines = csv.trim().split('\n');
 
     expect(lines.length, 2);
@@ -153,7 +165,7 @@ void main() {
       ),
     ]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    final row = (await buildCsv()).trim().split('\n')[1].split(',');
     expect(row[1], 'liquid');
     expect(row[2], 'outgoing');
     expect(row[5], '350');
@@ -185,7 +197,7 @@ void main() {
       ),
     ]);
 
-    final csv = await usecase.execute(
+    final csv = await buildCsv(
       start: DateTime.utc(2026, 1, 1),
       end: DateTime.utc(2026, 1, 15),
     );
@@ -213,7 +225,7 @@ void main() {
       ),
     ]);
 
-    final csv = await usecase.execute(
+    final csv = await buildCsv(
       start: DateTime.utc(2026, 1, 1),
       end: DateTime.utc(2026, 1, 31),
     );
@@ -237,27 +249,35 @@ void main() {
         ),
       ]);
 
-      final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+      final row = (await buildCsv()).trim().split('\n')[1].split(',');
       expect(row[6], 'pending');
     },
   );
 
-  test('throws NoTransactionsToExportError when list is empty', () async {
+  test('fails with an empty-export failure when the list is empty', () async {
     stub([]);
     expect(
-      () => usecase.execute(),
-      throwsA(isA<NoTransactionsToExportError>()),
+      await usecase.execute(),
+      isA<Err<String, TransactionFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<TransactionExportEmptyFailure>(),
+      ),
     );
   });
 
-  test('throws InvalidDateRangeError when start is after end', () async {
+  test('fails with a range failure when start is after end', () async {
     stub([]);
     expect(
-      () => usecase.execute(
+      await usecase.execute(
         start: DateTime.utc(2026, 2, 1),
         end: DateTime.utc(2026, 1, 1),
       ),
-      throwsA(isA<InvalidDateRangeError>()),
+      isA<Err<String, TransactionFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<TransactionExportInvalidRangeFailure>(),
+      ),
     );
   });
 
@@ -279,7 +299,7 @@ void main() {
       ),
     ]);
 
-    final lines = (await usecase.execute()).trim().split('\n');
+    final lines = (await buildCsv()).trim().split('\n');
     expect(lines[1], contains('new'));
     expect(lines[2], contains('old'));
   });
@@ -299,7 +319,7 @@ void main() {
         ),
       ]);
 
-      final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+      final row = (await buildCsv()).trim().split('\n')[1].split(',');
       expect(row[1], 'lightning_receive');
       expect(row[2], 'incoming');
       expect(row[8], 'lightning'); // network
@@ -324,7 +344,7 @@ void main() {
       ),
     ]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    final row = (await buildCsv()).trim().split('\n')[1].split(',');
     expect(row[1], 'lightning_send');
     expect(row[2], 'outgoing');
     expect(row[8], 'lightning'); // network
@@ -366,7 +386,7 @@ void main() {
         ),
       ]);
 
-      final lines = (await usecase.execute()).trim().split('\n');
+      final lines = (await buildCsv()).trim().split('\n');
       expect(lines.length, 3, reason: 'both legs are exported');
 
       final rowsByTxid = {
@@ -434,7 +454,7 @@ void main() {
         ),
       ]);
 
-      final lines = (await usecase.execute()).trim().split('\n');
+      final lines = (await buildCsv()).trim().split('\n');
       final rowsByTxid = {
         for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
       };
@@ -475,7 +495,7 @@ void main() {
         ),
       ]);
 
-      final lines = (await usecase.execute()).trim().split('\n');
+      final lines = (await buildCsv()).trim().split('\n');
       final rowsByTxid = {
         for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
       };
@@ -499,7 +519,7 @@ void main() {
       ),
     ]);
 
-    final lines = (await usecase.execute()).trim().split('\n');
+    final lines = (await buildCsv()).trim().split('\n');
     expect(lines.length, 2);
     final row = lines[1].split(',');
     expect(row, contains('chain_send_only'));
@@ -529,7 +549,7 @@ void main() {
       ),
     ]);
 
-    final csv = await usecase.execute();
+    final csv = await buildCsv();
     expect(csv, isNot(contains('expired_swap')));
     expect(csv, isNot(contains('expired_tx')));
     expect(csv, contains('non_swap_tx'));
@@ -548,7 +568,7 @@ void main() {
     );
     stub([Transaction(payjoin: payjoin)]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    final row = (await buildCsv()).trim().split('\n')[1].split(',');
     expect(row[1], 'payjoin_send');
     expect(row[2], 'outgoing');
     expect(row[8], 'bitcoin');
@@ -567,7 +587,7 @@ void main() {
     );
     stub([Transaction(payjoin: payjoin)]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    final row = (await buildCsv()).trim().split('\n')[1].split(',');
     expect(row[1], 'payjoin_receive');
     expect(row[2], 'incoming');
     expect(row[8], 'bitcoin');
