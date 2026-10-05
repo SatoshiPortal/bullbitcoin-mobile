@@ -7718,6 +7718,9 @@ final class Schema16 extends i0.VersionedSchema {
     sendTransactionPolicyChoices,
     bullVaultRecords,
     bullVaultGenerationReservations,
+    walletBackupStates,
+    walletBackupControls,
+    keychainNostrKeys,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -8269,6 +8272,8 @@ final class Schema16 extends i0.VersionedSchema {
         _column_326,
         _column_327,
         _column_231,
+        _column_328,
+        _column_329,
       ],
       attachedDatabase: database,
     ),
@@ -8280,7 +8285,58 @@ final class Schema16 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(lineage_id, generation)'],
-      columns: [_column_314, _column_328],
+      columns: [_column_314, _column_330],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape51 walletBackupStates = Shape51(
+    source: i0.VersionedTable(
+      entityName: 'wallet_backup_states',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(identity)'],
+      columns: [
+        _column_331,
+        _column_332,
+        _column_333,
+        _column_334,
+        _column_335,
+        _column_336,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape52 walletBackupControls = Shape52(
+    source: i0.VersionedTable(
+      entityName: 'wallet_backup_controls',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_337, _column_338, _column_339],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape53 keychainNostrKeys = Shape53(
+    source: i0.VersionedTable(
+      entityName: 'keychain_nostr_keys',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(public_key)',
+        'UNIQUE(parent_fingerprint, identity)',
+      ],
+      columns: [
+        _column_340,
+        _column_341,
+        _column_342,
+        _column_247,
+        _column_343,
+        _column_231,
+        _column_309,
+      ],
       attachedDatabase: database,
     ),
     alias: null,
@@ -8711,6 +8767,10 @@ class Shape49 extends i0.VersionedTable {
       columnsByName['mobile_backup_deferred']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get createdAt =>
       columnsByName['created_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get descriptorTestedAt =>
+      columnsByName['descriptor_tested_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get serverTestedAt =>
+      columnsByName['server_tested_at']! as i1.GeneratedColumn<String>;
 }
 
 i1.GeneratedColumn<String> _column_314(String aliasedName) =>
@@ -8828,6 +8888,22 @@ i1.GeneratedColumn<int> _column_327(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL CHECK (mobile_backup_deferred IN (0, 1))',
     );
+i1.GeneratedColumn<String> _column_328(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'descriptor_tested_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_329(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'server_tested_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
 
 class Shape50 extends i0.VersionedTable {
   Shape50({required super.source, required super.alias}) : super.aliased();
@@ -8837,12 +8913,164 @@ class Shape50 extends i0.VersionedTable {
       columnsByName['generation']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<int> _column_328(String aliasedName) =>
+i1.GeneratedColumn<int> _column_330(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'generation',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape51 extends i0.VersionedTable {
+  Shape51({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get identity =>
+      columnsByName['identity']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get generation =>
+      columnsByName['generation']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get etag =>
+      columnsByName['etag']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get ciphertextHash =>
+      columnsByName['ciphertext_hash']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get confirmedContentHash =>
+      columnsByName['confirmed_content_hash']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get lastSuccessAt =>
+      columnsByName['last_success_at']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_331(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'identity',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_332(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'generation',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_333(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'etag',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_334(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'ciphertext_hash',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_335(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'confirmed_content_hash',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_336(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'last_success_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+
+class Shape52 extends i0.VersionedTable {
+  Shape52({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get enabled =>
+      columnsByName['enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recoveryScope =>
+      columnsByName['recovery_scope']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_337(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_338(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'enabled',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (enabled IN (0, 1))',
+    );
+i1.GeneratedColumn<int> _column_339(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'recovery_scope',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape53 extends i0.VersionedTable {
+  Shape53({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get publicKey =>
+      columnsByName['public_key']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get parentFingerprint =>
+      columnsByName['parent_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get identity =>
+      columnsByName['identity']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get purpose =>
+      columnsByName['purpose']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get description =>
+      columnsByName['description']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_340(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'public_key',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_341(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'parent_fingerprint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_342(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'identity',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_343(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'description',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
 i0.MigrationStepWithVersion migrationSteps({
