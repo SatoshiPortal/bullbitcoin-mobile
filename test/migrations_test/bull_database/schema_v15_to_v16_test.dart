@@ -4,10 +4,12 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' hide isNotNull, isNull;
+import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'generated/schema.dart';
+import 'generated/schema_v14.dart' as v14;
 import 'generated/schema_v15.dart' as v15;
 import 'generated/schema_v16.dart' as v16;
 
@@ -198,87 +200,108 @@ void main() {
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v15 wallets retain descriptors and normalize signer data', () async {
-    final schema = await verifier.schemaAt(15);
-    final oldDb = v15.DatabaseAtV15(schema.newConnection());
-    for (final (index, wallet) in _wallets.indexed) {
-      await _insertLegacyWallet(oldDb, wallet, index);
-    }
-    await oldDb.close();
+  for (final version in [14, 15]) {
+    test(
+      'v$version wallets retain descriptors and normalize signer data',
+      () async {
+        final schema = await verifier.schemaAt(version);
+        final oldDb = version == 14
+            ? v14.DatabaseAtV14(schema.newConnection())
+            : v15.DatabaseAtV15(schema.newConnection());
+        for (final (index, wallet) in _wallets.indexed) {
+          await _insertLegacyWallet(oldDb, wallet, index);
+        }
+        await oldDb.close();
 
-    final db = SqliteDatabase(schema.newConnection());
+        final db = SqliteDatabase(schema.newConnection());
+        await verifier.migrateAndValidate(db, 16);
+        await db.close();
+
+        final migratedDb = v16.DatabaseAtV16(schema.newConnection());
+        final metadataRows = await migratedDb
+            .select(migratedDb.walletMetadatas)
+            .get();
+        final signerRows = await migratedDb
+            .select(migratedDb.walletSigners)
+            .get();
+        final keyRows = await migratedDb
+            .select(migratedDb.walletDescriptorKeys)
+            .get();
+
+        expect(metadataRows, hasLength(_wallets.length));
+        expect(signerRows, hasLength(_wallets.length));
+        expect(keyRows, hasLength(_wallets.length));
+        for (final (index, wallet) in _wallets.indexed) {
+          final metadata = metadataRows.singleWhere(
+            (row) => row.id == wallet.id,
+          );
+          expect(metadata.id, wallet.id);
+          expect(metadata.network, wallet.network);
+          expect(metadata.publicDescriptor, _expectedDescriptor(wallet));
+          if (wallet.network.startsWith('bitcoin')) {
+            final expanded = _expandBitcoinDescriptor(
+              metadata.publicDescriptor,
+              isTestnet: wallet.network == 'bitcoinTestnet',
+            );
+            expect(expanded.external, wallet.externalDescriptor);
+            expect(expanded.internal, wallet.internalDescriptor);
+          }
+          expect(metadata.isEncryptedVaultTested, index.isEven ? 1 : 0);
+          expect(metadata.isPhysicalBackupTested, index.isOdd ? 1 : 0);
+          expect(
+            metadata.latestEncryptedBackup,
+            index.isEven ? 1680000000 + index : null,
+          );
+          expect(
+            metadata.latestPhysicalBackup,
+            index.isOdd ? 1681000000 + index : null,
+          );
+          expect(metadata.isDefault, index == 0 ? 1 : 0);
+          expect(metadata.isHidden, 0);
+          expect(metadata.label, index.isEven ? 'wallet-$index' : null);
+          expect(
+            metadata.syncedAt,
+            index.isEven ? '2026-08-0${index + 1}T00:00:00.000Z' : null,
+          );
+          expect(
+            metadata.birthday,
+            index.isOdd ? '2025-08-0${index + 1}T00:00:00.000Z' : null,
+          );
+
+          final signer = signerRows.singleWhere(
+            (row) => row.walletId == wallet.id,
+          );
+          final key = keyRows.singleWhere((row) => row.walletId == wallet.id);
+          expect(signer.id, 'signer-0');
+          expect(signer.position, 0);
+          expect(signer.signer, wallet.signer);
+          expect(signer.signerDevice, wallet.signerDevice);
+          expect(key.id, 'key-0');
+          expect(key.signerId, signer.id);
+          expect(key.position, 0);
+          expect(key.masterFingerprint, wallet.masterFingerprint);
+          expect(key.xpubFingerprint, wallet.xpubFingerprint);
+          expect(key.xpub, wallet.xpub);
+          expect(key.derivationPath, wallet.derivationPath);
+          expect(
+            key.descriptorPath,
+            wallet.network.startsWith('bitcoin')
+                ? standardSingleSignatureDescriptorPath
+                : '',
+          );
+        }
+
+        await migratedDb.close();
+      },
+    );
+  }
+
+  test('fresh creation matches the pending schema', () async {
+    final db = SqliteDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
     await verifier.migrateAndValidate(db, 16);
-    await db.close();
-
-    final migratedDb = v16.DatabaseAtV16(schema.newConnection());
-    final metadataRows = await migratedDb
-        .select(migratedDb.walletMetadatas)
-        .get();
-    final signerRows = await migratedDb.select(migratedDb.walletSigners).get();
-    final keyRows = await migratedDb
-        .select(migratedDb.walletDescriptorKeys)
-        .get();
-
-    expect(metadataRows, hasLength(_wallets.length));
-    expect(signerRows, hasLength(_wallets.length));
-    expect(keyRows, hasLength(_wallets.length));
-    for (final (index, wallet) in _wallets.indexed) {
-      final metadata = metadataRows.singleWhere((row) => row.id == wallet.id);
-      expect(metadata.id, wallet.id);
-      expect(metadata.network, wallet.network);
-      expect(metadata.publicDescriptor, _expectedDescriptor(wallet));
-      if (wallet.network.startsWith('bitcoin')) {
-        final expanded = _expandBitcoinDescriptor(
-          metadata.publicDescriptor,
-          isTestnet: wallet.network == 'bitcoinTestnet',
-        );
-        expect(expanded.external, wallet.externalDescriptor);
-        expect(expanded.internal, wallet.internalDescriptor);
-      }
-      expect(metadata.isEncryptedVaultTested, index.isEven ? 1 : 0);
-      expect(metadata.isPhysicalBackupTested, index.isOdd ? 1 : 0);
-      expect(
-        metadata.latestEncryptedBackup,
-        index.isEven ? 1680000000 + index : null,
-      );
-      expect(
-        metadata.latestPhysicalBackup,
-        index.isOdd ? 1681000000 + index : null,
-      );
-      expect(metadata.isDefault, index == 0 ? 1 : 0);
-      expect(metadata.isHidden, 0);
-      expect(metadata.label, index.isEven ? 'wallet-$index' : null);
-      expect(
-        metadata.syncedAt,
-        index.isEven ? '2026-08-0${index + 1}T00:00:00.000Z' : null,
-      );
-      expect(
-        metadata.birthday,
-        index.isOdd ? '2025-08-0${index + 1}T00:00:00.000Z' : null,
-      );
-
-      final signer = signerRows.singleWhere((row) => row.walletId == wallet.id);
-      final key = keyRows.singleWhere((row) => row.walletId == wallet.id);
-      expect(signer.id, 'signer-0');
-      expect(signer.position, 0);
-      expect(signer.signer, wallet.signer);
-      expect(signer.signerDevice, wallet.signerDevice);
-      expect(key.id, 'key-0');
-      expect(key.signerId, signer.id);
-      expect(key.position, 0);
-      expect(key.masterFingerprint, wallet.masterFingerprint);
-      expect(key.xpubFingerprint, wallet.xpubFingerprint);
-      expect(key.xpub, wallet.xpub);
-      expect(key.derivationPath, wallet.derivationPath);
-      expect(
-        key.descriptorPath,
-        wallet.network.startsWith('bitcoin')
-            ? standardSingleSignatureDescriptorPath
-            : '',
-      );
-    }
-
-    await migratedDb.close();
+    expect(await db.select(db.walletMetadatas).get(), isEmpty);
+    expect(await db.select(db.bullVaultRecords).get(), isEmpty);
   });
 
   test('failed v15 migration rolls back and can be retried', () async {
@@ -376,36 +399,37 @@ String _expectedDescriptor(_LegacyWallet wallet) {
 }
 
 Future<void> _insertLegacyWallet(
-  v15.DatabaseAtV15 db,
+  GeneratedDatabase db,
   _LegacyWallet wallet,
   int index,
 ) async {
-  await db
-      .into(db.walletMetadatas)
-      .insert(
-        v15.WalletMetadatasCompanion.insert(
-          id: wallet.id,
-          masterFingerprint: wallet.masterFingerprint,
-          xpubFingerprint: wallet.xpubFingerprint,
-          isEncryptedVaultTested: index.isEven ? 1 : 0,
-          isPhysicalBackupTested: index.isOdd ? 1 : 0,
-          latestEncryptedBackup: Value(
-            index.isEven ? 1680000000 + index : null,
-          ),
-          latestPhysicalBackup: Value(index.isOdd ? 1681000000 + index : null),
-          xpub: wallet.xpub,
-          externalPublicDescriptor: wallet.externalDescriptor,
-          internalPublicDescriptor: wallet.internalDescriptor,
-          signer: wallet.signer,
-          signerDevice: Value(wallet.signerDevice),
-          isDefault: index == 0 ? 1 : 0,
-          label: Value(index.isEven ? 'wallet-$index' : null),
-          syncedAt: Value(
-            index.isEven ? '2026-08-0${index + 1}T00:00:00.000Z' : null,
-          ),
-          birthday: Value(
-            index.isOdd ? '2025-08-0${index + 1}T00:00:00.000Z' : null,
-          ),
-        ),
-      );
+  await db.customStatement(
+    '''
+    INSERT INTO wallet_metadatas (
+      id, master_fingerprint, xpub_fingerprint,
+      is_encrypted_vault_tested, is_physical_backup_tested,
+      latest_encrypted_backup, latest_physical_backup, xpub,
+      external_public_descriptor, internal_public_descriptor,
+      signer, signer_device, is_default, label, synced_at, birthday
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''',
+    [
+      wallet.id,
+      wallet.masterFingerprint,
+      wallet.xpubFingerprint,
+      index.isEven ? 1 : 0,
+      index.isOdd ? 1 : 0,
+      index.isEven ? 1680000000 + index : null,
+      index.isOdd ? 1681000000 + index : null,
+      wallet.xpub,
+      wallet.externalDescriptor,
+      wallet.internalDescriptor,
+      wallet.signer,
+      wallet.signerDevice,
+      index == 0 ? 1 : 0,
+      index.isEven ? 'wallet-$index' : null,
+      index.isEven ? '2026-08-0${index + 1}T00:00:00.000Z' : null,
+      index.isOdd ? '2025-08-0${index + 1}T00:00:00.000Z' : null,
+    ],
+  );
 }

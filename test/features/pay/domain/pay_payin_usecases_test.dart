@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -75,6 +77,22 @@ void main() {
           networkFee: const NetworkFee.absolute(200),
           amountSat: 100000,
         );
+
+    test('unavailable selected coins have a specific failure', () async {
+      stubThrow(SelectedBitcoinCoinsUnavailableException());
+      expect(
+        (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
+        isA<PaySelectedCoinsUnavailableFailure>(),
+      );
+    });
+
+    test('insufficient selected coins have a specific failure', () async {
+      stubThrow(SelectedBitcoinCoinsInsufficientException());
+      expect(
+        (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
+        isA<PaySelectedCoinsInsufficientFailure>(),
+      );
+    });
 
     test('a build failure is sanitized, reason kept for logs only', () async {
       stubThrow(Exception(_rawReason));
@@ -173,6 +191,59 @@ void main() {
   });
 
   group('SignPayPayinUsecase', () {
+    test('returns only finalized Bitcoin transactions', () async {
+      final port = _MockBitcoinSigningPort();
+      final usecase = SignPayPayinUsecase(
+        bitcoinSigningPort: port,
+        liquidWalletRepository: _MockLiquidWalletRepository(),
+      );
+      when(
+        () => port.signPsbt('psbt', walletId: 'wallet-1'),
+      ).thenAnswer((_) async => const Ok((psbt: 'signed', isFinalized: true)));
+      when(
+        () => port.getTxSize(psbt: 'signed', walletId: 'wallet-1'),
+      ).thenAnswer((_) async => 110);
+      final result = await usecase.bitcoin(psbt: 'psbt', walletId: 'wallet-1');
+      expect(
+        (result as Ok<({String signedPsbt, int txSize}), PayFailure>).value,
+        (signedPsbt: 'signed', txSize: 110),
+      );
+    });
+
+    test('refuses partial or rejected Bitcoin signatures', () async {
+      final port = _MockBitcoinSigningPort();
+      final usecase = SignPayPayinUsecase(
+        bitcoinSigningPort: port,
+        liquidWalletRepository: _MockLiquidWalletRepository(),
+      );
+      for (final signingResult
+          in <Result<({String psbt, bool isFinalized}), BitcoinSigningFailure>>[
+            const Ok((psbt: 'partial', isFinalized: false)),
+            const Err(
+              BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
+            ),
+          ]) {
+        when(
+          () => port.signPsbt('psbt', walletId: 'wallet-1'),
+        ).thenAnswer((_) async => signingResult);
+        final result = await usecase.bitcoin(
+          psbt: 'psbt',
+          walletId: 'wallet-1',
+        );
+        expect(
+          (result as Err<({String signedPsbt, int txSize}), PayFailure>)
+              .failure,
+          isA<PayTransactionSigningFailedFailure>(),
+        );
+      }
+      verifyNever(
+        () => port.getTxSize(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    });
+
     test(
       'a Bitcoin signing failure never carries the descriptor out',
       () async {

@@ -61,5 +61,4 @@ void main() {
     expect(cubit.state.transaction, isNull);
     expect(cubit.state.failure, isA<PsbtFinalizationFailure>());
   });
-
 }

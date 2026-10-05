@@ -57,6 +57,51 @@ void main() {
   });
 
   group('ParseWatchOnlyInputUsecase', () {
+    test('rejects private extended keys before parsing', () async {
+      for (final prefix in ['xprv', 'yprv', 'zprv', 'tprv', 'uprv', 'vprv']) {
+        final result = await usecase.execute(
+          'wpkh(${prefix}123456789/<0;1>/*)',
+        );
+        expect(
+          (result as Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
+              .failure,
+          isA<InvalidFormatFailure>(),
+        );
+      }
+      verifyZeroInteractions(descriptorPort);
+      verifyZeroInteractions(getSettingsUsecase);
+    });
+
+    test('rejects a Liquid descriptor before signer lookup', () async {
+      const input = 'wpkh([86241f88/84h/1776h/0h]$_xpub/<0;1>/*)';
+      for (final network in [Network.bitcoinMainnet, Network.bitcoinTestnet]) {
+        when(
+          () => descriptorPort.parseBitcoinDescriptor(
+            descriptor: input,
+            network: network,
+          ),
+        ).thenReturn((
+          descriptor: input,
+          scriptType: ScriptType.bip84,
+          inferredChangePath: false,
+          descriptorKeys: [
+            _descriptorKey(
+              masterFingerprint: '86241f88',
+              xpubFingerprint: '12345678',
+              xpub: _xpub,
+              derivationPath: "m/84'/1776'/0'",
+            ),
+          ],
+        ));
+      }
+      final result = await usecase.execute(input);
+      expect(
+        (result as Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>).failure,
+        isA<InvalidFormatFailure>(),
+      );
+      verifyZeroInteractions(seedVerification);
+    });
+
     test('maps raw xpub input to Bull wallet types', () async {
       final result = await usecase.execute(_xpub);
 

@@ -53,11 +53,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        LabeledTextInput(
-          label: context.loc.walletDetailsNetworkLabel,
-          value: networkLabel,
-          onChanged: null,
-        ),
+        BBText(networkLabel, style: context.font.bodyMedium),
         const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
