@@ -38,6 +38,7 @@ class SyncCoordinator {
     required SyncWalletUsecase syncWalletUsecase,
     this._syncSwaps,
     this._syncSwapsOutcome,
+    this._syncSp,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -59,6 +60,11 @@ class SyncCoordinator {
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final Future<void> Function()? _syncSwaps;
+  // The SP side of a sync tick: restart the taproot listener, then resume
+  // the chain scan when the SP feature's policy allows it. Passed as a lazy
+  // closure from the composition root, like the swap callbacks, so this core
+  // orchestrator never imports the SP feature (rule #7).
+  final Future<void> Function()? _syncSp;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
   SyncOutcome? lastSwapSyncOutcome;
@@ -87,13 +93,13 @@ class SyncCoordinator {
   final Map<SyncKind, List<Completer<Object?>>> _waiters =
       <SyncKind, List<Completer<Object?>>>{};
 
-  /// Schedule `kinds` (or all kinds when `only` is null) and resolve once
-  /// every requested kind that actually runs has settled. Resolution tracks
+  /// Schedule `kinds` (or bitcoin, liquid and sp when `only` is null) and
+  /// resolve once every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
-  /// order follows the [SyncKind] enum declaration (bitcoin → liquid).
+  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps → sp).
   ///
-  /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
+  /// Pass [SyncTrigger.user] to bypass the per-kind throttle; reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
   /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
   ///
@@ -105,7 +111,8 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
-    final requestedKinds = only ?? const {SyncKind.bitcoin, SyncKind.liquid};
+    final requestedKinds =
+        only ?? const {SyncKind.bitcoin, SyncKind.liquid, SyncKind.sp};
     final requested = SyncKind.values
         .where(requestedKinds.contains)
         .toList(growable: false);
@@ -242,6 +249,8 @@ class SyncCoordinator {
         } else {
           await _syncSwaps!();
         }
+      case SyncKind.sp:
+        await _syncSp?.call();
     }
   }
 

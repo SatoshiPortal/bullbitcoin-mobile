@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +66,7 @@ class HomeFiatBalance extends StatelessWidget {
     final loadingPrice = priceState.loadingPrice;
     final hasValid = priceState.hasValidFiatRate;
 
-    // Only gate on balance/loading and whether we have a usable rate — not
+    // Only gate on balance/loading and whether we have a usable rate, not
     // [startupFailed], or a successful currency change still shows skeleton.
     final showSkeleton = showBalanceLoading || loadingPrice || !hasValid;
 
