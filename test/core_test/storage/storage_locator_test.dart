@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/storage_locator.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -15,6 +18,7 @@ void main() {
   late Directory documentsDirectory;
 
   setUp(() async {
+    StorageLocator.resetPrewarmForTesting();
     documentsDirectory = await Directory.systemTemp.createTemp(
       'storage-prewarm-',
     );
@@ -97,6 +101,48 @@ void main() {
     await expectLater(StorageLocator.prewarmSecureStorage(), completes);
 
     expect(calls, isEmpty);
+  });
+
+  test('prewarm runs once per process even when called repeatedly', () async {
+    await StorageLocator.prewarmSecureStorage();
+    await StorageLocator.prewarmSecureStorage();
+
+    expect(calls, hasLength(1));
+    expect(calls.single.method, 'containsKey');
+  });
+
+  test('registerDatasources joins an in-flight prewarm', () async {
+    final logDirectory = await Directory.systemTemp.createTemp('storage-log-');
+    log = Logger.replace(directory: logDirectory);
+    addTearDown(() async {
+      await log.flush();
+      await logDirectory.delete(recursive: true);
+    });
+
+    final gate = Completer<bool>();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          calls.add(call);
+          return gate.future;
+        });
+
+    final prewarm = StorageLocator.prewarmSecureStorage();
+    var registered = false;
+    final registration = Future(() async {
+      await StorageLocator.registerDatasources(GetIt.asNewInstance());
+      registered = true;
+    });
+
+    await pumpEventQueue();
+    expect(
+      registered,
+      isFalse,
+      reason: 'the startup probe must wait for the in-flight prewarm',
+    );
+
+    gate.complete(false);
+    await prewarm;
+    await registration;
   });
 
   test('prewarm leaves initialization failures to the startup probe', () async {

@@ -20,6 +20,8 @@ import 'package:path_provider/path_provider.dart';
 
 class StorageLocator {
   static const _prewarmKey = '__bull_secure_storage_prewarm__';
+  static Future<void>? _prewarmFuture;
+  static Object? _prewarmError;
   static const _fss10Storage = fss10.FlutterSecureStorage(
     aOptions: fss10.AndroidOptions(
       resetOnError: false,
@@ -36,7 +38,29 @@ class StorageLocator {
   /// optimization is skipped if any supported prior-install marker exists.
   /// The manifest disables Android backup; classification still fails closed.
   /// The authoritative startup probe handles FSS9 fallback and reports errors.
-  static Future<void> prewarmSecureStorage() async {
+  ///
+  /// Safety rests on two invariants of the pinned fork
+  /// (SatoshiPortal/flutter_secure_storage @ 0a0869d) — re-verify both when
+  /// bumping the ref:
+  ///
+  /// 1. A failed init persists nothing. With ESP data present and
+  ///    `migrateOnAlgorithmChange: false`, the native side errors out before
+  ///    `StorageCipherFactory` is constructed, and that constructor is the
+  ///    only place the algorithm marker is written — so a failed prewarm
+  ///    leaves the ESP state untouched for the probe's FSS9 routing.
+  /// 2. The plugin runs every method call on one background `HandlerThread`,
+  ///    and Bull's options take the synchronous cipher-init branch, so native
+  ///    init never runs twice concurrently. [registerDatasources] also joins
+  ///    this future on the Dart side, keeping probe-vs-prewarm ordering
+  ///    deterministic even if a future ref changes the native threading.
+  ///
+  /// Idempotent: concurrent and repeated calls share one underlying run.
+  static Future<void> prewarmSecureStorage() => _prewarmFuture ??= _prewarm();
+
+  static Future<void> _prewarm() async {
+    // `defaultTargetPlatform` instead of the `Platform.isAndroid` used
+    // elsewhere in this file, so tests can drive the gates through
+    // `debugDefaultTargetPlatformOverride`; both agree on production Android.
     if (defaultTargetPlatform != TargetPlatform.android) return;
 
     try {
@@ -47,10 +71,20 @@ class StorageLocator {
       if (priorInstall.hasDatabase || priorInstall.hasLegacyHiveBoxes) return;
 
       await _fss10Storage.containsKey(key: _prewarmKey);
-    } catch (_) {
+    } catch (error) {
       // Fail closed. The startup probe repeats initialization and remains the
       // only path allowed to select FSS10 or route an install through FSS9.
+      // The logger isn't initialized this early, so stash the error for
+      // registerDatasources to surface.
+      _prewarmError = error;
     }
+  }
+
+  /// Clears the memoized prewarm state so each test starts from a cold run.
+  @visibleForTesting
+  static void resetPrewarmForTesting() {
+    _prewarmFuture = null;
+    _prewarmError = null;
   }
 
   static Future<({bool hasDatabase, bool hasLegacyHiveBoxes})>
@@ -68,6 +102,23 @@ class StorageLocator {
   }
 
   static Future<void> registerDatasources(GetIt locator) async {
+    // Join any in-flight prewarm so the startup probe below can never overlap
+    // an FSS10 init started during the wizard. Normally the prewarm resolved
+    // long before Bull.init; the exception is a first launch killed after
+    // wizard completion but before the flag commit below. The probe's native
+    // calls would queue behind the prewarm's anyway, so this join adds no
+    // wall-clock time — it only makes the ordering deterministic.
+    await (_prewarmFuture ?? Future<void>.value());
+    final prewarmError = _prewarmError;
+    if (prewarmError != null) {
+      _prewarmError = null;
+      log.warning(
+        'StorageLocator: secure-storage prewarm failed — optimization skipped '
+        '(non-fatal), the startup probe initializes storage instead. '
+        'Error: ${prewarmError.runtimeType}: $prewarmError',
+      );
+    }
+
     const seedStoreTypeDatasource = SeedStoreTypeDatasource();
     locator.registerLazySingleton<SeedStoreTypeDatasource>(
       () => seedStoreTypeDatasource,

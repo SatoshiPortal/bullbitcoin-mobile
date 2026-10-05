@@ -267,7 +267,9 @@ Future main() async {
         WidgetsFlutterBinding.ensureInitialized();
         // Android initializes FSS10 lazily and may spend several seconds in a
         // cold fsync. When no supported prior-install marker exists, start that
-        // local-only work during the wizard. Upgrade probes stay in Bull.init.
+        // local-only work during the wizard. Upgrade probes stay in Bull.init,
+        // and `StorageLocator.registerDatasources` joins this future before
+        // probing, so the unawaited start can never overlap the probe.
         unawaited(StorageLocator.prewarmSecureStorage());
         // Wizard runs BEFORE `Bull.init` for everyone — fresh installs
         // and upgrades alike — so consent is collected before
