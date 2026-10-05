@@ -3223,6 +3223,26 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "descriptor_tested_at",
+            "getter_name": "descriptorTestedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_tested_at",
+            "getter_name": "serverTestedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -3279,6 +3299,227 @@
     },
     {
       "id": 25,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "wallet_backup_states",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "identity",
+            "getter_name": "identity",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "etag",
+            "getter_name": "etag",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ciphertext_hash",
+            "getter_name": "ciphertextHash",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "confirmed_content_hash",
+            "getter_name": "confirmedContentHash",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_success_at",
+            "getter_name": "lastSuccessAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "identity"
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "wallet_backup_controls",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "enabled",
+            "getter_name": "enabled",
+            "moor_type": "bool",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"enabled\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recovery_scope",
+            "getter_name": "recoveryScope",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "keychain_nostr_keys",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "public_key",
+            "getter_name": "publicKey",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "parent_fingerprint",
+            "getter_name": "parentFingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "identity",
+            "getter_name": "identity",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "purpose",
+            "getter_name": "purpose",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "description",
+            "getter_name": "description",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "public_key"
+        ],
+        "unique_keys": [
+          [
+            "parent_fingerprint",
+            "identity"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 28,
       "references": [
         19
       ],
@@ -3297,7 +3538,7 @@
       }
     },
     {
-      "id": 26,
+      "id": 29,
       "references": [
         19
       ],
@@ -3316,7 +3557,7 @@
       }
     },
     {
-      "id": 27,
+      "id": 30,
       "references": [
         19
       ],
@@ -3335,7 +3576,7 @@
       }
     },
     {
-      "id": 28,
+      "id": 31,
       "references": [
         19
       ],
@@ -3354,7 +3595,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 32,
       "references": [
         19
       ],
@@ -3373,7 +3614,7 @@
       }
     },
     {
-      "id": 30,
+      "id": 33,
       "references": [
         19
       ],
@@ -3392,7 +3633,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 34,
       "references": [
         19
       ],
@@ -3411,7 +3652,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 35,
       "references": [
         20
       ],
@@ -3430,7 +3671,7 @@
       }
     },
     {
-      "id": 33,
+      "id": 36,
       "references": [
         20
       ],
@@ -3662,7 +3903,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, \"descriptor_tested_at\" TEXT NULL, \"server_tested_at\" TEXT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
         }
       ]
     },
@@ -3672,6 +3913,33 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_generation_reservations\" (\"lineage_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, PRIMARY KEY (\"lineage_id\", \"generation\"));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_backup_states",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_states\" (\"identity\" TEXT NOT NULL, \"generation\" INTEGER NULL, \"etag\" TEXT NULL, \"ciphertext_hash\" TEXT NULL, \"confirmed_content_hash\" TEXT NULL, \"last_success_at\" TEXT NULL, PRIMARY KEY (\"identity\"));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_backup_controls",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_controls\" (\"id\" INTEGER NOT NULL, \"enabled\" INTEGER NULL CHECK (\"enabled\" IN (0, 1)), \"recovery_scope\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "keychain_nostr_keys",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"keychain_nostr_keys\" (\"public_key\" TEXT NOT NULL, \"parent_fingerprint\" TEXT NOT NULL, \"identity\" INTEGER NOT NULL, \"purpose\" TEXT NOT NULL, \"description\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, PRIMARY KEY (\"public_key\"), UNIQUE (\"parent_fingerprint\", \"identity\"));"
         }
       ]
     },
