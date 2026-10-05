@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
@@ -36,14 +37,20 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         .state
         .watchOnlyWallet;
     final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    final networkLabel = switch (entity.network) {
+      Network.bitcoinMainnet =>
+        context.loc.importWatchOnlyNetworkBitcoinMainnet,
+      Network.bitcoinTestnet =>
+        context.loc.importWatchOnlyNetworkBitcoinTestnet,
+      Network.liquidMainnet || Network.liquidTestnet => throw StateError(
+        'Liquid watch-only wallets must be rejected before presentation',
+      ),
+    };
 
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
-          'Network: ${entity.network.name}',
-          style: context.font.bodyMedium,
-        ),
+        BBText(networkLabel, style: context.font.bodyMedium),
         const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,

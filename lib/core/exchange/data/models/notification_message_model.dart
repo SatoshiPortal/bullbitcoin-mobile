@@ -8,6 +8,7 @@ class NotificationMessageModel {
     'userPreferences': NotificationMessageKind.userPreferences,
     'message': NotificationMessageKind.message,
     'order': NotificationMessageKind.order,
+    'limitOrder': NotificationMessageKind.limitOrder,
     'user': NotificationMessageKind.user,
   };
 

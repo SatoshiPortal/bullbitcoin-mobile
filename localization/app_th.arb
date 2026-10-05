@@ -1438,7 +1438,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "คุณพยายามที่จะถอนเงินข้างต้น.",
+  "withdrawAboveMaxAmountError": "จำนวนสูงสุดคือ {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2091,7 +2091,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
+  "withdrawBelowMinAmountError": "จำนวนขั้นต่ำคือ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3065,10 +3065,6 @@
   "autoswapInfoSettingsButton": "การตั้งค่าการตั้งค่า",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "ผู้รับใหม่",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "แจ็คของคุณตอนนี้เชื่อมต่อและพร้อมที่จะใช้งานด้วยชิป.",
   "@importQrDeviceKeystoneStep10": {
@@ -4215,10 +4211,6 @@
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
   },
-  "withdrawRecipientsMyTab": "จดหมายของฉัน",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
   "sendFeeRateTooLow": "ค่าธรรมเนียมค่าธรรมเนียมต่ํา",
   "@sendFeeRateTooLow": {
     "description": "Error for insufficient fee"
@@ -5323,7 +5315,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "เลือก \"ตัวเลือก\" เป็นตัวเลือกการส่งออก",
+  "importQrDeviceSeedsignerStep6": "เลือก \"Animated\" เป็นตัวเลือกการส่งออก สำหรับเฟิร์มแวร์ SeedSigner รุ่นเก่า ให้เลือก \"Sparrow\"",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -5591,10 +5583,6 @@
   "addressViewAddressesTitle": "ที่อยู่",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
-  },
-  "withdrawRecipientsNoRecipients": "ไม่มีผู้รับที่จะถอน.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
   },
   "transactionSwapProgressPaymentMade": "การชําระเงิน\nผลิตจาก",
   "@transactionSwapProgressPaymentMade": {
@@ -6706,10 +6694,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "อ่านต่อ",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "รายการ",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6803,10 +6787,6 @@
   "sendTitle": "ส่ง",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "การถอนเงินไม่ได้พบ กรุณาลองอีกครั้ง.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -8156,10 +8136,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "ประเภททุกประเภท",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "ข้อควรระวัง - แนะนํา",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8494,14 +8470,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "และวิธีการควรส่งเงิน?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "เลือกผู้รับ",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "ผู้รับชําระเงิน",
   "@sellPayoutRecipient": {
@@ -10817,15 +10785,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ข้อผิดพลาด: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ค่าธรรมเนียม",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11207,10 +11166,6 @@
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "การถอนเงินนี้ได้รับการยืนยัน.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
@@ -12227,5 +12182,75 @@
   "autoBuyInfoMessage": "จำนวนเงินใดก็ตามที่เพิ่มเข้าบัญชีของคุณจะถูกแปลงเป็น Bitcoin ตามอัตราแลกเปลี่ยนปัจจุบันและส่งไปยังกระเป๋าเงินของคุณ",
   "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
   "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
-  "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง"
+  "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
+  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
+  "importWatchOnlyErrorNetworkMismatch": "กระเป๋าเงินนี้กำลังใช้เครือข่าย Bitcoin อื่น โปรดสลับระหว่าง Mainnet และ Testnet แล้วลองอีกครั้ง",
+  "importWatchOnlyErrorAlreadyExists": "นำเข้ากระเป๋าเงินนี้แล้ว",
+  "importWatchOnlyNetworkBitcoinMainnet": "เครือข่าย: เครือข่ายหลักของ Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "เครือข่าย: เครือข่ายทดสอบของ Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "ไม่สามารถสรุปธุรกรรมที่ลงนามแล้วได้ โปรดตรวจสอบว่ามีลายเซ็นที่จำเป็นครบถ้วนแล้วลองอีกครั้ง",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

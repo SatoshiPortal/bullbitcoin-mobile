@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,10 +25,10 @@ class WithdrawRecipientsScreen extends StatelessWidget {
               ? state.isCreatingWithdrawOrder
               : false,
           onRecipientAddedHookError: state is WithdrawRecipientInputState
-              ? state.newRecipientError?.toString()
+              ? state.newRecipientFailure?.toTranslated(context)
               : null,
           onRecipientSelectedHookError: state is WithdrawRecipientInputState
-              ? state.selectedRecipientError?.toString()
+              ? state.selectedRecipientFailure?.toTranslated(context)
               : null,
         );
       },

@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -17,6 +18,18 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
+
+/// The value of an [Ok], failing the test on an [Err].
+T _ok<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected Ok, got $failure'),
+};
+
+/// The failure of an [Err], failing the test on an [Ok].
+F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => fail('expected Err, got $value'),
+  Err(:final failure) => failure,
+};
 
 void main() {
   late _MockExchangeOrderRepository mainnetRepository;
@@ -37,15 +50,14 @@ void main() {
       settingsRepository: settingsRepository,
       recipientsFacade: recipientsFacade,
     );
-    interacSecurityDetails =
-        (InteracSecurityDetails.create(
-                  recipientId: 'recipient-1',
-                  email: 'person@example.com',
-                  securityQuestion: 'Favourite city?',
-                  securityAnswer: 'Montreal',
-                )
-                as Ok<InteracSecurityDetails, RecipientsFailure>)
-            .value;
+    interacSecurityDetails = _ok(
+      InteracSecurityDetails.create(
+        recipientId: 'recipient-1',
+        email: 'person@example.com',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal',
+      ),
+    );
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,
@@ -75,7 +87,7 @@ void main() {
       saveSecurityDetailsAsDefault: true,
     );
 
-    expect(result, same(order));
+    expect(_ok(result), same(order));
     verifyInOrder([
       () => mainnetRepository.confirmWithdrawOrder('order-1'),
       () => recipientsFacade.updateInteracSecurityDetails(
@@ -101,10 +113,12 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
 
-    await usecase.execute(
+    final result = await usecase.execute(
       orderId: 'order-1',
       interacSecurityDetails: interacSecurityDetails,
     );
+
+    expect(_ok(result), same(order));
 
     verify(
       () => recipientsFacade.updateInteracSecurityDetails(
@@ -142,7 +156,7 @@ void main() {
         saveSecurityDetailsAsDefault: true,
       );
 
-      expect(result, same(order));
+      expect(_ok(result), same(order));
     },
   );
 
@@ -154,7 +168,7 @@ void main() {
 
     final result = await usecase.execute(orderId: 'order-1');
 
-    expect(result, same(order));
+    expect(_ok(result), same(order));
     verifyZeroInteractions(recipientsFacade);
   });
 
@@ -173,7 +187,7 @@ void main() {
 
     final result = await usecase.execute(orderId: 'order-1');
 
-    expect(result, same(order));
+    expect(_ok(result), same(order));
     verifyZeroInteractions(mainnetRepository);
   });
 
@@ -182,14 +196,14 @@ void main() {
       () => mainnetRepository.confirmWithdrawOrder('order-1'),
     ).thenThrow(Exception('Montreal'));
 
-    await expectLater(
-      usecase.execute(orderId: 'order-1'),
-      throwsA(
-        isA<UnexpectedWithdrawError>().having(
-          (error) => error.message,
-          'message',
-          isNot(contains('Montreal')),
-        ),
+    final result = await usecase.execute(orderId: 'order-1');
+
+    expect(
+      _err(result),
+      isA<WithdrawUnexpectedFailure>().having(
+        (failure) => failure.logMessage,
+        'logMessage',
+        isNot(contains('Montreal')),
       ),
     );
   });

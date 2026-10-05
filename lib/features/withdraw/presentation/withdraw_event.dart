@@ -16,8 +16,5 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     required String securityAnswer,
     required bool saveAsDefault,
   }) = WithdrawInteracSecurityDetailsSubmitted;
-  /*const factory WithdrawEvent.descriptionInputContinuePressed(
-    String description,
-  ) = WithdrawDescriptionInputContinuePressed;*/
   const factory WithdrawEvent.confirmed() = WithdrawConfirmed;
 }

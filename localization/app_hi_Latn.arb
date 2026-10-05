@@ -8526,7 +8526,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Sparrow\" select karo",
+  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Animated\" chunein. Purane SeedSigner firmware par \"Sparrow\" chunein.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -8782,34 +8782,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "Recipient Select Karo",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "Paisa kahan aur kaise bhejun?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "Naya recipient",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "Mere fiat recipients",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "Sabhi types",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "Withdraw karne ke liye koi recipient nahi mila.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "Withdrawal Confirm Karo",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -8853,15 +8825,6 @@
   "withdrawConfirmButton": "Withdrawal confirm karo",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "Apna account fund karo",
   "@fundExchangeFundAccount": {
@@ -10430,21 +10393,13 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "Aap minimum amount se kam withdraw karne ki koshish kar rahe hain.",
+  "withdrawBelowMinAmountError": "Minimum amount hai {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "Aap maximum amount se zyada withdraw karne ki koshish kar rahe hain.",
+  "withdrawAboveMaxAmountError": "Maximum amount {amount} {currency} hai",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "Withdrawal order nahi mila. Kripya dobara try karo.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Ye withdrawal order pehle se confirm ho chuka hai.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "Page nahi mila",
   "@coreScreensPageNotFound": {
@@ -12611,5 +12566,75 @@
   "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
   "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
-  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein."
+  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
+  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
+  "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
+  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin mainnet",
+  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin testnet",
+  "broadcastSignedTxErrorPsbtFinalization": "Signed transaction ko final nahin kiya ja saka. Pakka karen ki ismein sabhi zaroori signatures hain, phir dobara koshish karen.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
 }

@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:bb_mobile/features/exchange_settings/exchange_settings_locator.dart';
@@ -42,6 +43,8 @@ import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
@@ -120,6 +123,14 @@ class AppLocator {
                   );
         }
       },
+      // Lazy, like the swap callback above: SpLocator runs after this, and the
+      // closure only resolves the facade when a sync tick actually fires.
+      syncSp: () async {
+        final result = await locator<SpFacade>().syncWallet();
+        if (result case Err(:final failure)) {
+          throw SpSyncException(failure.logMessage);
+        }
+      },
     );
 
     // Register feature-specific dependencies
@@ -132,6 +143,9 @@ class AppLocator {
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
+    // SP must register before settings/wallet: their wrapper use cases
+    // resolve locator<SpFacade>().
+    SpLocator.setup(locator);
     SettingsLocator.setup(locator);
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
@@ -164,6 +178,7 @@ class AppLocator {
     ExchangeLocator.setup(locator);
     DefaultWalletsLocator.setup(locator);
     AutoBuyLocator.setup(locator);
+    LimitOrdersLocator.setup(locator);
     ExchangeSettingsLocator.setup(locator);
     ExchangeSupportChatLocator.setup(locator);
     BuyLocator.setup(locator);

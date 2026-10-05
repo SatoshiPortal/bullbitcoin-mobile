@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
 import 'package:flutter/material.dart';
@@ -48,9 +49,10 @@ class AutoBuyHomeCard extends StatelessWidget {
                   ),
                 ),
                 if (state.isSaving)
-                  const SizedBox.square(
-                    dimension: BullSpacing.lg,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  const LoadingLineContent(
+                    width: 48,
+                    height: 24,
+                    padding: EdgeInsets.zero,
                   )
                 else
                   BullSwitch(
