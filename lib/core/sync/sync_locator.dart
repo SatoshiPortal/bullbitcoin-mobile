@@ -7,10 +7,14 @@ class SyncLocator {
   /// Foreground-only. The background-task isolate uses its own GetIt and
   /// must not register the coordinator (its lifecycle listener has no
   /// widget binding to attach to in that isolate).
+  ///
+  /// [syncSp] is a lazy closure resolved at call time, like the swap
+  /// callbacks, so core never imports the SP feature (rule #7).
   static void setup(
     GetIt locator, {
     Future<void> Function()? syncSwaps,
     Future<SyncOutcome> Function()? syncSwapsOutcome,
+    Future<void> Function()? syncSp,
   }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
@@ -18,6 +22,7 @@ class SyncLocator {
         syncWalletUsecase: locator<SyncWalletUsecase>(),
         syncSwaps: syncSwaps,
         syncSwapsOutcome: syncSwapsOutcome,
+        syncSp: syncSp,
       ),
     );
   }

@@ -5161,7 +5161,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "\"Sparrow\" কে Export বিকল্প হিসেবে বেছে নিন",
+  "importQrDeviceSeedsignerStep6": "Export বিকল্প হিসেবে \"Animated\" বেছে নিন। SeedSigner-এর পুরোনো ফার্মওয়্যারে \"Sparrow\" বেছে নিন।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12390,6 +12390,11 @@
   "autoBuyWalletRequiredError": "অন্তত একটি ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকানা যোগ করুন।",
   "autoBuyUpdateError": "স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।",
   "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ওয়ালেটটি বর্তমানে একটি ভিন্ন Bitcoin নেটওয়ার্ক ব্যবহার করছে। Mainnet এবং Testnet-এর মধ্যে পরিবর্তন করে আবার চেষ্টা করুন।",
+  "importWatchOnlyErrorAlreadyExists": "এই ওয়ালেটটি ইতিমধ্যে আমদানি করা হয়েছে।",
+  "importWatchOnlyNetworkBitcoinMainnet": "নেটওয়ার্ক: Bitcoin মেইননেট",
+  "importWatchOnlyNetworkBitcoinTestnet": "নেটওয়ার্ক: Bitcoin টেস্টনেট",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষরিত লেনদেনটি চূড়ান্ত করা যায়নি। এতে প্রয়োজনীয় সব স্বাক্ষর আছে কি না নিশ্চিত করে আবার চেষ্টা করুন।",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
   "limitOrdersOpen": "Open a limit order",

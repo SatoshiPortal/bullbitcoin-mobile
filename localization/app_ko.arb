@@ -5315,7 +5315,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "수출 옵션으로 \"Sparrow\"를 선택하십시오",
+  "importQrDeviceSeedsignerStep6": "내보내기 옵션으로 \"Animated\"를 선택하세요. 이전 SeedSigner 펌웨어에서는 \"Sparrow\"를 선택하세요.",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -12180,6 +12180,11 @@
   "autoBuyWalletRequiredError": "기본 Bitcoin, Lightning 또는 Liquid 주소를 하나 이상 추가하세요.",
   "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
   "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
+  "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
+  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다.",
+  "importWatchOnlyNetworkBitcoinMainnet": "네트워크: 비트코인 메인넷",
+  "importWatchOnlyNetworkBitcoinTestnet": "네트워크: 비트코인 테스트넷",
+  "broadcastSignedTxErrorPsbtFinalization": "서명된 거래를 완료할 수 없습니다. 필요한 모든 서명이 포함되어 있는지 확인한 후 다시 시도하세요.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
   "limitOrdersOpen": "Open a limit order",

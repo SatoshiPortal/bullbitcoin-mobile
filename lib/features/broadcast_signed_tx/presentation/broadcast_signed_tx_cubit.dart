@@ -45,9 +45,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           final signedPsbt = bdk.Psbt(psbtBase64: payload);
 
           final tx = psbt.combine(other: signedPsbt);
-
-          tx.finalize();
-          finalTx = hex.encode(tx.extractTx().serialize());
+          final finalized = tx.finalize();
+          if (!finalized.couldFinalize) {
+            log.warning(
+              'Could not finalize the combined PSBT',
+              error: finalized.errors,
+            );
+            emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+            return;
+          }
+          finalTx = hex.encode(finalized.psbt.extractTx().serialize());
         }
 
         emit(

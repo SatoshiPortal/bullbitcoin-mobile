@@ -4,8 +4,10 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:screen_privacy/screen_privacy.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -41,6 +43,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
+    required this._revokeSpWalletUsecase,
+    required this._checkSpWalletSetupUsecase,
     required this._setErrorReportingUsecase,
     required this._setScreenCaptureProtectionUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
@@ -66,6 +70,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
+  final RevokeSpWalletForSettingsUsecase _revokeSpWalletUsecase;
+  final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
@@ -96,6 +102,22 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
+    await checkSpWalletSetup();
+  }
+
+  /// Refresh whether the SP wallet is set up (read through the facade). Called
+  /// on init, after a dev-mode toggle, and when the wallet-settings screen is
+  /// (re)entered so its SP entry reflects the current state.
+  Future<void> checkSpWalletSetup() async {
+    switch (await _checkSpWalletSetupUsecase.execute()) {
+      case Ok(:final value):
+        emit(state.copyWith(isSpWalletSetup: value));
+      case Err(:final failure):
+        // Leave the current value alone: a failed read is not "not set up".
+        log.warning(
+          'SettingsCubit.checkSpWalletSetup failed: ${failure.logMessage}',
+        );
+    }
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -176,12 +198,35 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
 
+    if (state.revokeSpFailed) {
+      emit(state.copyWith(revokeSpFailed: false));
+    }
+
+    // If disabling dev mode, revoke the SP wallet first
+    if (!isEnabled && settings?.isDevModeEnabled == true) {
+      // The revoke use case disposes the live session, deletes the wallet, and
+      // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
+      // so settings never drives the wallet for SP.
+      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
+        log.severe(
+          message: 'Failed to revoke SP wallet',
+          error: failure,
+          trace: StackTrace.current,
+        );
+        emit(state.copyWith(revokeSpFailed: true));
+        return;
+      }
+    }
+
     await _setIsDevModeUsecase.execute(isEnabled);
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        revokeSpFailed: false,
       ),
     );
+    // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.
+    await checkSpWalletSetup();
   }
 
   Future<void> setExchangeTestnetBasicAuth({

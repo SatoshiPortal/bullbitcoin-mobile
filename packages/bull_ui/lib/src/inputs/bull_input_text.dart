@@ -27,6 +27,8 @@ class BullInputText extends StatefulWidget {
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
+    this.digitsOnly = false,
+    this.suffixText,
     this.obscure = false,
     this.enableSuggestions = true,
     this.autocorrect = true,
@@ -83,6 +85,13 @@ class BullInputText extends StatefulWidget {
 
   /// When true, shows a decimal numeric keyboard.
   final bool onlyNumbers;
+
+  /// Restrict input to integer digits only. Unlike [onlyNumbers], this rejects
+  /// the decimal point, so keep [onlyNumbers] for decimal amount fields.
+  final bool digitsOnly;
+
+  /// Trailing unit shown inside the field, e.g. `sats`.
+  final String? suffixText;
 
   /// Obscures the text (e.g. for secrets).
   final bool obscure;
@@ -175,6 +184,8 @@ class _BullInputTextState extends State<BullInputText> {
           ? TextInputType.none
           : widget.onlyNumbers
           ? const TextInputType.numberWithOptions(decimal: true)
+          : widget.digitsOnly
+          ? TextInputType.number
           : TextInputType.multiline,
       textInputAction: shouldPreventNewlines
           ? TextInputAction.done
@@ -184,6 +195,7 @@ class _BullInputTextState extends State<BullInputText> {
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
         if (widget.maxLength != null)
           LengthLimitingTextInputFormatter(widget.maxLength),
+        if (widget.digitsOnly) FilteringTextInputFormatter.digitsOnly,
       ],
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
@@ -207,6 +219,7 @@ class _BullInputTextState extends State<BullInputText> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
+        suffixText: widget.suffixText,
         hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
         prefixIcon: widget.fixedPrefix != null
             ? Container(
