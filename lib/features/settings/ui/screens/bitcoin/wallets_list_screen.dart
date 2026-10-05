@@ -47,6 +47,7 @@ class WalletsListScreen extends StatelessWidget {
                   return BullSettingsEntryItem(
                     icon: Icons.account_balance_wallet_outlined,
                     title: wallet.displayLabel(context),
+                    titleMaxLines: null,
                     onTap: () => context.pushNamed(
                       SettingsRoute.walletDetailsSelectedWallet.name,
                       pathParameters: {'walletId': wallet.id},

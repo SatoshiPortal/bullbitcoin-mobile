@@ -18,6 +18,7 @@ class BullSettingsEntryItem extends StatelessWidget {
     this.isSuperUser = false,
     this.trailing,
     this.contentPadding,
+    this.titleMaxLines = 1,
   });
 
   /// Leading icon glyph.
@@ -47,6 +48,9 @@ class BullSettingsEntryItem extends StatelessWidget {
   /// Content padding override.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// Maximum title lines; null lets longer labels wrap.
+  final int? titleMaxLines;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
@@ -64,8 +68,10 @@ class BullSettingsEntryItem extends StatelessWidget {
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        maxLines: titleMaxLines,
+        overflow: titleMaxLines == null
+            ? TextOverflow.visible
+            : TextOverflow.ellipsis,
         style: Theme.of(
           context,
         ).textTheme.bodyLarge?.copyWith(color: textColor ?? colors.onSurface),
