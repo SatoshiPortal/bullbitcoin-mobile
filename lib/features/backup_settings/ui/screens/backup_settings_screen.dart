@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_setting.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -63,6 +64,7 @@ class _Screen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
+                      const BackupReminderSetting(),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
