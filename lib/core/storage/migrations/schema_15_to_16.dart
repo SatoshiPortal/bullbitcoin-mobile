@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 15 to 16.
+///
+/// Adds the TLS certificate validation setting to Mempool servers.
 ///
 /// Drops `prices`, the price history cache: the price history now lives in
 /// the pricer's own database (`packages/bull_pricer`). The rows were only a
@@ -35,5 +38,9 @@ class Schema15To16 {
         updates: {schema16.electrumServers},
       );
     }
+    await m.addColumnIfMissing(
+      schema16.mempoolServers,
+      schema16.mempoolServers.validateDomain,
+    );
   }
 }
