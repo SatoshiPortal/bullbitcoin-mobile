@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/features/settings/data/signing_key_account_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/repositories/signing_key_account_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
@@ -5,6 +8,7 @@ import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_registration_options_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/signing_key_account_session.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_policy_usecase.dart';
@@ -174,11 +178,24 @@ class SettingsLocator {
             locator<SetPayjoinExpireAfterSecUsecase>(),
       ),
     );
+    locator.registerFactory<SigningKeyAccountRepository>(
+      () => SigningKeyAccountRepositoryImpl(
+        labels: locator(),
+        accounts: locator(),
+        usages: locator(),
+        wallets: locator(),
+        settings: locator<SettingsRepository>(),
+        seedVerification: locator<SeedVerificationPort>(),
+      ),
+    );
+    locator.registerFactory(() => SyncUsedSigningKeyAccountsUsecase(locator()));
     locator.registerFactory<SigningKeyExportCubit>(() {
       final accountSession = SigningKeyAccountSession(locator());
       return SigningKeyExportCubit(
         exportSigningKeyUsecase: ExportSigningKeyUsecase(
           accountSession,
+          labelsFacade: locator(),
+          syncUsedAccounts: locator(),
           getDefaultSeedUsecase: locator(),
           getSettingsUsecase: locator(),
         ),

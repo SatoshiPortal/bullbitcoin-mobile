@@ -25,6 +25,28 @@ final class Bip48AccountRepositoryImpl implements Bip48AccountRepository {
   );
 
   @override
+  Future<Result<Set<int>, Bip48AccountAllocationFailure>> reservedAccounts({
+    required String seedFingerprint,
+    required int coinType,
+  }) => _serialized(() async {
+    if (!_validScope(seedFingerprint, coinType)) {
+      return const Err(Bip48AccountAllocationFailure());
+    }
+    try {
+      final accounts = await _datasource.read(
+        seedFingerprint: seedFingerprint,
+        coinType: coinType,
+      );
+      return accounts.every(_validAccount)
+          ? Ok(accounts)
+          : const Err(Bip48AccountAllocationFailure());
+    } on Exception catch (error, stackTrace) {
+      _logFailure(error, stackTrace);
+      return const Err(Bip48AccountAllocationFailure());
+    }
+  });
+
+  @override
   Future<Result<int, Bip48AccountAllocationFailure>> nextAvailable({
     required String seedFingerprint,
     required int coinType,

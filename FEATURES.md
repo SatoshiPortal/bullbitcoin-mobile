@@ -176,6 +176,7 @@ graph TB
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
+    SETTINGS --> LABELS
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa

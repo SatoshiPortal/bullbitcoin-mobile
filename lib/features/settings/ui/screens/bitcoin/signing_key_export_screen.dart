@@ -7,13 +7,17 @@ import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
+import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullInputText, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SigningKeyExportScreen extends StatefulWidget {
-  const SigningKeyExportScreen({super.key});
+  final VoidCallback? onRegisterDescriptor;
+  const SigningKeyExportScreen({super.key, this.onRegisterDescriptor});
 
   @override
   State<SigningKeyExportScreen> createState() => _SigningKeyExportScreenState();
@@ -27,6 +31,22 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
       setState(() => _revealedReservedAccount = null);
     }
     context.read<SigningKeyExportCubit>().selectAccount(account);
+  }
+
+  Future<void> _markAccountUsed() async {
+    FocusScope.of(context).unfocus();
+    final cubit = context.read<SigningKeyExportCubit>();
+    if (cubit.state.isLoading) return;
+    final account = cubit.state.account;
+    final description = await LabelEntryBottomSheet.label(
+      context,
+      title: context.loc.signingKeyUsageDescriptionTitle,
+      hint: context.loc.signingKeyUsageDescriptionHint,
+    );
+    if (!mounted || description == null || cubit.state.account != account) {
+      return;
+    }
+    await cubit.markAccountUsed(description);
   }
 
   @override
@@ -51,6 +71,43 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                     ),
                   ),
                   const Gap(24),
+                  if (state.usedAccounts.isNotEmpty) ...[
+                    Text(
+                      context.loc.signingKeyUsedTitle,
+                      style: context.font.titleMedium,
+                    ),
+                    const Gap(8),
+                    for (final used in state.usedAccounts) ...[
+                      BullBorderedTile(
+                        onTap: state.isLoading
+                            ? null
+                            : () => _selectAccount(context, used.account),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${context.loc.signingKeyExportAccount} ${used.account} — '
+                                '${used.description ?? context.loc.signingKeyUsedNoDescription}',
+                                style: context.font.bodyMedium,
+                              ),
+                            ),
+                            if (used.walletId case final walletId?)
+                              TextButton(
+                                onPressed: state.isLoading
+                                    ? null
+                                    : () => context.pushNamed(
+                                        const PsbtSigningFacade().routeName,
+                                        pathParameters: {'walletId': walletId},
+                                      ),
+                                child: Text(context.loc.signingKeyUsedSign),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const Gap(8),
+                    ],
+                    const Gap(24),
+                  ],
                   _SigningKeyAccountInput(
                     account: state.account,
                     onChanged: (account) => _selectAccount(context, account),
@@ -90,6 +147,24 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                         tagColor: context.appColors.secondary,
                         bgColor: context.appColors.onSecondary,
                       ),
+                      if (!state.descriptionSaved) ...[
+                        const Gap(16),
+                        InfoCard(
+                          description:
+                              context.loc.signingKeyUsageDescriptionFailed,
+                          tagColor: context.appColors.warning,
+                          bgColor: context.appColors.warningContainer,
+                        ),
+                      ],
+                      if (widget.onRegisterDescriptor != null) ...[
+                        const Gap(16),
+                        BBButton.big(
+                          label: context.loc.signingKeyRegisterDescriptor,
+                          onPressed: widget.onRegisterDescriptor!,
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ],
                       const Gap(24),
                     ],
                     if (state.isReserved) ...[
@@ -136,9 +211,7 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                       const Gap(24),
                       BBButton.big(
                         label: context.loc.signingKeyExportMarkUsed,
-                        onPressed: context
-                            .read<SigningKeyExportCubit>()
-                            .markAccountUsed,
+                        onPressed: _markAccountUsed,
                         bgColor: context.appColors.primary,
                         textColor: context.appColors.onPrimary,
                       ),
