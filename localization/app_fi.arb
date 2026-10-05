@@ -288,14 +288,6 @@
   "receivePaymentNormally": "Vastaanota maksu normaalisti",
   "receiveContinue": "Jatka",
   "receiveCopyAddressOnly": "Kopioi tai skannaa vain osoite",
-  "receiveError": "Virhe: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
   "receiveReceiveAmount": "Vastaanotettava määrä",
   "receiveSendNetworkFee": "Lähetyksen verkkokulu",
@@ -4970,5 +4962,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "Summa ylittää suurimman mahdollisen Bitcoin-määrän {max}",
+  "receiveErrorNoteNotSaved": "Muistiinpanoasi ei voitu tallentaa. Yritä uudelleen.",
+  "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
+  "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen."
 }

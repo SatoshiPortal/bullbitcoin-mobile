@@ -9840,15 +9840,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "오류: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry 조사",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12248,5 +12239,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "금액이 비트코인의 최대 가능 금액인 {max}을(를) 초과합니다",
+  "receiveErrorNoteNotSaved": "메모를 저장할 수 없습니다. 다시 시도해 주세요.",
+  "receiveErrorAddressUnavailable": "수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
+  "receiveErrorBroadcastOriginal": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요."
 }

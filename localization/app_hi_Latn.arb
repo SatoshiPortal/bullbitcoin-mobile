@@ -1464,15 +1464,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Yeh fee bheji gayi raashi se kati jayegi",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
@@ -12636,5 +12627,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "Raashi Bitcoin ki adhiktam sambhav raashi {max} se adhik hai",
+  "receiveErrorNoteNotSaved": "Aapka note save nahin ho saka. Kripya phir se prayas karein.",
+  "receiveErrorAddressUnavailable": "Prapti pata taiyar nahin kiya ja saka. Kripya phir se prayas karein.",
+  "receiveErrorBroadcastOriginal": "Hum lenden prasarit nahin kar sake. Apna internet connection janchein aur phir se prayas karein."
 }

@@ -953,7 +953,6 @@
   "receivePaymentNormally": "Nhận thanh toán bình thường",
   "receiveContinue": "Tiếp tục",
   "receiveCopyAddressOnly": "Chỉ sao chép hoặc quét địa chỉ",
-  "receiveError": "Lỗi: {error}",
   "receiveFeeExplanation": "Khoản phí này sẽ được trừ từ số tiền được gửi",
   "receiveReceiveAmount": "Số tiền nhận được",
   "receiveSendNetworkFee": "Phí mạng gửi",
@@ -3671,5 +3670,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "Số tiền vượt quá số lượng Bitcoin tối đa có thể là {max}",
+  "receiveErrorNoteNotSaved": "Không thể lưu ghi chú của bạn. Vui lòng thử lại.",
+  "receiveErrorAddressUnavailable": "Không thể tạo địa chỉ nhận. Vui lòng thử lại.",
+  "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại."
 }
