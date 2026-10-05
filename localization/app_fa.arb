@@ -7,10 +7,6 @@
   "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
   "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
   "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
-  "settingsTelegramLabel": "تلگرام",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "exchangeSettingsSecuritySettingsTitle": "تنظیمات امنیتی",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
@@ -4614,10 +4610,6 @@
   "importQrDeviceSpecterStep9": "کد QR را که بر روی Specter شما نمایش داده شده است، اسکن کنید",
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
-  },
-  "settingsRecoverbullTitle": "بازیابی",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "buyInputKycPending": "KYC ID Verification",
   "@buyInputKycPending": {
@@ -11965,6 +11957,9 @@
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "settingsErrorSavingSetting": "این تنظیم ذخیره نشد. لطفاً دوباره تلاش کنید.",
+  "settingsErrorConsentNotGiven": "این تنظیم پیش از تغییر به تأیید شما نیاز دارد.",
+  "settingsErrorLoadingLogs": "گزارش‌های تشخیصی آماده نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorSigningOut": "خروج کامل از حساب انجام نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorSavingPreferences": "تنظیمات شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorLoadingAnnouncements": "اطلاعیه‌ها بارگذاری نشد.",

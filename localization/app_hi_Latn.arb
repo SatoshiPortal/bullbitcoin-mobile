@@ -348,10 +348,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
@@ -363,10 +359,6 @@
   "settingsServiceStatusTitle": "Services Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "settingsLanguageTitle": "Bhaasha",
   "@settingsLanguageTitle": {
@@ -12350,6 +12342,9 @@
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "settingsErrorSavingSetting": "Woh setting save nahin ho saki. Kripya dobara koshish karein.",
+  "settingsErrorConsentNotGiven": "Is setting ko badalne se pehle aapki confirmation zaroori hai.",
+  "settingsErrorLoadingLogs": "Diagnostic logs taiyar nahin ho sake. Kripya dobara koshish karein.",
   "exchangeErrorSigningOut": "Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.",
   "exchangeErrorSavingPreferences": "Aapki preferences save nahin ho sakin. Kripya dobara koshish karein.",
   "exchangeErrorLoadingAnnouncements": "Announcements load nahin ho sake.",
