@@ -4908,5 +4908,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Сумма превышает максимально возможную сумму Bitcoin: {max}",
   "receiveErrorNoteNotSaved": "Не удалось сохранить заметку. Попробуйте ещё раз.",
   "receiveErrorAddressUnavailable": "Не удалось подготовить адрес для получения. Попробуйте ещё раз.",
-  "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз."
+  "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз.",
+  "fundExchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз."
 }

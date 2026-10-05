@@ -10158,5 +10158,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Сумата надвишава максимално възможната сума в Bitcoin от {max}",
   "receiveErrorNoteNotSaved": "Бележката ви не можа да бъде запазена. Опитайте отново.",
   "receiveErrorAddressUnavailable": "Не можа да бъде подготвен адрес за получаване. Опитайте отново.",
-  "receiveErrorBroadcastOriginal": "Не успяхме да излъчим транзакцията. Проверете интернет връзката си и опитайте отново."
+  "receiveErrorBroadcastOriginal": "Не успяхме да излъчим транзакцията. Проверете интернет връзката си и опитайте отново.",
+  "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново."
 }

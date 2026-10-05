@@ -9274,5 +9274,6 @@
   "receiveErrorAmountAboveProtocolLimit": "পৰিমাণটো বিটকইনৰ সৰ্বাধিক সম্ভাব্য পৰিমাণ {max} তকৈ অধিক",
   "receiveErrorNoteNotSaved": "আপোনাৰ টোকা সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
 }

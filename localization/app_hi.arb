@@ -12270,5 +12270,6 @@
   "receiveErrorAmountAboveProtocolLimit": "राशि बिटकॉइन की अधिकतम संभव राशि {max} से अधिक है",
   "receiveErrorNoteNotSaved": "आपका नोट सहेजा नहीं जा सका। कृपया फिर से प्रयास करें।",
   "receiveErrorAddressUnavailable": "प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
-  "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।"
+  "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।",
+  "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।"
 }

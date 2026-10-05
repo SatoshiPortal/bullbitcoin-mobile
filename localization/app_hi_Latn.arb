@@ -12468,5 +12468,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Raashi Bitcoin ki adhiktam sambhav raashi {max} se adhik hai",
   "receiveErrorNoteNotSaved": "Aapka note save nahin ho saka. Kripya phir se prayas karein.",
   "receiveErrorAddressUnavailable": "Prapti pata taiyar nahin kiya ja saka. Kripya phir se prayas karein.",
-  "receiveErrorBroadcastOriginal": "Hum lenden prasarit nahin kar sake. Apna internet connection janchein aur phir se prayas karein."
+  "receiveErrorBroadcastOriginal": "Hum lenden prasarit nahin kar sake. Apna internet connection janchein aur phir se prayas karein.",
+  "fundExchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein."
 }

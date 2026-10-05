@@ -3808,5 +3808,6 @@
   "receiveErrorAmountAboveProtocolLimit": "თანხა აღემატება Bitcoin-ის მაქსიმალურ შესაძლო თანხას — {max}",
   "receiveErrorNoteNotSaved": "თქვენი შენიშვნა ვერ შეინახა. სცადეთ ხელახლა.",
   "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
-  "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
+  "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
+  "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
 }

@@ -26,6 +26,13 @@ final class FundingNetworkException extends FundingDatasourceException {
   const FundingNetworkException([super.logMessage]);
 }
 
+/// The request never reached the API, or timed out. Split from
+/// [FundingNetworkException] because it is the one transport problem the
+/// user can act on — a 5xx is not fixed by checking their connection.
+final class FundingUnreachableException extends FundingDatasourceException {
+  const FundingUnreachableException([super.logMessage]);
+}
+
 /// The response was not the JSON-RPC shape the gateway expects.
 final class FundingResponseException extends FundingDatasourceException {
   const FundingResponseException([super.logMessage]);

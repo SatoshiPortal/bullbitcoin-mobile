@@ -136,7 +136,7 @@ void main() {
 
     // A plain offline device: no response at all. This must stay a warning-level
     // transport condition rather than a severe Sentry event, which is what the
-    // FundingNetworkException classification buys.
+    // FundingUnreachableException classification buys.
     test('a connection error is classified as transport, not a bug', () async {
       final dio = Dio();
       dio.httpClientAdapter = _ConnectionErrorAdapter();
@@ -145,11 +145,56 @@ void main() {
       final result = await gateway.getFundingDetails(
         fundingMethod: RegularSepa(),
       );
-      final failure = (result as Err).failure as FundExchangeFailure;
+      switch (result) {
+        case Ok():
+          fail('a connection error must not be reported as funding details');
+        case Err(:final failure):
+          // The one transport failure the user can act on, so it gets its own
+          // variant instead of the catch-all.
+          expect(failure, isA<FundExchangeNetworkFailure>());
+          expect(failure.logMessage, 'Unreachable: connectionError');
+          expect(failure.logMessage, isNot(contains(_backendSentence)));
+      }
+    });
 
-      expect(failure, isA<FundExchangeUnexpectedFailure>());
-      expect(failure.logMessage, 'Transport failure: connectionError');
-      expect(failure.logMessage, isNot(contains(_backendSentence)));
+    test(
+      'a rejected certificate is not reported as a connection problem',
+      () async {
+        final dio = Dio();
+        dio.httpClientAdapter = _BadCertificateAdapter();
+        final gateway = BullBitcoinApiFundingGateway(
+          authenticatedApiClient: dio,
+        );
+
+        switch (await gateway.getFundingDetails(fundingMethod: RegularSepa())) {
+          case Ok():
+            fail('a rejected certificate must not be reported as details');
+          case Err(:final failure):
+            // Checking the connection does not fix an untrusted certificate.
+            expect(failure, isA<FundExchangeUnexpectedFailure>());
+            expect(failure.logMessage, 'Transport failure: badCertificate');
+        }
+      },
+    );
+
+    test('a server error is not reported as a connection problem', () async {
+      final gateway = BullBitcoinApiFundingGateway(
+        authenticatedApiClient: _dioReturning({}, statusCode: 503),
+      );
+
+      final result = await gateway.getFundingDetails(
+        fundingMethod: RegularSepa(),
+      );
+
+      switch (result) {
+        case Ok():
+          fail('a 503 must not be reported as funding details');
+        case Err(:final failure):
+          // A 5xx is not fixed by checking the connection, so it must not
+          // read "check your internet connection".
+          expect(failure, isA<FundExchangeUnexpectedFailure>());
+          expect(failure.logMessage, 'HTTP 503');
+      }
     });
 
     test(
@@ -236,6 +281,19 @@ void main() {
       final failure = (result as Err).failure as FundExchangeFailure;
 
       expect(failure, isA<FundExchangeConsentRegistrationFailure>());
+    });
+
+    test('offline gets the connection advice, not the consent error', () async {
+      final dio = Dio();
+      dio.httpClientAdapter = _ConnectionErrorAdapter();
+      final gateway = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
+
+      switch (await gateway.registerResponsibilityConsent()) {
+        case Ok():
+          fail('an unreachable API must not be reported as consent');
+        case Err(:final failure):
+          expect(failure, isA<FundExchangeNetworkFailure>());
+      }
     });
 
     test('a 200 with no error is Ok', () async {
@@ -405,4 +463,16 @@ class _ThrowingAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async => throw StateError(_backendSentence);
+}
+
+class _BadCertificateAdapter implements HttpClientAdapter {
+  @override
+  void close({bool force = false}) {}
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw DioException.badCertificate(requestOptions: options);
 }

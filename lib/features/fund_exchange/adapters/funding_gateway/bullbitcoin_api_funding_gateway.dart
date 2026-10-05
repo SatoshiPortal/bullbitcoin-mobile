@@ -154,7 +154,14 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       return const Ok(null);
     } on FundingDatasourceException catch (e, st) {
       log.warning('$method failed', error: e, trace: st);
-      return Err(FundExchangeConsentRegistrationFailure(e.logMessage));
+      // Offline is the one cause the user can fix, so it gets the same
+      // check-your-connection advice as every other call.
+      return Err(switch (e) {
+        FundingUnreachableException() => FundExchangeNetworkFailure(
+          e.logMessage,
+        ),
+        _ => FundExchangeConsentRegistrationFailure(e.logMessage),
+      });
     } catch (e, st) {
       log.severe(message: '$method failed', error: e, trace: st);
       return Err(FundExchangeConsentRegistrationFailure(e.toString()));
@@ -176,7 +183,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         path,
         data: {'jsonrpc': '2.0', 'id': '0', 'method': method, 'params': params},
       );
-    } on DioException catch (e) {
+    } on DioException catch (e, st) {
       // Dio's default `validateStatus` throws on any non-2xx, so a bad status
       // surfaces here rather than at the check below. Either way this is an
       // ordinary transport condition — an offline device, a 5xx — not a bug,
@@ -192,7 +199,26 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       if (e.type == DioExceptionType.unknown) {
         rethrow;
       }
-      throw FundingNetworkException('Transport failure: ${e.type.name}');
+      if (e.type == DioExceptionType.badCertificate) {
+        // A rejected TLS certificate on the exchange API can mean the traffic
+        // is being intercepted, so it is raised to Sentry rather than treated
+        // as an ordinary hiccup. A gateway-written exception is reported, not
+        // the DioException, so nothing from the request travels with it.
+        log.severe(
+          message: 'Exchange API TLS certificate rejected ($method)',
+          error: const FundingNetworkException('Bad certificate'),
+          trace: st,
+        );
+      }
+      throw switch (e.type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout ||
+        DioExceptionType.receiveTimeout ||
+        DioExceptionType.connectionError => FundingUnreachableException(
+          'Unreachable: ${e.type.name}',
+        ),
+        _ => FundingNetworkException('Transport failure: ${e.type.name}'),
+      };
     }
 
     // Reachable only if a caller widens `validateStatus`; kept so a non-200
@@ -249,6 +275,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       'ERR_RCP_400' => FundExchangeRequestInvalidFailure(e.logMessage),
       _ => FundExchangeUnexpectedFailure(e.logMessage),
     },
+    FundingUnreachableException() => FundExchangeNetworkFailure(e.logMessage),
     FundingNetworkException() ||
     FundingResponseException() => FundExchangeUnexpectedFailure(e.logMessage),
   };

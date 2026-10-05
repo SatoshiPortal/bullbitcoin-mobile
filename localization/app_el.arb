@@ -12083,5 +12083,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Το ποσό υπερβαίνει το μέγιστο δυνατό ποσό Bitcoin των {max}",
   "receiveErrorNoteNotSaved": "Η σημείωσή σας δεν μπόρεσε να αποθηκευτεί. Δοκιμάστε ξανά.",
   "receiveErrorAddressUnavailable": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης. Δοκιμάστε ξανά.",
-  "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά."
+  "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά."
 }

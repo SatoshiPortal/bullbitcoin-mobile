@@ -12083,5 +12083,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Tutar, mümkün olan en yüksek Bitcoin tutarı olan {max} değerini aşıyor",
   "receiveErrorNoteNotSaved": "Notunuz kaydedilemedi. Lütfen tekrar deneyin.",
   "receiveErrorAddressUnavailable": "Alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
-  "receiveErrorBroadcastOriginal": "İşlemi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin."
+  "receiveErrorBroadcastOriginal": "İşlemi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "fundExchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin."
 }

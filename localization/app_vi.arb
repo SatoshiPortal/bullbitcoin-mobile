@@ -3661,5 +3661,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Số tiền vượt quá số lượng Bitcoin tối đa có thể là {max}",
   "receiveErrorNoteNotSaved": "Không thể lưu ghi chú của bạn. Vui lòng thử lại.",
   "receiveErrorAddressUnavailable": "Không thể tạo địa chỉ nhận. Vui lòng thử lại.",
-  "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại."
+  "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại.",
+  "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại."
 }

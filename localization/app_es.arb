@@ -4899,5 +4899,6 @@
   "receiveErrorAmountAboveProtocolLimit": "El monto supera el monto máximo posible de Bitcoin de {max}",
   "receiveErrorNoteNotSaved": "No se pudo guardar tu nota. Inténtalo de nuevo.",
   "receiveErrorAddressUnavailable": "No se pudo preparar una dirección de recepción. Inténtalo de nuevo.",
-  "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo."
+  "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo."
 }

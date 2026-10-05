@@ -71,6 +71,12 @@ final class FundExchangePaymentLinkUnavailableFailure
   const FundExchangePaymentLinkUnavailableFailure([super.logMessage]);
 }
 
+/// The request never reached the API, or timed out. Its own variant because it
+/// is the one failure with advice the user can act on: check the connection.
+final class FundExchangeNetworkFailure extends FundExchangeFailure {
+  const FundExchangeNetworkFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class FundExchangeUnexpectedFailure extends FundExchangeFailure {

@@ -4902,5 +4902,6 @@
   "receiveErrorAmountAboveProtocolLimit": "金额超过比特币的最大可能金额 {max}",
   "receiveErrorNoteNotSaved": "无法保存您的备注。请重试。",
   "receiveErrorAddressUnavailable": "无法准备接收地址。请重试。",
-  "receiveErrorBroadcastOriginal": "我们无法广播该交易。请检查您的网络连接并重试。"
+  "receiveErrorBroadcastOriginal": "我们无法广播该交易。请检查您的网络连接并重试。",
+  "fundExchangeErrorNetwork": "请检查您的网络连接后重试。"
 }

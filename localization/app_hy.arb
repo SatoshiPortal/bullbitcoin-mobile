@@ -3661,5 +3661,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Գումարը գերազանցում է Bitcoin-ի առավելագույն հնարավոր գումարը՝ {max}",
   "receiveErrorNoteNotSaved": "Ձեր նշումը չհաջողվեց պահել։ Փորձեք կրկին։",
   "receiveErrorAddressUnavailable": "Չհաջողվեց պատրաստել ստացման հասցե։ Փորձեք կրկին։",
-  "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
+  "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
+  "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
 }

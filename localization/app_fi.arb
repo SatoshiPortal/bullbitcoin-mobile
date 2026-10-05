@@ -4890,5 +4890,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Summa ylittää suurimman mahdollisen Bitcoin-määrän {max}",
   "receiveErrorNoteNotSaved": "Muistiinpanoasi ei voitu tallentaa. Yritä uudelleen.",
   "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
-  "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen."
+  "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen.",
+  "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen."
 }

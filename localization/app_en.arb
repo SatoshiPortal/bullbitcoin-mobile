@@ -15639,5 +15639,9 @@
   "settingsDevModeSpRevokeFailed": "Could not fully delete the Silent Payments wallet. It is disabled and cannot be reloaded. Turn developer mode off again to retry.",
   "@settingsDevModeSpRevokeFailed": {
     "description": "Shown when turning developer mode off could not remove the Silent Payments wallet from disk."
+  },
+  "fundExchangeErrorNetwork": "Check your internet connection and try again.",
+  "@fundExchangeErrorNetwork": {
+    "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
   }
 }

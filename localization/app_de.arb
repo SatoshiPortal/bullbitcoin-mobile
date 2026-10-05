@@ -4940,5 +4940,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Der Betrag liegt über dem maximal möglichen Bitcoin-Betrag von {max}",
   "receiveErrorNoteNotSaved": "Deine Notiz konnte nicht gespeichert werden. Bitte versuche es erneut.",
   "receiveErrorAddressUnavailable": "Es konnte keine Empfangsadresse erstellt werden. Bitte versuche es erneut.",
-  "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut."
+  "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut.",
+  "fundExchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut."
 }

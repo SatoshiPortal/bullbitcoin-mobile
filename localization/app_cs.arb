@@ -12083,5 +12083,6 @@
   "receiveErrorAmountAboveProtocolLimit": "Částka je vyšší než maximální možná částka Bitcoinu {max}",
   "receiveErrorNoteNotSaved": "Vaši poznámku nebylo možné uložit. Zkuste to prosím znovu.",
   "receiveErrorAddressUnavailable": "Nepodařilo se připravit přijímací adresu. Zkuste to prosím znovu.",
-  "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu."
+  "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu."
 }

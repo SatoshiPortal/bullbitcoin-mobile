@@ -34,6 +34,7 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
       context.loc.fundExchangeScamConsentError,
     FundExchangePaymentLinkUnavailableFailure() =>
       context.loc.fundExchangeErrorOpeningPaymentLink,
+    FundExchangeNetworkFailure() => context.loc.fundExchangeErrorNetwork,
     // Never `logMessage`: it can hold the API's own sentence. A screen that
     // knows its context can say more, as the details card does.
     FundExchangeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
@@ -59,6 +60,7 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
     FundExchangeNoInstitutionsFailure() ||
     FundExchangeConsentRegistrationFailure() ||
     FundExchangePaymentLinkUnavailableFailure() ||
+    FundExchangeNetworkFailure() ||
     FundExchangeUnexpectedFailure() => null,
   };
 }
