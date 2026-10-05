@@ -187,7 +187,13 @@ const _unresolvedSensitiveMembers = {
   'newConfidential',
   'restoreBackup',
   'signedPsetWithExtraDetails',
+  'signSilentPaymentPsbt',
+  'dartBwkApiSpSignerSignSilentPaymentPsbt',
+  'initMock',
 };
+
+const _dartBwk = 'package:bull_sdk/src/rust/third_party/dart_bwk/';
+const _frbGenerated = 'package:bull_sdk/src/rust/frb_generated.dart';
 
 bool _isTestingLibrary(String uri) =>
     uri == 'package:secrets/testing.dart' ||
@@ -238,6 +244,16 @@ String? materialSymbol(Element element) {
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/boltz/') =>
       owner == 'SwapMasterKey' &&
           {'new', 'create', 'xprv', 'mnemonic'}.contains(member),
+    // bwk's silent payments signer takes the spend key and the taproot
+    // account xprv: only the package derives them, and only the package may
+    // hand them to it. The account itself holds no spend authority.
+    _ when uri.startsWith(_dartBwk) => member == 'signSilentPaymentPsbt',
+    // The same signer reached through the generated FFI entry point, and the
+    // mock seam that would route every FFI call, the lent keys included,
+    // to a Dart object.
+    _ when uri == _frbGenerated =>
+      member == 'dartBwkApiSpSignerSignSilentPaymentPsbt' ||
+          symbol == 'BullSdk.initMock',
     _ when uri.startsWith('package:recoverbull/') =>
       symbol == 'RecoverBull.restoreBackup' ||
           symbol == 'EncryptionService.decrypt',

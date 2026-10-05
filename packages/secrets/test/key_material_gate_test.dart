@@ -390,6 +390,67 @@ class SwapMasterKeyModel {
     },
   );
 
+  test('silent payments spend authority stays in the package', () async {
+    final violations = await inspect('silent_payments_spend', '''
+import 'package:bull_sdk/bull_sdk.dart';
+import 'package:bull_sdk/bwk.dart' as bwk;
+Future<void> spend(List<int> psbt) async {
+  await bwk.signSilentPaymentPsbt(psbt: psbt, bSpend: const []);
+  final sign = bwk.signSilentPaymentPsbt;
+  await BullSdk.instance.api.dartBwkApiSpSignerSignSilentPaymentPsbt(
+    psbt: psbt, bSpend: const []);
+  BullSdk.initMock(api: throw UnimplementedError());
+}
+''');
+    expect(violations, [
+      endsWith('frb_generated.dart#BullSdk.initMock'),
+      endsWith(
+        'frb_generated.dart#BullSdkApi.dartBwkApiSpSignerSignSilentPaymentPsbt',
+      ),
+      endsWith('sp_signer.dart#.signSilentPaymentPsbt'),
+    ]);
+  });
+
+  test('dynamic access to the silent payments signer fails closed', () async {
+    final violations = await inspect('silent_payments_dynamic', '''
+Future<void> spend(dynamic bwk, dynamic sdk) async {
+  await bwk.signSilentPaymentPsbt(psbt: const [], bSpend: const []);
+  await sdk.api.dartBwkApiSpSignerSignSilentPaymentPsbt();
+  sdk.initMock(api: null);
+}
+''');
+    expect(violations, [
+      for (final member in [
+        'dartBwkApiSpSignerSignSilentPaymentPsbt',
+        'initMock',
+        'signSilentPaymentPsbt',
+      ])
+        endsWith('unresolved sensitive member $member'),
+    ]);
+  });
+
+  test('a watch-only silent payments account stays available', () async {
+    // The account holds no spend authority, so nothing about it is gated:
+    // not its constructor, not finalize, not a Dart implementation of it.
+    final violations = await inspect('silent_payments_watch', '''
+import 'package:bull_sdk/bwk.dart' as bwk;
+abstract class StandIn implements bwk.SpAccount {}
+Future<void> watch(List<int> signed) async {
+  final account = await bwk.SpAccount.createFromDescriptors(
+    name: '', network: bwk.SpNetwork.bitcoin, spDescriptor: '',
+    taprootDescriptor: '', blindbitUrl: '', electrumUrl: '', dataDir: '');
+  account.spAddress();
+  final simulation = await account.preparePsbt(
+    recipients: const [], feerateSatVb: BigInt.one);
+  final tx = await account.finalize(
+    simulation: simulation, signedPsbt: signed);
+  await account.ownedOutputs(txBytes: tx);
+  await account.broadcast(txHex: '');
+}
+''');
+    expect(violations, isEmpty);
+  });
+
   test(
     'unresolved production units fail the gate before a green report',
     () async {

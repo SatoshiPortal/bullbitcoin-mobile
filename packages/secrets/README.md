@@ -156,7 +156,7 @@ Every asynchronous operation returns `Result<T, SecretFailure>`. Handle failure 
 
 ## Boundary checks and remaining migration
 
-`make custody-check` checks keystore access and the internal seal, then resolves production Dart symbols to reject private-key derivation and vault decryption outside this package. Pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter have explicit named exceptions. BIP85 child formatting and public-key operations remain allowed. This detects forbidden library operations; it is not a complete information-flow proof.
+`make custody-check` checks keystore access and the internal seal, then resolves production Dart symbols to reject private-key derivation, vault decryption and bwk's silent payments signer outside this package. Pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter have explicit named exceptions. BIP85 child formatting and public-key operations remain allowed. This detects forbidden library operations; it is not a complete information-flow proof.
 
 RecoverBull creation, restoration and backup inspection use the package. Decrypted vaults and their mnemonic no longer reach app presentation state. Pre-import scanning remains in the wallet code until the sync extraction; it is outside the stored-secret lifecycle. The app still receives the documented BIP85 children, swap credential, silent payment scan credential, recovery key and database keys.
 
