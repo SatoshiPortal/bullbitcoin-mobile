@@ -81,26 +81,35 @@ void main() {
     test('places wallet import under the Wallet section', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.backup).title, 'Backup');
+      expect(
+        items.byId(SettingsItemId.backup).title,
+        'Wallet Recovery (money backup)',
+      );
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet and Bitcoin → Hardware wallet',
       );
-      expect(backupSettingsDataItemOrder, [
+      for (final id in [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
-      ]);
+      ]) {
+        final item = items.byId(id);
+        expect(item.section, SettingsItemSection.dataExport);
+        expect(item.path, ['Settings', 'Data export', item.title]);
+      }
       expect(walletSettingsItemOrder, [
-        SettingsItemId.payjoin,
-        SettingsItemId.autoswap,
+        SettingsItemId.wallets,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
-        SettingsItemId.broadcastTransaction,
+        SettingsItemId.autoswap,
+        SettingsItemId.payjoin,
+        SettingsItemId.extension,
+        SettingsItemId.seedViewer,
       ]);
     });
 
@@ -109,24 +118,24 @@ void main() {
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
-        SettingsItemId.appSettings,
         SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
-        SettingsItemId.btcMap,
-        SettingsItemId.termsOfService,
+        SettingsItemId.appSettings,
+        SettingsItemId.dataExport,
+        SettingsItemId.tools,
+        SettingsItemId.helpAndInfo,
         SettingsItemId.servicesStatus,
-        SettingsItemId.logs,
       ]);
       expect(rootItems.map((item) => item.title), [
-        'App',
-        'Backup',
-        'Wallet',
+        'Wallet Recovery (money backup)',
+        'Wallet and Bitcoin',
         'Exchange',
-        'Map',
-        'Terms of Service',
+        'App and device',
+        'Data export',
+        'Tools',
+        'Help and info',
         'Service Status',
-        'Logs',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
@@ -206,18 +215,22 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Backup → Transaction History',
+        'Settings → Data export → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Backup ← Transaction History',
+        'Settings ← Data export ← Transaction History',
       );
     });
 
     test('omits inaccessible superuser settings', () {
       final items = _englishItems();
 
-      expect(searchSettings(items, 'dev mode'), isEmpty);
+      // Breadcrumb matches must not expose restricted settings.
+      expect(
+        searchSettings(items, 'dev mode').map((item) => item.id),
+        isNot(contains(SettingsItemId.devMode)),
+      );
       expect(searchSettings(items, 'seed viewer'), isEmpty);
       expect(searchSettings(items, 'testnet user credentials'), isEmpty);
     });

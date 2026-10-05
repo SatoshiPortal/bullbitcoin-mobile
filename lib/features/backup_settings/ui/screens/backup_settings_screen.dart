@@ -52,7 +52,7 @@ class _Screen extends StatelessWidget {
               forceMaterialTransparency: true,
               automaticallyImplyLeading: false,
               flexibleSpace: TopBar(
-                title: context.loc.settingsBackupTitle,
+                title: context.loc.walletRecoverySettingsTitle,
                 onBack: () => context.pop(),
               ),
             ),
@@ -86,8 +86,6 @@ class _Screen extends StatelessWidget {
                           ),
                       if (state.lastEncryptedBackup != null)
                         const _ViewVaultKeyButton(),
-                      for (final id in backupSettingsDataItemOrder)
-                        items.byId(id).buildTile(context),
                     ],
                   ),
                 ),

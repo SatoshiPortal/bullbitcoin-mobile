@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
-import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
@@ -22,7 +21,7 @@ class ImportWalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.importWalletTitle)),
+      appBar: AppBar(title: Text(context.loc.importWalletHardwareTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -35,13 +34,6 @@ class ImportWalletPage extends StatelessWidget {
                 style: context.font.titleMedium,
               ),
               const Gap(12),
-              TabMenuVerticalButton(
-                title: context.loc.importWalletImportMnemonic,
-                onTap: () => context.pushNamed(
-                  ImportMnemonicRoute.importMnemonicHome.name,
-                ),
-              ),
-              const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletImportWatchOnly,
                 onTap: () =>
