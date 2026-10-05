@@ -42,7 +42,12 @@ final class TorHttpClientFactory {
         uri.port,
       );
       final Future<Socket> socket = uri.scheme == 'https'
-          ? connection.then((value) => value.secure(uri.host, onBadCertificate: allowBadCertificate ? (_) => true : null))
+          ? connection.then(
+              (value) => value.secure(
+                uri.host,
+                onBadCertificate: allowBadCertificate ? (_) => true : null,
+              ),
+            )
           : connection;
       return ConnectionTask.fromSocket(socket, () {
         // Cancellation owns cleanup, not the request's error reporting.
