@@ -127,25 +127,31 @@ class ServerListItem extends StatelessWidget {
   }
 
   Widget _buildStatusIndicator(BuildContext context) {
-    final isOnline = server.status == ElectrumServerStatus.online;
+    final (color, label) = switch (server.status) {
+      ElectrumServerStatus.online => (
+        context.appColors.success,
+        context.loc.electrumServerOnline,
+      ),
+      ElectrumServerStatus.offline => (
+        context.appColors.warning,
+        context.loc.electrumServerOffline,
+      ),
+      ElectrumServerStatus.unknown => (
+        context.appColors.textMuted,
+        context.loc.statusCheckUnknown,
+      ),
+    };
 
     return Row(
       children: [
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            shape: .circle,
-            color: isOnline
-                ? context.appColors.success
-                : context.appColors.warning,
-          ),
+          decoration: BoxDecoration(shape: .circle, color: color),
         ),
         const SizedBox(width: 8),
         Text(
-          isOnline
-              ? context.loc.electrumServerOnline
-              : context.loc.electrumServerOffline,
+          label,
           style: context.font.bodySmall?.copyWith(
             color: context.appColors.onSurface,
           ),

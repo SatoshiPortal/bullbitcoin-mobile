@@ -97,6 +97,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  battery_plus:
+    dependency: transitive
+    description:
+      name: battery_plus
+      sha256: "3853aa1e18ea1d15493dd1d3edac05770b4b95c1e691fb85934c5fd3b1ac0fcc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.1.1"
+  battery_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: battery_plus_platform_interface
+      sha256: e8342c0f32de4b1dfd0223114b6785e48e579bfc398da9471c9179b907fa4910
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   bdk_dart:
     dependency: transitive
     description:
@@ -158,8 +174,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -187,6 +203,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+  bloc_test:
+    dependency: "direct dev"
+    description:
+      name: bloc_test
+      sha256: "1dd549e58be35148bc22a9135962106aa29334bc1e3f285994946a1057b29d7b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.0"
   blockchain_utils:
     dependency: transitive
     description:
@@ -216,8 +240,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -305,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -446,6 +470,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  connectivity_plus:
+    dependency: transitive
+    description:
+      name: connectivity_plus
+      sha256: "762c99f890ca8bf87f7337236f99edd42793843bc6c3631da294a76653a54bd0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.3.1"
+  connectivity_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_plus_platform_interface
+      sha256: "3c09627c536d22fd24691a905cdd8b14520de69da52c7a97499c8be5284a32ed"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   conventional_commit:
     dependency: transitive
     description:
@@ -566,6 +606,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  device_info_plus:
+    dependency: transitive
+    description:
+      name: device_info_plus
+      sha256: b4fed1b2835da9d670d7bed7db79ae2a94b0f5ad6312268158a9b5479abbacdd
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.4.0"
+  device_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_plus_platform_interface
+      sha256: e1ea89119e34903dca74b883d0dd78eb762814f97fb6c76f35e9ff74d261a18f
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.3"
+  diff_match_patch:
+    dependency: transitive
+    description:
+      name: diff_match_patch
+      sha256: "2efc9e6e8f449d0abe15be240e2c2a3bcd977c8d126cfd70598aee60af35c0a4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   dio:
     dependency: "direct main"
     description:
@@ -875,7 +939,7 @@ packages:
     source: hosted
     version: "2.3.0"
   freezed:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: freezed
       sha256: f23ea33b3863f119b58ed1b586e881a46bd28715ddcc4dbc33104524e3434131
@@ -1286,7 +1350,7 @@ packages:
     source: hosted
     version: "1.3.0"
   logging_colorful:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logging_colorful
       sha256: "702888d741bb0b419cea9ecccc8509483fd228297a7635bf9aac05c0b13d555a"
@@ -1381,8 +1445,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  nm:
+    dependency: transitive
+    description:
+      name: nm
+      sha256: "2c9aae4127bdc8993206464fcc063611e0e36e72018696cd9631023a31b24254"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   no_screenshot:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: no_screenshot
       sha256: "2192d312e74e67b88ae6cf61cea0e0ae66aee3881127c0740dcbdcd1d4eed3e9"
@@ -1405,6 +1477,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.3.0"
+  onion:
+    dependency: transitive
+    description:
+      path: "packages/onion"
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      url: "https://github.com/pythcoiner/bull_sdk"
+    source: git
+    version: "0.1.0"
   package_config:
     dependency: transitive
     description:
@@ -1707,9 +1788,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      url: "https://github.com/pythcoiner/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
@@ -1724,8 +1805,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
-      resolved-ref: "62977e2f5159458d79ec8089dc853a8edcb84458"
+      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -2038,15 +2119,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.18.0"
-  tor:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: b92e2bc5a404367298b6016f171df29d1aae66d0
-      resolved-ref: b92e2bc5a404367298b6016f171df29d1aae66d0
-      url: "https://github.com/Foundation-Devices/tor"
-    source: git
-    version: "0.1.0"
   type_plus:
     dependency: transitive
     description:
@@ -2088,13 +2160,21 @@ packages:
     source: hosted
     version: "1.1.0"
   unorm_dart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: unorm_dart
       sha256: "0c69186b03ca6addab0774bcc0f4f17b88d4ce78d9d4d8f0619e30a99ead58e7"
       url: "https://pub.dev"
     source: hosted
     version: "0.3.2"
+  upower:
+    dependency: transitive
+    description:
+      name: upower
+      sha256: cf042403154751180affa1d15614db7fa50234bc2373cd21c3db666c38543ebf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   ur:
     dependency: "direct main"
     description:
@@ -2337,6 +2417,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.15.0"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "6f1b564492d0147b330dd794fee8f512cec4977957f310f9951b5f9d83618dae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   workmanager:
     dependency: "direct main"
     description:

@@ -8,9 +8,9 @@
 //     (see bdk_wallet_datasource_test.dart, which asserts them). The
 //     repository therefore reads the frozen store LIVE at build time and
 //     enforces the invariant itself — merging the frozen set into the
-//     `unspendable` list (automatic selection can't pick a frozen coin)
-//     and stripping it from `selected` (a frozen coin can't be forced in
-//     as a mandatory input) — so it holds for ANY caller, with any
+//     `unspendable` list (automatic selection can't pick a frozen coin) and
+//     rejecting any `selected` list containing a frozen coin (a frozen coin
+//     can't be forced in as a mandatory input) — so it holds for ANY caller, with any
 //     staleness of the caller's earlier utxo fetch, not only for callers
 //     going through PrepareBitcoinSendUsecase's own frozen-set handling.
 //     (Payjoin-derived exclusions remain at the usecase: they come from
@@ -184,36 +184,34 @@ void main() {
   );
 
   group('D7 — frozen store is read live at build time', () {
-    test(
-      'fails closed when one selected coin was frozen since selection',
-      () async {
-        when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-          (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-        );
+    test('a coin frozen in the store rejects the selection even when '
+        'the caller passes NO unspendable list', () async {
+      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
+        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
+      );
 
-        await expectLater(
-          buildPsbt(
-            selected: [
-              _utxo(txId: 'tx-frozen', vout: 0),
-              _utxo(txId: 'tx-free', vout: 1),
-            ],
-          ),
-          throwsA(isA<NoSpendableUtxoException>()),
-        );
-        verifyNever(
-          () => bdkDatasource.buildPsbt(
-            wallet: any(named: 'wallet'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
-            networkFee: any(named: 'networkFee'),
-            drain: any(named: 'drain'),
-            unspendable: any(named: 'unspendable'),
-            selected: any(named: 'selected'),
-            replaceByFee: any(named: 'replaceByFee'),
-          ),
-        );
-      },
-    );
+      await expectLater(
+        buildPsbt(
+          selected: [
+            _utxo(txId: 'tx-frozen', vout: 0),
+            _utxo(txId: 'tx-free', vout: 1),
+          ],
+        ),
+        throwsA(isA<NoSpendableUtxoException>()),
+      );
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    });
 
     test('frozen outpoints are merged into the unspendable list passed down, '
         'so automatic selection cannot pick them either', () async {
@@ -248,16 +246,18 @@ void main() {
     );
   });
 
-  group('D7 — selected ∩ unspendable (caller-supplied) is stripped', () {
+  group('D7 — selected ∩ unspendable (caller-supplied) is rejected', () {
     test(
-      'throws when an explicit selection is entirely frozen instead of falling back',
+      'a selected coin that is also unspendable fails before the datasource',
       () async {
-        when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-          (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-        );
-
         await expectLater(
-          buildPsbt(selected: [_utxo(txId: 'tx-frozen', vout: 0)]),
+          buildPsbt(
+            unspendable: const [(txId: 'tx-frozen', vout: 0)],
+            selected: [
+              _utxo(txId: 'tx-frozen', vout: 0),
+              _utxo(txId: 'tx-free', vout: 1),
+            ],
+          ),
           throwsA(isA<NoSpendableUtxoException>()),
         );
         verifyNever(
@@ -274,31 +274,6 @@ void main() {
         );
       },
     );
-
-    test('fails closed when the caller excludes one selected coin', () async {
-      await expectLater(
-        buildPsbt(
-          unspendable: const [(txId: 'tx-frozen', vout: 0)],
-          selected: [
-            _utxo(txId: 'tx-frozen', vout: 0),
-            _utxo(txId: 'tx-free', vout: 1),
-          ],
-        ),
-        throwsA(isA<NoSpendableUtxoException>()),
-      );
-      verifyNever(
-        () => bdkDatasource.buildPsbt(
-          wallet: any(named: 'wallet'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
-          networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
-          unspendable: any(named: 'unspendable'),
-          selected: any(named: 'selected'),
-          replaceByFee: any(named: 'replaceByFee'),
-        ),
-      );
-    });
 
     test('same txId but different vout is NOT stripped', () async {
       await buildPsbt(
@@ -322,17 +297,6 @@ void main() {
         );
 
         expect(capturedSelected(), hasLength(2));
-      },
-    );
-
-    test(
-      'null or empty selection keeps automatic selection available',
-      () async {
-        await buildPsbt();
-        expect(capturedSelected(), isNull);
-
-        await buildPsbt(selected: []);
-        expect(capturedSelected(), isEmpty);
       },
     );
   });

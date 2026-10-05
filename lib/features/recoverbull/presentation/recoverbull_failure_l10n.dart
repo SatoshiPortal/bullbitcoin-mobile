@@ -14,6 +14,8 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.recoverbullErrorConnectionFailed,
     VaultCreationFailure() => context.loc.recoverbullErrorVaultCreationFailed,
     TorNotStartedFailure() => context.loc.recoverbullTorNotStarted,
+    ExternalTorProxyUnavailableFailure() =>
+      context.loc.torSettingsExternalProxyUnavailableDescription,
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
     VaultRecoveryFailure() => context.loc.walletSetupErrorTryAgain,

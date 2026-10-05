@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
@@ -25,14 +26,13 @@ void main() {
       ),
     ).thenAnswer((_) async => 1010);
 
-    await expectLater(
-      usecase.execute(
-        psbtOrPset: 'pset',
-        record: _record(),
-        walletId: 'wallet-1',
-      ),
-      completes,
+    final result = await usecase.execute(
+      psbtOrPset: 'pset',
+      record: _record(),
+      walletId: 'wallet-1',
     );
+
+    expect(result, isA<Ok<void, SendFailure>>());
   });
 
   test('rejects an amount mismatch before signing', () async {
@@ -44,14 +44,20 @@ void main() {
       ),
     ).thenAnswer((_) async => 1009);
 
-    await expectLater(
-      usecase.execute(
-        psbtOrPset: 'pset',
-        record: _record(),
-        walletId: 'wallet-1',
-      ),
-      throwsA(isA<SendTransactionBuildFailure>()),
+    final result = await usecase.execute(
+      psbtOrPset: 'pset',
+      record: _record(),
+      walletId: 'wallet-1',
     );
+
+    switch (result) {
+      case Ok():
+        fail('a payin that underpays the order must not be signed');
+      case Err(:final failure):
+        // Its own variant, not the shared build failure: the user is told the
+        // order no longer matches, which is actionable (start again).
+        expect(failure, isA<SendExchangeOrderMismatchFailure>());
+    }
   });
 }
 

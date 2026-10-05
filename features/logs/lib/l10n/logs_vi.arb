@@ -1,0 +1,19 @@
+{
+  "logSettingsLogsTitle": "Nhật ký",
+  "logsViewerDeleteButton": "Xóa",
+  "logsViewerShareButton": "Chia sẻ",
+  "logsExportedMessage": "Nhật ký đã được xuất thành công",
+  "logsExportFailedMessage": "Xuất nhật ký thất bại",
+  "logsViewerShowingCount": "Đang hiển thị {shown} trong {total} nhật ký",
+  "logsViewerClearFilter": "Xóa bộ lọc",
+  "logsViewerFilterByDate": "Lọc theo ngày",
+  "copiedToClipboardMessage": "Đã sao chép vào bộ nhớ tạm",
+  "logsViewerDeleteTitle": "Xóa nhật ký",
+  "logsViewerDeleteConfirmation": "Bạn có chắc muốn xóa tất cả nhật ký không? Hành động này không thể hoàn tác.",
+  "logsDeletedMessage": "Đã xóa nhật ký",
+  "logsViewerCancelButton": "Hủy",
+  "logsShareOptionShare": "Chia sẻ",
+  "logsShareOptionExport": "Xuất",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "retry": "Thử lại"
+}

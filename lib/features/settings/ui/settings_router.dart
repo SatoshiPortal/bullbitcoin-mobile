@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -7,27 +6,23 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
+import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/bitcoin_wallets_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
@@ -37,8 +32,10 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/settings/ui/settings_route.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
@@ -48,46 +45,9 @@ import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_logs/bull_logs.dart';
 
-enum SettingsRoute {
-  settings('/settings'),
-  pinCode('pin-code'),
-  language('language'),
-  currency('currency'),
-  backupSettings('backup-settings'),
-  walletDetailsWalletList('wallet-details'),
-  walletDetailsSelectedWallet(':walletId'),
-  walletOptions(':walletId/options'),
-  walletAddresses(':walletId/addresses'),
-  logs('logs'),
-  allSeedView('seed-viewer'),
-  experimental('experimental-settings'),
-  exchangeAccount('exchange-account'),
-  exchangeSettings('exchange-settings'),
-  exchangeAccountInfo('exchange-account-info'),
-  exchangeSecurity('exchange-security'),
-  exchangeBitcoinWallets('exchange-bitcoin-wallets'),
-  exchangeAppSettings('exchange-app-settings'),
-  exchangeFileUpload('exchange-file-upload'),
-  exchangeStatistics('exchange-statistics'),
-  exchangeTransactions('exchange-transactions'),
-  exchangeLegacyTransactions('exchange-legacy-transactions'),
-  exchangeReferrals('exchange-referrals'),
-  exchangeLogout('exchange-logout'),
-  bitcoinSettings('bitcoin-settings'),
-  payjoinSettings('payjoin-settings'),
-  payjoinAdvancedSettings('payjoin-advanced-settings'),
-  autoswapSettings('autoswap-settings'),
-  appSettings('app-settings'),
-  theme('theme'),
-  swapRestore('swap-restore'),
-  swapRescue('swap-rescue'),
-  btcMap('btc-map');
-
-  final String path;
-
-  const SettingsRoute(this.path);
-}
+export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static final route = GoRoute(
@@ -98,6 +58,11 @@ class SettingsRouter {
       child: const AllSettingsScreen(),
     ),
     routes: [
+      GoRoute(
+        name: SettingsRoute.search.name,
+        path: SettingsRoute.search.path,
+        builder: (context, state) => const SettingsSearchScreen(),
+      ),
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,
@@ -127,14 +92,7 @@ class SettingsRouter {
         path: SettingsRoute.exchangeSecurity.path,
         builder: (context, state) => const ExchangeSecurityScreen(),
       ),
-      GoRoute(
-        name: SettingsRoute.exchangeBitcoinWallets.name,
-        path: SettingsRoute.exchangeBitcoinWallets.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<DefaultWalletsCubit>(),
-          child: const ExchangeBitcoinWalletsScreen(),
-        ),
-      ),
+      DefaultWalletsRouter.route,
       GoRoute(
         name: SettingsRoute.exchangeAppSettings.name,
         path: SettingsRoute.exchangeAppSettings.path,
@@ -177,9 +135,9 @@ class SettingsRouter {
         builder: (context, state) => const ExchangeLogoutScreen(),
       ),
       GoRoute(
-        name: SettingsRoute.bitcoinSettings.name,
-        path: SettingsRoute.bitcoinSettings.path,
-        builder: (context, state) => const BitcoinSettingsScreen(),
+        name: SettingsRoute.walletSettings.name,
+        path: SettingsRoute.walletSettings.path,
+        builder: (context, state) => const WalletSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.payjoinSettings.name,
@@ -222,71 +180,54 @@ class SettingsRouter {
           TestWalletBackupRouter.route,
         ],
       ),
+      // A wallet is always reached from its own screen (wallet home → gear),
+      // never from a list, so these carry the shared prefix themselves.
       GoRoute(
-        path: SettingsRoute.walletDetailsWalletList.path,
-        name: SettingsRoute.walletDetailsWalletList.name,
-        builder: (context, state) => const WalletsListScreen(),
-        routes: [
-          GoRoute(
-            path: SettingsRoute.walletOptions.path,
-            name: SettingsRoute.walletOptions.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return WalletOptionsScreen(walletId: walletId);
-            },
-          ),
-          GoRoute(
-            path: SettingsRoute.walletDetailsSelectedWallet.path,
-            name: SettingsRoute.walletDetailsSelectedWallet.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return MultiBlocListener(
-                listeners: [
-                  BlocListener<WalletBloc, WalletState>(
-                    listenWhen: (previous, current) {
-                      return previous.wallets.length > current.wallets.length;
-                    },
-                    listener: (context, state) {
-                      context.goNamed(WalletRoute.walletHome.name);
-                    },
-                  ),
-                  BlocListener<WalletBloc, WalletState>(
-                    listenWhen: (previous, current) {
-                      // Listen for wallet deletion error to show an alert dialog
-                      return previous.walletDeletionError == null &&
-                          current.walletDeletionError != null;
-                    },
-                    listener: (context, state) {
-                      BlurredDialog.show(
-                        context: context,
-                        builder: (_) => const FailedWalletDeletionAlertDialog(),
-                      );
-                    },
-                  ),
-                ],
-                child: WalletDetailsScreen(walletId: walletId),
-              );
-            },
-          ),
-          GoRoute(
-            path: SettingsRoute.walletAddresses.path,
-            name: SettingsRoute.walletAddresses.name,
-            builder: (context, state) {
-              final walletId = state.pathParameters['walletId']!;
-              return BlocProvider(
-                create: (_) =>
-                    locator<AddressViewBloc>(param1: walletId, param2: 10),
-                child: AddressesScreen(walletId: walletId),
-              );
-            },
-          ),
-        ],
+        path: SettingsRoute.walletDetailsSelectedWallet.path,
+        name: SettingsRoute.walletDetailsSelectedWallet.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          return MultiBlocListener(
+            listeners: [
+              BlocListener<WalletBloc, WalletState>(
+                listenWhen: (previous, current) {
+                  return previous.wallets.length > current.wallets.length;
+                },
+                listener: (context, state) {
+                  context.goNamed(WalletRoute.walletHome.name);
+                },
+              ),
+              BlocListener<WalletBloc, WalletState>(
+                listenWhen: (previous, current) {
+                  // Listen for a wallet deletion failure to show a sheet.
+                  return previous.walletDeletionFailure == null &&
+                      current.walletDeletionFailure != null;
+                },
+                listener: (context, state) {
+                  WalletDeletionFailedSheet.show(
+                    context,
+                    failure: state.walletDeletionFailure!,
+                  );
+                },
+              ),
+            ],
+            child: WalletDetailsScreen(walletId: walletId),
+          );
+        },
       ),
       GoRoute(
-        path: SettingsRoute.logs.path,
-        name: SettingsRoute.logs.name,
-        builder: (context, state) => const LogSettingsScreen(),
+        path: SettingsRoute.walletAddresses.path,
+        name: SettingsRoute.walletAddresses.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          return BlocProvider(
+            create: (_) =>
+                locator<AddressViewBloc>(param1: walletId, param2: 10),
+            child: AddressesScreen(walletId: walletId),
+          );
+        },
       ),
+      const LogsFeature().route,
       GoRoute(
         path: SettingsRoute.allSeedView.path,
         name: SettingsRoute.allSeedView.name,

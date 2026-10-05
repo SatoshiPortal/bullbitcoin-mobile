@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
+import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -9,7 +10,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
@@ -26,7 +27,7 @@ import 'package:go_router/go_router.dart';
 class _CreateOrderError extends StatelessWidget {
   const _CreateOrderError({required this.error});
 
-  final BuyError error;
+  final BuyFailure error;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +37,12 @@ class _CreateOrderError extends StatelessWidget {
 
     final (String label, double amount, String currency)? limit =
         switch (error) {
-          BelowMinAmountBuyError(:final minAmount, :final currency) => (
+          BuyBelowMinAmountFailure(:final minAmount, :final currency) => (
             context.loc.buyInputMinAmountError,
             minAmount,
             currency,
           ),
-          AboveMaxAmountBuyError(:final maxAmount, :final currency) => (
+          BuyAboveMaxAmountFailure(:final maxAmount, :final currency) => (
             context.loc.buyInputMaxAmountError,
             maxAmount,
             currency,
@@ -108,7 +109,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
       (BuyBloc bloc) => bloc.state.isCreatingOrder,
     );
     final createOrderError = context.select(
-      (BuyBloc bloc) => bloc.state.createOrderBuyError,
+      (BuyBloc bloc) => bloc.state.inputFailure,
     );
     final needsKycUpgrade = context.select(
       (BuyBloc bloc) => bloc.state.needsKycUpgrade(bloc.state.amount ?? 0),

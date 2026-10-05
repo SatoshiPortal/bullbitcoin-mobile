@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 class LabeledTextInput extends StatelessWidget {
   final String label;
@@ -10,6 +9,18 @@ class LabeledTextInput extends StatelessWidget {
   final String hint;
   final Function(String)? onChanged;
   final int? maxLines;
+
+  /// Optional external controller, for a caller that owns the field text (a
+  /// form pushing a programmatic change back in). One is created when null.
+  final TextEditingController? controller;
+
+  /// Both default to true. Set them false for secrets: the IME's suggestion
+  /// and autocorrect caches must never see the value.
+  final bool enableSuggestions;
+  final bool autocorrect;
+
+  /// iOS Smart Punctuation, on by default. Disable both when the value must
+  /// survive exactly as typed.
   final SmartQuotesType? smartQuotesType;
   final SmartDashesType? smartDashesType;
 
@@ -20,6 +31,9 @@ class LabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.controller,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
     this.smartQuotesType,
     this.smartDashesType,
   });
@@ -51,7 +65,8 @@ class LabeledTextInput extends StatelessWidget {
               ),
             ],
           ),
-          child: BBInputText(
+          child: BullInputText(
+            controller: controller,
             value: value,
             onChanged: onChanged ?? (_) {},
             disabled: onChanged == null,
@@ -68,6 +83,8 @@ class LabeledTextInput extends StatelessWidget {
             hint: hint,
             hideBorder: true,
             maxLines: maxLines,
+            enableSuggestions: enableSuggestions,
+            autocorrect: autocorrect,
             smartQuotesType: smartQuotesType,
             smartDashesType: smartDashesType,
           ),

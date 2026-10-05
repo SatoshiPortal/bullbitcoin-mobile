@@ -4,7 +4,7 @@
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

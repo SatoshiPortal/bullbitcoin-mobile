@@ -1,0 +1,28 @@
+{
+  "logSettingsLogsTitle": "Логове",
+  "logsViewerDeleteButton": "Изтрий",
+  "logsViewerShareButton": "Споделяне",
+  "logsExportedMessage": "Журналите са експортирани успешно",
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите",
+  "logsViewerShowingCount": "Показване на {shown} от {total} журнала",
+  "logsViewerClearFilter": "Изчисти филтъра",
+  "logsViewerFilterByDate": "Филтриране по дата",
+  "copiedToClipboardMessage": "Копирано в клипборда",
+  "logsViewerDeleteTitle": "Изтрий логовете",
+  "logsViewerDeleteConfirmation": "Сигурни ли сте, че искате да изтриете всички логове? Това действие не може да бъде отменено.",
+  "logsDeletedMessage": "Логовете са изтрити",
+  "logsViewerCancelButton": "Отказ",
+  "logsShareOptionShare": "Споделяне",
+  "logsShareOptionExport": "Експортиране",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

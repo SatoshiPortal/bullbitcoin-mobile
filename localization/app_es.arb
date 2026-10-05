@@ -83,13 +83,9 @@
   "pinCodeSettingsLabel": "Código PIN",
   "languageSettingsLabel": "Idioma",
   "backupSettingsLabel": "Respaldo de billetera",
-  "electrumServerSettingsLabel": "Servidor Electrum (nodo Bitcoin)",
   "fiatCurrencySettingsLabel": "Moneda fiduciaria",
   "languageSettingsScreenTitle": "Idioma",
-  "backupSettingsScreenTitle": "Ajustes de Respaldo",
   "settingsExchangeSettingsTitle": "Ajustes de Cambio",
-  "settingsWalletBackupTitle": "Respaldo de Billetera",
-  "settingsBitcoinSettingsTitle": "Ajustes de Bitcoin",
   "settingsSecurityPinTitle": "PIN de Seguridad",
   "pinCodeAuthentication": "Autenticación",
   "pinCodeCreateTitle": "Crear nuevo PIN",
@@ -120,12 +116,9 @@
   "settingsAppSettingsTitle": "Configuración de la aplicación",
   "settingsTermsOfServiceTitle": "Términos de servicio",
   "settingsAppVersionLabel": "Versión de aplicación: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "GitHub",
   "settingsGetHelpLabel": "Obtener ayuda",
-  "settingsServicesStatusTitle": "Estado de Servicios",
-  "settingsTorSettingsTitle": "Ajustes de Tor",
-  "settingsRecoverbullTitle": "Recoverbull",
+  "settingsServiceStatusTitle": "Estado de Servicios",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
   "settingsDevModeWarningTitle": "Modo desarrollador",
@@ -133,9 +126,7 @@
   "settingsDevModeUnderstandButton": "Entiendo",
   "settingsSuperuserModeDisabledMessage": "Modo superusuario desactivado.",
   "settingsSuperuserModeUnlockedMessage": "¡Modo superusuario desbloqueado!",
-  "walletOptionsUnnamedWalletFallback": "Billetera Sin Nombre",
-  "walletOptionsNotFoundMessage": "Billetera no encontrada",
-  "walletOptionsWalletDetailsTitle": "Detalles de la Billetera",
+  "walletDetailsUnnamedWalletFallback": "Billetera Sin Nombre",
   "addressViewAddressesTitle": "Direcciones",
   "walletDetailsDeletingMessage": "Borrando billetera…",
   "walletDetailsWalletFingerprintLabel": "Huella digital de la billetera",
@@ -148,8 +139,6 @@
   "walletDetailsSignerDeviceLabel": "Dispositivo firmante",
   "walletDetailsSignerDeviceNotSupported": "No compatible",
   "walletDetailsCopyButton": "Copia",
-  "bitcoinSettingsWalletsTitle": "Billeteras",
-  "bitcoinSettingsElectrumServerTitle": "Ajustes del Servidor Electrum",
   "mempoolSettingsTitle": "Servidor Mempool",
   "mempoolSettingsDescription": "Configure servidores de mempool adaptados para diferentes redes. Cada red puede utilizar su propio servidor para bloquear explorador y estimación de comisión.",
   "mempoolSettingsDefaultServer": "Default Server",
@@ -171,8 +160,7 @@
   "mempoolCustomServerBottomSheetDescription": "Introduzca la URL de su servidor mempool personalizado. El servidor será validado antes de guardar.",
   "mempoolSettingsUseForFeeEstimation": "Utilice para Estimación de Comisión",
   "mempoolSettingsUseForFeeEstimationDescription": "Cuando habilitado, este servidor será utilizado para estimación de comisión. Cuando inhabilitado, el servidor mempool de Bull Bitcoin será utilizado en su lugar.",
-  "bitcoinSettingsAutoTransferTitle": "Transferencia automática",
-  "bitcoinSettingsImportWalletTitle": "Importar billetera",
+  "walletSettingsImportWalletTitle": "Importar billetera",
   "bitcoinSettingsBroadcastTransactionTitle": "Transmitir transacción",
   "bitcoinSettingsTestnetModeTitle": "Modo Testnet",
   "bitcoinSettingsBip85EntropiesTitle": "Entropías determinísticas BIP85",
@@ -234,8 +222,6 @@
   "exchangeAccountInfoVerificationLimitedVerification": "Verificación limitada",
   "exchangeAccountInfoVerificationNotVerified": "No verificado",
   "exchangeAccountInfoUserNumberCopiedMessage": "Número de usuario copiado al portapapeles",
-  "walletsListTitle": "Detalles de billetera",
-  "walletsListNoWalletsMessage": "No se encontraron billeteras",
   "walletDeletionConfirmationTitle": "Borrar Billetera",
   "walletDeletionConfirmationMessage": "¿Seguro que desea borrar esta billetera?",
   "walletDeletionConfirmationCancelButton": "Cancelar",
@@ -337,14 +323,6 @@
   "receivePaymentNormally": "Recibir pago normalmente",
   "receiveContinue": "Continuar",
   "receiveCopyAddressOnly": "Copiar o escanear solo la dirección",
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
   "receiveReceiveAmount": "Monto a recibir",
   "receiveSendNetworkFee": "Comisión de red de envío",
@@ -539,12 +517,10 @@
   "payWhichWalletQuestion": "¿Desde cual billetera desea pagar?",
   "payExternalWallet": "Billetera externa",
   "payFromAnotherWallet": "Pagar desde otro billetera Bitcoin",
-  "payAboveMaxAmountError": "Está intentando pagar por encima del monto máximo que se puede pagar con esta billetera.",
-  "payBelowMinAmountError": "Está intentando pagar por debajo del monto mínimo que se puede pagar con esta billetera.",
+  "payAboveMaxAmountError": "El importe máximo que puede pagar con esta cartera es {amount}.",
+  "payBelowMinAmountError": "El importe mínimo que puede pagar con esta cartera es {amount}.",
   "payInsufficientBalanceError": "Saldo insuficiente en la billetera seleccionada para completar esta orden de pago.",
   "payUnauthenticatedError": "No está autenticado. Por favor inicie sesión para continuar.",
-  "payOrderNotFoundError": "No se encontró la orden de pago. Por favor intente de nuevo.",
-  "payOrderAlreadyConfirmedError": "Esta orden de pago ya ha sido confirmada.",
   "paySelectNetwork": "Seleccionar red",
   "payHowToPayInvoice": "¿Cómo desea pagar esta factura?",
   "payBitcoinOnChain": "Bitcoin on-chain",
@@ -593,11 +569,6 @@
   "paySinpeOrigen": "Origen",
   "payNotAvailable": "N/A",
   "payBitcoinOnchain": "Bitcoin on-chain",
-  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
-  "payBelowMinAmount": "Está intentando pagar un monto inferior al monto mínimo que se puede pagar con esta billetera.",
-  "payNotAuthenticated": "No está autenticado. Por favor, inicie sesión para continuar.",
-  "payOrderNotFound": "No se encontró la orden de pago. Por favor, intente nuevamente.",
-  "payOrderAlreadyConfirmed": "Esta orden de pago ya ha sido confirmada.",
   "payPaymentInProgress": "¡Pago en curso!",
   "payPaymentInProgressDescription": "Su pago ha sido iniciado y el destinatario recibirá los fondos después de que su transacción reciba 1 confirmación on-chain.",
   "payPriceRefreshIn": "El precio se actualizará en ",
@@ -611,38 +582,12 @@
   "payCopied": "¡Copiado!",
   "payWhichWallet": "¿Desde cuál billetera desea pagar?",
   "payExternalWalletDescription": "Pagar desde otro billetera Bitcoin",
-  "payInsufficientBalance": "Saldo insuficiente en la billetera seleccionada para completar esta orden de pago.",
   "payRbfActivated": "Replace-by-fee activado",
   "transactionTitle": "Transacciones",
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Detalles de la transacción",
   "transactionDetailTransferProgress": "Progreso de la transferencia",
   "transactionDetailSwapProgress": "Progreso del intercambio",
-  "transactionDetailRetryTransfer": "Reintentar transferencia {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Reintentar intercambio {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Agregar nota",
-  "transactionDetailBumpFees": "Aumentar tarifas",
   "transactionFilterAll": "Todas",
   "transactionFilterSend": "Enviar",
   "transactionFilterReceive": "Recibir",
@@ -657,7 +602,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "En progreso",
   "transactionStatusPending": "Pendiente",
-  "transactionStatusConfirmed": "Confirmada",
   "transactionStatusTransferCompleted": "Transferencia completada",
   "transactionStatusTransferInProgress": "Transferencia en progreso",
   "transactionStatusPaymentInProgress": "Pago en progreso",
@@ -667,51 +611,9 @@
   "transactionStatusTransferExpired": "Transferencia expirada",
   "transactionStatusSwapExpired": "Intercambio expirado",
   "transactionStatusPayjoinRequested": "Payjoin solicitado",
-  "transactionLabelTransactionId": "ID de transacción",
-  "transactionLabelToWallet": "A billetera",
-  "transactionLabelFromWallet": "Desde billetera",
-  "transactionLabelRecipientAddress": "Dirección del destinatario",
-  "transactionLabelAddress": "Dirección",
-  "transactionLabelAddressNotes": "Notas de dirección",
-  "transactionLabelAmountReceived": "Monto recibido",
-  "transactionLabelAmountSent": "Monto enviado",
-  "transactionLabelTransactionFee": "Tarifa de transacción",
-  "transactionLabelStatus": "Estado",
-  "transactionLabelConfirmationTime": "Tiempo de confirmación",
-  "transactionLabelTransferId": "ID de transferencia",
-  "transactionLabelSwapId": "ID de intercambio",
-  "transactionLabelTransferStatus": "Estado de transferencia",
-  "transactionLabelSwapStatus": "Estado de intercambio",
-  "transactionLabelSwapStatusRefunded": "Reembolsado",
-  "transactionLabelLiquidTransactionId": "ID de transacción Liquid",
-  "transactionLabelBitcoinTransactionId": "ID de transacción Bitcoin",
-  "transactionLabelTotalTransferFees": "Tarifas totales de transferencia",
-  "transactionLabelTotalSwapFees": "Tarifas totales de intercambio",
-  "transactionLabelNetworkFee": "Tarifa de red",
-  "transactionLabelTransferFee": "Tarifa de transferencia",
-  "transactionLabelBoltzSwapFee": "Tarifa de intercambio Boltz",
-  "transactionLabelCreatedAt": "Creado el",
-  "transactionLabelCompletedAt": "Completado el",
-  "transactionLabelPayjoinStatus": "Estado de payjoin",
-  "transactionLabelPayjoinCreationTime": "Tiempo de creación de payjoin",
-  "transactionPayjoinStatusCompleted": "Completado",
-  "transactionPayjoinStatusExpired": "Expirado",
-  "transactionOrderLabelOrderType": "Tipo de orden",
-  "transactionOrderLabelOrderNumber": "Número de orden",
-  "transactionOrderLabelPayinAmount": "Monto de pago",
-  "transactionOrderLabelPayoutAmount": "Monto a recibir",
-  "transactionOrderLabelExchangeRate": "Tipo de cambio",
-  "transactionOrderLabelPayinMethod": "Método de pago",
-  "transactionOrderLabelPayoutMethod": "Método de cobro",
-  "transactionOrderLabelPayinStatus": "Estado de pago",
-  "transactionOrderLabelOrderStatus": "Estado de orden",
-  "transactionOrderLabelPayoutStatus": "Estado de cobro",
   "transactionNotesLabel": "Notas de transacción",
   "transactionNoteAddTitle": "Agregar nota",
-  "transactionNoteEditTitle": "Editar nota",
   "transactionNoteHint": "Nota",
-  "transactionNoteSaveButton": "Guardar",
-  "transactionNoteUpdateButton": "Actualizar",
   "transactionPayjoinSendWithout": "Enviar sin payjoin",
   "transactionSwapProgressInitiated": "Iniciado",
   "transactionSwapProgressPaymentMade": "Pago\nrealizado",
@@ -811,18 +713,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Fecha de creación de Payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
   "globalDefaultLiquidWalletLabel": "Pagos instantáneos",
-  "walletTypeWatchOnly": "Solo lectura",
-  "walletTypeWatchSigner": "Observación-Firma",
-  "walletTypeBitcoinNetwork": "Red Bitcoin",
-  "walletTypeLiquidLightningNetwork": "Red Liquid y Lightning",
-  "walletNetworkBitcoin": "Red Bitcoin",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "walletNetworkLiquid": "Red Liquid",
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "walletAddressTypeConfidentialSegwit": "Segwit confidencial",
-  "walletAddressTypeNativeSegwit": "Segwit nativo",
-  "walletAddressTypeNestedSegwit": "Segwit anidado",
-  "walletAddressTypeLegacy": "Heredado",
   "walletBalanceUnconfirmedIncoming": "En progreso",
   "walletButtonReceive": "Recibir",
   "walletButtonSend": "Enviar",
@@ -864,16 +754,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "Más rápida - Solo para transacciones menores a €30,000",
   "fundExchangeMethodRegularSepa": "SEPA estándar",
   "fundExchangeMethodRegularSepaSubtitle": "Solo usar para transacciones mayores a €30,000",
-  "fundExchangeMethodSpeiTransfer": "Transferencia SPEI",
-  "fundExchangeMethodSpeiTransferSubtitle": "Transfiere fondos usando tu CLABE",
-  "fundExchangeMethodSinpeTransfer": "Transferencia SINPE",
-  "fundExchangeMethodSinpeTransferSubtitle": "Transfiere Colones usando SINPE",
-  "fundExchangeMethodCrIbanCrc": "IBAN Costa Rica (CRC)",
-  "fundExchangeMethodCrIbanCrcSubtitle": "Transfiere fondos en Colón costarricense (CRC)",
-  "fundExchangeMethodCrIbanUsd": "IBAN Costa Rica (USD)",
-  "fundExchangeMethodCrIbanUsdSubtitle": "Transfiere fondos en dólares estadounidenses (USD)",
-  "fundExchangeMethodArsBankTransfer": "Transferencia bancaria",
-  "fundExchangeMethodArsBankTransferSubtitle": "Envía una transferencia bancaria desde tu cuenta bancaria",
   "fundExchangeBankTransferWireTitle": "Transferencia bancaria (wire)",
   "fundExchangeBankTransferWireDescription": "Envía una transferencia wire desde tu cuenta bancaria usando los datos bancarios de Bull Bitcoin a continuación. Tu banco puede requerir solo algunas partes de estos datos.",
   "fundExchangeBankTransferWireTimeframe": "Los fondos que envíes se agregarán a tu Bull Bitcoin dentro de 1-2 días hábiles.",
@@ -935,15 +815,6 @@
   "fundExchangeSinpeDescription": "Transfiere Colones usando SINPE",
   "fundExchangeCrIbanCrcTitle": "Transferencia bancaria (CRC)",
   "fundExchangeCrIbanUsdTitle": "Transferencia bancaria (USD)",
-  "fundExchangeCrBankTransferDescription1": "Envía una transferencia bancaria desde tu cuenta bancaria usando los datos a continuación ",
-  "fundExchangeCrBankTransferDescriptionExactly": "exactamente",
-  "fundExchangeCrBankTransferDescription2": ". Los fondos se agregarán al saldo de tu cuenta.",
-  "fundExchangeLabelIbanCrcOnly": "Número de cuenta IBAN (solo para Colones)",
-  "fundExchangeLabelIbanUsdOnly": "Número de cuenta IBAN (solo para dólares estadounidenses)",
-  "fundExchangeLabelPaymentDescription": "Descripción del pago",
-  "fundExchangeHelpPaymentDescription": "Tu código de transferencia.",
-  "fundExchangeInfoTransferCodeRequired": "Debes agregar el código de transferencia como el \"mensaje\" o \"motivo\" o \"descripción\" al hacer el pago. Si olvidas poner este código, tu pago puede ser rechazado.",
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
   "fundExchangeArsBankTransferTitle": "Transferencia bancaria",
   "fundExchangeArsBankTransferDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los datos bancarios exactos de Argentina a continuación.",
   "fundExchangeLabelRecipientNameArs": "Nombre del destinatario",
@@ -953,11 +824,12 @@
   "fundExchangeErrorTitleRcpPo404": "Opción de pago no disponible",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE no disponible",
   "fundExchangeErrorTitleOrdKyc400": "Requisitos KYC faltantes",
-  "fundExchangeErrorOrdKyc400": "No cumples con los requisitos KYC para esta acción: {missingFields}",
+  "fundExchangeErrorOrdKyc400": "No cumples con los requisitos KYC para esta acción",
+  "fundExchangeErrorOrdCsrcp400": "Por favor active la opción de pago virtual para este destinatario SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "No se pudo abrir el enlace de pago. Por favor, inténtelo de nuevo.",
   "fundExchangeErrorTitleOrdCop400": "Datos de fondeo COP inválidos",
-  "fundExchangeErrorOrdCop400": "Datos de solicitud inválidos para fondeo COP: {error}",
+  "fundExchangeErrorOrdCop400": "Datos de solicitud inválidos para fondeo COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Pago virtual no activado",
-  "fundExchangeErrorOrdCsrcp400": "Por favor active la opción de pago virtual para el destinatario SEPA con IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Solicitud inválida",
   "fundExchangeErrorRcp400": "Solicitud inválida",
   "fundExchangeErrorOrdPo404": "No hay opción de pago disponible",
@@ -1033,7 +905,6 @@
   "startBackupButton": "Iniciar respaldo",
   "exportVaultButton": "Exportar bóveda",
   "exportingVaultButton": "Exportando...",
-  "viewVaultKeyButton": "Ver clave de bóveda",
   "revealingVaultKeyButton": "Revelando...",
   "errorLabel": "Error",
   "backupKeyTitle": "Clave de respaldo",
@@ -1252,46 +1123,6 @@
   "bip85NoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
   "connectingToKeyServer": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
   "anErrorOccurred": "Ocurrió un error",
-  "dcaSetRecurringBuyTitle": "Configurar Compra Recurrente",
-  "dcaInsufficientBalanceTitle": "Saldo Insuficiente",
-  "dcaInsufficientBalanceDescription": "No tiene suficiente saldo para crear esta orden.",
-  "dcaFundAccountButton": "Fondear su cuenta",
-  "dcaScheduleDescription": "Las compras de Bitcoin se realizarán automáticamente según este calendario.",
-  "dcaFrequencyValidationError": "Por favor seleccione una frecuencia",
-  "dcaContinueButton": "Continuar",
-  "dcaConfirmRecurringBuyTitle": "Confirmar Compra Recurrente",
-  "dcaConfirmationDescription": "Las órdenes de compra se realizarán automáticamente según esta configuración. Puede desactivarlas en cualquier momento.",
-  "dcaFrequencyLabel": "Frecuencia",
-  "dcaFrequencyHourly": "hora",
-  "dcaFrequencyDaily": "día",
-  "dcaFrequencyWeekly": "semana",
-  "dcaFrequencyMonthly": "mes",
-  "dcaAmountLabel": "Cantidad",
-  "dcaPaymentMethodLabel": "Método de pago",
-  "dcaPaymentMethodValue": "Saldo en {currency}",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "Tipo de orden",
-  "dcaOrderTypeValue": "Compra recurrente",
-  "dcaNetworkLabel": "Red",
-  "dcaNetworkBitcoin": "Red Bitcoin",
-  "dcaNetworkLightning": "Red Lightning",
-  "dcaNetworkLiquid": "Red Liquid",
-  "dcaLightningAddressLabel": "Dirección Lightning",
-  "dcaConfirmationError": "Algo salió mal: {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "Continuar",
   "dcaSuccessTitle": "¡Compra Recurrente Activada!",
   "dcaSuccessMessageHourly": "Comprará {amount} cada hora",
   "@dcaSuccessMessageHourly": {
@@ -1662,7 +1493,6 @@
   "urDecodingFailedMessage": "Decodificación UR fallida",
   "urProcessingFailedMessage": "Procesamiento UR fallido",
   "scanNfcButton": "Escanear NFC",
-  "shareLogsLabel": "Compartir registros",
   "viewLogsLabel": "Ver registros",
   "errorSharingLogsMessage": "Error al compartir registros: {error}",
   "@errorSharingLogsMessage": {
@@ -1672,10 +1502,8 @@
       }
     }
   },
-  "copiedToClipboardMessage": "Copiado al portapapeles",
   "submitButton": "Enviar",
   "optionalPassphraseHint": "Frase de contraseña opcional",
-  "labelInputLabel": "Etiqueta",
   "requiredHint": "Requerido",
   "wordsDropdownSuffix": " palabras",
   "emptyMnemonicWordsError": "Ingrese todas las palabras de su mnemónico",
@@ -1697,7 +1525,6 @@
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
   "routeErrorMessage": "Página no encontrada",
-  "logsViewerTitle": "Registros",
   "payInvoiceTitle": "Pagar Factura",
   "payEnterAmountTitle": "Ingresar Monto",
   "payInvalidInvoice": "Factura inválida",
@@ -2002,7 +1829,7 @@
   "sendErrorInsufficientBalanceForPayment": "Saldo insuficiente para cubrir este pago",
   "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
   "sendErrorUnsupportedQrCodeFormat": "Formato de código QR no compatible",
-  "sendErrorBuildFailed": "Error de construcción",
+  "sendErrorBuildFailed": "No se pudo preparar este pago. Inténtelo de nuevo.",
   "sendErrorConfirmationFailed": "Error de confirmación",
   "sendErrorInsufficientBalanceForSwap": "Saldo insuficiente para pagar este intercambio a través de Liquid y fuera de los límites de intercambio para pagar a través de Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "La cantidad está por debajo de los límites de intercambio",
@@ -2385,57 +2212,9 @@
   "testBackupErrorNoMnemonic": "No se cargó ninguna mnemónica",
   "testBackupErrorSelectAllWords": "Por favor seleccione todas las palabras",
   "testBackupErrorIncorrectOrder": "Orden de palabras incorrecto. Por favor intente nuevamente.",
-  "testBackupErrorVerificationFailed": "Verificación fallida: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Error al obtener respaldo: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Contenido del archivo inválido",
   "testBackupErrorUnexpectedSuccess": "Logro inesperado: el respaldo debería coincidir con la billetera existente",
   "testBackupErrorWalletMismatch": "El respaldo no coincide con la billetera existente",
-  "testBackupErrorWriteFailed": "Error al escribir en el almacenamiento: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Error al probar respaldo: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Error al cargar billeteras: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Error al cargar mnemónica: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveCancelButton": "Cancelar",
   "recoverbullGoogleDriveDeleteButton": "Eliminar",
   "recoverbullGoogleDriveDeleteConfirmation": "¿Está seguro de que desea eliminar esta copia de seguridad del cofre? Esta acción no se puede deshacer.",
@@ -2649,15 +2428,6 @@
   "psbtFlowSignTransaction": "Firmar transacción",
   "psbtFlowInstructions": "Instrucciones",
   "psbtFlowDone": "He terminado",
-  "psbtFlowError": "Error: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowNoPartsToDisplay": "No hay partes para mostrar",
   "psbtFlowPartProgress": "Parte {current} de {total}",
   "@psbtFlowPartProgress": {
     "placeholders": {
@@ -2669,21 +2439,8 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Instrucciones de Krux",
-  "psbtFlowKeystoneTitle": "Instrucciones de Keystone",
-  "psbtFlowPassportTitle": "Instrucciones de Foundation Passport",
-  "psbtFlowSeedSignerTitle": "Instrucciones de SeedSigner",
   "psbtFlowSpecterTitle": "Instrucciones de Specter",
   "psbtFlowColdcardTitle": "Instrucciones de Coldcard Q",
-  "psbtFlowJadeTitle": "Instrucciones PSBT de Blockstream Jade",
-  "psbtFlowLoginToDevice": "Inicie sesión en su dispositivo {device}",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTurnOnDevice": "Encienda su dispositivo {device}",
   "@psbtFlowTurnOnDevice": {
     "placeholders": {
@@ -2692,21 +2449,12 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Agregue una frase de contraseña si tiene una (opcional)",
   "psbtFlowClickScan": "Haga clic en Escanear",
-  "psbtFlowClickSign": "Haga clic en Firmar",
-  "psbtFlowClickPsbt": "Haga clic en PSBT",
-  "psbtFlowLoadFromCamera": "Haga clic en Cargar desde la cámara",
-  "psbtFlowScanQrOption": "Seleccione la opción \"Escanear QR\"",
-  "psbtFlowScanAnyQr": "Seleccione la opción \"Escanear cualquier código QR\"",
-  "psbtFlowSignWithQr": "Haga clic en Firmar con código QR",
   "psbtFlowScanQrShown": "Escanee el código QR que se muestra en la billetera Bull",
   "psbtFlowTroubleScanningTitle": "Si tiene problemas para escanear:",
   "psbtFlowIncreaseBrightness": "Aumente el brillo de la pantalla en su dispositivo",
   "psbtFlowMoveLaser": "Mueva el láser rojo hacia arriba y abajo sobre el código QR",
   "psbtFlowMoveBack": "Intente alejar un poco su dispositivo",
-  "psbtFlowHoldSteady": "Mantenga el código QR estable y centrado",
-  "psbtFlowMoveCloserFurther": "Intente acercar o alejar más su dispositivo",
   "psbtFlowReviewTransaction": "Una vez que la transacción se importe en su {device}, revise la dirección de destino y el monto.",
   "@psbtFlowReviewTransaction": {
     "placeholders": {
@@ -2958,7 +2706,6 @@
     }
   },
   "transactionHistoryTitle": "Historial de transacciones",
-  "transactionHistoryHeading": "Historial de transacciones",
   "exportTransactionsDescription": "Exporta todas las transacciones de tu billetera (Bitcoin, Liquid, Lightning y swaps) como archivo CSV. Filtra por rango de fechas opcionalmente.",
   "exportTransactionsStartDate": "Fecha de inicio",
   "exportTransactionsEndDate": "Fecha final",
@@ -3093,7 +2840,7 @@
   "importQrDeviceSeedsignerStep3": "Escanee un SeedQR o ingrese su frase de 12 o 24 palabras",
   "importQrDeviceSeedsignerStep4": "Seleccione \"Exportar Xpub\"",
   "importQrDeviceSeedsignerStep5": "Elija \"Firma Única\", luego seleccione su tipo de script preferido (elija Native Segwit si no está seguro).",
-  "importQrDeviceSeedsignerStep6": "Seleccione \"Sparrow\" como opción de exportación",
+  "importQrDeviceSeedsignerStep6": "Seleccione \"Animated\" como opción de exportación. En versiones anteriores del firmware de SeedSigner, seleccione \"Sparrow\".",
   "importQrDeviceSeedsignerStep7": "En su dispositivo móvil, toque Abrir Cámara",
   "importQrDeviceSeedsignerStep8": "Escanee el código QR que se muestra en su SeedSigner",
   "importQrDeviceSeedsignerStep9": "Ingrese una etiqueta para su billetera SeedSigner y toque Importar",
@@ -3151,44 +2898,11 @@
   "exchangeKycLimited": "Limitado",
   "exchangeKycComplete": "Complete su KYC",
   "exchangeKycRemoveLimits": "Para eliminar límites de transacción",
-  "dcaActivate": "Activar compra recurrente",
-  "dcaDeactivate": "Desactivar compra recurrente",
-  "dcaViewSettings": "Ver configuración",
-  "dcaHideSettings": "Ocultar configuración",
-  "dcaCancelTitle": "¿Cancelar compra recurrente de Bitcoin?",
-  "dcaCancelMessage": "Su plan de compra recurrente de Bitcoin se detendrá y las compras programadas finalizarán. Para reiniciar, deberá configurar un nuevo plan.",
-  "dcaCancelButton": "Cancelar",
-  "dcaConfirmDeactivate": "Sí, desactivar",
-  "dcaUnableToGetConfig": "No se puede obtener la configuración DCA",
-  "dcaAddressBitcoin": "Dirección Bitcoin",
-  "dcaAddressLightning": "Dirección Lightning",
-  "dcaAddressLiquid": "Dirección Liquid",
-  "dcaBuyingMessage": "Está comprando {amount} cada {frequency} a través de {network} mientras haya fondos en su cuenta.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Inicio de sesión fallido",
   "exchangeAuthErrorMessage": "Ocurrió un error, por favor intente iniciar sesión nuevamente.",
   "exchangeAuthOk": "OK",
   "withdrawAmountTitle": "Retirar fiat",
   "withdrawAmountContinue": "Continuar",
-  "withdrawRecipientsTitle": "Seleccionar destinatario",
-  "withdrawRecipientsPrompt": "¿Dónde y cómo debemos enviar el dinero?",
-  "withdrawRecipientsNewTab": "Nuevo destinatario",
-  "withdrawRecipientsMyTab": "Mis destinatarios fiat",
-  "withdrawRecipientsFilterAll": "Todos los tipos",
-  "withdrawRecipientsNoRecipients": "No se encontraron destinatarios para retirar.",
-  "withdrawRecipientsContinue": "Continuar",
   "withdrawConfirmTitle": "Confirmar retiro",
   "withdrawConfirmRecipientName": "Nombre del destinatario",
   "withdrawConfirmAmount": "Monto",
@@ -3200,16 +2914,6 @@
   "withdrawConfirmPhone": "Teléfono",
   "withdrawConfirmCard": "Tarjeta",
   "withdrawConfirmButton": "Confirmar retiro",
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "fundExchangeFundAccount": "Financiar su cuenta",
-  "fundExchangeSelectCountry": "Seleccione su país y método de pago",
   "fundExchangeSpeiTransfer": "Transferencia SPEI",
   "fundExchangeSpeiSubtitle": "Transfiera fondos usando su CLABE",
   "fundExchangeBankTransfer": "Transferencia bancaria",
@@ -3224,7 +2928,6 @@
   "fundExchangeCopGeneratePaymentLink": "Generar enlace de pago",
   "fundExchangeCopRedirectMessage": "Serás redirigido a una página externa para realizar el pago.",
   "fundExchangeCopOpenPaymentLink": "Abrir enlace de pago",
-  "fundExchangeCopFailedToOpenLink": "No se pudo abrir el enlace de pago. Por favor intenta de nuevo o contacta soporte.",
   "dcaSetupTitle": "Configurar compra recurrente",
   "dcaSetupInsufficientBalance": "Saldo insuficiente",
   "dcaSetupInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",
@@ -3256,14 +2959,6 @@
   "dcaConfirmNetworkLightning": "Lightning",
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Dirección Lightning",
-  "dcaConfirmError": "Algo salió mal: {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmContinue": "Continuar",
   "buyInputTitle": "Comprar Bitcoin",
   "buyInputMinAmountError": "Debe comprar al menos",
@@ -3360,7 +3055,6 @@
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
   "electrumEmptyFieldError": "Este campo no puede estar vacío",
-  "electrumBitcoinSslInfo": "Si no se especifica ningún protocolo, se usará SSL por defecto.",
   "electrumLiquidSslInfo": "No se debe especificar ningún protocolo, SSL se usará automáticamente.",
   "electrumAddServer": "Agregar servidor",
   "electrumEnableSsl": "Activar SSL",
@@ -3496,8 +3190,6 @@
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
   "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intenta cerrarla completamente y reiniciarla. Si el error persiste, contacta con soporte y comparte tus registros.",
-  "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
-  "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su frase de recuperación no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver frases después de reinstalar.",
   "appStartupContactSupportButton": "Contactar Soporte",
   "ledgerImportTitle": "Importar Billetera Ledger",
   "ledgerSignTitle": "Firmar Transacción",
@@ -3540,18 +3232,21 @@
   "ledgerInstructionsAndroidDual": "Asegúrese de que su Ledger esté desbloqueado con la aplicación Bitcoin abierta y Bluetooth habilitado.",
   "ledgerScanningMessage": "Buscando dispositivos Ledger cercanos...",
   "ledgerConnectingSubtext": "Estableciendo conexión segura...",
-  "ledgerErrorUnknown": "Error desconocido",
-  "ledgerErrorUnknownOccurred": "Ocurrió un error desconocido",
+  "ledgerErrorPermissionDenied": "Se requieren permisos de Bluetooth para conectarse a los dispositivos Ledger.",
+  "ledgerErrorNoDevicesFound": "No se encontraron dispositivos Ledger. Asegúrate de que tu dispositivo esté encendido y con el Bluetooth activado.",
+  "ledgerErrorMultipleDevicesFound": "Se encontraron varios dispositivos Ledger. Asegúrate de que solo haya un dispositivo cerca.",
+  "ledgerErrorDeviceNotFound": "Dispositivo Ledger no encontrado.",
+  "ledgerErrorDeviceMismatch": "Se detectó una discrepancia de dispositivo.",
+  "ledgerErrorInvalidPsbt": "Se detectó un formato PSBT no válido.",
+  "ledgerErrorMissingDerivationPath": "Se requiere la ruta de derivación",
+  "ledgerErrorMissingScriptType": "Se requiere el tipo de script",
+  "ledgerErrorDeviceBusy": "Otro programa está usando su Ledger. Por favor ciérrelo (por ejemplo, Ledger Live) e intente nuevamente.",
   "ledgerErrorNoConnection": "No hay conexión Ledger disponible",
   "ledgerErrorRejectedByUser": "La transacción fue rechazada por el usuario en el dispositivo Ledger.",
   "ledgerErrorDeviceLocked": "El dispositivo Ledger está bloqueado. Por favor desbloquee su dispositivo e intente nuevamente.",
   "ledgerErrorBitcoinAppNotOpen": "Por favor abra la aplicación Bitcoin en su dispositivo Ledger e intente nuevamente.",
   "ledgerErrorMissingPsbt": "Se requiere PSBT para firmar",
-  "ledgerErrorMissingDerivationPathSign": "Se requiere ruta de derivación para firmar",
-  "ledgerErrorMissingScriptTypeSign": "Se requiere tipo de script para firmar",
   "ledgerErrorMissingAddress": "Se requiere dirección para verificación",
-  "ledgerErrorMissingDerivationPathVerify": "Se requiere ruta de derivación para verificación",
-  "ledgerErrorMissingScriptTypeVerify": "Se requiere tipo de script para verificación",
   "ledgerButtonTryAgain": "Intentar Nuevamente",
   "ledgerButtonManagePermissions": "Administrar Permisos de la Aplicación",
   "ledgerButtonNeedHelp": "¿Necesita Ayuda?",
@@ -3747,7 +3442,6 @@
   },
   "torSettingsPortNumber": "Número de puerto",
   "torSettingsPortHint": "9050",
-  "torSettingsPortHelper": "Puerto Orbot predeterminado: 9050",
   "torSettingsPortValidationEmpty": "Por favor ingrese un número de puerto",
   "torSettingsPortValidationInvalid": "Por favor ingrese un número válido",
   "torSettingsPortValidationRange": "El puerto debe estar entre 1 y 65535",
@@ -3760,46 +3454,21 @@
   "torSettingsDescConnected": "El proxy Tor está activo y listo",
   "torSettingsDescConnecting": "Estableciendo conexión Tor",
   "torSettingsDescDisconnected": "El proxy Tor no está activo",
-  "torSettingsDescUnknown": "No se puede determinar el estado de Tor. Asegúrese de que Orbot esté instalado y en ejecución.",
-  "torSettingsInfoTitle": "Información importante",
-  "torSettingsInfoDescription": "• El proxy Tor solo aplica a Bitcoin (no Liquid)\n• El puerto Orbot predeterminado es 9050\n• Asegúrese de que Orbot esté ejecutándose antes de habilitar\n• La conexión puede ser más lenta a través de Tor",
   "withdrawSuccessTitle": "Retiro iniciado",
   "withdrawSuccessOrderDetails": "Detalles del pedido",
   "withdrawConfirmBankAccount": "Cuenta bancaria",
   "withdrawOwnershipQuestion": "¿A quién pertenece esta cuenta?",
   "withdrawOwnershipMyAccount": "Es mi cuenta",
   "withdrawOwnershipOtherAccount": "Es la cuenta de otra persona",
-  "walletAutoTransferBlockedTitle": "Transferencia automática bloqueada",
-  "walletAutoTransferBlockedMessage": "Intentando transferir {amount} BTC. La comisión actual es {currentFee}% del monto de la transferencia y el umbral de comisión está fijado en {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "Bloquear",
-  "walletAutoTransferAllowButton": "Permitir",
   "navigationTabWallet": "Billetera",
   "navigationTabExchange": "Intercambio",
   "buyUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "buyBelowMinAmountError": "Está intentando comprar por debajo del monto mínimo.",
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
-  "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
-  "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
   "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
-  "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
-  "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
-  "withdrawAboveMaxAmountError": "Está intentando retirar por encima del monto máximo.",
-  "withdrawOrderNotFoundError": "No se encontró la orden de retiro. Por favor, inténtelo de nuevo.",
-  "withdrawOrderAlreadyConfirmedError": "Esta orden de retiro ya ha sido confirmada.",
+  "withdrawBelowMinAmountError": "La cantidad mínima es {amount} {currency}",
+  "withdrawAboveMaxAmountError": "La cantidad máxima es {amount} {currency}",
   "coreScreensPageNotFound": "Página no encontrada",
   "coreScreensLogsTitle": "Registros",
   "coreScreensConfirmSend": "Confirmar envío",
@@ -3838,7 +3507,6 @@
       }
     }
   },
-  "bitcoinSettingsMempoolServerTitle": "Ajustes del Servidor Mempool",
   "save": "Guardar",
   "logoutConfirmationTitle": "Confirmar cierre de sesión",
   "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
@@ -4060,7 +3728,6 @@
   "mempoolErrorSameAsDefault": "Esta URL es la misma que el servidor predeterminado. Por favor, usa una URL diferente.",
   "mempoolErrorConnectionTimeout": "Tiempo de conexión agotado. El servidor puede estar lento o inaccesible.",
   "mempoolErrorHostNotFound": "No se puede encontrar este servidor. Por favor, verifica la URL e intenta de nuevo.",
-  "mempoolErrorTorNotRunning": "No se puede alcanzar la dirección .onion. Asegúrate de que Tor/Orbot esté funcionando e intenta de nuevo.",
   "mempoolErrorConnectionFailed": "No se puede conectar al servidor. Verifica tu conexión de red e intenta de nuevo.",
   "mempoolErrorNotMempoolServer": "Esta URL no parece ser un servidor mempool. Por favor, verifica la dirección.",
   "mempoolErrorServerUnavailable": "Servidor no disponible. Por favor, intenta más tarde.",
@@ -4326,7 +3993,6 @@
   "recipientsPayoutMethod": "Método de pago",
   "recipientsFilterByJurisdiction": "Filtrar por jurisdicción:",
   "recipientsListEmpty": "No se encontraron destinatarios.",
-  "recipientsListLoadError": "No se pudieron cargar los destinatarios. Desliza hacia abajo para reintentar.",
   "recipientsContinue": "Continuar",
   "recipientsJurisdictionAll": "Todas las jurisdicciones",
   "recipientsJurisdictionCanada": "🇨🇦 Canadá",
@@ -4438,8 +4104,6 @@
   "exchangeFileUploadTapToReupload": "Toca para volver a subir",
   "exchangeSupportChatAttachmentImage": "Imagen",
   "exchangeSupportChatAttachmentUnknownFile": "Archivo desconocido",
-  "exchangeSupportChatPermissionDenied": "Permiso denegado.",
-  "exchangeSupportChatPermissionDeniedSettings": "Permiso denegado. Concede acceso a la biblioteca de fotos en Ajustes.",
   "exchangeSupportChatPickFilesFailed": "No se pudieron seleccionar los archivos. Inténtalo de nuevo.",
   "exchangeSupportChatAttachLogsFailed": "No se pudieron adjuntar los registros. Inténtalo de nuevo.",
   "exchangeSupportChatFetchFileDataFailed": "No se pudieron obtener los datos del archivo.",
@@ -4496,31 +4160,6 @@
     "description": "Error shown when seed deletion fails"
   },
   "sendEstimatedDeliveryHours": "horas",
-  "labelErrorNotFound": "Etiqueta \"{label}\" no encontrada.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Este tipo {type} no es compatible",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Error inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Las etiquetas del sistema no se pueden eliminar.",
   "mempoolErrorUnexpected": "Ocurrió un error inesperado",
   "mempoolErrorUpdateSettingsFailed": "Error al actualizar la configuración: {error}",
   "coreScreensUnexpectedError": "Error inesperado: {message}.",
@@ -4777,11 +4416,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Filtrar por fecha",
-  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
-  "logsViewerClearFilter": "Borrar filtro",
-  "logsViewerShareButton": "Compartir",
-  "logsShareOptionShare": "Compartir",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados correctamente",
   "logsExportFailedMessage": "Error al exportar los registros",
@@ -4813,7 +4447,6 @@
   "transactionFilterFunding": "Financiación",
   "transactionFilterReward": "Recompensa",
   "transactionFilterRefund": "Reembolso",
-  "transactionFilterBalanceAdjustment": "Ajuste",
   "transactionListLoadingFailed": "No se pudieron cargar las transacciones.",
   "transactionLabelNetworkFees": "Comisiones de red",
   "walletLiquidRiskDisclosureLabel": "Estos fondos son Liquid L-BTC (no BTC). Más información.",
@@ -4906,10 +4539,6 @@
   "viewerAddressTab": "Dirección",
   "viewerPaymentUriTab": "URI de pago",
   "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
-  "logsViewerDeleteTitle": "Eliminar registros",
-  "logsViewerDeleteConfirmation": "¿Está seguro de que desea eliminar todos los registros? Esta acción no se puede deshacer.",
-  "logsViewerDeleteButton": "Eliminar",
-  "logsViewerCancelButton": "Cancelar",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
@@ -4948,6 +4577,10 @@
   "transactionDetailLabelPayjoinAborted": "Cancelado",
   "transactionDetailLabelPayjoinFeeContribution": "Contribución a la comisión de Payjoin",
   "transactionPayjoinFeeContributionExplanation": "Un payjoin añade una de tus monedas como entrada adicional al pago para mejorar la privacidad. La comisión de minería de esa entrada adicional se descuenta del monto que recibes (BIP78).",
+  "dcaAccountUnavailableError": "No se pudo cargar tu cuenta. Comprueba tu conexión, asegúrate de haber iniciado sesión e inténtalo de nuevo.",
+  "dcaLightningAddressRequiredError": "Introduce una dirección Lightning para recibir tus compras.",
+  "dcaReceiveAddressError": "No se pudo preparar una dirección de recepción en tu monedero. Vuelve a intentarlo.",
+  "dcaOrderCreationError": "No se pudo crear la compra recurrente. Vuelve a intentarlo más tarde.",
   "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
   "settingsPayjoinAdvancedTitle": "Ajustes avanzados de Payjoin",
@@ -4979,5 +4612,217 @@
   "coreSwapsStatusUnknown": "Desconocido",
   "sendSwapExpiredTitle": "Orden expirada",
   "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera.",
-  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente."
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente.",
+  "torSettingsStatusCensored": "La conexión parece filtrada",
+  "torSettingsDescCensored": "Tor no pudo alcanzar la red. A menudo significa que la conexión está filtrada.",
+  "torSettingsBootstrapProgress": "Conectando… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Obteniendo información de la red",
+  "recoverbullLongestStep": "Este es el paso más largo. Un primer inicio puede tardar más de un minuto.",
+  "recoverbullTorOffline": "Parece que no hay conexión a internet.",
+  "recoverbullTorClockSkewed": "El reloj de tu dispositivo está desajustado, así que Tor no puede verificar los certificados de los repetidores. Revisa la fecha y la hora.",
+  "recoverbullTorCantStart": "Tor no pudo conectarse en este momento. Inténtalo de nuevo.",
+  "recoverbullServerUnreachableTorOk": "Tor funciona, pero el servidor de respaldo no respondió. Justo después de un primer inicio esto puede tardar un momento.",
+  "torSettingsEmbeddedTitle": "Tor integrado",
+  "torSettingsEmbeddedDescription": "El Tor integrado lo usan RecoverBull y los servidores Bitcoin Electrum .onion. El resto del tráfico de la app sigue siendo directo.",
+  "torSettingsTransportMode": "Método de conexión",
+  "torSettingsModeAutomatic": "Automático",
+  "torSettingsModeDirect": "Directa",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Prueba primero una conexión directa a Tor y usa Snowflake si la red parece bloquear Tor.",
+  "torSettingsModeDirectDescription": "Se conecta directamente a la red Tor, sin transporte conectable.",
+  "torSettingsModeSnowflakeDescription": "Usa proxies voluntarios de Snowflake para alcanzar Tor desde una red filtrada.",
+  "torSettingsActiveTransport": "Transporte activo: {transport}",
+  "settingsScreenPrivacyTitle": "Privacidad de pantalla",
+  "settingsScreenPrivacyDisabledMessage": "Ahora se permiten capturas de pantalla en pantallas sensibles",
+  "settingsSearchHint": "Buscar en ajustes",
+  "settingsSearchNoResults": "No se encontraron ajustes.",
+  "settingsSearchMempoolKeywords": "explorador de bloques|estimación de comisiones|comisiones de transacción|API de mempool",
+  "settingsSearchExchangeKeywords": "cuenta|cuenta del exchange|operar|comprar y vender",
+  "settingsSearchStartBackupKeywords": "crear copia de seguridad|guardar copia de seguridad|respaldar cartera",
+  "settingsSearchRecoverbullKeywords": "copia de seguridad cifrada|copia en la nube|bóveda cifrada|recuperar bóveda|Recoverbull",
+  "settingsSearchLabelsKeywords": "etiquetas de cartera|etiquetas de transacciones|BIP329|importar etiquetas|exportar etiquetas",
+  "settingsSearchTransactionHistoryKeywords": "exportar transacciones|exportación de transacciones|CSV|historial de cartera",
+  "settingsSearchAppSettingsKeywords": "preferencias de la aplicación|ajustes de la aplicación|ajustes generales",
+  "settingsSearchBtcMapKeywords": "BTC Map|mapa de bitcoin|mapa de comercios|lugares donde gastar bitcoin",
+  "settingsSearchTermsOfServiceKeywords": "términos y condiciones|información legal|acuerdo de usuario|TOS",
+  "settingsSearchServicesStatusKeywords": "estado de servicios|estado del sistema|en línea|interrupción",
+  "settingsSearchImportWalletKeywords": "añadir cartera|recuperar cartera|importar mnemónico|cartera de solo lectura|cartera física",
+  "settingsSearchBroadcastTransactionKeywords": "transmitir transacción firmada|publicar transacción|transacción sin procesar|hexadecimal de transacción|PSBT",
+  "settingsSearchPayjoinKeywords": "privacidad Payjoin|transacción colaborativa|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "intercambio automático|swap automático|transferencia automática|saldo de cartera instantánea|Autoswap",
+  "settingsSearchElectrumKeywords": "nodo de Bitcoin|nodo Electrum|servidor personalizado|nodo propio|Electrum",
+  "settingsSearchTestnetModeKeywords": "red de pruebas|testnet de Bitcoin|testnet de Liquid|modo de pruebas|Testnet",
+  "settingsSearchSeedViewerKeywords": "frase semilla|frase de recuperación|mnemónico|palabras de respaldo|mostrar semillas",
+  "settingsSearchBip85Keywords": "entropía determinista|semillas derivadas|entropía derivada|BIP85",
+  "settingsSearchLanguageKeywords": "configuración regional|traducción|idioma de la interfaz|idioma preferido",
+  "settingsSearchThemeKeywords": "apariencia|modo oscuro|modo claro|tema del sistema",
+  "settingsSearchCurrencyKeywords": "moneda fiat|moneda local|moneda predeterminada|moneda de cambio",
+  "settingsSearchSecurityPinKeywords": "código PIN|código de acceso|bloqueo de la aplicación|autenticación|cambiar PIN",
+  "settingsSearchLogsKeywords": "registros de depuración|registros de diagnóstico|registros de la aplicación|exportar registros",
+  "settingsSearchDevModeKeywords": "modo desarrollador|ajustes de desarrollo|modo de depuración|pruebas avanzadas",
+  "settingsSearchTestnetCredentialsKeywords": "credenciales de testnet|inicio de sesión en testnet|usuario de testnet|contraseña de testnet|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "informes de fallos|informes de errores|diagnóstico|telemetría|registros de errores",
+  "settingsSearchScreenPrivacyKeywords": "capturas de pantalla|grabación de pantalla|protección de captura|privacidad",
+  "settingsSearchStartTyping": "Empieza a escribir para ver resultados.",
+  "exchangeSupportChatLoadMessagesError": "No se pudieron cargar los mensajes. Inténtalo de nuevo.",
+  "exchangeSupportChatSendMessageError": "No se pudo enviar tu mensaje. Inténtalo de nuevo.",
+  "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo.",
+  "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
+  "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados",
+  "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo.",
+  "psbtFlowInvalidPsbtError": "No se pudo leer esta transacción. Vuelve atrás y créala de nuevo.",
+  "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR.",
+  "sendErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
+  "sendErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
+  "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
+  "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "walletLoadFailed": "No se pudieron cargar sus billeteras. Compruebe su conexión e inténtelo de nuevo.",
+  "walletWarningElectrumBitcoinDown": "Servidor Bitcoin no disponible",
+  "walletWarningElectrumLiquidDown": "Servidor Liquid no disponible",
+  "walletWarningElectrumBothDown": "Servidores Bitcoin y Liquid no disponibles",
+  "walletWarningElectrumAction": "Toque para configurar los ajustes del servidor",
+  "walletLoadFailedRetryHint": "Deslice hacia abajo para actualizar e inténtelo de nuevo",
+  "transactionDetailLoadError": "No se pudieron cargar los detalles de la transacción.",
+  "transactionPayjoinBroadcastFailed": "No se pudo difundir la transacción original. Por favor, inténtelo de nuevo.",
+  "transactionPayjoinOriginalUnavailable": "La transacción original ya no está disponible para difundirse.",
+  "transactionLabelLimitReached": "Solo puede tener hasta 10 etiquetas.",
+  "settingsErrorSavingSetting": "No se pudo guardar ese ajuste. Por favor, inténtelo de nuevo.",
+  "settingsErrorConsentNotGiven": "Este ajuste necesita su confirmación antes de poder cambiarse.",
+  "settingsErrorLoadingLogs": "No se pudieron preparar los registros de diagnóstico. Por favor, inténtelo de nuevo.",
+  "exchangeErrorSigningOut": "No se pudo cerrar su sesión por completo. Por favor, inténtelo de nuevo.",
+  "exchangeErrorSavingPreferences": "No se pudieron guardar sus preferencias. Por favor, inténtelo de nuevo.",
+  "exchangeErrorLoadingAnnouncements": "No se pudieron cargar los anuncios.",
+  "exchangeErrorRequestingAccountDeletion": "No se pudo enviar su solicitud de eliminación de cuenta. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorLoadingStatistics": "No se pudieron cargar sus estadísticas de operaciones. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorLoadingAccount": "No se pudieron cargar los datos de su cuenta. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Ya se ha enviado un documento.",
+  "exchangeSettingsErrorDocumentEmpty": "Ese archivo está vacío. Elija otro.",
+  "exchangeSettingsErrorDocumentTooLarge": "Ese archivo es demasiado grande. Elija uno más pequeño.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Ese tipo de archivo no se acepta. Elija otro.",
+  "exchangeSettingsErrorDocumentUnreadable": "No se pudo leer ese archivo. Elija otro.",
+  "exchangeSettingsErrorUploadingDocument": "No se pudo subir el documento. Por favor, inténtelo de nuevo.",
+  "labelsErrorNoteTooLong": "La nota no debe tener más de {max} caracteres",
+  "labelsErrorNoteForbiddenCharacter": "La nota no puede contener el carácter {character}",
+  "labelsErrorFileTooLarge": "Ese archivo es demasiado grande. Los archivos de etiquetas deben pesar menos de {max}.",
+  "labelsErrorFileUnreadable": "Esto no parece un archivo de etiquetas BIP-329. Comprueba que elegiste el archivo correcto.",
+  "labelsErrorFileEmpty": "Ese archivo no contiene etiquetas para importar.",
+  "labelsErrorExportFailed": "No se pudieron guardar tus etiquetas. Inténtalo de nuevo.",
+  "labelsErrorFileReservedName": "Ese archivo usa un nombre de etiqueta reservado por la aplicación. Cámbialo en el archivo e inténtalo de nuevo.",
+  "labelsErrorNoteForbiddenWhitespace": "La nota no puede contener saltos de línea ni tabulaciones",
+  "labelsErrorFileInvalidEntry": "Algunas entradas de ese archivo no se pudieron leer. Revisa el archivo e inténtalo de nuevo.",
+  "recipientsErrorLoadFailed": "No se pudieron cargar tus destinatarios. Inténtalo de nuevo.",
+  "recipientsErrorSaveFailed": "No se pudo guardar este destinatario. Revisa los datos e inténtalo de nuevo.",
+  "recipientsErrorSinpeLookupFailed": "No pudimos verificar este número de teléfono. Revísalo e inténtalo de nuevo.",
+  "recipientsErrorBillerSearchFailed": "No se pudo buscar entre los emisores de facturas. Inténtalo de nuevo.",
+  "recipientsErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "recipientsListPullToRetry": "Desliza hacia abajo para reintentar.",
+  "recipientsErrorSavedButNotSelected": "Este destinatario se guardó, pero no pudimos continuar. Búscalo en tu lista para seguir.",
+  "testBackupErrorWalletsUnavailable": "No se pudieron cargar tus billeteras. Inténtalo de nuevo.",
+  "testBackupErrorNoWallets": "No hay ninguna billetera cuya copia de seguridad se pueda probar.",
+  "testBackupErrorNoWalletSelected": "Selecciona una billetera antes de probar su copia de seguridad.",
+  "testBackupErrorSeedUnavailable": "No se pudo leer tu frase de recuperación. Inténtalo de nuevo.",
+  "testBackupErrorSeedNotMnemonic": "Esta billetera no tiene una frase de recuperación para probar.",
+  "testBackupErrorCompletionFailed": "Tu frase de recuperación era correcta, pero no pudimos guardar el resultado. Inténtalo de nuevo.",
+  "withdrawInteracSecurityDetailsTitle": "Detalles de seguridad de Interac",
+  "withdrawInteracSaveAsDefault": "Guardar estos datos como predeterminados",
+  "withdrawInteracSecurityQuestionLengthError": "La pregunta de seguridad debe tener entre 3 y 40 caracteres",
+  "withdrawInteracSecurityAnswerLengthError": "La respuesta de seguridad debe tener entre 3 y 40 caracteres",
+  "withdrawInteracSecurityAnswerFormatError": "Usa letras, números o guiones sin espacios",
+  "autoBuyTitle": "Compra Automática",
+  "autoBuyDescription": "Compra bitcoin automáticamente cada vez que deposites fondos en tu cuenta",
+  "autoBuyActivate": "Activar compra automática",
+  "autoBuyDeactivate": "Desactivar compra automática",
+  "autoBuyCancelTitle": "¿Cancelar Compra Automática?",
+  "autoBuyCancelMessage": "No comprarás bitcoin automáticamente la próxima vez que deposites fondos en tu cuenta.",
+  "autoBuyDeactivateConfirm": "Sí, desactivar",
+  "autoBuyHowItWorks": "Cómo funciona",
+  "autoBuyConnectWallet": "Conecta tu monedero Bitcoin, Lightning o Liquid",
+  "autoBuyPurchaseCreated": "Se crea automáticamente una compra de Bitcoin cada vez que depositas fondos en tu cuenta de Bull Bitcoin.",
+  "autoBuyBitcoinSent": "Bitcoin se envía directamente a tu propio monedero.",
+  "autoBuyRiskDisclaimer": "No se puede garantizar la ejecución de la orden. Los retrasos o cambios de precio entre el depósito y la compra pueden cambiar la tasa efectiva.",
+  "autoBuyGetStarted": "Comenzar con la compra automática",
+  "autoBuyConfirmTitle": "Confirmar Compra Automática",
+  "autoBuyInfoMessage": "Cualquier cantidad añadida a tu cuenta se convertirá en Bitcoin al tipo de cambio actual y se enviará a tu monedero.",
+  "autoBuyAccountUnavailableError": "Tu cuenta de Bull Bitcoin no está disponible. Inténtalo de nuevo más tarde.",
+  "autoBuyWalletRequiredError": "Añade al menos una dirección predeterminada de Bitcoin, Lightning o Liquid.",
+  "autoBuyUpdateError": "No se pudo actualizar la compra automática. Inténtalo de nuevo más tarde.",
+  "withdrawUnexpectedError": "Su retiro no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
+  "importWatchOnlyErrorNetworkMismatch": "Este monedero está usando una red de Bitcoin diferente. Cambia entre Mainnet y Testnet e inténtalo de nuevo.",
+  "importWatchOnlyErrorAlreadyExists": "Esta billetera ya está importada.",
+  "importWatchOnlyNetworkBitcoinMainnet": "Red: red principal de Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Red: red de pruebas de Bitcoin",
+  "broadcastSignedTxErrorPsbtFinalization": "No se pudo finalizar la transacción firmada. Asegúrate de que contenga todas las firmas necesarias e inténtalo de nuevo.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "El monto supera el monto máximo posible de Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "No se pudo guardar tu nota. Inténtalo de nuevo.",
+  "receiveErrorAddressUnavailable": "No se pudo preparar una dirección de recepción. Inténtalo de nuevo.",
+  "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "exchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "walletBalancesMayBeStale": "No se pudieron actualizar tus saldos y es posible que no estén al día."
 }

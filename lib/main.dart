@@ -1,15 +1,17 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show InternetAddress, Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
@@ -18,6 +20,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -37,6 +40,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bull_tor/tor.dart' as bull_tor;
+import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -50,6 +55,38 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
 
+final class _ReportLoggerReporter implements LoggerReporter {
+  const _ReportLoggerReporter();
+
+  @override
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  }) {
+    Report.error(
+      message: message,
+      exception: exception,
+      stackTrace: stackTrace,
+      category: category,
+    );
+  }
+
+  @override
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  }) => Report.shout(
+    message: message,
+    exception: exception,
+    stackTrace: stackTrace,
+    category: category,
+  );
+}
+
 @visibleForTesting
 void resumePayjoinsOnAppResume(
   AppLifecycleState state,
@@ -61,6 +98,7 @@ void resumePayjoinsOnAppResume(
 }
 
 class Bull {
+  static final _diagnosticRuntime = DiagnosticRuntimeContext();
   static Future<void> init({String? payjoinDatabasePath}) async {
     await initLogs();
     // The pre-init wizard writes consent to prefs via the bloc's
@@ -81,6 +119,9 @@ class Bull {
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     final settings = locator<SettingsRepository>();
+    _diagnosticRuntime.setTorLoader(
+      () => _loadTorContext(settings, locator<bull_tor.Tor>()),
+    );
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     if (Platform.isAndroid || Platform.isIOS) {
       await initWorkmanager();
@@ -114,8 +155,21 @@ class Bull {
   /// periodic task).
   static Future<void> initLogs({bool background = false}) async {
     final logDirectory = await getApplicationDocumentsDirectory();
-    log = Logger.replace(directory: logDirectory, background: background);
-    await log.ensureLogsExist();
+    final diagnosticContextProvider = background
+        ? null
+        : DiagnosticContextProvider(
+            PlatformDiagnosticContextSource(runtime: _diagnosticRuntime),
+          );
+    log = Logger.replace(
+      directory: logDirectory,
+      background: background,
+      diagnosticContextLoader: diagnosticContextProvider?.load,
+      reporter: const _ReportLoggerReporter(),
+    );
+    // Platform diagnostics can take up to the provider timeout on a cold
+    // install. Keep file creation on the critical path, then collect one
+    // diagnostic row after the first application frame.
+    await log.ensureLogsExist(writeDiagnosticContext: false);
     if (!background) {
       // Cold-start prune for the FG file. `Logger.prune()` is
       // intentionally per-isolate (see the comment above its
@@ -132,6 +186,61 @@ class Bull {
       // `_enqueue` and is a no-op if the file is small.
       unawaited(log.prune());
     }
+  }
+
+  static Future<DiagnosticTorContext> _loadTorContext(
+    SettingsRepository settings,
+    bull_tor.Tor client,
+  ) async {
+    final saved = await settings.fetch();
+    if (saved.useTorProxy) {
+      final state = await client.external.verify(
+        bull_tor.TorProxyEndpoint(
+          host: InternetAddress.loopbackIPv4.address,
+          port: saved.torProxyPort,
+        ),
+      );
+      return _diagnosticTorState(state, socksProxyConfigured: true);
+    }
+    return _diagnosticTorState(
+      client.embedded.current,
+      socksProxyConfigured: false,
+    );
+  }
+
+  static DiagnosticTorContext _diagnosticTorState(
+    bull_tor.TorConnectionState state, {
+    required bool socksProxyConfigured,
+  }) {
+    final source = state.source?.name;
+    final transport = switch (state) {
+      bull_tor.TorConnecting(:final transport) => transport?.name,
+      bull_tor.TorReady(:final route) => route.transport?.name,
+      _ => null,
+    };
+    final progress = switch (state) {
+      bull_tor.TorConnecting(:final progress?) =>
+        (progress * 100).round().clamp(0, 100),
+      _ => null,
+    };
+    final diagnostic = switch (state) {
+      bull_tor.TorConnecting(:final diagnostic) => diagnostic?.name,
+      _ => null,
+    };
+    return DiagnosticTorContext(
+      source: source,
+      state: switch (state) {
+        bull_tor.TorUninitialized() => 'uninitialized',
+        bull_tor.TorStopped() => 'stopped',
+        bull_tor.TorConnecting() => 'connecting',
+        bull_tor.TorReady() => 'ready',
+        bull_tor.TorUnavailable() => 'unavailable',
+      },
+      transport: transport,
+      progressPercent: progress,
+      diagnostic: diagnostic,
+      socksProxyConfigured: socksProxyConfigured,
+    );
   }
 
   static Future<void> initLocator({String? payjoinDatabasePath}) async {
@@ -157,6 +266,10 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
+        // Android initializes FSS10 lazily and may spend several seconds in a
+        // cold fsync. When no supported prior-install marker exists, start that
+        // local-only work during the wizard. Upgrade probes stay in Bull.init.
+        unawaited(StorageLocator.prewarmSecureStorage());
         // Wizard runs BEFORE `Bull.init` for everyone — fresh installs
         // and upgrades alike — so consent is collected before
         // migrations / Sentry init / Drift schema work fires off, and
@@ -175,6 +288,7 @@ Future main() async {
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(AppInitErrorScreen(error: error));
+        _refreshDiagnosticContextAfterFirstFrame();
         return;
       } finally {
         // Make sure the just-logged severe line is on disk before we
@@ -184,6 +298,7 @@ Future main() async {
         await log.flush();
       }
       runApp(const BullBitcoinWalletApp());
+      _refreshDiagnosticContextAfterFirstFrame();
     },
     (error, stackTrace) {
       // Use try-catch to prevent cascading crashes if logging itself fails
@@ -210,6 +325,12 @@ Future main() async {
   );
 }
 
+void _refreshDiagnosticContextAfterFirstFrame() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(log.refreshDiagnosticContext());
+  });
+}
+
 class BullBitcoinWalletApp extends StatefulWidget {
   const BullBitcoinWalletApp({super.key});
 
@@ -219,12 +340,14 @@ class BullBitcoinWalletApp extends StatefulWidget {
 
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
+  late final tor.TorLifecycleController _torLifecycleController;
   // final router = AppRouter.router;
 
   @override
   void initState() {
     super.initState();
 
+    _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
   }
@@ -236,6 +359,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
+    _torLifecycleController.dispose();
 
     super.dispose();
   }
@@ -282,6 +406,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       child: ExchangeListener(
         child: MultiBlocListener(
           listeners: [
+            SettingsFailureListener(),
             BlocListener<AppStartupBloc, AppStartupState>(
               listenWhen: (previous, current) =>
                   previous != current &&
@@ -305,6 +430,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
             BlocListener<SettingsCubit, SettingsState>(
               listenWhen: (previous, current) =>
+                  previous.environment != null &&
                   previous.environment != current.environment,
               listener: (context, settings) async {
                 // Re-fetch user summary (re-init exchange bloc) and wallets
@@ -349,8 +475,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     routerConfig: AppRouter.router,
                     theme: AppTheme.themeData(appThemeType),
                     locale: language?.locale,
-                    localizationsDelegates:
-                        AppLocalizations.localizationsDelegates,
+                    localizationsDelegates: [
+                      ...AppLocalizations.localizationsDelegates,
+                      LogsLocalizations.delegate,
+                    ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
                       final app = AppStartupWidget(app: child!);

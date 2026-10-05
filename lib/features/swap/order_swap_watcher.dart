@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 
 class OrderSwapWatcher {

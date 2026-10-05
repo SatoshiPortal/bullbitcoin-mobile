@@ -33,21 +33,19 @@ class BullFadingLinearProgress extends StatefulWidget {
 }
 
 class _BullFadingLinearProgressState extends State<BullFadingLinearProgress> {
-  bool isVisible = false;
+  late bool _tickerEnabled;
 
   @override
   void initState() {
     super.initState();
-    isVisible = widget.trigger;
+    _tickerEnabled = widget.trigger;
   }
 
   @override
   void didUpdateWidget(BullFadingLinearProgress oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.trigger != oldWidget.trigger) {
-      setState(() {
-        isVisible = widget.trigger;
-      });
+    if (widget.trigger && !oldWidget.trigger) {
+      setState(() => _tickerEnabled = true);
     }
   }
 
@@ -56,11 +54,19 @@ class _BullFadingLinearProgressState extends State<BullFadingLinearProgress> {
     return SizedBox(
       height: widget.height,
       child: AnimatedOpacity(
-        opacity: isVisible ? 1.0 : 0.0,
+        opacity: widget.trigger ? 1.0 : 0.0,
         duration: widget.duration,
-        child: LinearProgressIndicator(
-          backgroundColor: widget.backgroundColor,
-          color: widget.foregroundColor,
+        onEnd: () {
+          if (!widget.trigger && _tickerEnabled) {
+            setState(() => _tickerEnabled = false);
+          }
+        },
+        child: TickerMode(
+          enabled: _tickerEnabled,
+          child: LinearProgressIndicator(
+            backgroundColor: widget.backgroundColor,
+            color: widget.foregroundColor,
+          ),
         ),
       ),
     );

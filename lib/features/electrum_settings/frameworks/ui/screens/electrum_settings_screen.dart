@@ -7,9 +7,9 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/dragg
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/set_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_proxy_error_banner.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ElectrumSettingsScreen extends StatelessWidget {
   const ElectrumSettingsScreen({super.key});
@@ -19,13 +19,10 @@ class ElectrumSettingsScreen extends StatelessWidget {
     final isLoading = context.select(
       (ElectrumSettingsBloc bloc) => bloc.state.isLoading,
     );
-    final isLiquid = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
-    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.electrumTitle),
-        // Create a reusable app bar with a loading indicator at the bottom
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: isLoading
@@ -42,7 +39,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
         child: BBPullableBody(
           onRefresh: () async {
             final bloc = context.read<ElectrumSettingsBloc>();
-            bloc.add(ElectrumSettingsLoaded(isLiquid: isLiquid));
+            bloc.add(ElectrumSettingsLoaded(isLiquid: bloc.state.isLiquid));
             await bloc.stream.firstWhere((state) => !state.isLoadingData);
           },
           slivers: [
@@ -50,15 +47,12 @@ class ElectrumSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const Gap(16),
                   BBSegmentFull(
                     items: {
                       context.loc.electrumNetworkBitcoin,
                       context.loc.electrumNetworkLiquid,
                     },
-                    initialValue: isLiquid
-                        ? context.loc.electrumNetworkLiquid
-                        : context.loc.electrumNetworkBitcoin,
+                    initialValue: context.loc.electrumNetworkBitcoin,
                     onSelected: (value) {
                       context.read<ElectrumSettingsBloc>().add(
                         ElectrumSettingsLoaded(

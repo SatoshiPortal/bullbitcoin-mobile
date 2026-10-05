@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -34,9 +34,19 @@ class LoadAutoswapSettingsUsecase {
       final appSettings = await _getSettingsUsecase.execute();
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
 
-      final wallets = await _walletRepository.getWallets(
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(
         environment: appSettings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          return Err(
+            AutoswapSettingsUnavailableFailure(
+              'wallets: ${failure.runtimeType}',
+            ),
+          );
+      }
       final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
       final defaultBitcoinWallet = bitcoinWallets
           .where((w) => w.isDefault)

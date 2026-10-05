@@ -1,23 +1,14 @@
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockDio extends Mock implements Dio {}
 
-class _MockSettingsRepo extends Mock implements MempoolSettingsRepository {}
-
-class _MockActiveServerUsecase extends Mock
-    implements GetActiveMempoolServerUsecase {}
-
 const _precise = ApiServiceConstants.mempoolPreciseFeesPath;
 const _recommended = ApiServiceConstants.mempoolRecommendedFeesPath;
+const _baseUrl = 'https://mempool.example';
 
 Response<dynamic> _ok(String path, Map<String, dynamic> body) => Response(
   requestOptions: RequestOptions(path: path),
@@ -42,38 +33,11 @@ DioException _dioError(String path, {int? statusCode}) => DioException(
 
 void main() {
   late _MockDio dio;
-  late _MockSettingsRepo settingsRepo;
-  late _MockActiveServerUsecase activeServer;
   late FeesDatasource datasource;
-
-  setUpAll(() {
-    registerFallbackValue(
-      MempoolServerNetwork.fromEnvironment(isTestnet: false, isLiquid: false),
-    );
-  });
 
   setUp(() {
     dio = _MockDio();
-    settingsRepo = _MockSettingsRepo();
-    activeServer = _MockActiveServerUsecase();
-    datasource = FeesDatasource(
-      getActiveMempoolServerUsecase: activeServer,
-      mempoolSettingsRepository: settingsRepo,
-      dioBuilder: (_) => dio,
-    );
-    // Use BB's mempool (no custom server) so the active-server usecase isn't
-    // involved — keeps the test focused on the precise/recommended fallback.
-    when(() => settingsRepo.fetchByNetwork(any())).thenAnswer(
-      (_) async => Ok(
-        MempoolSettings.existing(
-          network: MempoolServerNetwork.fromEnvironment(
-            isTestnet: false,
-            isLiquid: false,
-          ),
-          useForFeeEstimation: false,
-        ),
-      ),
-    );
+    datasource = FeesDatasource(dioBuilder: (_) => dio);
   });
 
   group('FeesDatasource.fetchBitcoinNetworkFees', () {
@@ -88,7 +52,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
 
       expect(fees.fastestFee, 1.203);
       expect(fees.hourFee, 0.65);
@@ -110,7 +74,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
 
       expect(fees.fastestFee, 3.0);
       expect(fees.hourFee, 1.0);
@@ -131,7 +95,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
       expect(fees.fastestFee, 2.0);
     });
 
@@ -149,7 +113,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
       expect(fees.fastestFee, 4.0);
     });
 
@@ -169,7 +133,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
       expect(fees.fastestFee, 3.0);
       verify(() => dio.get<dynamic>(_recommended)).called(1);
     });
@@ -189,7 +153,7 @@ void main() {
         ),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
 
       expect(fees.fastestFee, 1.203);
       expect(fees.hourFee, 0.65);
@@ -214,7 +178,7 @@ void main() {
         }),
       );
 
-      final fees = await datasource.fetchBitcoinNetworkFees(isTestnet: false);
+      final fees = await datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl);
       expect(fees.fastestFee, 3.0);
       verify(() => dio.get<dynamic>(_recommended)).called(1);
     });
@@ -228,7 +192,7 @@ void main() {
       ).thenThrow(_dioError(_recommended, statusCode: 404));
 
       expect(
-        () => datasource.fetchBitcoinNetworkFees(isTestnet: false),
+        () => datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl),
         throwsA(isA<MempoolFeesException>()),
       );
     });

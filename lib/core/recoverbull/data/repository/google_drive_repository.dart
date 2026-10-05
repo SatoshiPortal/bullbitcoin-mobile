@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasou
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 
 /// Data boundary for Google Drive vault storage. Catches Drive/auth/IO

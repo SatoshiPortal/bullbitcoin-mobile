@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
+import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,8 +24,11 @@ class _MockSendMessageUsecase extends Mock
 class _MockGetAttachmentUsecase extends Mock
     implements GetSupportChatMessageAttachmentUsecase {}
 
-class _MockGetUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
+class _MockResolveUserIdUsecase extends Mock
+    implements ResolveSupportChatUserIdUsecase {}
+
+class _MockPickImageAttachmentsUsecase extends Mock
+    implements PickImageAttachmentsUsecase {}
 
 class _MockCreateLogAttachmentUsecase extends Mock
     implements CreateLogAttachmentUsecase {}
@@ -62,8 +67,9 @@ void main() {
       getMessagesUsecase: _MockGetMessagesUsecase(),
       sendMessageUsecase: _MockSendMessageUsecase(),
       getAttachmentUsecase: getAttachmentUsecase,
-      getUserSummaryUsecase: _MockGetUserSummaryUsecase(),
+      resolveUserIdUsecase: _MockResolveUserIdUsecase(),
       createLogAttachmentUsecase: _MockCreateLogAttachmentUsecase(),
+      pickImageAttachmentsUsecase: _MockPickImageAttachmentsUsecase(),
       exchangeNotificationService: notificationService,
     );
   });
@@ -80,10 +86,12 @@ void main() {
       // path, so this payload wrote attacker bytes over a sibling file.
       const payload = '../outside_the_sandbox.txt';
       when(() => getAttachmentUsecase.execute('att-1')).thenAnswer(
-        (_) async => SupportChatMessageAttachment(
-          attachmentId: 'att-1',
-          fileName: payload,
-          fileData: Uint8List.fromList('attacker bytes'.codeUnits),
+        (_) async => Ok(
+          SupportChatMessageAttachment(
+            attachmentId: 'att-1',
+            fileName: payload,
+            fileData: Uint8List.fromList('attacker bytes'.codeUnits),
+          ),
         ),
       );
 
@@ -109,10 +117,12 @@ void main() {
       'a plain fileName is written as-is inside the temp directory',
       () async {
         when(() => getAttachmentUsecase.execute('att-2')).thenAnswer(
-          (_) async => SupportChatMessageAttachment(
-            attachmentId: 'att-2',
-            fileName: 'receipt.pdf',
-            fileData: Uint8List.fromList('%PDF'.codeUnits),
+          (_) async => Ok(
+            SupportChatMessageAttachment(
+              attachmentId: 'att-2',
+              fileName: 'receipt.pdf',
+              fileData: Uint8List.fromList('%PDF'.codeUnits),
+            ),
           ),
         );
 

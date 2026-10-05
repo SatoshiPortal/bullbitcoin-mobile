@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
@@ -17,12 +17,15 @@ class SeedRepository {
     String? passphrase,
   }) async {
     try {
+      // The model retains its input list across the async isolate boundary.
       final model = SeedModel.mnemonic(
-        mnemonicWords: mnemonicWords,
+        mnemonicWords: List<String>.unmodifiable(mnemonicWords),
         passphrase: passphrase,
       );
-      await _source.store(fingerprint: model.masterFingerprint, seed: model);
-      return model.toEntity() as MnemonicSeed;
+      // PBKDF2 is CPU-bound; derive once, off the calling isolate.
+      final seed = await compute(_toEntityInIsolate, model) as MnemonicSeed;
+      await _source.store(fingerprint: seed.masterFingerprint, seed: model);
+      return seed;
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to create seed from mnemonic',

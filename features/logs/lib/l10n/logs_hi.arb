@@ -1,0 +1,34 @@
+{
+  "logSettingsLogsTitle": "लॉग",
+  "logsViewerDeleteButton": "हटाएं",
+  "logsViewerShareButton": "शेयर करें",
+  "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
+  "logsViewerShowingCount": "{total} में से {shown} लॉग दिखाए जा रहे हैं",
+  "logsViewerClearFilter": "फ़िल्टर हटाएं",
+  "logsViewerFilterByDate": "तारीख के अनुसार फ़िल्टर करें",
+  "copiedToClipboardMessage": "कोपिड टू क्लिपबोर्ड",
+  "logsViewerDeleteTitle": "लॉग हटाएं",
+  "logsViewerDeleteConfirmation": "क्या आप वाकई सभी लॉग हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+  "logsDeletedMessage": "लॉग्स हटा दिए गए",
+  "logsViewerCancelButton": "रद्द करें",
+  "logsShareOptionShare": "शेयर करें",
+  "logsShareOptionExport": "निर्यात करें",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

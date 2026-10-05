@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 
 class AllowPermissionUsecase {
   final RecoverBullRepository _recoverBullRepository;

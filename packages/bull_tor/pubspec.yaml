@@ -1,0 +1,35 @@
+name: bull_tor
+description: Bull Mobile Tor lifecycle, embedded Onion, and external SOCKS integration.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_sdk:
+    git:
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      path: packages/bull_sdk
+  get_it: ^9.1.1
+  meta: ^1.17.0
+  path_provider: ^2.1.5
+  socks5_proxy: ^2.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
+  test: ^1.31.0
+
+flutter:
+  uses-material-design: true
+  plugin:
+    platforms:
+      ios:
+        pluginClass: BullTorPlugin

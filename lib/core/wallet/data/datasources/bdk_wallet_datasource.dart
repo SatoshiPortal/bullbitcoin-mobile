@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -113,7 +113,7 @@ class BdkWalletDatasource {
             electrumUrl: electrumServer.url,
             electrumSocks5: electrumServer.socks5,
             electrumStopGap: electrumServer.stopGap,
-            electrumTimeout: electrumServer.timeout,
+            electrumTimeout: electrumServer.effectiveTimeout,
             electrumRetry: electrumServer.retry,
             electrumValidateDomain: electrumServer.validateDomain,
             walletHexId: wallet.hexId,
@@ -267,13 +267,6 @@ class BdkWalletDatasource {
       // return value (as this call did before) silently drops the manual
       // UTXO selection and leaves BDK to pick inputs automatically.
       txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
-      // `addUtxos` makes these inputs MANDATORY, not EXCLUSIVE: BDK documents them as "the internal list of UTXOs that must be spent", and coin selection stays free to append more of the wallet's coins when the selection alone can't cover outputs + fee.
-      // In bdk_wallet 3.0.0's `create_tx` that is `required = params.utxos` plus `optional = filter_utxos(..)`, and `manually_selected_only` is what empties the optional pool (`filter_utxos` returns `vec![]`).
-      // Without it, hand-picking coins that fall short produces a perfectly valid PSBT containing a coin the user deliberately excluded — an irreversible on-chain privacy leak, since the common-input-ownership heuristic then links that coin's history to the rest of the selection. With it, the shortfall surfaces as InsufficientFundsException instead, which is the honest answer.
-      //
-      // Drain gets no carve-out: `manually_selected_only` empties the optional pool BEFORE `drain_wallet` folds it into the required set, so draining with a selection spends — and drains — exactly the picked coins. MAX with coin control therefore means "MAX of the selection", and callers must derive the displayed amount from the selection total, not the whole spendable balance (SendCubit.createTransaction does). Flows that lock an amount in before the build (chain swaps, exchange payins) are covered by their amount-verification usecases: a drain that pays less than the quoted amount fails explicitly there instead of silently spending coins the user excluded.
-      //
-      // Guarded by the enclosing isNotEmpty check for a second reason: `create_tx` rejects `manually_selected_only` with an empty selection (`CreateTxError::NoUtxosSelected`).
       txBuilder = txBuilder.manuallySelectedOnly();
     }
 
@@ -819,7 +812,7 @@ class BdkWalletDatasource {
         electrumUrl: electrumServer.url,
         electrumSocks5: electrumServer.socks5,
         electrumStopGap: electrumServer.stopGap,
-        electrumTimeout: electrumServer.timeout,
+        electrumTimeout: electrumServer.effectiveTimeout,
         electrumRetry: electrumServer.retry,
         electrumValidateDomain: electrumServer.validateDomain,
         rootIsolateToken: ServicesBinding.rootIsolateToken!,

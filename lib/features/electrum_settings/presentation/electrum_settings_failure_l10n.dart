@@ -16,6 +16,8 @@ extension ElectrumServersFailureL10n on ElectrumServersFailure {
       context.loc.electrumServerAlreadyExists,
     ElectrumServersUnreachableFailure() =>
       context.loc.electrumServerUnreachable,
+    ElectrumServersExternalTorProxyUnavailableFailure() =>
+      context.loc.electrumConfiguredExternalTorUnavailable,
     ElectrumServersUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

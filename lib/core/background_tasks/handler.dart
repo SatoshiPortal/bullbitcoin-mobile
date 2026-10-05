@@ -1,12 +1,14 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:get_it/get_it.dart';
 import 'package:workmanager/workmanager.dart';
+
+import 'package:bb_mobile/core/utils/result.dart';
 
 @pragma('vm:entry-point')
 void backgroundTasksHandler() {
@@ -58,16 +60,37 @@ Future<bool> tasksHandler(String task) async {
 
     switch (backgroundTask) {
       case BackgroundTask.bitcoinSync:
-        final wallets = await getWalletsUsecase.execute(onlyBitcoin: true);
-        for (final wallet in wallets) {
-          await syncWalletUsecase.execute(wallet);
-          log.fine('Bitcoin Wallet ${wallet.id} synced');
+        switch (await getWalletsUsecase.execute(onlyBitcoin: true)) {
+          case Ok(:final value):
+            for (final wallet in value) {
+              await syncWalletUsecase.execute(wallet);
+              log.fine('Bitcoin Wallet ${wallet.id} synced');
+            }
+          // Terminal handler: there is no caller to hand a failure to, so the
+          // task reports itself as failed and the scheduler retries later.
+          case Err(:final failure):
+            log.severe(
+              message: 'Background bitcoin sync: ${failure.logMessage}',
+              error: failure,
+              trace: StackTrace.current,
+            );
+            return false;
         }
       case BackgroundTask.liquidSync:
-        final wallets = await getWalletsUsecase.execute(onlyLiquid: true);
-        for (final wallet in wallets) {
-          await syncWalletUsecase.execute(wallet);
-          log.fine('Liquid Wallet ${wallet.id} synced');
+        switch (await getWalletsUsecase.execute(onlyLiquid: true)) {
+          case Ok(:final value):
+            for (final wallet in value) {
+              await syncWalletUsecase.execute(wallet);
+              log.fine('Liquid Wallet ${wallet.id} synced');
+            }
+          // See the bitcoin case: failing the task asks for a retry.
+          case Err(:final failure):
+            log.severe(
+              message: 'Background liquid sync: ${failure.logMessage}',
+              error: failure,
+              trace: StackTrace.current,
+            );
+            return false;
         }
       case BackgroundTask.swapsSync:
         // Kept as a no-op for tasks scheduled by an older app version.

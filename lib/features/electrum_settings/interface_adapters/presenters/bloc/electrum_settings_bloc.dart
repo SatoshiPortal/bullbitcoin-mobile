@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
@@ -16,8 +17,10 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/usecases/has_active_custom_bitcoin_onion_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +37,9 @@ class ElectrumSettingsBloc
   final SetCustomServersPriorityUsecase _setCustomServersPriorityUsecase;
   final DeleteCustomServerUsecase _deleteCustomServerUsecase;
   final SetAdvancedElectrumOptionsUsecase _setAdvancedElectrumOptionsUsecase;
+  final HasActiveCustomBitcoinOnionServerUsecase
+  _hasActiveCustomBitcoinOnionServerUsecase;
+  int _loadGeneration = 0;
 
   ElectrumSettingsBloc({
     required this._loadElectrumServerDataUsecase,
@@ -41,6 +47,7 @@ class ElectrumSettingsBloc
     required this._setCustomServersPriorityUsecase,
     required this._deleteCustomServerUsecase,
     required this._setAdvancedElectrumOptionsUsecase,
+    required this._hasActiveCustomBitcoinOnionServerUsecase,
   }) : super(const ElectrumSettingsState()) {
     on<ElectrumSettingsLoaded>(_onLoaded);
     on<ElectrumCustomServerAdded>(_onCustomServerAdded);
@@ -54,6 +61,7 @@ class ElectrumSettingsBloc
     ElectrumSettingsLoaded event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final generation = ++_loadGeneration;
     emit(
       state.copyWith(
         isLiquid: event.isLiquid,
@@ -63,46 +71,26 @@ class ElectrumSettingsBloc
       ),
     );
 
-    switch (await _loadElectrumServerDataUsecase.execute(
+    final result = await _loadElectrumServerDataUsecase.execute(
       LoadElectrumServerDataRequest(isLiquid: event.isLiquid),
-    )) {
+      onUpdate: (response) {
+        if (generation != _loadGeneration || emit.isDone) return;
+        emit(_stateWithServerData(response, isLoadingData: true));
+      },
+    );
+    if (generation != _loadGeneration || emit.isDone) return;
+
+    switch (result) {
       case Ok(:final value):
-        final statuses = value.serverStatuses;
-        final servers = value.servers;
-        final settings = value.settings;
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
+        if (generation != _loadGeneration || emit.isDone) return;
         emit(
-          state.copyWith(
-            environment: settings.network.isTestnet
-                ? ElectrumEnvironment.testnet
-                : ElectrumEnvironment.mainnet,
-            defaultServers: servers
-                .where((s) => !s.isCustom)
-                .map(
-                  (s) => ElectrumServerViewModel(
-                    url: s.url,
-                    status: statuses[s.url]!,
-                    priority: s.priority,
-                  ),
-                )
-                .toList(),
-            customServers: servers
-                .where((s) => s.isCustom)
-                .map(
-                  (s) => ElectrumServerViewModel(
-                    url: s.url,
-                    status: statuses[s.url]!,
-                    priority: s.priority,
-                  ),
-                )
-                .toList(),
-            advancedOptions: ElectrumAdvancedOptionsViewModel(
-              retry: settings.retry,
-              timeout: settings.timeout,
-              stopGap: settings.stopGap,
-              validateDomain: settings.validateDomain,
-              socks5: settings.socks5,
-            ),
+          _stateWithServerData(
+            value,
             isLoadingData: false,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -117,10 +105,53 @@ class ElectrumSettingsBloc
     }
   }
 
+  ElectrumSettingsState _stateWithServerData(
+    LoadElectrumServerDataResponse response, {
+    required bool isLoadingData,
+    bool? hasActiveCustomBitcoinOnionServer,
+  }) {
+    final statuses = response.serverStatuses;
+    final servers = response.servers;
+    final settings = response.settings;
+
+    ElectrumServerViewModel toViewModel(ElectrumServerDto server) =>
+        ElectrumServerViewModel(
+          url: server.url,
+          status: statuses[server.url] ?? ElectrumServerStatus.unknown,
+          priority: server.priority,
+        );
+
+    return state.copyWith(
+      environment: settings.network.isTestnet
+          ? ElectrumEnvironment.testnet
+          : ElectrumEnvironment.mainnet,
+      defaultServers: servers
+          .where((server) => !server.isCustom)
+          .map(toViewModel)
+          .toList(),
+      customServers: servers
+          .where((server) => server.isCustom)
+          .map(toViewModel)
+          .toList(),
+      advancedOptions: ElectrumAdvancedOptionsViewModel(
+        retry: settings.retry,
+        timeout: settings.timeout,
+        stopGap: settings.stopGap,
+        validateDomain: settings.validateDomain,
+        socks5: settings.socks5,
+      ),
+      isLoadingData: isLoadingData,
+      hasActiveCustomBitcoinOnionServer:
+          hasActiveCustomBitcoinOnionServer ??
+          state.hasActiveCustomBitcoinOnionServer,
+    );
+  }
+
   Future<void> _onCustomServerAdded(
     ElectrumCustomServerAdded event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    _invalidateLoadGeneration();
     emit(
       state.copyWith(isAddingCustomServer: true, electrumServersError: null),
     );
@@ -154,10 +185,22 @@ class ElectrumSettingsBloc
           status: value,
           priority: priority,
         );
+        // Custom servers (self-hosted, Tailscale, etc.) commonly present a
+        // certificate that fails strict domain validation, so switching to
+        // one disables it automatically.
+        final updatedAdvancedOptions = await _setValidateDomain(
+          network: network,
+          validateDomain: false,
+        );
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: [...state.customServers, newServer],
             isAddingCustomServer: false,
+            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -174,6 +217,7 @@ class ElectrumSettingsBloc
     ElectrumCustomServersPrioritized event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    _invalidateLoadGeneration();
     emit(
       state.copyWith(
         isPrioritizingCustomServer: true,
@@ -223,10 +267,14 @@ class ElectrumSettingsBloc
               ),
             )
             .toList();
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: updatedServers,
             isPrioritizingCustomServer: false,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -245,23 +293,42 @@ class ElectrumSettingsBloc
     ElectrumCustomServerDeleted event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    _invalidateLoadGeneration();
     emit(
       state.copyWith(isDeletingCustomServer: true, electrumServersError: null),
     );
 
-    final sortedServers = state.getServersSortedByPriority(isCustom: true);
+    final isTestnet = state.environment == ElectrumEnvironment.testnet;
+    final network = ElectrumServerNetwork.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: state.isLiquid,
+    );
 
     switch (await _deleteCustomServerUsecase.execute(
       DeleteCustomServerRequest(url: event.server.url),
     )) {
       case Ok():
-        final updatedCustomServers = sortedServers
+        // Re-derive from the latest state, not a pre-await snapshot: a
+        // custom server added concurrently while this delete was in flight
+        // must not be dropped from the list, and must not be missed by the
+        // validateDomain "last custom server" check below.
+        final updatedCustomServers = state.customServers
             .where((s) => s.url != event.server.url)
             .toList();
+        // Deleting the last custom server falls back to the default
+        // servers, so domain validation is re-enabled for them.
+        final updatedAdvancedOptions = updatedCustomServers.isEmpty
+            ? await _setValidateDomain(network: network, validateDomain: true)
+            : null;
+        final hasActiveCustomBitcoinOnionServer =
+            await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: updatedCustomServers,
             isDeletingCustomServer: false,
+            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            hasActiveCustomBitcoinOnionServer:
+                hasActiveCustomBitcoinOnionServer,
           ),
         );
       case Err(:final failure):
@@ -280,6 +347,7 @@ class ElectrumSettingsBloc
     ElectrumAdvancedOptionsSaved event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    _invalidateLoadGeneration();
     emit(
       state.copyWith(isSavingAdvancedOptions: true, advancedOptionsError: null),
     );
@@ -371,6 +439,46 @@ class ElectrumSettingsBloc
     emit(state.copyWith(advancedOptionsError: null));
   }
 
+  void _invalidateLoadGeneration() {
+    _loadGeneration++;
+  }
+
+  // Auto-toggles validateDomain to match the active server tier (off for
+  // custom, on for defaults). Best-effort: the server list change already
+  // succeeded, so a failure here is logged rather than surfaced as an
+  // add/delete-server error. Returns null when nothing changed.
+  Future<ElectrumAdvancedOptionsViewModel?> _setValidateDomain({
+    required ElectrumServerNetwork network,
+    required bool validateDomain,
+  }) async {
+    final current = state.advancedOptions;
+    if (current == null || current.validateDomain == validateDomain) {
+      return null;
+    }
+
+    final request = SetAdvancedElectrumOptionsRequest(
+      options: ElectrumSettingsDto(
+        stopGap: current.stopGap,
+        timeout: current.timeout,
+        retry: current.retry,
+        validateDomain: validateDomain,
+        socks5: current.socks5,
+        network: network,
+      ),
+    );
+
+    switch (await _setAdvancedElectrumOptionsUsecase.execute(request)) {
+      case Ok():
+        return current.copyWith(validateDomain: validateDomain);
+      case Err(:final failure):
+        log.warning(
+          'Failed to auto-toggle validateDomain to $validateDomain',
+          error: failure,
+        );
+        return null;
+    }
+  }
+
   // Lift a core failure into the server-list feature failure for the add flow.
   ElectrumServersFailure _toAddFailure(core.ElectrumFailure failure) =>
       switch (failure) {
@@ -378,6 +486,8 @@ class ElectrumSettingsBloc
           ElectrumServersAlreadyExistsFailure(failure.logMessage),
         core.ElectrumServerUnreachableFailure() =>
           ElectrumServersUnreachableFailure(failure.logMessage),
+        core.ElectrumExternalTorProxyUnavailableFailure() =>
+          ElectrumServersExternalTorProxyUnavailableFailure(failure.logMessage),
         core.ElectrumUnexpectedFailure() => ElectrumServersUnexpectedFailure(
           failure.logMessage,
         ),

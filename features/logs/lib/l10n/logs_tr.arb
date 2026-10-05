@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Sil",
+  "logsViewerShareButton": "Paylaş",
+  "logsExportedMessage": "Kayıtlar başarıyla dışa aktarıldı",
+  "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
+  "logsViewerShowingCount": "{total} kayıttan {shown} tanesi gösteriliyor",
+  "logsViewerClearFilter": "Filtreyi Temizle",
+  "logsViewerFilterByDate": "Tarihe Göre Filtrele",
+  "copiedToClipboardMessage": "Copied to klibi",
+  "logsViewerDeleteTitle": "Günlükleri sil",
+  "logsViewerDeleteConfirmation": "Tüm günlükleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "logsDeletedMessage": "Günlükler silindi",
+  "logsViewerCancelButton": "İptal",
+  "logsShareOptionShare": "Paylaş",
+  "logsShareOptionExport": "Dışa Aktar",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Tekrar dene",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

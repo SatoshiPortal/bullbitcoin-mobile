@@ -3,7 +3,10 @@ import 'dart:collection';
 
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:flutter/widgets.dart'
@@ -38,6 +41,7 @@ class SyncCoordinator {
     required SyncWalletUsecase syncWalletUsecase,
     this._syncSwaps,
     this._syncSwapsOutcome,
+    this._syncSp,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -59,6 +63,11 @@ class SyncCoordinator {
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final Future<void> Function()? _syncSwaps;
+  // The SP side of a sync tick: restart the taproot listener, then resume
+  // the chain scan when the SP feature's policy allows it. Passed as a lazy
+  // closure from the composition root, like the swap callbacks, so this core
+  // orchestrator never imports the SP feature (rule #7).
+  final Future<void> Function()? _syncSp;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
   SyncOutcome? lastSwapSyncOutcome;
@@ -87,13 +96,13 @@ class SyncCoordinator {
   final Map<SyncKind, List<Completer<Object?>>> _waiters =
       <SyncKind, List<Completer<Object?>>>{};
 
-  /// Schedule `kinds` (or all kinds when `only` is null) and resolve once
-  /// every requested kind that actually runs has settled. Resolution tracks
+  /// Schedule `kinds` (or bitcoin, liquid and sp when `only` is null) and
+  /// resolve once every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
-  /// order follows the [SyncKind] enum declaration (bitcoin → liquid).
+  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps → sp).
   ///
-  /// Pass [SyncTrigger.user] to bypass the per-kind throttle — reserved for
+  /// Pass [SyncTrigger.user] to bypass the per-kind throttle; reserved for
   /// explicit user gestures (pull-to-refresh). Default callers (route-aware
   /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
   ///
@@ -105,7 +114,8 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
-    final requestedKinds = only ?? const {SyncKind.bitcoin, SyncKind.liquid};
+    final requestedKinds =
+        only ?? const {SyncKind.bitcoin, SyncKind.liquid, SyncKind.sp};
     final requested = SyncKind.values
         .where(requestedKinds.contains)
         .toList(growable: false);
@@ -194,7 +204,14 @@ class SyncCoordinator {
         _enqueued.remove(kind);
         _running = kind;
         try {
-          await _runTask(kind);
+          // A wallet read failure fails the round without being thrown: it is
+          // settled as the error and, like a throw, never stamps
+          // _lastSuccessAt.
+          final failure = await _runTask(kind);
+          if (failure != null) {
+            _settle(kind, failure);
+            continue;
+          }
           _lastSuccessAt[kind] = DateTime.now();
           _settle(kind, null);
         } catch (e) {
@@ -221,18 +238,36 @@ class SyncCoordinator {
     }
   }
 
-  Future<void> _runTask(SyncKind kind) async {
+  /// Syncs every wallet the read returns, or returns the read's failure so
+  /// the round fails.
+  ///
+  /// Deliberately not degraded to an empty list: `_drainOnce` stamps
+  /// `_lastSuccessAt` for any round that completes normally, so a swallowed
+  /// read failure would both report a successful sync to pull-to-refresh and
+  /// count toward the throttle — suppressing the retries that would recover
+  /// from a transient failure.
+  Future<WalletFailure?> _syncAll(
+    Future<Result<List<Wallet>, WalletFailure>> read,
+  ) async {
+    switch (await read) {
+      case Ok(:final value):
+        for (final wallet in value) {
+          await _syncWallet.execute(wallet);
+        }
+        return null;
+      case Err(:final failure):
+        return failure;
+    }
+  }
+
+  /// The wallet read failure that failed the round, or null. Any other failure
+  /// is thrown, as before.
+  Future<WalletFailure?> _runTask(SyncKind kind) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        final wallets = await _getWallets.execute(onlyBitcoin: true);
-        for (final wallet in wallets) {
-          await _syncWallet.execute(wallet);
-        }
+        return _syncAll(_getWallets.execute(onlyBitcoin: true));
       case SyncKind.liquid:
-        final wallets = await _getWallets.execute(onlyLiquid: true);
-        for (final wallet in wallets) {
-          await _syncWallet.execute(wallet);
-        }
+        return _syncAll(_getWallets.execute(onlyLiquid: true));
       case SyncKind.swaps:
         final outcomeCallback = _syncSwapsOutcome;
         if (outcomeCallback != null) {
@@ -242,7 +277,10 @@ class SyncCoordinator {
         } else {
           await _syncSwaps!();
         }
+      case SyncKind.sp:
+        await _syncSp?.call();
     }
+    return null;
   }
 
   void _onLifecycleChange(AppLifecycleState state) {

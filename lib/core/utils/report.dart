@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:bull_logger/bull_logger.dart' show ReportCategory;
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum MigrationType { install, upgrade }
@@ -12,8 +13,6 @@ enum MigrationType { install, upgrade }
 /// [Report.error] / [Report.shout] can attach to an event so crash-cache
 /// can filter on it server-side. `null` falls through to `category=error`
 /// for [Report.error] and `category=none` for [Report.shout].
-enum ReportCategory { migration, error }
-
 class Report {
   static const _consentKey = 'error_reporting_consent';
   static const _lastVersionKey = 'last_seen_app_version';
@@ -233,10 +232,13 @@ class Report {
   /// Sentry init can read it before the SQLite locator is available.
   /// Called right after the primary SQLite write in
   /// `SettingsRepository.setErrorReportingEnabled`.
+  ///
+  /// The live [consent] flag is set first, so an opt-out takes effect for the
+  /// rest of the session even if persisting the mirror then fails.
   static Future<void> updateConsent(bool enabled) async {
+    consent = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_consentKey, enabled);
-    consent = enabled;
   }
 
   /// Advances the persisted `_lastVersionKey` marker. Caller emits the

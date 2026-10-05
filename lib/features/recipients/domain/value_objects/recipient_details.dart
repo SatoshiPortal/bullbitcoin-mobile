@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_typ
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class RecipientDetails {
+sealed class RecipientDetails {
   final String? label;
   final bool isDefault;
   final bool? isOwner;
@@ -23,8 +23,8 @@ class InteracEmailCadDetails extends RecipientDetails {
   @override
   final String email;
   final String name;
-  final String securityQuestion;
-  final String securityAnswer;
+  final String? securityQuestion;
+  final String? securityAnswer;
 
   const InteracEmailCadDetails._({
     super.label,
@@ -32,8 +32,8 @@ class InteracEmailCadDetails extends RecipientDetails {
     super.isOwner,
     required this.email,
     required this.name,
-    required this.securityQuestion,
-    required this.securityAnswer,
+    this.securityQuestion,
+    this.securityAnswer,
   });
 
   factory InteracEmailCadDetails.create({
@@ -42,8 +42,8 @@ class InteracEmailCadDetails extends RecipientDetails {
     bool? isOwner,
     required String email,
     required String name,
-    String securityQuestion = 'What is your favorite color?',
-    String securityAnswer = 'Orange',
+    String? securityQuestion,
+    String? securityAnswer,
   }) {
     if (email.trim().isEmpty) {
       throw ArgumentError('Email cannot be empty');
@@ -51,12 +51,16 @@ class InteracEmailCadDetails extends RecipientDetails {
     if (name.trim().isEmpty) {
       throw ArgumentError('Name cannot be empty');
     }
-    if (securityQuestion.trim().isEmpty) {
-      throw ArgumentError('Security question cannot be empty');
-    }
-    if (securityAnswer.trim().isEmpty) {
-      throw ArgumentError('Security answer cannot be empty');
-    }
+    final trimmedSecurityQuestion = securityQuestion?.trim();
+    final trimmedSecurityAnswer = securityAnswer?.trim();
+    final normalizedSecurityQuestion = trimmedSecurityQuestion?.isEmpty == false
+        ? trimmedSecurityQuestion
+        : null;
+    final normalizedSecurityAnswer = trimmedSecurityAnswer?.isEmpty == false
+        ? trimmedSecurityAnswer
+        : null;
+    final hasCompleteSecurityDetails =
+        normalizedSecurityQuestion != null && normalizedSecurityAnswer != null;
 
     return InteracEmailCadDetails._(
       label: label,
@@ -64,8 +68,12 @@ class InteracEmailCadDetails extends RecipientDetails {
       isOwner: isOwner,
       email: email.trim(),
       name: name.trim(),
-      securityQuestion: securityQuestion.trim(),
-      securityAnswer: securityAnswer.trim(),
+      securityQuestion: hasCompleteSecurityDetails
+          ? normalizedSecurityQuestion
+          : null,
+      securityAnswer: hasCompleteSecurityDetails
+          ? normalizedSecurityAnswer
+          : null,
     );
   }
 
@@ -378,17 +386,26 @@ class SpeiCardMxnDetails extends RecipientDetails {
 }
 
 // ── SINPE (CRC/USD)
+//
+// The owner name comes from a Ridivi lookup on the server, which can fail or be
+// empty on older records, so it is nullable by design (#2529). Display sites
+// fall back to the label and then to the account identifier.
+String? _nullIfBlank(String? value) {
+  final trimmed = value?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
+}
+
 @immutable
 class SinpeIbanUsdDetails extends RecipientDetails {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanUsdDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeIbanUsdDetails.create({
@@ -396,13 +413,10 @@ class SinpeIbanUsdDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String iban,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeIbanUsdDetails._(
@@ -410,7 +424,7 @@ class SinpeIbanUsdDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       iban: iban.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 
@@ -421,14 +435,14 @@ class SinpeIbanUsdDetails extends RecipientDetails {
 @immutable
 class SinpeIbanCrcDetails extends RecipientDetails {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanCrcDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeIbanCrcDetails.create({
@@ -436,13 +450,10 @@ class SinpeIbanCrcDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String iban,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeIbanCrcDetails._(
@@ -450,7 +461,7 @@ class SinpeIbanCrcDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       iban: iban.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 
@@ -461,14 +472,14 @@ class SinpeIbanCrcDetails extends RecipientDetails {
 @immutable
 class SinpeMovilCrcDetails extends RecipientDetails {
   final String phoneNumber;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeMovilCrcDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
     required this.phoneNumber,
-    required this.ownerName,
+    this.ownerName,
   });
 
   factory SinpeMovilCrcDetails.create({
@@ -476,13 +487,10 @@ class SinpeMovilCrcDetails extends RecipientDetails {
     bool isDefault = false,
     bool? isOwner,
     required String phoneNumber,
-    required String ownerName,
+    String? ownerName,
   }) {
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
-    }
-    if (ownerName.trim().isEmpty) {
-      throw ArgumentError('Owner name cannot be empty');
     }
 
     return SinpeMovilCrcDetails._(
@@ -490,7 +498,7 @@ class SinpeMovilCrcDetails extends RecipientDetails {
       isDefault: isDefault,
       isOwner: isOwner,
       phoneNumber: phoneNumber.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: _nullIfBlank(ownerName),
     );
   }
 

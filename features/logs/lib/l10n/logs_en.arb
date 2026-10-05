@@ -1,0 +1,114 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Delete",
+  "logsViewerFilter": "Filter logs",
+  "logsViewerShareButton": "Share",
+  "logsShareFailedMessage": "Failed to share logs",
+  "logsExportedMessage": "Logs exported successfully",
+  "logsExportFailedMessage": "Failed to export logs",
+  "logsViewerShowingCount": "Showing {shown} of {total} logs",
+  "logsViewerCollapseAll": "Collapse all",
+  "logsViewerWrapAll": "Wrap all",
+  "logsViewerEmpty": "No logs yet",
+  "logsViewerNoMatches": "No logs match the active filters",
+  "logsViewerClearFilter": "Clear filter",
+  "logsViewerSearchHint": "Search logs",
+  "logsViewerFilterByDate": "Filter by Date",
+  "logsViewerCollapseHint": "Tap to collapse. Long press to copy.",
+  "logsViewerExpandHint": "Tap a log to expand it. Long press to copy.",
+  "copiedToClipboardMessage": "Copied to clipboard",
+  "logsViewerDeleteTitle": "Delete logs",
+  "logsViewerDeleteConfirmation": "Are you sure you want to delete all logs? This action cannot be undone.",
+  "logsDeletedMessage": "Logs deleted",
+  "logsViewerCancelButton": "Cancel",
+  "logsShareOptionShare": "Share",
+  "logsShareOptionExport": "Export",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@logsViewerDeleteButton": {
+    "description": "Button to confirm deleting all logs"
+  },
+  "@logsViewerFilter": {
+    "description": "Tooltip for the log filters button"
+  },
+  "@logsViewerShareButton": {
+    "description": "Button to open the share/export options for logs"
+  },
+  "@logsShareFailedMessage": {
+    "description": "Error message shown when sharing logs fails"
+  },
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
+  },
+  "@logsViewerShowingCount": {
+    "description": "Counter showing filtered vs total log entries",
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@logsViewerCollapseAll": {
+    "description": "Button that collapses all visible log entries to one line"
+  },
+  "@logsViewerWrapAll": {
+    "description": "Button that expands all visible log entries onto multiple lines"
+  },
+  "@logsViewerEmpty": {
+    "description": "Empty state when no logs have been recorded"
+  },
+  "@logsViewerNoMatches": {
+    "description": "Empty state when filters hide every log entry"
+  },
+  "@logsViewerClearFilter": {
+    "description": "Tooltip for the button that clears the date filter"
+  },
+  "@logsViewerSearchHint": {
+    "description": "Hint for the log search field"
+  },
+  "@logsViewerFilterByDate": {
+    "description": "Button label to filter logs by date range"
+  },
+  "@logsViewerCollapseHint": {
+    "description": "Accessibility hint for an expanded log entry"
+  },
+  "@logsViewerExpandHint": {
+    "description": "Hint explaining how to expand and copy a collapsed log entry"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "@logsViewerDeleteTitle": {
+    "description": "Title of the delete logs confirmation bottom sheet"
+  },
+  "@logsViewerDeleteConfirmation": {
+    "description": "Confirmation message shown before deleting all logs"
+  },
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "@logsViewerCancelButton": {
+    "description": "Button to cancel deleting logs"
+  },
+  "@logsShareOptionShare": {
+    "description": "Option in the bottom sheet to share logs as text"
+  },
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

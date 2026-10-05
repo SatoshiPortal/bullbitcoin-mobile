@@ -9,13 +9,17 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor HTTP Client, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
     %% Feature modules
     SETTINGS[Settings]
-    TOR[Tor]
+    LOGS[Logs<br/>Workspace Feature]
+    ELECTRUM_SETTINGS[Electrum Settings]
+    RECOVERBULL[RecoverBull]
+    TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
     SECRETS[Secrets]
@@ -41,6 +45,8 @@ graph TB
     TX_HISTORY[Transaction History]
     BG_TASKS[Background Tasks]
     DCA[DCA]
+    DEFAULT_WALLETS[Default Wallets]
+    LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
     BUY[Buy]
@@ -50,12 +56,19 @@ graph TB
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
     AUTOSWAP[Autoswap]
+    SP[Silent Payments]
+    AUTOBUY[AutoBuy]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
 
     %% Extracted package dependencies
     CORE --> PRIMITIVES
+    CORE --> BULL_LOGGER
+    LOGS --> BULL_LOGGER
+    LOGS --> PRIMITIVES
+    LOGS --> BULL_UI
+    SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
 
@@ -65,10 +78,15 @@ graph TB
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    APP_STARTUP --> LOGS
     AUTOSWAP --> SWAPS
+    APP_STARTUP --> TOR
+    AUTOSWAP --> TRANSFER
+    AUTOBUY --> DEFAULT_WALLETS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
+    BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BTC_PRICE --> SETTINGS
@@ -80,7 +98,11 @@ graph TB
     COINS --> LABELS
     COINS --> WALLETS
     DCA --> RECEIVE
+    SETTINGS --> DEFAULT_WALLETS
     EXCHANGE --> SETTINGS
+    EXCHANGE --> AUTOBUY
+    EXCHANGE --> LIMIT_ORDERS
+    LIMIT_ORDERS --> DEFAULT_WALLETS
     FEES --> NETWORK
     FUNDING --> EXCHANGE
     HW_WALLETS --> CORE
@@ -101,18 +123,27 @@ graph TB
     SEND --> FEES
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
+    SEND --> SP
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
     SEND --> WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
+    SETTINGS --> RECOVERBULL
     STATUS --> BULL_PAYJOIN
+    STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
+    SETTINGS --> SP
+    WALLETS --> SP
     SWAPS --> UTXO_MGMT
-    TOR --> CORE
+    CORE --> TOR
+    ELECTRUM_SETTINGS --> TOR
+    WALLETS --> TOR
+    WALLETS --> ELECTRUM_SETTINGS
+    RECOVERBULL --> TOR
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -136,7 +167,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN packageStyle
+    class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
+    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -175,7 +207,8 @@ graph TB
    - Database (Drift/SQLite)
    - Secure Storage instance (Flutter Secure Storage)
    - API Clients (REST/GraphQL clients)
-   - Factory for a HTTP client to connect to Tor
+   - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
+   - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
    - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
@@ -194,6 +227,7 @@ graph TB
 ### Central Features (Highly Depended Upon)
 
 - **Core**: Foundation for all features
+- **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price

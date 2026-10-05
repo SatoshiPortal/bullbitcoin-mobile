@@ -2,11 +2,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/test_completed_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/view_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +85,13 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
           if (state.failure != null) {
+            if (state.failure is ExternalTorProxyUnavailableFailure) {
+              final router = GoRouter.of(context);
+              context.read<RecoverBullBloc>().add(const OnClearError());
+              Navigator.of(context).pop();
+              router.pushNamed(const TorSettingsFacade().settingsRouteName);
+              return;
+            }
             SnackBarUtils.showSnackBar(
               context,
               state.failure!.toTranslated(context),

@@ -1,0 +1,33 @@
+name: bull_logs
+description: Bull Bitcoin diagnostic log viewer.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  bull_logger:
+  bull_ui:
+  primitives:
+  go_router: ^17.0.0
+  get_it: ^9.1.1
+  meta: ^1.17.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  generate: true

@@ -1,0 +1,19 @@
+{
+  "logSettingsLogsTitle": "ჟურნალები",
+  "logsViewerDeleteButton": "წაშლა",
+  "logsViewerShareButton": "გაზიარება",
+  "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა",
+  "logsViewerShowingCount": "ნაჩვენებია {shown} {total}-დან",
+  "logsViewerClearFilter": "ფილტრის გასუფთავება",
+  "logsViewerFilterByDate": "თარიღის მიხედვით გაფილტრვა",
+  "copiedToClipboardMessage": "დაკოპირდა",
+  "logsViewerDeleteTitle": "ჟურნალების წაშლა",
+  "logsViewerDeleteConfirmation": "დარწმუნებული ხართ, რომ გსურთ ყველა ჟურნალის წაშლა? ეს მოქმედება შეუქცევადია.",
+  "logsDeletedMessage": "ჟურნალები წაშლილია",
+  "logsViewerCancelButton": "გაუქმება",
+  "logsShareOptionShare": "გაზიარება",
+  "logsShareOptionExport": "ექსპორტი",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "retry": "ხელახლა ცდა"
+}

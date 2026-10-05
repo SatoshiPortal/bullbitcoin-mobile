@@ -1,5 +1,8 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/result.dart' as core;
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class SendWithPayjoinUsecase {
@@ -7,7 +10,8 @@ class SendWithPayjoinUsecase {
 
   const SendWithPayjoinUsecase(this._sender);
 
-  Future<PayjoinSenderSession> execute({
+  @useResult
+  Future<core.Result<PayjoinSenderSession, SendFailure>> execute({
     required String walletId,
     required bool isTestnet,
     required String bip21,
@@ -29,13 +33,22 @@ class SendWithPayjoinUsecase {
             : DateTime.now().add(Duration(seconds: expireAfterSec)),
       ),
     );
-    return switch (result) {
-      Ok(:final value) => value,
-      Err() => throw SendPayjoinException('Failed to start Payjoin send'),
-    };
+    switch (result) {
+      case Ok(:final value):
+        return core.Ok(value);
+      case Err(:final failure):
+        // Both parts: Failure has no toString() override, so passing the value
+        // itself would log "Instance of 'PayjoinX'" and drop the message,
+        // while passing only logMessage drops the type.
+        log.warning(
+          'Failed to start Payjoin send',
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+        );
+        return core.Err(
+          SendTransactionConfirmationFailure(
+            logMessage: failure.logMessage ?? 'Failed to start Payjoin send',
+          ),
+        );
+    }
   }
-}
-
-class SendPayjoinException extends BullException {
-  SendPayjoinException(super.message);
 }

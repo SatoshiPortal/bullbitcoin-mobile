@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class SwapExternalAddressInput extends StatelessWidget {
@@ -33,7 +32,7 @@ class SwapExternalAddressInput extends StatelessWidget {
           ),
         ),
         const Gap(4),
-        BBInputText(
+        BullInputText(
           onChanged: (value) {
             context.read<TransferBloc>().add(
               TransferEvent.externalAddressChanged(value),

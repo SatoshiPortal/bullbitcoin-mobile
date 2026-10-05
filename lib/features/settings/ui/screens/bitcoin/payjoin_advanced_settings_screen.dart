@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
 /// Payjoin advanced settings, on their own page (product decision
 /// 2026-07-26 — not an expand/collapse section): the minimum-receive-amount
@@ -23,7 +21,7 @@ import 'package:bull_ui/bull_ui.dart' show Gap;
 /// persisted value exactly once in [initState] — deliberately NOT re-synced
 /// from [SettingsCubit] on every rebuild, so navigating away and back can
 /// never reset a custom value the user already typed. Note the controller +
-/// `value:` mirror handed to [BBInputText]: its didUpdateWidget resyncs the
+/// `value:` mirror handed to [BullInputText]: its didUpdateWidget resyncs the
 /// text when `value` diverges from the controller, so `value` must always be
 /// read from the controller itself at build time — never from a stale
 /// snapshot.
@@ -70,17 +68,11 @@ class _PayjoinAdvancedSettingsScreenState
     _expireDebounce?.cancel();
     final pendingMinAmount = _pendingMinAmount;
     if (pendingMinAmount != null) {
-      unawaited(
-        _persist(() => _settingsCubit.setPayjoinMinAmount(pendingMinAmount)),
-      );
+      unawaited(_settingsCubit.setPayjoinMinAmount(pendingMinAmount));
     }
     final pendingExpireAfterSec = _pendingExpireAfterSec;
     if (pendingExpireAfterSec != null) {
-      unawaited(
-        _persist(
-          () => _settingsCubit.setPayjoinExpireAfterSec(pendingExpireAfterSec),
-        ),
-      );
+      unawaited(_settingsCubit.setPayjoinExpireAfterSec(pendingExpireAfterSec));
     }
     _minAmountController.dispose();
     _expireController.dispose();
@@ -114,7 +106,7 @@ class _PayjoinAdvancedSettingsScreenState
     _pendingMinAmount = amountSat;
     _minAmountDebounce = Timer(_debounceDuration, () {
       _pendingMinAmount = null;
-      _persist(() => _settingsCubit.setPayjoinMinAmount(amountSat));
+      _settingsCubit.setPayjoinMinAmount(amountSat);
     });
   }
 
@@ -141,23 +133,8 @@ class _PayjoinAdvancedSettingsScreenState
     _pendingExpireAfterSec = expireAfterSec;
     _expireDebounce = Timer(_debounceDuration, () {
       _pendingExpireAfterSec = null;
-      _persist(() => _settingsCubit.setPayjoinExpireAfterSec(expireAfterSec));
+      _settingsCubit.setPayjoinExpireAfterSec(expireAfterSec);
     });
-  }
-
-  /// Awaits the save and logs a failure instead of `.ignore()`-ing it: the
-  /// UI validates bounds before ever calling this, so a throw here is a
-  /// programmer bug that must not be silently swallowed.
-  Future<void> _persist(Future<void> Function() save) async {
-    try {
-      await save();
-    } catch (e) {
-      log.severe(
-        message: 'Failed to persist a payjoin setting',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
   }
 
   @override
@@ -179,7 +156,7 @@ class _PayjoinAdvancedSettingsScreenState
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBInputText(
+                  BullInputText(
                     value: _minAmountController.text,
                     controller: _minAmountController,
                     focusNode: _minAmountNode,
@@ -208,7 +185,7 @@ class _PayjoinAdvancedSettingsScreenState
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBInputText(
+                  BullInputText(
                     value: _expireController.text,
                     controller: _expireController,
                     focusNode: _expireNode,

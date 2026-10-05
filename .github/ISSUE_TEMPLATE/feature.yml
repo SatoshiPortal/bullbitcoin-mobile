@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a user or maintainer-focused improvement.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: "Never include mnemonics, private keys, PINs, tokens, or other secrets. Report security vulnerabilities privately using the Security Policy link."
+  - type: textarea
+    id: problem
+    attributes: { label: Problem, description: "What user or maintainer problem should be solved?" }
+    validations: { required: true }
+  - type: textarea
+    id: outcome
+    attributes: { label: Desired outcome, description: "What should become possible or better?" }
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes: { label: Alternatives considered, description: "What workarounds or alternatives have you tried?" }
+  - type: textarea
+    id: security-impact
+    attributes: { label: Security impact, description: "Could this affect keys, privacy, funds, authentication, or trust boundaries?" }
+    validations: { required: true }
+  - type: textarea
+    id: acceptance-criteria
+    attributes: { label: Acceptance criteria, description: List observable conditions that define success. }
+    validations: { required: true }

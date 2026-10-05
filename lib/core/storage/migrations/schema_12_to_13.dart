@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 12 to 13

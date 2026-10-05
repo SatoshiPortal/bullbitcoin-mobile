@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -9,8 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'self_signed_electrum_server.dart';
 
 /// The datasource must open the socket described by the resolved connection
-/// instead of always forcing CA-validated TLS. These tests pin the three
-/// decisions it makes: the url scheme, and the `validateDomain` flag.
+/// instead of always forcing CA-validated TLS. These tests pin the decisions it
+/// makes: the url scheme, the `validateDomain` flag, and the proxy.
 ///
 /// The fake servers never return a real transaction, so every call ends in an
 /// error. What matters is *which* error: a TLS/certificate failure means the
@@ -29,10 +30,27 @@ void main() {
 
   setUp(() {
     db = SqliteDatabase(NativeDatabase.memory());
-    datasource = ElectrumRemoteDatasource(sqlite: db);
+    datasource = ElectrumRemoteDatasource(
+      sqlite: db,
+      socketConnector: const ElectrumSocketConnector(),
+    );
   });
 
   tearDown(() => db.close());
+
+  ElectrumConnection connectionTo(
+    String url, {
+    required bool validateDomain,
+    String? socks5,
+  }) => ElectrumConnection(
+    url: url,
+    retry: 1,
+    timeout: 5,
+    stopGap: 20,
+    validateDomain: validateDomain,
+    isCustom: true,
+    socks5: socks5,
+  );
 
   Future<String> errorFor(ElectrumConnection connection) async {
     try {
@@ -42,16 +60,6 @@ void main() {
       return e.toString();
     }
   }
-
-  ElectrumConnection connectionTo(String url, {required bool validateDomain}) =>
-      ElectrumConnection(
-        url: url,
-        retry: 1,
-        timeout: 5,
-        stopGap: 20,
-        validateDomain: validateDomain,
-        isCustom: true,
-      );
 
   test('tcp:// reaches a plain server without attempting TLS', () async {
     final server = await ServerSocket.bind('127.0.0.1', 0);
@@ -110,5 +118,20 @@ void main() {
     // TLS attempted against a plain socket — proves the url was not mistaken
     // for a `host` scheme by Uri.parse.
     expect(error, contains('HandshakeException'));
+  });
+
+  test('rejects an unusable proxy instead of connecting directly', () async {
+    // A malformed SOCKS endpoint must abort the request. Falling through to a
+    // direct connection would silently send over clearnet the traffic the
+    // caller asked to route through Tor.
+    final error = await errorFor(
+      connectionTo(
+        'ssl://127.0.0.1:1',
+        validateDomain: true,
+        socks5: '127.0.0.1:not-a-port',
+      ),
+    );
+
+    expect(error, contains('unusable SOCKS5 proxy'));
   });
 }

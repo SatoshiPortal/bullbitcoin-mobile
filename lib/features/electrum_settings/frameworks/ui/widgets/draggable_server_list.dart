@@ -3,9 +3,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/electrum_servers_error_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/server_list_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
-import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -110,11 +110,7 @@ class DraggableServerList extends StatelessWidget {
         ],
         const Gap(16),
         if (electrumServersError != null) ...[
-          InfoCard(
-            description: electrumServersError.toTranslated(context),
-            tagColor: context.appColors.error,
-            bgColor: context.appColors.errorContainer,
-          ),
+          ElectrumServersErrorCard(failure: electrumServersError),
           const Gap(16),
         ],
         TextButton.icon(

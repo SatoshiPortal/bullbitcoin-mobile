@@ -4,9 +4,11 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+
+import 'package:bb_mobile/core/utils/result.dart';
 
 /// Rebuilds an orphaned restored swap into local storage + the watcher, sending
 /// funds to the [selectedWalletId] the user picked (on the swap's acting chain).
@@ -39,10 +41,15 @@ class RescueSwapUsecase {
       // Map the user-selected wallet (on the acting chain) to the swap's
       // send/receive roles; for chain swaps the opposite role falls back to the
       // default wallet of the other chain (required, but unused on the happy path).
-      final defaults = await _walletRepository.getWallets(
+      final defaults = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw RescueSwapException(
+          'wallets read failed: ${failure.runtimeType}',
+        ),
+      };
       String? defaultIdForAsset(String asset) {
         final wantLiquid = asset == 'L-BTC';
         for (final w in defaults) {
@@ -87,6 +94,8 @@ class RescueSwapUsecase {
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
       );
+    } on RescueSwapException {
+      rethrow;
     } catch (e) {
       log.warning('SWAP_RESTORE: rescue failed: $e');
       throw RescueSwapException('$e');
@@ -97,11 +106,16 @@ class RescueSwapUsecase {
   /// chain this swap acts on (claim destination or refund return).
   Future<List<Wallet>> candidateWallets(RestoredSwap restored) async {
     final settings = await _settingsRepository.fetch();
-    return _walletRepository.getWallets(
+    return switch (await _walletRepository.getWallets(
       onlyBitcoin: !restored.actsOnLiquid,
       onlyLiquid: restored.actsOnLiquid,
       environment: settings.environment,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw RescueSwapException(
+        'wallets read failed: ${failure.runtimeType}',
+      ),
+    };
   }
 }
 

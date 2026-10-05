@@ -1,0 +1,53 @@
+import 'package:bb_mobile/core/failures/failure.dart';
+
+sealed class ExchangeSupportChatFailure extends Failure {
+  const ExchangeSupportChatFailure([super.logMessage]);
+}
+
+/// The user is not logged in to their Bull Bitcoin account — the actionable
+/// signal is "log in", not "retry".
+final class NotAuthenticatedFailure extends ExchangeSupportChatFailure {
+  const NotAuthenticatedFailure([super.logMessage]);
+}
+
+/// Could not load the chat message history.
+final class LoadMessagesFailure extends ExchangeSupportChatFailure {
+  const LoadMessagesFailure([super.logMessage]);
+}
+
+/// Sending a chat message (with or without attachments) failed.
+final class SendMessageFailure extends ExchangeSupportChatFailure {
+  const SendMessageFailure([super.logMessage]);
+}
+
+/// The user tried to send an empty message.
+final class MessageEmptyFailure extends ExchangeSupportChatFailure {
+  const MessageEmptyFailure();
+}
+
+/// Downloading / opening a message attachment failed.
+final class LoadAttachmentFailure extends ExchangeSupportChatFailure {
+  const LoadAttachmentFailure([super.logMessage]);
+}
+
+/// The attachment came back without usable file data.
+final class FetchFileDataFailure extends ExchangeSupportChatFailure {
+  const FetchFileDataFailure([super.logMessage]);
+}
+
+/// Picking image files failed.
+final class PickFilesFailure extends ExchangeSupportChatFailure {
+  const PickFilesFailure([super.logMessage]);
+}
+
+/// Building / attaching the diagnostic logs failed.
+final class AttachLogsFailure extends ExchangeSupportChatFailure {
+  const AttachLogsFailure([super.logMessage]);
+}
+
+/// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI — the
+/// presentation extension returns the shared generic string.
+final class ExchangeSupportChatUnexpectedFailure
+    extends ExchangeSupportChatFailure {
+  const ExchangeSupportChatUnexpectedFailure([super.logMessage]);
+}

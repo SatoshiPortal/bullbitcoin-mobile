@@ -1,9 +1,10 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:meta/meta.dart';
@@ -31,11 +32,20 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
       // Derive from the default wallet of the environment the app is actually
       // running in: a hardcoded mainnet lookup finds no wallet on testnet.
       final settings = await _settingsRepository.fetch();
-      final wallets = await _walletRepository.getWallets(
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          log.warning('bip85 hex: ${failure.logMessage}');
+          return Err(
+            Bip85UnexpectedFailure('default wallet: ${failure.runtimeType}'),
+          );
+      }
       if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
       final defaultWallet = wallets.first;
 
@@ -69,7 +79,7 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
         error: e,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return Err(Bip85UnexpectedFailure('derivation: ${e.runtimeType}'));
     }
   }
 }

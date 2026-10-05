@@ -1,0 +1,25 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Eliminar",
+  "logsViewerShareButton": "Partilhar",
+  "logsExportedMessage": "Registos exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registos",
+  "logsViewerShowingCount": "A mostrar {shown} de {total} registos",
+  "logsViewerClearFilter": "Limpar filtro",
+  "logsViewerFilterByDate": "Filtrar por data",
+  "copiedToClipboardMessage": "Copiado para clipboard",
+  "logsViewerDeleteTitle": "Eliminar registos",
+  "logsViewerDeleteConfirmation": "Tem a certeza de que deseja eliminar todos os registos? Esta ação não pode ser desfeita.",
+  "logsDeletedMessage": "Registros excluídos",
+  "logsViewerCancelButton": "Cancelar",
+  "logsShareOptionShare": "Partilhar",
+  "logsShareOptionExport": "Exportar",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "retry": "Tentar novamente",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

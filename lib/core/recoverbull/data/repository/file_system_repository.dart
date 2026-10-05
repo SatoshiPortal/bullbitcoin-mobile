@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 
 /// Data boundary for local file pick/save. Catches picker/IO exceptions and

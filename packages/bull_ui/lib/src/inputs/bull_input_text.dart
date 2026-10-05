@@ -27,7 +27,13 @@ class BullInputText extends StatefulWidget {
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
+    this.digitsOnly = false,
+    this.suffixText,
     this.obscure = false,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
+    this.smartQuotesType,
+    this.smartDashesType,
     this.style,
     this.hideBorder = false,
     this.maxLines,
@@ -80,8 +86,26 @@ class BullInputText extends StatefulWidget {
   /// When true, shows a decimal numeric keyboard.
   final bool onlyNumbers;
 
+  /// Restrict input to integer digits only. Unlike [onlyNumbers], this rejects
+  /// the decimal point, so keep [onlyNumbers] for decimal amount fields.
+  final bool digitsOnly;
+
+  /// Trailing unit shown inside the field, e.g. `sats`.
+  final String? suffixText;
+
   /// Obscures the text (e.g. for secrets).
   final bool obscure;
+
+  /// Both default to true. Set them false for secrets (a BIP39 passphrase):
+  /// the IME's suggestion and autocorrect caches must never see the value.
+  final bool enableSuggestions;
+  final bool autocorrect;
+
+  /// iOS Smart Punctuation, which rewrites `'` as `’` and `--` as `—`.
+  /// Left null, [TextField] enables it (unless [obscure]). Disable both when
+  /// the value must survive exactly as typed.
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
 
   /// Maximum lines.
   final int? maxLines;
@@ -143,8 +167,12 @@ class _BullInputTextState extends State<BullInputText> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    // Numeric and obscured fields are never legitimately multiline, so they
+    // default to a single line instead of Flutter's unlimited `null`.
+    final effectiveMaxLines =
+        widget.maxLines ?? (widget.obscure || widget.onlyNumbers ? 1 : null);
     final shouldPreventNewlines =
-        widget.maxLines != null && widget.maxLines! <= 2;
+        effectiveMaxLines != null && effectiveMaxLines <= 2;
 
     return TextField(
       key: widget.uiKey,
@@ -156,6 +184,8 @@ class _BullInputTextState extends State<BullInputText> {
           ? TextInputType.none
           : widget.onlyNumbers
           ? const TextInputType.numberWithOptions(decimal: true)
+          : widget.digitsOnly
+          ? TextInputType.number
           : TextInputType.multiline,
       textInputAction: shouldPreventNewlines
           ? TextInputAction.done
@@ -165,13 +195,18 @@ class _BullInputTextState extends State<BullInputText> {
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
         if (widget.maxLength != null)
           LengthLimitingTextInputFormatter(widget.maxLength),
+        if (widget.digitsOnly) FilteringTextInputFormatter.digitsOnly,
       ],
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
       enableIMEPersonalizedLearning: false,
+      enableSuggestions: widget.enableSuggestions,
+      autocorrect: widget.autocorrect,
+      smartQuotesType: widget.smartQuotesType,
+      smartDashesType: widget.smartDashesType,
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
-      maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
+      maxLines: effectiveMaxLines,
       style:
           widget.style ??
           Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -184,6 +219,7 @@ class _BullInputTextState extends State<BullInputText> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
+        suffixText: widget.suffixText,
         hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
         prefixIcon: widget.fixedPrefix != null
             ? Container(

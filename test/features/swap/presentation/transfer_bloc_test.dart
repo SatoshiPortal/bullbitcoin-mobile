@@ -1,10 +1,11 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -20,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -291,6 +293,86 @@ void main() {
       expect(
         bloc.state.buildTransactionException?.message,
         selectedCoinsInsufficientCode,
+      );
+    },
+  );
+
+  test('maps unavailable selected coins in the cached rebuild path', () async {
+    final selected = _bitcoinUtxo('selected-tx');
+    when(
+      () => validateBitcoinSelection.execute(
+        walletId: 'wallet-1',
+        selectedInputs: [selected],
+      ),
+    ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: _destinationWallet(),
+        receiveAddress: 'tb1qreceive',
+        amount: '1000',
+        selectedUtxos: [selected],
+        bitcoinNetworkFees: _feeOptions(),
+        feePreviewCache: const BitcoinFeePreviewCache(
+          fastest: BitcoinFeePreviewSlot(
+            feeSat: 250,
+            unsignedPsbt: 'cached-unsigned-psbt',
+            txSize: 100,
+          ),
+        ),
+      ),
+    );
+
+    bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
+    await bloc.stream.firstWhere(
+      (state) => state.buildTransactionException != null,
+    );
+
+    expect(
+      bloc.state.buildTransactionException?.message,
+      selectedCoinsUnavailableCode,
+    );
+  });
+
+  test(
+    'maps unavailable selected coins in the non-cached rebuild path',
+    () async {
+      final selected = _bitcoinUtxo('selected-tx');
+      when(
+        () => prepareBitcoin.execute(
+          walletId: 'wallet-1',
+          address: 'tb1qreceive',
+          amountSat: 1000,
+          networkFee: any(named: 'networkFee'),
+          drain: false,
+          selectedInputs: [selected],
+          replaceByFee: true,
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+          toWallet: _destinationWallet(),
+          receiveAddress: 'tb1qreceive',
+          amount: '1000',
+          selectedUtxos: [selected],
+          signedPsbt: 'stale-psbt',
+          bitcoinNetworkFees: _feeOptions(),
+        ),
+      );
+
+      bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
+      await bloc.stream.firstWhere(
+        (state) => state.buildTransactionException != null,
+      );
+
+      expect(
+        bloc.state.buildTransactionException?.message,
+        selectedCoinsUnavailableCode,
+      );
+      expect(bloc.state.signedPsbt, isEmpty);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
       );
     },
   );
@@ -639,6 +721,48 @@ void main() {
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
         () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+      );
+    },
+  );
+
+  test(
+    'maps unavailable selected coins during confirm and clears fee previews',
+    () async {
+      final selected = _bitcoinUtxo('selected-tx');
+      when(
+        () => validateBitcoinSelection.execute(
+          walletId: 'wallet-1',
+          selectedInputs: [selected],
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(),
+          toWallet: _destinationWallet(),
+          receiveAddress: 'tb1qreceive',
+          amount: '1000',
+          selectedUtxos: [selected],
+          signedPsbt: 'signed-psbt',
+          feePreviewCache: const BitcoinFeePreviewCache(
+            fastest: BitcoinFeePreviewSlot(
+              feeSat: 250,
+              unsignedPsbt: 'cached-unsigned-psbt',
+              txSize: 100,
+            ),
+          ),
+        ),
+      );
+
+      bloc.add(const TransferEvent.confirmed());
+      await bloc.stream.firstWhere((state) => !state.isConfirming);
+
+      expect(
+        bloc.state.buildTransactionException?.message,
+        selectedCoinsUnavailableCode,
+      );
+      expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
       );
     },
   );
@@ -1084,7 +1208,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1115,7 +1239,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1145,12 +1269,12 @@ void main() {
       () => getPendingOrders.execute(),
     ).thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute()).thenAnswer(
-      (_) async => [
+      (_) async => Ok<List<Wallet>, WalletFailure>([
         _liquidWallet(id: 'default-liquid', isDefault: true),
         _liquidWallet(),
         _destinationWallet(id: 'default-bitcoin', isDefault: true),
         _destinationWallet(),
-      ],
+      ]),
     );
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
@@ -1183,7 +1307,7 @@ void main() {
     ).thenAnswer((_) async => Ok([prepared]));
     when(
       () => getWallets.execute(),
-    ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
@@ -1252,7 +1376,7 @@ void main() {
       ).thenAnswer((_) async => Ok([expired]));
       when(
         () => getWallets.execute(),
-      ).thenAnswer((_) async => [_liquidWallet(), _destinationWallet()]);
+      ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
       when(
         () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
       ).thenAnswer((_) async => _feeOptions());

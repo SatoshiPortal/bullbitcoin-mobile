@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -89,6 +89,7 @@ class LwkWalletDatasource {
         await lwkWallet.sync_(
           electrumUrl: electrumServer.url,
           validateDomain: electrumServer.validateDomain,
+          timeout: electrumServer.effectiveTimeout,
         );
         //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {

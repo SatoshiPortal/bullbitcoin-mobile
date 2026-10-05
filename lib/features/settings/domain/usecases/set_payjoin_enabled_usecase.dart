@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' as payjoin;
+import 'package:meta/meta.dart';
 
 class SetPayjoinEnabledUsecase {
   final payjoin.PayjoinPolicyAccess _policy;
@@ -16,6 +17,7 @@ class SetPayjoinEnabledUsecase {
     required this._markPayjoinDisclaimerShownUsecase,
   }) : _policy = payjoinPolicy;
 
+  @useResult
   Future<Result<bool, SettingsFailure>> execute(
     bool enabled, {
     required Future<bool> Function() requestConsent,
@@ -35,11 +37,10 @@ class SetPayjoinEnabledUsecase {
             consentGranted = await requestConsent();
           } catch (e, stackTrace) {
             log.warning(
-              'Failed to present the Payjoin disclaimer',
-              error: e,
+              'Failed to present the Payjoin disclaimer: ${e.runtimeType}',
               trace: stackTrace,
             );
-            return Err(SettingsConsentFailure(e.toString()));
+            return const Err(SettingsConsentFailure());
           }
           if (!consentGranted) return const Ok(false);
 
@@ -62,6 +63,7 @@ class SetPayjoinEnabledUsecase {
     return _persist(true);
   }
 
+  @useResult
   Future<Result<bool, SettingsFailure>> _persist(bool enabled) async {
     try {
       final result = await _policy.setEnabled(enabled);
@@ -71,10 +73,15 @@ class SetPayjoinEnabledUsecase {
           SettingsStorageFailure('Failed to update Payjoin policy'),
         ),
       };
-    } catch (_) {
-      log.warning('Failed to persist the Payjoin setting');
-      return const Err(
-        SettingsStorageFailure('Failed to update Payjoin policy'),
+    } catch (e, st) {
+      // A reported Err above is a storage failure; a throw is not something the
+      // policy contract allows, so it is the catch-all. Type only in the log.
+      log.warning(
+        'Failed to persist the Payjoin setting: ${e.runtimeType}',
+        trace: st,
+      );
+      return Err(
+        SettingsUnexpectedFailure('setEnabled threw: ${e.runtimeType}'),
       );
     }
   }

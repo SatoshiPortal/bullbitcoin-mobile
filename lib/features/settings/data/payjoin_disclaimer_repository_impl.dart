@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -20,9 +20,12 @@ class PayjoinDisclaimerRepositoryImpl implements PayjoinDisclaimerRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       return Ok(prefs.getBool(_shownKey) ?? false);
-    } catch (e) {
-      log.warning('Failed to read the Payjoin disclaimer flag: $e');
-      return Err(SettingsStorageFailure(e.toString()));
+    } catch (e, st) {
+      log.warning(
+        'Failed to read the Payjoin disclaimer flag: ${e.runtimeType}',
+        trace: st,
+      );
+      return const Err(SettingsStorageFailure());
     }
   }
 
@@ -37,9 +40,12 @@ class PayjoinDisclaimerRepositoryImpl implements PayjoinDisclaimerRepository {
         );
       }
       return const Ok(null);
-    } catch (e) {
-      log.warning('Failed to persist the Payjoin disclaimer flag: $e');
-      return Err(SettingsStorageFailure(e.toString()));
+    } catch (e, st) {
+      log.warning(
+        'Failed to persist the Payjoin disclaimer flag: ${e.runtimeType}',
+        trace: st,
+      );
+      return const Err(SettingsStorageFailure());
     }
   }
 }

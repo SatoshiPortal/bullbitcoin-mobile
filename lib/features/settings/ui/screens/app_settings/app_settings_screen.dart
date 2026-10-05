@@ -1,98 +1,61 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_tile.dart';
-import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class AppSettingsScreen extends StatelessWidget {
   const AppSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-    final isDevModeEnabled = context.select(
-      (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
-    );
     final currentLanguage = context.select(
       (SettingsCubit cubit) =>
           cubit.state.language ?? Language.unitedStatesEnglish,
     );
+    final items = settingsItemsOf(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                SettingsEntryItem(
-                  icon: Icons.language,
-                  title: context.loc.settingsLanguageTitle,
-                  trailing: AppLanguagePicker(
-                    value: currentLanguage,
-                    onChanged: (lang) =>
-                        context.read<SettingsCubit>().changeLanguage(lang),
-                  ),
-                ),
-                SettingsEntryItem(
-                  icon: Icons.palette,
-                  title: context.loc.settingsThemeTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.theme.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.attach_money,
-                  title: context.loc.settingsCurrencyTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.currency.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.fiber_pin,
-                  title: context.loc.settingsSecurityPinTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.pinCode.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.vpn_lock,
-                  title: context.loc.settingsTorSettingsTitle,
-                  onTap: () {
-                    context.pushNamed(TorSettingsRoute.torSettings.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.article,
-                  title: context.loc.logSettingsLogsTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.logs.name);
-                  },
-                ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.logo_dev,
-                    title: context.loc.appSettingsDevModeTitle,
-                    trailing: const DevModeSwitch(),
-                  ),
-                if (isDevModeEnabled) const ExchangeTestnetBasicAuthTile(),
-                SettingsEntryItem(
-                  icon: Icons.bug_report,
-                  title: context.loc.settingsErrorReportingTitle,
-                  trailing: const ErrorReportingSwitch(),
-                ),
-              ],
+    Widget? trailingFor(SettingsItemId id) => switch (id) {
+      SettingsItemId.language => AppLanguagePicker(
+        value: currentLanguage,
+        onChanged: (lang) => context.read<SettingsCubit>().changeLanguage(lang),
+      ),
+      SettingsItemId.screenPrivacy => const ScreenCaptureProtectionSwitch(),
+      SettingsItemId.devMode => const DevModeSwitch(),
+      SettingsItemId.testnetMode => const TestnetModeSwitch(),
+      SettingsItemId.errorReporting => const ErrorReportingSwitch(),
+      _ => null,
+    };
+
+    return BlocListener<SettingsCubit, SettingsState>(
+      // Turning dev mode off revokes the SP wallet. The revoke leaves a
+      // `.revoked` sentinel even when the on-disk delete fails, so the wallet
+      // is unloadable but still there; the user is the only one who can retry.
+      listenWhen: (previous, current) =>
+          !previous.revokeSpFailed && current.revokeSpFailed,
+      listener: (context, state) => SnackBarUtils.showSnackBar(
+        context,
+        context.loc.settingsDevModeSpRevokeFailed,
+      ),
+      child: Scaffold(
+        appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  for (final item in items.inSection(SettingsItemSection.app))
+                    item.buildTile(context, trailing: trailingFor(item.id)),
+                ],
+              ),
             ),
           ),
         ),

@@ -2,7 +2,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
+import 'package:bull_logs/bull_logs.dart';
+import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
+import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -43,11 +46,8 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               return widget.app;
             } else if (state is AppStartupLegacyBackupRequired) {
               return const LegacyBackupScreen();
-            } else if (state is AppStartupFailure) {
-              return AppStartupFailureScreen(
-                hasBackup: state.hasBackup,
-                e: state.e,
-              );
+            } else if (state is AppStartupFailureState) {
+              return AppStartupFailureScreen(failure: state.failure);
             }
 
             // TODO: remove this when all states are handled and return the
@@ -89,10 +89,9 @@ class AppStartupListener extends StatelessWidget {
 }
 
 class AppStartupFailureScreen extends StatelessWidget {
-  const AppStartupFailureScreen({super.key, this.e, required this.hasBackup});
+  const AppStartupFailureScreen({super.key, required this.failure});
 
-  final Object? e;
-  final bool hasBackup;
+  final AppStartupFailure failure;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +127,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    context.loc.appStartupErrorMessage,
+                    failure.toTranslated(context),
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.secondary.withValues(alpha: 0.7),
                     ),
@@ -155,7 +154,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 textColor: context.appColors.onPrimary,
               ),
               const SizedBox(height: 24),
-              const ShareLogsWidget(),
+              ShareLogsWidget(facade: GetIt.I<LogsFacade>()),
             ],
           ),
         ),

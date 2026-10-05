@@ -7,14 +7,19 @@ import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
+import 'package:bb_mobile/core/price/price_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
+    as settings;
 import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
-import 'package:bb_mobile/core/tor/tor_locator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 
 class CoreLocator {
@@ -23,13 +28,21 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources(GetIt locator) async {
-    await TorLocator.registerDatasources(locator);
+    await bull_tor.TorLocator.registerDatasources(
+      locator,
+      logger: bull_tor.TorLogger(
+        configCallback: log.config,
+        fineCallback: log.fine,
+        warningCallback: log.warning,
+      ),
+    );
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
+    PriceLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
-    await RecoverbullLocator.registerDatasources(locator);
+    RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
     SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
@@ -47,15 +60,36 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    await TorLocator.registerRepositories(locator);
+    await SettingsLocator.registerRepositories(locator);
+    final settingsRepository = locator<settings.SettingsRepository>();
+    final appSettings = await settingsRepository.fetch();
+    bull_tor.TorLocator.registerRepositories(
+      locator,
+      initialMode: appSettings.torTransportMode,
+      lastSuccessfulTransport: appSettings.lastSuccessfulTorTransport,
+      onSuccessfulTransport: (transport) async {
+        // Best-effort cache of the working transport; the repository already
+        // logged the raw reason at its boundary.
+        final stored = await settingsRepository.setLastSuccessfulTorTransport(
+          transport,
+        );
+        if (stored case Err(:final failure)) {
+          log.warning(
+            'Could not persist the successful Tor transport: '
+            '${failure.runtimeType}',
+          );
+        }
+      },
+    );
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
+    PriceLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
-    await RecoverbullLocator.registerRepositories(locator);
+    RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
@@ -70,9 +104,11 @@ class CoreLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    bull_tor.TorLocator.registerUsecases(locator);
     LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
+    PriceLocator.registerUseCases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
@@ -81,7 +117,6 @@ class CoreLocator {
     StorageLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
-    TorLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);

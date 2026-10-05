@@ -1,0 +1,34 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Delete",
+  "logsViewerShareButton": "Share karein",
+  "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
+  "logsExportFailedMessage": "Logs export karne mein vifal",
+  "logsViewerShowingCount": "{total} mein se {shown} log dikhaaye ja rahe hain",
+  "logsViewerClearFilter": "Filter hatayein",
+  "logsViewerFilterByDate": "Taareekh ke anusaar filter karein",
+  "copiedToClipboardMessage": "Clipboard mein copy hua",
+  "logsViewerDeleteTitle": "Logs Delete Karo",
+  "logsViewerDeleteConfirmation": "Kya aap sach mein saare logs delete karna chahte hain? Ye action wapas nahi liya ja sakta.",
+  "logsDeletedMessage": "Logs delete ho gayi",
+  "logsViewerCancelButton": "Cancel",
+  "logsShareOptionShare": "Share karein",
+  "logsShareOptionExport": "Export karein",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

@@ -2,18 +2,17 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -22,32 +21,11 @@ class ExchangeSettingsLocator {
   static void setup(GetIt locator) {
     _registerRepositories(locator);
     _registerUsecases(locator);
+    _registerFeatureUsecases(locator);
     _registerCubits(locator);
   }
 
   static void _registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
-        ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: false,
-      ),
-      instanceName: 'mainnet',
-    );
-
-    locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: true,
-      ),
-      instanceName: 'testnet',
-    );
-
     locator.registerLazySingleton<ExchangeKycRepository>(
       () => ExchangeKycRepositoryImpl(
         bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
@@ -94,42 +72,6 @@ class ExchangeSettingsLocator {
   }
 
   static void _registerUsecases(GetIt locator) {
-    locator.registerLazySingleton<GetDefaultWalletsUsecase>(
-      () => GetDefaultWalletsUsecase(
-        mainnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'mainnet',
-        ),
-        testnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'testnet',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerLazySingleton<SaveDefaultWalletUsecase>(
-      () => SaveDefaultWalletUsecase(
-        mainnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'mainnet',
-        ),
-        testnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'testnet',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerLazySingleton<DeleteDefaultWalletUsecase>(
-      () => DeleteDefaultWalletUsecase(
-        mainnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'mainnet',
-        ),
-        testnetRepository: locator<ExchangeRecipientRepository>(
-          instanceName: 'testnet',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
     locator.registerLazySingleton<UploadKycDocumentUsecase>(
       () => UploadKycDocumentUsecase(
         mainnetRepository: locator<ExchangeKycRepository>(
@@ -155,25 +97,45 @@ class ExchangeSettingsLocator {
     );
   }
 
-  static void _registerCubits(GetIt locator) {
-    locator.registerFactory<DefaultWalletsCubit>(
-      () => DefaultWalletsCubit(
-        getDefaultWalletsUsecase: locator<GetDefaultWalletsUsecase>(),
-        saveDefaultWalletUsecase: locator<SaveDefaultWalletUsecase>(),
-        deleteDefaultWalletUsecase: locator<DeleteDefaultWalletUsecase>(),
+  /// The feature's own use-cases. Each wraps a shared `core/exchange`
+  /// use-case that still throws, and is therefore the `try/catch` boundary
+  /// that turns a raw exception into a sanitized `ExchangeSettingsFailure`.
+  static void _registerFeatureUsecases(GetIt locator) {
+    locator.registerLazySingleton<DocumentPickerPort>(
+      () => const FilePickerDocumentAdapter(),
+    );
+
+    locator.registerFactory<GetExchangeStatisticsUsecase>(
+      () => GetExchangeStatisticsUsecase(
+        getOrderStatsUsecase: locator<GetOrderStatsUsecase>(),
       ),
     );
 
+    locator.registerFactory<GetExchangeSettingsAccountUsecase>(
+      () => GetExchangeSettingsAccountUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+      ),
+    );
+
+    locator.registerFactory<UploadExchangeDocumentUsecase>(
+      () => UploadExchangeDocumentUsecase(
+        documentPicker: locator<DocumentPickerPort>(),
+        uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
+      ),
+    );
+  }
+
+  static void _registerCubits(GetIt locator) {
     locator.registerFactory<FileUploadCubit>(
       () => FileUploadCubit(
-        uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getAccountUsecase: locator<GetExchangeSettingsAccountUsecase>(),
+        uploadDocumentUsecase: locator<UploadExchangeDocumentUsecase>(),
       ),
     );
 
     locator.registerFactory<StatisticsCubit>(
       () => StatisticsCubit(
-        getOrderStatsUsecase: locator<GetOrderStatsUsecase>(),
+        getStatisticsUsecase: locator<GetExchangeStatisticsUsecase>(),
       ),
     );
   }

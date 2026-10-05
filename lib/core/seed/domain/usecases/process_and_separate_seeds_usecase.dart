@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class ProcessAndSeparateSeedsUsecase {
   ProcessAndSeparateSeedsUsecase();

@@ -37,6 +37,10 @@ final class TorNotStartedFailure extends RecoverBullFailure {
   const TorNotStartedFailure();
 }
 
+final class ExternalTorProxyUnavailableFailure extends RecoverBullFailure {
+  const ExternalTorProxyUnavailableFailure();
+}
+
 final class VaultKeyFetchFailure extends RecoverBullFailure {
   const VaultKeyFetchFailure();
 }

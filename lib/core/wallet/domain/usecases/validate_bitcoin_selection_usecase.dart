@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint;
@@ -42,14 +42,14 @@ class ValidateBitcoinSelectionUsecase {
         if (selectedInputs.any(
           (utxo) => !spendableOutpoints.contains(utxo.outpoint),
         )) {
-          throw InsufficientFundsException(
+          throw NoSpendableUtxoException(
             'A selected coin is no longer spendable',
           );
         }
       }
 
       return unspendable.toList();
-    } on InsufficientFundsException {
+    } on NoSpendableUtxoException {
       rethrow;
     } on ValidateBitcoinSelectionException {
       rethrow;

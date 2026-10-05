@@ -6,7 +6,8 @@ import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -37,7 +38,8 @@ class GetTransactionsUsecase {
     required this._getTransactionOrderSwapsUsecase,
   });
 
-  Future<List<Transaction>> execute({
+  @useResult
+  Future<Result<List<Transaction>, TransactionFailure>> execute({
     String? walletId,
     bool sync = false,
   }) async {
@@ -78,13 +80,61 @@ class GetTransactionsUsecase {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
       };
-      final orderSwaps = [...loadedOrderSwaps];
+      // A failed swap load degrades the list rather than failing it: wallet
+      // transactions are still worth showing. Logged, so a broken swap store
+      // stays diagnosable.
+      if (loadedOrderSwaps case Err(:final failure)) {
+        log.warning(
+          'Order swaps unavailable; listing without them: '
+          '${failure.runtimeType}',
+        );
+      }
+      final resolvedOrderSwaps = switch (loadedOrderSwaps) {
+        Ok(:final value) => value,
+        Err() => const <OrderSwapRecord>[],
+      };
+      final orderSwaps = [...resolvedOrderSwaps];
       final canonicalOrderSwaps = <OrderSwapWalletLeg, OrderSwapRecord>{};
       final secondaryOrderSwapLegs = <OrderSwapWalletLeg>{};
-      for (final orderSwap in loadedOrderSwaps) {
+      for (final orderSwap in resolvedOrderSwaps) {
         final canonical = canonicalOrderSwapWalletLeg(orderSwap);
         if (canonical != null) canonicalOrderSwaps[canonical] = orderSwap;
         secondaryOrderSwapLegs.addAll(secondaryOrderSwapWalletLegs(orderSwap));
+      }
+
+      final swapBuckets = <String, List<int>>{};
+      for (var index = 0; index < swaps.length; index++) {
+        final swap = swaps[index];
+        for (final txId in {swap.sendTxId, swap.receiveTxId, swap.refundTxId}) {
+          if (txId != null) swapBuckets.putIfAbsent(txId, () => []).add(index);
+        }
+      }
+      final payjoinBuckets = <String, List<int>>{};
+      for (var index = 0; index < payjoins.length; index++) {
+        final payjoin = payjoins[index];
+        for (final txId in {payjoin.txId, payjoin.originalTxId}) {
+          if (txId != null) {
+            payjoinBuckets.putIfAbsent(txId, () => []).add(index);
+          }
+        }
+      }
+      final orderBuckets = <String, List<int>>{};
+      for (var index = 0; index < orders.length; index++) {
+        final order = orders[index];
+        // The payjoin is broadcast before the payout txid is reported.
+        for (final txId in {order.transactionId, order.payjoin?.txid}) {
+          if (txId != null) orderBuckets.putIfAbsent(txId, () => []).add(index);
+        }
+      }
+      final consumedPayjoinIndices = <int>{};
+      final consumedOrderIndices = <int>{};
+      final consumedOrderSwapIndices = <int>{};
+      final orderSwapIndexQueues = <OrderSwapRecord, List<int>>{};
+      final nextOrderSwapQueueIndices = <OrderSwapRecord, int>{};
+      for (var index = 0; index < orderSwaps.length; index++) {
+        orderSwapIndexQueues
+            .putIfAbsent(orderSwaps[index], () => [])
+            .add(index);
       }
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
@@ -98,68 +148,64 @@ class GetTransactionsUsecase {
       final broadcastedTransactions = walletTransactions
           .map((wt) {
             Swap? swap;
-            try {
-              swap = swaps.firstWhere((s) {
-                final claimedLeg =
-                    (wt.isOutgoing && s.sendTxId == wt.txId) ||
-                    (wt.isIncoming &&
-                        (s.receiveTxId == wt.txId || s.refundTxId == wt.txId));
-                return claimedLeg &&
-                    s.walletId == wt.walletId &&
-                    (s.amountSat == 0 || wt.amountSat <= s.amountSat) &&
-                    _transactionPaysSwapAddress(wt, s);
-              });
-            } catch (_) {
-              // If no swap is found, it means the transaction is not a swap
-              swap = null;
+            for (final index in swapBuckets[wt.txId] ?? const <int>[]) {
+              final s = swaps[index];
+              final claimedLeg =
+                  (wt.isOutgoing && s.sendTxId == wt.txId) ||
+                  (wt.isIncoming &&
+                      (s.receiveTxId == wt.txId || s.refundTxId == wt.txId));
+              if (claimedLeg &&
+                  s.walletId == wt.walletId &&
+                  (s.amountSat == 0 || wt.amountSat <= s.amountSat) &&
+                  _transactionPaysSwapAddress(wt, s)) {
+                swap = s;
+                break;
+              }
             }
             final orderSwap =
                 canonicalOrderSwaps[(txId: wt.txId, walletId: wt.walletId)];
             if (orderSwap != null) {
-              orderSwaps.remove(orderSwap);
+              final queue = orderSwapIndexQueues[orderSwap];
+              final queueIndex = nextOrderSwapQueueIndices[orderSwap] ?? 0;
+              if (queue != null && queueIndex < queue.length) {
+                consumedOrderSwapIndices.add(queue[queueIndex]);
+                nextOrderSwapQueueIndices[orderSwap] = queueIndex + 1;
+              }
             }
             PayjoinSession? payjoin;
-            try {
-              payjoin = payjoins.firstWhere(
-                (pj) =>
-                    [pj.txId, pj.originalTxId].contains(wt.txId) &&
-                    // Make sure to match the direction of the payjoin, since
-                    //  both a sender and receiver payjoin can exist for the
-                    //  same transaction if it was done between two wallets in
-                    //  the app.
-                    wt.isOutgoing == pj is PayjoinSenderSession,
-              );
-              // Remove the payjoin from the list of payjoins to avoid duplication
-              //  since it's already included in the broadcasted transaction
-              payjoins.remove(payjoin);
-            } catch (_) {
-              // If no payjoin is found, it means the transaction is not a payjoin
-              payjoin = null;
+            for (final index in payjoinBuckets[wt.txId] ?? const <int>[]) {
+              if (consumedPayjoinIndices.contains(index)) continue;
+              final candidate = payjoins[index];
+              if ((candidate.txId == wt.txId ||
+                      candidate.originalTxId == wt.txId) &&
+                  // Make sure to match the direction of the payjoin, since
+                  //  both a sender and receiver payjoin can exist for the
+                  //  same transaction if it was done between two wallets in
+                  //  the app.
+                  wt.isOutgoing == candidate is PayjoinSenderSession) {
+                payjoin = candidate;
+                consumedPayjoinIndices.add(index);
+                break;
+              }
             }
 
             Order? order;
-            try {
-              order = orders.firstWhere((o) {
-                if (![o.transactionId, o.payjoin?.txid].contains(wt.txId)) {
-                  return false;
-                }
-                if (o.toAddress != null && o.toAddress != wt.toAddress) {
-                  return false;
-                }
-                final expectedDirection = o is BuyOrder
-                    ? wt.isIncoming
-                    : o is SellOrder
-                    ? wt.isOutgoing
-                    : true;
-                return expectedDirection &&
-                    _transactionCoversOrderAmount(wt, o);
-              });
-              // Remove the order from the list of orders to avoid duplication
-              //  since it's already included in the broadcasted transaction
-              orders.remove(order);
-            } catch (_) {
-              // If no order is found, it means the transaction is not an order
-              order = null;
+            for (final index in orderBuckets[wt.txId] ?? const <int>[]) {
+              if (consumedOrderIndices.contains(index)) continue;
+              final o = orders[index];
+              if (o.toAddress != null && o.toAddress != wt.toAddress) {
+                continue;
+              }
+              final expectedDirection = o is BuyOrder
+                  ? wt.isIncoming
+                  : o is SellOrder
+                  ? wt.isOutgoing
+                  : true;
+              if (expectedDirection && _transactionCoversOrderAmount(wt, o)) {
+                order = o;
+                consumedOrderIndices.add(index);
+                break;
+              }
             }
 
             return Transaction(
@@ -212,21 +258,42 @@ class GetTransactionsUsecase {
       // incoming and outgoing transactions). We want to make sure the swap is
       // associated with both the incoming as outgoing transaction, so we do it
       // after the broadcasted transactions are created with any associated swaps.
+      final consumedSwapIndices = <int>{};
+      final swapIndexQueues = <Swap, List<int>>{};
+      final nextSwapQueueIndices = <Swap, int>{};
+      for (var index = 0; index < swaps.length; index++) {
+        swapIndexQueues.putIfAbsent(swaps[index], () => []).add(index);
+      }
       for (final tx in dedupedBroadcastedTransactions) {
         if (tx.isSwap) {
-          swaps.remove(tx.swap);
+          final swap = tx.swap;
+          if (swap == null) continue;
+          final queue = swapIndexQueues[swap];
+          if (queue == null) continue;
+          final queueIndex = nextSwapQueueIndices[swap] ?? 0;
+          if (queueIndex < queue.length) {
+            consumedSwapIndices.add(queue[queueIndex]);
+            nextSwapQueueIndices[swap] = queueIndex + 1;
+          }
         }
       }
 
       // Combine results of broadcasted transactions, remaining swaps which are
       //  ongoing and remaining payjoins that are unbroadcasted as well
       //  into a single list of Transaction entities.
-      return [
+      return Ok([
         ...dedupedBroadcastedTransactions,
         // A resolved recovered swap with no wallet tx here was only associated
         // via a default/counterpart wallet id; don't show it on that chain.
         ...swaps
-            .where((s) => !(s.recovered && s.status.isTerminal))
+            .asMap()
+            .entries
+            .where(
+              (entry) =>
+                  !consumedSwapIndices.contains(entry.key) &&
+                  !(entry.value.recovered && entry.value.status.isTerminal),
+            )
+            .map((entry) => entry.value)
             .map((s) => Transaction(swap: s)),
         // An aborted Payjoin means its original transaction was successfully
         // broadcast or observed. If that wallet transaction is not visible in
@@ -234,9 +301,20 @@ class GetTransactionsUsecase {
         // standalone `0 sats / pending` row; the real transaction will be
         // joined through originalTxId once wallet sync catches up.
         ...payjoins
-            .where((p) => !p.isAborted)
+            .asMap()
+            .entries
+            .where(
+              (entry) =>
+                  !consumedPayjoinIndices.contains(entry.key) &&
+                  !entry.value.isAborted,
+            )
+            .map((entry) => entry.value)
             .map((p) => Transaction(payjoin: p)),
-        ...orderSwaps.map((orderSwap) => Transaction(orderSwap: orderSwap)),
+        ...orderSwaps
+            .asMap()
+            .entries
+            .where((entry) => !consumedOrderSwapIndices.contains(entry.key))
+            .map((entry) => Transaction(orderSwap: entry.value)),
         // If walletId is not null, the orders should be linked to a wallet transaction.
         // TODO: We could still check on the address of the order to see if it
         // is related to the wallet id, even without a wallet transaction yet.
@@ -245,16 +323,26 @@ class GetTransactionsUsecase {
         //  most efficient and robust way for the future. But for now we assume that
         //  orders without a wallet transaction are not relevant for a specific wallet yet.
         ...(walletId == null
-            ? orders.map((o) => Transaction(order: o))
+            ? orders
+                  .asMap()
+                  .entries
+                  .where((entry) => !consumedOrderIndices.contains(entry.key))
+                  .map((entry) => Transaction(order: entry.value))
             : <Transaction>[]),
-      ];
+      ]);
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to fetch transactions',
-        error: e,
+        error: e.runtimeType,
         trace: stackTrace,
       );
-      throw TransactionAggregationFailure(e.toString());
+      // Returned, never thrown: both callers switch on the result and have no
+      // try/catch, so a throw here would strand the list on "syncing" and the
+      // export screen on "loading". The log above keeps the type only: the
+      // on-device log is shareable, and these errors can quote txids.
+      return Err(
+        TransactionAggregationFailure('aggregation failed: ${e.runtimeType}'),
+      );
     }
   }
 
@@ -277,6 +365,7 @@ class GetTransactionsUsecase {
       default:
         return true;
     }
+    if (!declared.isFinite) return false;
     final declaredSat = ConvertAmount.btcToSats(declared);
     if (declaredSat <= 0) return true;
     return wt.amountSat >= declaredSat;

@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "মানচিত্ৰ",
-  "recipientsListLoadError": "প্ৰাপকসকল ল’ড কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
   "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
   "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
   "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
@@ -259,13 +258,9 @@
   "pinCodeSettingsLabel": "PIN কোড",
   "languageSettingsLabel": "ভাষা",
   "backupSettingsLabel": "Wallet বেকআপ",
-  "electrumServerSettingsLabel": "Electrum চাৰ্ভাৰ (Bitcoin নোড)",
   "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
   "languageSettingsScreenTitle": "ভাষা",
-  "backupSettingsScreenTitle": "বেকআপ ছেটিংছ",
   "settingsExchangeSettingsTitle": "Exchange ছেটিংছ",
-  "settingsWalletBackupTitle": "Wallet বেকআপ",
-  "settingsBitcoinSettingsTitle": "Bitcoin ছেটিংছ",
   "settingsSecurityPinTitle": "নিৰাপত্তা PIN",
   "pinCodeAuthentication": "প্ৰমাণীকৰণ",
   "pinCodeCreateTitle": "নতুন PIN তৈয়াৰ কৰক",
@@ -295,11 +290,8 @@
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
   "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
-  "settingsServicesStatusTitle": "সেৱাৰ স্থিতি",
-  "settingsTorSettingsTitle": "Tor ছেটিংছ",
-  "settingsRecoverbullTitle": "Recoverbull",
+  "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
   "settingsDevModeWarningTitle": "Dev মোড",
@@ -307,9 +299,7 @@
   "settingsDevModeUnderstandButton": "মই বুজি পাইছোঁ",
   "settingsSuperuserModeDisabledMessage": "Superuser মোড অক্ষম কৰা হৈছে।",
   "settingsSuperuserModeUnlockedMessage": "Superuser মোড আনলক হৈছে!",
-  "walletOptionsUnnamedWalletFallback": "নামহীন Wallet",
-  "walletOptionsNotFoundMessage": "Wallet পোৱা নগ'ল",
-  "walletOptionsWalletDetailsTitle": "Wallet বিৱৰণ",
+  "walletDetailsUnnamedWalletFallback": "নামহীন Wallet",
   "addressViewAddressesTitle": "ঠিকনাসমূহ",
   "walletDetailsDeletingMessage": "Wallet মচা হৈছে...",
   "walletDetailsWalletFingerprintLabel": "Wallet ফিংগাৰপ্ৰিন্ট",
@@ -322,9 +312,6 @@
   "walletDetailsSignerDeviceLabel": "Signer ডিভাইচ",
   "walletDetailsSignerDeviceNotSupported": "সমৰ্থিত নহয়",
   "walletDetailsCopyButton": "কপি কৰক",
-  "bitcoinSettingsWalletsTitle": "Wallets",
-  "bitcoinSettingsElectrumServerTitle": "Electrum চাৰ্ভাৰ ছেটিংছ",
-  "bitcoinSettingsMempoolServerTitle": "Mempool চাৰ্ভাৰ ছেটিংছ",
   "mempoolSettingsTitle": "Mempool চাৰ্ভাৰ",
   "mempoolSettingsDescription": "বিভিন্ন নেটৱৰ্কৰ বাবে কাষ্টম mempool চাৰ্ভাৰ কনফিগাৰ কৰক। প্ৰতিটো নেটৱৰ্কে ব্লক এক্সপ্লোৰাৰ আৰু মাচুল অনুমানৰ বাবে নিজৰ চাৰ্ভাৰ ব্যৱহাৰ কৰিব পাৰে।",
   "mempoolSettingsDefaultServer": "ডিফল্ট চাৰ্ভাৰ",
@@ -358,7 +345,6 @@
   "mempoolErrorSameAsDefault": "এই URL ডিফল্ট চাৰ্ভাৰৰ দৰেই। অনুগ্ৰহ কৰি এটা ভিন্ন URL ব্যৱহাৰ কৰক।",
   "mempoolErrorConnectionTimeout": "সংযোগৰ সময় শেষ হৈছে। চাৰ্ভাৰটো লেহেমীয়া বা অপ্ৰাপ্য হ'ব পাৰে।",
   "mempoolErrorHostNotFound": "এই চাৰ্ভাৰ বিচাৰি পোৱা নগ'ল। অনুগ্ৰহ কৰি URL পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorTorNotRunning": ".onion ঠিকনাত উপনীত হ'ব পৰা নগ'ল। Tor/Orbot চলি আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "mempoolErrorConnectionFailed": "চাৰ্ভাৰৰ সৈতে সংযোগ কৰিবলৈ অক্ষম। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "mempoolErrorNotMempoolServer": "এই URL এটা mempool চাৰ্ভাৰ নহয় যেন লাগিছে। অনুগ্ৰহ কৰি ঠিকনা যাচাই কৰক।",
   "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
@@ -389,8 +375,7 @@
       }
     }
   },
-  "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Transfer ছেটিংছ",
-  "bitcoinSettingsImportWalletTitle": "Wallet আমদানি কৰক",
+  "walletSettingsImportWalletTitle": "Wallet আমদানি কৰক",
   "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
   "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 নিৰ্ণায়ক Entropies",
@@ -537,8 +522,6 @@
   },
   "exchangeStatisticsTotalAmount": "মুঠ পৰিমাণ",
   "retry": "পুনৰ চেষ্টা কৰক",
-  "walletsListTitle": "Wallet বিৱৰণ",
-  "walletsListNoWalletsMessage": "কোনো wallet পোৱা নগ'ল",
   "walletDeletionConfirmationTitle": "Wallet মচক",
   "walletDeletionConfirmationMessage": "আপুনি নিশ্চিতভাৱে এই wallet মচিব বিচাৰে?",
   "walletDeletionConfirmationCancelButton": "বাতিল কৰক",
@@ -640,14 +623,6 @@
   "receivePaymentNormally": "সাধাৰণভাৱে পৰিশোধ গ্ৰহণ কৰক",
   "receiveContinue": "অব্যাহত ৰাখক",
   "receiveCopyAddressOnly": "কেৱল ঠিকনা কপি বা স্কেন কৰক",
-  "receiveError": "ভুল: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
@@ -842,12 +817,10 @@
   "payWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWallet": "বাহ্যিক wallet",
   "payFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
-  "payAboveMaxAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmountError": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
+  "payAboveMaxAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা সৰ্বাধিক পৰিমাণ হ'ল {amount}।",
+  "payBelowMinAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা নূন্যতম পৰিমাণ হ'ল {amount}।",
   "payInsufficientBalanceError": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
   "payUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFoundError": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmedError": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
   "paySelectNetwork": "নেটৱৰ্ক বাছক",
   "payHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
   "payBitcoinOnChain": "Bitcoin অন-চেইন",
@@ -894,11 +867,6 @@
   "paySinpeOrigen": "উৎস",
   "payNotAvailable": "N/A",
   "payBitcoinOnchain": "Bitcoin অন-চেইন",
-  "payAboveMaxAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payBelowMinAmount": "আপুনি এই wallet-ৰ সৈতে পৰিশোধ কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম পৰিশোধ কৰিবলৈ চেষ্টা কৰিছে।",
-  "payNotAuthenticated": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
-  "payOrderNotFound": "পৰিশোধ অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
-  "payOrderAlreadyConfirmed": "এই পৰিশোধ অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
   "payPaymentInProgress": "পৰিশোধ চলি আছে!",
   "payPaymentInProgressDescription": "আপোনাৰ পৰিশোধ আৰম্ভ কৰা হৈছে আৰু আপোনাৰ লেনদেনে অনচেইন 1 নিশ্চিতকৰণ পোৱাৰ পিছত প্ৰাপকে ধন পাব।",
   "payPriceRefreshIn": "মূল্য পুনৰ নবীকৰণ হ'ব ",
@@ -912,38 +880,12 @@
   "payCopied": "কপি হৈছে!",
   "payWhichWallet": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
-  "payInsufficientBalance": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
   "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
   "transactionTitle": "লেনদেনসমূহ",
-  "transactionError": "ভুল - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "লেনদেনৰ বিৱৰণ",
   "transactionDetailTransferProgress": "Transfer অগ্ৰগতি",
   "transactionDetailSwapProgress": "Swap অগ্ৰগতি",
-  "transactionDetailRetryTransfer": "Transfer {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Swap {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "টোকা যোগ কৰক",
-  "transactionDetailBumpFees": "মাচুল বৃদ্ধি কৰক",
   "transactionFilterAll": "সকলো",
   "transactionFilterSend": "প্ৰেৰণ",
   "transactionFilterReceive": "গ্ৰহণ",
@@ -956,7 +898,6 @@
   "transactionFilterFunding": "ফান্ডিং",
   "transactionFilterReward": "পুৰস্কাৰ",
   "transactionFilterRefund": "ঘূৰাই দিয়া",
-  "transactionFilterBalanceAdjustment": "সামঞ্জস্য",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
@@ -964,7 +905,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "চলি আছে",
   "transactionStatusPending": "অপেক্ষাৰত",
-  "transactionStatusConfirmed": "নিশ্চিত হৈছে",
   "transactionStatusTransferCompleted": "Transfer সম্পন্ন হৈছে",
   "transactionStatusTransferInProgress": "Transfer চলি আছে",
   "transactionStatusPaymentInProgress": "পৰিশোধ চলি আছে",
@@ -974,51 +914,9 @@
   "transactionStatusTransferExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusSwapExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusPayjoinRequested": "Payjoin অনুৰোধ কৰা হৈছে",
-  "transactionLabelTransactionId": "লেনদেন ID",
-  "transactionLabelToWallet": "Wallet লৈ",
-  "transactionLabelFromWallet": "Wallet-ৰ পৰা",
-  "transactionLabelRecipientAddress": "প্ৰাপকৰ ঠিকনা",
-  "transactionLabelAddress": "ঠিকনা",
-  "transactionLabelAddressNotes": "ঠিকনাৰ টোকা",
-  "transactionLabelAmountReceived": "গ্ৰহণ কৰা পৰিমাণ",
-  "transactionLabelAmountSent": "প্ৰেৰণ কৰা পৰিমাণ",
-  "transactionLabelTransactionFee": "লেনদেন মাচুল",
-  "transactionLabelStatus": "স্থিতি",
-  "transactionLabelConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "transactionLabelTransferId": "Transfer ID",
-  "transactionLabelSwapId": "Swap ID",
-  "transactionLabelTransferStatus": "Transfer স্থিতি",
-  "transactionLabelSwapStatus": "Swap স্থিতি",
-  "transactionLabelSwapStatusRefunded": "ঘূৰাই দিয়া হৈছে",
-  "transactionLabelLiquidTransactionId": "Liquid লেনদেন ID",
-  "transactionLabelBitcoinTransactionId": "Bitcoin লেনদেন ID",
-  "transactionLabelTotalTransferFees": "মুঠ Transfer মাচুল",
-  "transactionLabelTotalSwapFees": "মুঠ Swap মাচুল",
-  "transactionLabelNetworkFee": "নেটৱৰ্ক মাচুল",
-  "transactionLabelTransferFee": "Transfer মাচুল",
-  "transactionLabelBoltzSwapFee": "Boltz Swap মাচুল",
-  "transactionLabelCreatedAt": "তৈয়াৰ হৈছে",
-  "transactionLabelCompletedAt": "সম্পন্ন হৈছে",
-  "transactionLabelPayjoinStatus": "Payjoin স্থিতি",
-  "transactionLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
-  "transactionPayjoinStatusCompleted": "সম্পন্ন হৈছে",
-  "transactionPayjoinStatusExpired": "মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionOrderLabelOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "transactionOrderLabelOrderNumber": "অৰ্ডাৰ নম্বৰ",
-  "transactionOrderLabelPayinAmount": "পেইন পৰিমাণ",
-  "transactionOrderLabelPayoutAmount": "পেআউট পৰিমাণ",
-  "transactionOrderLabelExchangeRate": "বিনিময় হাৰ",
-  "transactionOrderLabelPayinMethod": "পেইন পদ্ধতি",
-  "transactionOrderLabelPayoutMethod": "পেআউট পদ্ধতি",
-  "transactionOrderLabelPayinStatus": "পেইন স্থিতি",
-  "transactionOrderLabelOrderStatus": "অৰ্ডাৰৰ স্থিতি",
-  "transactionOrderLabelPayoutStatus": "পেআউট স্থিতি",
   "transactionNotesLabel": "লেনদেনৰ টোকা",
   "transactionNoteAddTitle": "টোকা যোগ কৰক",
-  "transactionNoteEditTitle": "টোকা সম্পাদনা কৰক",
   "transactionNoteHint": "টোকা",
-  "transactionNoteSaveButton": "সংৰক্ষণ কৰক",
-  "transactionNoteUpdateButton": "আপডেট কৰক",
   "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
   "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
   "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",
@@ -1118,18 +1016,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
   "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
   "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
-  "walletTypeWatchOnly": "কেৱল চোৱা",
-  "walletTypeWatchSigner": "Watch-Signer",
-  "walletTypeBitcoinNetwork": "Bitcoin নেটৱৰ্ক",
-  "walletTypeLiquidLightningNetwork": "Liquid আৰু Lightning নেটৱৰ্ক",
-  "walletNetworkBitcoin": "Bitcoin নেটৱৰ্ক",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "walletNetworkLiquid": "Liquid নেটৱৰ্ক",
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "walletAddressTypeLegacy": "Legacy",
   "walletBalanceUnconfirmedIncoming": "চলি আছে",
   "walletButtonReceive": "গ্ৰহণ কৰক",
   "walletButtonSend": "প্ৰেৰণ কৰক",
@@ -1169,16 +1055,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "দ্ৰুততম - কেৱল €30,000-ৰ তলৰ লেনদেনৰ বাবে",
   "fundExchangeMethodRegularSepa": "Regular SEPA",
   "fundExchangeMethodRegularSepaSubtitle": "কেৱল €30,000-ৰ ওপৰৰ বৃহত্তৰ লেনদেনৰ বাবে ব্যৱহাৰ কৰক",
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "fundExchangeMethodSpeiTransferSubtitle": "আপোনাৰ CLABE ব্যৱহাৰ কৰি ধন transfer কৰক",
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ব্যৱহাৰ কৰি Colones transfer কৰক",
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC)-ত ধন transfer কৰক",
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "fundExchangeMethodCrIbanUsdSubtitle": "US Dollars (USD)-ত ধন transfer কৰক",
-  "fundExchangeMethodArsBankTransfer": "ব্যাংক Transfer",
-  "fundExchangeMethodArsBankTransferSubtitle": "আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক",
   "fundExchangeBankTransferWireTitle": "ব্যাংক transfer (wire)",
   "fundExchangeBankTransferWireDescription": "তলৰ Bull Bitcoin-ৰ ব্যাংকৰ বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা wire transfer পঠিয়াওক। আপোনাৰ ব্যাংকৰ বাবে হয়তো এই বিৱৰণৰ কিছু অংশহে প্ৰয়োজন হ'ব।",
   "fundExchangeBankTransferWireTimeframe": "আপুনি পঠিওৱা যিকোনো ধন 1-2 ব্যৱসায়িক দিনৰ ভিতৰত আপোনাৰ Bull Bitcoin-ত যোগ কৰা হ'ব।",
@@ -1240,15 +1116,6 @@
   "fundExchangeSinpeDescription": "SINPE ব্যৱহাৰ কৰি Colones transfer কৰক",
   "fundExchangeCrIbanCrcTitle": "ব্যাংক Transfer (CRC)",
   "fundExchangeCrIbanUsdTitle": "ব্যাংক Transfer (USD)",
-  "fundExchangeCrBankTransferDescription1": "তলৰ বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক ",
-  "fundExchangeCrBankTransferDescriptionExactly": "ঠিক তেনেকৈয়ে",
-  "fundExchangeCrBankTransferDescription2": "। ধন আপোনাৰ একাউন্ট ব্যালেন্সত যোগ কৰা হ'ব।",
-  "fundExchangeLabelIbanCrcOnly": "IBAN একাউন্ট নম্বৰ (কেৱল Colones-ৰ বাবে)",
-  "fundExchangeLabelIbanUsdOnly": "IBAN একাউন্ট নম্বৰ (কেৱল US Dollars-ৰ বাবে)",
-  "fundExchangeLabelPaymentDescription": "পৰিশোধৰ বিৱৰণ",
-  "fundExchangeHelpPaymentDescription": "আপোনাৰ transfer কোড।",
-  "fundExchangeInfoTransferCodeRequired": "পৰিশোধ কৰোঁতে আপুনি transfer কোড \"বাৰ্তা\" বা \"কাৰণ\" বা \"বিৱৰণ\" হিচাপে যোগ কৰিব লাগিব। যদি আপুনি এই কোড দিয়াটো পাহৰে, আপোনাৰ পৰিশোধ প্ৰত্যাখ্যান হ'ব পাৰে।",
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
   "fundExchangeArsBankTransferTitle": "ব্যাংক Transfer",
   "fundExchangeArsBankTransferDescription": "তলৰ Argentina ব্যাংকৰ সঠিক বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক।",
   "fundExchangeLabelRecipientNameArs": "প্ৰাপকৰ নাম",
@@ -1258,11 +1125,12 @@
   "fundExchangeErrorTitleRcpPo404": "পৰিশোধ বিকল্প উপলব্ধ নাই",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নাই",
   "fundExchangeErrorTitleOrdKyc400": "KYC প্ৰয়োজনীয়তা অনুপস্থিত",
-  "fundExchangeErrorOrdKyc400": "এই কাৰ্যৰ বাবে আপোনাৰ প্ৰয়োজনীয় KYC প্ৰয়োজনীয়তা নাই: {missingFields}",
+  "fundExchangeErrorOrdKyc400": "এই কাৰ্যৰ বাবে আপোনাৰ প্ৰয়োজনীয় KYC প্ৰয়োজনীয়তা নাই",
+  "fundExchangeErrorOrdCsrcp400": "অনুগ্ৰহ কৰি এই SEPA গ্ৰাহকৰ বাবে ভাৰ্চুৱেল পৰিশোধ বিকল্প সক্ৰিয় কৰক",
+  "fundExchangeErrorOpeningPaymentLink": "পৰিশোধৰ লিংকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
-  "fundExchangeErrorOrdCop400": "COP ফান্ডিংৰ বাবে অবৈধ অনুৰোধ ডেটা: {error}",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংৰ বাবে অবৈধ অনুৰোধ ডেটা",
   "fundExchangeErrorTitleOrdCsrcp400": "ভাৰ্চুৱেল পৰিশোধ সক্ৰিয় নহয়",
-  "fundExchangeErrorOrdCsrcp400": "অনুগ্ৰহ কৰি IBAN: {iban} থকা SEPA গ্ৰাহকৰ বাবে ভাৰ্চুৱেল পৰিশোধ বিকল্প সক্ৰিয় কৰক",
   "fundExchangeErrorTitleRcp400": "অবৈধ অনুৰোধ",
   "fundExchangeErrorRcp400": "অবৈধ অনুৰোধ",
   "fundExchangeErrorOrdPo404": "কোনো পৰিশোধ বিকল্প উপলব্ধ নাই",
@@ -1337,7 +1205,6 @@
   "startBackupButton": "বেকআপ আৰম্ভ কৰক",
   "exportVaultButton": "Vault ৰপ্তানি কৰক",
   "exportingVaultButton": "ৰপ্তানি হৈ আছে...",
-  "viewVaultKeyButton": "Vault Key চাওক",
   "revealingVaultKeyButton": "প্ৰকাশ কৰা হৈ আছে...",
   "errorLabel": "ত্ৰুটি",
   "backupKeyTitle": "বেকআপ Key",
@@ -1583,120 +1450,6 @@
   "anErrorOccurred": "এটা ত্ৰুটি ঘটিছে",
   "@anErrorOccurred": {
     "description": "Generic error message"
-  },
-  "dcaSetRecurringBuyTitle": "পুনৰাবৃত্তি ক্ৰয় নিৰ্ধাৰণ কৰক",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
-  },
-  "dcaInsufficientBalanceTitle": "অপৰ্যাপ্ত বেলেঞ্চ",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
-  },
-  "dcaInsufficientBalanceDescription": "এই অৰ্ডাৰ সৃষ্টি কৰিবলৈ আপোনাৰ যথেষ্ট বেলেঞ্চ নাই।",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
-  "dcaFundAccountButton": "আপোনাৰ একাউণ্ট পুঁজি যোগান ধৰক",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
-  },
-  "dcaScheduleDescription": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে কৰা হ'ব।",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
-  "dcaFrequencyValidationError": "অনুগ্ৰহ কৰি এটা কম্পাঙ্ক বাছনি কৰক",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
-  "dcaContinueButton": "অব্যাহত ৰাখক",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
-  "dcaConfirmRecurringBuyTitle": "পুনৰাবৃত্তি ক্ৰয় নিশ্চিত কৰক",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
-  "dcaConfirmationDescription": "এই ছেটিংছ অনুযায়ী ক্ৰয় অৰ্ডাৰ স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব। আপুনি যিকোনো সময়তে নিষ্ক্ৰিয় কৰিব পাৰিব।",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
-  "dcaFrequencyLabel": "কম্পাঙ্ক",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
-  },
-  "dcaFrequencyHourly": "ঘণ্টা",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
-  "dcaFrequencyDaily": "দিন",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
-  "dcaFrequencyWeekly": "সপ্তাহ",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
-  },
-  "dcaFrequencyMonthly": "মাহ",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
-  "dcaAmountLabel": "পৰিমাণ",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
-  "dcaPaymentMethodLabel": "পৰিশোধ পদ্ধতি",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
-  },
-  "dcaPaymentMethodValue": "{currency} বেলেঞ্চ",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaOrderTypeLabel": "অৰ্ডাৰৰ ধৰণ",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
-  "dcaOrderTypeValue": "পুনৰাবৃত্তি ক্ৰয়",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
-  },
-  "dcaNetworkLabel": "নেটৱৰ্ক",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
-  "dcaNetworkBitcoin": "Bitcoin নেটৱৰ্ক",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
-  "dcaNetworkLightning": "Lightning নেটৱৰ্ক",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
-  "dcaNetworkLiquid": "Liquid নেটৱৰ্ক",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
-  "dcaLightningAddressLabel": "Lightning ঠিকনা",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
-  "dcaConfirmationError": "কিবা সমস্যা হৈছে: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmButton": "অব্যাহত ৰাখক",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaSuccessTitle": "পুনৰাবৃত্তি ক্ৰয় সক্ৰিয় হৈছে!",
   "@dcaSuccessTitle": {
@@ -2756,10 +2509,6 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "shareLogsLabel": "লগ শ্বেয়াৰ কৰক",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
-  },
   "deleteLogsTitle": "লগ মচক",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -2781,10 +2530,6 @@
       }
     }
   },
-  "copiedToClipboardMessage": "ক্লিপবোৰ্ডত কপি কৰা হৈছে",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "submitButton": "দাখিল কৰক",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
@@ -2792,10 +2537,6 @@
   "optionalPassphraseHint": "ঐচ্ছিক Passphrase",
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
-  },
-  "labelInputLabel": "লেবেল",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
   },
   "requiredHint": "প্ৰয়োজনীয়",
   "@requiredHint": {
@@ -2880,10 +2621,6 @@
   "routeErrorMessage": "পৃষ্ঠা পোৱা নগ'ল",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
-  },
-  "logsViewerTitle": "লগসমূহ",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
   },
   "payInvoiceTitle": "Invoice পৰিশোধ কৰক",
   "@payInvoiceTitle": {
@@ -3730,7 +3467,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "অসমৰ্থিত QR ক'ড ফৰ্মেট",
-  "sendErrorBuildFailed": "নিৰ্মাণ বিফল হৈছে",
+  "sendErrorBuildFailed": "এই পৰিশোধ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -4747,24 +4484,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorVerificationFailed": "যাচাইকৰণ বিফল হৈছে: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "বেকআপ আনিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "অবৈধ ফাইল বিষয়বস্তু",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -4776,42 +4495,6 @@
   "testBackupErrorWalletMismatch": "বেকআপ বৰ্তমানৰ wallet-ৰ সৈতে নিমিলে",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "testBackupErrorWriteFailed": "সংৰক্ষণত লিখিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "বেকআপ পৰীক্ষা কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Wallets লোড কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonic লোড কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveCancelButton": "বাতিল কৰক",
   "@recoverbullGoogleDriveCancelButton": {
@@ -5366,19 +5049,6 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
-  "psbtFlowError": "ত্ৰুটি: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowNoPartsToDisplay": "প্ৰদৰ্শন কৰিবলৈ কোনো অংশ নাই",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "psbtFlowPartProgress": "অংশ {current} / {total}",
   "@psbtFlowPartProgress": {
     "description": "Progress indicator for animated QR code parts",
@@ -5391,22 +5061,6 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Krux নিৰ্দেশনা",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
-  },
-  "psbtFlowKeystoneTitle": "Keystone নিৰ্দেশনা",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
-  "psbtFlowPassportTitle": "Foundation Passport নিৰ্দেশনা",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
-  },
-  "psbtFlowSeedSignerTitle": "SeedSigner নিৰ্দেশনা",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "psbtFlowSpecterTitle": "Specter নিৰ্দেশনা",
   "@psbtFlowSpecterTitle": {
     "description": "Title for Specter device signing instructions"
@@ -5414,19 +5068,6 @@
   "psbtFlowColdcardTitle": "Coldcard Q নিৰ্দেশনা",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT নিৰ্দেশনা",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
-  "psbtFlowLoginToDevice": "আপোনাৰ {device} ডিভাইচত লগিন কৰক",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "psbtFlowTurnOnDevice": "আপোনাৰ {device} ডিভাইচ চালু কৰক",
   "@psbtFlowTurnOnDevice": {
@@ -5437,37 +5078,9 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "psbtFlowClickScan": "Scan ক্লিক কৰক",
   "@psbtFlowClickScan": {
     "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowClickSign": "Sign ক্লিক কৰক",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
-  "psbtFlowClickPsbt": "PSBT ক্লিক কৰক",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
-  "psbtFlowLoadFromCamera": "Load from camera ক্লিক কৰক",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
-  "psbtFlowScanQrOption": "\"Scan QR\" বিকল্পটো বাছনি কৰক",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" বিকল্পটো বাছনি কৰক",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
-  },
-  "psbtFlowSignWithQr": "Sign with QR Code ক্লিক কৰক",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
   },
   "psbtFlowScanQrShown": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
   "@psbtFlowScanQrShown": {
@@ -5488,14 +5101,6 @@
   "psbtFlowMoveBack": "আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowHoldSteady": "QR code টো স্থিৰ আৰু মাজত ধৰক",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
-  "psbtFlowMoveCloserFurther": "আপোনাৰ ডিভাইচটো ওচৰলৈ বা আঁতৰলৈ লৰাই চেষ্টা কৰক",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "psbtFlowReviewTransaction": "আপোনাৰ {device} ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
   "@psbtFlowReviewTransaction": {
@@ -6268,7 +5873,6 @@
     }
   },
   "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
-  "transactionHistoryHeading": "লেনদেনৰ ইতিহাস",
   "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
   "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
   "exportTransactionsEndDate": "শেষৰ তাৰিখ",
@@ -6670,7 +6274,7 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Sparrow\" বাছনি কৰক",
+  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Animated\" বাছনি কৰক। পুৰণি SeedSigner firmware-ত \"Sparrow\" বাছনি কৰক।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -6898,69 +6502,6 @@
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
-  "dcaActivate": "Recurring Buy সক্ৰিয় কৰক",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
-  "dcaDeactivate": "Recurring Buy নিষ্ক্ৰিয় কৰক",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
-  },
-  "dcaViewSettings": "ছেটিংছ চাওক",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
-  "dcaHideSettings": "ছেটিংছ লুকুৱাওক",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
-  },
-  "dcaCancelTitle": "Bitcoin Recurring Buy বাতিল কৰিবনে?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
-  },
-  "dcaCancelMessage": "আপোনাৰ নিয়মিত Bitcoin ক্ৰয় পৰিকল্পনা বন্ধ হ'ব, আৰু নিৰ্ধাৰিত ক্ৰয়সমূহ শেষ হ'ব। পুনৰ আৰম্ভ কৰিবলৈ, আপুনি এটা নতুন পৰিকল্পনা স্থাপন কৰিব লাগিব।",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
-  },
-  "dcaCancelButton": "বাতিল",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
-  },
-  "dcaConfirmDeactivate": "হয়, নিষ্ক্ৰিয় কৰক",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
-  },
-  "dcaUnableToGetConfig": "DCA কনফিগাৰেচন পাবলৈ অসমৰ্থ",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
-  "dcaAddressBitcoin": "Bitcoin ঠিকনা",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
-  "dcaAddressLightning": "Lightning ঠিকনা",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
-  },
-  "dcaAddressLiquid": "Liquid ঠিকনা",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
-  "dcaBuyingMessage": "আপোনাৰ একাউণ্টত পুঁজি থকালৈকে আপুনি প্ৰতি {frequency} তে {network} ৰ জৰিয়তে {amount} ক্ৰয় কৰি আছে।",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "লগইন ব্যৰ্থ হৈছে",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -6984,34 +6525,6 @@
   "withdrawAmountContinue": "অব্যাহত ৰাখক",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
-  },
-  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "withdrawConfirmTitle": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmTitle": {
@@ -7056,23 +6569,6 @@
   "withdrawConfirmButton": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "ত্ৰুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "আপোনাৰ দেশ আৰু পৰিশোধ পদ্ধতি বাছনি কৰক",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
   },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
@@ -7190,15 +6686,6 @@
   "dcaConfirmLightningAddress": "Lightning ঠিকনা",
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
-  },
-  "dcaConfirmError": "কিবা সমস্যা হৈছে: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "dcaConfirmContinue": "অব্যাহত ৰাখক",
   "@dcaConfirmContinue": {
@@ -7543,10 +7030,6 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "যদি কোনো protocol নিৰ্দিষ্ট কৰা নহয়, তেন্তে ডিফল্টৰূপে SSL ব্যৱহাৰ কৰা হ'ব।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "electrumLiquidSslInfo": "কোনো protocol নিৰ্দিষ্ট কৰিব নালাগে, SSL স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰ কৰা হ'ব।",
   "@electrumLiquidSslInfo": {
     "description": "Info text for Liquid server protocol"
@@ -7801,14 +7284,6 @@
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
-  "appStartupErrorMessageWithBackup": "আৰম্ভ কৰিব পৰা নগ'ল। সমাধানৰ বাবে মচক আৰু পুনৰস্থাপন কৰক।",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "আৰম্ভ কৰিব পৰা নগ'ল। সমাধানৰ বাবে মচক আৰু পুনৰস্থাপন কৰক। আপোনাৰ seed-ৰ বেকআপ নাথাকিলে, পুনৰস্থাপনৰ পিছত Settings->Bitcoin Settings->View Seeds-ত চাব পাৰিব।",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
-  },
   "appStartupContactSupportButton": "সহায়ৰ সৈতে যোগাযোগ কৰক",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
@@ -7931,13 +7406,17 @@
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
-  "ledgerErrorUnknown": "অজ্ঞাত ত্ৰুটি",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
-  "ledgerErrorUnknownOccurred": "অজ্ঞাত ত্ৰুটি ঘটিছে",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
+  "ledgerErrorPermissionDenied": "Ledger ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ব্লুটুথ অনুমতি প্ৰয়োজন।",
+  "ledgerErrorNoDevicesFound": "কোনো Ledger ডিভাইচ পোৱা নগ'ল। আপোনাৰ ডিভাইচটো চালু আছে আৰু ব্লুটুথ সক্ষম আছে বুলি নিশ্চিত কৰক।",
+  "ledgerErrorMultipleDevicesFound": "একাধিক Ledger ডিভাইচ পোৱা গ'ল। অনুগ্ৰহ কৰি ওচৰত কেৱল এটা ডিভাইচ থকাটো নিশ্চিত কৰক।",
+  "ledgerErrorDeviceNotFound": "Ledger ডিভাইচ পোৱা নগ'ল।",
+  "ledgerErrorDeviceMismatch": "ডিভাইচৰ অমিল ধৰা পৰিছে।",
+  "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
+  "ledgerErrorMissingDerivationPath": "ডেৰিভেশ্যন পাথ প্ৰয়োজন",
+  "ledgerErrorMissingScriptType": "স্ক্ৰিপ্ট প্ৰকাৰ প্ৰয়োজন",
+  "ledgerErrorDeviceBusy": "আন এটা প্ৰগ্ৰামে আপোনাৰ Ledger ব্যৱহাৰ কৰি আছে। অনুগ্ৰহ কৰি ইয়াক বন্ধ কৰক (উদাহৰণস্বৰূপে, Ledger Live) আৰু পুনৰ চেষ্টা কৰক।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
   },
   "ledgerErrorNoConnection": "কোনো Ledger সংযোগ উপলব্ধ নাই",
   "@ledgerErrorNoConnection": {
@@ -7959,25 +7438,9 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "ledgerErrorMissingDerivationPathSign": "চহিৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
-  },
-  "ledgerErrorMissingScriptTypeSign": "চহিৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "ledgerErrorMissingAddress": "যাচাইৰ বাবে ঠিকনা আৱশ্যক",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "ledgerErrorMissingDerivationPathVerify": "যাচাইৰ বাবে derivation path আৱশ্যক",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
-  "ledgerErrorMissingScriptTypeVerify": "যাচাইৰ বাবে script type আৱশ্যক",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
   },
   "ledgerButtonTryAgain": "পুনৰ চেষ্টা কৰক",
   "@ledgerButtonTryAgain": {
@@ -8529,10 +7992,6 @@
   "@torSettingsPortHint": {
     "description": "Hint text for port input showing default value"
   },
-  "torSettingsPortHelper": "ডিফল্ট Orbot port: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
-  },
   "torSettingsPortValidationEmpty": "অনুগ্ৰহ কৰি এটা port নম্বৰ দিয়ক",
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
@@ -8581,18 +8040,6 @@
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
   },
-  "torSettingsDescUnknown": "Tor-ৰ স্থিতি নিৰ্ধাৰণ কৰিব পৰা নগ'ল। Orbot ইনষ্টল আৰু চলি আছে নিশ্চিত কৰক।",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
-  },
-  "torSettingsInfoTitle": "গুৰুত্বপূৰ্ণ তথ্য",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
-  },
-  "torSettingsInfoDescription": "• Tor proxy কেৱল Bitcoin-ত প্ৰযোজ্য (Liquid-ত নহয়)\n• ডিফল্ট Orbot port হৈছে 9050\n• সামৰ্থ্য কৰাৰ আগতে Orbot চলি আছে নিশ্চিত কৰক\n• Tor-ৰ জৰিয়তে সংযোগ লেহেমীয়া হ'ব পাৰে",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "withdrawSuccessTitle": "উত্তোলন আৰম্ভ হৈছে",
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
@@ -8617,33 +8064,6 @@
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
   },
-  "walletAutoTransferBlockedTitle": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ বাধা প্ৰাপ্ত",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC ট্ৰান্সফাৰ কৰিবলৈ চেষ্টা কৰা হৈছে। বৰ্তমানৰ মাচুল হৈছে ট্ৰান্সফাৰ পৰিমাণৰ {currentFee}% আৰু মাচুলৰ সীমা {thresholdFee}%-ত ছেট কৰা আছে",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "বাধা দিয়ক",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
-  "walletAutoTransferAllowButton": "অনুমতি দিয়ক",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
-  },
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
@@ -8664,38 +8084,18 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "buyInsufficientFundsError": "এই ক্ৰয় অৰ্ডাৰ সম্পন্ন কৰিবলৈ আপোনাৰ Bull Bitcoin account-ত পৰ্যাপ্ত পুঁজি নাই।",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
-  "buyOrderNotFoundError": "ক্ৰয় অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
-  "buyOrderAlreadyConfirmedError": "এই ক্ৰয় অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "withdrawUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawAboveMaxAmountError": "সৰ্বোচ্চ পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
   "@coreScreensPageNotFound": {
@@ -8950,10 +8350,6 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "পৰিশোধ লিংক খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায়ৰ বাবে যোগাযোগ কৰক।",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
-  },
   "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হৈছে",
   "@transactionStatusPayjoinCompleted": {
     "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
@@ -9035,37 +8431,6 @@
     }
   },
   "sendEstimatedDeliveryHours": "ঘণ্টা",
-  "labelErrorNotFound": "লেবেল \"{label}\" পোৱা নগ'ল।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "এই ধৰণ {type} সমৰ্থিত নহয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "চিস্টেম লেবেলসমূহ মচিব নোৱাৰি।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "coreScreensUnexpectedError": "অপ্ৰত্যাশিত ত্ৰুটি: {message}।",
   "walletButtonCoins": "কইন পৰিচালনা কৰক",
   "@walletButtonCoins": {
@@ -9320,11 +8685,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "তাৰিখ অনুযায়ী ফিল্টাৰ কৰক",
-  "logsViewerShowingCount": "{total} টা লগৰ ভিতৰত {shown} টা দেখুওৱা হৈছে",
-  "logsViewerClearFilter": "ফিল্টাৰ মচক",
-  "logsViewerShareButton": "শ্বেয়াৰ কৰক",
-  "logsShareOptionShare": "শ্বেয়াৰ কৰক",
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
@@ -9547,15 +8907,9 @@
   "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
   "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
   "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
-  "exchangeSupportChatPermissionDenied": "অনুমতি নাকচ কৰা হৈছে।",
-  "exchangeSupportChatPermissionDeniedSettings": "অনুমতি নাকচ কৰা হৈছে। অনুগ্ৰহ কৰি ছেটিংছত ফটো লাইব্ৰেৰীৰ প্ৰৱেশাধিকাৰ দিয়ক।",
   "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
-  "logsViewerDeleteTitle": "লগ মচক",
-  "logsViewerDeleteConfirmation": "আপুনি নিশ্চিতভাৱে সকলো লগ মচিব বিচাৰে নে? এই কাৰ্য পূৰ্বাৱস্থালৈ ঘূৰাই আনিব নোৱাৰিব।",
-  "logsViewerDeleteButton": "মচক",
-  "logsViewerCancelButton": "বাতিল কৰক",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
@@ -9594,6 +8948,10 @@
   "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
   "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
+  "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক, আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
+  "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
   "settingsPayjoinDisclaimerTitle": "Payjoin দাবীত্যাগ",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
   "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
@@ -9616,5 +8974,217 @@
   "coreSwapsStatusAwaitingClaim": "দাবীৰ অপেক্ষাত",
   "coreSwapsStatusUnknown": "অজ্ঞাত",
   "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
-  "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।"
+  "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
+  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
+  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
+  "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",
+  "recoverbullPhaseNetworkInfo": "নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি আছে",
+  "recoverbullLongestStep": "এইটোৱেই আটাইতকৈ দীঘলীয়া পদক্ষেপ। প্ৰথমবাৰ আৰম্ভ হ'বলৈ এক মিনিটতকৈ বেছি সময় লাগিব পাৰে।",
+  "recoverbullTorOffline": "ইণ্টাৰনেট সংযোগ নথকা যেন লাগিছে।",
+  "recoverbullTorClockSkewed": "আপোনাৰ ডিভাইচৰ ঘড়ী ভুল, সেয়েহে Tor-এ ৰিলে প্ৰমাণপত্ৰ পৰীক্ষা কৰিব নোৱাৰে। তাৰিখ আৰু সময়ৰ ছেটিং চাওক।",
+  "recoverbullTorCantStart": "এতিয়া Tor সংযোগ কৰিব পৰা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recoverbullServerUnreachableTorOk": "Tor কাম কৰি আছে, কিন্তু বেকআপ ছাৰ্ভাৰে সঁহাৰি দিয়া নাই। প্ৰথমবাৰ আৰম্ভ কৰাৰ পিছত ইয়াত অলপ সময় লাগিব পাৰে।",
+  "torSettingsEmbeddedTitle": "অন্তৰ্নিহিত Tor",
+  "torSettingsEmbeddedDescription": "অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে। এপৰ বাকী ট্ৰেফিক পোনপটীয়াকৈয়ে থাকে।",
+  "torSettingsTransportMode": "সংযোগৰ পদ্ধতি",
+  "torSettingsModeAutomatic": "স্বয়ংক্ৰিয়",
+  "torSettingsModeDirect": "পোনপটীয়া",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
+  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
+  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
+  "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
+  "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে",
+  "settingsSearchHint": "ছেটিংছ সন্ধান কৰক",
+  "settingsSearchNoResults": "কোনো ছেটিংছ পোৱা নগ'ল।",
+  "settingsSearchMempoolKeywords": "ব্লক এক্সপ্লোৰাৰ|মাচুলৰ অনুমান|লেনদেনৰ মাচুল|mempool API",
+  "settingsSearchExchangeKeywords": "একাউণ্ট|এক্সচেঞ্জ একাউণ্ট|ট্ৰেডিং|ক্ৰয় আৰু বিক্ৰয়",
+  "settingsSearchStartBackupKeywords": "বেকআপ তৈয়াৰ কৰক|বেকআপ সংৰক্ষণ কৰক|ৱালেট বেকআপ কৰক",
+  "settingsSearchRecoverbullKeywords": "এনক্ৰিপ্টেড বেকআপ|ক্লাউড বেকআপ|এনক্ৰিপ্টেড ভল্ট|ভল্ট পুনৰুদ্ধাৰ",
+  "settingsSearchLabelsKeywords": "ৱালেট লেবেল|লেনদেনৰ লেবেল|BIP329|লেবেল আমদানি|লেবেল ৰপ্তানি",
+  "settingsSearchTransactionHistoryKeywords": "লেনদেন ৰপ্তানি|লেনদেনৰ ইতিহাস ৰপ্তানি|CSV|ৱালেটৰ ইতিহাস",
+  "settingsSearchAppSettingsKeywords": "এপ পছন্দসমূহ|এপ্লিকেশ্যন ছেটিংছ|সাধাৰণ ছেটিংছ",
+  "settingsSearchBtcMapKeywords": "BTC Map|বিটকইন মানচিত্ৰ|ব্যৱসায়ীৰ মানচিত্ৰ|বিটকইন খৰচ কৰাৰ ঠাই",
+  "settingsSearchTermsOfServiceKeywords": "চৰ্ত আৰু নিয়মাৱলী|আইনী|ব্যৱহাৰকাৰী চুক্তি|TOS",
+  "settingsSearchServicesStatusKeywords": "সেৱাৰ স্বাস্থ্য|চিষ্টেমৰ স্থিতি|অনলাইন|সেৱা বন্ধ",
+  "settingsSearchImportWalletKeywords": "ৱালেট যোগ কৰক|ৱালেট পুনৰুদ্ধাৰ|Mnemonic আমদানি|Watch-only ৱালেট|হাৰ্ডৱেৰ ৱালেট",
+  "settingsSearchBroadcastTransactionKeywords": "স্বাক্ষৰিত লেনদেন প্ৰচাৰ|লেনদেন পঠিয়াওক|কেঁচা লেনদেন|লেনদেন hex|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin গোপনীয়তা|সহযোগিতামূলক লেনদেন|P2EP",
+  "settingsSearchAutoswapKeywords": "Autoswap|স্বয়ংক্ৰিয় swap|স্বয়ংক্ৰিয় transfer|তাৎক্ষণিক ৱালেট বেলেঞ্চ",
+  "settingsSearchElectrumKeywords": "বিটকইন নোড|Electrum নোড|কাষ্টম চাৰ্ভাৰ|নিজা নোড",
+  "settingsSearchTestnetModeKeywords": "পৰীক্ষামূলক নেটৱৰ্ক|Bitcoin Testnet|Liquid Testnet|পৰীক্ষা মোড",
+  "settingsSearchSeedViewerKeywords": "ছীড বাক্যাংশ|পুনৰুদ্ধাৰ বাক্যাংশ|Mnemonic|বেকআপ শব্দ|ছীড দেখুৱাওক",
+  "settingsSearchBip85Keywords": "নিৰ্ধাৰিত এণ্ট্ৰপি|চাইল্ড ছীড|উৎপন্ন এণ্ট্ৰপি|BIP85",
+  "settingsSearchLanguageKeywords": "এপৰ ভাষা|অনুবাদ|প্ৰদৰ্শনৰ ভাষা|পছন্দৰ ভাষা",
+  "settingsSearchThemeKeywords": "এপৰ ৰূপ|আন্ধাৰ মোড|পোহৰ মোড|চিষ্টেম থিম|ডাৰ্ক মোড|লাইট মোড",
+  "settingsSearchCurrencyKeywords": "Fiat মুদ্ৰা|স্থানীয় মুদ্ৰা|ডিফল্ট মুদ্ৰা|Exchange মুদ্ৰা",
+  "settingsSearchSecurityPinKeywords": "PIN কোড|পাছকোড|এপ লক|প্ৰমাণীকৰণ|PIN সলনি কৰক",
+  "settingsSearchLogsKeywords": "Debug লগ|Diagnostic লগ|এপ লগ|লগ ৰপ্তানি",
+  "settingsSearchDevModeKeywords": "Developer মোড|Development ছেটিংছ|Debug মোড|উন্নত পৰীক্ষণ",
+  "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যৱহাৰকাৰীৰ তথ্য|Testnet লগইন|Testnet ব্যৱহাৰকাৰীৰ নাম|Testnet পাছৱৰ্ড|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
+  "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
+  "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।",
+  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "psbtFlowInvalidPsbtError": "এই লেনদেন পঢ়িব পৰা নগ'ল। উভতি গৈ ইয়াক পুনৰ সৃষ্টি কৰক।",
+  "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।",
+  "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
+  "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletLoadFailed": "আপোনাৰ ৱালেটসমূহ লʼড কৰিব পৰা নগʼল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumLiquidDown": "Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
+  "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক",
+  "transactionDetailLoadError": "লেনদেনৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল।",
+  "transactionPayjoinBroadcastFailed": "মূল লেনদেনটো সম্প্ৰচাৰ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটো আৰু সম্প্ৰচাৰৰ বাবে উপলব্ধ নহয়।",
+  "transactionLabelLimitReached": "আপুনি সৰ্বাধিক ১০টা লেবেল ৰাখিব পাৰে।",
+  "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "settingsErrorConsentNotGiven": "এই ছেটিং সলনি কৰাৰ আগতে আপোনাৰ নিশ্চিতকৰণৰ প্ৰয়োজন।",
+  "settingsErrorLoadingLogs": "নিদান লগসমূহ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorSigningOut": "আপোনাক সম্পূৰ্ণৰূপে ছাইন আউট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorSavingPreferences": "আপোনাৰ পছন্দসমূহ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorLoadingAnnouncements": "ঘোষণাসমূহ ল'ড কৰিব পৰা নগ'ল।",
+  "exchangeErrorRequestingAccountDeletion": "আপোনাৰ একাউণ্ট মচাৰ অনুৰোধ পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorLoadingStatistics": "আপোনাৰ ট্ৰেডিং পৰিসংখ্যা ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorLoadingAccount": "আপোনাৰ একাউণ্টৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে এখন নথি দাখিল কৰা হৈছে।",
+  "exchangeSettingsErrorDocumentEmpty": "সেই ফাইলটো খালী। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentTooLarge": "সেই ফাইলটো অতি ডাঙৰ। সৰু এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইল প্ৰকাৰ গ্ৰহণ কৰা নহয়। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটো পঢ়িব পৰা নগ'ল। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorUploadingDocument": "নথিখন আপল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorNoteTooLong": "টোকা {max} আখৰতকৈ বেছি হ'ব নোৱাৰে",
+  "labelsErrorNoteForbiddenCharacter": "টোকাত {character} আখৰটো থাকিব নোৱাৰে",
+  "labelsErrorFileTooLarge": "এই ফাইলটো অতি ডাঙৰ। লেবেল ফাইল {max} তকৈ সৰু হ'ব লাগিব।",
+  "labelsErrorFileUnreadable": "এইটো BIP-329 লেবেল ফাইল যেন নালাগে। আপুনি শুদ্ধ ফাইল বাছিছে নে চাওক।",
+  "labelsErrorFileEmpty": "এই ফাইলত আমদানি কৰিবলৈ কোনো লেবেল নাই।",
+  "labelsErrorExportFailed": "আপোনাৰ লেবেলবোৰ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorFileReservedName": "এই ফাইলে এপ্পে সংৰক্ষিত কৰা লেবেল নাম ব্যৱহাৰ কৰে। ফাইলত নাম সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorNoteForbiddenWhitespace": "টোকাত লাইন ব্ৰেক বা টেব থাকিব নোৱাৰে",
+  "labelsErrorFileInvalidEntry": "সেই ফাইলৰ কিছুমান প্ৰবিষ্টি পঢ়িব পৰা নগ'ল। ফাইলটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorLoadFailed": "আপোনাৰ প্ৰাপকসকলক ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorSaveFailed": "এই প্ৰাপকজনক সংৰক্ষণ কৰিব পৰা নগ'ল। তথ্য পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorSinpeLookupFailed": "আমি এই ফোন নম্বৰটো সত্যাপন কৰিব নোৱাৰিলোঁ। ইয়াক পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorBillerSearchFailed": "বিলাৰ বিচাৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsListPullToRetry": "পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
+  "recipientsErrorSavedButNotSelected": "এই প্ৰাপকজনক সংৰক্ষণ কৰা হৈছে, কিন্তু আমি আগবাঢ়িব নোৱাৰিলোঁ। আগবাঢ়িবলৈ তালিকাত বিচাৰক।",
+  "testBackupErrorWalletsUnavailable": "আপোনাৰ ৱালেটবোৰ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorNoWallets": "বেকআপ পৰীক্ষা কৰিবলৈ কোনো ৱালেট নাই।",
+  "testBackupErrorNoWalletSelected": "বেকআপ পৰীক্ষা কৰাৰ আগতে এটা ৱালেট বাছনি কৰক।",
+  "testBackupErrorSeedUnavailable": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ পঢ়িব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
+  "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "withdrawInteracSecurityDetailsTitle": "Interac সুৰক্ষা বিৱৰণ",
+  "withdrawInteracSaveAsDefault": "এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক",
+  "withdrawInteracSecurityQuestionLengthError": "সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerLengthError": "সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব",
+  "withdrawInteracSecurityAnswerFormatError": "খালী ঠাই নিদিয়াকৈ আখৰ, সংখ্যা বা হাইফেন ব্যৱহাৰ কৰক",
+  "autoBuyTitle": "স্বয়ংক্ৰিয় ক্ৰয়",
+  "autoBuyDescription": "আপুনি একাউণ্টত পুঁজি জমা কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনক",
+  "autoBuyActivate": "স্বয়ংক্ৰিয় ক্ৰয় সক্ৰিয় কৰক",
+  "autoBuyDeactivate": "স্বয়ংক্ৰিয় ক্ৰয় নিষ্ক্ৰিয় কৰক",
+  "autoBuyCancelTitle": "স্বয়ংক্ৰিয় ক্ৰয় বাতিল কৰিবনে?",
+  "autoBuyCancelMessage": "পৰৱৰ্তী বাৰ আপুনি একাউণ্টত পুঁজি যোগ কৰিলে স্বয়ংক্ৰিয়ভাৱে Bitcoin কিনা নহ'ব।",
+  "autoBuyDeactivateConfirm": "হয়, নিষ্ক্ৰিয় কৰক",
+  "autoBuyHowItWorks": "ই কেনেকৈ কাম কৰে",
+  "autoBuyConnectWallet": "আপোনাৰ Bitcoin, Lightning বা Liquid ৱালেট সংযোগ কৰক",
+  "autoBuyPurchaseCreated": "আপুনি আপোনাৰ Bull Bitcoin একাউণ্টত পুঁজি যোগ কৰা প্ৰতিবাৰতে স্বয়ংক্ৰিয়ভাৱে এটা Bitcoin ক্ৰয় সৃষ্টি কৰা হয়।",
+  "autoBuyBitcoinSent": "Bitcoin পোনপটীয়াকৈ আপোনাৰ নিজৰ ৱালেটলৈ পঠিওৱা হয়।",
+  "autoBuyRiskDisclaimer": "অৰ্ডাৰ কাৰ্যকৰী হোৱাৰ নিশ্চয়তা দিব নোৱাৰি। জমা আৰু ক্ৰয়ৰ মাজত হোৱা পলম বা দামৰ পৰিৱৰ্তনে প্ৰকৃত হাৰ সলনি কৰিব পাৰে।",
+  "autoBuyGetStarted": "স্বয়ংক্ৰিয় ক্ৰয় আৰম্ভ কৰক",
+  "autoBuyConfirmTitle": "স্বয়ংক্ৰিয় ক্ৰয় নিশ্চিত কৰক",
+  "autoBuyInfoMessage": "আপোনাৰ একাউণ্টত যোগ কৰা যিকোনো পৰিমাণ বৰ্তমানৰ বিনিময় হাৰত Bitcoin-লৈ ৰূপান্তৰ কৰি আপোনাৰ ৱালেটলৈ পঠিওৱা হ'ব।",
+  "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
+  "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
+  "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
+  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ৱালেটটোৱে বৰ্তমান বেলেগ Bitcoin নেটৱৰ্ক ব্যৱহাৰ কৰি আছে। Mainnet আৰু Testnet-ৰ মাজত সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "importWatchOnlyErrorAlreadyExists": "এই ৱালেটটো ইতিমধ্যে আমদানি কৰা হৈছে।",
+  "importWatchOnlyNetworkBitcoinMainnet": "নেটৱৰ্ক: Bitcoin মূল নেটৱৰ্ক",
+  "importWatchOnlyNetworkBitcoinTestnet": "নেটৱৰ্ক: Bitcoin পৰীক্ষামূলক নেটৱৰ্ক",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষৰিত লেনদেনটো চূড়ান্ত কৰিব পৰা নগ'ল। ইয়াত সকলো প্ৰয়োজনীয় স্বাক্ষৰ আছে বুলি নিশ্চিত কৰি পুনৰ চেষ্টা কৰক।",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "পৰিমাণটো বিটকইনৰ সৰ্বাধিক সম্ভাব্য পৰিমাণ {max} তকৈ অধিক",
+  "receiveErrorNoteNotSaved": "আপোনাৰ টোকা সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletBalancesMayBeStale": "আপোনাৰ বেলেঞ্চ আপডেট কৰিব পৰা নগ'ল আৰু সেয়া পুৰণি হ'ব পাৰে।"
 }

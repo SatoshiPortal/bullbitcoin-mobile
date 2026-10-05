@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
@@ -19,6 +20,9 @@ class ImportWatchOnlyDescriptorUsecase {
   Future<Result<Wallet, ImportWatchOnlyFailure>> execute({
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
   }) async {
+    if (!watchOnlyDescriptor.network.isBitcoin) {
+      return const Err(InvalidFormatFailure());
+    }
     try {
       final wallet = await _wallet.importDescriptor(
         watchOnlyDescriptor: watchOnlyDescriptor,
@@ -33,7 +37,12 @@ class ImportWatchOnlyDescriptorUsecase {
         error: e,
         trace: st,
       );
-      return const Err(ImportFailedFailure());
+      return switch (e) {
+        WalletAlreadyExistsException() => const Err(
+          WalletAlreadyExistsFailure(),
+        ),
+        _ => const Err(ImportFailedFailure()),
+      };
     }
   }
 }

@@ -21,6 +21,7 @@ Read:
 | `get KEY [--locale L]` | Print the description and the value across locales |
 | `check KEY` | Which locales have KEY, which are missing it |
 | `missing [--locale L] [--list]` | Keys in the `en` template absent from a locale |
+| `orphans [--locale L] [--list]` | Keys in a locale absent from the template (unreachable — gen-l10n only reads template keys) |
 | `missing-detail LOCALE` | JSON `{key: {en, description, placeholders}}` for every key missing in LOCALE — feed to a translator, then to `fill` |
 | `audit-identical [--locale L] [--list]` | Values byte-identical to the `en` template — a likely untranslated/copy-pasted string (brand names, acronyms, or shared official document names are expected false positives) |
 | `audit-placeholders [--locale L] [--list]` | Values whose top-level `{placeholder}` tokens don't match the `en` template's — a near-certain bug, since a missing placeholder silently drops data at render time |
@@ -36,7 +37,7 @@ Write (other keys left untouched):
 | `fill LOCALE --translations-file PATH [--overwrite]` | Bulk-add/update many key/value translations for one locale in a single pass (PATH is `{"key":"value",...}`, typically produced by translating the output of `missing-detail`). Existing keys are left untouched unless `--overwrite` |
 | `set-meta KEY [--description ...] [--placeholders '{...}']` | Update an existing key's template metadata in place, without touching translations |
 | `rename OLD NEW` | Rename a key across every locale in place, preserving values + metadata |
-| `delete KEY` | Remove KEY and its `@KEY` metadata from every file |
+| `delete KEY [KEY...]` | Remove keys and their `@KEY` metadata from every file (all-or-nothing: aborts if any key is unknown) |
 
 Unknown options are rejected rather than ignored, so a typo fails loudly — and
 an option that isn't valid for the specific command (e.g. `get KEY --description

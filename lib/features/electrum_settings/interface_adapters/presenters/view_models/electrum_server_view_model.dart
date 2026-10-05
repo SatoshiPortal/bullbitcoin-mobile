@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server_view_model.freezed.dart';
@@ -14,21 +15,14 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   }) = _ElectrumServerViewModel;
   const ElectrumServerViewModel._();
 
-  String get displayName {
-    // Remove scheme if present (e.g., "ssl://" or "tcp://")
-    if (url.contains('://')) {
-      return url.split('://').last;
-    }
-    return url;
-  }
+  ElectrumServerUrl get _address => ElectrumServerUrl(url);
 
-  String get protocol {
-    // Extract protocol if present (e.g., "ssl" or "tcp")
-    if (url.contains('://')) {
-      return url.split('://').first;
-    }
-    // Default to 'ssl' if no protocol specified, for Liquid servers that
-    // don't require a scheme for example but always use SSL automatically.
-    return 'ssl';
-  }
+  /// Address without the scheme (e.g. `ssl://` or `tcp://`).
+  String get displayName => _address.authority;
+
+  /// Configured protocol, defaulting to `ssl` for entries that omit it —
+  /// Liquid servers, for example, are always TLS without saying so.
+  String get protocol => _address.scheme;
+
+  bool get isOnion => _address.isOnion;
 }

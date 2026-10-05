@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -56,16 +56,27 @@ fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
 
-# Formatting gate scoped to existing git-tracked source via git ls-files: untracked generated code never trips it, deleted files are skipped, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0).
+# Formatting gate scoped to existing git-tracked source via git ls-files: untracked generated code never trips it, deleted files are skipped, and tracked generated files are filtered by suffix and by /generated/ path segment because `dart format` does not read analysis_options.yaml `exclude:`. Keep the regex in sync with the staged-files variant in .git_hooks/pre-commit. pipefail so a git/grep failure cannot silently pass the gate (xargs -r would no-op and exit 0), and bounded batches keep the formatter below ARG_MAX as the workspace grows.
 format-check:
 	@echo "🎨 dart format should have nothing to change"
-	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r fvm dart format --output=none --set-exit-if-changed'
+	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
 checks: analyze bull-ui-check fix-check format-check unit-test
+
+# Supply-chain regression gate: every external GitHub Actions `uses:` reference
+# must stay pinned to a full commit SHA (mutable tags can be repointed).
+# Analyze and Test runs this as a dedicated lightweight job for every PR.
+action-pins-check:
+	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
+	@bash tools/check_action_pins.sh
+
+pr-governance-test:
+	@echo "🛡️ Testing PR governance policy"
+	@node --test tools/pr_governance/policy.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -104,6 +115,17 @@ ios-sqlite-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
+
+ios-simulator:
+	@if [ "$$(uname)" != "Darwin" ]; then echo "iOS simulator builds require macOS"; exit 1; fi
+	@case "$(BUILD_NUMBER)" in ''|*[!0-9]*|0) echo "BUILD_NUMBER must be a positive integer"; exit 1;; esac
+	@echo "Building iOS Simulator app (build $(BUILD_NUMBER))"
+# Flutter supports only debug mode on the iOS Simulator. Remove Android's
+# default flavor temporarily because iOS has a single unflavored Runner scheme.
+	@backup="$$(mktemp)"; cp pubspec.yaml "$$backup" \
+	  && trap 'cp "$$backup" pubspec.yaml; rm -f "$$backup"' EXIT INT TERM \
+	  && grep -v '^[[:space:]]*default-flavor:' "$$backup" > pubspec.yaml \
+	  && fvm flutter build ios --simulator --debug --build-number "$(BUILD_NUMBER)"
 
 ios-release:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "iOS releases require macOS"; exit 1; fi
@@ -278,7 +300,7 @@ android: container-app
 # read the live pin out of bull-app. Keep in sync with the `channel` in
 # bdk-dart's native/rust-toolchain.toml (bdk_dart is transitive via bull_sdk).
 BDK_RUST_VERSION ?= 1.85.1
-TRACKED_RUST_LIBS := libbdk_dart_ffi.so libtor.so libpayjoin_flutter.so librust_lib_bull_sdk.so
+TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_flutter.so librust_lib_bull_sdk.so
 verify-rustc-pins:
 	@command -v strings >/dev/null 2>&1 || { echo "❌ 'strings' (binutils) not found — cannot verify rustc pins. Install binutils; failing closed rather than skipping the check (a skipped check must never read as green)."; exit 1; }
 	@tmpdir=$$(mktemp -d); \
@@ -302,7 +324,7 @@ verify-rustc-pins:
 			name=$$(basename "$$so"); \
 			case "$$name" in \
 				libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
-				libtor.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
+				libonion.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
 				*) expected="" ;; \
 			esac; \
 			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \

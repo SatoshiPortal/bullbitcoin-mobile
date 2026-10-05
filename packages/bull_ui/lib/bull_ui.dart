@@ -5,6 +5,8 @@
 /// Internals live under `lib/src/`.
 library;
 
+export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
+
 // Curated re-export of Flutter foundation/layout primitives (Decision D5).
 // A blanket `export 'package:flutter/widgets.dart'` is deliberately avoided —
 // the list grows on demand as components need more symbols.
@@ -48,6 +50,7 @@ export 'package:flutter/widgets.dart'
         ListView,
         MainAxisAlignment,
         MainAxisSize,
+        Navigator,
         NeverScrollableScrollPhysics,
         Opacity,
         Padding,

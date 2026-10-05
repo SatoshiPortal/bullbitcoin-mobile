@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
@@ -45,9 +45,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           final signedPsbt = bdk.Psbt(psbtBase64: payload);
 
           final tx = psbt.combine(other: signedPsbt);
-
-          tx.finalize();
-          finalTx = hex.encode(tx.extractTx().serialize());
+          final finalized = tx.finalize();
+          if (!finalized.couldFinalize) {
+            log.warning(
+              'Could not finalize the combined PSBT',
+              error: finalized.errors,
+            );
+            emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+            return;
+          }
+          finalTx = hex.encode(finalized.psbt.extractTx().serialize());
         }
 
         emit(

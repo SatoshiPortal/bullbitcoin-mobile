@@ -9,15 +9,27 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2662 custom URL logging', () {
     test(
-      'fee datasource does not include the complete base URL in its exception',
+      'fee URL selection stays outside the datasource exception boundary',
       () {
-        final source = File(
+        final datasourceSource = File(
           'lib/core/fees/data/fees_datasource.dart',
         ).readAsStringSync();
+        final repositorySource = File(
+          'lib/core/fees/data/fees_repository_impl.dart',
+        ).readAsStringSync();
 
-        expect(source, isNot(contains('No mempool fee endpoint available at')));
-        expect(source, contains('baseUrl = server.fullUrl'));
-        expect(source, contains("'No mempool fee endpoint available'"));
+        expect(repositorySource, contains('customServer.fullUrl'));
+        expect(repositorySource, contains('defaultServer.fullUrl'));
+        expect(repositorySource, contains('baseUrl:'));
+        expect(datasourceSource, isNot(contains('server.fullUrl')));
+        expect(
+          datasourceSource,
+          isNot(contains('No mempool fee endpoint available at')),
+        );
+        expect(
+          datasourceSource,
+          contains("'No mempool fee endpoint available'"),
+        );
       },
     );
   });

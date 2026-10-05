@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:screen_privacy/screen_privacy.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -17,6 +20,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +43,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
     required this._setThemeModeUsecase,
+    required this._revokeSpWalletUsecase,
+    required this._checkSpWalletSetupUsecase,
     required this._setErrorReportingUsecase,
+    required this._setScreenCaptureProtectionUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
@@ -63,7 +70,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
+  final RevokeSpWalletForSettingsUsecase _revokeSpWalletUsecase;
+  final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
+  final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
@@ -77,6 +87,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     return super.close();
   }
 
+  void clearFailure() {
+    emit(state.copyWith(failure: null));
+  }
+
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
       _getSettingsUsecase.execute(),
@@ -84,9 +98,30 @@ class SettingsCubit extends Cubit<SettingsState> {
     ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
 
+    // Mirror the persisted preference into the process-wide capture controller
+    // so protected screens honour the user's choice from the first frame.
+    ScreenCaptureProtection.instance.enabledByUser =
+        storedSettings.screenCaptureProtectionEnabled;
+
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
+    await checkSpWalletSetup();
+  }
+
+  /// Refresh whether the SP wallet is set up (read through the facade). Called
+  /// on init, after a dev-mode toggle, and when the wallet-settings screen is
+  /// (re)entered so its SP entry reflects the current state.
+  Future<void> checkSpWalletSetup() async {
+    switch (await _checkSpWalletSetupUsecase.execute()) {
+      case Ok(:final value):
+        emit(state.copyWith(isSpWalletSetup: value));
+      case Err(:final failure):
+        // Leave the current value alone: a failed read is not "not set up".
+        log.warning(
+          'SettingsCubit.checkSpWalletSetup failed: ${failure.logMessage}',
+        );
+    }
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -95,7 +130,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Testnet mode toggled: $active was ${settings?.environment.name}',
     );
     final environment = active ? Environment.testnet : Environment.mainnet;
-    await _setEnvironmentUsecase.execute(environment);
+    final result = await _setEnvironmentUsecase.execute(environment);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(environment: environment),
@@ -109,7 +149,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
     );
     final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
-    await _setBitcoinUnitUsecase.execute(unit);
+    final result = await _setBitcoinUnitUsecase.execute(unit);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(state.copyWith(storedSettings: settings?.copyWith(bitcoinUnit: unit)));
   }
 
@@ -118,7 +163,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Language changed to: ${language.label} was ${settings?.language?.label}',
     );
-    await _setLanguageUsecase.execute(language);
+    final result = await _setLanguageUsecase.execute(language);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(language: language)),
     );
@@ -129,7 +179,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Currency changed to: $currencyCode was ${settings?.currencyCode}',
     );
-    await _setCurrencyUsecase.execute(currencyCode);
+    final result = await _setCurrencyUsecase.execute(currencyCode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(currencyCode: currencyCode),
@@ -140,14 +195,24 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleHideAmounts(bool hide) async {
     final settings = state.storedSettings;
     log.config('Hide amounts toggled: $hide was ${settings?.hideAmounts}');
-    await _setHideAmountsUsecase.execute(hide);
+    final result = await _setHideAmountsUsecase.execute(hide);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(state.copyWith(storedSettings: settings?.copyWith(hideAmounts: hide)));
   }
 
   Future<void> toggleSuperuserMode(bool active) async {
     final settings = state.storedSettings;
     log.config('Superuser mode toggled: $active was ${settings?.isSuperuser}');
-    await _setIsSuperuserUsecase.execute(active);
+    final result = await _setIsSuperuserUsecase.execute(active);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
     );
@@ -158,7 +223,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.info(
       'Theme mode changed to: ${themeMode.name} + currentThemeMode: ${settings?.themeMode.name}',
     );
-    await _setThemeModeUsecase.execute(themeMode);
+    final result = await _setThemeModeUsecase.execute(themeMode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
     );
@@ -167,12 +237,43 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
 
-    await _setIsDevModeUsecase.execute(isEnabled);
+    if (state.revokeSpFailed) {
+      emit(state.copyWith(revokeSpFailed: false));
+    }
+
+    // If disabling dev mode, revoke the SP wallet first
+    if (!isEnabled && settings?.isDevModeEnabled == true) {
+      // The revoke use case disposes the live session, deletes the wallet, and
+      // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
+      // so settings never drives the wallet for SP.
+      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
+        log.severe(
+          message: 'Failed to revoke SP wallet',
+          error: failure,
+          trace: StackTrace.current,
+        );
+        emit(state.copyWith(revokeSpFailed: true));
+        return;
+      }
+    }
+
+    final result = await _setIsDevModeUsecase.execute(isEnabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      // The revoke above may already have dropped the SP wallet, so the setup
+      // flag is re-read even though the dev-mode write itself failed.
+      await checkSpWalletSetup();
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        revokeSpFailed: false,
       ),
     );
+    // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.
+    await checkSpWalletSetup();
   }
 
   Future<void> setExchangeTestnetBasicAuth({
@@ -184,10 +285,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     final trimmedPassword = password?.trim();
     final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
     final pass = (trimmedPassword?.isEmpty ?? true) ? null : trimmedPassword;
-    await _setExchangeTestnetBasicAuthUsecase.execute(
+    final result = await _setExchangeTestnetBasicAuthUsecase.execute(
       username: user,
       password: pass,
     );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(
@@ -203,10 +309,42 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
     );
-    await _setErrorReportingUsecase.execute(enabled);
+    final result = await _setErrorReportingUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isErrorReportingEnabled: enabled),
+      ),
+    );
+  }
+
+  Future<void> toggleScreenCaptureProtection(bool enabled) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Screen capture protection toggled: $enabled was '
+      '${settings?.screenCaptureProtectionEnabled}',
+    );
+    final result = await _setScreenCaptureProtectionUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      // `init` mirrors the persisted value into this flag, so it must never
+      // get ahead of storage: a write that failed leaves the old value in
+      // place, and the switch snaps back to match.
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    // Apply immediately: this flips FLAG_SECURE on any protected screen that
+    // is currently mounted, and clears it if the user just opted out.
+    ScreenCaptureProtection.instance.enabledByUser = enabled;
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(
+          screenCaptureProtectionEnabled: enabled,
+        ),
       ),
     );
   }
@@ -237,7 +375,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Payjoin min amount set to: $amountSat was '
       '${state.payjoinMinAmountSat}',
     );
-    await _setPayjoinMinAmountUsecase.execute(amountSat);
+    final result = await _setPayjoinMinAmountUsecase.execute(amountSat);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         payjoinPolicy: state.payjoinPolicy?.copyWith(
@@ -253,7 +396,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Payjoin expiry set to: $expireAfterSec was '
       '${state.payjoinExpireAfterSec}',
     );
-    await _setPayjoinExpireAfterSecUsecase.execute(expireAfterSec);
+    final result = await _setPayjoinExpireAfterSecUsecase.execute(
+      expireAfterSec,
+    );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         payjoinPolicy: state.payjoinPolicy?.copyWith(

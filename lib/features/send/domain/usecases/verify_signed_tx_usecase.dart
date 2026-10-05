@@ -1,6 +1,9 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
+import 'package:meta/meta.dart';
 
 /// Checks that a transaction signed by a directly-connected hardware device
 /// (Ledger, BitBox) is the transaction carried by the unsigned PSBT.
@@ -11,7 +14,8 @@ import 'package:convert/convert.dart';
 /// the user still sees the intended details. Signing may add scriptSig and
 /// witness data, but every other transaction field must remain identical.
 class VerifySignedTxUsecase {
-  Future<void> execute({
+  @useResult
+  Future<Result<void, SendFailure>> execute({
     required String unsignedPsbt,
     required String signedTxHex,
   }) async {
@@ -20,17 +24,33 @@ class VerifySignedTxUsecase {
     try {
       signed = await BitcoinTx.fromBytes(hex.decode(signedTxHex));
       intended = await BitcoinTx.fromPsbt(unsignedPsbt);
-    } catch (e) {
-      throw VerifySignedTxException(
-        'Could not decode the signed transaction: $e',
+    } catch (e, st) {
+      log.severe(
+        message: 'Could not decode the signed transaction',
+        error: e,
+        trace: st,
+      );
+      return Err(
+        SendTransactionConfirmationFailure(
+          logMessage: 'Could not decode the signed transaction: $e',
+        ),
       );
     }
 
     if (!_isSameUnsignedTransaction(signed, intended)) {
-      throw VerifySignedTxException(
-        'The signed transaction does not match the confirmed transaction',
+      log.severe(
+        error:
+            'The signed transaction does not match the confirmed transaction',
+        trace: StackTrace.current,
+      );
+      return const Err(
+        SendTransactionConfirmationFailure(
+          logMessage:
+              'The signed transaction does not match the confirmed transaction',
+        ),
       );
     }
+    return const Ok(null);
   }
 
   bool _isSameUnsignedTransaction(BitcoinTx signed, BitcoinTx intended) {
@@ -68,8 +88,4 @@ class VerifySignedTxUsecase {
     }
     return true;
   }
-}
-
-class VerifySignedTxException extends BullException {
-  VerifySignedTxException(super.message);
 }

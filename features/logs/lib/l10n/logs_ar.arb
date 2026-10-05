@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "اللوز",
+  "logsViewerDeleteButton": "حذف",
+  "logsViewerShareButton": "مشاركة",
+  "logsExportedMessage": "تم تصدير السجلات بنجاح",
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "logsViewerShowingCount": "عرض {shown} من {total} سجل",
+  "logsViewerClearFilter": "مسح التصفية",
+  "logsViewerFilterByDate": "تصفية حسب التاريخ",
+  "copiedToClipboardMessage": "مركب على لوح مشبك",
+  "logsViewerDeleteTitle": "حذف السجلات",
+  "logsViewerDeleteConfirmation": "هل أنت متأكد من رغبتك في حذف جميع السجلات؟ لا يمكن التراجع عن هذا الإجراء.",
+  "logsDeletedMessage": "تم حذف السجلات",
+  "logsViewerCancelButton": "إلغاء",
+  "logsShareOptionShare": "مشاركة",
+  "logsShareOptionExport": "تصدير",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "إعادة المحاولة",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

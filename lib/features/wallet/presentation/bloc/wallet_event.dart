@@ -37,8 +37,25 @@ class WalletDeleted extends WalletEvent {
   const WalletDeleted(this.walletId);
 }
 
-class StartTorInitialization extends WalletEvent {
-  const StartTorInitialization();
+class BlockAutoSwapUntilNextExecution extends WalletEvent {
+  const BlockAutoSwapUntilNextExecution();
+}
+
+class ExecuteAutoSwap extends WalletEvent {
+  const ExecuteAutoSwap();
+}
+
+class ExecuteAutoSwapFeeOverride extends WalletEvent {
+  const ExecuteAutoSwapFeeOverride();
+}
+
+class RefreshSpWallet extends WalletEvent {
+  const RefreshSpWallet();
+}
+
+class SetSpWalletBalance extends WalletEvent {
+  final int amount;
+  const SetSpWalletBalance(this.amount);
 }
 
 class ElectrumSyncResultChanged extends WalletEvent {

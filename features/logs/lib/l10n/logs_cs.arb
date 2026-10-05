@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Přihlášení",
+  "logsViewerDeleteButton": "Smazat",
+  "logsViewerShareButton": "Sdílet",
+  "logsExportedMessage": "Záznamy byly úspěšně exportovány",
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
+  "logsViewerClearFilter": "Vymazat filtr",
+  "logsViewerFilterByDate": "Filtrovat podle data",
+  "copiedToClipboardMessage": "Připojil se do schránky",
+  "logsViewerDeleteTitle": "Smazat logy",
+  "logsViewerDeleteConfirmation": "Opravdu chcete smazat všechny logy? Tuto akci nelze vrátit zpět.",
+  "logsDeletedMessage": "Logy smazány",
+  "logsViewerCancelButton": "Zrušit",
+  "logsShareOptionShare": "Sdílet",
+  "logsShareOptionExport": "Exportovat",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Zkusit znovu",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

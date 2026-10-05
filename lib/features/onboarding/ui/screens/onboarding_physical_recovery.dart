@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
@@ -22,6 +22,8 @@ class OnboardingPhysicalRecovery extends StatefulWidget {
 
 class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
     with PrivacyScreen {
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
+
   @override
   void dispose() {
     unawaited(disableScreenPrivacy());
@@ -31,7 +33,7 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: enableScreenPrivacy(),
+      future: _privacyFuture,
       builder: (context, snapshot) {
         return BlocListener<OnboardingBloc, OnboardingState>(
           listenWhen: (previous, current) =>
@@ -59,41 +61,31 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                     ),
                     Expanded(
                       child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: .stretch,
-                              children: [
-                                IgnorePointer(
-                                  ignoring:
-                                      state.onboardingStepStatus ==
-                                      OnboardingStepStatus.loading,
-                                  child: Opacity(
-                                    opacity:
-                                        state.onboardingStepStatus ==
-                                            OnboardingStepStatus.loading
-                                        ? 0.5
-                                        : 1.0,
-                                    child: MnemonicWidget(
-                                      initialLength:
-                                          bip39.MnemonicLength.words12,
-                                      allowMultipleMnemonicLength: true,
-                                      allowLabel: false,
-                                      allowPassphrase: false,
-                                      submitLabel:
-                                          context.loc.onboardingRecover,
-                                      onSubmit: (mnemonic) {
-                                        context.read<OnboardingBloc>().add(
-                                          OnboardingRecoverWalletClicked(
-                                            mnemonic: mnemonic,
-                                          ),
-                                        );
-                                      },
-                                    ),
+                        // MnemonicWidget owns its own scroll and docks the
+                        // in-app keyboard at the bottom, so it fills the space.
+                        child: IgnorePointer(
+                          ignoring:
+                              state.onboardingStepStatus ==
+                              OnboardingStepStatus.loading,
+                          child: Opacity(
+                            opacity:
+                                state.onboardingStepStatus ==
+                                    OnboardingStepStatus.loading
+                                ? 0.5
+                                : 1.0,
+                            child: MnemonicWidget(
+                              initialLength: bip39.MnemonicLength.words12,
+                              allowMultipleMnemonicLength: true,
+                              allowLabel: false,
+                              allowPassphrase: false,
+                              submitLabel: context.loc.onboardingRecover,
+                              onSubmit: (mnemonic) {
+                                context.read<OnboardingBloc>().add(
+                                  OnboardingRecoverWalletClicked(
+                                    mnemonic: mnemonic,
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
                           ),
                         ),

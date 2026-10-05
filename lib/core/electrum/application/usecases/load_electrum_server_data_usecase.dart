@@ -6,14 +6,16 @@ import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:meta/meta.dart';
 
@@ -22,6 +24,7 @@ class LoadElectrumServerDataUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
+  final ElectrumTorSessionPort _torSessionPort;
   final SettingsRepository _settingsRepository;
 
   const LoadElectrumServerDataUsecase({
@@ -29,30 +32,29 @@ class LoadElectrumServerDataUsecase {
     required this._electrumSettingsRepository,
     required this._environmentPort,
     required this._serverStatusPort,
+    required this._torSessionPort,
     required this._settingsRepository,
   });
 
   @useResult
   Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> execute(
-    LoadElectrumServerDataRequest request,
-  ) async {
+    LoadElectrumServerDataRequest request, {
+    void Function(LoadElectrumServerDataResponse response)? onUpdate,
+  }) async {
     try {
       final isLiquid = request.isLiquid;
       final environment = await _environmentPort.getEnvironment();
+      final network = ElectrumServerNetwork.fromEnvironment(
+        isTestnet: environment.isTestnet,
+        isLiquid: isLiquid,
+      );
 
-      // Fetch servers, settings, and app settings in parallel
-      final (serversResult, settingsResult, appSettings) = await (
+      final (serversResult, settingsResult) = await (
         _electrumServerRepository.fetchAll(
           isTestnet: environment.isTestnet,
           isLiquid: isLiquid,
         ),
-        _electrumSettingsRepository.fetchByNetwork(
-          ElectrumServerNetwork.fromEnvironment(
-            isTestnet: environment.isTestnet,
-            isLiquid: isLiquid,
-          ),
-        ),
-        _settingsRepository.fetch(),
+        _electrumSettingsRepository.fetchByNetwork(network),
       ).wait;
 
       final List<ElectrumServer> servers;
@@ -74,30 +76,56 @@ class LoadElectrumServerDataUsecase {
         return const Err(ElectrumLoadFailure('No Electrum servers found'));
       }
 
-      // Check server statuses (use Tor proxy if enabled for Bitcoin/Testnet, not Liquid)
-      final useTorProxy = !isLiquid && appSettings.useTorProxy;
-      final serverStatusMap = <String, ElectrumServerStatus>{};
+      final appSettings = await _settingsRepository.fetch();
+      final serverDtos = servers
+          .map((server) => ElectrumServerDto.fromDomain(server))
+          .toList();
+      final settingsDto = ElectrumSettingsDto.fromDomain(settings);
+      final serverStatusMap = {
+        for (final server in servers) server.url: ElectrumServerStatus.unknown,
+      };
+
+      LoadElectrumServerDataResponse response() =>
+          LoadElectrumServerDataResponse(
+            servers: serverDtos,
+            serverStatuses: Map.unmodifiable(serverStatusMap),
+            settings: settingsDto,
+          );
+
+      onUpdate?.call(response());
       await Future.wait(
         servers.map((server) async {
-          final status = await _serverStatusPort.checkSocket(
+          final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
             url: server.url,
-            useTorProxy: useTorProxy,
-            torProxyPort: appSettings.torProxyPort,
+            configuredTimeout: settings.timeout,
           );
-          serverStatusMap[server.url] = status;
+          ElectrumTorRoute? route;
+          try {
+            route = await _torSessionPort.open(
+              network: network,
+              serverUrl: server.url,
+              isCustom: server.isCustom,
+              externalProxyEnabled: appSettings.useTorProxy,
+              externalProxyPort: appSettings.torProxyPort,
+            );
+            serverStatusMap[server.url] = await _serverStatusPort.checkElectrum(
+              url: server.url,
+              network: network,
+              validateDomain: settings.validateDomain,
+              timeout: effectiveTimeout,
+              retry: settings.retry,
+              proxyEndpoint: route?.endpoint,
+            );
+          } on Exception {
+            serverStatusMap[server.url] = ElectrumServerStatus.offline;
+          } finally {
+            onUpdate?.call(response());
+            await route?.close();
+          }
         }),
       );
 
-      // Return the response DTO
-      return Ok(
-        LoadElectrumServerDataResponse(
-          servers: servers.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
-          serverStatuses: serverStatusMap,
-          settings: ElectrumSettingsDto.fromDomain(settings),
-          useTorProxy: appSettings.useTorProxy,
-          torProxyPort: appSettings.torProxyPort,
-        ),
-      );
+      return Ok(response());
     } catch (e, st) {
       log.severe(
         message: 'Failed to load electrum server data',

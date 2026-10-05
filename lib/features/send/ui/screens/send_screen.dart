@@ -7,14 +7,13 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -27,13 +26,12 @@ import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
@@ -49,7 +47,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -173,8 +171,9 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
-    final isValidPaymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest != null,
+    final hasRecipientInput = context.select(
+      (SendCubit cubit) =>
+          cubit.state.copiedRawPaymentRequest.trim().isNotEmpty,
     );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
@@ -185,7 +184,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
+      disabled: !hasRecipientInput || loadingBestWallet || creatingSwap,
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
@@ -201,7 +200,7 @@ class AddressField extends StatelessWidget {
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
 
-    return BBInputText(
+    return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,
@@ -233,23 +232,17 @@ class AddressErrorSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final failure = context.select((SendCubit cubit) => cubit.state.failure);
-    final frozenBalanceSat = context.select(
-      (SendCubit cubit) => cubit.state.frozenBalanceSat,
-    );
-    final formattedFrozenBalance = context.select(
-      (SendCubit cubit) => cubit.state.formattedFrozenBalance,
+    final frozenBalanceHint = context.select(
+      (SendCubit cubit) => cubit.state.frozenBalanceHint,
     );
     if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          // #2337: when the shortfall is only because coins are frozen, point
-          // the user at Manage coins instead of a dead-end "not enough balance".
-          failure is SendInsufficientBalanceFailure && frozenBalanceSat > 0
-              ? context.loc.sendErrorInsufficientBalanceFrozenHint(
-                  formattedFrozenBalance,
-                )
-              : failure.toTranslated(context),
+          failure.toTranslated(
+            context,
+            formattedFrozenBalance: frozenBalanceHint,
+          ),
           style: context.font.bodyMedium,
           color: context.appColors.error,
           textAlign: .center,
@@ -354,12 +347,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     final failure = context.select(
                       (SendCubit cubit) => cubit.state.failure,
                     );
-                    final balanceError =
-                        failure is SendInsufficientBalanceFailure;
-                    final swapLimitsError =
-                        failure is SendAmountOutOfBoundsFailure
-                        ? failure
-                        : null;
+                    final balanceError = context.select(
+                      (SendCubit cubit) => cubit.state.hasBalanceFailure,
+                    );
+                    final frozenBalanceHint = context.select(
+                      (SendCubit cubit) => cubit.state.frozenBalanceHint,
+                    );
+                    final suggestsInstantPayments = context.select(
+                      (SendCubit cubit) => cubit.state.suggestsInstantPayments,
+                    );
                     final walletHasBalance = context.select(
                       (SendCubit cubit) => cubit.state.walletHasBalance,
                     );
@@ -380,9 +376,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                         .select<SendCubit, List<String>>(
                           (bloc) => bloc.state.inputAmountCurrencyCodes,
                         );
-                    final buildError = failure is SendTransactionBuildFailure;
+                    final buildError = context.select(
+                      (SendCubit cubit) => cubit.state.hasBuildFailure,
+                    );
                     final selectedWallet = context.select(
                       (SendCubit cubit) => cubit.state.selectedWallet!,
+                    );
+                    // Only a real wallet can be swapped for another one. Silent
+                    // payments has exactly one and nothing to pick from.
+                    final pickableWallet = context.select(
+                      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
                     );
                     final wallets = context.select(
                       (SendCubit cubit) => cubit.state.wallets,
@@ -406,35 +409,47 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
                                       ),
-                                      child: DropdownButtonFormField<Wallet>(
-                                        alignment: Alignment.centerLeft,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          contentPadding: EdgeInsets.zero,
-                                        ),
-                                        icon: Icon(
-                                          Icons.keyboard_arrow_down,
-                                          color: context.appColors.secondary,
-                                        ),
-                                        iconSize: 24,
-                                        initialValue: selectedWallet,
-                                        items: wallets.map((w) {
-                                          return DropdownMenuItem(
-                                            value: w,
-                                            child: Text(
-                                              w.displayLabel(context),
+                                      child: pickableWallet == null
+                                          ? Text(
+                                              selectedWallet.displayLabel(
+                                                context,
+                                              ),
                                               style: context.font.headlineSmall,
+                                            )
+                                          : DropdownButtonFormField<Wallet>(
+                                              alignment: Alignment.centerLeft,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                contentPadding: EdgeInsets.zero,
+                                              ),
+                                              icon: Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color:
+                                                    context.appColors.secondary,
+                                              ),
+                                              iconSize: 24,
+                                              initialValue: pickableWallet,
+                                              items: wallets.map((w) {
+                                                return DropdownMenuItem(
+                                                  value: w,
+                                                  child: Text(
+                                                    w.displayLabel(context),
+                                                    style: context
+                                                        .font
+                                                        .headlineSmall,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged: (value) {
+                                                if (value != null) {
+                                                  context
+                                                      .read<SendCubit>()
+                                                      .updateSelectedWallet(
+                                                        value,
+                                                      );
+                                                }
+                                              },
                                             ),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            context
-                                                .read<SendCubit>()
-                                                .updateSelectedWallet(value);
-                                          }
-                                        },
-                                      ),
                                     ),
                                   ),
                                   const Gap(10),
@@ -452,30 +467,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           .onCurrencyChanged(currencyCode);
                                     },
                                     error: balanceError
-                                        ? (state.frozenBalanceSat > 0
-                                              ? context.loc
-                                                    .sendErrorInsufficientBalanceFrozenHint(
-                                                      state
-                                                          .formattedFrozenBalance,
-                                                    )
-                                              : context
-                                                    .loc
-                                                    .sendErrorInsufficientBalanceForPayment)
+                                        ? failure!.toTranslated(
+                                            context,
+                                            formattedFrozenBalance:
+                                                frozenBalanceHint,
+                                          )
                                         : (!walletHasBalance &&
                                               amountConfirmedClicked)
                                         ? context.loc.sendInsufficientBalance
-                                        : swapLimitsError != null
-                                        ? _getSwapLimitsErrorMessage(
-                                            context,
-                                            swapLimitsError,
-                                          )
                                         : failure?.toTranslated(context),
                                     focusNode: _amountFocusNode,
                                     readOnly: _isMax,
                                     isMax: _isMax,
                                   ),
-                                  if (swapLimitsError?.suggestInstantPayments ==
-                                      true)
+                                  if (suggestsInstantPayments)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6),
                                       child: BBText(
@@ -767,16 +772,24 @@ class _SendError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final failure = context.select((SendCubit cubit) => cubit.state.failure);
-    final buildError = failure is SendTransactionBuildFailure;
-    final confirmError = failure is SendTransactionConfirmationFailure
-        ? failure
-        : null;
+    final buildError = context.select(
+      (SendCubit cubit) => cubit.state.hasBuildFailure,
+    );
+    final confirmError = context.select(
+      (SendCubit cubit) => cubit.state.hasConfirmFailure,
+    );
+    final broadcastError = context.select(
+      (SendCubit cubit) => cubit.state.hasBroadcastFailure,
+    );
+    final frozenBalanceHint = context.select(
+      (SendCubit cubit) => cubit.state.frozenBalanceHint,
+    );
 
     if (buildError) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorBuildFailed,
+          failure!.toTranslated(context),
           style: context.font.bodyLarge,
           color: context.appColors.error,
           maxLines: 5,
@@ -784,7 +797,7 @@ class _SendError extends StatelessWidget {
         ),
       );
     }
-    if (confirmError != null) {
+    if (confirmError) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -796,7 +809,7 @@ class _SendError extends StatelessWidget {
               maxLines: 5,
               textAlign: .center,
             ),
-            if (confirmError.isBroadcastFailure) ...[
+            if (broadcastError) ...[
               const Gap(8),
               BBText(
                 context.loc.sendErrorBroadcastFailed,
@@ -809,9 +822,25 @@ class _SendError extends StatelessWidget {
           ],
         ),
       );
-    } else {
-      return const SizedBox.shrink();
     }
+    if (failure != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BBText(
+          // Same frozen-coins hint the address and amount steps pass, so a
+          // shortfall reads identically wherever it surfaces.
+          failure.toTranslated(
+            context,
+            formattedFrozenBalance: frozenBalanceHint,
+          ),
+          style: context.font.bodyLarge,
+          color: context.appColors.error,
+          maxLines: 5,
+          textAlign: .center,
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
 
@@ -861,13 +890,14 @@ class _BottomButtons extends StatelessWidget {
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx) ...[
+          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -972,6 +1002,7 @@ class _OnchainTransactionReview extends StatelessWidget {
     final willAttemptPayjoin = context.select(
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -988,7 +1019,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
-          onFeePriorityTap: hasFinalizedTx
+          onFeePriorityTap: hasFinalizedTx || isSpMode
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();
@@ -2203,17 +2234,4 @@ class SignBitBoxButton extends StatelessWidget {
       Error.throwWithStackTrace(e, st);
     }
   }
-}
-
-String _getSwapLimitsErrorMessage(
-  BuildContext context,
-  SendAmountOutOfBoundsFailure error,
-) {
-  if (error.minimumSat != null) {
-    return context.loc.sendErrorAmountBelowMinimum(error.minimumSat.toString());
-  }
-  if (error.maximumSat != null) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maximumSat.toString());
-  }
-  return context.loc.sendErrorAmountBelowSwapLimits;
 }

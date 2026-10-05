@@ -59,8 +59,13 @@ jobs:
         id: metadata
         run: |
           version_line="$(awk '/^version:/ { print $2; exit }' pubspec.yaml)"
+          version_name="${version_line%%+*}"
           base_build="${version_line##*+}"
 
+          if ! [[ "$version_name" =~ ^[0-9A-Za-z][0-9A-Za-z.-]*$ ]] || [ "$version_name" = "$version_line" ]; then
+            echo "::error::pubspec.yaml must contain a filename-safe version followed by +build."
+            exit 1
+          fi
           if ! [[ "$base_build" =~ ^[1-9][0-9]*$ ]]; then
             echo "::error::pubspec.yaml must contain a positive integer build number."
             exit 1
@@ -68,6 +73,7 @@ jobs:
 
           build_number="$base_build"
 
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "BUILD_NUMBER=$build_number" >> "$GITHUB_ENV"
@@ -125,11 +131,11 @@ jobs:
         run: |
           rustup toolchain install "$RUST_VERSION" --profile minimal
           rustup component add --toolchain "$RUST_VERSION" clippy rustfmt
-          rustup target add --toolchain "$RUST_VERSION" aarch64-apple-ios
+          rustup target add --toolchain "$RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim
 
           rustup toolchain install "$BDK_RUST_VERSION" --profile minimal
           rustup component add --toolchain "$BDK_RUST_VERSION" clippy rustfmt
-          rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios
+          rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim
 
           # Cargokit requests `rustup run stable` directly, which otherwise
           # bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
@@ -203,6 +209,59 @@ jobs:
           fi
           test "$(pod "_${locked_version}_" --version)" = "$locked_version"
           pod "_${locked_version}_" install --deployment
+
+      - name: Build iOS Simulator app
+        run: make ios-simulator BUILD_NUMBER="$BUILD_NUMBER"
+
+      - name: Verify and package iOS Simulator app
+        id: simulator
+        run: |
+          source_app="build/ios/iphonesimulator/Runner.app"
+          artifact_name="BULL_${{ steps.metadata.outputs.version_name }}+${{ steps.metadata.outputs.build_number }}_simulator_${{ steps.metadata.outputs.sha_short }}"
+          named_app="$RUNNER_TEMP/$artifact_name.app"
+          archive="$RUNNER_TEMP/$artifact_name.zip"
+
+          if [ ! -d "$source_app" ]; then
+            echo "::error::Expected the simulator application at $source_app."
+            exit 1
+          fi
+
+          ditto "$source_app" "$named_app"
+          executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$named_app/Info.plist")"
+          binary="$named_app/$executable"
+          actual_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$named_app/Info.plist")"
+          actual_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$named_app/Info.plist")"
+          actual_bundle="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$named_app/Info.plist")"
+
+          if [ "$actual_version" != "${{ steps.metadata.outputs.version_name }}" ]; then
+            echo "::error::Simulator version is $actual_version; expected ${{ steps.metadata.outputs.version_name }}."
+            exit 1
+          fi
+          if [ "$actual_build" != "$BUILD_NUMBER" ]; then
+            echo "::error::Simulator build number is $actual_build; expected $BUILD_NUMBER."
+            exit 1
+          fi
+          if [ "$actual_bundle" != "com.bullbitcoin.app" ]; then
+            echo "::error::Simulator bundle identifier is $actual_bundle; expected com.bullbitcoin.app."
+            exit 1
+          fi
+
+          xcrun vtool -show-build "$binary" | grep -F "platform IOSSIMULATOR"
+          lipo -verify_arch arm64 "$binary"
+          ditto -c -k --sequesterRsrc --keepParent "$named_app" "$archive"
+          test -s "$archive"
+
+          echo "path=$archive" >> "$GITHUB_OUTPUT"
+
+      # The app bundle is already zipped with ditto to preserve executable
+      # permissions. Upload the ZIP directly instead of wrapping it again.
+      - name: Preserve iOS Simulator app
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.simulator.outputs.path }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Import App Store distribution certificate
         uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7.0.0
@@ -316,8 +375,13 @@ jobs:
           fi
 
           codesign --verify --deep --strict --verbose=2 "${apps[0]}"
+          actual_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "${apps[0]}/Info.plist")"
           actual_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "${apps[0]}/Info.plist")"
           actual_bundle="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${apps[0]}/Info.plist")"
+          if [ "$actual_version" != "${{ steps.metadata.outputs.version_name }}" ]; then
+            echo "::error::IPA version is $actual_version; expected ${{ steps.metadata.outputs.version_name }}."
+            exit 1
+          fi
           if [ "$actual_build" != "$BUILD_NUMBER" ]; then
             echo "::error::IPA build number is $actual_build; expected $BUILD_NUMBER."
             exit 1
@@ -333,27 +397,35 @@ jobs:
             exit 1
           fi
 
-          echo "path=$ipa_path" >> "$GITHUB_OUTPUT"
+          store_name="BULL_${{ steps.metadata.outputs.version_name }}+${{ steps.metadata.outputs.build_number }}_store_${{ steps.metadata.outputs.sha_short }}"
+          store_path="$(dirname "$ipa_path")/$store_name.ipa"
+          mv "$ipa_path" "$store_path"
 
-      - name: Record artifact hash
+          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+
+      - name: Record artifact hashes
         env:
           IPA_PATH: ${{ steps.ipa.outputs.path }}
+          SIMULATOR_PATH: ${{ steps.simulator.outputs.path }}
         run: |
-          echo "### App Store Connect build" >> "$GITHUB_STEP_SUMMARY"
+          echo "### iOS release artifacts" >> "$GITHUB_STEP_SUMMARY"
           echo "- Ref: \`$GITHUB_REF_NAME\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Commit: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Build number: \`$BUILD_NUMBER\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Version: \`${{ steps.metadata.outputs.version_name }}+$BUILD_NUMBER\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Xcode: \`$(xcodebuild -version | tr '\n' ' ')\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Store: \`$(basename "$IPA_PATH")\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Simulator: \`$(basename "$SIMULATOR_PATH")\` (Apple Silicon)" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           shasum -a 256 "$IPA_PATH" >> "$GITHUB_STEP_SUMMARY"
+          shasum -a 256 "$SIMULATOR_PATH" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Preserve IPA and dSYMs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: BULL-app-store-connect-${{ steps.metadata.outputs.sha_short }}-${{ steps.metadata.outputs.build_number }}
+          name: BULL_${{ steps.metadata.outputs.version_name }}+${{ steps.metadata.outputs.build_number }}_store_${{ steps.metadata.outputs.sha_short }}
           path: |
-            build/ios/ipa/*.ipa
+            ${{ steps.ipa.outputs.path }}
             build/ios/archive/*.xcarchive/dSYMs
           if-no-files-found: error
           retention-days: 30

@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Journaux",
+  "logsViewerDeleteButton": "Supprimer",
+  "logsViewerFilter": "Filtrer les journaux",
+  "logsViewerShareButton": "Partager",
+  "logsShareFailedMessage": "Échec du partage des logs",
+  "logsExportedMessage": "Journaux exportés avec succès",
+  "logsExportFailedMessage": "Échec de l'exportation des journaux",
+  "logsViewerShowingCount": "Affichage de {shown} sur {total} journaux",
+  "logsViewerCollapseAll": "Replier tout",
+  "logsViewerWrapAll": "Déplier tout",
+  "logsViewerEmpty": "Aucun journal pour le moment",
+  "logsViewerNoMatches": "Aucun journal ne correspond aux filtres actifs",
+  "logsViewerClearFilter": "Effacer le filtre",
+  "logsViewerSearchHint": "Rechercher dans les logs",
+  "logsViewerFilterByDate": "Filtrer par date",
+  "logsViewerCollapseHint": "Touchez pour replier. Appuyez longuement pour copier.",
+  "logsViewerExpandHint": "Touchez un journal pour le déplier. Appuyez longuement pour le copier.",
+  "copiedToClipboardMessage": "Copié dans le presse-papiers",
+  "logsViewerDeleteTitle": "Supprimer les journaux",
+  "logsViewerDeleteConfirmation": "Voulez-vous vraiment supprimer tous les journaux ? Cette action est irréversible.",
+  "logsDeletedMessage": "Journaux supprimés",
+  "logsViewerCancelButton": "Annuler",
+  "logsShareOptionShare": "Partager",
+  "logsShareOptionExport": "Exporter",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

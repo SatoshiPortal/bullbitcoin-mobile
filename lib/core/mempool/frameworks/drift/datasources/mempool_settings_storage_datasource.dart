@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_settings_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class MempoolSettingsStorageDatasource {
   final SqliteDatabase _sqlite;

@@ -1,0 +1,25 @@
+{
+  "logSettingsLogsTitle": "记录",
+  "logsViewerDeleteButton": "删除",
+  "logsViewerShareButton": "分享",
+  "logsExportedMessage": "日志导出成功",
+  "logsExportFailedMessage": "日志导出失败",
+  "logsViewerShowingCount": "显示 {shown} 条（共 {total} 条）日志",
+  "logsViewerClearFilter": "清除筛选",
+  "logsViewerFilterByDate": "按日期筛选",
+  "copiedToClipboardMessage": "涂料",
+  "logsViewerDeleteTitle": "删除日志",
+  "logsViewerDeleteConfirmation": "您确定要删除所有日志吗？此操作无法撤销。",
+  "logsDeletedMessage": "日志已删除",
+  "logsViewerCancelButton": "取消",
+  "logsShareOptionShare": "分享",
+  "logsShareOptionExport": "导出",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "retry": "重试",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

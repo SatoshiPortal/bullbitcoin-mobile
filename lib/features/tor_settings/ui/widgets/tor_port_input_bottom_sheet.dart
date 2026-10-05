@@ -113,7 +113,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                   labelText: context.loc.torSettingsPortNumber,
                   hintText: context.loc.torSettingsPortHint,
                   border: const OutlineInputBorder(),
-                  helperText: context.loc.torSettingsPortHelper,
+                  helperText: context.loc.torSettingsLocalProxyPortHelper,
                 ),
                 validator: (value) => _validatePort(value, context),
                 onFieldSubmitted: (_) => _submit(),
