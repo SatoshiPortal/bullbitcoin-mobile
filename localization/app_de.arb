@@ -4864,5 +4864,6 @@
   "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut.",
   "fundExchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut.",
   "exchangeErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut.",
-  "walletBalancesMayBeStale": "Ihre Guthaben konnten nicht aktualisiert werden und sind möglicherweise nicht aktuell."
+  "walletBalancesMayBeStale": "Ihre Guthaben konnten nicht aktualisiert werden und sind möglicherweise nicht aktuell.",
+  "settingsSearchTorKeywords": "Tor-Proxy|Orbot|Onion-Routing|Integriertes Tor|Privatsphäre-Netzwerk"
 }
