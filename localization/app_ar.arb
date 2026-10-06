@@ -11818,5 +11818,6 @@
   "receiveErrorBroadcastOriginal": "لم نتمكن من بث المعاملة. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
-  "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة."
+  "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة.",
+  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية"
 }

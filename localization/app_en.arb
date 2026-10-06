@@ -15445,5 +15445,9 @@
   "walletBalancesMayBeStale": "Your balances could not be updated and may be out of date.",
   "@walletBalancesMayBeStale": {
     "description": "Shown on the home screen when a refresh could not sync the wallets: the list is loaded but balances may be stale. Not a failed load. Non-English values are machine generated and want review."
+  },
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
+  "@settingsSearchTorKeywords": {
+    "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
   }
 }
