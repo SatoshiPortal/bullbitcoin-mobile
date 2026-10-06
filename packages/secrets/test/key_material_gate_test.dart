@@ -74,6 +74,51 @@ export 'package:secrets/testing.dart';
   }
 
   test(
+    'resolved keystore use is blocked through re-exports and comments',
+    () async {
+      File('${fixture.path}/keystore_bridge.dart').writeAsStringSync('''
+export 'package:flutter_secure_storage/flutter_secure_storage.dart';
+''');
+      const source =
+          "import /* formatting */ 'keystore_bridge.dart' as bridge;\n"
+          'Object create() => bridge.FlutterSecureStorage();';
+      expect(await inspect('keystore_use', source), isNotEmpty);
+      expect(
+        await inspect(
+          'allowed_keystore',
+          source,
+          policyPath: 'lib/core/storage/storage_locator.dart',
+        ),
+        isEmpty,
+      );
+    },
+  );
+
+  test('multiline adjacent platform channel strings are checked', () async {
+    final violations = await inspect('channel', """
+const channel = 'plugins.it_nomads.com/'
+    /* join */ 'flutter_secure_storage';
+""");
+    expect(
+      violations.single,
+      endsWith('flutter_secure_storage platform channel'),
+    );
+  });
+
+  test(
+    'internal references remain blocked when analyzer diagnostics are ignored',
+    () async {
+      const ignoredDiagnostic = 'invalid_use_of_internal_member';
+      final violations = await inspect('internal_reference', """
+// ignore_for_file: $ignoredDiagnostic
+import 'package:secrets/secrets.dart';
+Object reveal(Secret secret) => secret.revealMnemonic;
+""");
+      expect(violations, contains(endsWith('#Secret.revealMnemonic')));
+    },
+  );
+
+  test(
     'aliases and getter access resolve to the private seed declaration',
     () async {
       final violations = await inspect('alias', '''
@@ -465,21 +510,27 @@ Future<void> watch(List<int> signed) async {
   );
 
   test(
-    'production discovery excludes custody, generated code and vendor files',
+    'production discovery excludes custody and tests, nothing by file name',
     () {
       final root = Directory('${fixture.path}/discovery')..createSync();
+      // A hand-written file can carry any name or sit in any directory, so
+      // none of these is skipped.
       const included = [
         'lib/app.dart',
         'packages/other/lib/value.dart',
         'features/other/lib/feature.dart',
+        'lib/example.g.dart',
+        'lib/example.freezed.dart',
+        'lib/example.steps.dart',
+        'lib/generated/example.dart',
+        'lib/vendor/example.dart',
+        'lib/build/example.dart',
+        'features/other/lib/generated/example.dart',
       ];
       for (final path in [
         ...included,
         'packages/secrets/lib/private.dart',
         'test/example.dart',
-        'lib/example.g.dart',
-        'lib/generated/example.dart',
-        'lib/vendor/example.dart',
       ]) {
         File('${root.path}/$path')
           ..createSync(recursive: true)
@@ -491,4 +542,13 @@ Future<void> watch(List<int> signed) async {
       );
     },
   );
+
+  test('a checkout under a directory named build is still checked', () async {
+    final root = Directory('${fixture.path}/build/checkout')
+      ..createSync(recursive: true);
+    File('${root.path}/lib/app.dart')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('const answer = 42;');
+    expect(productionDartFiles(root.path), hasLength(1));
+  });
 }

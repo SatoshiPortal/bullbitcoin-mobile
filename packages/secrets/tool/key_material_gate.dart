@@ -26,6 +26,12 @@ Future<void> main(List<String> arguments) async {
     '${report.violations.length} violations',
   );
   if (report.violations.isNotEmpty) exitCode = 1;
+  // A root that yields no file proves nothing; a green report on it would be
+  // a gate that silently stopped looking.
+  if (report.fileCount == 0) {
+    stderr.writeln('Key-material boundary: no production Dart file found');
+    exitCode = 1;
+  }
 }
 
 class KeyMaterialReport {
@@ -75,6 +81,9 @@ List<String> productionDartFiles(String root) {
       }
     }
   }
+  // Every Dart file under a production `lib/` is checked, generated or not: a
+  // name or a directory says nothing about who wrote a file, and generated
+  // code references none of the forbidden symbols.
   return [
     for (final directory in roots)
       if (directory.existsSync())
@@ -82,17 +91,7 @@ List<String> productionDartFiles(String root) {
           recursive: true,
           followLinks: false,
         ))
-          if (file is File &&
-              file.path.endsWith('.dart') &&
-              !RegExp(
-                r'\.(g|freezed|gr|config|mocks|steps)\.dart$',
-              ).hasMatch(file.path) &&
-              !file.path
-                  .split(Platform.pathSeparator)
-                  .any(
-                    (part) => ['generated', 'vendor', 'build'].contains(part),
-                  ))
-            file.path,
+          if (file is File && file.path.endsWith('.dart')) file.path,
   ]..sort();
 }
 
@@ -121,7 +120,12 @@ class _KeyMaterialVisitor extends RecursiveAstVisitor<void> {
       return;
     }
     final symbol = materialSymbol(element);
-    if (symbol == null || _isException(path, node, symbol)) return;
+    if (symbol == null ||
+        (symbol.startsWith('package:flutter_secure_storage') &&
+            _secureStorageImporters.contains(path)) ||
+        _isException(path, node, symbol)) {
+      return;
+    }
     violations.add('$path: $symbol');
   }
 
@@ -149,6 +153,25 @@ class _KeyMaterialVisitor extends RecursiveAstVisitor<void> {
       checkTestingLibrary(configuration.uri.stringValue);
     }
     super.visitExportDirective(node);
+  }
+
+  void checkChannel(String? value) {
+    if (!_secureStorageImporters.contains(path) &&
+        value == 'plugins.it_nomads.com/flutter_secure_storage') {
+      violations.add('$path: flutter_secure_storage platform channel');
+    }
+  }
+
+  @override
+  void visitAdjacentStrings(AdjacentStrings node) {
+    checkChannel(node.stringValue);
+    super.visitAdjacentStrings(node);
+  }
+
+  @override
+  void visitSimpleStringLiteral(SimpleStringLiteral node) {
+    checkChannel(node.stringValue);
+    super.visitSimpleStringLiteral(node);
   }
 
   @override
@@ -192,6 +215,14 @@ const _unresolvedSensitiveMembers = {
   'initMock',
 };
 
+// Kept identical to the text custody policy's narrow app-store allowlist.
+const _secureStorageImporters = {
+  'lib/core/storage/storage_locator.dart',
+  'lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart',
+  'test/core_test/storage/secure_storage_reserved_keys_test.dart',
+  'test/core_test/storage/storage_locator_test.dart',
+};
+
 const _dartBwk = 'package:bull_sdk/src/rust/third_party/dart_bwk/';
 const _frbGenerated = 'package:bull_sdk/src/rust/frb_generated.dart';
 
@@ -201,6 +232,12 @@ bool _isTestingLibrary(String uri) =>
 
 String? materialSymbol(Element element) {
   final uri = element.library?.uri.toString();
+  if (uri != null &&
+      (uri.startsWith('package:flutter_secure_storage') ||
+          (uri.startsWith('package:secrets/') &&
+              element.metadata.hasInternal))) {
+    return '$uri#${element.enclosingElement?.name}.${element.name}';
+  }
   if (uri != null && _isTestingLibrary(uri)) {
     return '$uri#${element.name}';
   }
