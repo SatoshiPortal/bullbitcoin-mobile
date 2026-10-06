@@ -493,7 +493,7 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "walletDetailsDeletingMessage": "Deleting wallet...",
+  "walletDetailsDeletingMessage": "Deleting wallet…",
   "@walletDetailsDeletingMessage": {
     "description": "Message displayed while a wallet is being deleted"
   },
@@ -629,7 +629,7 @@
   "@mempoolServerStatusOffline": {
     "description": "Status label when mempool server is offline"
   },
-  "mempoolServerStatusChecking": "Checking...",
+  "mempoolServerStatusChecking": "Checking…",
   "@mempoolServerStatusChecking": {
     "description": "Status label when checking mempool server status"
   },
@@ -1014,7 +1014,7 @@
   "@exchangeFileUploadAddMoreFiles": {
     "description": "Button label to add more files"
   },
-  "exchangeFileUploadUploading": "Uploading...",
+  "exchangeFileUploadUploading": "Uploading…",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
@@ -1497,7 +1497,7 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "receiveEnterHere": "Enter here...",
+  "receiveEnterHere": "Enter here…",
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
@@ -1670,7 +1670,7 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
   },
@@ -1958,7 +1958,7 @@
   "@sellFastest": {
     "description": "Display text for fastest fee option"
   },
-  "sellCalculating": "Calculating...",
+  "sellCalculating": "Calculating…",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
   },
@@ -2006,7 +2006,7 @@
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
   },
-  "sellInProgress": "Sell in progress...",
+  "sellInProgress": "Sell in progress…",
   "@sellInProgress": {
     "description": "Message for sell in progress"
   },
@@ -2070,7 +2070,7 @@
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
   },
-  "payLoadingRecipients": "Loading recipients...",
+  "payLoadingRecipients": "Loading recipients…",
   "@payLoadingRecipients": {
     "description": "Message while loading recipients"
   },
@@ -2275,7 +2275,7 @@
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
   },
-  "payValidating": "Validating...",
+  "payValidating": "Validating…",
   "@payValidating": {
     "description": "Text shown while validating SINPE"
   },
@@ -2437,7 +2437,7 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "payCalculating": "Calculating...",
+  "payCalculating": "Calculating…",
   "@payCalculating": {
     "description": "Text shown while calculating fees"
   },
@@ -2945,7 +2945,7 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "transactionListLoadingTransactions": "Loading transactions...",
+  "transactionListLoadingTransactions": "Loading transactions…",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
   },
@@ -3947,11 +3947,11 @@
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
-  "exportingVaultButton": "Exporting...",
+  "exportingVaultButton": "Exporting…",
   "@exportingVaultButton": {
     "description": "Button label shown while exporting vault"
   },
-  "revealingVaultKeyButton": "Revealing...",
+  "revealingVaultKeyButton": "Revealing…",
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
@@ -4297,7 +4297,7 @@
   "@savingToDevice": {
     "description": "Message shown when saving to device"
   },
-  "loadingBackupFile": "Loading backup file...",
+  "loadingBackupFile": "Loading backup file…",
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
@@ -5067,7 +5067,7 @@
   "@bitboxErrorConnectionFailed": {
     "description": "Error when connection to BitBox device fails"
   },
-  "bitboxErrorInvalidResponse": "Invalid response from BitBox device. Please try again.",
+  "bitboxErrorInvalidResponse": "Invalid response from BitBox. Please try again.",
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
@@ -5131,7 +5131,7 @@
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
   },
-  "bitboxActionVerifyAddressProcessing": "Showing address on BitBox...",
+  "bitboxActionVerifyAddressProcessing": "Showing address on BitBox…",
   "@bitboxActionVerifyAddressProcessing": {
     "description": "Processing text for verify address"
   },
@@ -5175,19 +5175,19 @@
   "@bitboxActionVerifyAddressSuccessSubtext": {
     "description": "Success subtext for verify address"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Please enter your password on the BitBox device...",
+  "bitboxActionUnlockDeviceProcessingSubtext": "Please enter your password on the BitBox device…",
   "@bitboxActionUnlockDeviceProcessingSubtext": {
     "description": "Processing subtext for unlock device"
   },
-  "bitboxActionPairDeviceProcessingSubtext": "Please verify the pairing code on your BitBox device...",
+  "bitboxActionPairDeviceProcessingSubtext": "Please verify the pairing code on your BitBox device…",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
   },
-  "bitboxActionImportWalletProcessingSubtext": "Setting up your watch-only wallet...",
+  "bitboxActionImportWalletProcessingSubtext": "Setting up your watch-only wallet…",
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "bitboxActionSignTransactionProcessingSubtext": "Please confirm the transaction on your BitBox device...",
+  "bitboxActionSignTransactionProcessingSubtext": "Please confirm the transaction on your BitBox device…",
   "@bitboxActionSignTransactionProcessingSubtext": {
     "description": "Processing subtext for sign transaction"
   },
@@ -5228,19 +5228,19 @@
       }
     }
   },
-  "bitboxScreenConnectSubtext": "Make sure your BitBox02 is unlocked and connected via USB.",
+  "bitboxScreenConnectSubtext": "Make sure your BitBox is unlocked and connected via USB.",
   "@bitboxScreenConnectSubtext": {
     "description": "Subtext for initial state"
   },
-  "bitboxScreenScanningSubtext": "Looking for your BitBox device...",
+  "bitboxScreenScanningSubtext": "Looking for your BitBox device…",
   "@bitboxScreenScanningSubtext": {
     "description": "Subtext when scanning"
   },
-  "bitboxScreenConnectingSubtext": "Establishing secure connection...",
+  "bitboxScreenConnectingSubtext": "Establishing secure connection…",
   "@bitboxScreenConnectingSubtext": {
     "description": "Subtext when connecting"
   },
-  "bitboxScreenPairingCodeSubtext": "Verify this code matches your BitBox02 screen, then confirm on the device.",
+  "bitboxScreenPairingCodeSubtext": "Verify this code matches your BitBox screen, then confirm on the device.",
   "@bitboxScreenPairingCodeSubtext": {
     "description": "Subtext when showing pairing code"
   },
@@ -5248,7 +5248,7 @@
   "@bitboxScreenEnterPasswordSubtext": {
     "description": "Subtext when waiting for password"
   },
-  "bitboxScreenVerifyAddressSubtext": "Compare this address with your BitBox02 screen",
+  "bitboxScreenVerifyAddressSubtext": "Compare this address with your BitBox screen",
   "@bitboxScreenVerifyAddressSubtext": {
     "description": "Subtext when showing address verification"
   },
@@ -5256,7 +5256,7 @@
   "@bitboxScreenUnknownError": {
     "description": "Fallback error message"
   },
-  "bitboxScreenWaitingConfirmation": "Waiting for confirmation on BitBox02...",
+  "bitboxScreenWaitingConfirmation": "Waiting for confirmation on BitBox…",
   "@bitboxScreenWaitingConfirmation": {
     "description": "Message shown while waiting for device confirmation"
   },
@@ -5292,11 +5292,11 @@
   "@bitboxScreenNestedSegwitBip49Subtitle": {
     "description": "Subtitle for BIP49 option"
   },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "bitboxScreenTroubleshootingTitle": "BitBox Troubleshooting",
   "@bitboxScreenTroubleshootingTitle": {
     "description": "Title for troubleshooting instructions"
   },
-  "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
+  "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
   "@bitboxScreenTroubleshootingSubtitle": {
     "description": "Subtitle for troubleshooting instructions"
   },
@@ -5308,7 +5308,7 @@
   "@bitboxScreenTroubleshootingStep2": {
     "description": "Troubleshooting step 2"
   },
-  "bitboxScreenTroubleshootingStep3": "Restart your BitBox02 device by unplugging and reconnecting it.",
+  "bitboxScreenTroubleshootingStep3": "Restart your BitBox device by unplugging and reconnecting it.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
   },
@@ -5377,7 +5377,7 @@
   "@replaceByFeeSatsVbUnit": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "replaceByFeeScreenTitle": "Replace by fee",
+  "replaceByFeeScreenTitle": "Replace-by-fee",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
@@ -5666,7 +5666,7 @@
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
-  "payProcessingPayment": "Processing payment...",
+  "payProcessingPayment": "Processing payment…",
   "@payProcessingPayment": {
     "description": "Loading message while payment is being processed"
   },
@@ -5775,7 +5775,7 @@
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
   },
-  "payCheckingStatus": "Checking payment status...",
+  "payCheckingStatus": "Checking payment status…",
   "@payCheckingStatus": {
     "description": "Loading message while verifying payment status"
   },
@@ -5871,7 +5871,7 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "paySwapInProgress": "Swap in progress...",
+  "paySwapInProgress": "Swap in progress…",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
@@ -5883,7 +5883,7 @@
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
-  "payBroadcastingTransaction": "Broadcasting transaction...",
+  "payBroadcastingTransaction": "Broadcasting transaction…",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
@@ -6046,7 +6046,7 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "paySyncingWallet": "Syncing wallet...",
+  "paySyncingWallet": "Syncing wallet…",
   "@paySyncingWallet": {
     "description": "Status message during wallet sync"
   },
@@ -6062,7 +6062,7 @@
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
   },
-  "payDecodingInvoice": "Decoding invoice...",
+  "payDecodingInvoice": "Decoding invoice…",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
   },
@@ -6090,7 +6090,7 @@
   "@payUseCoinjoin": {
     "description": "Option to use CoinJoin for privacy"
   },
-  "payCoinjoinInProgress": "CoinJoin in progress...",
+  "payCoinjoinInProgress": "CoinJoin in progress…",
   "@payCoinjoinInProgress": {
     "description": "Status during CoinJoin process"
   },
@@ -6114,7 +6114,7 @@
   "@payFilterPayments": {
     "description": "Button to filter payment list"
   },
-  "paySearchPayments": "Search payments...",
+  "paySearchPayments": "Search payments…",
   "@paySearchPayments": {
     "description": "Search box placeholder"
   },
@@ -6193,7 +6193,7 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "sendInitiatingSwap": "Initiating swap...",
+  "sendInitiatingSwap": "Initiating swap…",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
   },
@@ -6288,7 +6288,7 @@
   "@sendVerifyOnDevice": {
     "description": "Instruction to check hardware wallet screen"
   },
-  "sendSigningTransaction": "Signing transaction...",
+  "sendSigningTransaction": "Signing transaction…",
   "@sendSigningTransaction": {
     "description": "Status while hardware wallet signs"
   },
@@ -6304,7 +6304,7 @@
   "@sendUserRejected": {
     "description": "Error when user declines on hardware wallet"
   },
-  "sendBuildingTransaction": "Building transaction...",
+  "sendBuildingTransaction": "Building transaction…",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
   },
@@ -6722,7 +6722,7 @@
   "@sellConfirmOrder": {
     "description": "Button to submit sell order"
   },
-  "sellProcessingOrder": "Processing order...",
+  "sellProcessingOrder": "Processing order…",
   "@sellProcessingOrder": {
     "description": "Loading message during order submission"
   },
@@ -6760,11 +6760,11 @@
   "@sellNetworkError": {
     "description": "Error for connectivity issues"
   },
-  "sellRateExpired": "Exchange rate expired. Refreshing...",
+  "sellRateExpired": "Exchange rate expired. Refreshing…",
   "@sellRateExpired": {
     "description": "Message when rate quote times out"
   },
-  "sellUpdatingRate": "Updating exchange rate...",
+  "sellUpdatingRate": "Updating exchange rate…",
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
@@ -6928,7 +6928,7 @@
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
   },
-  "buyVerificationInProgress": "Verification in progress...",
+  "buyVerificationInProgress": "Verification in progress…",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
@@ -7038,11 +7038,11 @@
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
   },
-  "receiveAwaitingPayment": "Awaiting payment...",
+  "receiveAwaitingPayment": "Awaiting payment…",
   "@receiveAwaitingPayment": {
     "description": "Status while waiting for payment"
   },
-  "receiveConfirming": "Confirming... ({count}/{required})",
+  "receiveConfirming": "Confirming… ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
     "placeholders": {
@@ -7112,7 +7112,7 @@
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
   },
-  "backupSettingsExporting": "Exporting...",
+  "backupSettingsExporting": "Exporting…",
   "@backupSettingsExporting": {
     "description": "Button text while vault export is in progress"
   },
@@ -7120,7 +7120,7 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
-  "backupSettingsRevealing": "Revealing...",
+  "backupSettingsRevealing": "Revealing…",
   "@backupSettingsRevealing": {
     "description": "Button text while revealing vault key"
   },
@@ -7828,7 +7828,7 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "recoverbullPleaseWait": "Please wait while we establish a secure connection...",
+  "recoverbullPleaseWait": "Please wait while we establish a secure connection…",
   "@recoverbullPleaseWait": {
     "description": "Message shown during connection establishment"
   },
@@ -8076,7 +8076,7 @@
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
   },
-  "rbfTitle": "Replace by fee",
+  "rbfTitle": "Replace-by-fee",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
@@ -8488,7 +8488,7 @@
   "@kruxStep7": {
     "description": "Krux troubleshooting tip 1"
   },
-  "kruxStep8": "   - Move the red laser up and down over QR code",
+  "kruxStep8": "   - Hold the QR code steady and centered",
   "@kruxStep8": {
     "description": "Krux troubleshooting tip 2"
   },
@@ -8548,7 +8548,7 @@
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
   },
-  "keystoneStep6": "   - Move the red laser up and down over QR code",
+  "keystoneStep6": "   - Hold the QR code steady and centered",
   "@keystoneStep6": {
     "description": "Keystone troubleshooting tip 2"
   },
@@ -8608,7 +8608,7 @@
   "@passportStep5": {
     "description": "Passport troubleshooting tip 1"
   },
-  "passportStep6": "   - Move the red laser up and down over QR code",
+  "passportStep6": "   - Hold the QR code steady and centered",
   "@passportStep6": {
     "description": "Passport troubleshooting tip 2"
   },
@@ -8668,7 +8668,7 @@
   "@seedsignerStep5": {
     "description": "SeedSigner troubleshooting tip 1"
   },
-  "seedsignerStep6": "   - Move the red laser up and down over QR code",
+  "seedsignerStep6": "   - Hold the QR code steady and centered",
   "@seedsignerStep6": {
     "description": "SeedSigner troubleshooting tip 2"
   },
@@ -8888,7 +8888,7 @@
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
   },
-  "importMnemonicChecking": "Checking...",
+  "importMnemonicChecking": "Checking…",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
   },
@@ -8922,7 +8922,7 @@
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
   },
-  "importMnemonicImporting": "Importing...",
+  "importMnemonicImporting": "Importing…",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
@@ -9194,7 +9194,7 @@
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
   },
-  "broadcastSignedTxBroadcasting": "Broadcasting...",
+  "broadcastSignedTxBroadcasting": "Broadcasting…",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -9284,11 +9284,11 @@
       }
     }
   },
-  "importQrDeviceScanning": "Scanning...",
+  "importQrDeviceScanning": "Scanning…",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
   },
-  "importQrDeviceImporting": "Importing wallet...",
+  "importQrDeviceImporting": "Importing wallet…",
   "@importQrDeviceImporting": {
     "description": "Status while importing from QR device"
   },
@@ -9360,11 +9360,11 @@
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
   },
-  "importQrDeviceJadeStep8": "Click the \"open camera\" button",
+  "importQrDeviceJadeStep8": "On your mobile, click \"open camera\"",
   "@importQrDeviceJadeStep8": {
     "description": "Jade instruction step 8"
   },
-  "importQrDeviceJadeStep9": "Scan the QR code you see on your device.",
+  "importQrDeviceJadeStep9": "Scan the QR code you see on your Jade.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
   },
@@ -9372,7 +9372,7 @@
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
   },
-  "importQrDeviceJadeFirmwareWarning": "Make sure your device is updated to the latest firmware",
+  "importQrDeviceJadeFirmwareWarning": "Make sure your Jade is updated to the latest firmware",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
@@ -9396,11 +9396,11 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "importQrDeviceKruxStep4": "Click the \"open camera\" button",
+  "importQrDeviceKruxStep4": "On your mobile, click \"open camera\"",
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "importQrDeviceKruxStep5": "Scan the QR code you see on your device.",
+  "importQrDeviceKruxStep5": "Scan the QR code you see on your Krux.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
   },
@@ -9424,7 +9424,7 @@
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
+  "importQrDeviceKeystoneStep3": "Tap the \"…\" (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
@@ -9492,7 +9492,7 @@
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
+  "importQrDevicePassportStep8": "On your mobile, click \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9544,7 +9544,7 @@
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
-  "importQrDeviceSeedsignerStep7": "On your mobile device, tap Open Camera",
+  "importQrDeviceSeedsignerStep7": "On your mobile, click \"open camera\"",
   "@importQrDeviceSeedsignerStep7": {
     "description": "SeedSigner instruction step 7"
   },
@@ -9596,7 +9596,7 @@
   "@importQrDeviceSpecterStep7": {
     "description": "Specter instruction step 7"
   },
-  "importQrDeviceSpecterStep8": "On your mobile device, tap Open Camera",
+  "importQrDeviceSpecterStep8": "On your mobile, click \"open camera\"",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
   },
@@ -9620,11 +9620,11 @@
   "@importColdcardMultisigPrompt": {
     "description": "Additional instruction for multisig"
   },
-  "importColdcardScanning": "Scanning...",
+  "importColdcardScanning": "Scanning…",
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "importColdcardImporting": "Importing Coldcard wallet...",
+  "importColdcardImporting": "Importing Coldcard wallet…",
   "@importColdcardImporting": {
     "description": "Status while importing"
   },
@@ -9687,15 +9687,15 @@
   "@importColdcardQStep2": {
     "description": "Coldcard Q import instruction step 2"
   },
-  "importColdcardQStep3": "Select the advanced/settings menu",
+  "importColdcardQStep3": "Select the \"Advanced/Tools\" menu",
   "@importColdcardQStep3": {
     "description": "Coldcard Q import instruction step 3"
   },
-  "importColdcardQStep4": "Click \"export wallet\"",
+  "importColdcardQStep4": "Click \"Export Wallet\"",
   "@importColdcardQStep4": {
     "description": "Coldcard Q import instruction step 4"
   },
-  "importColdcardQStep5": "Select \"descriptor\" as export type",
+  "importColdcardQStep5": "Select \"Descriptor\" as export type",
   "@importColdcardQStep5": {
     "description": "Coldcard Q import instruction step 5"
   },
@@ -9711,11 +9711,11 @@
   "@importColdcardQStep8": {
     "description": "Coldcard Q import instruction step 8"
   },
-  "importColdcardQStep9": "For QR, click the QR code button on the device. It will show you a QR code on the device",
+  "importColdcardQStep9": "For QR, click the QR code button on the Coldcard Q device. It will show you a QR code on the device",
   "@importColdcardQStep9": {
     "description": "Coldcard Q import instruction step 9"
   },
-  "importColdcardQStep10": "For NFC, click the NFC button on the device",
+  "importColdcardQStep10": "For NFC, click the NFC button on the Coldcard Q",
   "@importColdcardQStep10": {
     "description": "Coldcard Q import instruction step 10"
   },
@@ -9723,7 +9723,7 @@
   "@importColdcardQStep11": {
     "description": "Coldcard Q import instruction step 11"
   },
-  "importColdcardQStep12": "Scan the QR code you see on your device or put the phone NFC on top of the Coldcard NFC",
+  "importColdcardQStep12": "Scan the QR code you see on your ColdCard Q or put the phone NFC on top of the Coldcard NFC",
   "@importColdcardQStep12": {
     "description": "Coldcard Q import instruction step 12"
   },
@@ -9743,15 +9743,15 @@
   "@importColdcardMk4Step2": {
     "description": "Coldcard Mk4 import instruction step 2"
   },
-  "importColdcardMk4Step3": "Select the advanced/settings menu",
+  "importColdcardMk4Step3": "Select the \"Advanced/Tools\" menu",
   "@importColdcardMk4Step3": {
     "description": "Coldcard Mk4 import instruction step 3"
   },
-  "importColdcardMk4Step4": "Click \"export wallet\"",
+  "importColdcardMk4Step4": "Click \"Export Wallet\"",
   "@importColdcardMk4Step4": {
     "description": "Coldcard Mk4 import instruction step 4"
   },
-  "importColdcardMk4Step5": "Select \"descriptor\" as export type",
+  "importColdcardMk4Step5": "Select \"Descriptor\" as export type",
   "@importColdcardMk4Step5": {
     "description": "Coldcard Mk4 import instruction step 5"
   },
@@ -10236,7 +10236,7 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "sellSendPaymentCalculating": "Calculating...",
+  "sellSendPaymentCalculating": "Calculating…",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
   },
@@ -10658,7 +10658,7 @@
   "@electrumPrivacyNoticeContent1": {
     "description": "First paragraph of privacy notice"
   },
-  "electrumPrivacyNoticeContent2": "However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
+  "electrumPrivacyNoticeContent2": "However, if you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
   "@electrumPrivacyNoticeContent2": {
     "description": "Second paragraph of privacy notice"
   },
@@ -10738,7 +10738,7 @@
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
-  "ledgerProcessingVerify": "Showing address on Ledger...",
+  "ledgerProcessingVerify": "Showing address on Ledger…",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
   },
@@ -10750,7 +10750,7 @@
   "@ledgerSuccessSignTitle": {
     "description": "Success message title after signing transaction with Ledger"
   },
-  "ledgerSuccessVerifyTitle": "Verifying address on Ledger...",
+  "ledgerSuccessVerifyTitle": "Verifying address on Ledger…",
   "@ledgerSuccessVerifyTitle": {
     "description": "Success message title for address verification on Ledger"
   },
@@ -10766,11 +10766,11 @@
   "@ledgerSuccessVerifyDescription": {
     "description": "Success message description after verifying address on Ledger"
   },
-  "ledgerProcessingImportSubtext": "Setting up your watch-only wallet...",
+  "ledgerProcessingImportSubtext": "Setting up your watch-only wallet…",
   "@ledgerProcessingImportSubtext": {
     "description": "Processing subtext shown while importing Ledger wallet"
   },
-  "ledgerProcessingSignSubtext": "Please confirm the transaction on your Ledger device...",
+  "ledgerProcessingSignSubtext": "Please confirm the transaction on your Ledger device…",
   "@ledgerProcessingSignSubtext": {
     "description": "Processing subtext shown while signing transaction"
   },
@@ -10816,11 +10816,11 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "ledgerScanningMessage": "Looking for Ledger devices nearby...",
+  "ledgerScanningMessage": "Looking for Ledger devices nearby…",
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "ledgerConnectingSubtext": "Establishing secure connection...",
+  "ledgerConnectingSubtext": "Establishing secure connection…",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
   },
@@ -11004,7 +11004,7 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "Fetching Price History...",
+  "priceChartFetchingHistory": "Fetching Price History…",
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
@@ -11068,7 +11068,7 @@
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
   },
-  "exchangeSupportChatInputHint": "Type a message...",
+  "exchangeSupportChatInputHint": "Type a message…",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
@@ -11296,7 +11296,7 @@
       }
     }
   },
-  "sellLoadingGeneric": "Loading...",
+  "sellLoadingGeneric": "Loading…",
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
@@ -11462,7 +11462,7 @@
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
-  "torSettingsStatusConnecting": "Connecting...",
+  "torSettingsStatusConnecting": "Connecting…",
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
@@ -11653,7 +11653,7 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensResolvingInputs": "Resolving transaction inputs…",
   "@coreScreensResolvingInputs": {
     "description": "Loading message while resolving transaction input values"
   },
@@ -12880,7 +12880,7 @@
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
   },
-  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox02 Nova.",
+  "bitboxErrorBluetoothPermissionDenied": "Bluetooth permission is required to connect to your BitBox Nova.",
   "@bitboxErrorBluetoothPermissionDenied": {
     "description": "Error when Bluetooth permissions are not granted for BitBox"
   },
@@ -12888,11 +12888,11 @@
   "@bitboxErrorBluetoothUnavailable": {
     "description": "Error when Bluetooth is off or unavailable for BitBox02 Nova"
   },
-  "bitboxErrorNoBleDevicesFound": "No BitBox02 Nova found nearby. Check Bluetooth and try again.",
+  "bitboxErrorNoBleDevicesFound": "No BitBox Nova found nearby. Check Bluetooth and try again.",
   "@bitboxErrorNoBleDevicesFound": {
     "description": "Error when no BitBox02 Nova BLE devices are detected"
   },
-  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices found. Keep only one nearby and try again.",
+  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox Nova devices found. Keep only one nearby and try again.",
   "@bitboxErrorMultipleBleDevicesFound": {
     "description": "Error when multiple BitBox02 Nova BLE devices are detected"
   },
@@ -12900,15 +12900,15 @@
   "@bitboxErrorOperationFailed": {
     "description": "Generic error when a BitBox operation fails"
   },
-  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox02 Nova is unlocked and Bluetooth is enabled.",
+  "bitboxScreenConnectSubtextBluetooth": "Make sure your BitBox Nova is unlocked and Bluetooth is enabled.",
   "@bitboxScreenConnectSubtextBluetooth": {
     "description": "Subtext for initial Bluetooth state"
   },
-  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox02 Nova nearby...",
+  "bitboxScreenScanningSubtextBluetooth": "Looking for your BitBox Nova nearby…",
   "@bitboxScreenScanningSubtextBluetooth": {
     "description": "Subtext when scanning over Bluetooth"
   },
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox Nova Troubleshooting",
   "@bitboxScreenTroubleshootingBluetoothTitle": {
     "description": "Title for Bluetooth troubleshooting instructions"
   },
@@ -12920,11 +12920,11 @@
   "@bitboxScreenTroubleshootingBluetoothStep1": {
     "description": "Bluetooth troubleshooting step 1"
   },
-  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Make sure Bluetooth is enabled on your BitBox Nova.",
   "@bitboxScreenTroubleshootingBluetoothStep2": {
     "description": "Bluetooth troubleshooting step 2"
   },
-  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox02 Nova and try connecting again.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restart your BitBox Nova and try connecting again.",
   "@bitboxScreenTroubleshootingBluetoothStep3": {
     "description": "Bluetooth troubleshooting step 3"
   },
@@ -12937,11 +12937,11 @@
       }
     }
   },
-  "importWalletBitBox": "BitBox02",
+  "importWalletBitBox": "BitBox",
   "@importWalletBitBox": {
     "description": "Button label for BitBox02 hardware wallet"
   },
-  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletBitBoxNova": "BitBox Nova",
   "@importWalletBitBoxNova": {
     "description": "Button label for BitBox02 Nova hardware wallet"
   },
@@ -15337,7 +15337,7 @@
   "@spTestButton": {
     "description": "Silent Payments: test backend connection button"
   },
-  "spTestingConnection": "Testing connection...",
+  "spTestingConnection": "Testing connection…",
   "@spTestingConnection": {
     "description": "Silent Payments: backend connection testing status"
   },
