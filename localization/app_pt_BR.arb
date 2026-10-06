@@ -1876,10 +1876,6 @@
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
   },
-  "importQrDevicePassportStep11": "Digite um rótulo para sua carteira de passaporte e toque em \"Importar\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "sellTransactionFee": "Taxa de transação",
   "@sellTransactionFee": {
     "description": "Label for Bitcoin network fee"
@@ -4060,7 +4056,7 @@
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
   },
-  "importQrDevicePassportStep7": "Selecione \"Código QR\"",
+  "importQrDevicePassportStep7": "No aplicativo BULL wallet, selecione \"Segwit (BIP84)\" como opção de derivação",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -4289,7 +4285,7 @@
   "@fundExchangeLabelBankAccountDetails": {
     "description": "Label for bank account details field"
   },
-  "importQrDevicePassportStep4": "Selecione \"Carteira de contato\"",
+  "importQrDevicePassportStep4": "Selecione \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4984,10 +4980,6 @@
   "@nextButton": {
     "description": "Button label to go to next step"
   },
-  "importQrDevicePassportStep10": "No aplicativo de carteira BULL, selecione \"Segwit (BIP84)\" como a opção de derivação",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
@@ -5419,7 +5411,7 @@
   "@exchangeAuthLoginFailedOkButton": {
     "description": "OK button label in the login failed dialog"
   },
-  "importQrDevicePassportStep1": "Poder no seu dispositivo de passaporte",
+  "importQrDevicePassportStep1": "Ligue o seu dispositivo Passport",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6083,7 +6075,7 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "importQrDevicePassportStep9": "Digitalizar o código QR exibido no seu Passaporte",
+  "importQrDevicePassportStep9": "Configuração concluída.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6153,7 +6145,7 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
+  "importQrDevicePassportStep6": "Escaneie o código QR exibido no seu Passport",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -7385,7 +7377,7 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
-  "importQrDevicePassportStep8": "No seu dispositivo móvel, toque em \"câmera aberta\"",
+  "importQrDevicePassportStep8": "Digite um rótulo para sua carteira Passport e toque em \"Importar\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -7886,7 +7878,7 @@
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
-  "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
+  "importQrDevicePassportStep5": "Selecione \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -7922,10 +7914,6 @@
   "transactionDetailLabelOrderStatus": "Status da ordem",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "importQrDevicePassportStep12": "Configuração completa.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "rbfBroadcast": "Transmissão",
   "@rbfBroadcast": {
@@ -8021,7 +8009,7 @@
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
   },
-  "importQrDevicePassportStep3": "Selecione \"Conta de gerenciamento\"",
+  "importQrDevicePassportStep3": "Selecione \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
