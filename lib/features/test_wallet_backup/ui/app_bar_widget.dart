@@ -73,10 +73,6 @@ Future<String?> _showWalletPicker({
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.4,
       ),
-      decoration: BoxDecoration(
-        color: context.appColors.onSecondary,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
