@@ -11815,5 +11815,6 @@
   "receiveErrorBroadcastOriginal": "نتوانستیم تراکنش را ارسال کنیم. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "fundExchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
-  "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند."
+  "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

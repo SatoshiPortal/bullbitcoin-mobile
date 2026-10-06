@@ -11815,5 +11815,6 @@
   "receiveErrorBroadcastOriginal": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
-  "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다."
+  "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

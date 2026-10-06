@@ -4815,5 +4815,6 @@
   "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen.",
   "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
-  "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita."
+  "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

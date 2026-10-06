@@ -11815,5 +11815,6 @@
   "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "exchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
-  "walletBalancesMayBeStale": "Δεν ήταν δυνατή η ενημέρωση των υπολοίπων σας και ενδέχεται να μην είναι ενημερωμένα."
+  "walletBalancesMayBeStale": "Δεν ήταν δυνατή η ενημέρωση των υπολοίπων σας και ενδέχεται να μην είναι ενημερωμένα.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

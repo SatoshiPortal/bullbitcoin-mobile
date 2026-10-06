@@ -3620,5 +3620,6 @@
   "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
-  "walletBalancesMayBeStale": "Ձեր մնացորդները չհաջողվեց թարմացնել, և դրանք կարող են հնացած լինել։"
+  "walletBalancesMayBeStale": "Ձեր մնացորդները չհաջողվեց թարմացնել, և դրանք կարող են հնացած լինել։",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

@@ -3743,5 +3743,6 @@
   "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
-  "walletBalancesMayBeStale": "თქვენი ნაშთების განახლება ვერ მოხერხდა და ისინი შეიძლება მოძველებული იყოს."
+  "walletBalancesMayBeStale": "თქვენი ნაშთების განახლება ვერ მოხერხდა და ისინი შეიძლება მოძველებული იყოს.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

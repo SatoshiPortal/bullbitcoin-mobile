@@ -4827,5 +4827,6 @@
   "receiveErrorBroadcastOriginal": "Non è stato possibile trasmettere la transazione. Controlla la connessione a Internet e riprova.",
   "fundExchangeErrorNetwork": "Controlla la connessione a Internet e riprova.",
   "exchangeErrorNetwork": "Controlla la connessione a Internet e riprova.",
-  "walletBalancesMayBeStale": "Non è stato possibile aggiornare i tuoi saldi, che potrebbero non essere aggiornati."
+  "walletBalancesMayBeStale": "Non è stato possibile aggiornare i tuoi saldi, che potrebbero non essere aggiornati.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

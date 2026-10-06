@@ -4873,5 +4873,6 @@
   "receiveErrorBroadcastOriginal": "Nous n’avons pas pu diffuser la transaction. Vérifiez votre connexion Internet et réessayez.",
   "fundExchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "exchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
-  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour."
+  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

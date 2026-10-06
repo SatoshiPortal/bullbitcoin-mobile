@@ -4824,5 +4824,6 @@
   "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo.",
   "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
   "exchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
-  "walletBalancesMayBeStale": "No se pudieron actualizar tus saldos y es posible que no estén al día."
+  "walletBalancesMayBeStale": "No se pudieron actualizar tus saldos y es posible que no estén al día.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

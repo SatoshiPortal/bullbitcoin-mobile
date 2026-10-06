@@ -11815,5 +11815,6 @@
   "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
-  "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální."
+  "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální.",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }

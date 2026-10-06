@@ -12002,5 +12002,6 @@
   "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।",
   "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
   "exchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
-  "walletBalancesMayBeStale": "आपके बैलेंस अपडेट नहीं हो सके और वे पुराने हो सकते हैं।"
+  "walletBalancesMayBeStale": "आपके बैलेंस अपडेट नहीं हो सके और वे पुराने हो सकते हैं।",
+  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
 }
