@@ -455,6 +455,30 @@ void main() {
       );
     });
 
+    // The user can act on these two, so each keeps its own failure rather
+    // than collapsing into the catch-all.
+    test('too many coins maps to SpTooManyCoins with its counts', () async {
+      final failure = await failureFromStopScan(
+        const SpError.tooManyCoins(count: 21, max: 20),
+      );
+
+      expect(
+        failure,
+        isA<SpTooManyCoins>()
+            .having((f) => f.count, 'count', 21)
+            .having((f) => f.max, 'max', 20),
+      );
+    });
+
+    test('a sub-dust max maps to SpNothingToSendAfterFee', () async {
+      expect(
+        await failureFromStopScan(
+          SpError.nothingToSendAfterFee(remainderSat: BigInt.from(3000)),
+        ),
+        isA<SpNothingToSendAfterFee>(),
+      );
+    });
+
     test('refused descriptors map to SpCredentialRefused, without bwk\'s '
         'reason', () async {
       final failure = await failureFromStopScan(

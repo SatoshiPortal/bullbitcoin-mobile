@@ -40,6 +40,12 @@ final class SendInsufficientFundsForFeesFailure extends SendFailure {
   const SendInsufficientFundsForFeesFailure([super.logMessage]);
 }
 
+/// The wallet holds more coins than automatic coin selection can search; a
+/// max send to an own address merges them.
+final class SendTooManyCoinsFailure extends SendFailure {
+  const SendTooManyCoinsFailure([super.logMessage]);
+}
+
 final class SendSelectedCoinsUnavailableFailure extends SendFailure {
   const SendSelectedCoinsUnavailableFailure([super.logMessage]);
 }

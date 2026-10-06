@@ -144,8 +144,12 @@ class BwkSpAccountRepository
       SpError_SimulationDrifted(:final detail) => SpSimulationDrifted(detail),
       SpError_DisposeTimedOut() => SpSessionBusy('$e'),
       SpError_ScannerAlreadyRunning() => SpScanBusy('$e'),
-      SpError_TooManyCoins() ||
-      SpError_NothingToSendAfterFee() => SpUnexpected('$e'),
+      SpError_TooManyCoins(:final count, :final max) => SpTooManyCoins(
+        count: count,
+        max: max,
+        logMessage: '$e',
+      ),
+      SpError_NothingToSendAfterFee() => SpNothingToSendAfterFee('$e'),
       // Fixed text: the descriptors carry the scan private key.
       SpError_InvalidDescriptor() => const SpCredentialRefused(
         'the account refused its descriptors',

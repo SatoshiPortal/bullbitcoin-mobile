@@ -25,6 +25,8 @@ extension SpFailureL10n on SpFailure {
     SpAmountExceedsBalance() => context.loc.spFailureAmountExceedsBalance,
     SpAddressNetworkMismatch() => context.loc.spFailureAddressNetworkMismatch,
     SpInvalidAddress() => context.loc.spFailureInvalidAddress,
+    SpTooManyCoins() => context.loc.spFailureTooManyCoins,
+    SpNothingToSendAfterFee() => context.loc.spFailureNothingToSendAfterFee,
     SpBroadcastUncertain() => context.loc.spFailureBroadcastUncertain,
     SpSignedTransactionMismatch() =>
       context.loc.spFailureSignedTransactionMismatch,

@@ -15519,6 +15519,14 @@
   "@spFailureBackendOnionUnsupported": {
     "description": "Silent Payments server settings: the entered server address is a Tor .onion address, which the Silent Payments client cannot reach yet"
   },
+  "spFailureTooManyCoins": "This wallet holds too many coins to pick from for this payment. Send the maximum amount to yourself once to combine them, then try again.",
+  "@spFailureTooManyCoins": {
+    "description": "Silent Payments send: automatic coin selection refuses wallets with more coins than it can search; sending everything to oneself merges them"
+  },
+  "spFailureNothingToSendAfterFee": "After the network fee, the amount left to send is too small.",
+  "@spFailureNothingToSendAfterFee": {
+    "description": "Silent Payments send max: what remains after paying the network fee is below the minimum an output can carry"
+  },
   "spFailureCredentialRefused": "The Silent Payments wallet could not be opened with this wallet's keys.",
   "@spFailureCredentialRefused": {
     "description": "Silent Payments setup failure: the watch-only account refused the descriptors derived from the default wallet"

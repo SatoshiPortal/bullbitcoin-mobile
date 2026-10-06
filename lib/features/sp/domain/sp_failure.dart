@@ -106,6 +106,24 @@ final class SpInvalidAddress extends SpFailure {
   const SpInvalidAddress([super.logMessage]);
 }
 
+/// Send: the wallet holds more coins than automatic coin selection can search.
+/// A max send to an own address merges them.
+final class SpTooManyCoins extends SpFailure {
+  final int count;
+  final int max;
+
+  const SpTooManyCoins({
+    required this.count,
+    required this.max,
+    String? logMessage,
+  }) : super(logMessage);
+}
+
+/// Send max: what remains after the network fee is below the dust limit.
+final class SpNothingToSendAfterFee extends SpFailure {
+  const SpNothingToSendAfterFee([super.logMessage]);
+}
+
 /// The broadcast outcome is unknown: the transaction may or may not have been
 /// sent, so the user must check before retrying.
 final class SpBroadcastUncertain extends SpFailure {
@@ -115,8 +133,8 @@ final class SpBroadcastUncertain extends SpFailure {
 /// The signed transaction differs from the confirmed simulation (inputs,
 /// outputs, amounts or fee, or change the receiving path does not recognise),
 /// so it was not broadcast. Mapped from bwk's `SignedPsbtMismatch` and from
-/// the app's own check of the extracted transaction. Nothing was sent; the
-/// user can review the payment and try again.
+/// the app's own check of the extracted transaction. Nothing was sent; the user can review
+/// the payment and try again.
 final class SpSignedTransactionMismatch extends SpFailure {
   const SpSignedTransactionMismatch([super.logMessage]);
 }

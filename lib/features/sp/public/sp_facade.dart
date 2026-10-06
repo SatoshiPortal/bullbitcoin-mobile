@@ -60,6 +60,8 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpAmountExceedsBalance,
         SpAddressNetworkMismatch,
         SpInvalidAddress,
+        SpTooManyCoins,
+        SpNothingToSendAfterFee,
         SpBroadcastUncertain,
         SpSignedTransactionMismatch,
         SpCredentialRefused,

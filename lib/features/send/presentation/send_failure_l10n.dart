@@ -27,6 +27,9 @@ extension SendFailureL10n on SendFailure {
       context.loc.sendErrorAddressNetworkMismatch,
     SendInsufficientFundsForFeesFailure() =>
       context.loc.sendErrorInsufficientFundsForFees,
+    // The Silent Payments wallet is the only one that refuses this way; its
+    // message names the fix (a max send to self).
+    SendTooManyCoinsFailure() => context.loc.spFailureTooManyCoins,
     SendSelectedCoinsUnavailableFailure() =>
       context.loc.sendErrorSelectedCoinsUnavailable,
     SendSelectedCoinsInsufficientFailure() =>
