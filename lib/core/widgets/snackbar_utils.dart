@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullRadius;
 import 'package:flutter/material.dart';
 
 class SnackBarUtils {
@@ -274,7 +275,7 @@ class _SnackBarState extends State<_SnackBar>
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: context.appColors.onSurface.withAlpha(204),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(BullRadius.xxs),
               ),
               child: widget.content,
             ),
