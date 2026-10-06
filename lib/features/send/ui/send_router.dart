@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
@@ -16,6 +17,15 @@ enum SendRoute {
   final String path;
 }
 
+class SendRouteArgs {
+  final Wallet? wallet;
+  final bool isSpMode;
+
+  const SendRouteArgs({this.wallet, this.isSpMode = false});
+
+  const SendRouteArgs.sp() : wallet = null, isSpMode = true;
+}
+
 class SendRouter {
   static final route = GoRoute(
     name: SendRoute.send.name,
@@ -23,10 +33,17 @@ class SendRouter {
     builder: (context, state) {
       // Pass a preselected wallet to the send bloc if one is set in the URI
       //  of the incoming route
-      final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
+      final args = state.extra is SendRouteArgs
+          ? state.extra! as SendRouteArgs
+          : null;
+      final wallet =
+          args?.wallet ??
+          (state.extra is Wallet ? state.extra! as Wallet : null);
       return BlocProvider(
-        create: (_) =>
-            locator<SendCubit>(param1: wallet)..loadWalletWithRatesAndFees(),
+        create: (_) => locator<SendCubit>(
+          param1: wallet,
+          param2: args?.isSpMode == true ? context.loc.walletSpTitle : null,
+        )..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );
     },

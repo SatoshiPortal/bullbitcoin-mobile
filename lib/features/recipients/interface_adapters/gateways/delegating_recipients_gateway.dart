@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
@@ -16,7 +18,7 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   });
 
   @override
-  Future<Recipient> saveRecipient(
+  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
     RecipientDetails recipientDetails, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -35,7 +37,33 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
+  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+    required String recipientId,
+    required String email,
+    required String? securityQuestion,
+    required String? securityAnswer,
+    required bool isTestnet,
+  }) {
+    final gateway = isTestnet
+        ? _bullBitcoinTestnetApiClient
+        : _bullbitcoinApiClient;
+    return gateway.updateInteracSecurityDetails(
+      recipientId: recipientId,
+      email: email,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
+      isTestnet: isTestnet,
+    );
+  }
+
+  @override
+  Future<
+    Result<
+      ({List<Recipient> recipients, int totalRecipients}),
+      RecipientsFailure
+    >
+  >
+  listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
     int page = 1,
@@ -66,7 +94,7 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<String> checkSinpe({
+  Future<Result<String, RecipientsFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   }) {
@@ -82,7 +110,7 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<List<CadBiller>> listCadBillers({
+  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   }) {

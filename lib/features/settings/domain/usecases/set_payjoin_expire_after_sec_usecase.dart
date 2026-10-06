@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show Err;
+import 'package:meta/meta.dart';
 
 class SetPayjoinExpireAfterSecUsecase {
   final PayjoinPolicyAccess _policy;
@@ -7,7 +9,8 @@ class SetPayjoinExpireAfterSecUsecase {
   SetPayjoinExpireAfterSecUsecase({required PayjoinPolicyAccess payjoinPolicy})
     : _policy = payjoinPolicy;
 
-  Future<void> execute(int expireAfterSec) async {
+  @useResult
+  Future<Result<void, SettingsFailure>> execute(int expireAfterSec) async {
     final lifetime = Duration(seconds: expireAfterSec);
     if (lifetime < PayjoinPolicy.minimumSessionLifetime ||
         lifetime > PayjoinPolicy.maximumSessionLifetime) {
@@ -21,8 +24,11 @@ class SetPayjoinExpireAfterSecUsecase {
     }
 
     final result = await _policy.setSessionLifetime(lifetime);
-    if (result case Err()) {
-      throw StateError('Failed to update Payjoin policy');
-    }
+
+    return result.mapErr(
+      (failure) => SettingsStorageFailure(
+        'setSessionLifetime failed: ${failure.runtimeType}',
+      ),
+    );
   }
 }

@@ -133,7 +133,7 @@ class Logger {
   // Public API
   // ---------------------------------------------------------------------------
 
-  Future<void> ensureLogsExist() async {
+  Future<void> ensureLogsExist({bool writeDiagnosticContext = true}) async {
     try {
       if (!await logsFile.exists()) {
         await logsFile.create(recursive: true);
@@ -142,7 +142,7 @@ class Logger {
       await _enqueue(() async {
         _ensureSinkOpen();
       });
-      await _writeDiagnosticContext();
+      if (writeDiagnosticContext) await _writeDiagnosticContext();
     } catch (e) {
       _reportLoggerFailure('Logs existence failed', e);
     }

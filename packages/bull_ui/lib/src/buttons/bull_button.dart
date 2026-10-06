@@ -32,6 +32,7 @@ class BullButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
+    this.compact = false,
   }) : size = BullButtonSize.large;
 
   const BullButton.small({
@@ -48,6 +49,7 @@ class BullButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
+    this.compact = false,
   }) : size = BullButtonSize.small;
 
   /// Optional leading/trailing icon glyph.
@@ -89,6 +91,10 @@ class BullButton extends StatelessWidget {
   /// Overrides the default label text style.
   final TextStyle? textStyle;
 
+  /// Shrink to the label instead of the fixed small width, for a chip-sized
+  /// action that sits in a row or a wrap with others.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(BullRadius.xxs);
@@ -116,9 +122,12 @@ class BullButton extends StatelessWidget {
           onTap: disabled ? null : onPressed,
           borderRadius: radius,
           child: Container(
-            height: height ?? 52,
-            width: width ?? (size == BullButtonSize.large ? null : 160),
-            padding: height != null
+            height: height ?? (compact ? 36 : 52),
+            width:
+                width ?? (size == BullButtonSize.large || compact ? null : 160),
+            padding: compact
+                ? const EdgeInsets.symmetric(horizontal: 16)
+                : height != null
                 ? null
                 : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
@@ -129,6 +138,7 @@ class BullButton extends StatelessWidget {
               borderRadius: radius,
             ),
             child: Row(
+              mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (iconData == null) ...[

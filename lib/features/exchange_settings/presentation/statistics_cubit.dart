@@ -1,34 +1,28 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 
 class StatisticsCubit extends Cubit<StatisticsState> {
-  StatisticsCubit({required this._getOrderStatsUsecase})
-    : super(const StatisticsState());
+  final GetExchangeStatisticsUsecase _getExchangeStatisticsUsecase;
 
-  final GetOrderStatsUsecase _getOrderStatsUsecase;
+  StatisticsCubit({required GetExchangeStatisticsUsecase getStatisticsUsecase})
+    : _getExchangeStatisticsUsecase = getStatisticsUsecase,
+      super(const StatisticsState());
 
   Future<void> loadStatistics() async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, failure: null));
 
-    try {
-      final stats = await _getOrderStatsUsecase.execute();
+    final result = await _getExchangeStatisticsUsecase.execute();
+    if (isClosed) return;
 
-      emit(state.copyWith(isLoading: false, stats: stats));
-    } catch (e) {
-      log.severe(
-        message: 'Failed to load statistics',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(isLoading: false, error: 'Failed to load statistics'),
-      );
-    }
+    emit(switch (result) {
+      Ok(:final value) => state.copyWith(isLoading: false, stats: value),
+      Err(:final failure) => state.copyWith(isLoading: false, failure: failure),
+    });
   }
 
   void clearError() {
-    emit(state.copyWith(error: null));
+    emit(state.copyWith(failure: null));
   }
 }

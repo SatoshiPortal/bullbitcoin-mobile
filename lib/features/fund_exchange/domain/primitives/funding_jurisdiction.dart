@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
-
 enum FundingJurisdiction {
   canada('CA'),
   europe('EU'),
@@ -9,12 +7,6 @@ enum FundingJurisdiction {
   colombia('CO');
 
   final String code;
-  const FundingJurisdiction(this.code);
 
-  static FundingJurisdiction fromString(String code) {
-    return FundingJurisdiction.values.firstWhere(
-      (e) => e.code == code,
-      orElse: () => throw JurisdictionNotSupported(jurisdiction: code),
-    );
-  }
+  const FundingJurisdiction(this.code);
 }

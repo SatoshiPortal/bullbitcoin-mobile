@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 
 class CheckSinpeParams {
@@ -15,25 +18,28 @@ class CheckSinpeResult {
 
 class CheckSinpeUsecase {
   final RecipientsGatewayPort _recipientsGateway;
-  // TODO: The settings repository should not be used directly here, since it is
-  // from another domain. We should use a settings port that gets the settings
-  // facade injected so no business logic is skipped from the settings domain.
-  final SettingsRepository _settingsRepository;
+  final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   CheckSinpeUsecase({
     required this._recipientsGateway,
-    required this._settingsRepository,
+    required this._getRecipientsEnvironmentUsecase,
   });
 
-  Future<CheckSinpeResult> execute(CheckSinpeParams params) async {
-    final settings = await _settingsRepository.fetch();
-    final isTestnet = settings.environment.isTestnet;
+  @useResult
+  Future<Result<CheckSinpeResult, RecipientsFailure>> execute(
+    CheckSinpeParams params,
+  ) async {
+    final bool isTestnet;
+    switch (await _getRecipientsEnvironmentUsecase.execute()) {
+      case Ok(:final value):
+        isTestnet = value.isTestnet;
+      case Err(:final failure):
+        return Err(failure);
+    }
 
-    final ownerName = await _recipientsGateway.checkSinpe(
+    return (await _recipientsGateway.checkSinpe(
       phoneNumber: params.phoneNumber,
       isTestnet: isTestnet,
-    );
-
-    return CheckSinpeResult(ownerName: ownerName);
+    )).map((ownerName) => CheckSinpeResult(ownerName: ownerName));
   }
 }

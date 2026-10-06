@@ -1,5 +1,7 @@
 import 'dart:io' show Directory, Platform;
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -14,6 +16,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide ScriptType;
 
@@ -84,7 +87,12 @@ Future<void> main({bool isInitialized = false}) async {
     );
     await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
     await Future<void>.delayed(const Duration(seconds: 3));
-    await walletRepository.getWallets(sync: true);
+    // Fail fast: a funding sync that failed would otherwise surface as a
+    // confusing balance assertion further down.
+    expect(
+      await walletRepository.getWallets(sync: true),
+      isA<Ok<List<Wallet>, WalletFailure>>(),
+    );
   }
 
   const aliceDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
@@ -162,7 +170,12 @@ Future<void> main({bool isInitialized = false}) async {
   // full wallet sync before every one of their tests.
   group('funded testnet Payjoin', () {
     setUpAll(() async {
-      await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
+      // Setup: assert rather than discard, so a failed write surfaces here
+      // instead of as a confusing failure further down the test.
+      expect(
+        await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
+        isA<Ok<void, SettingsFailure>>(),
+      );
       final currentPolicy = await policy.load();
       previousPayjoinEnabled = switch (currentPolicy) {
         Ok(:final value) => value.enabled,
@@ -196,19 +209,33 @@ Future<void> main({bool isInitialized = false}) async {
           if (restored case Err(:final failure)) throw failure;
         }
       } finally {
-        await locator<SetEnvironmentUsecase>().execute(Environment.mainnet);
+        // Teardown: assert rather than discard, so a failed restore surfaces
+        // here instead of leaking into whatever test runs next.
+        expect(
+          await locator<SetEnvironmentUsecase>().execute(Environment.mainnet),
+          isA<Ok<void, SettingsFailure>>(),
+        );
       }
     });
 
     setUp(() async {
-      await walletRepository.getWallets(sync: true);
+      // Fail fast: a funding sync that failed would otherwise surface as a
+      // confusing balance assertion further down.
+      expect(
+        await walletRepository.getWallets(sync: true),
+        isA<Ok<List<Wallet>, WalletFailure>>(),
+      );
     });
 
     test(
       'funded testnet wallets complete a Payjoin',
       () async {
-        receiverWallet = (await walletRepository.getWallet(receiverWallet.id))!;
-        senderWallet = (await walletRepository.getWallet(senderWallet.id))!;
+        receiverWallet = _wallet(
+          await walletRepository.getWallet(receiverWallet.id),
+        );
+        senderWallet = _wallet(
+          await walletRepository.getWallet(senderWallet.id),
+        );
         expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
         expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
 
@@ -311,3 +338,10 @@ Future<void> main({bool isInitialized = false}) async {
     );
   }, skip: hasFixtures ? null : fixtureSkip);
 }
+
+/// The repository returns a `Result` now; a wallet that cannot be read back
+/// mid-test is a broken fixture, not a case under test.
+Wallet _wallet(Result<Wallet, WalletFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected a wallet, got $failure'),
+};

@@ -4,8 +4,9 @@ import 'package:flutter/widgets.dart';
 
 extension SettingsFailureL10n on SettingsFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    SettingsStorageFailure() => context.loc.oopsSomethingWentWrong,
-    SettingsConsentFailure() => context.loc.oopsSomethingWentWrong,
-    SettingsLogsFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsStorageFailure() => context.loc.settingsErrorSavingSetting,
+    SettingsConsentFailure() => context.loc.settingsErrorConsentNotGiven,
+    SettingsLogsFailure() => context.loc.settingsErrorLoadingLogs,
+    SettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

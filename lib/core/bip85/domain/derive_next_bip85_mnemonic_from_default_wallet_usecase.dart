@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
@@ -33,11 +34,20 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       // Derive from the default wallet of the environment the app is actually
       // running in: a hardcoded mainnet lookup finds no wallet on testnet.
       final settings = await _settingsRepository.fetch();
-      final wallets = await _walletRepository.getWallets(
+      final List<Wallet> wallets;
+      switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          wallets = value;
+        case Err(:final failure):
+          log.warning('bip85 mnemonic: ${failure.logMessage}');
+          return Err(
+            Bip85UnexpectedFailure('default wallet: ${failure.runtimeType}'),
+          );
+      }
       if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
       final defaultWallet = wallets.first;
 
@@ -71,7 +81,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
         error: e,
         trace: st,
       );
-      return Err(Bip85UnexpectedFailure(e.toString()));
+      return Err(Bip85UnexpectedFailure('derivation: ${e.runtimeType}'));
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -19,6 +20,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -120,7 +122,6 @@ class Bull {
     _diagnosticRuntime.setTorLoader(
       () => _loadTorContext(settings, locator<bull_tor.Tor>()),
     );
-    await log.refreshDiagnosticContext();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     if (Platform.isAndroid || Platform.isIOS) {
       await initWorkmanager();
@@ -165,7 +166,10 @@ class Bull {
       diagnosticContextLoader: diagnosticContextProvider?.load,
       reporter: const _ReportLoggerReporter(),
     );
-    await log.ensureLogsExist();
+    // Platform diagnostics can take up to the provider timeout on a cold
+    // install. Keep file creation on the critical path, then collect one
+    // diagnostic row after the first application frame.
+    await log.ensureLogsExist(writeDiagnosticContext: false);
     if (!background) {
       // Cold-start prune for the FG file. `Logger.prune()` is
       // intentionally per-isolate (see the comment above its
@@ -262,6 +266,10 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
+        // Android initializes FSS10 lazily and may spend several seconds in a
+        // cold fsync. When no supported prior-install marker exists, start that
+        // local-only work during the wizard. Upgrade probes stay in Bull.init.
+        unawaited(StorageLocator.prewarmSecureStorage());
         // Wizard runs BEFORE `Bull.init` for everyone — fresh installs
         // and upgrades alike — so consent is collected before
         // migrations / Sentry init / Drift schema work fires off, and
@@ -280,6 +288,7 @@ Future main() async {
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(AppInitErrorScreen(error: error));
+        _refreshDiagnosticContextAfterFirstFrame();
         return;
       } finally {
         // Make sure the just-logged severe line is on disk before we
@@ -289,6 +298,7 @@ Future main() async {
         await log.flush();
       }
       runApp(const BullBitcoinWalletApp());
+      _refreshDiagnosticContextAfterFirstFrame();
     },
     (error, stackTrace) {
       // Use try-catch to prevent cascading crashes if logging itself fails
@@ -313,6 +323,12 @@ Future main() async {
       }
     },
   );
+}
+
+void _refreshDiagnosticContextAfterFirstFrame() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(log.refreshDiagnosticContext());
+  });
 }
 
 class BullBitcoinWalletApp extends StatefulWidget {
@@ -390,6 +406,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       child: ExchangeListener(
         child: MultiBlocListener(
           listeners: [
+            SettingsFailureListener(),
             BlocListener<AppStartupBloc, AppStartupState>(
               listenWhen: (previous, current) =>
                   previous != current &&
@@ -413,6 +430,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
             BlocListener<SettingsCubit, SettingsState>(
               listenWhen: (previous, current) =>
+                  previous.environment != null &&
                   previous.environment != current.environment,
               listener: (context, settings) async {
                 // Re-fetch user summary (re-init exchange bloc) and wallets

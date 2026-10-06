@@ -5,11 +5,11 @@ part 'state.freezed.dart';
 
 @freezed
 sealed class Bip329LabelsState with _$Bip329LabelsState {
-  const factory Bip329LabelsState.initial() = _Initial;
-  const factory Bip329LabelsState.loading() = _Loading;
-  const factory Bip329LabelsState.exportSuccess() = _ExportSuccess;
+  const factory Bip329LabelsState.initial() = Bip329LabelsInitial;
+  const factory Bip329LabelsState.loading() = Bip329LabelsLoading;
+  const factory Bip329LabelsState.exportSuccess() = Bip329LabelsExportSuccess;
   const factory Bip329LabelsState.importSuccess({required int labelsCount}) =
-      _ImportSuccess;
+      Bip329LabelsImportSuccess;
   const factory Bip329LabelsState.error({required LabelFailure failure}) =
-      _Error;
+      Bip329LabelsFailureState;
 }

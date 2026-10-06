@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/labels_import_exception.dart';
 import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
@@ -75,15 +78,27 @@ class Bip329LabelsCodec {
     return bip329.Bip329Label.toJsonLines(bip329Labels);
   }
 
+  /// Throws [LabelsImportException] for the ways a chosen file can be
+  /// wrong. They were bare `throw 'string'` before: the messages were
+  /// accurate and actionable, but nothing above could tell them apart, so
+  /// every one of them reached the user as "Oops something went wrong".
   DecodedLabels decode(String input) {
-    if (input.length > maxImportBytes) throw 'Labels file exceeds 1 MiB';
+    // Measured in UTF-8 bytes, matching what the limit claims and what the
+    //  user sees on disk. It was `input.length` — UTF-16 code units — so a
+    //  file of non-ASCII labels could sit above the stated limit and still
+    //  be accepted.
+    if (utf8.encode(input).length > maxImportBytes) {
+      throw const LabelsImportException.tooLarge(maxImportBytes);
+    }
     var bip329Labels = <bip329.Bip329Label>[];
     try {
       bip329Labels = bip329.Bip329Label.fromJsonLines(input);
-    } catch (e) {
-      throw 'Failed to parse bip329 format';
+    } catch (_) {
+      throw const LabelsImportException(LabelsImportProblem.unreadable);
     }
-    if (bip329Labels.isEmpty) throw 'No labels found';
+    if (bip329Labels.isEmpty) {
+      throw const LabelsImportException(LabelsImportProblem.empty);
+    }
 
     final labels = <NewLabel>[];
     final frozen = <({String? walletId, String txId, int vout})>[];
@@ -167,7 +182,12 @@ String? _walletIdFromBip329Origin(String? origin) {
 
 NewLabel _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
   if (LabelSystem.isSystemLabel(bip329Label.label)) {
-    throw LabelValidationException('Reserved system label name');
+    // Aborts the whole import: the decode loop calls this bare, by design —
+    //  a file naming a system label is rejected rather than silently
+    //  half-imported. It must be a LabelsImportException so the use-case can
+    //  say WHY; as a LabelValidationException it fell through to the
+    //  catch-all and read "Oops something went wrong".
+    throw const LabelsImportException(LabelsImportProblem.reservedName);
   }
   return switch (bip329Label) {
     bip329.TxLabel() => NewLabel(
@@ -206,6 +226,10 @@ NewLabel _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    _ => throw 'Unsupported label type: ${bip329Label.runtimeType}',
+    // An unknown record type is a malformed file from this app's point of
+    //  view. There is no per-element tolerance in the decode loop, so this
+    //  aborts the import — deliberately: a file this app cannot fully read
+    //  should not be partially applied to the user's labels.
+    _ => throw const LabelsImportException(LabelsImportProblem.unreadable),
   };
 }

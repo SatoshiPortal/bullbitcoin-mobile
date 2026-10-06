@@ -31,7 +31,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required this._exchangeNotificationService,
   }) : super(const ExchangeSupportChatState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
-        .where((message) => message.type == 'message')
+        .where((message) => message.kind == NotificationMessageKind.message)
         .listen((_) => loadMessages(page: 1));
   }
 

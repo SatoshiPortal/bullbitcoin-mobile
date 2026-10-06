@@ -87,4 +87,34 @@ void main() {
     final contents = await log.logsFile.readAsString();
     expect(contents, contains('Diagnostic context unavailable'));
   });
+
+  test('can create logs without loading diagnostic context', () async {
+    final directory = await Directory.systemTemp.createTemp('logger-context-');
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    var loadCount = 0;
+    log = Logger.replace(
+      directory: directory,
+      diagnosticContextLoader: () async {
+        loadCount++;
+        return const DiagnosticContext(
+          app: '6.13.0+214',
+          system: {},
+          resources: {},
+          network: {},
+          tor: {},
+        );
+      },
+    );
+
+    await log.ensureLogsExist(writeDiagnosticContext: false);
+
+    expect(loadCount, 0);
+    expect(await log.logsFile.exists(), isTrue);
+
+    await log.refreshDiagnosticContext();
+    expect(loadCount, 1);
+  });
 }

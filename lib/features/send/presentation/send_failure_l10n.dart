@@ -23,6 +23,8 @@ extension SendFailureL10n on SendFailure {
           : context.loc.sendErrorInsufficientBalanceFrozenHint(
               formattedFrozenBalance,
             ),
+    SendAddressNetworkMismatchFailure() =>
+      context.loc.sendErrorAddressNetworkMismatch,
     SendInsufficientFundsForFeesFailure() =>
       context.loc.sendErrorInsufficientFundsForFees,
     SendSelectedCoinsUnavailableFailure() =>

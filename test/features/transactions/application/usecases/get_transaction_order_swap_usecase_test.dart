@@ -1,9 +1,22 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/core/failures/failure.dart';
+
+/// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
+F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok() => fail('expected an Err, got Ok'),
+  Err(:final failure) => failure,
+};
+
+/// The value an [Ok] carries; an [Err] fails the test, naming the failure.
+T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
+};
 
 class _MockSwapFacade extends Mock implements SwapFacade {}
 
@@ -23,18 +36,19 @@ void main() {
 
     final result = await usecase.execute('local-1');
 
-    expect(result.localId, 'local-1');
-    expect(result.orderId, 'order-1');
+    final record = _valueOf(result);
+    expect(record.localId, 'local-1');
+    expect(record.orderId, 'order-1');
   });
 
-  test('throws when the local record id is absent', () async {
+  test('reports a missing local record as not-found', () async {
     when(() => swapFacade.getOrder('missing')).thenAnswer(
       (_) async => const Err(SwapOrderNotFoundFailure('Local order not found')),
     );
 
-    await expectLater(
-      usecase.execute('missing'),
-      throwsA(isA<TransactionNotFoundError>()),
+    expect(
+      _failureOf(await usecase.execute('missing')),
+      isA<TransactionNotFoundFailure>(),
     );
   });
 }

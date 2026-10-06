@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -54,12 +54,13 @@ class LoadBuyContextUsecase {
 
   @useResult
   Future<Result<List<Wallet>, BuyFailure>> wallets() async {
-    try {
-      return Ok(await _getWalletsUsecase.execute());
-    } catch (e, st) {
-      log.severe(message: 'Failed to load the wallets', error: e, trace: st);
-      return Err(BuyUnexpectedFailure('$e'));
+    final result = await _getWalletsUsecase.execute();
+    if (result case Err(:final failure)) {
+      log.warning('Failed to load the wallets: ${failure.logMessage}');
     }
+    return result.mapErr(
+      (failure) => BuyUnexpectedFailure('wallets: ${failure.runtimeType}'),
+    );
   }
 
   /// The address the exchange will pay out to.

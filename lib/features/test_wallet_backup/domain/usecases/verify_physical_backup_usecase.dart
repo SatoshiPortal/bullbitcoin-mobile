@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart'
     show MnemonicSeedModel, SeedModel;
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class VerifyPhysicalBackupUsecase {
   final SeedRepository _seedRepository;
@@ -11,27 +14,44 @@ class VerifyPhysicalBackupUsecase {
   /// Compares [mnemonic] against the seed stored for [fingerprint].
   ///
   /// The stored secret is read at the point of use and never leaves this
-  /// method; only the comparison result is returned.
-  Future<bool> execute({
+  /// method; only the comparison result is returned. A mismatch is `Ok(false)`
+  /// — a wrong answer is a legitimate outcome of the test, not a failure.
+  @useResult
+  Future<Result<bool, TestWalletBackupFailure>> execute({
     required String fingerprint,
     required List<String> mnemonic,
   }) async {
     try {
       final seed = await _seedRepository.get(fingerprint);
       final seedModel = SeedModel.fromEntity(seed);
-      final mnemonicWords = switch (seedModel) {
-        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
-        _ => throw Exception('Selected seed is not a mnemonic seed'),
-      };
+      if (seedModel is! MnemonicSeedModel) {
+        // Not an error condition to log loudly: some wallets simply have no
+        // mnemonic, and there is nothing the user can do about it here.
+        return const Err(TestWalletBackupSeedNotMnemonicFailure());
+      }
 
-      return mnemonic.length == mnemonicWords.length &&
+      final mnemonicWords = seedModel.mnemonicWords;
+      final matches =
+          mnemonic.length == mnemonicWords.length &&
           List.generate(
             mnemonic.length,
             (i) => mnemonic[i] == mnemonicWords[i],
           ).every((element) => element);
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      rethrow;
+      return Ok(matches);
+    } on Object catch (e, st) {
+      // warning, not severe: severe forwards the exception to the crash
+      // reporter (see Logger.severe), and this is the seed read path — the
+      // driver's message is not guaranteed to be free of the value it failed
+      // on, so it must not leave the device. warning stays local.
+      log.warning('Failed to verify the physical backup', error: e, trace: st);
+      // The failure carries NO logMessage on purpose. It is stored in bloc
+      //  state, and this is the seed read path: the thrown reason comes
+      //  straight from the secure-storage driver and is not guaranteed to be
+      //  free of the value it failed on. It is logged above and goes no
+      //  further. (Failure has no toString() today, so logMessage would not
+      //  print in a state dump — but relying on that is one debug helper away
+      //  from a disclosure.)
+      return const Err(TestWalletBackupSeedUnavailableFailure());
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
+import 'package:bb_mobile/core/price/price_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
@@ -15,6 +16,7 @@ import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
@@ -36,6 +38,7 @@ class CoreLocator {
     );
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
+    PriceLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
@@ -65,19 +68,22 @@ class CoreLocator {
       initialMode: appSettings.torTransportMode,
       lastSuccessfulTransport: appSettings.lastSuccessfulTorTransport,
       onSuccessfulTransport: (transport) async {
-        try {
-          await settingsRepository.setLastSuccessfulTorTransport(transport);
-        } catch (error, stackTrace) {
+        // Best-effort cache of the working transport; the repository already
+        // logged the raw reason at its boundary.
+        final stored = await settingsRepository.setLastSuccessfulTorTransport(
+          transport,
+        );
+        if (stored case Err(:final failure)) {
           log.warning(
-            'Could not persist the successful Tor transport',
-            error: error,
-            trace: stackTrace,
+            'Could not persist the successful Tor transport: '
+            '${failure.runtimeType}',
           );
         }
       },
     );
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
+    PriceLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
@@ -102,6 +108,7 @@ class CoreLocator {
     LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
+    PriceLocator.registerUseCases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
