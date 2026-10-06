@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "মানচিত্র",
-  "recipientsListLoadError": "প্রাপকদের লোড করা যায়নি। আবার চেষ্টা করতে নিচে টানুন।",
   "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
   "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
   "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
@@ -9,10 +8,6 @@
   "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
   "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
   "@@locale": "bn",
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "exchangeSettingsSecuritySettingsTitle": "নিরাপত্তা সেটিংস",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
@@ -60,10 +55,6 @@
   "translationWarningContributeButton": "অনুবাদ উন্নত করতে সাহায্য করুন",
   "@translationWarningContributeButton": {
     "description": "Button to open Weblate translation platform"
-  },
-  "transactionLabelSwapId": "বদল আইডি",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
   },
   "dcaChooseWalletTitle": "বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@dcaChooseWalletTitle": {
@@ -334,10 +325,6 @@
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
   },
-  "transactionOrderLabelPayoutStatus": "Payout অবস্থা",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
-  },
   "receiveInvoiceCopied": "চালান ক্লিপবোর্ডে কপি হয়েছে",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -521,10 +508,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "লেবেল",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "জোড়া শুরু করুন",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -669,22 +652,9 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "ওয়ালেট লোড করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "ব্যাংক অ্যাকাউন্টের দেশ",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
-  },
-  "walletAddressTypeNestedSegwit": "আভ্যন্তরীণ সেগউইট",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
   },
   "exchangeLandingFeature2": "DCA, সীমিত অর্ডার ও স্বয়ংক্রিয় ক্রয়",
   "@exchangeLandingFeature2": {
@@ -763,19 +733,6 @@
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
   },
-  "walletAddressTypeConfidentialSegwit": "গোপন সেগউইট",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
-  },
-  "transactionDetailRetryTransfer": "পুনরায় হস্তান্তর করুন {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "পাঠানো পরিমাণ থেকে মোট ফি কাটা হয়েছে।",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -788,10 +745,6 @@
   "seedsignerStep12": "Bull Bitcoin ওয়ালেট আপনাকে SeedSigner-এ থাকা QR কোডটি স্ক্যান করতে অনুরোধ করবে। সেটি স্ক্যান করুন।",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "হস্তান্তর অবস্থা",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "আপনি সর্বাধিক পরিমাণের উপরে ক্রয় করার চেষ্টা করছেন।",
   "@buyAboveMaxAmountError": {
@@ -878,10 +831,6 @@
   "translationWarningDescription": "এই অ্যাপের বেশিরভাগ অনুবাদ AI দ্বারা তৈরি এবং এতে ভুল থাকতে পারে। আপনি যদি কোনো ভুল লক্ষ্য করেন বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মে অবদান রাখতে পারেন।",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "নিশ্চিতকরণ সময়",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "ভাষা",
   "@languageSettingsScreenTitle": {
@@ -1067,10 +1016,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "অবস্থা",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "transactionSwapDescLnSendDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এই প্রক্রিয়াটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
@@ -1082,10 +1027,6 @@
   "coreScreensReceiveNetworkFeeLabel": "প্রাপ্ত নেটওয়ার্ক ফি",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "সমাপ্ত",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "আনুমানিক ফি",
   "@payEstimatedFee": {
@@ -1328,10 +1269,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "কোস্টা রিকা IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "মোছা ব্যর্থ হয়েছে",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1363,10 +1300,6 @@
   "importQrDeviceKruxStep4": "ক্যামেরা খোলার বোতামে ক্লিক করুন",
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "appStartupErrorMessageWithBackup": "আরম্ভ করতে পারিনি। সমস্যাটি ঠিক করতে মুছে ফেলুন এবং পুনরায় ইনস্টল করুন।",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
   },
   "payPasteInvoice": "চালান পেস্ট করুন",
   "@payPasteInvoice": {
@@ -1613,10 +1546,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "ফি বাড়ান",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "ঠিকানা ক্লিপবোর্ডে কপি করা হয়েছে",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1738,10 +1667,6 @@
   "payLastName": "শেষ নাম",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "মেয়াদ শেষ",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "ব্যাংক ট্রান্সফার (ওয়্যার বা ইএফটি)",
   "@fundExchangeMethodBankTransferWire": {
@@ -1976,10 +1901,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "পাঠানো পরিমাণ",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "গোপন বাক্য",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2000,17 +1921,9 @@
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
-  "fundExchangeCrBankTransferDescription2": "এই তহবিলগুলো আপনার অ্যাকাউন্টের ব্যালান্সে যোগ হবে।",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
   "sellAmount": "বিক্রি করার পরিমাণ",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "বিনিময় অবস্থা",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "বাতিল করুন",
   "@walletDeletionConfirmationCancelButton": {
@@ -2199,10 +2112,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "অসমর্থিত QR কোড ফরম্যাট",
-  "transactionLabelAmountReceived": "প্রাপ্ত পরিমাণ",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "Recoverbull ভল্ট পুনরুদ্ধার",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2292,10 +2201,6 @@
   "payPaymentConfirmed": "পেমেন্ট নিশ্চিত হয়েছে",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "আদেশ নম্বর",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "পরিমাণ লিখুন",
   "@buyEnterAmount": {
@@ -2396,22 +2301,9 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "পর্যবেক্ষণ-স্বাক্ষরকারী",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "নিরাপদ সংযোগ স্থাপন করা হচ্ছে..।",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "ত্রুটি - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "বাতিল",
   "@electrumPrivacyNoticeCancel": {
@@ -2586,10 +2478,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "ওয়ালেট থেকে",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "রেট সীমিত। অনুগ্রহ করে {retryIn} পরে আবার চেষ্টা করুন",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2680,10 +2568,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "আপনার CLABE ব্যবহার করে তহবিল স্থানান্তর",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "Jade আনলক করতে ডিভাইস নির্দেশনা অনুসরণ করুন",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2745,10 +2629,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescription1": "নীচে দেওয়া বিবরণ ব্যবহার করে আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ব্যাংক ট্রান্সফার পাঠান ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
   "fundExchangeHelpBeneficiaryName": "আমাদের অফিসিয়াল কর্পোরেট নাম ব্যবহার করুন। \"Bull Bitcoin\" ব্যবহার করবেন না।",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2800,10 +2680,6 @@
   "payLightningInvoice": "লাইটনিং চালান",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "পাওআউট পরিমাণ",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "ব্যাকআপ কী ম্যানুয়ালি লিখুন >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2880,10 +2756,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "সমাপ্তির সময়",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "নতুন PIN তৈরি করুন",
   "@pinCodeCreateTitle": {
@@ -3183,15 +3055,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "ব্যাকআপ আনতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "স্ক্যান করতে সমস্যা হলে:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -3256,10 +3119,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "বিটকয়েন নেটওয়ার্ক",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "উন্নত বিকল্প",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3267,10 +3126,6 @@
   "autoswapWarningCardSubtitle": "আপনার ইনস্ট্যান্ট পেমেন্ট ব্যালান্স ০.০২ BTC ছাড়িয়ে গেলে সোয়াপ ট্রিগার হবে।",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
-  },
-  "transactionStatusConfirmed": "নিশ্চিত।",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "transactionLabelSendAmount": "পাঠানোর পরিমাণ",
   "@transactionLabelSendAmount": {
@@ -3316,10 +3171,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "আপনার দেশ এবং পেমেন্ট পদ্ধতি নির্বাচন করুন",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE ব্যবহার করে কলোনেস স্থানান্তর",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3347,10 +3198,6 @@
   "allSeedViewSecurityWarningMessage": "সিড ফ্রেজ প্রদর্শন করা একটি নিরাপত্তা ঝুঁকি। যেকোনো ব্যক্তি আপনার সিড ফ্রেজ দেখলে আপনার তহবিল অ্যাক্সেস করতে পারে। অনুগ্রহ করে নিশ্চিত করুন আপনি একটি ব্যক্তিগত স্থানে আছেন এবং কেউ আপনার স্ক্রিন দেখতে পাচ্ছে না।",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin টেস্টনেট",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "আরও ভল্ট দেখুন",
   "@recoverbullSeeMoreVaults": {
@@ -3403,10 +3250,6 @@
   "importColdcardInstructionsStep1": "আপনার Coldcard Q ডিভাইসে লগ ইন করুন",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "ফেরত দেওয়া হয়েছে",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "Lightning ইনভয়েস",
   "@receiveLightningInvoice": {
@@ -3600,10 +3443,6 @@
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
   },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ব্যবহার করে কলোনেস স্থানান্তর",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
   "sendEstimatedDelivery": "আনুমানিক ডেলিভারি ~ ",
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
@@ -3702,10 +3541,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "হস্তান্তর ফি",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "আর তথ্যের জন্য recoverbull.com-এ যান।",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3747,10 +3582,6 @@
   "importQrDevicePassportStep2": "আপনার PIN লিখুন",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "পাওআউট পদ্ধতি",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "আপনাকে অন্তত এটুকু কিনতে হবে",
   "@buyShouldBuyAtLeast": {
@@ -3952,10 +3783,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN অ্যাকাউন্ট নম্বর (কলোনসের জন্য কেবল)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "১২টি শব্দ একটি কাগজে লিখে রাখুন। সেগুলো নিরাপদে রাখুন এবং ভুলে যাওয়ার চেষ্টা করবেন না।",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4087,10 +3914,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "মোট বিনিময় ফি",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "ত্রুটি",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4159,15 +3982,6 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "পুনরায় বদল করুন {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendErrorSwapCreationFailed": "বদল তৈরি করতে ব্যর্থ হয়েছে।",
   "sendErrorInvoiceMustContainAmount": "চালানে একটি পরিমাণ থাকতে হবে",
   "@sendErrorSwapCreationFailed": {
@@ -4214,10 +4028,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "fundExchangeLabelCedulaJuridica": "আইনি সনদ নম্বর",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
-  },
   "exchangeRecipientsComingSoon": "প্রাপকসমূহ - শীঘ্রই আসছে",
   "@exchangeRecipientsComingSoon": {
     "description": "Message indicating that the recipients feature is coming soon"
@@ -4262,10 +4072,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KYC ID যাচাই প্রক্রিয়াধীন",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4273,10 +4079,6 @@
   "importWatchOnlySelectDerivation": "উৎপত্তি পথ নির্বাচন করুন",
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
-  },
-  "walletAddressTypeLegacy": "পুরাতন",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
   },
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
@@ -4362,15 +4164,6 @@
   "replaceByFeeScreenTitle": "ফি দ্বারা প্রতিস্থাপন করুন",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "স্টোরেজে লিখতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "লাইটনিং নেটওয়ার্ক",
   "@exchangeDcaNetworkLightning": {
@@ -4655,10 +4448,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "যদি কোনো প্রটোকল নির্দিষ্ট না করা হয়, ডিফল্টরূপে SSL ব্যবহার করা হবে।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "লেনদেন",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4682,10 +4471,6 @@
   "buyKYCLevel3": "স্তর ৩ - পূর্ণ",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "আরম্ভ করতে পারিনি। সমস্যাটি ঠিক করতে মুছে ফেলুন এবং পুনরায় ইনস্টল করুন। যদি আপনার সিড ব্যাকআপ করা না থাকে, পুনরায় ইনস্টল করার পরে Settings->Bitcoin Settings->View Seeds-এ গিয়ে এটি দেখতে পারবেন।",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "হোমে যান",
   "@sellGoHome": {
@@ -4790,10 +4575,6 @@
   "exchangeKycLevelLight": "হালকা",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "transactionLabelCreatedAt": "তৈরির সময়",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "সবচেয়ে ধীরতম বিকল্প, তবে অনলাইন ব্যাংকিংয়ের মাধ্যমে করা যায় (৩–৪ ব্যবসায়িক দিন)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -4983,14 +4764,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "electrumServerSettingsLabel": "Electrum সার্ভার (Bitcoin নোড)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "লাইটনিং ঠিকানা লিখুন",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5035,10 +4808,6 @@
   "gotItButton": "বুঝেছি",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "লিকুইড ও লাইটনিং নেটওয়ার্ক",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "ফি অগ্রাধিকার",
   "@sendFeePriority": {
@@ -5161,7 +4930,7 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "\"Sparrow\" কে Export বিকল্প হিসেবে বেছে নিন",
+  "importQrDeviceSeedsignerStep6": "Export বিকল্প হিসেবে \"Animated\" বেছে নিন। SeedSigner-এর পুরোনো ফার্মওয়্যারে \"Sparrow\" বেছে নিন।",
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
@@ -5208,21 +4977,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "আর তথ্যের জন্য recoverbull.com-এ যান।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC স্থানান্তর করার চেষ্টা হচ্ছে। স্থানান্তর পরিমাণের বর্তমান ফি {currentFee}% এবং ফি থ্রেশহোল্ডটি {thresholdFee}% এ সেট করা হয়েছে",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Krux-এ লেনদেনটি স্বাক্ষর করতে বোতামগুলো ক্লিক করুন।",
   "@kruxStep11": {
@@ -5328,10 +5082,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "পেমেন্ট বিবরণ",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "পরিমাণ সর্বোচ্চ সীমা ছাড়িয়ে গেছে",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5360,10 +5110,6 @@
   "replaceByFeeFastestTitle": "সবচেয়ে দ্রুত",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
-  },
-  "transactionLabelBitcoinTransactionId": "বিটকয়েন লেনদেন নম্বর",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
   },
   "sellPayinAmount": "পেইন পরিমাণ",
   "@sellPayinAmount": {
@@ -5474,10 +5220,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "transactionLabelPayjoinStatus": "Payjoin অবস্থা",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "passportStep2": "QR কোড দিয়ে সাইন করুন",
   "@passportStep2": {
     "description": "Passport instruction step 2"
@@ -5568,10 +5310,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "শুধু পর্যবেক্ষণ",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "ভল্ট ডিক্রিপ্ট করুন",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5615,14 +5353,6 @@
   "importQrDevicePassportStep1": "আপনার Passport ডিভাইস চালু করুন",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ব্যাংক স্থানান্তর পাঠান",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "বিনিময় হার",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "নীচে Bull Bitcoin-এর ব্যাংক বিবরণ ব্যবহার করে আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ওয়্যার ট্রান্সফার পাঠান। আপনার ব্যাংকের এই বিবরণের কেবল কয়েকটি অংশ প্রয়োজন হতে পারে।",
   "@fundExchangeBankTransferWireDescription": {
@@ -5747,10 +5477,6 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "fundExchangeMethodSinpeTransfer": "SINPE ট্রান্সফার",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
   "payFromAnotherWallet": "অন্য একটি বিটকয়েন ওয়ালেট থেকে পেমেন্ট করুন",
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
@@ -5823,10 +5549,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "লিকুইড টেস্টনেট",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@electrumDeleteFailedError": {
@@ -6325,17 +6047,9 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "পেমেন্ট করার সময় ট্রান্সফার কোডটি 'message' বা 'reason' বা 'description' হিসেবে যোগ করতে হবে। আপনি যদি এই কোডটি যোগ করতে ভুল করেন, তবে আপনার পেমেন্ট প্রত্যাখ্যাত হতে পারে।",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ঘণ্টা",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
-  },
-  "transactionLabelPayjoinCreationTime": "Payjoin তৈরির সময়",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
   },
   "payRBFDisabled": "RBF বন্ধ হয়েছে",
   "@payRBFDisabled": {
@@ -6454,10 +6168,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "নেটওয়ার্ক ফি",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "Keystone ওয়ালেট-এর জন্য একটি লেবেল লিখুন এবং \"ইমপোর্ট\" চাপুন",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6469,10 +6179,6 @@
   "payEnterAmountTitle": "পরিমাণ লিখুন",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "Payin পদ্ধতি",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "আপনি এত বেশি ক্রয় করতে পারবেন না",
   "@buyInputMaxAmountError": {
@@ -6595,10 +6301,6 @@
   "appStartupErrorTitle": "স্টার্টআপ ত্রুটি",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "হস্তান্তর নম্বর",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "পাঠান",
   "@sendTitle": {
@@ -6835,10 +6537,6 @@
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
   },
-  "fundExchangeHelpPaymentDescription": "আপনার ট্রান্সফার কোড।",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
   "sellSendPaymentFastest": "সবচেয়ে দ্রুত",
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
@@ -6850,10 +6548,6 @@
   "allSeedViewDeleteWarningMessage": "সিড মুছে ফেলা একটি অপরিবর্তনীয় ক্রিয়া। শুধুই তখন এটি করুন যদি আপনার কাছে এই সিডের নিরাপদ ব্যাকআপ থাকে বা সংশ্লিষ্ট ওয়ালেটগুলো সম্পূর্ণভাবে খালি হয়ে গেছে।",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
-  },
-  "walletAutoTransferAllowButton": "অনুমতি দিন",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন *",
   "@autoswapSelectWalletRequired": {
@@ -6890,10 +6584,6 @@
   "buyUpgradeKYC": "KYC স্তর আপগ্রেড করুন",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "আদেশের ধরন",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "স্বয়ংক্রিয় স্থানান্তর সক্ষম করুন",
   "@autoswapEnableToggleLabel": {
@@ -7218,10 +6908,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "আদেশ অবস্থা",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "তৈরি করা হয়েছে:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7263,10 +6949,6 @@
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
   },
-  "transactionLabelAddress": "ঠিকানা",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
   "testBackupConfirm": "নিশ্চিত করুন",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
@@ -7282,15 +6964,6 @@
   "receiveCopyAddressOnly": "শুধুমাত্র ঠিকানা কপি বা স্ক্যান করুন",
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "testBackupErrorTestFailed": "ব্যাকআপ পরীক্ষা করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payLightningFee": "লাইটনিং শুল্ক",
   "@payLightningFee": {
@@ -7378,15 +7051,6 @@
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
   },
-  "testBackupErrorLoadMnemonic": "মেনোমিক লোড করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "দাম আপডেট হবে ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
@@ -7447,10 +7111,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "transactionLabelAddressNotes": "ঠিকানার নোট",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
   "bitboxScreenTroubleshootingStep3": "বিটবক্স02 ডিভাইসটি বিচ্ছিন্ন করে পুনরায় সংযোগ দিন।",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
@@ -7464,11 +7124,12 @@
   "fundExchangeErrorTitleRcpPo404": "পেমেন্ট অপশন উপলব্ধ নেই",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নেই",
   "fundExchangeErrorTitleOrdKyc400": "KYC প্রয়োজনীয়তা অনুপস্থিত",
-  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই: {missingFields}",
+  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই",
+  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে এই SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
+  "fundExchangeErrorOpeningPaymentLink": "পেমেন্ট লিঙ্কটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
-  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা: {error}",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা",
   "fundExchangeErrorTitleOrdCsrcp400": "ভার্চুয়াল পেমেন্ট সক্রিয় নয়",
-  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে IBAN: {iban} সহ SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
   "fundExchangeErrorTitleRcp400": "অবৈধ অনুরোধ",
   "fundExchangeErrorRcp400": "অবৈধ অনুরোধ",
   "fundExchangeErrorOrdPo404": "কোনো পেমেন্ট অপশন উপলব্ধ নেই",
@@ -7501,10 +7162,6 @@
   "transactionFilterSell": "বিক্রি",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI ট্রান্সফার",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " পেমেন্ট বিবরণে \"Bitcoin\" বা \"Crypto\" শব্দটি রাখবেন না। এতে আপনার পেমেন্ট ব্লক হতে পারে।",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -7588,10 +7245,6 @@
   "exchangeAmountInputValidationZero": "পরিমাণ শূন্যের বেশি হতে হবে",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
-  },
-  "transactionLabelTransactionFee": "লেনদেন ফি",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
   },
   "payWalletNotSynced": "ওয়ালেট সিঙ্ক হয়নি. অনুগ্রহ করে অপেক্ষা করুন",
   "@payWalletNotSynced": {
@@ -7885,10 +7538,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "Payin অবস্থা",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "নিরাপদ বিটকয়েন ওয়ালেট",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8021,10 +7670,6 @@
   "backupBestPracticesTitle": "ব্যাকআপের সেরা অনুশীলনসমূহ",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "প্রাপকের ঠিকানা",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "গুগল ড্রাইভ",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -8289,10 +7934,6 @@
   "logSettingsErrorLoadingMessage": "লগ লোড করতে ত্রুটি: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "লিকুইড নেটওয়ার্ক",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "সর্বোচ্চ",
   "@swapMaxButton": {
@@ -8758,10 +8399,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "লেনদেনের আইডি",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "Bitcoin নেটওয়ার্ক ফি আপনি যে পরিমাণ পাবেন তা থেকে কেটে নেওয়া হবে এবং Bitcoin মাইনারদের দ্বারা সংগ্রহ করা হবে",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9056,15 +8693,6 @@
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
-  "testBackupErrorVerificationFailed": "যাচাইকরণ ব্যর্থ: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "বিস্তারিত দেখুন",
   "@sendViewDetails": {
     "description": "Button to view transaction details"
@@ -9076,10 +8704,6 @@
   "sendSubmarineSwap": "Submarine Swap",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
-  },
-  "transactionLabelLiquidTransactionId": "Liquid লেনদেন নম্বর",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
   },
   "payNotAvailable": "প্রযোজ্য নয়",
   "@payNotAvailable": {
@@ -9317,10 +8941,6 @@
   "payViewTransaction": "লেনদেন দেখুন",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "গন্তব্য ওয়ালেট",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "আপনার যদি অন্য কোনো নথি পাঠাতে হয়, এখানে আপলোড করুন।",
   "@exchangeFileUploadInstructions": {
@@ -9571,10 +9191,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN অ্যাকাউন্ট নম্বর (শুধু US ডলার জন্য)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "প্রাপকের বিবরণ",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -9584,15 +9200,6 @@
   "fundExchangeWarningTitle": "স্ক্যামারদের থেকে সতর্ক থাকুন",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "receiveError": "ত্রুটি: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumRetryCount": "পুনরায় চেষ্টা সংখ্যা",
   "@electrumRetryCount": {
@@ -9673,10 +9280,6 @@
   "payBatchPayment": "একাধিক পেমেন্ট",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz বদল ফি",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
   },
   "transactionSwapDescLnReceiveFailed": "আপনার সোয়াপ নিয়ে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল যদি ফিরেফেরা না আসে, তবে দয়া করে সাপোর্টে যোগাযোগ করুন।",
   "@transactionSwapDescLnReceiveFailed": {
@@ -9999,10 +9602,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "CRC-এ কোস্টা রিকার কলোনে তহবিল স্থানান্তর\n==WEBLATE_PART==",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "লেনদেনের বিবরণ",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10019,10 +9618,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "মোট হস্তান্তর ফি",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "পুনরায় চেষ্টা করুন",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10034,10 +9629,6 @@
   "exchangeAccountInfoLastNameLabel": "শেষ নাম",
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
-  },
-  "walletAutoTransferBlockedTitle": "স্বয়ংক্রিয় স্থানান্তর ব্লক করা হয়েছে",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
   },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নির্দেশাবলী",
   "@importQrDeviceJadeInstructionsTitle": {
@@ -10055,10 +9646,6 @@
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
   },
-  "transactionNoteEditTitle": "নোট সম্পাদনা",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionDetailLabelCompletedAt": "সমাপ্তির সময়",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
@@ -10067,17 +9654,9 @@
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
-  "walletTypeBitcoinNetwork": "বিটকয়েন নেটওয়ার্ক",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
   "importMnemonicSelectType": "ইমপোর্ট করার জন্য একটি ওয়ালেট টাইপ নির্বাচন করুন",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "ব্যাংক স্থানান্তর",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "Keystone ডিভাইস চালু করুন",
   "@importQrDeviceKeystoneStep1": {
@@ -10367,10 +9946,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "walletAddressTypeNativeSegwit": "স্থানীয় সেগউইট",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
-  },
   "payOpenInvoice": "চালান খুলুন",
   "@payOpenInvoice": {
     "description": "Button to open invoice"
@@ -10456,10 +10031,6 @@
   "buyGetConfirmedFaster": "দ্রুত নিশ্চিত করুন",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "পে-ইন পরিমাণ",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "SSL সক্ষম করুন",
   "@electrumEnableSsl": {
@@ -10553,10 +10124,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "ঠিক",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "এনক্রিপ্টেড ভল্ট",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10609,10 +10176,6 @@
   "torSettingsPortValidationRange": "পোর্ট নম্বর 1 থেকে 65535 এর মধ্যে হতে হবে",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "US ডলার (USD) এ অর্থ স্থানান্তর করুন",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "টাইমআউট খালি হতে পারে না",
   "@electrumTimeoutEmptyError": {
@@ -10810,10 +10373,6 @@
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
   },
-  "fundExchangeMethodCrIbanUsd": "কোস্টা রিকা IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
   "recoverbullErrorSelectVault": "ভল্ট নির্বাচন করতে ব্যর্থ হয়েছে",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
@@ -10866,10 +10425,6 @@
   "autoswapSelectWallet": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "ব্লক",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive থেকে ভল্ট নির্বাচন করতে ব্যর্থ হয়েছে",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -11175,21 +10730,9 @@
   "@transactionFilterRefund": {
     "description": "Filter option to show only refund orders"
   },
-  "transactionFilterBalanceAdjustment": "সমন্বয়",
-  "@transactionFilterBalanceAdjustment": {
-    "description": "Filter option to show only balance adjustment orders"
-  },
   "transactionNoteHint": "নোট",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionNoteSaveButton": "সংরক্ষণ করুন",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
-  "transactionNoteUpdateButton": "আপডেট করুন",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "transactionPayjoinSendWithout": "পেজয়েন ছাড়া পাঠান",
   "@transactionPayjoinSendWithout": {
@@ -11345,7 +10888,6 @@
     }
   },
   "transactionHistoryTitle": "লেনদেনের ইতিহাস",
-  "transactionHistoryHeading": "লেনদেনের ইতিহাস",
   "exportTransactionsDescription": "আপনার সমস্ত ওয়ালেট লেনদেন (Bitcoin, Liquid, Lightning এবং সোয়াপ) CSV ফাইল হিসাবে এক্সপোর্ট করুন। ঐচ্ছিকভাবে তারিখের পরিসর দ্বারা ফিল্টার করুন।",
   "exportTransactionsStartDate": "শুরুর তারিখ",
   "exportTransactionsEndDate": "শেষ তারিখ",
@@ -11639,10 +11181,6 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "পেমেন্ট লিঙ্ক খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন অথবা সহায়তার সাথে যোগাযোগ করুন।",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
-  },
   "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
   "@transactionStatusPayjoinCompleted": {
     "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
@@ -11714,37 +11252,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
   "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।",
-  "labelErrorUnexpected": "অপ্রত্যাশিত ত্রুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "সিস্টেম লেবেলগুলি মুছে ফেলা যাবে না।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "এই ধরনের {type} সমর্থিত নয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "লেবেল \"{label}\" খুঁজে পাওয়া যায়নি।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "ঘণ্টা",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -12366,6 +11873,53 @@
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
   "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumLiquidDown": "Liquid সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumBothDown": "Bitcoin এবং Liquid সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumAction": "সার্ভার সেটিংস কনফিগার করতে ট্যাপ করুন",
+  "walletLoadFailedRetryHint": "রিফ্রেশ করতে নিচে টানুন এবং আবার চেষ্টা করুন",
+  "transactionDetailLoadError": "লেনদেনের বিবরণ লোড করা যায়নি।",
+  "transactionPayjoinBroadcastFailed": "মূল লেনদেনটি সম্প্রচার করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটি আর সম্প্রচারের জন্য উপলব্ধ নয়।",
+  "transactionLabelLimitReached": "আপনি সর্বাধিক ১০টি লেবেল রাখতে পারেন।",
+  "settingsErrorSavingSetting": "সেই সেটিংটি সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "settingsErrorConsentNotGiven": "এই সেটিংটি পরিবর্তনের আগে আপনার নিশ্চিতকরণ প্রয়োজন।",
+  "settingsErrorLoadingLogs": "ডায়াগনস্টিক লগ প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeErrorSigningOut": "আপনাকে সম্পূর্ণরূপে সাইন আউট করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeErrorSavingPreferences": "আপনার পছন্দসমূহ সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeErrorLoadingAnnouncements": "ঘোষণাগুলি লোড করা যায়নি।",
+  "exchangeErrorRequestingAccountDeletion": "আপনার অ্যাকাউন্ট মুছে ফেলার অনুরোধ পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorLoadingStatistics": "আপনার ট্রেডিং পরিসংখ্যান লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorLoadingAccount": "আপনার অ্যাকাউন্টের বিবরণ লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে একটি নথি জমা দেওয়া হয়েছে।",
+  "exchangeSettingsErrorDocumentEmpty": "সেই ফাইলটি খালি। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentTooLarge": "সেই ফাইলটি খুব বড়। ছোট একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইলের ধরন গ্রহণযোগ্য নয়। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটি পড়া যায়নি। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorUploadingDocument": "নথিটি আপলোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "labelsErrorNoteTooLong": "নোট {max} অক্ষরের বেশি হতে পারবে না",
+  "labelsErrorNoteForbiddenCharacter": "নোটে {character} অক্ষরটি থাকতে পারবে না",
+  "labelsErrorFileTooLarge": "এই ফাইলটি খুব বড়। লেবেল ফাইল {max} এর কম হতে হবে।",
+  "labelsErrorFileUnreadable": "এটি BIP-329 লেবেল ফাইল বলে মনে হচ্ছে না। আপনি সঠিক ফাইল বেছেছেন কিনা দেখুন।",
+  "labelsErrorFileEmpty": "এই ফাইলে আমদানি করার মতো কোনো লেবেল নেই।",
+  "labelsErrorExportFailed": "আপনার লেবেল সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+  "labelsErrorFileReservedName": "এই ফাইলটি অ্যাপের সংরক্ষিত লেবেল নাম ব্যবহার করে। ফাইলে নাম পরিবর্তন করে আবার চেষ্টা করুন।",
+  "labelsErrorNoteForbiddenWhitespace": "নোটে লাইন ব্রেক বা ট্যাব থাকতে পারবে না",
+  "labelsErrorFileInvalidEntry": "সেই ফাইলের কিছু এন্ট্রি পড়া যায়নি। ফাইলটি পরীক্ষা করে আবার চেষ্টা করুন।",
+  "recipientsErrorLoadFailed": "আপনার প্রাপকদের লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "recipientsErrorSaveFailed": "এই প্রাপককে সংরক্ষণ করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।",
+  "recipientsErrorSinpeLookupFailed": "আমরা এই ফোন নম্বরটি যাচাই করতে পারিনি। এটি পরীক্ষা করে আবার চেষ্টা করুন।",
+  "recipientsErrorBillerSearchFailed": "বিলার খোঁজা যায়নি। আবার চেষ্টা করুন।",
+  "recipientsErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "recipientsListPullToRetry": "আবার চেষ্টা করতে নিচে টানুন।",
+  "recipientsErrorSavedButNotSelected": "এই প্রাপককে সংরক্ষণ করা হয়েছে, তবে আমরা এগোতে পারিনি। চালিয়ে যেতে তালিকায় খুঁজুন।",
+  "testBackupErrorWalletsUnavailable": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "testBackupErrorNoWallets": "ব্যাকআপ পরীক্ষা করার মতো কোনো ওয়ালেট নেই।",
+  "testBackupErrorNoWalletSelected": "ব্যাকআপ পরীক্ষা করার আগে একটি ওয়ালেট নির্বাচন করুন।",
+  "testBackupErrorSeedUnavailable": "আপনার পুনরুদ্ধার বাক্যাংশ পড়া যায়নি। আবার চেষ্টা করুন।",
+  "testBackupErrorSeedNotMnemonic": "এই ওয়ালেটে পরীক্ষা করার মতো কোনো পুনরুদ্ধার বাক্যাংশ নেই।",
+  "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।",
   "withdrawInteracSecurityDetailsTitle": "Interac নিরাপত্তার বিবরণ",
   "withdrawInteracSaveAsDefault": "এই বিবরণগুলো ডিফল্ট হিসেবে সংরক্ষণ করুন",
   "withdrawInteracSecurityQuestionLengthError": "নিরাপত্তা প্রশ্ন 3-40 অক্ষরের হতে হবে",
@@ -12389,5 +11943,81 @@
   "autoBuyAccountUnavailableError": "আপনার Bull Bitcoin অ্যাকাউন্ট উপলব্ধ নয়। পরে আবার চেষ্টা করুন।",
   "autoBuyWalletRequiredError": "অন্তত একটি ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকানা যোগ করুন।",
   "autoBuyUpdateError": "স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।",
-  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।"
+  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
+  "importWatchOnlyErrorNetworkMismatch": "এই ওয়ালেটটি বর্তমানে একটি ভিন্ন Bitcoin নেটওয়ার্ক ব্যবহার করছে। Mainnet এবং Testnet-এর মধ্যে পরিবর্তন করে আবার চেষ্টা করুন।",
+  "importWatchOnlyErrorAlreadyExists": "এই ওয়ালেটটি ইতিমধ্যে আমদানি করা হয়েছে।",
+  "importWatchOnlyNetworkBitcoinMainnet": "নেটওয়ার্ক: Bitcoin মেইননেট",
+  "importWatchOnlyNetworkBitcoinTestnet": "নেটওয়ার্ক: Bitcoin টেস্টনেট",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষরিত লেনদেনটি চূড়ান্ত করা যায়নি। এতে প্রয়োজনীয় সব স্বাক্ষর আছে কি না নিশ্চিত করে আবার চেষ্টা করুন।",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
+  "limitOrdersOpen": "Open a limit order",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "পরিমাণটি বিটকয়েনের সর্বোচ্চ সম্ভাব্য পরিমাণ {max} এর চেয়ে বেশি",
+  "receiveErrorNoteNotSaved": "আপনার নোট সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+  "receiveErrorAddressUnavailable": "গ্রহণের ঠিকানা প্রস্তুত করা যায়নি। আবার চেষ্টা করুন।",
+  "receiveErrorBroadcastOriginal": "আমরা লেনদেনটি সম্প্রচার করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "fundExchangeErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "exchangeErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "walletBalancesMayBeStale": "আপনার ব্যালেন্স আপডেট করা যায়নি এবং সেগুলো পুরনো হতে পারে।"
 }

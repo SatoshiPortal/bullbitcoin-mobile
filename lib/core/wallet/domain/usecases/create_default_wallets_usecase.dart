@@ -6,6 +6,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
+import 'package:bb_mobile/core/utils/result.dart';
+
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
@@ -35,10 +37,16 @@ class CreateDefaultWalletsUsecase {
           ? Network.liquidMainnet
           : Network.liquidTestnet;
 
-      final existing = await _wallet.getWallets(
+      final existing = switch (await _wallet.getWallets(
         onlyDefaults: true,
         environment: environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        // Wrapped into this use-case's own exception by the catch below.
+        Err(:final failure) => throw CreateDefaultWalletsException(
+          'existing defaults read failed: ${failure.runtimeType}',
+        ),
+      };
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
       if (hasBitcoin && hasLiquid) return existing;
@@ -78,7 +86,19 @@ class CreateDefaultWalletsUsecase {
       } catch (_) {
         for (final wallet in created) {
           try {
-            await _wallet.deleteWallet(walletId: wallet.id);
+            // Rollback must not mask the original creation failure, but it
+            // still has to report: the repository returns a Result now, so
+            // discarding it would silence this log for every repository-level
+            // failure and leave a half-created wallet set unexplained.
+            if (await _wallet.deleteWallet(walletId: wallet.id) case Err(
+              :final failure,
+            )) {
+              log.severe(
+                message: 'CreateDefaultWalletsUsecase: rollback failed',
+                error: failure.runtimeType,
+                trace: StackTrace.current,
+              );
+            }
           } catch (e, stackTrace) {
             log.severe(
               message: 'CreateDefaultWalletsUsecase: rollback failed',
@@ -91,6 +111,8 @@ class CreateDefaultWalletsUsecase {
       }
 
       return [...existing, ...created];
+    } on CreateDefaultWalletsException {
+      rethrow;
     } catch (e) {
       throw CreateDefaultWalletsException(e.toString());
     }

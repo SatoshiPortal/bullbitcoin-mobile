@@ -311,7 +311,7 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
               // the dark ink in both brightnesses, so the toast never inverts.
               decoration: BoxDecoration(
                 color: colors.secondaryFixed,
-                borderRadius: BorderRadius.circular(BullRadius.xs),
+                borderRadius: BorderRadius.circular(BullRadius.xxs),
               ),
               child: widget.content,
             ),

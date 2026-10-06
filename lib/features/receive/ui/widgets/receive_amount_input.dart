@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -59,8 +61,8 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedAmountInputEquivalent,
     );
-    final amountException = context.select<ReceiveBloc, AmountException?>(
-      (bloc) => bloc.state.amountException,
+    final amountFailure = context.select<ReceiveBloc, ReceiveFailure?>(
+      (bloc) => bloc.state.hasAmountInputFailure ? bloc.state.failure : null,
     );
 
     return BlocListener<ReceiveBloc, ReceiveState>(
@@ -78,7 +80,7 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
             ReceiveAmountCurrencyChanged(currencyCode),
           );
         },
-        error: amountException?.message,
+        error: amountFailure?.toTranslated(context),
       ),
     );
   }

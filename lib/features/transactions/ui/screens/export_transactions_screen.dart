@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -83,17 +84,9 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                 context,
                 context.loc.exportTransactionsSuccess,
               ),
-              noTransactions: (_) => SnackBarUtils.showSnackBar(
+              failure: (state) => SnackBarUtils.showSnackBar(
                 context,
-                context.loc.exportTransactionsEmpty,
-              ),
-              invalidDateRange: (_) => SnackBarUtils.showSnackBar(
-                context,
-                context.loc.exportTransactionsInvalidDateRange,
-              ),
-              error: (_) => SnackBarUtils.showSnackBar(
-                context,
-                context.loc.exportTransactionsError,
+                state.failure.toTranslated(context),
               ),
             );
           },

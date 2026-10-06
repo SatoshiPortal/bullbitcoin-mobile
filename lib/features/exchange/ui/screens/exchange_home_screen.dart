@@ -13,11 +13,13 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.da
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +39,12 @@ class ExchangeHomeScreen extends StatelessWidget {
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
     );
+    final getUserSummaryFailure = context.select(
+      (ExchangeCubit cubit) => cubit.state.getUserSummaryFailure,
+    );
+    final stopDcaFailure = context.select(
+      (ExchangeCubit cubit) => cubit.state.stopDcaFailure,
+    );
     final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
     final hasDcaActive = dca?.isActive ?? false;
     final autoBuy = context.select(
@@ -51,14 +59,6 @@ class ExchangeHomeScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // The transparent app bar floats over the scrollable content (the
-    // colored top section extends behind it). A static overlay is almost
-    // identical to the previous pinned SliverAppBar inside a SliverStack:
-    // the bar never scrolls away, and the theme pins scrolledUnderElevation
-    // to 0 so no tint appears on scroll. One accepted difference: a drag
-    // starting on the bar's buttons no longer scrolls the list, since the
-    // bar is now a Stack sibling above the scroll view instead of a sliver
-    // inside it.
     return Stack(
       children: [
         BBPullableBody(
@@ -66,38 +66,57 @@ class ExchangeHomeScreen extends StatelessWidget {
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate([
-                const ExchangeHomeTopSection(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    children: [
-                      const Gap(12),
-                      if (!isFullyVerified) const ExchangeHomeKycCard(),
-                      const Gap(12),
-                      DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
-                      const Gap(12),
-                      locator<AutoBuyFacade>().buildHomeCard(
-                        isActive: autoBuy?.isActive ?? false,
-                        isRestricted: isFundingRestricted,
-                        onActivate: () async {
-                          await context.pushNamed(AutoBuyRoute.autoBuy.name);
-                          if (context.mounted) {
-                            await context
-                                .read<ExchangeCubit>()
-                                .fetchUserSummary();
-                          }
-                        },
-                        onStatusChanged: () =>
+            const PinnedHeaderSliver(child: ExchangeHomeTopSection()),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  children: [
+                    const Gap(12),
+                    // A refresh that fails leaves stale data on screen; say
+                    // so instead of letting it look current.
+                    if (getUserSummaryFailure != null) ...[
+                      ExchangeFailureBanner(
+                        failure: getUserSummaryFailure,
+                        onRetry: () =>
                             context.read<ExchangeCubit>().fetchUserSummary(),
                       ),
                       const Gap(12),
-                      if (!notLoggedIn) const AnnouncementBanner(),
                     ],
-                  ),
+                    if (stopDcaFailure != null) ...[
+                      ExchangeFailureBanner(
+                        failure: stopDcaFailure,
+                        onRetry: () => context.read<ExchangeCubit>().stopDca(),
+                      ),
+                      const Gap(12),
+                    ],
+                    if (!isFullyVerified) ...[
+                      const ExchangeHomeKycCard(),
+                      const Gap(12),
+                    ],
+                    DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
+                    const Gap(12),
+                    locator<AutoBuyFacade>().buildHomeCard(
+                      isActive: autoBuy?.isActive ?? false,
+                      isRestricted: isFundingRestricted,
+                      onActivate: () async {
+                        await context.pushNamed(AutoBuyRoute.autoBuy.name);
+                        if (context.mounted) {
+                          await context
+                              .read<ExchangeCubit>()
+                              .fetchUserSummary();
+                        }
+                      },
+                      onStatusChanged: () =>
+                          context.read<ExchangeCubit>().fetchUserSummary(),
+                    ),
+                    const Gap(12),
+                    locator<LimitOrdersFacade>().buildDashboardCard(),
+                    const Gap(12),
+                    if (!notLoggedIn) const AnnouncementBanner(),
+                  ],
                 ),
-              ]),
+              ),
             ),
           ],
           bottomChild: Padding(

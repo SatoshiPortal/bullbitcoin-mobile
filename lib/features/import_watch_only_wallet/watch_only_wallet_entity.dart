@@ -64,6 +64,9 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     final normalized = value.trim().replaceFirst(RegExp(r'^\[[^\]]+\]'), '');
     final satoshified = await satoshifier.Satoshifier.parse(normalized);
     if (satoshified is satoshifier.WatchOnlyDescriptor) {
+      if (!satoshified.descriptor.network.isBitcoin) {
+        throw FormatException('Only Bitcoin watch-only wallets are supported');
+      }
       return WatchOnlyWalletEntity.descriptor(
         watchOnlyDescriptor: satoshified,
         signerDevice: signerDevice,

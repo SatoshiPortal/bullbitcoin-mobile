@@ -42,12 +42,12 @@ jobs:
           fetch-depth: 0 # Fetch full history for branch operations
           persist-credentials: true # Keep credentials for subsequent git commands
 
-      - uses: anthropics/claude-code-action@16b3b310c3d7b5279df73130324d5205aeea8eac # v1.0.205
+      - uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Use Claude Fable 5 — Anthropic's most capable model for review-grade
-          # reasoning. Passed through to the Claude Code CLI via claude_args.
-          claude_args: "--model claude-fable-5"
+          # Use Claude Fable 5.1 for PR reviews. The model ID is passed
+          # through to the Claude Code CLI via claude_args.
+          claude_args: "--model claude-fable-5-1"
           # On PR-open the action auto-picks "agent" mode, which runs the prompt
           # but posts nothing. Forcing tag mode gives Claude the GitHub
           # review/comment tools + a tracking comment so the review is posted.

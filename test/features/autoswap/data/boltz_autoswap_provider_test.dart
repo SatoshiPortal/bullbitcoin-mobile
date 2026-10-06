@@ -102,7 +102,9 @@ void main() {
     );
     when(
       () => walletRepository.getWallets(environment: Environment.testnet),
-    ).thenAnswer((_) async => [_wallet(liquid: true), _wallet(liquid: false)]);
+    ).thenAnswer(
+      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+    );
     when(
       () => swapRepository.getOngoingSwaps(walletId: 'liquid-wallet'),
     ).thenAnswer((_) async => []);

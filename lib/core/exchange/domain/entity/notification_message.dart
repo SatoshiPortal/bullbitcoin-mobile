@@ -7,6 +7,7 @@ enum NotificationMessageKind {
   userPreferences,
   message,
   order,
+  limitOrder,
   user,
   unknown,
 }

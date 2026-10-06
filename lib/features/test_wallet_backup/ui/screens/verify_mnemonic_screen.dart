@@ -5,7 +5,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:flutter/material.dart';
@@ -47,20 +49,24 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
 
   Future<void> _loadSecret() async {
     setState(() => _isLoading = true);
-    try {
-      final (mnemonic, _) = await context
-          .read<TestWalletBackupBloc>()
-          .loadSelectedWalletMnemonic();
-      if (!mounted) return;
-      setState(() {
-        _mnemonic = mnemonic;
-        _shuffled = [...mnemonic]..shuffle();
-        _selectedIndices = [];
-        _isLoading = false;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
+    final result = await context
+        .read<TestWalletBackupBloc>()
+        .loadSelectedWalletMnemonic();
+    if (!mounted) return;
+    switch (result) {
+      case Ok(:final value):
+        final (mnemonic, _) = value;
+        setState(() {
+          _mnemonic = mnemonic;
+          _shuffled = [...mnemonic]..shuffle();
+          _selectedIndices = [];
+          _isLoading = false;
+        });
+      case Err(:final failure):
+        // Surfaced instead of silently dropped: the previous catch left the
+        // screen on an empty word list with no explanation.
+        setState(() => _isLoading = false);
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
     }
   }
 
@@ -112,16 +118,19 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
               previous.verificationStatus != current.verificationStatus ||
-              (previous.statusError.isEmpty && current.statusError.isNotEmpty),
+              previous.failure != current.failure,
           listener: (context, state) {
-            if (state.statusError.isNotEmpty) {
-              SnackBarUtils.showSnackBar(context, state.statusError);
-              context.read<TestWalletBackupBloc>().add(const ClearError());
+            if (state.failure case final failure?) {
+              SnackBarUtils.showSnackBar(
+                context,
+                failure.toTranslated(context),
+              );
+              context.read<TestWalletBackupBloc>().add(const ClearFailure());
               return;
             }
             switch (state.verificationStatus) {
               case BackupVerificationStatus.success:
-                context.read<TestWalletBackupBloc>().add(const ClearError());
+                context.read<TestWalletBackupBloc>().add(const ClearFailure());
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const BackupTestSuccessScreen(),
@@ -133,7 +142,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                   context,
                   context.loc.testBackupErrorIncorrectOrder,
                 );
-                context.read<TestWalletBackupBloc>().add(const ClearError());
+                context.read<TestWalletBackupBloc>().add(const ClearFailure());
               case BackupVerificationStatus.idle:
                 break;
             }

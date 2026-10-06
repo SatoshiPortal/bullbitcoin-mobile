@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
+import 'package:bb_mobile/core/utils/result.dart';
+
 class CompletePhysicalBackupVerificationUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
@@ -14,10 +16,17 @@ class CompletePhysicalBackupVerificationUsecase {
   Future<void> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
-      final defaultWallets = await _walletRepository.getWallets(
+      final defaultWallets = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        // Wrapped into this use-case's own exception by the catch below.
+        Err(:final failure) =>
+          throw CompletePhysicalBackupVerificationException(
+            'default wallets read failed: ${failure.runtimeType}',
+          ),
+      };
       if (defaultWallets.isEmpty) {
         throw Exception('No default wallet found');
       }
@@ -32,6 +41,8 @@ class CompletePhysicalBackupVerificationUsecase {
           latestPhysicalBackup: DateTime.now(),
         );
       }
+    } on CompletePhysicalBackupVerificationException {
+      rethrow;
     } catch (e) {
       throw CompletePhysicalBackupVerificationException(e.toString());
     }

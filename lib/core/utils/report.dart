@@ -232,10 +232,13 @@ class Report {
   /// Sentry init can read it before the SQLite locator is available.
   /// Called right after the primary SQLite write in
   /// `SettingsRepository.setErrorReportingEnabled`.
+  ///
+  /// The live [consent] flag is set first, so an opt-out takes effect for the
+  /// rest of the session even if persisting the mirror then fails.
   static Future<void> updateConsent(bool enabled) async {
+    consent = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_consentKey, enabled);
-    consent = enabled;
   }
 
   /// Advances the persisted `_lastVersionKey` marker. Caller emits the

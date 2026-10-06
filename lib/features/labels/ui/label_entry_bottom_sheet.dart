@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
+import 'package:bb_mobile/features/labels/domain/note_violation_to_label_failure.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -114,11 +115,11 @@ class LabelEntryBottomSheet extends StatefulWidget {
 
 class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
   late final TextEditingController _controller;
-  String? _errorMessage;
+  LabelFailure? _failure;
 
   String get _trimmed => _controller.text.trim();
   bool get _canSave =>
-      _errorMessage == null && (widget.allowEmpty || _trimmed.isNotEmpty);
+      _failure == null && (widget.allowEmpty || _trimmed.isNotEmpty);
 
   @override
   void initState() {
@@ -134,9 +135,15 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
   }
 
   void _revalidate() {
-    final result = NoteValidator.validate(_controller.text);
+    final violation = NoteValidator.validate(_controller.text);
     setState(() {
-      _errorMessage = result.isValid ? null : result.errorMessage;
+      // Mapped to this feature's family, then translated at render time.
+      // NoteValidator used to hand back an English sentence built in
+      // core/utils, which this sheet painted verbatim — in every locale, for
+      // the receive, send and transactions flows that all open it.
+      _failure = violation == null
+          ? null
+          : mapNoteViolationToLabelFailure(violation);
     });
   }
 
@@ -251,10 +258,10 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
               ],
             ),
           ),
-          if (_errorMessage != null) ...[
+          if (_failure case final failure?) ...[
             Gap(tightGap),
             BBText(
-              _errorMessage!,
+              failure.toTranslated(context),
               style: context.font.bodySmall,
               color: context.appColors.error,
             ),

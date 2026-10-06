@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - develop
+      # Silent-payments staging branch: PRs (e.g. #2408) target it instead of
+      # develop, and the filter is evaluated against the PR's base branch.
+      - feat/sp-9-26
     types: [opened, synchronize, reopened, edited, labeled, unlabeled]
   # The funded Payjoin fixture spends from shared testnet wallets. It does not
   # run for the concurrent develop stack; workflow_dispatch lets a reviewer run

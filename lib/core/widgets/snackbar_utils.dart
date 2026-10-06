@@ -35,7 +35,31 @@ class SnackBarUtils {
     _show(context, content);
   }
 
+  /// Shows a snackbar in a given overlay, for callers whose own context sits
+  /// *above* the app's `Overlay` — an app-wide listener mounted next to its
+  /// provider rather than on a route, for instance.
+  ///
+  /// [overlay]'s context sits below `MaterialApp`, so theme and localizations
+  /// resolve through it even when the caller's context cannot reach either.
+  static void showSnackBarIn(OverlayState overlay, String message) {
+    _showIn(
+      overlay,
+      Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 14,
+          color: overlay.context.appColors.surface,
+        ),
+      ),
+    );
+  }
+
   static void _show(BuildContext context, Widget content) {
+    _showIn(Overlay.of(context, rootOverlay: true), content);
+  }
+
+  static void _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
 
     _entry = OverlayEntry(
@@ -51,7 +75,7 @@ class SnackBarUtils {
       ),
     );
 
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    overlay.insert(_entry!);
 
     _scheduleAutoDismiss();
   }

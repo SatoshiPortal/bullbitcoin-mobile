@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
@@ -111,12 +112,15 @@ Future<void> main({bool isInitialized = false}) async {
         );
         expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
 
-        final wallets = await walletRepository.getWallets(
+        final walletsResult = await walletRepository.getWallets(
           onlyDefaults: true,
           onlyBitcoin: true,
           environment: Environment.mainnet,
         );
 
+        expect(walletsResult, isA<Ok<List<Wallet>, WalletFailure>>());
+        final wallets =
+            (walletsResult as Ok<List<Wallet>, WalletFailure>).value;
         expect(wallets.length, 1);
         final wallet = wallets.first;
         expect(wallet.masterFingerprint, isNotEmpty);

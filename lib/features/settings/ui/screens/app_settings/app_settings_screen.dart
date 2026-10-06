@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
@@ -33,17 +34,28 @@ class AppSettingsScreen extends StatelessWidget {
       _ => null,
     };
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                for (final item in items.inSection(SettingsItemSection.app))
-                  item.buildTile(context, trailing: trailingFor(item.id)),
-              ],
+    return BlocListener<SettingsCubit, SettingsState>(
+      // Turning dev mode off revokes the SP wallet. The revoke leaves a
+      // `.revoked` sentinel even when the on-disk delete fails, so the wallet
+      // is unloadable but still there; the user is the only one who can retry.
+      listenWhen: (previous, current) =>
+          !previous.revokeSpFailed && current.revokeSpFailed,
+      listener: (context, state) => SnackBarUtils.showSnackBar(
+        context,
+        context.loc.settingsDevModeSpRevokeFailed,
+      ),
+      child: Scaffold(
+        appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  for (final item in items.inSection(SettingsItemSection.app))
+                    item.buildTile(context, trailing: trailingFor(item.id)),
+                ],
+              ),
             ),
           ),
         ),
