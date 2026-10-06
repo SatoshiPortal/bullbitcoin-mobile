@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
@@ -299,6 +300,35 @@ void main() {
       ),
       findsOneWidget,
     );
+    // An empty word list is a failed read, not a finished test.
+    expect(find.text(context.loc.testBackupAllWordsSelected), findsNothing);
+    await drainSnackBar(tester);
+  });
+
+  testWidgets('ends the spinner when the wallets fail to load', (tester) async {
+    await pumpScreen(tester);
+    await flush(tester);
+    expect(spinner, findsOneWidget);
+
+    // LoadWallets failed: no wallet will ever be selected, so no read is
+    // coming that would end the spinner.
+    bloc.seed(
+      const TestWalletBackupState(
+        failure: TestWalletBackupWalletsUnavailableFailure(),
+      ),
+    );
+    await flush(tester);
+
+    expect(spinner, findsNothing);
+    verifyNever(() => getMnemonicUsecase.execute(any()));
+    final context = tester.element(find.byType(VerifyMnemonicScreen));
+    expect(
+      find.text(
+        const TestWalletBackupWalletsUnavailableFailure().toTranslated(context),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(context.loc.testBackupAllWordsSelected), findsNothing);
     await drainSnackBar(tester);
   });
 }

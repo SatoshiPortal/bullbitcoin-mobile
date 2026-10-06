@@ -141,6 +141,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
           listener: (context, state) {
             _syncSecret(state.selectedWallet?.masterFingerprint);
             if (state.failure case final failure?) {
+              // With no wallet selected, no load is coming that would end the
+              // spinner (e.g. LoadWallets itself failed), so end it here.
+              if (state.selectedWallet == null) {
+                setState(() => _isLoading = false);
+              }
               SnackBarUtils.showSnackBar(
                 context,
                 failure.toTranslated(context),
@@ -216,7 +221,8 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                             ),
                           ],
                         )
-                      else
+                      // No words means a failed read, not a finished test.
+                      else if (_mnemonic.isNotEmpty)
                         BBText(
                           context.loc.testBackupAllWordsSelected,
                           textAlign: .center,
