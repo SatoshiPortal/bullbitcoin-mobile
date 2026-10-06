@@ -154,7 +154,9 @@ abstract class ReceiveState with _$ReceiveState {
           return liquidAddress!.address;
         }
         final bip21Uri = Uri(
-          scheme: 'liquidnetwork',
+          scheme: wallet?.network == Network.liquidTestnet
+              ? 'liquidtestnet'
+              : 'liquidnetwork',
           path: liquidAddress!.address,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
