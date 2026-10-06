@@ -48,11 +48,11 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ### Bug Fixes
 
+- Improved SeedSigner compatibility: older exports without network info are classified correctly, combined PSBTs are finalized before broadcast and incomplete ones rejected, watch-only imports report network mismatches and duplicates with clear messages, and the import instructions were updated. ([#2872](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2872))
 - Limit orders preserve the latest payout destination when asynchronous wallet or address lookups complete. ([#2886](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2886))
 - Verified encrypted secure-storage writes before selecting the fresh-install storage backend, preserving the fallback when Android cipher initialization fails. ([fc135cfc3](https://github.com/SatoshiPortal/bullbitcoin-mobile/commit/fc135cfc36f4f0797f784d9b772a3286ae7abd30))
 - Retained Payjoin ownership fragments in the 6.14.0 release. ([#2889](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2889), [#2890](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2890))
 - Prevented duplicate Exchange funding link launches on repeated taps. ([#2820](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2820))
-- Improved SeedSigner compatibility: older exports without network info are classified correctly, combined PSBTs are finalized before broadcast and incomplete ones rejected, watch-only imports report network mismatches and duplicates with clear messages, and the import instructions were updated. ([#2872](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2872))
 - Fixed Interac e-transfer withdrawals overriding the security question and answer. ([#2829](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2829))
 - Send reports insufficient funds when the fee does not fit, and rejects coins that became unavailable before broadcast. ([#2741](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2741), [#2782](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2782))
 - Fixed manual coin selection and the RBF toggle, and corrected RBF fee handling with better Electrum connectivity checks in Settings. ([#2473](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2473), [#2736](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2736))
