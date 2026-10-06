@@ -333,6 +333,40 @@ void main() {
     }
     expect(sealed('about'), findsOneWidget);
   });
+
+  // Same reach as the view: the challenge's future is public through the
+  // FutureBuilder handed to the host builders, and must yield no word.
+  testWidgets('the read a host builder can reach carries no word', (
+    tester,
+  ) async {
+    final secret = await store(tester, wordsA);
+    Future<Object?>? reached;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MnemonicChallenge(
+          secret: secret,
+          failureBuilder: (_, _, _) => const SizedBox(),
+          onSolved: () {},
+          onMistake: () {},
+          tileBuilder: (context, tile) {
+            reached ??= (context.widget as FutureBuilder).future;
+            return tile.word;
+          },
+          layoutBuilder: (context, tiles) => Column(children: tiles),
+        ),
+      ),
+    );
+    await settle(tester);
+
+    expect(reached, isNotNull);
+    Object? value;
+    await tester.runAsync(() async {
+      value = ((await reached) as dynamic).value;
+    });
+    expect(() => (value as dynamic).words, throwsNoSuchMethodError);
+    expect(sealed('about'), findsOneWidget);
+  });
 }
 
 /// A word as it is painted: the widgets hold no `Text` to find, so the

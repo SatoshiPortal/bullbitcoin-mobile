@@ -237,6 +237,45 @@ void main() {
     expect(find.bySemanticsLabel(wordsA.join(' ')), findsNothing);
     semantics.dispose();
   });
+
+  // A host builder runs with the FutureBuilder's own context, and
+  // `FutureBuilder.future` is public: whatever the read yields there must
+  // carry no word and no passphrase a host could read by name.
+  testWidgets('the read a host builder can reach carries no word', (
+    tester,
+  ) async {
+    late Secret secret;
+    await tester.runAsync(() async {
+      secret =
+          (await secrets.import(words: wordsA, passphrase: 'hunter2')
+                  as Ok<Secret, SecretFailure>)
+              .value;
+    });
+    Future<Object?>? reached;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MnemonicView(
+          secret: secret,
+          failureBuilder: (_, _, _) => const SizedBox(),
+          wordBuilder: (context, number, word) {
+            reached ??= (context.widget as FutureBuilder).future;
+            return word;
+          },
+        ),
+      ),
+    );
+    await settle(tester);
+
+    expect(reached, isNotNull);
+    Object? value;
+    await tester.runAsync(() async {
+      value = ((await reached) as dynamic).value;
+    });
+    expect(() => (value as dynamic).words, throwsNoSuchMethodError);
+    expect(() => (value as dynamic).passphrase, throwsNoSuchMethodError);
+    expect(sealed('about'), findsOneWidget);
+  });
 }
 
 /// A word as it is painted: the widgets hold no `Text` to find, so the

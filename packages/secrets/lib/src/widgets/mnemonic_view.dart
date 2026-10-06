@@ -55,8 +55,22 @@ final class MnemonicView extends StatefulWidget {
   State<MnemonicView> createState() => _MnemonicViewState();
 }
 
+/// A read, already painted. The state's future sits in a public framework field (`FutureBuilder.future`) that a host builder can reach through its `BuildContext`, so it never carries the words: only painted widgets, whose text has no accessor, in fields private to this library.
+final class _Painted {
+  final List<Widget> _words;
+  final Widget _sentence;
+  final Widget? _passphrase;
+
+  _Painted(RevealedMnemonic mnemonic)
+    : _words = [for (final word in mnemonic.words) PaintedWord(word)],
+      _sentence = PaintedMnemonic(mnemonic.words),
+      _passphrase = mnemonic.hasPassphrase
+          ? PaintedPassphrase(mnemonic.passphrase)
+          : null;
+}
+
 final class _MnemonicViewState extends State<MnemonicView> {
-  late Future<Result<RevealedMnemonic, SecretFailure>> _revealed;
+  late Future<Result<_Painted, SecretFailure>> _revealed;
   int _generation = 0;
 
   @override
@@ -76,8 +90,9 @@ final class _MnemonicViewState extends State<MnemonicView> {
     }
   }
 
-  Future<Result<RevealedMnemonic, SecretFailure>> _reveal() =>
-      widget.secret.revealMnemonic(reason: RevealReason.userDisplay);
+  Future<Result<_Painted, SecretFailure>> _reveal() => widget.secret
+      .revealMnemonic(reason: RevealReason.userDisplay)
+      .then((result) => result.map(_Painted.new));
 
   void _retry() {
     if (!mounted) return;
@@ -88,20 +103,13 @@ final class _MnemonicViewState extends State<MnemonicView> {
   }
 
   /// The host's layout, or the joined sentence when it supplied none.
-  Widget _words(BuildContext context, List<String> words) {
+  Widget _words(BuildContext context, _Painted painted) {
     final builder = widget.wordBuilder;
     final layout = widget.layoutBuilder;
-    if (builder == null && layout == null) {
-      return PaintedMnemonic(words, style: widget.style);
-    }
+    if (builder == null && layout == null) return painted._sentence;
     final cells = [
-      for (var i = 0; i < words.length; i++)
-        builder?.call(
-              context,
-              i + 1,
-              PaintedWord(words[i], style: widget.style),
-            ) ??
-            PaintedWord(words[i], style: widget.style),
+      for (var i = 0; i < painted._words.length; i++)
+        builder?.call(context, i + 1, painted._words[i]) ?? painted._words[i],
     ];
     return layout?.call(context, cells) ?? Wrap(children: cells);
   }
@@ -124,24 +132,29 @@ final class _MnemonicViewState extends State<MnemonicView> {
             failure,
             _retry,
           ),
+          // The painted widgets carry no style of their own: [style] reaches
+          // them through the inherited text style.
           Ok(:final value) => ExcludeSemantics(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _words(context, value.words),
-                if (value.hasPassphrase) ...[
-                  if (widget.passphraseLabel != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        widget.passphraseLabel!,
-                        style: widget.passphraseLabelStyle ?? widget.style,
+            child: DefaultTextStyle.merge(
+              style: widget.style,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _words(context, value),
+                  if (value._passphrase case final passphrase?) ...[
+                    if (widget.passphraseLabel != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          widget.passphraseLabel!,
+                          style: widget.passphraseLabelStyle ?? widget.style,
+                        ),
                       ),
-                    ),
-                  PaintedPassphrase(value.passphrase, style: widget.style),
+                    passphrase,
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         };

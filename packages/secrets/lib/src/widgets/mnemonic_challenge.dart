@@ -98,7 +98,8 @@ final class MnemonicChallenge extends StatefulWidget {
 }
 
 final class _MnemonicChallengeState extends State<MnemonicChallenge> {
-  late Future<Result<RevealedMnemonic, SecretFailure>> _revealed;
+  /// Whether the read succeeded, and nothing more. The future sits in a public framework field (`FutureBuilder.future`) that a host builder can reach through its `BuildContext`, so the words stay in the private fields below.
+  late Future<Result<bool, SecretFailure>> _revealed;
   int _generation = 0;
   bool _verifying = false;
 
@@ -149,22 +150,20 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   /// — so the result is kept only if it is still that secret's, and the
   /// widget is still mounted. Otherwise it is dropped: a stale read must not
   /// become the answer key for the secret on screen.
-  Future<Result<RevealedMnemonic, SecretFailure>> _reveal(
-    int generation,
-  ) async {
+  Future<Result<bool, SecretFailure>> _reveal(int generation) async {
     final id = widget.secret.id;
     final result = await widget.secret.revealMnemonic(
       reason: RevealReason.physicalBackupCheck,
     );
     if (!mounted || widget.secret.id != id || generation != _generation) {
-      return result;
+      return result.map((_) => false);
     }
     if (result case Ok(:final value)) {
       _answer = value.words;
       _shuffled = [...value.words]..shuffle();
       widget.onProgress?.call(0, _answer.length);
     }
-    return result;
+    return result.map((_) => true);
   }
 
   void _reshuffle() {
