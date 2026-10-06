@@ -36,23 +36,33 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context
-        .read<TestWalletBackupBloc>()
-        .state
-        .selectedWallet
-        ?.masterFingerprint;
-    if (fingerprint != _fingerprint) {
-      _fingerprint = fingerprint;
-      unawaited(_loadSecret());
-    }
+    _syncSecret(
+      context
+          .read<TestWalletBackupBloc>()
+          .state
+          .selectedWallet
+          ?.masterFingerprint,
+    );
   }
 
-  Future<void> _loadSecret() async {
+  /// Loads the secret whenever the selected wallet changes. The test flow
+  /// opens this screen before the wallets have loaded, so the fingerprint
+  /// read at mount can still be null; the bloc listener calls this again
+  /// once a wallet is selected.
+  void _syncSecret(String? fingerprint) {
+    if (fingerprint == null || fingerprint == _fingerprint) return;
+    _fingerprint = fingerprint;
+    unawaited(_loadSecret(fingerprint));
+  }
+
+  Future<void> _loadSecret(String fingerprint) async {
     setState(() => _isLoading = true);
     final result = await context
         .read<TestWalletBackupBloc>()
         .loadSelectedWalletMnemonic();
-    if (!mounted) return;
+    // Drop a load overtaken by a later wallet switch, so the words of the
+    // previous wallet never land under the newly selected one.
+    if (!mounted || fingerprint != _fingerprint) return;
     switch (result) {
       case Ok(:final value):
         final (mnemonic, _) = value;
@@ -64,8 +74,15 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         });
       case Err(:final failure):
         // Surfaced instead of silently dropped: the previous catch left the
-        // screen on an empty word list with no explanation.
-        setState(() => _isLoading = false);
+        // screen on an empty word list with no explanation. The words of the
+        // previously selected wallet are cleared too, so they never show
+        // under the name of the wallet whose read failed.
+        setState(() {
+          _mnemonic = [];
+          _shuffled = [];
+          _selectedIndices = [];
+          _isLoading = false;
+        });
         SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
     }
   }
@@ -117,9 +134,12 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
       builder: (context, snapshot) {
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
+              previous.selectedWallet?.masterFingerprint !=
+                  current.selectedWallet?.masterFingerprint ||
               previous.verificationStatus != current.verificationStatus ||
               previous.failure != current.failure,
           listener: (context, state) {
+            _syncSecret(state.selectedWallet?.masterFingerprint);
             if (state.failure case final failure?) {
               SnackBarUtils.showSnackBar(
                 context,
