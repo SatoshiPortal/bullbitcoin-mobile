@@ -33,10 +33,15 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 - The Buy success screen can open the order details. ([#2695](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2695))
 - Restyled wallet deletion prompts as bottom sheets, and kept numeric input fields to a single line. ([#2691](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2691), [#2689](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2689))
 - Improved log diagnostics and the in-app log viewer. ([#2753](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2753))
+- Reviewed English source strings and German translations, standardized ellipses, and restored translated Tor settings search keywords across locales. ([#2854](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2854), [#2853](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2853), [#2904](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2904))
 - Updated German translations. ([#2727](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2727), [#2810](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2810))
 
 ### Bug Fixes
 
+- Fixed the physical backup verification screen getting stuck on a spinner while the selected wallet loads or when no wallet is available. ([#2909](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2909))
+- Made the Exchange scam-warning sheet scrollable on small screens and with longer translations, keeping the consent checkbox and continue button accessible above the bottom safe area. ([#2915](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2915))
+- Restored access to Tor settings from Settings and search. ([#2904](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2904))
+- Fixed bottom-sheet content overflowing rounded corners and aligned legacy toast corners with the design system. ([#2907](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2907), [#2903](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2903))
 - Improved SeedSigner compatibility: older exports without network info are classified correctly, combined PSBTs are finalized before broadcast and incomplete ones rejected, watch-only imports report network mismatches and duplicates with clear messages, and the import instructions were updated. ([#2872](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2872))
 - Fixed Interac e-transfer withdrawals overriding the security question and answer. ([#2829](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2829))
 - Send reports insufficient funds when the fee does not fit, and rejects coins that became unavailable before broadcast. ([#2741](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2741), [#2782](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2782))
