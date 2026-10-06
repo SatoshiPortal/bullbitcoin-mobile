@@ -35,10 +35,6 @@ class BullPickerSheet<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.8,
       ),
