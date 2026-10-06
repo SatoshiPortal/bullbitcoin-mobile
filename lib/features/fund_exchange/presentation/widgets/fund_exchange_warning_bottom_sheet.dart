@@ -69,6 +69,11 @@ class _FundExchangeWarningBottomSheetState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // The sheet is opened with `isScrollControlled: true`, so it may grow to
+    // the full screen height. The warning content scrolls while the consent
+    // checkbox and the continue button stay pinned below it, so the primary
+    // action is always reachable regardless of screen size or locale text
+    // length.
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -78,39 +83,55 @@ class _FundExchangeWarningBottomSheetState
           backgroundColor: context.appColors.surface,
           foregroundColor: context.appColors.primary,
         ),
+        Flexible(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: context.appColors.tertiary,
+                  child: Icon(
+                    Icons.shield_outlined,
+                    size: 28,
+                    color: context.appColors.onSurface,
+                  ),
+                ),
+                const Gap(8.0),
+                BBText(
+                  context.loc.fundExchangeWarningTitle,
+                  style: theme.textTheme.displaySmall,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(4.0),
+                BBText(
+                  context.loc.fundExchangeWarningDescription,
+                  style: theme.textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(16.0),
+                const FundExchangeScamWarningCard(),
+              ],
+            ),
+          ),
+        ),
         Padding(
+          // `useSafeArea` on the modal only pads the top (status bar); the
+          // bottom system padding (iOS home indicator, Android gesture bar)
+          // is left to the content, so add it here to keep the continue
+          // button out of the system gesture zone when the sheet is full
+          // height. There is no text field in this sheet, so the keyboard
+          // inset is not needed.
           padding: EdgeInsets.fromLTRB(
             16.0,
             16.0,
             16.0,
-            MediaQuery.of(context).viewInsets.bottom + 16.0,
+            MediaQuery.paddingOf(context).bottom + 16.0,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: context.appColors.tertiary,
-                child: Icon(
-                  Icons.shield_outlined,
-                  size: 28,
-                  color: context.appColors.onSurface,
-                ),
-              ),
-              const Gap(8.0),
-              BBText(
-                context.loc.fundExchangeWarningTitle,
-                style: theme.textTheme.displaySmall,
-              ),
-              const Gap(4.0),
-              BBText(
-                context.loc.fundExchangeWarningDescription,
-                style: theme.textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const Gap(16.0),
-              const FundExchangeScamWarningCard(),
-              const Gap(16.0),
               CheckboxListTile(
                 tileColor: context.appColors.secondaryFixedDim,
                 contentPadding: const EdgeInsets.all(8.0),
