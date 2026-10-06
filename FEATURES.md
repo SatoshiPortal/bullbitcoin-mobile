@@ -54,6 +54,8 @@ graph TB
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements]
     CONSOLIDATION[Consolidation]
+    TEST_WALLET_BACKUP[Test Wallet Backup]
+    IMPORT_MNEMONIC[Import Mnemonic]
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
     AUTOSWAP[Autoswap]
@@ -77,6 +79,8 @@ graph TB
     ADDRESS_MGMT --> LABELS
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
+    TEST_WALLET_BACKUP --> SECRETS
+    IMPORT_MNEMONIC --> SECRETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
@@ -175,7 +179,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,TEST_WALLET_BACKUP,IMPORT_MNEMONIC,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -236,7 +240,7 @@ graph TB
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
-- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps
+- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, Test Wallet Backup, Import Mnemonic, RecoverBull, Swaps and Silent Payments
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin

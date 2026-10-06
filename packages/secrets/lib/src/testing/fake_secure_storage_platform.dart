@@ -44,13 +44,27 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
 
   int reads = 0;
 
+  /// The iOS accessibility class each entry was filed under, by key, as the plugin names it (`unlocked`, `first_unlock_this_device`). `null` unless the store was built with one: the store then ignores classes, as every test that predates them expects.
+  ///
+  /// When set, a write records the class it was sent with. An entry with no recorded class is visible to every query.
+  final Map<String, String>? accessibilityOf;
+
+  /// When set, reads, listings and existence checks see only entries filed under the class they ask for, and a write that misses the key under its class adds it — colliding, as `SecItemAdd` does, with the same key filed under another class. Deletes ignore the class. That is `flutter_secure_storage_darwin` 0.3.2 on a keychain that filters on `kSecAttrAccessible`; unset, the keychain ignores the class and only [accessibilityOf] records it.
+  final bool filtersAccessibility;
+
   FakeSecureStoragePlatform({
     Map<String, String>? entries,
     this.locked = false,
     this.writesFail = false,
     List<Object?>? scripted,
     List<Object?>? scriptedWrites,
-  }) : entries = entries ?? {},
+    this.accessibilityOf,
+    this.filtersAccessibility = false,
+  }) : assert(
+         !filtersAccessibility || accessibilityOf != null,
+         'filtering on classes needs a record of them',
+       ),
+       entries = entries ?? {},
        scriptedWrites = List.of(scriptedWrites ?? const []),
        // A growable copy: callers pass `List.filled(…)`, which is fixed-length, and `removeAt` on it throws `UnsupportedError`. That `Error` used to be swallowed into a failure by the boundary, and three tests passed without ever throwing what they had scripted.
        scripted = List.of(scripted ?? const []);
@@ -70,6 +84,19 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
     details: -25308,
   );
 
+  /// `errSecDuplicateItem`, raised by an add on a key the keychain already holds.
+  static PlatformException get duplicateError => PlatformException(
+    code: 'Unexpected security result code',
+    details: -25299,
+  );
+
+  /// Whether a query sent with [options] sees [key].
+  bool _visible(String key, Map<String, String> options) {
+    if (!filtersAccessibility) return true;
+    final filed = accessibilityOf![key];
+    return filed == null || filed == options['accessibility'];
+  }
+
   @override
   Future<String?> read({
     required String key,
@@ -82,7 +109,7 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
       if (next is Exception) throw next;
       return next as String?;
     }
-    return entries[key];
+    return _visible(key, options) ? entries[key] : null;
   }
 
   @override
@@ -91,7 +118,10 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
   }) async {
     reads++;
     if (locked) throw lockedError;
-    return Map<String, String>.from(entries);
+    return {
+      for (final e in entries.entries)
+        if (_visible(e.key, options)) e.key: e.value,
+    };
   }
 
   /// Raises the next scripted mutation outcome, or the blanket failure.
@@ -111,7 +141,14 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
     required Map<String, String> options,
   }) async {
     _guardMutation();
+    if (entries.containsKey(key) && !_visible(key, options)) {
+      throw duplicateError;
+    }
     entries[key] = value;
+    final accessibility = options['accessibility'];
+    if (accessibilityOf != null && accessibility != null) {
+      accessibilityOf![key] = accessibility;
+    }
   }
 
   @override
@@ -121,17 +158,19 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
   }) async {
     _guardMutation();
     entries.remove(key);
+    accessibilityOf?.remove(key);
   }
 
   @override
   Future<void> deleteAll({required Map<String, String> options}) async {
     _guardMutation();
     entries.clear();
+    accessibilityOf?.clear();
   }
 
   @override
   Future<bool> containsKey({
     required String key,
     required Map<String, String> options,
-  }) async => entries.containsKey(key);
+  }) async => entries.containsKey(key) && _visible(key, options);
 }

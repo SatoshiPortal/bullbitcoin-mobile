@@ -6,6 +6,10 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
+### Important Upgrade Note
+
+- Android pre-v5 (0.x, "BULL") and legacy `flutter_secure_storage` 9 installations have no automatic seed migration or legacy rescue screen in this version. Before upgrading, create and validate backups of every wallet and passphrase using the last compatible app. Reinstall and restore only after validating those backups; uninstalling first can destroy remaining local material. A storage initialization failure does not itself offer an in-app restore action.
+
 ---
 
 ## [6.14.0] - 2026-10-04

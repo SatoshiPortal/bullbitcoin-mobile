@@ -25,8 +25,9 @@ typedef LendSilentPaymentKeys =
 /// this signer derives the BIP352 spend key and the BIP86 taproot account key
 /// and lends them to bwk's `signSilentPaymentPsbt` for one call: a free
 /// function that holds nothing, completes the silent payment outputs (BIP375
-/// shares, DLEQ proofs, output scripts), signs every input and wipes its own
-/// copies. The words, the seed and the master key never reach bwk.
+/// shares, DLEQ proofs, output scripts), signs every input and makes a
+/// best-effort wipe of its owned secret buffers. The words, the seed and
+/// the master key never reach bwk.
 ///
 /// Erasure is best effort. The spend key crosses as a [Uint8List] this signer
 /// built and zeroes once the call returns, on every path; the FFI copies it

@@ -4,6 +4,8 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:synchronized/synchronized.dart';
@@ -86,6 +88,16 @@ class FlutterSecureStorageDatasource {
 
   final FlutterSecureStorage _storage;
 
+  /// The class every item of this package is filed under on iOS: readable once the device has been unlocked since boot, and never carried to another device by a backup.
+  static const _iosOptions = IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock_this_device,
+  );
+
+  /// The class 6.5.2 and earlier wrote under: `flutter_secure_storage` 9's default, `kSecAttrAccessibleWhenUnlocked`, which a backup carries to another device. Used only to find those items and re-file them. See [_rebindLegacyKeychain].
+  static const _legacyIosOptions = IOSOptions(
+    accessibility: KeychainAccessibility.unlocked,
+  );
+
   @internal
   FlutterSecureStorageDatasource()
     : _storage = const FlutterSecureStorage(
@@ -96,9 +108,7 @@ class FlutterSecureStorageDatasource {
           resetOnError: false,
           migrateOnAlgorithmChange: false,
         ),
-        iOptions: IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock_this_device,
-        ),
+        iOptions: _iosOptions,
       );
 
   // ------------------------------------------------------------------ secrets
@@ -113,7 +123,8 @@ class FlutterSecureStorageDatasource {
     required SecretModel secret,
     required Future<Uint8List> Function(SecretModel model) seedOf,
     bool rejectExisting = false,
-  }) {
+  }) async {
+    await _rebound();
     final key = keyForSecret(id);
     final json = jsonEncode(secret.toJson());
     return _lock.synchronized(() async {
@@ -184,6 +195,7 @@ class FlutterSecureStorageDatasource {
   ///
   /// [KeystoreLockedException] passes through untouched: a sealed keystore is not an absence, and retrying cannot unseal it.
   Future<SecretModel?> fetchSecret(Fingerprint id) async {
+    await _rebound();
     return switch (await _settle(
       keyForSecret(id),
       budget: _ReadBudget.settled,
@@ -205,12 +217,21 @@ class FlutterSecureStorageDatasource {
   /// through, which the import flow then rejects on its own. The costs
   /// are not comparable, and ~4.5s of backoff on every import is not
   /// worth paying for the smaller one.
-  Future<bool> secretExists(Fingerprint id) async =>
-      await _readRaw(keyForSecret(id)) != null;
+  Future<bool> secretExists(Fingerprint id) async {
+    await _rebound();
+    return await _readSecretRaw(keyForSecret(id)) != null;
+  }
 
   /// Under the lock, so a delete cannot interleave with a store of the same key. Never called from inside another locked operation — those use [_deleteRaw].
-  Future<void> trashSecret(Fingerprint id) =>
-      _lock.synchronized(() => _deleteRaw(keyForSecret(id)));
+  Future<void> trashSecret(Fingerprint id) async {
+    await _rebound();
+    final key = keyForSecret(id);
+    return _lock.synchronized(() async {
+      // Remove the recovery copy first: if this fails, the original stays.
+      if (_isIos) await _deleteRaw('$rebindBackupPrefix$key');
+      await _deleteRaw(key);
+    });
+  }
 
   /// Every parsable secret in the namespace, with its fingerprint.
   ///
@@ -221,7 +242,18 @@ class FlutterSecureStorageDatasource {
   /// plugin cannot decrypt — in any namespace, not only ours — fails the
   /// whole read. Parsing happens off the queue and off this isolate.
   Future<StoredListing> fetchAllSecrets() async {
+    await _rebound();
     final entries = await _readAllRaw(secretNamespace);
+    if (_isIos) {
+      final pending = await _readAllRaw(rebindBackupPrefix);
+      for (final MapEntry(:key, :value) in pending.entries) {
+        final original = key.substring(rebindBackupPrefix.length);
+        if (original.startsWith(secretNamespace) &&
+            (entries[original] == null || entries[original]!.isEmpty)) {
+          entries[original] = value;
+        }
+      }
+    }
     return _parseOffIsolate(entries);
   }
 
@@ -248,7 +280,8 @@ class FlutterSecureStorageDatasource {
     required String package,
     required String name,
     required String Function() generateHex,
-  }) {
+  }) async {
+    await _rebound();
     final key = keyForModule(kind: kind, package: package, name: name);
     // Taken once, around the whole read-modify-write. See the class doc:
     // nothing inside may take it again.
@@ -302,6 +335,7 @@ class FlutterSecureStorageDatasource {
     required String package,
     required String name,
   }) async {
+    await _rebound();
     final key = keyForModule(kind: kind, package: package, name: name);
     // One contract for "present but unusable", whatever the shape — empty,
     // not JSON, or JSON that is not a key: [ModuleKeyCorruptException], as
@@ -336,9 +370,100 @@ class FlutterSecureStorageDatasource {
     required KeyKind kind,
     required String package,
     required String name,
-  }) {
+  }) async {
+    await _rebound();
     final key = keyForModule(kind: kind, package: package, name: name);
     return _lock.synchronized(() => _deleteRaw(key));
+  }
+
+  // ------------------------------------------------- iOS keychain re-binding
+
+  /// Recorded once every legacy item has been re-filed. Its presence is the only thing that skips [_rebindLegacyKeychain]; its value means nothing.
+  static const rebindMarkerKey = '$keyNamespace/meta/ios-keychain-rebound';
+
+  /// Where an item's value waits while it is re-filed: written and read back before the original is deleted, deleted only once the original reads back under the new class. A backup found on a later run is finished first.
+  static const rebindBackupPrefix = '$keyNamespace/meta/ios-keychain-backup/';
+
+  /// The re-binding of this process: run once, before the first operation, and forgotten if it failed so the next operation tries again.
+  static Future<void>? _rebinding;
+
+  /// Forgets that this process re-bound the keychain, so a test can run it again on a fresh store.
+  @visibleForTesting
+  static void debugForgetRebind() => _rebinding = null;
+
+  /// Completes once the legacy items are re-filed, or once re-filing them has failed. Never throws: a keystore that cannot be migrated now is still read as before, and the next operation tries again.
+  Future<void> _rebound() {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
+      return Future.value();
+    }
+    return _rebinding ??= _lock.synchronized(_rebindLegacyKeychain).catchError((
+      Object e,
+    ) {
+      _rebinding = null;
+      // Empty modern stores and temporarily hidden legacy rows are expected.
+      // They must remain retryable without a warning on every operation.
+      if (e is _RebindDeferred) return;
+      log.warning(
+        'iOS keychain re-binding deferred: '
+        '${e is _RebindAborted ? e : describeSafely(e)}',
+      );
+    }, test: (e) => e is Exception);
+  }
+
+  /// Re-files every seed that 6.5.2 or earlier wrote under `kSecAttrAccessibleWhenUnlocked` as `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
+  ///
+  /// The plugin puts the class in every read, write and existence query and leaves it out only of a delete, so an item filed under the old class is either invisible to this package's reads (and its seed reported missing) or kept where a backup carries it to another device. Which of the two iOS does is not settled from source; both end here. The item cannot be updated into the new class: the write would look for it under the new class, miss, and collide on add. So each one is backed up, deleted across classes and written again.
+  ///
+  /// Crash-safe in that order: until the original reads back under the new class, its value is in a backup that a later run finishes first. Any failure stops the run without the marker, leaving the remaining items as they were. Runs under [_lock] and calls primitives only.
+  Future<void> _rebindLegacyKeychain() async {
+    if (await _readRaw(rebindMarkerKey) != null) return;
+
+    final pending = await _readAllRaw(rebindBackupPrefix);
+    for (final MapEntry(key: backup, value: value) in pending.entries) {
+      final key = backup.substring(rebindBackupPrefix.length);
+      final current = await _readRaw(key);
+      if (current != null && current != value) {
+        throw _RebindAborted('$key differs from its backup');
+      }
+      if (current == null) await _refile(key, value);
+      await _deleteRaw(backup);
+    }
+
+    final legacy = await _translate(
+      () => _storage.readAll(iOptions: _legacyIosOptions),
+    );
+    if (!legacy.keys.any((key) => key.startsWith(secretNamespace))) {
+      // An empty enumeration cannot prove that no legacy seed exists.
+      // Defer completion and clear the single-flight cache for a later read.
+      throw const _RebindDeferred();
+    }
+    var refiled = 0;
+    for (final MapEntry(:key, :value) in legacy.entries) {
+      if (!key.startsWith(secretNamespace)) continue;
+      if (value.isEmpty) {
+        throw _RebindAborted('$key is empty');
+      }
+      final backup = '$rebindBackupPrefix$key';
+      await _writeRaw(backup, value);
+      if (await _readRaw(backup) != value) {
+        throw _RebindAborted('backup of $key did not read back');
+      }
+      await _refile(key, value);
+      await _deleteRaw(backup);
+      refiled++;
+    }
+
+    await _writeRaw(rebindMarkerKey, '1');
+    if (refiled > 0) log.info('iOS keychain: re-filed $refiled legacy secrets');
+  }
+
+  /// Deletes [key] in every class, writes it under the new one and reads it back.
+  Future<void> _refile(String key, String value) async {
+    await _deleteRaw(key);
+    await _writeRaw(key, value);
+    if (await _readRaw(key) != value) {
+      throw _RebindAborted('$key did not read back');
+    }
   }
 
   // ------------------------------------------------------------- shared core
@@ -365,7 +490,7 @@ class FlutterSecureStorageDatasource {
     for (var attempt = 0; attempt < budget.attempts; attempt++) {
       String? value;
       try {
-        value = await _readRaw(key);
+        value = await _readSecretRaw(key);
         lastError = null;
       } on KeystoreLockedException {
         rethrow;
@@ -428,7 +553,7 @@ class FlutterSecureStorageDatasource {
 
   // -------------------------------------------------------------------- lock
 
-  /// Guards composed operations — [storeSecret], [trashSecret], [fetchOrCreateModuleKey], [deleteModuleKey].
+  /// Guards composed operations — [storeSecret], [trashSecret], [fetchOrCreateModuleKey], [deleteModuleKey] — and the one-time [_rebindLegacyKeychain], which every operation awaits before taking it.
   /// Process-wide, because the keystore is. See the class doc for why it
   /// is not per instance, why single calls are not guarded, and why it
   /// must never be taken twice on one path.
@@ -440,6 +565,21 @@ class FlutterSecureStorageDatasource {
   /// `Lock` is not reentrant: taking it here would hang, not throw.
   Future<String?> _readRaw(String key) =>
       _translate(() => _storage.read(key: key));
+
+  static bool get _isIos =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  /// A failed rewrite can leave the only seed copy in its verified backup.
+  /// Reads must consult it before concluding that the seed is missing.
+  Future<String?> _readSecretRaw(String key) async {
+    final value = await _readRaw(key);
+    if (!_isIos ||
+        !key.startsWith(secretNamespace) ||
+        (value != null && value.isNotEmpty)) {
+      return value;
+    }
+    return await _readRaw('$rebindBackupPrefix$key') ?? value;
+  }
 
   Future<void> _writeRaw(String key, String value) =>
       _translate(() => _storage.write(key: key, value: value));
@@ -507,17 +647,6 @@ StoredListing _parseAll(Map<String, String> entries) {
   return (parsed: secrets, unparsable: unparsable);
 }
 
-/// The platform keystore is sealed and the value cannot be read *right now*.
-///
-/// Distinct from "no such secret" on purpose. iOS returns
-/// `errSecInteractionNotAllowed` (-25308) when the device has not been
-/// unlocked since boot and the item's accessibility class requires
-/// post-unlock access. Retrying cannot help — only a user unlock clears
-/// it — and collapsing it into a not-found makes callers such as
-/// `CheckForExistingDefaultWalletsUsecase` read a transient,
-/// self-healing state as "the wallet seed is gone" and offer destructive
-/// recovery.
-
 /// How long [FlutterSecureStorageDatasource._settle] may insist before a null counts as an absence.
 ///
 /// Two budgets, one mechanism. A re-read only costs when the answer is "absent", so the budget follows where absence is the normal outcome. See doc/design.md, § Absence.
@@ -537,6 +666,21 @@ enum _ReadBudget {
   Duration delayBefore(int attempt) => doubling
       ? FlutterSecureStorageDatasource._initialDelay * (1 << (attempt - 1))
       : FlutterSecureStorageDatasource._initialDelay;
+}
+
+/// The keychain answered the re-binding in a way that makes going on unsafe. An [Exception], not an [Error]: it is the store misbehaving, not this code, and it defers the run instead of failing the operation that triggered it.
+final class _RebindAborted implements Exception {
+  final String message;
+
+  const _RebindAborted(this.message);
+
+  @override
+  String toString() => 'keychain re-binding aborted: $message';
+}
+
+/// No legacy seed was visible; a later enumeration must still be allowed.
+final class _RebindDeferred implements Exception {
+  const _RebindDeferred();
 }
 
 /// What a settled read concluded.
