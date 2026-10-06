@@ -182,6 +182,7 @@ void main() {
         'local currency': SettingsItemId.currency,
         'passcode': SettingsItemId.securityPin,
         'diagnostic logs': SettingsItemId.logs,
+        'orbot': SettingsItemId.tor,
         'screen recording': SettingsItemId.screenPrivacy,
         'developer mode': SettingsItemId.devMode,
         'basic auth': SettingsItemId.testnetCredentials,
@@ -262,6 +263,12 @@ void main() {
       final results = searchSettings(_germanItems(), 'Dunkelmodus');
 
       expect(results.map((item) => item.id), contains(SettingsItemId.theme));
+    });
+
+    test('matches the restored German Tor keywords', () {
+      final results = searchSettings(_germanItems(), 'Integriertes Tor');
+
+      expect(results.map((item) => item.id), contains(SettingsItemId.tor));
     });
 
     test('folds the German sharp s to a double s', () {

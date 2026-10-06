@@ -3632,5 +3632,6 @@
   "receiveErrorBroadcastOriginal": "Hatukuweza kutangaza muamala. Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "fundExchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "exchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
-  "walletBalancesMayBeStale": "Salio lako halikuweza kusasishwa na huenda si la sasa."
+  "walletBalancesMayBeStale": "Salio lako halikuweza kusasishwa na huenda si la sasa.",
+  "settingsSearchTorKeywords": "proksi ya Tor|Orbot|uelekezaji wa onion|Tor iliyojengewa ndani|mtandao wa faragha"
 }

@@ -11815,5 +11815,6 @@
   "receiveErrorBroadcastOriginal": "İşlemi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "fundExchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "exchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
-  "walletBalancesMayBeStale": "Bakiyeleriniz güncellenemedi ve güncel olmayabilir."
+  "walletBalancesMayBeStale": "Bakiyeleriniz güncellenemedi ve güncel olmayabilir.",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion yönlendirme|gömülü Tor|gizlilik ağı"
 }
