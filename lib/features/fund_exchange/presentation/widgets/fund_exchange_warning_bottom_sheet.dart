@@ -117,11 +117,17 @@ class _FundExchangeWarningBottomSheetState
           ),
         ),
         Padding(
+          // `useSafeArea` on the modal only pads the top (status bar); the
+          // bottom system padding (iOS home indicator, Android gesture bar)
+          // is left to the content, so add it here to keep the continue
+          // button out of the system gesture zone when the sheet is full
+          // height. There is no text field in this sheet, so the keyboard
+          // inset is not needed.
           padding: EdgeInsets.fromLTRB(
             16.0,
             16.0,
             16.0,
-            MediaQuery.of(context).viewInsets.bottom + 16.0,
+            MediaQuery.paddingOf(context).bottom + 16.0,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -136,7 +136,8 @@ class FundExchangeRouter {
                     context: context,
                     isScrollControlled: true,
                     // The sheet may grow to full height on small screens;
-                    // keep it clear of the status bar and home indicator.
+                    // keep it clear of the status bar. The bottom system
+                    // padding is handled by the sheet's pinned footer.
                     useSafeArea: true,
                     builder: (_) => BlocProvider.value(
                       value: bloc,
