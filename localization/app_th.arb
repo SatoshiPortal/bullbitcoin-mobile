@@ -11820,5 +11820,5 @@
   "fundExchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "walletBalancesMayBeStale": "ไม่สามารถอัปเดตยอดคงเหลือของคุณได้ และยอดอาจไม่เป็นปัจจุบัน",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "พร็อกซี Tor|Orbot|การกำหนดเส้นทางแบบหัวหอม|Tor ในตัว|เครือข่ายความเป็นส่วนตัว"
 }

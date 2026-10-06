@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
-import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
@@ -589,7 +589,8 @@ List<SettingsItem> buildSettingsItems({
       title: localization.torSettingsTitle,
       path: path(SettingsItemSection.app, localization.torSettingsTitle),
       icon: Icons.vpn_lock,
-      open: (context) => context.pushNamed(TorSettingsRoute.torSettings.name),
+      open: (context) =>
+          context.pushNamed(const TorSettingsFacade().settingsRouteName),
       keywords: _keywords(
         localization.settingsSearchTorKeywords,
         english.settingsSearchTorKeywords,

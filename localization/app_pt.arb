@@ -4864,5 +4864,5 @@
   "fundExchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
   "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
   "walletBalancesMayBeStale": "Não foi possível atualizar os seus saldos e podem estar desatualizados.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|encaminhamento onion|Tor integrado|rede de privacidade"
 }

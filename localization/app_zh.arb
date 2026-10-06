@@ -4828,5 +4828,5 @@
   "fundExchangeErrorNetwork": "请检查您的网络连接后重试。",
   "exchangeErrorNetwork": "请检查您的网络连接后重试。",
   "walletBalancesMayBeStale": "无法更新您的余额，余额可能不是最新的。",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor 代理|Orbot|洋葱路由|内置 Tor|隐私网络"
 }

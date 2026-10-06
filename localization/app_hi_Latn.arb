@@ -12198,5 +12198,5 @@
   "fundExchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
   "exchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
   "walletBalancesMayBeStale": "Aapke balance update nahin ho sake aur ve purane ho sakte hain.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network"
 }

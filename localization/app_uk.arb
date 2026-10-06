@@ -4825,5 +4825,5 @@
   "fundExchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
   "exchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
   "walletBalancesMayBeStale": "Не вдалося оновити баланси, вони можуть бути неактуальними.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor-проксі|Orbot|onion-маршрутизація|вбудований Tor|мережа приватності"
 }

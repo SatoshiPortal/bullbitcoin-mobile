@@ -9923,5 +9923,5 @@
   "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "exchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "walletBalancesMayBeStale": "Балансите ви не можаха да бъдат обновени и може да не са актуални.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност"
 }

@@ -11816,5 +11816,5 @@
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí"
 }

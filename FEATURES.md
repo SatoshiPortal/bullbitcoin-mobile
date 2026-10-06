@@ -18,6 +18,7 @@ graph TB
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
+    TOR_SETTINGS[Tor Settings]
     RECOVERBULL[RecoverBull]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
@@ -131,6 +132,8 @@ graph TB
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
+    SETTINGS --> TOR_SETTINGS
+    TOR_SETTINGS --> TOR
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN

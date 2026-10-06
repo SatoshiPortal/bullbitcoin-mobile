@@ -4816,5 +4816,5 @@
   "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita.",
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network"
+  "settingsSearchTorKeywords": "Tor-välityspalvelin|Orbot|onion-reititys|sisäinen Tor|yksityisyysverkko"
 }

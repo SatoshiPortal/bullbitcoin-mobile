@@ -15446,8 +15446,8 @@
   "@walletBalancesMayBeStale": {
     "description": "Shown on the home screen when a refresh could not sync the wallets: the list is loaded but balances may be stale. Not a failed load. Non-English values are machine generated and want review."
   },
-  "settingsSearchTorKeywords": "tor|proxy|onion|orbot|socks5|privacy|anonymous|network",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
-    "description": "Pipe-separated search keywords for finding the Tor settings in settings search; technical terms like tor, orbot, onion, socks5 should stay as-is"
+    "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
   }
 }
