@@ -23,8 +23,9 @@ analyzer:
     # The seal on Secret.revealMnemonic: the last gate on a stored mnemonic
     # must fail a build, not merely warn.
     invalid_use_of_internal_member: error
+  # Generated code is analyzed like any other: the @internal seal and the
+  # src/ boundary are enforced by file, and a name such as `x.g.dart` says
+  # nothing about who wrote the file.
   exclude:
-    - lib/**/*.g.dart
-    - lib/**/*.freezed.dart
     - pubspec.yaml
   
