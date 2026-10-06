@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 /// Eagerly warms the configured Tor route for an existing RecoverBull backup.
 class InitializeRequiredTorUsecase {
@@ -19,8 +21,18 @@ class InitializeRequiredTorUsecase {
   );
 
   Future<TorConnectionState?> execute() async {
-    if (!await _walletPort.hasMainnetBitcoinEncryptedBackup()) {
-      return null;
+    switch (await _walletPort.hasMainnetBitcoinEncryptedBackup()) {
+      case Ok(value: true):
+        break;
+      case Ok():
+        return null;
+      // Same as before this check returned a Result: an unknown answer skips
+      // Tor rather than starting it. Logged, type only.
+      case Err(:final failure):
+        log.warning(
+          'Encrypted backup check failed, skipping Tor: ${failure.runtimeType}',
+        );
+        return null;
     }
     final settings = await _settingsRepository.fetch();
     if (settings.useTorProxy) {

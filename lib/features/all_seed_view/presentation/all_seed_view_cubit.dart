@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 part 'all_seed_view_cubit.freezed.dart';
 part 'all_seed_view_state.dart';
 
@@ -58,25 +59,20 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
         return;
     }
 
-    // GetWalletsUsecase still throws — this cubit is the boundary for it as
-    // the first layer this feature owns. NoWalletsFoundException is normal:
-    // seeds can exist before any wallet is created.
+    // "No wallets yet" is normal here: seeds can exist before any wallet is
+    // created, and every seed is then simply treated as "old".
     final existingFingerprints = <String>{};
-    try {
-      final wallets = await _getWalletsUsecase.execute();
-      existingFingerprints.addAll(wallets.map((w) => w.masterFingerprint));
-    } on NoWalletsFoundException {
-      // intentionally empty — all seeds treated as "old"
-    } catch (e, st) {
-      // The seeds were fetched successfully; only the wallet lookup failed.
-      // Degrade gracefully: treat every seed as "old" and still display them,
-      // rather than discarding a good fetch and showing "No seeds found".
-      log.severe(
-        message:
-            'fetchAllSeeds: wallets fetch failed, treating all seeds as old',
-        error: e,
-        trace: st,
-      );
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        existingFingerprints.addAll(value.map((w) => w.masterFingerprint));
+      case Err(failure: NoWalletsFoundFailure()):
+        break;
+      case Err(:final failure):
+        // The seeds were fetched successfully; only the wallet lookup failed.
+        // Degrade gracefully: treat every seed as "old" and still display
+        // them, rather than discarding a good fetch and showing
+        // "No seeds found".
+        log.warning('all seeds: wallet lookup failed: ${failure.logMessage}');
     }
 
     final processed = _processAndSeparateSeedsUsecase.execute(

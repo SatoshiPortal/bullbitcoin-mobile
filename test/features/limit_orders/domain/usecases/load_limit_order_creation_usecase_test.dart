@@ -79,7 +79,7 @@ void main() {
     when(
       () => defaultWallets.getDefaultWallets(),
     ).thenAnswer((_) async => _wallets);
-    when(() => getWallets.execute()).thenAnswer((_) async => []);
+    when(() => getWallets.execute()).thenAnswer((_) async => Ok([]));
   });
 
   test(
@@ -89,10 +89,10 @@ void main() {
         () => getUserSummary.execute(),
       ).thenAnswer((_) async => userSummary());
       when(() => getWallets.execute()).thenAnswer(
-        (_) async => [
+        (_) async => Ok([
           _wallet('w-btc', Network.bitcoinMainnet),
           _wallet('w-lbtc', Network.liquidMainnet),
-        ],
+        ]),
       );
 
       final result = await usecase.execute();

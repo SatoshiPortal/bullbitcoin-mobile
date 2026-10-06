@@ -21,6 +21,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -68,6 +70,16 @@ class WalletLocator {
       () => WatchSpWalletUsecase(spFacade: locator<SpFacade>()),
     );
 
+    locator.registerFactory<SyncWalletsUsecase>(
+      () => SyncWalletsUsecase(locator<SyncCoordinator>()),
+    );
+    locator.registerFactory<WatchWalletSyncEventsUsecase>(
+      () => WatchWalletSyncEventsUsecase(
+        watchStarted: locator<WatchStartedWalletSyncsUsecase>(),
+        watchFinished: locator<WatchFinishedWalletSyncsUsecase>(),
+        watchElectrum: locator<WatchElectrumSyncResultsUsecase>(),
+      ),
+    );
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
@@ -80,13 +92,8 @@ class WalletLocator {
         watchSpWalletUsecase: locator<WatchSpWalletUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
-        watchStartedWalletSyncsUsecase:
-            locator<WatchStartedWalletSyncsUsecase>(),
-        watchFinishedWalletSyncsUsecase:
-            locator<WatchFinishedWalletSyncsUsecase>(),
-        watchElectrumSyncResultsUsecase:
-            locator<WatchElectrumSyncResultsUsecase>(),
-        syncCoordinator: locator<SyncCoordinator>(),
+        watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
+        syncWalletsUsecase: locator<SyncWalletsUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),

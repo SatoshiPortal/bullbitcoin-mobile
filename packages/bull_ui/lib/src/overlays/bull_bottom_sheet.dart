@@ -27,6 +27,9 @@ class BullBottomSheet extends StatelessWidget {
       useSafeArea: true,
       backgroundColor: colors.surface,
       barrierColor: colors.text.withValues(alpha: 0.4),
+      // The sheet owns the shape and clips its content to it, so a child's
+      // own decoration can never show a mismatched corner.
+      clipBehavior: Clip.antiAlias,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(BullRadius.lg),

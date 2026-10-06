@@ -258,7 +258,6 @@
   "pinCodeSettingsLabel": "PIN কোড",
   "languageSettingsLabel": "ভাষা",
   "backupSettingsLabel": "Wallet বেকআপ",
-  "electrumServerSettingsLabel": "Electrum চাৰ্ভাৰ (Bitcoin নোড)",
   "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
   "languageSettingsScreenTitle": "ভাষা",
   "settingsExchangeSettingsTitle": "Exchange ছেটিংছ",
@@ -291,10 +290,8 @@
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
   "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
   "settingsDevModeWarningTitle": "Dev মোড",
@@ -885,35 +882,10 @@
   "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
   "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
   "transactionTitle": "লেনদেনসমূহ",
-  "transactionError": "ভুল - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "লেনদেনৰ বিৱৰণ",
   "transactionDetailTransferProgress": "Transfer অগ্ৰগতি",
   "transactionDetailSwapProgress": "Swap অগ্ৰগতি",
-  "transactionDetailRetryTransfer": "Transfer {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Swap {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "টোকা যোগ কৰক",
-  "transactionDetailBumpFees": "মাচুল বৃদ্ধি কৰক",
   "transactionFilterAll": "সকলো",
   "transactionFilterSend": "প্ৰেৰণ",
   "transactionFilterReceive": "গ্ৰহণ",
@@ -926,7 +898,6 @@
   "transactionFilterFunding": "ফান্ডিং",
   "transactionFilterReward": "পুৰস্কাৰ",
   "transactionFilterRefund": "ঘূৰাই দিয়া",
-  "transactionFilterBalanceAdjustment": "সামঞ্জস্য",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
@@ -934,7 +905,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "চলি আছে",
   "transactionStatusPending": "অপেক্ষাৰত",
-  "transactionStatusConfirmed": "নিশ্চিত হৈছে",
   "transactionStatusTransferCompleted": "Transfer সম্পন্ন হৈছে",
   "transactionStatusTransferInProgress": "Transfer চলি আছে",
   "transactionStatusPaymentInProgress": "পৰিশোধ চলি আছে",
@@ -944,51 +914,9 @@
   "transactionStatusTransferExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusSwapExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusPayjoinRequested": "Payjoin অনুৰোধ কৰা হৈছে",
-  "transactionLabelTransactionId": "লেনদেন ID",
-  "transactionLabelToWallet": "Wallet লৈ",
-  "transactionLabelFromWallet": "Wallet-ৰ পৰা",
-  "transactionLabelRecipientAddress": "প্ৰাপকৰ ঠিকনা",
-  "transactionLabelAddress": "ঠিকনা",
-  "transactionLabelAddressNotes": "ঠিকনাৰ টোকা",
-  "transactionLabelAmountReceived": "গ্ৰহণ কৰা পৰিমাণ",
-  "transactionLabelAmountSent": "প্ৰেৰণ কৰা পৰিমাণ",
-  "transactionLabelTransactionFee": "লেনদেন মাচুল",
-  "transactionLabelStatus": "স্থিতি",
-  "transactionLabelConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "transactionLabelTransferId": "Transfer ID",
-  "transactionLabelSwapId": "Swap ID",
-  "transactionLabelTransferStatus": "Transfer স্থিতি",
-  "transactionLabelSwapStatus": "Swap স্থিতি",
-  "transactionLabelSwapStatusRefunded": "ঘূৰাই দিয়া হৈছে",
-  "transactionLabelLiquidTransactionId": "Liquid লেনদেন ID",
-  "transactionLabelBitcoinTransactionId": "Bitcoin লেনদেন ID",
-  "transactionLabelTotalTransferFees": "মুঠ Transfer মাচুল",
-  "transactionLabelTotalSwapFees": "মুঠ Swap মাচুল",
-  "transactionLabelNetworkFee": "নেটৱৰ্ক মাচুল",
-  "transactionLabelTransferFee": "Transfer মাচুল",
-  "transactionLabelBoltzSwapFee": "Boltz Swap মাচুল",
-  "transactionLabelCreatedAt": "তৈয়াৰ হৈছে",
-  "transactionLabelCompletedAt": "সম্পন্ন হৈছে",
-  "transactionLabelPayjoinStatus": "Payjoin স্থিতি",
-  "transactionLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
-  "transactionPayjoinStatusCompleted": "সম্পন্ন হৈছে",
-  "transactionPayjoinStatusExpired": "মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionOrderLabelOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "transactionOrderLabelOrderNumber": "অৰ্ডাৰ নম্বৰ",
-  "transactionOrderLabelPayinAmount": "পেইন পৰিমাণ",
-  "transactionOrderLabelPayoutAmount": "পেআউট পৰিমাণ",
-  "transactionOrderLabelExchangeRate": "বিনিময় হাৰ",
-  "transactionOrderLabelPayinMethod": "পেইন পদ্ধতি",
-  "transactionOrderLabelPayoutMethod": "পেআউট পদ্ধতি",
-  "transactionOrderLabelPayinStatus": "পেইন স্থিতি",
-  "transactionOrderLabelOrderStatus": "অৰ্ডাৰৰ স্থিতি",
-  "transactionOrderLabelPayoutStatus": "পেআউট স্থিতি",
   "transactionNotesLabel": "লেনদেনৰ টোকা",
   "transactionNoteAddTitle": "টোকা যোগ কৰক",
-  "transactionNoteEditTitle": "টোকা সম্পাদনা কৰক",
   "transactionNoteHint": "টোকা",
-  "transactionNoteSaveButton": "সংৰক্ষণ কৰক",
-  "transactionNoteUpdateButton": "আপডেট কৰক",
   "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
   "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
   "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",
@@ -1088,18 +1016,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
   "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
   "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
-  "walletTypeWatchOnly": "কেৱল চোৱা",
-  "walletTypeWatchSigner": "Watch-Signer",
-  "walletTypeBitcoinNetwork": "Bitcoin নেটৱৰ্ক",
-  "walletTypeLiquidLightningNetwork": "Liquid আৰু Lightning নেটৱৰ্ক",
-  "walletNetworkBitcoin": "Bitcoin নেটৱৰ্ক",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "walletNetworkLiquid": "Liquid নেটৱৰ্ক",
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "walletAddressTypeLegacy": "Legacy",
   "walletBalanceUnconfirmedIncoming": "চলি আছে",
   "walletButtonReceive": "গ্ৰহণ কৰক",
   "walletButtonSend": "প্ৰেৰণ কৰক",
@@ -5957,7 +5873,6 @@
     }
   },
   "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
-  "transactionHistoryHeading": "লেনদেনৰ ইতিহাস",
   "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
   "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
   "exportTransactionsEndDate": "শেষৰ তাৰিখ",
@@ -7115,10 +7030,6 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "যদি কোনো protocol নিৰ্দিষ্ট কৰা নহয়, তেন্তে ডিফল্টৰূপে SSL ব্যৱহাৰ কৰা হ'ব।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "electrumLiquidSslInfo": "কোনো protocol নিৰ্দিষ্ট কৰিব নালাগে, SSL স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰ কৰা হ'ব।",
   "@electrumLiquidSslInfo": {
     "description": "Info text for Liquid server protocol"
@@ -8153,33 +8064,6 @@
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
   },
-  "walletAutoTransferBlockedTitle": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ বাধা প্ৰাপ্ত",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC ট্ৰান্সফাৰ কৰিবলৈ চেষ্টা কৰা হৈছে। বৰ্তমানৰ মাচুল হৈছে ট্ৰান্সফাৰ পৰিমাণৰ {currentFee}% আৰু মাচুলৰ সীমা {thresholdFee}%-ত ছেট কৰা আছে",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "বাধা দিয়ক",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
-  "walletAutoTransferAllowButton": "অনুমতি দিয়ক",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
-  },
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
@@ -9156,6 +9040,19 @@
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletLoadFailed": "আপোনাৰ ৱালেটসমূহ লʼড কৰিব পৰা নগʼল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumLiquidDown": "Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
+  "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক",
+  "transactionDetailLoadError": "লেনদেনৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল।",
+  "transactionPayjoinBroadcastFailed": "মূল লেনদেনটো সম্প্ৰচাৰ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটো আৰু সম্প্ৰচাৰৰ বাবে উপলব্ধ নহয়।",
+  "transactionLabelLimitReached": "আপুনি সৰ্বাধিক ১০টা লেবেল ৰাখিব পাৰে।",
+  "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "settingsErrorConsentNotGiven": "এই ছেটিং সলনি কৰাৰ আগতে আপোনাৰ নিশ্চিতকৰণৰ প্ৰয়োজন।",
+  "settingsErrorLoadingLogs": "নিদান লগসমূহ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorSigningOut": "আপোনাক সম্পূৰ্ণৰূপে ছাইন আউট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorSavingPreferences": "আপোনাৰ পছন্দসমূহ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorLoadingAnnouncements": "ঘোষণাসমূহ ল'ড কৰিব পৰা নগ'ল।",
@@ -9288,5 +9185,7 @@
   "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletBalancesMayBeStale": "আপোনাৰ বেলেঞ্চ আপডেট কৰিব পৰা নগ'ল আৰু সেয়া পুৰণি হ'ব পাৰে।",
+  "settingsSearchTorKeywords": "Tor প্ৰক্সী|Orbot|Onion routing|অন্তৰ্নিহিত Tor|গোপনীয়তা নেটৱৰ্ক"
 }

@@ -36,7 +36,6 @@
     }
   },
   "exchangeSettingsSecuritySettingsTitle": "Налаштування безпеки",
-  "transactionNoteUpdateButton": "Оновлення",
   "appStartupContactSupportButton": "Контакти",
   "ledgerHelpTitle": "Ledger усунення несправностей",
   "fundExchangeLabelBankAccountCountry": "Країна банківського рахунку",
@@ -115,7 +114,6 @@
   "pinCodeSettingsLabel": "Поштовий індекс",
   "languageSettingsLabel": "Українська",
   "backupSettingsLabel": "Резервування стін",
-  "electrumServerSettingsLabel": "Електорний сервер (Bitcoin node)",
   "fiatCurrencySettingsLabel": "Фіат валюта",
   "languageSettingsScreenTitle": "Українська",
   "settingsExchangeSettingsTitle": "Налаштування Exchange",
@@ -149,11 +147,9 @@
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",
   "settingsAppVersionLabel": "Версія додатка: ",
-  "settingsTelegramLabel": "Телеграма",
   "settingsGithubLabel": "Гитуб",
   "settingsGetHelpLabel": "Отримати допомогу",
   "settingsServiceStatusTitle": "Статус на сервери",
-  "settingsRecoverbullTitle": "Реcoverbull",
   "settingsLanguageTitle": "Українська",
   "settingsDevModeWarningTitle": "Режим Dev",
   "settingsDevModeWarningMessage": "Цей режим є ризикованим. За допомогою цього ви підтверджуєте, що ви можете втратити гроші",
@@ -470,27 +466,10 @@
   "payExternalWalletDescription": "Сплатити з іншого біткойн-гаманця",
   "payRbfActivated": "Замініть активоване",
   "transactionTitle": "Твитнуть",
-  "transactionError": "Помилка - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Деталі транзакції",
   "transactionDetailTransferProgress": "Прогрес трансферу",
   "transactionDetailSwapProgress": "Swap Прогрес",
-  "transactionDetailRetryTransfer": "Трансфер з картки {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Додати замітку",
-  "transactionDetailBumpFees": "Бамперові збори",
   "transactionFilterAll": "Всі",
   "transactionFilterSend": "Відправити",
   "transactionFilterReceive": "Отримати",
@@ -505,7 +484,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → Л-БТ",
   "transactionStatusInProgress": "Прогрес",
   "transactionStatusPending": "Закінчення",
-  "transactionStatusConfirmed": "Підтвердження",
   "transactionStatusTransferCompleted": "Трансфер завершено",
   "transactionStatusPaymentInProgress": "Плата за прогрес",
   "transactionStatusPaymentRefunded": "Повернення платежів",
@@ -514,44 +492,9 @@
   "transactionStatusTransferExpired": "Трансфер Expired",
   "transactionStatusSwapExpired": "Обмінюється",
   "transactionStatusPayjoinRequested": "Payjoin запитав",
-  "transactionLabelTransactionId": "Код транзакції",
-  "transactionLabelToWallet": "Гаманець",
-  "transactionLabelFromWallet": "Від гаманця",
-  "transactionLabelRecipientAddress": "Адреса одержувача",
-  "transactionLabelAddress": "Контакти",
-  "transactionLabelAddressNotes": "Контакти",
-  "transactionLabelAmountReceived": "Сума отримана",
-  "transactionLabelAmountSent": "Сума відправлена",
-  "transactionLabelTransactionFee": "Плата за транзакції",
-  "transactionLabelStatus": "Статус на сервери",
-  "transactionLabelConfirmationTime": "Термін підтвердження",
-  "transactionLabelTransferId": "Трансфер ID",
-  "transactionLabelSwapId": "Обмін ID",
-  "transactionLabelTransferStatus": "Статус на сервери",
-  "transactionLabelSwapStatusRefunded": "Повернення",
-  "transactionLabelLiquidTransactionId": "Ідентифікаційний код",
-  "transactionLabelBitcoinTransactionId": "Код транзакції Bitcoin",
-  "transactionLabelTotalTransferFees": "Сума переказу",
-  "transactionLabelTotalSwapFees": "Загальний обмін",
-  "transactionLabelNetworkFee": "Партнерство",
-  "transactionLabelTransferFee": "Плата за трансфер",
-  "transactionLabelBoltzSwapFee": "Boltz Обмінюється Fee",
-  "transactionLabelCreatedAt": "Створено",
-  "transactionLabelCompletedAt": "Увімкнути",
-  "transactionLabelPayjoinStatus": "Статус на сервери",
-  "transactionLabelPayjoinCreationTime": "Час створення Payjoin",
-  "transactionPayjoinStatusCompleted": "Виконаний",
-  "transactionPayjoinStatusExpired": "Зареєструватися",
-  "transactionOrderLabelOrderType": "Тип замовлення",
-  "transactionOrderLabelOrderNumber": "Номер замовлення",
-  "transactionOrderLabelPayinAmount": "Сума виплат",
-  "transactionOrderLabelPayoutAmount": "Сума виплат",
-  "transactionOrderLabelExchangeRate": "Курс валют",
   "transactionNotesLabel": "Примітки транзакцій",
   "transactionNoteAddTitle": "Додати замітку",
-  "transactionNoteEditTitle": "Редагувати замітку",
   "transactionNoteHint": "Зареєструватися",
-  "transactionNoteSaveButton": "Зберегти",
   "transactionPayjoinSendWithout": "Відправлення без плати",
   "transactionSwapProgressInitiated": "Ініціюється",
   "transactionSwapProgressPaymentMade": "Оплата\nЗроблено",
@@ -635,17 +578,6 @@
   "transactionDetailLabelSendNetworkFee": "Закупи хостинг »",
   "transactionDetailLabelTransferFee": "Плата за трансфер",
   "transactionDetailLabelPayjoinStatus": "Статус на сервери",
-  "walletTypeWatchSigner": "Відгуки",
-  "walletTypeBitcoinNetwork": "Bitcoin мережа",
-  "walletTypeLiquidLightningNetwork": "Рідка та Lightning мережа",
-  "walletNetworkBitcoin": "Bitcoin мережа",
-  "walletNetworkBitcoinTestnet": "Біткойн Testnet",
-  "walletNetworkLiquid": "Мережа рідин",
-  "walletNetworkLiquidTestnet": "Рідкий Testnet",
-  "walletAddressTypeConfidentialSegwit": "Конфіденційний Segwit",
-  "walletAddressTypeNativeSegwit": "Нативний Segwit",
-  "walletAddressTypeNestedSegwit": "Нескінченний Segwit",
-  "walletAddressTypeLegacy": "Спадщина",
   "walletBalanceUnconfirmedIncoming": "Прогрес",
   "walletButtonReceive": "Отримати",
   "walletButtonSend": "Відправити",
@@ -799,21 +731,7 @@
   "payCompletedDescription": "Після завершення платежу, одержувач отримав кошти.",
   "paySinpeEnviado": "СИНП ЕНВАДО!",
   "payPaymentInProgressDescription": "Ваш платіж був ініційований, а одержувач отримає кошти після отримання вашої операції 1 підтвердження.",
-  "transactionDetailRetrySwap": "Заміна {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionStatusTransferInProgress": "Трансфер в Прогрес",
-  "transactionLabelSwapStatus": "Статус на сервери",
-  "transactionOrderLabelPayinMethod": "Метод Payin",
-  "transactionOrderLabelPayoutMethod": "Спосіб виплати",
-  "transactionOrderLabelPayinStatus": "Статус на сервери",
-  "transactionOrderLabelOrderStatus": "Статус на сервери",
-  "transactionOrderLabelPayoutStatus": "Статус на сервери",
   "transactionSwapStatusSwapStatus": "Статус на сервери",
   "transactionSwapDescLnSendCompleted": "Відшкодування відправлено успішно! Ваш ковпачок тепер завершено.",
   "transactionSwapDescLnSendFailed": "Проблемою була проблема. Ваші кошти будуть повернені в ваш гаманець автоматично.",
@@ -830,7 +748,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Час створення Payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
   "globalDefaultLiquidWalletLabel": "Миттєві платежі",
-  "walletTypeWatchOnly": "Відгуки",
   "fundExchangeWarningDescription": "Якщо хтось запитує вас купити Біткойн або \"допомоги вам\", будьте обережні, вони можуть бути намагатися з вами!",
   "fundExchangeWarningTacticsTitle": "Поширена тактика шампана",
   "fundExchangeWarningTactic1": "Вони перспективні повернення інвестицій",
@@ -2095,7 +2012,6 @@
     }
   },
   "payReviewPayment": "Огляд платежів",
-  "electrumBitcoinSslInfo": "Якщо не вказано протокол, ssl буде використовуватися за замовчуванням.",
   "buyKYCLevel3": "Рівень 3 - Повний",
   "keystoneStep8": "Після того, як угода була імпортована у Keystone, перевірте адресу призначення та суму.",
   "psbtFlowSpecterTitle": "Інструкція Specter",
@@ -2230,20 +2146,6 @@
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Фізична резервна копія: ",
   "receiveRequestInboundLiquidity": "Запит Отримання ємності",
   "backupWalletHowToDecideBackupMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
-  "walletAutoTransferBlockedMessage": "Спогади про передачу {amount} BTC. Поточна комісія {currentFee}% від суми переказу та порогу винагороди встановлюється на {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Натисніть кнопку, щоб зареєструвати операцію на сайті Krux.",
   "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
   "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
@@ -2611,7 +2513,6 @@
   "dcaConfirmNetwork": "Мережа",
   "allSeedViewDeleteWarningMessage": "Видалення насіння незворотної дії. Тільки робіть це, якщо у вас є безпечні резервні копії цього насіння або асоційованих гаманців повністю зливаються.",
   "transactionHistoryTitle": "Історія транзакцій",
-  "transactionHistoryHeading": "Історія транзакцій",
   "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
   "exportTransactionsStartDate": "Дата початку",
   "exportTransactionsEndDate": "Дата завершення",
@@ -2628,7 +2529,6 @@
     "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329 етикетки",
-  "walletAutoTransferAllowButton": "Смоктати",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
@@ -3380,7 +3280,6 @@
   "coreScreensConfirmTransfer": "Підтвердження трансферу",
   "recoverbullRetry": "Птиця",
   "receiveCopyInvoice": "Статус на сервери",
-  "walletAutoTransferBlockedTitle": "Авто Трансфер блокується",
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Інструкції",
   "paySendMax": "Макс",
   "recoverbullGoogleDriveDeleteConfirmation": "Ви впевнені, що ви хочете видалити цю резервну копію? Ця дія не може бути неоновою.",
@@ -3595,7 +3494,6 @@
   "payPaymentHistory": "Історія оплати",
   "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
-  "walletAutoTransferBlockButton": "Блоки",
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "ledgerSignTitle": "Реєстрація",
@@ -4547,7 +4445,6 @@
   "transactionFilterFunding": "Поповнення",
   "transactionFilterReward": "Винагорода",
   "transactionFilterRefund": "Повернення",
-  "transactionFilterBalanceAdjustment": "Коригування",
   "transactionListLoadingFailed": "Не вдалося завантажити транзакції.",
   "transactionLabelNetworkFees": "Мережеві збори",
   "walletLiquidRiskDisclosureLabel": "Ці кошти — це Liquid L-BTC (не BTC). Дізнатися більше.",
@@ -4781,6 +4678,19 @@
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
   "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "walletLoadFailed": "Не вдалося завантажити ваші гаманці. Перевірте підключення та спробуйте ще раз.",
+  "walletWarningElectrumBitcoinDown": "Сервер Bitcoin недоступний",
+  "walletWarningElectrumLiquidDown": "Сервер Liquid недоступний",
+  "walletWarningElectrumBothDown": "Сервери Bitcoin і Liquid недоступні",
+  "walletWarningElectrumAction": "Натисніть, щоб налаштувати параметри сервера",
+  "walletLoadFailedRetryHint": "Потягніть вниз, щоб оновити та спробувати ще раз",
+  "transactionDetailLoadError": "Не вдалося завантажити деталі транзакції.",
+  "transactionPayjoinBroadcastFailed": "Не вдалося опублікувати початкову транзакцію. Будь ласка, спробуйте ще раз.",
+  "transactionPayjoinOriginalUnavailable": "Початкова транзакція більше недоступна для публікації.",
+  "transactionLabelLimitReached": "Ви можете мати щонайбільше 10 міток.",
+  "settingsErrorSavingSetting": "Не вдалося зберегти це налаштування. Будь ласка, спробуйте ще раз.",
+  "settingsErrorConsentNotGiven": "Це налаштування потребує вашого підтвердження перед зміною.",
+  "settingsErrorLoadingLogs": "Не вдалося підготувати діагностичні журнали. Будь ласка, спробуйте ще раз.",
   "exchangeErrorSigningOut": "Не вдалося повністю вийти з облікового запису. Будь ласка, спробуйте ще раз.",
   "exchangeErrorSavingPreferences": "Не вдалося зберегти ваші налаштування. Будь ласка, спробуйте ще раз.",
   "exchangeErrorLoadingAnnouncements": "Не вдалося завантажити оголошення.",
@@ -4913,5 +4823,7 @@
   "receiveErrorAddressUnavailable": "Не вдалося підготувати адресу для отримання. Спробуйте ще раз.",
   "receiveErrorBroadcastOriginal": "Не вдалося надіслати транзакцію. Перевірте підключення до Інтернету та спробуйте ще раз.",
   "fundExchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
-  "exchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз."
+  "exchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
+  "walletBalancesMayBeStale": "Не вдалося оновити баланси, вони можуть бути неактуальними.",
+  "settingsSearchTorKeywords": "Tor-проксі|Orbot|onion-маршрутизація|вбудований Tor|мережа приватності"
 }

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
@@ -76,6 +79,37 @@ void main() {
     });
 
     test(
+      'a failed wallet read is NOT reported as "no default wallet"',
+      () async {
+        // An onboarded install always has a default bitcoin and a default
+        // liquid wallet, so an empty list means "not set up" while a failure
+        // means "could not read". Collapsing the two would tell a user with a
+        // perfectly good wallet that they have none.
+        when(
+          () => walletRepository.getWallets(
+            onlyDefaults: any(named: 'onlyDefaults'),
+            onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<List<Wallet>, WalletFailure>(
+            WalletStorageFailure(
+              'SqliteException(11): database disk image is malformed',
+            ),
+          ),
+        );
+
+        final result = await usecase.execute();
+
+        final failure = (result as Err).failure as Bip85Failure;
+        expect(failure, isA<Bip85UnexpectedFailure>());
+        expect(failure, isNot(isA<Bip85NoDefaultWalletFailure>()));
+        // The wallet layer's reason stays in the log.
+        expect(failure.logMessage, isNot(contains('disk image is malformed')));
+      },
+    );
+
+    test(
       'returns Bip85NoDefaultWalletFailure when no default wallet exists',
       () async {
         when(
@@ -84,7 +118,7 @@ void main() {
             onlyBitcoin: any(named: 'onlyBitcoin'),
             environment: any(named: 'environment'),
           ),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => Ok([]));
 
         final result = await usecase.execute();
 
@@ -129,6 +163,37 @@ void main() {
     });
 
     test(
+      'a failed wallet read is NOT reported as "no default wallet"',
+      () async {
+        // An onboarded install always has a default bitcoin and a default
+        // liquid wallet, so an empty list means "not set up" while a failure
+        // means "could not read". Collapsing the two would tell a user with a
+        // perfectly good wallet that they have none.
+        when(
+          () => walletRepository.getWallets(
+            onlyDefaults: any(named: 'onlyDefaults'),
+            onlyBitcoin: any(named: 'onlyBitcoin'),
+            environment: any(named: 'environment'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<List<Wallet>, WalletFailure>(
+            WalletStorageFailure(
+              'SqliteException(11): database disk image is malformed',
+            ),
+          ),
+        );
+
+        final result = await usecase.execute(length: 30);
+
+        final failure = (result as Err).failure as Bip85Failure;
+        expect(failure, isA<Bip85UnexpectedFailure>());
+        expect(failure, isNot(isA<Bip85NoDefaultWalletFailure>()));
+        // The wallet layer's reason stays in the log.
+        expect(failure.logMessage, isNot(contains('disk image is malformed')));
+      },
+    );
+
+    test(
       'returns Bip85NoDefaultWalletFailure when no default wallet exists',
       () async {
         when(
@@ -137,7 +202,7 @@ void main() {
             onlyBitcoin: any(named: 'onlyBitcoin'),
             environment: any(named: 'environment'),
           ),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => Ok([]));
 
         final result = await usecase.execute(length: 30);
 
@@ -155,7 +220,7 @@ void main() {
             onlyBitcoin: any(named: 'onlyBitcoin'),
             environment: any(named: 'environment'),
           ),
-        ).thenAnswer((_) async => [_fakeWallet]);
+        ).thenAnswer((_) async => Ok([_fakeWallet]));
 
         when(
           () => seedRepository.get(any()),
@@ -179,7 +244,7 @@ void main() {
             onlyBitcoin: any(named: 'onlyBitcoin'),
             environment: any(named: 'environment'),
           ),
-        ).thenAnswer((_) async => [_fakeWallet]);
+        ).thenAnswer((_) async => Ok([_fakeWallet]));
 
         when(
           () => seedRepository.get(any()),
@@ -209,19 +274,24 @@ void main() {
     });
 
     test(
-      'returns Bip85UnexpectedFailure when default seed lookup throws',
+      'returns Bip85UnexpectedFailure when the default seed cannot be read',
       () async {
-        when(
-          () => getDefaultSeedUsecase.execute(),
-        ).thenThrow(Exception('internal db error with secret path /data/user'));
+        // The seed use case returns a failure now rather than throwing.
+        when(() => getDefaultSeedUsecase.execute()).thenAnswer(
+          (_) async => const Err<Seed, SeedFailure>(
+            SeedFetchFailure('internal db error with secret path /data/user'),
+          ),
+        );
 
         final result = await usecase.execute();
 
         expect(result, isA<Err<dynamic, Bip85Failure>>());
         final failure = (result as Err).failure;
         expect(failure, isA<Bip85UnexpectedFailure>());
-        // logMessage is for Sentry only — never surfaced to UI.
+        // logMessage is for the log only, and must not carry the seed layer's
+        // reason across the boundary.
         expect(failure.logMessage, isNotNull);
+        expect(failure.logMessage, isNot(contains('/data/user')));
       },
     );
   });

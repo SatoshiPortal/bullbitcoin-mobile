@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -69,17 +68,11 @@ class _PayjoinAdvancedSettingsScreenState
     _expireDebounce?.cancel();
     final pendingMinAmount = _pendingMinAmount;
     if (pendingMinAmount != null) {
-      unawaited(
-        _persist(() => _settingsCubit.setPayjoinMinAmount(pendingMinAmount)),
-      );
+      unawaited(_settingsCubit.setPayjoinMinAmount(pendingMinAmount));
     }
     final pendingExpireAfterSec = _pendingExpireAfterSec;
     if (pendingExpireAfterSec != null) {
-      unawaited(
-        _persist(
-          () => _settingsCubit.setPayjoinExpireAfterSec(pendingExpireAfterSec),
-        ),
-      );
+      unawaited(_settingsCubit.setPayjoinExpireAfterSec(pendingExpireAfterSec));
     }
     _minAmountController.dispose();
     _expireController.dispose();
@@ -113,7 +106,7 @@ class _PayjoinAdvancedSettingsScreenState
     _pendingMinAmount = amountSat;
     _minAmountDebounce = Timer(_debounceDuration, () {
       _pendingMinAmount = null;
-      _persist(() => _settingsCubit.setPayjoinMinAmount(amountSat));
+      _settingsCubit.setPayjoinMinAmount(amountSat);
     });
   }
 
@@ -140,23 +133,8 @@ class _PayjoinAdvancedSettingsScreenState
     _pendingExpireAfterSec = expireAfterSec;
     _expireDebounce = Timer(_debounceDuration, () {
       _pendingExpireAfterSec = null;
-      _persist(() => _settingsCubit.setPayjoinExpireAfterSec(expireAfterSec));
+      _settingsCubit.setPayjoinExpireAfterSec(expireAfterSec);
     });
-  }
-
-  /// Awaits the save and logs a failure instead of `.ignore()`-ing it: the
-  /// UI validates bounds before ever calling this, so a throw here is a
-  /// programmer bug that must not be silently swallowed.
-  Future<void> _persist(Future<void> Function() save) async {
-    try {
-      await save();
-    } catch (e) {
-      log.severe(
-        message: 'Failed to persist a payjoin setting',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
   }
 
   @override

@@ -152,7 +152,7 @@ void main() {
 
     when(
       () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => spMnemonicSeed());
+    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );

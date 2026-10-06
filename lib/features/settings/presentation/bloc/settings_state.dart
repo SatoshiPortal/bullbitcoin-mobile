@@ -19,6 +19,7 @@ sealed class SettingsState with _$SettingsState {
     // read through the SP facade. Drives the bitcoin-settings SP setup/settings
     // entry, so the screen reads it here instead of the WalletBloc.
     @Default(false) bool isSpWalletSetup,
+    SettingsFailure? failure,
   }) = _SettingsState;
   const SettingsState._();
 

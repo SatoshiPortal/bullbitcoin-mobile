@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -48,7 +49,7 @@ void main() {
       () async {
         when(
           () => getWalletsUsecase.execute(),
-        ).thenAnswer((_) async => [walletWith(isDefault: false)]);
+        ).thenAnswer((_) async => Ok([walletWith(isDefault: false)]));
 
         final result = await usecase.execute();
 
@@ -59,12 +60,12 @@ void main() {
       },
     );
 
-    test('maps a NoWalletsFoundException to NoDefaultWalletFailure without '
+    test('maps a NoWalletsFoundFailure to NoDefaultWalletFailure without '
         'leaking the raw reason (NoDefaultWalletFailure carries no message '
         'field, so it structurally cannot leak)', () async {
-      when(() => getWalletsUsecase.execute()).thenThrow(
-        NoWalletsFoundException(
-          'No wallets found for the current environment: mainnet',
+      when(() => getWalletsUsecase.execute()).thenAnswer(
+        (_) async => const Err<List<Wallet>, WalletFailure>(
+          NoWalletsFoundFailure('no wallets for the active environment'),
         ),
       );
 
@@ -97,9 +98,8 @@ void main() {
     test('maps an unexpected CheckAllServiceStatusUsecase failure to a '
         'sanitized failure', () async {
       when(() => getWalletsUsecase.execute()).thenAnswer(
-        (_) async => [
-          walletWith(isDefault: true, network: Network.bitcoinMainnet),
-        ],
+        (_) async =>
+            Ok([walletWith(isDefault: true, network: Network.bitcoinMainnet)]),
       );
       when(
         () => checkAllServiceStatusUsecase.execute(
@@ -115,20 +115,19 @@ void main() {
       );
     });
 
-    test('does NOT misattribute a NoWalletsFoundException thrown by '
-        'CheckAllServiceStatusUsecase as NoDefaultWalletFailure — the narrow '
-        'catch only wraps the wallet-fetch call, so this falls through to the '
-        'generic (logged) catch-all instead', () async {
+    test('does NOT misattribute an unrelated "no wallets" throw from '
+        'CheckAllServiceStatusUsecase as NoDefaultWalletFailure — only the '
+        'wallet fetch can produce that, so this falls through to the generic '
+        '(logged) catch-all instead', () async {
       when(() => getWalletsUsecase.execute()).thenAnswer(
-        (_) async => [
-          walletWith(isDefault: true, network: Network.bitcoinMainnet),
-        ],
+        (_) async =>
+            Ok([walletWith(isDefault: true, network: Network.bitcoinMainnet)]),
       );
       when(
         () => checkAllServiceStatusUsecase.execute(
           network: any(named: 'network'),
         ),
-      ).thenThrow(NoWalletsFoundException('unexpected: no wallets found'));
+      ).thenThrow(Exception('unexpected: no wallets found'));
 
       final result = await usecase.execute();
 
@@ -140,9 +139,8 @@ void main() {
 
     test('returns Ok with the service status on success', () async {
       when(() => getWalletsUsecase.execute()).thenAnswer(
-        (_) async => [
-          walletWith(isDefault: true, network: Network.bitcoinMainnet),
-        ],
+        (_) async =>
+            Ok([walletWith(isDefault: true, network: Network.bitcoinMainnet)]),
       );
       const status = AllServicesStatus();
       when(

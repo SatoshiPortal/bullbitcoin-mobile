@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -18,6 +20,7 @@ import 'package:bb_mobile/main.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
@@ -152,7 +155,12 @@ Future<void> main({bool isInitialized = false}) async {
         addressRepository = locator<WalletAddressRepository>();
         prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-        await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
+        // Setup: assert rather than discard, so a failed write surfaces here
+        // instead of as a confusing failure further down the test.
+        expect(
+          await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
+          isA<Ok<void, SettingsFailure>>(),
+        );
         final seed = SeedModel.mnemonic(
           mnemonicWords: mnemonic!.split(' '),
         ).toEntity();
@@ -161,7 +169,12 @@ Future<void> main({bool isInitialized = false}) async {
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
         );
-        await walletRepository.getWallets(sync: true);
+        // Fail fast: a funding sync that failed would otherwise surface as a
+        // confusing balance assertion further down.
+        expect(
+          await walletRepository.getWallets(sync: true),
+          isA<Ok<List<Wallet>, WalletFailure>>(),
+        );
       });
 
       // Restore the shared app environment so this group can't leave the

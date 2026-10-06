@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -18,10 +19,19 @@ class CheckBackupUsecase {
   Future<Result<bool, TestWalletBackupFailure>> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
-      final defaultWallets = await _walletRepository.getWallets(
+      final List<Wallet> defaultWallets;
+      switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          defaultWallets = value;
+        // The wallet repository already logged the raw reason.
+        case Err(:final failure):
+          return Err(
+            TestWalletBackupWalletsUnavailableFailure(failure.logMessage),
+          );
+      }
       if (defaultWallets.isEmpty) return const Ok(false);
 
       for (final defaultWallet in defaultWallets) {

@@ -76,7 +76,7 @@ void main() {
         onlyDefaults: any(named: 'onlyDefaults'),
         environment: any(named: 'environment'),
       ),
-    ).thenAnswer((_) async => value);
+    ).thenAnswer((_) async => Ok(value));
 
     test('no default wallets is Ok(false), not a failure: a fresh install '
         'legitimately has none', () async {
@@ -142,7 +142,7 @@ void main() {
           onlyBitcoin: any(named: 'onlyBitcoin'),
           environment: any(named: 'environment'),
         ),
-      ).thenAnswer((_) async => const <Wallet>[]);
+      ).thenAnswer((_) async => Ok(const <Wallet>[]));
 
       final result = await usecase.execute();
 

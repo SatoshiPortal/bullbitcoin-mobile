@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullRadius;
 import 'package:flutter/material.dart';
 
 class SnackBarUtils {
@@ -35,7 +36,31 @@ class SnackBarUtils {
     _show(context, content);
   }
 
+  /// Shows a snackbar in a given overlay, for callers whose own context sits
+  /// *above* the app's `Overlay` — an app-wide listener mounted next to its
+  /// provider rather than on a route, for instance.
+  ///
+  /// [overlay]'s context sits below `MaterialApp`, so theme and localizations
+  /// resolve through it even when the caller's context cannot reach either.
+  static void showSnackBarIn(OverlayState overlay, String message) {
+    _showIn(
+      overlay,
+      Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 14,
+          color: overlay.context.appColors.surface,
+        ),
+      ),
+    );
+  }
+
   static void _show(BuildContext context, Widget content) {
+    _showIn(Overlay.of(context, rootOverlay: true), content);
+  }
+
+  static void _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
 
     _entry = OverlayEntry(
@@ -51,7 +76,7 @@ class SnackBarUtils {
       ),
     );
 
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    overlay.insert(_entry!);
 
     _scheduleAutoDismiss();
   }
@@ -250,7 +275,7 @@ class _SnackBarState extends State<_SnackBar>
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: context.appColors.onSurface.withAlpha(204),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(BullRadius.xxs),
               ),
               child: widget.content,
             ),
