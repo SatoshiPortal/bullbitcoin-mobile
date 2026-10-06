@@ -71,6 +71,13 @@ final class SpConfigInvalid extends SpFailure {
   const SpConfigInvalid([super.logMessage]);
 }
 
+/// A backend URL names a Tor `.onion` host. The SP client has no Tor route, so
+/// it could never reach it, and resolving the name would hand it to the
+/// network's DNS resolver.
+final class SpBackendOnionUnsupported extends SpFailure {
+  const SpBackendOnionUnsupported([super.logMessage]);
+}
+
 /// Clearing the stale on-disk state of a previously revoked wallet failed, so
 /// setup cannot proceed.
 final class SpSetupCleanupFailed extends SpFailure {

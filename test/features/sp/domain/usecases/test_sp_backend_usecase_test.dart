@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeProbe implements SpBackendProbePort {
   final Result<void, SpFailure> _result;
+  final probed = <String>[];
 
   _FakeProbe(this._result);
 
@@ -15,7 +16,10 @@ class _FakeProbe implements SpBackendProbePort {
   Future<Result<void, SpFailure>> testBackend(
     SpBackendKind kind,
     String url,
-  ) async => _result;
+  ) async {
+    probed.add(url);
+    return _result;
+  }
 
   @override
   Future<Result<SpBackendDefaults, SpFailure>> fetchRegtestDefaults() =>
@@ -43,6 +47,23 @@ void main() {
       final failure = (result as Err<void, SpFailure>).failure;
       expect(failure, isA<SpBackendUnreachable>());
       expect(failure.logMessage, contains('boom'));
+    });
+
+    // Probing would resolve the hidden-service name through the system DNS.
+    test('refuses an onion URL without probing it', () async {
+      final probe = _FakeProbe(const Ok(null));
+      final usecase = TestSpBackendUsecase(probe: probe);
+      for (final url in [
+        'ssl://abcdefghijklmnopqrstuvwxyz234567abcdefghijklmnopqrstuv.onion:50002',
+        'http://Example.ONION',
+      ]) {
+        final result = await usecase.execute(SpBackendKind.electrum, url);
+        expect(
+          (result as Err<void, SpFailure>).failure,
+          isA<SpBackendOnionUnsupported>(),
+        );
+      }
+      expect(probe.probed, isEmpty);
     });
   });
 }

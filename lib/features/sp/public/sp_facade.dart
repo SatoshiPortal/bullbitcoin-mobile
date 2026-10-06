@@ -54,6 +54,7 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpKeystoreLocked,
         SpBackendUnreachable,
         SpConfigInvalid,
+        SpBackendOnionUnsupported,
         SpSetupCleanupFailed,
         SpAmountBelowMinimum,
         SpAmountExceedsBalance,

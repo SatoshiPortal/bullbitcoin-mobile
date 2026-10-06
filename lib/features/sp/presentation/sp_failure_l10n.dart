@@ -19,6 +19,7 @@ extension SpFailureL10n on SpFailure {
     SpKeystoreLocked() => context.loc.spFailureKeystoreLocked,
     SpBackendUnreachable() => context.loc.spFailureBackendUnreachable,
     SpConfigInvalid() => context.loc.spFailureConfigInvalid,
+    SpBackendOnionUnsupported() => context.loc.spFailureBackendOnionUnsupported,
     SpSetupCleanupFailed() => context.loc.spFailureSetupCleanupFailed,
     SpAmountBelowMinimum() => context.loc.spFailureAmountBelowMinimum,
     SpAmountExceedsBalance() => context.loc.spFailureAmountExceedsBalance,

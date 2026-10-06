@@ -27,6 +27,7 @@ extension SpFailureToSendFailure on SpFailure {
     SpKeystoreLocked() ||
     SpBackendUnreachable() ||
     SpConfigInvalid() ||
+    SpBackendOnionUnsupported() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
     SpSignedTransactionMismatch() ||
