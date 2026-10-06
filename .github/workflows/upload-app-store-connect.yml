@@ -247,7 +247,7 @@ jobs:
           fi
 
           xcrun vtool -show-build "$binary" | grep -F "platform IOSSIMULATOR"
-          lipo -verify_arch arm64 "$binary"
+          lipo "$binary" -verify_arch arm64
           ditto -c -k --sequesterRsrc --keepParent "$named_app" "$archive"
           test -s "$archive"
 
