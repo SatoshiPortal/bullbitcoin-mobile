@@ -46,14 +46,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_cookie_manager/ios"
 
 SPEC CHECKSUMS:
-  bull_tor: 9080cbf03c4a3f0df35c65eb126c1bff89517365
+  bull_tor: 42b093bd4750917fa887f50c7cbbc4d3a9ca557a
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_secure_storage_legacy: 2b1517bd98433d760370884d3e2cc3ed8eeb2538
+  flutter_secure_storage_legacy: a315f1c83d88e9490f44a269454281a2c9b2c160
   IPtProxy: c4c20975d2c793222b7a9e0dc3855818b5f1181f
-  onion: a5e641118e5768953552bd149aa6fe4ec5b691eb
-  rust_lib_bull_sdk: 160980033dfde220ad447a6dffa22d4269f8ea6c
-  universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
-  webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
+  onion: e647bd29c5650e3fb768cc2165e1e746f9cb6dc3
+  rust_lib_bull_sdk: 6bdd9a2254b376e910a31340e03bf2db56c637db
+  universal_ble: 65e1257dffc557cc7991a93d253beeddc7c1dc92
+  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
 
 PODFILE CHECKSUM: 57721febcc4eb8705754804ee8553d269d7fc0cb
 
