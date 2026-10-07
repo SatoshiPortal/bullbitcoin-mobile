@@ -30,9 +30,21 @@ final class TorHttpClientFactory {
     }
 
     final client = HttpClient();
-    SocksTCPClient.assignToHttpClient(client, [
-      ProxySettings(address, endpoint.port, password: null),
-    ]);
+    client.connectionFactory = (uri, proxyHost, proxyPort) async {
+      final connection = SocksTCPClient.connect(
+        [ProxySettings(address, endpoint.port, password: null)],
+        InternetAddress(uri.host, type: InternetAddressType.unix),
+        uri.port,
+      );
+      final Future<Socket> socket = uri.scheme == 'https'
+          ? connection.then((value) => value.secure(uri.host))
+          : connection;
+      return ConnectionTask.fromSocket(socket, () {
+        // Cancellation owns cleanup, not the request's error reporting.
+        // The original socket future still delivers failures to HttpClient.
+        socket.then((value) => value.destroy()).ignore();
+      });
+    };
     return client;
   }
 }

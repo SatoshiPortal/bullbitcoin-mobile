@@ -31,6 +31,7 @@ class _StaticBloc extends Fake implements RecoverBullBloc {
 class _MutableBloc extends Fake implements RecoverBullBloc {
   RecoverBullState _state;
   final _states = StreamController<RecoverBullState>.broadcast();
+  final events = <RecoverBullEvent>[];
 
   _MutableBloc(this._state);
 
@@ -39,6 +40,9 @@ class _MutableBloc extends Fake implements RecoverBullBloc {
 
   @override
   Stream<RecoverBullState> get stream => _states.stream;
+
+  @override
+  void add(RecoverBullEvent event) => events.add(event);
 
   void pushState(RecoverBullState state) {
     _state = state;
@@ -59,6 +63,140 @@ class _RouteObserver extends NavigatorObserver {
 }
 
 void main() {
+  Future<void> pumpMutablePage(WidgetTester tester, _MutableBloc bloc) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: const ConnectingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+  }
+
+  testWidgets('retry preserves a Tor blockage until its diagnostic clears', (
+    tester,
+  ) async {
+    const blocked = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorConnecting(
+        source: tor.TorSource.embedded,
+        progress: 0.1,
+        diagnostic: tor.TorDiagnostic.offline,
+      ),
+    );
+    final bloc = _MutableBloc(blocked);
+    addTearDown(bloc.close);
+    await pumpMutablePage(tester, bloc);
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(seconds: 6)),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(l10n.recoverbullTorOffline), findsOneWidget);
+    await tester.tap(find.text(l10n.recoverbullRetry));
+    expect(bloc.events.single, isA<OnTorInitialization>());
+    await tester.pump();
+
+    // Initialization uses droppable(): a retry during an active attempt can
+    // produce no new state. The same diagnostic must remain visible.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(seconds: 6)),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(l10n.recoverbullTorOffline), findsOneWidget);
+    expect(find.text(l10n.recoverbullRetry), findsOneWidget);
+
+    bloc.pushState(
+      blocked.copyWith(
+        torConnection: const tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.2,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text(l10n.recoverbullTorOffline), findsNothing);
+    expect(find.text(l10n.recoverbullRetry), findsNothing);
+  });
+
+  testWidgets('server retry starts a new elapsed clock while Tor stays ready', (
+    tester,
+  ) async {
+    final connecting = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorReady(
+        tor.TorRoute(
+          source: tor.TorSource.embedded,
+          endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+          evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+          transport: tor.TorTransport.direct,
+        ),
+      ),
+      keyServerStatus: KeyServerStatus.connecting,
+      keyServerAttempt: 1,
+    );
+    final bloc = _MutableBloc(connecting);
+    addTearDown(bloc.close);
+    await pumpMutablePage(tester, bloc);
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 1100)),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('0:00'), findsNothing);
+
+    bloc.pushState(
+      connecting.copyWith(
+        keyServerStatus: KeyServerStatus.offline,
+        failure: const KeyServerConnectionFailure(),
+      ),
+    );
+    await tester.pump();
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    await tester.tap(find.text(l10n.recoverbullRetry));
+    expect(bloc.events.single, isA<OnServerCheck>());
+    bloc.pushState(connecting);
+    await tester.pump();
+
+    expect(find.textContaining('0:00'), findsOneWidget);
+  });
+
+  testWidgets('ordinary Tor progress does not reset the elapsed clock', (
+    tester,
+  ) async {
+    const connecting = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorConnecting(
+        source: tor.TorSource.embedded,
+        progress: 0.1,
+      ),
+    );
+    final bloc = _MutableBloc(connecting);
+    addTearDown(bloc.close);
+    await pumpMutablePage(tester, bloc);
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 1100)),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('0:00'), findsNothing);
+
+    bloc.pushState(
+      connecting.copyWith(
+        torConnection: const tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.4,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining('0:00'), findsNothing);
+  });
+
   Future<void> pumpPage(WidgetTester tester, RecoverBullState state) async {
     final bloc = _StaticBloc(state);
 

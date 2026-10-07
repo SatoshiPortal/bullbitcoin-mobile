@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
@@ -7,6 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:socks5_proxy/exceptions.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 
@@ -94,6 +97,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         error: 'Vault key processing failed',
         trace: st,
       );
+      // The SDK rethrows transport exceptions from fetchBackupKey unchanged.
+      // A failed Tor connection is actionable, not an unexpected crypto error.
+      if (e is SocksClientException ||
+          e is SocketException ||
+          e is TimeoutException ||
+          e is HttpException) {
+        return const Err(
+          KeyServerUnavailableFailure('Key server connection failed'),
+        );
+      }
       return const Err(
         RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
       );

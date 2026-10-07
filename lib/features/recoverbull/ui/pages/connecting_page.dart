@@ -93,6 +93,13 @@ class _ConnectingPageState extends State<ConnectingPage> {
     super.dispose();
   }
 
+  void _resetWait() {
+    setState(() {
+      _startedAt = DateTime.now();
+      _elapsed = Duration.zero;
+    });
+  }
+
   void _onStateChanged(BuildContext context, RecoverBullState state) {
     if (_hasNavigated) return;
 
@@ -123,16 +130,8 @@ class _ConnectingPageState extends State<ConnectingPage> {
       }
       _torPhaseWasActive = torIsActive;
 
-      // A retry restarts the wait: `OnTorInitialization` clears the failure and
-      // sets the key-server status back to unknown, so the clock has to follow.
-      if (connection is tor.TorConnecting &&
-          state.keyServerStatus == KeyServerStatus.unknown &&
-          _elapsed > Duration.zero &&
-          diagnostic == null) {
-        _startedAt = now;
-        _elapsed = Duration.zero;
-        _blockageSince = null;
-      }
+      // Progress updates keep the phase clock running. Only a phase change
+      // above or an explicit user retry starts a new wait.
     });
 
     if (connection is tor.TorReady &&
@@ -193,6 +192,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
                       state: state,
                       elapsed: _elapsed,
                       showBlockage: _blockageIsSettled,
+                      onRetry: _resetWait,
                     ),
                   ),
                 ),
@@ -212,11 +212,13 @@ class _Body extends StatelessWidget {
   final RecoverBullState state;
   final Duration elapsed;
   final bool showBlockage;
+  final VoidCallback onRetry;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
+    required this.onRetry,
   });
 
   tor.TorConnectionState get _tor => state.torConnection;
@@ -464,6 +466,7 @@ class _Body extends StatelessWidget {
             // than adopted — which is what left a retry waiting on a dead
             // bootstrap after the network came back.
             onRetry: () {
+              onRetry();
               final bloc = context.read<RecoverBullBloc>();
               if (_tor is tor.TorReady) {
                 bloc.add(const OnServerCheck());
