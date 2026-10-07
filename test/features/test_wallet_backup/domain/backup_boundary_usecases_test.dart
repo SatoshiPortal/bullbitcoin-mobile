@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -67,6 +68,7 @@ void main() {
       usecase = CheckBackupUsecase(
         walletRepository: wallets,
         settingsRepository: settings,
+        recoverBullStatus: (_) async => const RecoverBullStatus.initial(),
       );
       when(() => settings.fetch()).thenAnswer((_) async => _settings);
     });
@@ -77,6 +79,34 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => Ok(value));
+
+    for (final (environment, network) in [
+      (Environment.mainnet, RecoverBullNetwork.mainnet),
+      (Environment.testnet, RecoverBullNetwork.testnet),
+    ]) {
+      test(
+        'reads the ${network.name} encrypted backup in $environment',
+        () async {
+          final asked = <RecoverBullNetwork>[];
+          when(() => settings.fetch()).thenAnswer(
+            (_) async => _settings.copyWith(environment: environment),
+          );
+          stubWallets([_wallet()]);
+
+          final result = await CheckBackupUsecase(
+            walletRepository: wallets,
+            settingsRepository: settings,
+            recoverBullStatus: (network) async {
+              asked.add(network);
+              return const RecoverBullStatus.initial();
+            },
+          ).execute();
+
+          expect(result, isA<Ok<bool, TestWalletBackupFailure>>());
+          expect(asked, [network]);
+        },
+      );
+    }
 
     test('no default wallets is Ok(false), not a failure: a fresh install '
         'legitimately has none', () async {

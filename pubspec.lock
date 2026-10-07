@@ -679,7 +679,7 @@ packages:
     source: hosted
     version: "0.2.8"
   extension_google_sign_in_as_googleapis_auth:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: extension_google_sign_in_as_googleapis_auth
       sha256: "0dcb17e399f62e897ac78f0a402a3cb6ab9313ced8b2bf131f684d317e05c9ab"
@@ -1024,7 +1024,7 @@ packages:
     source: hosted
     version: "0.3.3+1"
   google_sign_in:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_sign_in
       sha256: d0a2c3bcb06e607bb11e4daca48bd4b6120f0bbc4015ccebbe757d24ea60ed2a
@@ -1064,7 +1064,7 @@ packages:
     source: hosted
     version: "0.12.4+4"
   googleapis:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: googleapis
       sha256: "692fb9e90c321b61a7a2123de0353ec8a20691cd979db2553d8d732f710f6535"
@@ -1776,7 +1776,7 @@ packages:
     source: hosted
     version: "0.6.0"
   recoverbull:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
       ref: "293b0d709f6c7775180f775c6a5fe99a39f175ce"

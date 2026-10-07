@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_store_type_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -11,7 +12,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecas
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart'
     as core;
@@ -23,9 +23,11 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incomi
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:get_it/get_it.dart';
 
 class WalletLocator {
@@ -43,6 +45,13 @@ class WalletLocator {
       () => DeleteWalletUsecase(
         locator<core.DeleteWalletUsecase>(),
         locator<SwapFacade>(),
+      ),
+    );
+    locator.registerFactory<CheckBackupNeededUsecase>(
+      () => CheckBackupNeededUsecase(
+        walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        recoverBullStatus: locator<RecoverBullFeature>().status,
       ),
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
@@ -81,7 +90,7 @@ class WalletLocator {
       ),
     );
     // Bloc
-    locator.registerFactory<WalletBloc>(
+    locator.registerLazySingleton<WalletBloc>(
       () => WalletBloc(
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),

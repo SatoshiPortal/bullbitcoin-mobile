@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -152,6 +152,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
+    add(const VerifyBackupStatus());
     add(const RefreshSpWallet());
 
     // Now that the wallets are loaded, we can sync them as done by the refresh
@@ -270,6 +271,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isRefreshing: false,
       ),
     );
+    add(const VerifyBackupStatus());
   }
 
   Future<void> _onWalletSyncStarted(
@@ -533,8 +535,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     VerifyBackupStatus event,
     Emitter<WalletState> emit,
   ) async {
-    // A failed check leaves the badge as it is: guessing either way would
-    // either nag a user who is backed up or hide a real warning.
+    // A failed check (settings or wallet read) leaves the badge as it is:
+    // guessing either way would either nag a user who is backed up or hide a
+    // real warning. An unreadable RecoverBull status is not a failure here,
+    // the use case falls back to the physical backup.
     final bool dbBackupNeeded;
     switch (await _checkBackupNeededUsecase.execute()) {
       case Ok(:final value):
@@ -543,11 +547,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         log.warning('Backup status check: ${failure.logMessage}');
         return;
     }
-    if (dbBackupNeeded == state.hasNoBackup()) return;
-    // Refreshing the backup badge only: a failed read leaves the current list
-    // on screen rather than replacing it with an error.
-    if (await _getWalletsUsecase.execute() case Ok(:final value)) {
-      emit(state.copyWith(wallets: value));
-    }
+    if (dbBackupNeeded == state.backupNeeded) return;
+    emit(state.copyWith(backupNeeded: dbBackupNeeded));
   }
 }

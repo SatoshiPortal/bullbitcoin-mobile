@@ -44,6 +44,7 @@ import 'package:bull_tor/tor.dart' as bull_tor;
 import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
 /// only in `main()` for the pre-init / pre-locator window: the wizard
@@ -359,6 +360,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
+    if (locator.isRegistered<RecoverBullLifecycle>()) {
+      unawaited(locator<RecoverBullLifecycle>().dispose());
+    }
     _torLifecycleController.dispose();
 
     super.dispose();
@@ -398,7 +402,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(create: (_) => locator<WalletBloc>()),
+        BlocProvider.value(value: locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated
         BlocProvider(create: (_) => locator<ExchangeCubit>()),
@@ -478,8 +482,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates: [
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
+                      RecoverBullLocalizations.delegate,
                     ],
-                    supportedLocales: AppLocalizations.supportedLocales,
+                    supportedLocales: {
+                      ...AppLocalizations.supportedLocales,
+                      ...RecoverBullLocalizations.supportedLocales,
+                    }.toList(),
                     builder: (context, child) {
                       final app = AppStartupWidget(app: child!);
                       // Mark beta-channel builds (`make android beta`) with a
