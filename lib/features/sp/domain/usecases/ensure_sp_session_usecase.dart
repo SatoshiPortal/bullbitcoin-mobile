@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 /// Establishes the live SP session, reconstructing it via `createFromScanKey`
 /// from the persisted backend config (the FFI create path never writes a
@@ -24,12 +25,14 @@ class EnsureSpSessionUsecase {
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final GetSpScanKeyUsecase _getSpScanKeyUsecase;
+  final SpSessionGuard _guard;
 
   EnsureSpSessionUsecase({
     required this._repository,
     required this._files,
     required this._configRepository,
     required this._getSpScanKeyUsecase,
+    required this._guard,
   });
 
   Future<Result<SpWallet?, SpFailure>>? _inFlight;
@@ -42,6 +45,20 @@ class EnsureSpSessionUsecase {
   /// session while its own bracket is still held.
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
+  }) {
+    // Rollback already owns the non-reentrant guard. It must not join a
+    // public establishment queued behind that same owner either.
+    if (allowDuringTeardown) return _execute(allowDuringTeardown: true);
+    if (_repository.teardownInProgress) return Future.value(const Ok(null));
+    return _inFlight ??= _guard
+        .exclusive(() => _execute(allowDuringTeardown: false))
+        .whenComplete(() {
+          _inFlight = null;
+        });
+  }
+
+  Future<Result<SpWallet?, SpFailure>> _execute({
+    required bool allowDuringTeardown,
   }) async {
     // A recreate/revoke is disposing (and maybe re-establishing) the session;
     // do not start a competing establishment while it runs.
@@ -67,10 +84,7 @@ class EnsureSpSessionUsecase {
       }
       return _repository.snapshot();
     }
-    return _inFlight ??= _establish(allowDuringTeardown: allowDuringTeardown)
-        .whenComplete(() {
-          _inFlight = null;
-        });
+    return _establish(allowDuringTeardown: allowDuringTeardown);
   }
 
   Future<Result<SpWallet?, SpFailure>> _establish({

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -30,6 +33,7 @@ void main() {
   late FakeSpAccountRepository accountRepo;
   late FakeSpBackendConfigRepository configRepo;
   late CreateSpWalletUsecase usecase;
+  late SpSessionGuard guard;
 
   CreateSpWalletUsecase build() => CreateSpWalletUsecase(
     getSpScanKeyUsecase: scanKeyUsecase,
@@ -38,6 +42,7 @@ void main() {
     files: accountRepo,
     configRepository: configRepo,
     scanSpWalletUsecase: ScanSpWalletUsecase(repository: accountRepo),
+    guard: guard,
   );
 
   Future<Result<void, SpFailure>> run({bool scanFromNow = false}) =>
@@ -64,7 +69,36 @@ void main() {
     when(
       () => scanKeyUsecase.execute(network: any(named: 'network')),
     ).thenAnswer((_) async => Ok(spScanKey));
+    guard = SpSessionGuard();
     usecase = build();
+  });
+
+  test('revoke waits for all of an in-flight setup', () async {
+    final entered = Completer<void>();
+    final release = Completer<SettingsEntity>();
+    when(() => settingsRepo.fetch()).thenAnswer((_) {
+      entered.complete();
+      return release.future;
+    });
+    final creating = run();
+    await entered.future;
+    final revoking = RevokeSpWalletUsecase(
+      repository: accountRepo,
+      files: accountRepo,
+      configRepository: configRepo,
+      guard: guard,
+    ).execute();
+    await Future<void>.delayed(Duration.zero);
+    expect(accountRepo.sentinel, isFalse);
+    release.complete(_settings());
+    expect(await creating, isA<Ok<void, SpFailure>>());
+    expect(await revoking, isA<Ok<void, SpFailure>>());
+    expect(accountRepo.hasSession, isFalse);
+    expect(accountRepo.accountDir, isFalse);
+    expect(
+      (await configRepo.fetch() as Ok<SpBackendConfig?, SpFailure>).value,
+      isNull,
+    );
   });
 
   group('CreateSpWalletUsecase gates', () {

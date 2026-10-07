@@ -168,6 +168,7 @@ void main() {
       files: repository,
       configRepository: configRepository,
       getSpScanKeyUsecase: getSpScanKeyUsecase,
+      guard: guard,
     );
     loadSpWalletDataUsecase = LoadSpWalletDataUsecase(
       repository: repository,

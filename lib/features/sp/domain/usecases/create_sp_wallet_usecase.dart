@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.da
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 /// Orchestrates SP wallet creation for the setup flow: gate on superuser +
@@ -21,6 +22,7 @@ class CreateSpWalletUsecase {
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
+  final SpSessionGuard _guard;
 
   CreateSpWalletUsecase({
     required this._getSpScanKeyUsecase,
@@ -29,6 +31,7 @@ class CreateSpWalletUsecase {
     required this._files,
     required this._configRepository,
     required this._scanSpWalletUsecase,
+    required this._guard,
   });
 
   /// [scanFromNow] seeds the scan cursor at the current tip so the wallet skips
@@ -39,7 +42,7 @@ class CreateSpWalletUsecase {
     required String blindbitUrl,
     required String electrumUrl,
     required bool scanFromNow,
-  }) async {
+  }) => _guard.exclusive(() async {
     // Outer boundary: any Exception from the settings/sentinel/save reads
     // becomes an Err so execute() is total.
     try {
@@ -152,7 +155,7 @@ class CreateSpWalletUsecase {
       // never reaches a log.
       return const Err(SpUnexpected('SP wallet create failed'));
     }
-  }
+  });
 
   /// Scan tip to tip, which covers roughly no blocks and exists only to record
   /// a cursor. A failure leaves the cursor unset, which just means the user

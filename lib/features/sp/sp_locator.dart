@@ -164,14 +164,15 @@ class SpLocator {
         secrets: locator<Secrets>(),
       ),
     );
-    // Singleton: its in-flight guard serializes session establishment so
-    // concurrent callers never race two live SpAccount instances.
+    // Establishment coalesces callers and shares the lifecycle guard with
+    // create, recreate and revoke.
     locator.registerLazySingleton<EnsureSpSessionUsecase>(
       () => EnsureSpSessionUsecase(
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
         getSpScanKeyUsecase: locator<GetSpScanKeyUsecase>(),
+        guard: locator<SpSessionGuard>(),
       ),
     );
     locator.registerFactory<GetSpWalletUsecase>(
@@ -309,6 +310,7 @@ class SpLocator {
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+        guard: locator<SpSessionGuard>(),
       ),
     );
     locator.registerFactory<RecreateSpWalletUsecase>(

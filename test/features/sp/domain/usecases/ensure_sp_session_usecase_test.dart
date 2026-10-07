@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
@@ -19,6 +21,7 @@ void main() {
   late _MockSpBackendConfigRepository configRepository;
   late MockGetSpScanKeyUsecase getSpScanKeyUsecase;
   late EnsureSpSessionUsecase usecase;
+  late SpSessionGuard guard;
 
   setUpAll(() async {
     registerFallbackValue(BitcoinNetwork.regtest);
@@ -30,11 +33,13 @@ void main() {
     repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
     getSpScanKeyUsecase = MockGetSpScanKeyUsecase();
+    guard = SpSessionGuard();
     usecase = EnsureSpSessionUsecase(
       repository: repository,
       files: repository,
       configRepository: configRepository,
       getSpScanKeyUsecase: getSpScanKeyUsecase,
+      guard: guard,
     );
 
     when(() => repository.hasSession).thenReturn(false);
@@ -61,6 +66,80 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
   });
+
+  for (final nativeFails in [false, true]) {
+    test(
+      'establishment holds the lifecycle guard through native creation (failure: $nativeFails)',
+      () async {
+        final entered = Completer<void>();
+        final release = Completer<Result<void, SpFailure>>();
+        when(
+          () => repository.createFromScanKey(
+            scanKey: any(named: 'scanKey'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+          ),
+        ).thenAnswer((_) {
+          entered.complete();
+          return release.future;
+        });
+        final establishing = usecase.execute();
+        await entered.future;
+        var teardownStarted = false;
+        final teardown = guard.exclusive(() async {
+          teardownStarted = true;
+        });
+        await Future<void>.delayed(Duration.zero);
+        expect(teardownStarted, isFalse);
+        release.complete(
+          nativeFails
+              ? const Err(SpUnexpected('native create failed'))
+              : const Ok(null),
+        );
+        await establishing;
+        await teardown;
+        expect(teardownStarted, isTrue);
+      },
+    );
+  }
+
+  test(
+    'rollback bypasses both the owned guard and a queued public ensure',
+    () async {
+      when(
+        () => repository.createFromScanKey(
+          scanKey: any(named: 'scanKey'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+        ),
+      ).thenAnswer((_) async {
+        when(() => repository.hasSession).thenReturn(true);
+        return const Ok(null);
+      });
+      final entered = Completer<void>();
+      final rollback = Completer<void>();
+      final owner = guard.exclusive(() async {
+        entered.complete();
+        await rollback.future;
+        return usecase.execute(allowDuringTeardown: true);
+      });
+      await entered.future;
+      final queued = usecase.execute();
+      rollback.complete();
+      expect(
+        await owner.timeout(const Duration(seconds: 1)),
+        isA<Ok<SpWallet?, SpFailure>>(),
+      );
+      await queued.timeout(const Duration(seconds: 1));
+      verify(
+        () => repository.createFromScanKey(
+          scanKey: any(named: 'scanKey'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+        ),
+      ).called(1);
+    },
+  );
 
   group('EnsureSpSessionUsecase', () {
     test('reuses the live session without reconstructing', () async {
