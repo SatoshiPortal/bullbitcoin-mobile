@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
@@ -7,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import 'package:bull_tor/tor.dart';
+import 'package:socks5_proxy/exceptions.dart';
+import 'package:socks5_proxy/enums.dart';
 
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
@@ -113,6 +118,28 @@ void main() {
       );
     });
   });
+
+  for (final error in <Exception>[
+    const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.hostUnreachable,
+    ),
+    const SocketException('Connection reset'),
+    TimeoutException('Response timed out'),
+  ]) {
+    test(
+      '${error.runtimeType} maps to a recoverable connection failure',
+      () async {
+        stubFetchThrows(error);
+
+        final result = await fetch();
+
+        expect(
+          (result as Err<String, RecoverBullCoreFailure>).failure,
+          isA<KeyServerUnavailableFailure>(),
+        );
+      },
+    );
+  }
 
   test('non-KeyServer error -> RecoverBullUnexpectedCoreFailure', () async {
     stubFetchThrows(Exception('socket: 1.2.3.4 reset'));
