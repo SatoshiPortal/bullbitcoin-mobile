@@ -80,7 +80,16 @@ final class TrashVaultKeyUsecase {
         case Err():
       }
       if (result case Ok()) {
-        await recordAttempt?.store.removeBackup(vault.id);
+        // The server already deleted the key: forgetting the backup locally is
+        // advisory and must not turn that outcome into an exception.
+        try {
+          await recordAttempt?.store.removeBackup(vault.id);
+        } catch (error, _) {
+          log.warning(
+            'recoverbull.attempts.monitoring.remove.failed '
+            'error_type=${error.runtimeType}',
+          );
+        }
       }
       return result;
     } finally {
