@@ -127,4 +127,88 @@ void main() {
 
     expect(find.text('Active transport: Snowflake'), findsOneWidget);
   });
+
+  testWidgets('tells the user the device is offline', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.1,
+        diagnostic: TorDiagnostic.offline,
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusOffline), findsOneWidget);
+    expect(find.text(l10n.torSettingsDescOffline), findsOneWidget);
+  });
+
+  testWidgets('asks to fix the clock and shows the measured skew', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure(
+          'skewed',
+          TorDiagnostic.clockSkewed,
+          TorBootstrapDetail(blockage: 'Clock is skewed by 2 hours'),
+        ),
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusClockSkewed), findsOneWidget);
+    expect(find.text(l10n.torSettingsDescClockSkewed), findsOneWidget);
+    expect(find.text('Clock is skewed by 2 hours'), findsOneWidget);
+  });
+
+  testWidgets('offers retry and Snowflake when Tor cannot bootstrap', (
+    tester,
+  ) async {
+    var retries = 0;
+    var snowflake = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: TorConnectionStatusCard(
+            connection: const TorConnecting(
+              source: TorSource.embedded,
+              progress: 0.5,
+              diagnostic: TorDiagnostic.cantBootstrap,
+            ),
+            onRetry: () => retries++,
+            onUseSnowflake: () => snowflake++,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusCantBootstrap), findsOneWidget);
+    await tester.tap(find.text(l10n.torSettingsRetry));
+    await tester.tap(find.text(l10n.torSettingsUseSnowflake));
+    expect((retries, snowflake), (1, 1));
+  });
+
+  testWidgets('offers no Snowflake switch that has nowhere to go', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.5,
+        diagnostic: TorDiagnostic.cantBootstrap,
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsUseSnowflake), findsNothing);
+  });
 }
