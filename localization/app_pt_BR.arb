@@ -1174,10 +1174,6 @@
   "@exchangeAuthLoginFailedMessage": {
     "description": "Message shown when exchange login fails"
   },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sendSwapWillTakeTime": "Levará algum tempo para confirmar",
   "@sendSwapWillTakeTime": {
     "description": "Message warning swap confirmation takes time"
@@ -2115,10 +2111,6 @@
   "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
   "@coreScreensFeeDeductionExplanation": {
     "description": "Explanation text for fee deduction"
-  },
-  "vaultSuccessfullyImported": "Seu cofre foi importado com sucesso",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "buyEnterAmount": "Insira quantidade",
   "@buyEnterAmount": {
@@ -3905,10 +3897,6 @@
   "importQrDeviceInvalidQR": "Código QR inválido",
   "@importQrDeviceInvalidQR": {
     "description": "Error for invalid QR code format"
-  },
-  "keyServerLabel": "Servidor chave ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
@@ -6853,10 +6841,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "googleDrivePrivacyMessage": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "encryptedVaultRecommendationText": "Você não tem certeza e precisa de mais tempo para aprender sobre práticas de segurança de backup.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
@@ -9219,10 +9203,6 @@
   "sendUserRejected": "Usuário rejeitado no dispositivo",
   "@sendUserRejected": {
     "description": "Error when user declines on hardware wallet"
-  },
-  "googleDriveSignInMessage": "Você precisará se inscrever no Google Drive",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "@payUnauthenticatedError": {

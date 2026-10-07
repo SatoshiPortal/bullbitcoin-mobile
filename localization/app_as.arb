@@ -1173,7 +1173,6 @@
   "backupCompletedTitle": "বেকআপ সম্পন্ন হৈছে!",
   "backupCompletedDescription": "এতিয়া আপোনাৰ বেকআপ পৰীক্ষা কৰোঁ আহক যাতে সকলো ঠিকমতে কৰা হৈছে।",
   "testBackupButton": "বেকআপ পৰীক্ষা কৰক",
-  "keyServerLabel": "Key Server ",
   "physicalBackupStatusLabel": "ভৌতিক বেকআপ",
   "encryptedVaultStatusLabel": "এনক্ৰিপ্টেড Vault",
   "testedStatus": "পৰীক্ষিত",
@@ -1225,7 +1224,6 @@
   "verifyButton": "যাচাই কৰক",
   "passphraseLabel": "Passphrase",
   "testYourWalletTitle": "আপোনাৰ wallet পৰীক্ষা কৰক",
-  "vaultSuccessfullyImported": "আপোনাৰ vault সফলতাৰে আমদানি কৰা হৈছে",
   "backupIdLabel": "বেকআপ ID:",
   "createdAtLabel": "তৈয়াৰ হোৱাৰ তাৰিখ:",
   "enterBackupKeyManuallyButton": "বেকআপ key হাতেৰে দিয়ক >>",
@@ -1312,8 +1310,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "আপুনি Google Drive-ত ছাইন-ইন কৰিব লাগিব",
-  "googleDrivePrivacyMessage": "Google-এ এই এপৰ সৈতে ব্যক্তিগত তথ্য ভাগ কৰিবলৈ কব।",
   "informationWillNotLeave": "এই তথ্য ",
   "willNot": "নাযাব ",
   "leaveYourPhone": "আপোনাৰ ফোনৰ বাহিৰলৈ আৰু ",
@@ -1322,7 +1318,6 @@
   "savingToDevice": "আপোনাৰ ডিভাইচত সংৰক্ষণ হৈ আছে।",
   "loadingBackupFile": "বেকআপ ফাইল লোড হৈ আছে...",
   "pleaseWaitFetching": "অনুগ্ৰহ কৰি অপেক্ষা কৰক, আপোনাৰ বেকআপ ফাইল আনি আছোঁ।",
-  "googleDriveProvider": "Google Drive",
   "appleICloudProvider": "Apple iCloud",
   "customLocationProvider": "কাস্টম ঠাই",
   "quickAndEasyTag": "দ্ৰুত আৰু সহজ",

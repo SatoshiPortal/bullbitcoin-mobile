@@ -3791,10 +3791,6 @@
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
   },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
-  },
   "payReviewPayment": "Επανεξέταση πληρωμής",
   "@payReviewPayment": {
     "description": "Title for payment review screen"
@@ -8982,10 +8978,6 @@
   "@verifyButton": {
     "description": "Button label to verify recovery phrase"
   },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "howToDecideVaultLocationText2": "Μια προσαρμοσμένη τοποθεσία μπορεί να είναι πολύ πιο ασφαλής, ανάλογα με την τοποθεσία που επιλέγετε. Πρέπει επίσης να βεβαιωθείτε ότι δεν χάσετε το αρχείο αντιγράφων ασφαλείας ή να χάσετε τη συσκευή στην οποία αποθηκεύεται το αρχείο αντιγράφων ασφαλείας σας.",
   "@howToDecideVaultLocationText2": {
     "description": "Second paragraph explaining custom location benefits"
@@ -9117,10 +9109,6 @@
   "testBackupGoogleDrivePrivacyPart2": "δεν θα ",
   "@testBackupGoogleDrivePrivacyPart2": {
     "description": "Second part (emphasized) of privacy message"
-  },
-  "vaultSuccessfullyImported": "Το θύλακα σας εισήχθη με επιτυχία",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "δεν θα ",
   "@backupWalletGoogleDrivePrivacyMessage2": {
@@ -9790,10 +9778,6 @@
   "@backupWalletVaultProviderGoogleDrive": {
     "description": "Name of Google Drive vault provider option"
   },
-  "googleDrivePrivacyMessage": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "backupWalletHowToDecideBackupModalTitle": "Πώς να αποφασίσετε",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -10104,10 +10088,6 @@
   "autoswapRecipientWalletLabel": "Recipient Bitcoin Wallet",
   "@autoswapRecipientWalletLabel": {
     "description": "Label for wallet selection dropdown"
-  },
-  "googleDriveSignInMessage": "Θα πρέπει να εγγραφείτε στο Google Drive",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "testBackupEnterKeyManually": "Εισάγετε το Backup key χειροκίνητα >>",
   "@testBackupEnterKeyManually": {
