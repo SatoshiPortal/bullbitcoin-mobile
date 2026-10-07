@@ -26,15 +26,16 @@ class RevokeSpWalletUsecase {
   ///   1. Write the `.revoked` sentinel BEFORE any teardown, so a self-heal
   ///      racing the teardown sees a revoked dir and refuses to reload it.
   ///   2. Dispose the live session so the sqlite handle is released before the
-  ///      delete. A dispose timeout must NOT abort the revoke (that would leave
-  ///      the wallet undeletable), so it is logged and the revoke proceeds.
-  ///   3. Delete the backups first, then the account dir. Sweeping backups
+  ///      delete. On disposal failure retain the revocation marker and report
+  ///      failure; a retry can finish teardown without publishing the session.
+  ///   3. Delete the backups first. Sweeping backups
   ///      first means a failure here still leaves the dir and its sentinel in
   ///      place, so the wallet stays unloadable and a retry is safe. Deleting
   ///      the dir first would strand a backup with no sentinel anywhere, which
   ///      the next session establish would adopt as a live wallet.
-  ///   4. Delete the persisted backend config so the wallet cannot be
-  ///      reconstructed. A delete failure must not abort the revoke.
+  ///   4. Delete the persisted backend config before deleting the account dir,
+  ///      so a failed config deletion leaves the revoke sentinel in place.
+  ///      Propagate a deletion failure rather than report successful revoke.
   ///   5. Emit `SpSetupChanged` so observers (the wallet home) re-evaluate and
   ///      drop the SP card.
   ///
@@ -56,13 +57,6 @@ class RevokeSpWalletUsecase {
       // delete failed.
       _configRepository.setIsSetUpNow(isSetUp: false);
       if (revoked case Err(:final failure)) return Err(failure);
-
-      if (await _configRepository.delete() case Err(:final failure)) {
-        log.warning(
-          'RevokeSpWalletUsecase: config delete failed, proceeding: '
-          '${failure.logMessage}',
-        );
-      }
 
       _repository.notifySetupChanged();
       return const Ok(null);
@@ -95,18 +89,21 @@ class RevokeSpWalletUsecase {
 
     if (_repository.hasSession) {
       if (await _repository.dispose() case Err(:final failure)) {
-        log.warning(
-          'RevokeSpWalletUsecase: dispose failed, proceeding: '
-          '${failure.logMessage}',
-        );
+        // A retained live session must not outlive its revocation marker.
+        return _afterFailedRevocation(failure);
       }
     }
 
     if (await _files.deleteOrphanBackups() case Err(:final failure)) {
-      return _afterFailedDelete(failure);
+      return _afterFailedRevocation(failure);
+    }
+    // Remove the reconstruction credential before removing its tombstone.
+    // On failure, keep the revoked directory and notify observers to hide it.
+    if (await _configRepository.delete() case Err(:final failure)) {
+      return _afterFailedRevocation(failure);
     }
     if (await _files.deleteAccountDir() case Err(:final failure)) {
-      return _afterFailedDelete(failure);
+      return _afterFailedRevocation(failure);
     }
     return const Ok(null);
   }
@@ -114,10 +111,12 @@ class RevokeSpWalletUsecase {
   /// The account dir is still (partly) on disk. Put the sentinel back, since
   /// the delete may have removed it before failing on a locked child, and tell
   /// observers to drop the SP card before reporting the failure.
-  Future<Result<void, SpFailure>> _afterFailedDelete(SpFailure failure) async {
+  Future<Result<void, SpFailure>> _afterFailedRevocation(
+    SpFailure failure,
+  ) async {
     log.severe(
       message:
-          'Failed to delete SP account directory; sentinel left in place so '
+          'Failed to complete SP revocation; sentinel left in place so '
           'wallet will not be loaded',
       error: failure,
       trace: StackTrace.current,

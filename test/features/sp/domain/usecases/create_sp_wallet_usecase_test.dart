@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -15,6 +18,37 @@ import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 import '../../sp_fakes.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _RetainedSessionRepository extends FakeSpAccountRepository {
+  bool disposalFails = true;
+
+  @override
+  Future<Result<void, SpFailure>> dispose() async {
+    if (disposalFails) return const Err(SpSessionBusy('session still live'));
+    return super.dispose();
+  }
+
+  @override
+  Future<Result<void, SpFailure>> createFromScanKey({
+    required SilentPaymentDescriptors scanKey,
+    required String blindbitUrl,
+    required String electrumUrl,
+    int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
+    int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+  }) {
+    // Match the real adapter's single-owner check before any native creation.
+    if (hasSession) {
+      return Future.value(const Err(SpSessionBusy('dispose first')));
+    }
+    return super.createFromScanKey(
+      scanKey: scanKey,
+      blindbitUrl: blindbitUrl,
+      electrumUrl: electrumUrl,
+      fetchConcurrencyFactor: fetchConcurrencyFactor,
+      matchConcurrencyFactor: matchConcurrencyFactor,
+    );
+  }
+}
 
 SettingsEntity _settings({
   bool? isSuperuser = true,
@@ -72,6 +106,44 @@ void main() {
     guard = SpSessionGuard();
     usecase = build();
   });
+
+  test(
+    'failed revoke followed by setup cannot expose the retained session',
+    () async {
+      final retained = _RetainedSessionRepository();
+      accountRepo = retained;
+      await configRepo.save(spBackendConfig());
+      usecase = build();
+      final revoked = await RevokeSpWalletUsecase(
+        repository: retained,
+        files: retained,
+        configRepository: configRepo,
+        guard: guard,
+      ).execute();
+      expect(revoked, isA<Err<void, SpFailure>>());
+      expect(retained.sentinel, isTrue);
+
+      expect(await run(), isA<Err<void, SpFailure>>());
+      expect(retained.sentinel, isTrue);
+      expect(retained.accountDir, isTrue);
+      expect(retained.createCount, 0);
+      final ensured = await EnsureSpSessionUsecase(
+        repository: retained,
+        files: retained,
+        configRepository: configRepo,
+        getSpScanKeyUsecase: scanKeyUsecase,
+        guard: guard,
+      ).execute();
+      expect(ensured, isA<Err<SpWallet?, SpFailure>>());
+
+      // Explicit setup can recover once the old handle actually closes.
+      retained.disposalFails = false;
+      expect(await run(), isA<Ok<void, SpFailure>>());
+      expect(retained.sentinel, isFalse);
+      expect(retained.createCount, 1);
+      await retained.disposeStreams();
+    },
+  );
 
   test('revoke waits for all of an in-flight setup', () async {
     final entered = Completer<void>();

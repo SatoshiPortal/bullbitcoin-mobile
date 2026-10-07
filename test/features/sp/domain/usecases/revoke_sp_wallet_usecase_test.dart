@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -10,6 +12,12 @@ import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 class MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
+
+class _DeleteFailingConfig extends FakeSpBackendConfigRepository {
+  @override
+  Future<Result<void, SpFailure>> delete() async =>
+      const Err(SpUnexpected('config delete failed'));
+}
 
 // The revoke sequence lives here, not behind one repository call, because the
 // order is what makes it safe: sentinel before dispose, backups before the
@@ -52,6 +60,34 @@ void main() {
     );
   });
 
+  test('failed config deletion leaves cold reconstruction blocked', () async {
+    final account = FakeSpAccountRepository();
+    addTearDown(account.disposeStreams);
+    final config = _DeleteFailingConfig();
+    await config.save(spBackendConfig());
+    final guard = SpSessionGuard();
+    final revoke = RevokeSpWalletUsecase(
+      repository: account,
+      files: account,
+      configRepository: config,
+      guard: guard,
+    );
+    expect(await revoke.execute(), isA<Err<void, SpFailure>>());
+    expect(account.accountDir, isTrue);
+    expect(account.sentinel, isTrue);
+    expect(account.hasSession, isFalse);
+    final ensure = EnsureSpSessionUsecase(
+      repository: account,
+      files: account,
+      configRepository: config,
+      guard: guard,
+      getSpScanKeyUsecase: MockGetSpScanKeyUsecase(),
+    );
+    final cold = await ensure.execute();
+    expect((cold as Ok<SpWallet?, SpFailure>).value, isNull);
+    expect(account.createCount, 0);
+  });
+
   group('RevokeSpWalletUsecase ordering', () {
     test('writes the sentinel BEFORE disposing the live session', () async {
       await usecase.execute();
@@ -80,8 +116,8 @@ void main() {
 
       verifyInOrder([
         () => accountRepo.beginTeardown(),
-        () => accountRepo.deleteAccountDir(),
         () => configRepo.delete(),
+        () => accountRepo.deleteAccountDir(),
         () => accountRepo.notifySetupChanged(),
         () => accountRepo.endTeardown(),
       ]);
@@ -110,16 +146,18 @@ void main() {
   });
 
   group('RevokeSpWalletUsecase failure paths', () {
-    test('a dispose timeout does NOT abort the revoke', () async {
-      // Aborting would leave a wallet that can never be deleted.
+    test('a dispose failure retains the marker and reports failure', () async {
       when(
         () => accountRepo.dispose(),
       ).thenAnswer((_) async => const Err(SpSessionBusy('still locked')));
 
-      expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
+      expect(await usecase.execute(), isA<Err<void, SpFailure>>());
 
-      verify(() => accountRepo.deleteAccountDir()).called(1);
+      verifyNever(() => accountRepo.deleteAccountDir());
+      verifyNever(() => configRepo.delete());
+      verify(() => accountRepo.writeRevokedSentinel()).called(1);
       verify(() => accountRepo.notifySetupChanged()).called(1);
+      verify(() => accountRepo.endTeardown()).called(1);
     });
 
     test('a sentinel write failure stops before anything is deleted', () async {
@@ -153,19 +191,20 @@ void main() {
         () => accountRepo.writeRevokedSentinel(skipIfPresent: true),
       ).called(1);
       verify(() => accountRepo.notifySetupChanged()).called(1);
-      verifyNever(() => configRepo.delete());
+      verify(() => configRepo.delete()).called(1);
       verify(() => accountRepo.endTeardown()).called(1);
     });
 
     test(
-      'a config delete failure does not abort the revoke; it still notifies',
+      'a config delete failure keeps the tombstone and reports failure',
       () async {
         when(
           () => configRepo.delete(),
         ).thenAnswer((_) async => const Err(SpUnexpected('config gone')));
 
-        await usecase.execute();
-
+        expect(await usecase.execute(), isA<Err<void, SpFailure>>());
+        verifyNever(() => accountRepo.deleteAccountDir());
+        verify(() => accountRepo.writeRevokedSentinel()).called(1);
         verify(() => accountRepo.notifySetupChanged()).called(1);
         verify(() => accountRepo.endTeardown()).called(1);
       },
@@ -181,7 +220,7 @@ void main() {
         final result = await usecase.execute();
 
         expect(result, isA<Err<void, SpFailure>>());
-        verifyNever(() => configRepo.delete());
+        verify(() => configRepo.delete()).called(1);
         verify(() => accountRepo.endTeardown()).called(1);
       },
     );

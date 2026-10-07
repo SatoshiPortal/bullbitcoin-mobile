@@ -91,6 +91,13 @@ class CreateSpWalletUsecase {
       // "succeed" yet be unreachable, since loads are blocked while the
       // sentinel exists.
       if (hasSentinel) {
+        // A failed revoke can retain a live native handle. Close it before
+        // removing its marker, so a failed setup cannot publish that session.
+        if (_repository.hasSession) {
+          if (await _repository.dispose() case Err(:final failure)) {
+            return Err(failure);
+          }
+        }
         if (await _files.deleteAccountDir() case Err(:final failure)) {
           return Err(
             SpSetupCleanupFailed(
