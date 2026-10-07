@@ -16,7 +16,7 @@ import 'package:mocktail/mocktail.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(MockEncryptedVault());
+    registerFallbackValue(fixtureVault());
     registerFallbackValue(const DecryptedVault());
   });
   setUp(setUpRecoverBullBloc);
@@ -48,7 +48,7 @@ void main() {
 
     test('drops concurrent password fetches', () async {
       final pending = Completer<Result<String, core.RecoverBullFailure>>();
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(
         () => fetchKey.execute(
           vault: vault,
@@ -81,7 +81,7 @@ void main() {
       'records the stable provider selection event without legacy text',
       () async {
         final logs = TestLogSink.recording();
-        final vault = MockEncryptedVault();
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
             vault: vault,
@@ -148,10 +148,7 @@ void main() {
     test(
       'rejects a password submitted after server storage and never retries storage',
       () async {
-        final vault = MockEncryptedVault();
-        when(() => vault.id).thenReturn('00');
-        when(() => vault.toFile()).thenReturn('{}');
-        when(() => vault.filename).thenReturn('vault.json');
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
             vault: vault,
@@ -204,7 +201,7 @@ void main() {
 
   group('OnVaultCreation store-key failure mapping', () {
     test('server failure never calls the provider', () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(() => createVault.execute()).thenAnswer(
         (_) async => Ok((
           vault: vault,
@@ -241,10 +238,7 @@ void main() {
     test(
       'provider failure can be retried without storing the key again',
       () async {
-        final vault = MockEncryptedVault();
-        when(() => vault.id).thenReturn('00');
-        when(() => vault.toFile()).thenReturn('{}');
-        when(() => vault.filename).thenReturn('vault.json');
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
             vault: vault,
@@ -311,10 +305,7 @@ void main() {
       'busy storeVaultKey -> VaultServiceBusyFailure (cooldown kept)',
       () async {
         const cooldown = Duration(minutes: 5);
-        final vault = MockEncryptedVault();
-        when(() => vault.id).thenReturn('00');
-        when(() => vault.toFile()).thenReturn('{}');
-        when(() => vault.filename).thenReturn('vault.json');
+        final vault = fixtureVault();
 
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
@@ -372,10 +363,7 @@ void main() {
       'marks the backup stored on the backed-up wallet network after provider '
       'and key store succeed',
       () async {
-        final vault = MockEncryptedVault();
-        when(() => vault.id).thenReturn('00');
-        when(() => vault.toFile()).thenReturn('{}');
-        when(() => vault.filename).thenReturn('vault.json');
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
             vault: vault,
@@ -415,7 +403,7 @@ void main() {
     );
 
     test('rejects unsupported iCloud before storing the remote key', () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(() => createVault.execute()).thenAnswer(
         (_) async => Ok((
           vault: vault,
@@ -459,10 +447,7 @@ void main() {
                 core.RecoverBullFailure
               >
             >();
-        final vault = MockEncryptedVault();
-        when(() => vault.id).thenReturn('00');
-        when(() => vault.toFile()).thenReturn('{}');
-        when(() => vault.filename).thenReturn('vault.json');
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer((_) => creation.future);
         when(
           () => saveFile.execute(
@@ -523,7 +508,7 @@ void main() {
               core.RecoverBullFailure
             >
           >();
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(() => createVault.execute()).thenAnswer((_) => creation.future);
       final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
 
@@ -562,7 +547,7 @@ void main() {
   test(
     'maps external failure while storing without announcing creation',
     () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(() => createVault.execute()).thenAnswer(
         (_) async => Ok((
           vault: vault,
@@ -606,7 +591,7 @@ void main() {
       (null, Duration.zero),
     ]) {
       test('storing the key maps retryIn $retryIn to $expected', () async {
-        final vault = MockEncryptedVault();
+        final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer(
           (_) async => Ok((
             vault: vault,
@@ -636,7 +621,7 @@ void main() {
       });
 
       test('fetching the key maps retryIn $retryIn to $expected', () async {
-        final vault = MockEncryptedVault();
+        final vault = fixtureVault();
         when(() => fetchKey.execute(vault: vault, password: 'pw')).thenAnswer(
           (_) async => Err(core.KeyServerRateLimitedFailure(retryIn: retryIn)),
         );

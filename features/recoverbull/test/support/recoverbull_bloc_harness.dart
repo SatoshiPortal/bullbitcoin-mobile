@@ -30,6 +30,7 @@ import 'log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:drift/native.dart';
+import 'package:recoverbull/recoverbull.dart' as sdk;
 
 class MockPickVault extends Mock implements PickVaultUsecase {}
 
@@ -65,7 +66,18 @@ class MockLifecycle extends Mock implements RecoverBullLifecyclePort {}
 
 class MockVerifyVault extends Mock implements VerifyDecryptedVaultUsecase {}
 
-class MockEncryptedVault extends Mock implements EncryptedVault {}
+/// A real encrypted backup, so tests exercise the entity rather than a mock
+/// whose getters return whatever each test stubbed. [keyByte] varies the
+/// backup key, and [secret] the encrypted payload, to build distinct vaults.
+EncryptedVault fixtureVault({
+  int keyByte = 9,
+  List<int> secret = const [1, 2, 3],
+}) => EncryptedVault(
+  file: sdk.RecoverBull.createBackup(
+    secret: secret,
+    backupKey: List<int>.filled(32, keyByte),
+  ).toJson(),
+);
 
 RecoverBullTorRoute testRoute({Future<void> Function()? onClose}) =>
     RecoverBullTorRoute(
