@@ -26,7 +26,12 @@ final class TorRepositoryImpl implements TorRepository {
 
   TorConnectionState _current = const TorUninitialized();
   TorTransportMode _mode;
-  TorTransport? _lastSuccessfulTransport;
+
+  /// Set when automatic mode left direct because its blockage suggested
+  /// censorship. Only then does this session keep skipping direct: a direct
+  /// attempt that was merely slow deserves another chance next time, while a
+  /// filtered one would just be rediscovered at the user's expense.
+  bool _directLooksCensored = false;
   StreamSubscription<EmbeddedTorEvent>? _embeddedSubscription;
 
   /// The start every concurrent caller joins, so one screen opening does not
@@ -42,13 +47,11 @@ final class TorRepositoryImpl implements TorRepository {
   factory TorRepositoryImpl(
     EmbeddedTorPort embeddedTor, {
     TorTransportMode initialMode = TorTransportMode.automatic,
-    TorTransport? lastSuccessfulTransport,
     Future<void> Function(TorTransport)? onSuccessfulTransport,
     Future<void> Function()? onSessionInvalidated,
   }) => TorRepositoryImpl._(
     embeddedTor,
     initialMode,
-    lastSuccessfulTransport,
     onSuccessfulTransport,
     onSessionInvalidated,
   );
@@ -56,7 +59,6 @@ final class TorRepositoryImpl implements TorRepository {
   TorRepositoryImpl._(
     this._embeddedTor,
     this._mode,
-    this._lastSuccessfulTransport,
     this._onSuccessfulTransport,
     this._onSessionInvalidated,
   );
@@ -111,6 +113,7 @@ final class TorRepositoryImpl implements TorRepository {
   Future<TorConnectionState> setMode(TorTransportMode mode) {
     if (_mode == mode) return ensureReady();
     _mode = mode;
+    _directLooksCensored = false;
     return retry();
   }
 
@@ -230,17 +233,20 @@ final class TorRepositoryImpl implements TorRepository {
             : await _embeddedTor.start(transport);
         if (!_isCurrent(generation)) return _current;
 
-        _lastSuccessfulTransport = transport;
         unawaited(_onSuccessfulTransport?.call(transport));
         final ready = _readyOn(endpoint, transport);
         _emit(ready);
         return ready;
-      } on _AbandonedAttempt {
+      } on _AbandonedAttempt catch (abandoned) {
+        if (abandoned.censored) _directLooksCensored = true;
         await _embeddedTor.stop();
         if (!_isCurrent(generation)) return _current;
         continue;
       } on TorBackendException catch (error) {
-        if (hasFallback && _shouldUseSnowflake(error.failure)) continue;
+        if (hasFallback && _shouldUseSnowflake(error.failure)) {
+          if (_suggestsCensorship(error.failure)) _directLooksCensored = true;
+          continue;
+        }
         return _fail(generation, error.failure);
       } catch (error) {
         return _fail(generation, TorUnexpectedFailure(error.toString()));
@@ -260,9 +266,9 @@ final class TorRepositoryImpl implements TorRepository {
   /// the backend's serialized lifecycle, so the caller stops it.
   Future<TorProxyEndpoint> _startOrAbandon(TorTransport transport) async {
     final abandoned = Completer<TorProxyEndpoint>();
-    void abandon() {
+    void abandon({bool censored = false}) {
       if (!abandoned.isCompleted) {
-        abandoned.completeError(const _AbandonedAttempt());
+        abandoned.completeError(_AbandonedAttempt(censored: censored));
       }
     }
 
@@ -273,7 +279,9 @@ final class TorRepositoryImpl implements TorRepository {
       if (event is! EmbeddedTorConnecting || event.transport != transport) {
         return;
       }
-      if (event.diagnostic?.suggestsCensorship ?? false) return abandon();
+      if (event.diagnostic?.suggestsCensorship ?? false) {
+        return abandon(censored: true);
+      }
       if (event.progress <= bestProgress) return;
       bestProgress = event.progress;
       stall.cancel();
@@ -308,9 +316,9 @@ final class TorRepositoryImpl implements TorRepository {
   List<TorTransport> _attempts() => switch (_mode) {
     TorTransportMode.direct => const [TorTransport.direct],
     TorTransportMode.snowflake => const [TorTransport.snowflake],
-    TorTransportMode.automatic
-        when _lastSuccessfulTransport == TorTransport.snowflake =>
-      const [TorTransport.snowflake],
+    TorTransportMode.automatic when _directLooksCensored => const [
+      TorTransport.snowflake,
+    ],
     TorTransportMode.automatic => const [
       TorTransport.direct,
       TorTransport.snowflake,
@@ -323,8 +331,10 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode.snowflake => transport == TorTransport.snowflake,
   };
 
-  static bool _shouldUseSnowflake(TorFailure failure) => switch (failure) {
-    TorBootstrapTimeoutFailure() => true,
+  static bool _shouldUseSnowflake(TorFailure failure) =>
+      failure is TorBootstrapTimeoutFailure || _suggestsCensorship(failure);
+
+  static bool _suggestsCensorship(TorFailure failure) => switch (failure) {
     TorBootstrapFailure(:final diagnostic) =>
       diagnostic?.suggestsCensorship ?? false,
     _ => false,
@@ -352,5 +362,7 @@ final class TorRepositoryImpl implements TorRepository {
 
 /// Internal signal that an attempt was given up in favour of the next one.
 final class _AbandonedAttempt implements Exception {
-  const _AbandonedAttempt();
+  final bool censored;
+
+  const _AbandonedAttempt({required this.censored});
 }
