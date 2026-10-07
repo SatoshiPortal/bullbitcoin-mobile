@@ -14962,5 +14962,21 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "statusCheckDegraded": "Degraded",
+  "@statusCheckDegraded": {
+    "description": "Status shown when a service is reachable but temporarily unable to process requests"
+  },
+  "statusCheckTemporarilyUnavailableExplanation": "The service is reachable but temporarily unable to process requests. Possible causes include overload, maintenance, an incident, or an attack.",
+  "@statusCheckTemporarilyUnavailableExplanation": {
+    "description": "Explanation for a temporarily unavailable service"
+  },
+  "statusCheckFeatureUnavailable": "Unavailable",
+  "@statusCheckFeatureUnavailable": {
+    "description": "Status shown when the feature behind a service could not start on this device, so the service was not checked"
+  },
+  "statusCheckFeatureUnavailableExplanation": "This feature could not start on this device, so its service was not checked. It will try again the next time the app opens.",
+  "@statusCheckFeatureUnavailableExplanation": {
+    "description": "Explanation for a service whose feature could not start on this device"
   }
 }

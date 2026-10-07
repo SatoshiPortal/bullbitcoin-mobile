@@ -4629,5 +4629,9 @@
   "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour.",
   "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
   "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
-  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée."
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée.",
+  "statusCheckDegraded": "Dégradé",
+  "statusCheckTemporarilyUnavailableExplanation": "Le service est joignable mais temporairement incapable de traiter les requêtes. Les causes possibles incluent une surcharge, une maintenance, un incident ou une attaque.",
+  "statusCheckFeatureUnavailable": "Indisponible",
+  "statusCheckFeatureUnavailableExplanation": "Cette fonctionnalité n’a pas pu démarrer sur cet appareil, son service n’a donc pas été vérifié. Elle réessaiera à la prochaine ouverture de l’application."
 }

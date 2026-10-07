@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
@@ -17,7 +18,7 @@ class CheckAllServiceStatusUsecase {
   /// and hold the whole screen. Generous enough for a warm client to answer and
   /// for a cold direct bootstrap to usually finish, short enough that a blocked
   /// network reports `offline` instead of hanging.
-  static const _torStatusTimeout = Duration(seconds: 20);
+  static const defaultTorStatusTimeout = Duration(seconds: 20);
 
   final ElectrumConnectivityPort _electrumConnectivityPort;
   final BitcoinPriceRepository _bitcoinPriceRepository;
@@ -31,6 +32,7 @@ class CheckAllServiceStatusUsecase {
   final TorRoutePool? routePool;
   final Future<RecoverBullHealth> Function()? recoverBullHealthProbe;
   final Future<RecoverBullStatus> Function()? recoverBullStatusProbe;
+  final Duration torStatusTimeout;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -45,6 +47,7 @@ class CheckAllServiceStatusUsecase {
     this.routePool,
     this.recoverBullHealthProbe,
     this.recoverBullStatusProbe,
+    this.torStatusTimeout = defaultTorStatusTimeout,
   });
 
   Future<AllServicesStatus> execute({
@@ -56,6 +59,11 @@ class CheckAllServiceStatusUsecase {
 
     try {
       var current = initialStatus.copyWith(lastChecked: null);
+
+      // Read once per check: both Tor-backed rows are gated on it.
+      Future<RecoverBullStatus>? recoverBullStatus;
+      Future<RecoverBullStatus> loadRecoverBullStatus() =>
+          recoverBullStatus ??= _loadRecoverBullStatus();
 
       Future<void> publish(
         Future<ServiceStatusInfo> check,
@@ -117,12 +125,12 @@ class CheckAllServiceStatusUsecase {
           serviceName: 'Mempool',
         ),
         publish(
-          _checkTorConnection(),
+          _checkTorConnection(loadRecoverBullStatus),
           (status, result) => status.copyWith(tor: result),
           serviceName: 'Tor',
         ),
         publish(
-          _checkRecoverbullConnection(),
+          _checkRecoverbullConnection(loadRecoverBullStatus),
           (status, result) => status.copyWith(recoverbull: result),
           serviceName: 'Recoverbull',
         ),
@@ -262,7 +270,9 @@ class CheckAllServiceStatusUsecase {
   /// is the point of a connectivity screen, and it costs nothing in practice:
   /// app startup already warms Tor for exactly these wallets, so this adopts
   /// the running client instead of booting a second one.
-  Future<ServiceStatusInfo> _checkTorConnection() async {
+  Future<ServiceStatusInfo> _checkTorConnection(
+    Future<RecoverBullStatus> Function() recoverBullStatus,
+  ) async {
     final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Tor',
@@ -283,50 +293,50 @@ class CheckAllServiceStatusUsecase {
       } on ArgumentError {
         return status.copyWith(status: ServiceStatus.offline);
       }
-      try {
-        final lease =
-            await (routePool?.acquire(
-                  key: 'external:${endpoint.host}:${endpoint.port}',
-                  open: () async {
-                    final result = await _tor.external.verify(endpoint);
-                    if (result case TorReady(:final route)) return route;
-                    throw StateError('External Tor unavailable');
-                  },
-                  close: () async {},
-                ) ??
-                Future<TorRouteLease>.error(StateError('No route pool')));
-        await lease.release();
-        return status.copyWith(status: ServiceStatus.online);
-      } catch (_) {
-        if (routePool == null) {
-          final external = await _tor.external.verify(endpoint);
-          return status.copyWith(
-            status: external is TorReady
-                ? ServiceStatus.online
-                : ServiceStatus.offline,
-          );
-        }
-        return status.copyWith(status: ServiceStatus.offline);
+      final pool = routePool;
+      if (pool == null) {
+        final external = await _tor.external.verify(endpoint);
+        return status.copyWith(
+          status: external is TorReady
+              ? ServiceStatus.online
+              : ServiceStatus.offline,
+        );
       }
+      final leased = await _leaseWithinTimeout(
+        () => pool.acquire(
+          key: 'external:${endpoint.host}:${endpoint.port}',
+          open: () async {
+            final result = await _tor.external.verify(endpoint);
+            if (result case TorReady(:final route)) return route;
+            throw StateError('External Tor unavailable');
+          },
+          close: () async {},
+        ),
+      );
+      return status.copyWith(
+        status: leased ? ServiceStatus.online : ServiceStatus.offline,
+      );
     }
-    return status.copyWith(status: await _checkEmbeddedTorIfRequired());
+    if (!_usesKeyServer(await recoverBullStatus())) {
+      return status;
+    }
+    return status.copyWith(status: await _checkEmbeddedTorConnection());
   }
 
-  Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
-    final recoverBullStatus =
-        await (recoverBullStatusProbe?.call() ??
-            _recoverBull?.status() ??
-            Future.value(const RecoverBullStatus.unavailable()));
-    if (!recoverBullStatus.isKnown || !recoverBullStatus.hasEncryptedBackup) {
-      return ServiceStatus.unknown;
-    }
-    return _checkEmbeddedTorConnection();
-  }
+  Future<RecoverBullStatus> _loadRecoverBullStatus() =>
+      recoverBullStatusProbe?.call() ??
+      _recoverBull?.status() ??
+      Future.value(const RecoverBullStatus.unavailable());
+
+  /// Only a wallet with an encrypted backup relies on embedded Tor and the key
+  /// server. An unreadable status is treated the same way: nothing is probed.
+  static bool _usesKeyServer(RecoverBullStatus status) =>
+      status.isKnown && status.hasEncryptedBackup;
 
   Future<ServiceStatus> _checkEmbeddedTorConnection() async {
     if (routePool == null) {
       return switch (await _ensureTorReadyUsecase.execute().timeout(
-        _torStatusTimeout,
+        torStatusTimeout,
         onTimeout: () => const TorUninitialized(),
       )) {
         TorReady(:final route) when route.source == TorSource.embedded =>
@@ -334,13 +344,13 @@ class CheckAllServiceStatusUsecase {
         _ => ServiceStatus.offline,
       };
     }
-    try {
-      TorSession? session;
-      final lease = await routePool!.acquire(
+    TorSession? session;
+    final leased = await _leaseWithinTimeout(
+      () => routePool!.acquire(
         key: 'embedded',
         open: () async {
           final state = await _ensureTorReadyUsecase.execute().timeout(
-            _torStatusTimeout,
+            torStatusTimeout,
             onTimeout: () => const TorUninitialized(),
           );
           if (state case TorReady(
@@ -359,34 +369,68 @@ class CheckAllServiceStatusUsecase {
         close: () async {
           await session?.close();
         },
-      );
+      ),
+    );
+    return leased ? ServiceStatus.online : ServiceStatus.offline;
+  }
+
+  /// Acquires and releases a pooled route within [torStatusTimeout].
+  ///
+  /// The ceiling covers the acquire itself, not only `open`: an acquire that
+  /// attaches to another caller's open can otherwise hang the row.
+  Future<bool> _leaseWithinTimeout(
+    Future<TorRouteLease> Function() acquire,
+  ) async {
+    Future<TorRouteLease>? acquisition;
+    try {
+      acquisition = acquire();
+      final lease = await acquisition.timeout(torStatusTimeout);
       await lease.release();
-      return ServiceStatus.online;
+      return true;
+    } on TimeoutException {
+      // A late lease must still be handed back, or the route never closes.
+      unawaited(acquisition!.then((lease) => lease.release(), onError: (_) {}));
+      return false;
     } catch (_) {
-      return ServiceStatus.offline;
+      return false;
     }
   }
 
-  Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
+  /// `unknown` when this wallet has no encrypted backup, like the Tor row: the
+  /// key server is unused, and probing it would start Tor for nothing.
+  Future<ServiceStatusInfo> _checkRecoverbullConnection(
+    Future<RecoverBullStatus> Function() recoverBullStatus,
+  ) async {
     final status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
       name: 'Recoverbull',
       lastChecked: DateTime.now(),
     );
 
+    // A feature that failed to start has no key server to probe; say so
+    // rather than reporting an indistinct unknown.
+    if (_recoverBull case final feature? when !feature.isAvailable) {
+      return status.copyWith(reason: ServiceStatusReason.featureUnavailable);
+    }
+    if (!_usesKeyServer(await recoverBullStatus())) return status;
+
     final health =
         await (recoverBullHealthProbe?.call() ??
                 _recoverBull?.checkService() ??
                 Future.value(RecoverBullHealth.timeout))
             .timeout(
-              _torStatusTimeout,
+              torStatusTimeout,
               onTimeout: () => RecoverBullHealth.timeout,
             );
     return status.copyWith(
       status: switch (health) {
         RecoverBullHealth.online => ServiceStatus.online,
+        RecoverBullHealth.temporarilyUnavailable => ServiceStatus.degraded,
         _ => ServiceStatus.offline,
       },
+      reason: health == RecoverBullHealth.temporarilyUnavailable
+          ? ServiceStatusReason.temporarilyUnavailable
+          : null,
     );
   }
 
