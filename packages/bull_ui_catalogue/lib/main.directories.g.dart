@@ -511,6 +511,16 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'layout',
     children: [
       _widgetbook.WidgetbookComponent(
+        name: 'BullCarousel',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullCarouselUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullPullableBody',
         useCases: [
           _widgetbook.WidgetbookUseCase(
