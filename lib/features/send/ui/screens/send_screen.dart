@@ -40,6 +40,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAssets,
         BullBorderedTile,
         BullBottomSheet,
         BullButton,
@@ -1745,7 +1746,7 @@ class SendSendingScreen extends StatelessWidget {
               Gif(
                 autostart: Autostart.loop,
                 height: 123,
-                image: AssetImage(Assets.animations.cubesLoading.path),
+                image: BullAssets.animations.cubesLoading,
               ),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
@@ -1950,7 +1951,7 @@ class SendSucessScreen extends StatelessWidget {
                       orderSwap.localStatus ==
                           OrderSwapLocalStatus.completed) ...[
                     Gif(
-                      image: AssetImage(Assets.animations.successTick.path),
+                      image: BullAssets.animations.successTick,
                       autostart: Autostart.once,
                       height: 100,
                       width: 100,
