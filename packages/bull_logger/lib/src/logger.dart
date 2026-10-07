@@ -7,6 +7,24 @@ import 'package:logging_colorful/logging_colorful.dart' as dep;
 
 enum ReportCategory { migration, error }
 
+/// A feature-facing logging contract with the levels intended for scoped use.
+///
+/// Scoped sinks prefix messages as `[scope] message`. Calling [scoped] again
+/// appends another prefix, so nested scopes are formatted as
+/// `[outer] [inner] message`.
+abstract interface class LogSink {
+  void fine(String message, {Object? error, StackTrace? trace});
+
+  void info(String message, {Object? error, StackTrace? trace});
+
+  void warning(String message, {Object? error, StackTrace? trace});
+
+  /// Logs an error, supplying logging-safe fallbacks when omitted.
+  void error(String message, {Object? error, StackTrace? trace});
+
+  LogSink scoped(String scope);
+}
+
 abstract interface class LoggerReporter {
   void reportError({
     String? message,
@@ -33,7 +51,7 @@ abstract interface class LoggerReporter {
 // instances stayed subscribed to the same broadcast stream.
 Logger log = Logger.replace(directory: Directory.current);
 
-class Logger {
+class Logger implements LogSink {
   final Directory dir;
   final String filename;
   final dep.LoggerColorful logger;
@@ -285,6 +303,7 @@ class Logger {
   /// Logs information messages that are part of the normal operation of the app.
   /// These messages are typically written to file only and not kept in memory.
   /// Use for recording general app flow and user actions.
+  @override
   void info(Object? message, {Object? error, StackTrace? trace}) {
     logger.info(message, error, trace);
   }
@@ -297,6 +316,7 @@ class Logger {
 
   /// Logs basic tracing information for debugging.
   /// Use for high-level flow tracking during development and troubleshooting.
+  @override
   void fine(Object? message, {Object? error, StackTrace? trace}) {
     logger.fine(message, error, trace);
   }
@@ -315,8 +335,27 @@ class Logger {
 
   /// Logs potentially harmful situations that don't prevent the app from working.
   /// Use for recoverable errors or unexpected but handled conditions.
+  @override
   void warning(Object? message, {Object? error, StackTrace? trace}) {
     logger.warning(message, error, trace);
+  }
+
+  @override
+  void error(String message, {Object? error, StackTrace? trace}) {
+    severe(
+      message: message,
+      error: error ?? message,
+      trace: trace ?? StackTrace.current,
+    );
+  }
+
+  @override
+  LogSink scoped(String scope) {
+    final trimmed = scope.trim();
+    if (trimmed.isEmpty) {
+      throw ArgumentError.value(scope, 'scope', 'must not be empty');
+    }
+    return _ScopedLogSink(this, trimmed);
   }
 
   /// Logs serious errors that may prevent parts of the app from working correctly.
@@ -532,5 +571,43 @@ class Logger {
       '[REDACTED]',
     );
     return value;
+  }
+}
+
+final class _ScopedLogSink implements LogSink {
+  final LogSink _parent;
+  final String _scope;
+
+  _ScopedLogSink(this._parent, this._scope);
+
+  String _prefix(String message) => '[$_scope] $message';
+
+  @override
+  void fine(String message, {Object? error, StackTrace? trace}) {
+    _parent.fine(_prefix(message), error: error, trace: trace);
+  }
+
+  @override
+  void info(String message, {Object? error, StackTrace? trace}) {
+    _parent.info(_prefix(message), error: error, trace: trace);
+  }
+
+  @override
+  void warning(String message, {Object? error, StackTrace? trace}) {
+    _parent.warning(_prefix(message), error: error, trace: trace);
+  }
+
+  @override
+  void error(String message, {Object? error, StackTrace? trace}) {
+    _parent.error(_prefix(message), error: error, trace: trace);
+  }
+
+  @override
+  LogSink scoped(String scope) {
+    final trimmed = scope.trim();
+    if (trimmed.isEmpty) {
+      throw ArgumentError.value(scope, 'scope', 'must not be empty');
+    }
+    return _ScopedLogSink(this, trimmed);
   }
 }
