@@ -4906,5 +4906,8 @@
   "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats.",
   "settingsSearchBackupKeywords": "sauvegarde|récupération|restaurer le portefeuille|sauvegarde de la seed",
   "settingsSearchTorKeywords": "proxy Tor|Orbot|routage onion|Tor intégré|réseau de confidentialité|socks5|anonyme",
-  "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille"
+  "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
+  "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
+  "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée."
 }
