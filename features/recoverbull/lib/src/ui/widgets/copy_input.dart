@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' show ImageFilter;
 
 import 'package:bull_ui/bull_ui.dart';
@@ -12,7 +13,7 @@ import 'with_bull_theme.dart';
 /// semantics. It never logs the value, and keeps both the displayed and the
 /// revealed value out of the semantics tree, so accessibility services cannot
 /// read it.
-class CopyInput extends StatelessWidget {
+class CopyInput extends StatefulWidget {
   final String value;
   final bool canShowValueModal;
   final int? maxLines;
@@ -20,6 +21,12 @@ class CopyInput extends StatelessWidget {
   final TextOverflow? overflow;
   final String? modalTitle;
   final Object? modalContent;
+
+  /// Opt-in: clears the copied value from the clipboard after this delay, or
+  /// as soon as the widget goes away, unless something else was copied since.
+  /// When the app is in the background at that moment, the clear happens on
+  /// its next return to the foreground.
+  final Duration? clearClipboardAfter;
 
   const CopyInput({
     super.key,
@@ -31,11 +38,47 @@ class CopyInput extends StatelessWidget {
     this.overflow,
     this.modalTitle,
     this.modalContent,
+    this.clearClipboardAfter,
   }) : value = value ?? text ?? '';
 
   @override
+  State<CopyInput> createState() => _CopyInputState();
+}
+
+class _CopyInputState extends State<CopyInput> {
+  _ClipboardClear? _pendingClear;
+
+  String get value => widget.value;
+  bool get canShowValueModal => widget.canShowValueModal;
+  int? get maxLines => widget.maxLines;
+  TextOverflow? get overflow => widget.overflow;
+  String? get modalTitle => widget.modalTitle;
+  Object? get modalContent => widget.modalContent;
+
+  @override
+  void dispose() {
+    // Leaving the screen must not leave the secret behind for the rest of the
+    // delay, nor a timer that outlives the widget.
+    final pending = _pendingClear;
+    if (pending != null) unawaited(pending.run());
+    super.dispose();
+  }
+
+  Future<void> _copy(BuildContext context, String copyValue) async {
+    await Clipboard.setData(ClipboardData(text: copyValue));
+    final clearAfter = widget.clearClipboardAfter;
+    if (clearAfter != null && mounted) {
+      _pendingClear?.cancel();
+      _pendingClear = _ClipboardClear(copyValue, clearAfter);
+    }
+    if (context.mounted) {
+      BullSnackBar.show(context, message: context.loc.copyDialogCopied);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final copyValue = clipboardText ?? value;
+    final copyValue = widget.clipboardText ?? value;
     final canCopy = copyValue.isNotEmpty;
     final colors = context.appColors;
     return Container(
@@ -95,15 +138,7 @@ class CopyInput extends StatelessWidget {
               iconSize: 20,
               tooltip: context.loc.copyDialogButton,
               icon: Icon(Icons.copy_sharp, color: colors.secondary),
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: copyValue));
-                if (context.mounted) {
-                  BullSnackBar.show(
-                    context,
-                    message: context.loc.copyDialogCopied,
-                  );
-                }
-              },
+              onPressed: () => _copy(context, copyValue),
             ),
           const SizedBox(width: 8),
         ],
@@ -146,15 +181,7 @@ class CopyInput extends StatelessWidget {
                   foregroundColor: context.appColors.secondary,
                   textStyle: Theme.of(context).textTheme.bodyLarge,
                 ),
-                onPressed: () async {
-                  await Clipboard.setData(ClipboardData(text: copyValue));
-                  if (context.mounted) {
-                    BullSnackBar.show(
-                      context,
-                      message: context.loc.copyDialogCopied,
-                    );
-                  }
-                },
+                onPressed: () => _copy(context, copyValue),
                 child: Text(context.loc.copyDialogButton),
               ),
             TextButton(
@@ -169,5 +196,53 @@ class CopyInput extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Clears one copied value from the clipboard unless something else was copied
+/// since. Android 10+ hides the clipboard from an app in the background, so a
+/// clipboard that cannot be read is cleared on the next return to the app
+/// rather than left holding the value.
+final class _ClipboardClear {
+  final String _copied;
+  Timer? _timer;
+  AppLifecycleListener? _resumeListener;
+  bool _finished = false;
+
+  _ClipboardClear(this._copied, Duration after) {
+    _timer = Timer(after, () => unawaited(run()));
+  }
+
+  Future<void> run({bool lastAttempt = false}) async {
+    if (_finished) return;
+    _timer?.cancel();
+    _timer = null;
+    final ClipboardData? current;
+    try {
+      current = await Clipboard.getData(Clipboard.kTextPlain);
+    } on PlatformException {
+      // The clipboard could not be read; never clear what may not be ours.
+      cancel();
+      return;
+    }
+    if (_finished) return;
+    if (current == null && !lastAttempt) {
+      _resumeListener ??= AppLifecycleListener(
+        onResume: () => unawaited(run(lastAttempt: true)),
+      );
+      return;
+    }
+    cancel();
+    if (current?.text == _copied) {
+      await Clipboard.setData(const ClipboardData(text: ''));
+    }
+  }
+
+  void cancel() {
+    _finished = true;
+    _timer?.cancel();
+    _timer = null;
+    _resumeListener?.dispose();
+    _resumeListener = null;
   }
 }
