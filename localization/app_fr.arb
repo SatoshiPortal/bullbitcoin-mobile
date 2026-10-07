@@ -4668,5 +4668,8 @@
   "torSettingsDescClockSkewed": "Tor ne peut pas se connecter tant que la date et l’heure sont incorrectes. Activez leur mise à jour automatique dans les réglages de l’appareil, puis réessayez.",
   "torSettingsStatusCantBootstrap": "Tor n’arrive pas à terminer la connexion",
   "torSettingsDescCantBootstrap": "Tor n’a pas pu charger l’annuaire du réseau. Réessayez ou passez à Snowflake.",
-  "torSettingsUseSnowflake": "Utiliser Snowflake"
+  "torSettingsUseSnowflake": "Utiliser Snowflake",
+  "torSettingsExternalProxyRefusedDescription": "Rien n’a répondu sur ce port. Vérifiez qu’Orbot est lancé et utilise ce port.",
+  "torSettingsExternalProxyTimeoutDescription": "Le proxy n’a pas répondu à temps. Il est peut-être encore en train de démarrer, réessayez dans un instant.",
+  "torSettingsExternalProxyNotSocksDescription": "Un service a répondu sur ce port, mais ce n’est pas un proxy SOCKS5. Vérifiez le port configuré dans Orbot."
 }
