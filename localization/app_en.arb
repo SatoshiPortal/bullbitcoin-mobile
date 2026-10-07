@@ -14998,5 +14998,13 @@
   "torSettingsExternalProxyNotSocksDescription": "Something answered on this port, but it is not a SOCKS5 proxy. Check the port set in Orbot.",
   "@torSettingsExternalProxyNotSocksDescription": {
     "description": "External Tor proxy status description when the configured local port answered, but not with a SOCKS5 greeting."
+  },
+  "torFallbackCensorship": "Your network seems to block Tor. Switching to Snowflake.",
+  "@torFallbackCensorship": {
+    "description": "App-wide snackbar shown when automatic Tor leaves a direct connection for Snowflake because the network looks like it filters Tor."
+  },
+  "torFallbackSlow": "Tor is connecting slowly. Switching to Snowflake.",
+  "@torFallbackSlow": {
+    "description": "App-wide snackbar shown when automatic Tor leaves a direct connection for Snowflake because it stopped progressing or ran out of time."
   }
 }

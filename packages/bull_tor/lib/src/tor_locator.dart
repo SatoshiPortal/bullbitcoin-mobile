@@ -23,6 +23,7 @@ import 'domain/usecases/set_tor_dormant_usecase.dart';
 import 'domain/usecases/set_tor_transport_mode_usecase.dart';
 import 'domain/usecases/verify_external_tor_usecase.dart';
 import 'domain/usecases/watch_tor_connection_usecase.dart';
+import 'domain/usecases/watch_tor_transport_fallbacks_usecase.dart';
 import 'tor_lifecycle_controller.dart';
 import 'tor_controller.dart';
 
@@ -78,6 +79,9 @@ final class TorLocator {
     locator.registerFactory<WatchTorConnectionUsecase>(
       () => WatchTorConnectionUsecase(locator<TorRepository>()),
     );
+    locator.registerFactory<WatchTorTransportFallbacksUsecase>(
+      () => WatchTorTransportFallbacksUsecase(locator<TorRepository>()),
+    );
     locator.registerFactory<SetTorDormantUsecase>(
       () => SetTorDormantUsecase(locator<TorRepository>()),
     );
@@ -115,6 +119,7 @@ final class TorLocator {
           locator<RetryTorConnectionUsecase>(),
           locator<WatchTorConnectionUsecase>(),
           locator<SetTorTransportModeUsecase>(),
+          locator<WatchTorTransportFallbacksUsecase>(),
           TorSessions(locator<OpenTorSessionUsecase>()),
         ),
         ExternalTor(locator<VerifyExternalTorUsecase>()),
