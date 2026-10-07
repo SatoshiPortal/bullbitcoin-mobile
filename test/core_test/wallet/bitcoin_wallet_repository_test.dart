@@ -22,10 +22,12 @@
 //     became wrong once that call was fixed: a null flag would have
 //     started disabling RBF by default, diverging from both the
 //     datasource's own default and BDK's default sequence (0xFFFFFFFD).
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -38,6 +40,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -48,6 +51,35 @@ class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockFrozenWalletUtxoDatasource extends Mock
     implements FrozenWalletUtxoDatasource {}
+
+class _FakePrivateBdkWalletModel extends Fake
+    implements PrivateBdkWalletModel {}
+
+class _CountingCoordinator implements WalletSourceOperationCoordinator {
+  final InMemoryWalletSourceOperationCoordinator _delegate =
+      InMemoryWalletSourceOperationCoordinator();
+  int acquisitions = 0;
+
+  @override
+  Future<T> runExclusive<T>(
+    WalletSourceKey key,
+    Future<T> Function(WalletSourceSession session) operation, {
+    Duration? timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
+  }) {
+    acquisitions++;
+    return _delegate.runExclusive(
+      key,
+      operation,
+      timeout: timeout,
+      allowRetired: allowRetired,
+      kind: kind,
+      priority: priority,
+    );
+  }
+}
 
 // Encodes as a bitcoin testnet BIP84 origin so
 // WalletMetadataModelExtension.isBitcoin decodes to true.
@@ -65,8 +97,10 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
+  late _MockSeedDatasource seedDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
+  late _CountingCoordinator coordinator;
   late BitcoinWalletRepository repository;
 
   const metadata = WalletMetadataModel(
@@ -91,18 +125,23 @@ void main() {
         isTestnet: true,
       ),
     );
+    registerFallbackValue(Uint8List(0));
     registerFallbackValue(const NetworkFee.relativeSatPerKwu(1000));
+    registerFallbackValue(_FakePrivateBdkWalletModel());
   });
 
   setUp(() {
     metadataDatasource = _MockWalletMetadataDatasource();
+    seedDatasource = _MockSeedDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
+    coordinator = _CountingCoordinator();
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: _MockSeedDatasource(),
+      seedDatasource: seedDatasource,
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
+      coordinator: coordinator,
     );
 
     when(
@@ -246,6 +285,49 @@ void main() {
     );
   });
 
+  test(
+    'does not use a stale model after deletion wins before source access',
+    () async {
+      final releaseFrozenLookup = Completer<void>();
+      final frozenLookupEntered = Completer<void>();
+      var metadataExists = true;
+      when(
+        () => metadataDatasource.fetch(_walletId),
+      ).thenAnswer((_) async => metadataExists ? metadata : null);
+      when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async {
+        frozenLookupEntered.complete();
+        await releaseFrozenLookup.future;
+        return [];
+      });
+
+      final build = buildPsbt();
+      await frozenLookupEntered.future;
+
+      await coordinator._delegate.runExclusive<void>(
+        const WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+        (session) async {
+          metadataExists = false;
+          session.retire();
+        },
+      );
+      releaseFrozenLookup.complete();
+
+      await expectLater(build, throwsStateError);
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    },
+  );
+
   group('D7 — selected ∩ unspendable (caller-supplied) is rejected', () {
     test(
       'a selected coin that is also unspendable fails before the datasource',
@@ -313,5 +395,126 @@ void main() {
 
       expect(capturedReplaceByFee(), isFalse);
     });
+  });
+
+  group('BDK operation coordination', () {
+    test('ownership checks wait behind an externally held source', () async {
+      final externalOperationStarted = Completer<void>();
+      final releaseExternalOperation = Completer<void>();
+      var datasourceCalled = false;
+
+      when(
+        () => bdkDatasource.isMine(any(), wallet: any(named: 'wallet')),
+      ).thenAnswer((_) async {
+        datasourceCalled = true;
+        return true;
+      });
+
+      final externalOperation = coordinator.runExclusive<void>(
+        const WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+        (_) async {
+          externalOperationStarted.complete();
+          await releaseExternalOperation.future;
+        },
+      );
+      await externalOperationStarted.future;
+
+      final ownershipCheck = repository.isScriptOfWallet(
+        walletId: _walletId,
+        script: Uint8List.fromList([0x51]),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(datasourceCalled, isFalse);
+
+      releaseExternalOperation.complete();
+      expect(await ownershipCheck, isTrue);
+      await externalOperation;
+    });
+
+    test('same-key PSBT builds do not overlap', () async {
+      final firstBuildStarted = Completer<void>();
+      final releaseFirstBuild = Completer<void>();
+      var activeBuilds = 0;
+      var maximumActiveBuilds = 0;
+      var buildCount = 0;
+
+      when(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer((_) async {
+        activeBuilds++;
+        maximumActiveBuilds = maximumActiveBuilds < activeBuilds
+            ? activeBuilds
+            : maximumActiveBuilds;
+        buildCount++;
+        if (buildCount == 1) firstBuildStarted.complete();
+        await releaseFirstBuild.future;
+        activeBuilds--;
+        return 'psbt';
+      });
+
+      final first = buildPsbt();
+      await firstBuildStarted.future;
+      final second = buildPsbt();
+      await Future<void>.delayed(Duration.zero);
+      expect(activeBuilds, 1);
+      expect(maximumActiveBuilds, 1);
+
+      releaseFirstBuild.complete();
+      await Future.wait([first, second]);
+      expect(maximumActiveBuilds, 1);
+    });
+
+    test(
+      'fee bump acquires the source once for creation and signing',
+      () async {
+        when(() => seedDatasource.get('73c5da0a')).thenAnswer(
+          (_) async => SeedModel.fromJson(const {
+            'runtimeType': 'mnemonic',
+            'mnemonicWords': ['abandon'],
+          }),
+        );
+        when(
+          () => bdkDatasource.createUnsignedReplaceByFeePsbt(
+            wallet: any(named: 'wallet'),
+            txid: any(named: 'txid'),
+            feeRate: any(named: 'feeRate'),
+          ),
+        ).thenAnswer((_) async => 'unsigned-psbt');
+        when(
+          () => bdkDatasource.signPsbt(any(), wallet: any(named: 'wallet')),
+        ).thenAnswer((_) async => 'signed-psbt');
+
+        final result = await repository.bumpFee(
+          walletId: _walletId,
+          txid: 'txid',
+          newFeeRate: const RelativeFee(500),
+        );
+
+        expect(result, 'signed-psbt');
+        expect(coordinator.acquisitions, 1);
+        verify(
+          () => bdkDatasource.createUnsignedReplaceByFeePsbt(
+            wallet: any(named: 'wallet'),
+            txid: 'txid',
+            feeRate: const RelativeFee(500),
+          ),
+        ).called(1);
+        verify(
+          () => bdkDatasource.signPsbt(
+            'unsigned-psbt',
+            wallet: any(named: 'wallet'),
+          ),
+        ).called(1);
+      },
+    );
   });
 }

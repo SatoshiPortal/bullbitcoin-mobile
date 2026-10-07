@@ -15449,5 +15449,22 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "backgroundNotificationBitcoinSingular": "1 Bitcoin transaction received",
+  "@backgroundNotificationBitcoinSingular": {
+    "description": "Privacy-preserving notification body for one newly received Bitcoin transaction"
+  },
+  "backgroundNotificationLiquidSingular": "1 Liquid transaction received",
+  "@backgroundNotificationLiquidSingular": {
+    "description": "Privacy-preserving notification body for one newly received Liquid transaction"
+  },
+  "backgroundNotificationTransactionsPlural": "{count} transactions received",
+  "@backgroundNotificationTransactionsPlural": {
+    "description": "Privacy-preserving notification body for multiple newly received transactions",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

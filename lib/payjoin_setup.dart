@@ -18,6 +18,8 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show WalletSourceOperationCoordinator;
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -39,6 +41,7 @@ abstract final class PayjoinSetup {
           locator<SeedDatasource>(),
           locator<BdkWalletDatasource>(),
           locator<WalletMetadataDatasource>(),
+          locator<WalletSourceOperationCoordinator>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),

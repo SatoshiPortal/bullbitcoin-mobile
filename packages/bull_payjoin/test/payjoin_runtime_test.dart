@@ -7,25 +7,11 @@ import 'package:test/test.dart';
 
 final class _WalletPort implements PayjoinWalletPort {
   @override
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  Future<T> withReceiverWallet<T>({
     required String walletId,
     required BitcoinNetwork network,
-  }) async =>
-      (Uint8List _) => false;
-
-  @override
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (Outpoint _) => false;
-
-  @override
-  Future<String Function(String psbt)> createPsbtProcessor({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (String psbt) => psbt;
+    required Future<T> Function(PayjoinWalletSession session) operation,
+  }) => operation(_Session());
 
   @override
   Future<String> signPsbt({
@@ -33,12 +19,20 @@ final class _WalletPort implements PayjoinWalletPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async => psbt;
+}
+
+final class _Session implements PayjoinWalletSession {
+  @override
+  List<PayjoinUtxo> get spendableUtxos => const [];
 
   @override
-  Future<List<PayjoinUtxo>> spendableUtxos({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async => const [];
+  bool ownsOutpoint(Outpoint _) => false;
+
+  @override
+  bool hasReceiverOutput(Uint8List _) => false;
+
+  @override
+  String processPsbt(String psbt) => psbt;
 }
 
 final class _BlockchainPort implements PayjoinBlockchainPort {

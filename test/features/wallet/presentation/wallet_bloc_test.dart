@@ -62,9 +62,12 @@ class _MockWatchSpWalletUsecase extends Mock implements WatchSpWalletUsecase {}
 class _MockCheckSpFeatureGateForWalletUsecase extends Mock
     implements CheckSpFeatureGateForWalletUsecase {}
 
-WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
+WalletBloc createBloc(
+  GetExternalTorProxyStatusUsecase externalStatus, {
+  GetWalletsUsecase? getWallets,
+}) {
   return WalletBloc(
-    getWalletsUsecase: _MockGetWalletsUsecase(),
+    getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: _stubbedSync(),
@@ -85,6 +88,18 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
 }
 
 void main() {
+  test('started sync updates status without reloading wallets', () async {
+    final getWallets = _MockGetWalletsUsecase();
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      getWallets: getWallets,
+    );
+    addTearDown(bloc.close);
+    final state = bloc.stream.first;
+    bloc.add(const WalletSyncStarted('wallet-1'));
+    expect((await state).syncStatus['wallet-1'], isTrue);
+    verifyNever(() => getWallets.execute());
+  });
   for (final scenario in [
     (
       'unavailable Bitcoin proxy points to Tor settings',

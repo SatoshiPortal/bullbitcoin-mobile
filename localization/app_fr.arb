@@ -4873,5 +4873,8 @@
   "receiveErrorBroadcastOriginal": "Nous n’avons pas pu diffuser la transaction. Vérifiez votre connexion Internet et réessayez.",
   "fundExchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "exchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
-  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour."
+  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour.",
+  "backgroundNotificationBitcoinSingular": "1 transaction Bitcoin reçue",
+  "backgroundNotificationLiquidSingular": "1 transaction Liquid reçue",
+  "backgroundNotificationTransactionsPlural": "{count} transactions reçues"
 }

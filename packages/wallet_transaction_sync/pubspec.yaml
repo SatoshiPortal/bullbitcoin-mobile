@@ -1,0 +1,28 @@
+name: wallet_transaction_sync
+description: Local-source-first wallet transaction synchronization contracts.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_sdk:
+    git:
+      url: https://github.com/pythcoiner/bull_sdk
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      path: packages/bull_sdk
+  crypto: ^3.0.7
+  meta: ^1.17.0
+  primitives:
+  sqlite3: ^2.9.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0
+  test: ^1.26.3

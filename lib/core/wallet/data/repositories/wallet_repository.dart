@@ -24,12 +24,21 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show
+        WalletNetworkKey,
+        WalletOperationKind,
+        WalletSourceKey,
+        WalletSourceOperationCoordinator,
+        WalletSyncMetadataPort;
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServersPort _serversPort;
+  final WalletSourceOperationCoordinator _coordinator;
+  final WalletSyncMetadataPort _syncMetadata;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -39,18 +48,20 @@ class WalletRepository {
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._serversPort,
+    required WalletSourceOperationCoordinator coordinator,
+    required this._syncMetadata,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource {
-    // Keep track of the last sync time in the wallet metadata
-    _walletSyncFinishedStream.listen(_updateWalletSyncTime);
-    // Start auto syncing wallets
-  }
+       _lwkWallet = lwkWalletDatasource,
+       // ignore: prefer_initializing_formals
+       _coordinator = coordinator;
 
   Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
       .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
       .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
+
+  Stream<String> get walletSyncStartedIdsStream => _walletSyncStartedStream;
 
   Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
       .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
@@ -113,8 +124,13 @@ class WalletRepository {
       }
     }
 
-    final balance = await _getBalance(metadata, sync: sync);
-    await _walletMetadataDatasource.store(metadata);
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     return Wallet(
       origin: metadata.id,
@@ -142,9 +158,6 @@ class WalletRepository {
       watchOnlyDescriptor,
     );
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
-
     final allWallets = await _readWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
@@ -152,7 +165,14 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     // Return the created wallet entity
     return Wallet(
@@ -190,9 +210,6 @@ class WalletRepository {
       label: label,
     );
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
-
     final allWallets = await _readWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
@@ -200,7 +217,14 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     // Return the created wallet entity
     return Wallet(
@@ -462,24 +486,34 @@ class WalletRepository {
       if (metadata == null) {
         return const Err(WalletNotFoundFailure('no metadata to delete'));
       }
-
       if (metadata.isBitcoin) {
-        try {
-          await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
-        } on WalletNotFound {
-          log.warning('deleteWallet: BDK file already absent for $walletId');
-        }
+        final wallet = WalletModel.fromMetadata(metadata);
+        await _coordinator.runExclusive<void>(_sourceKey(wallet), (
+          session,
+        ) async {
+          try {
+            await _bdkWallet.delete(wallet: wallet);
+          } on WalletNotFound {
+            log.warning('deleteWallet: BDK file already absent for $walletId');
+          }
+          await _walletMetadataDatasource.delete(walletId);
+          session.retire();
+        });
       }
-
       if (metadata.isLiquid) {
-        try {
-          await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
-        } on WalletNotFound {
-          log.warning('deleteWallet: LWK file already absent for $walletId');
-        }
+        final wallet = WalletModel.fromMetadata(metadata);
+        await _coordinator.runExclusive<void>(_sourceKey(wallet), (
+          session,
+        ) async {
+          try {
+            await _lwkWallet.delete(wallet: wallet);
+          } on WalletNotFound {
+            log.warning('deleteWallet: LWK file already absent for $walletId');
+          }
+          await _walletMetadataDatasource.delete(walletId);
+          session.retire();
+        });
       }
-
-      await _walletMetadataDatasource.delete(walletId);
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'deleteWallet failed', error: e, trace: st);
@@ -497,7 +531,11 @@ class WalletRepository {
 
     for (final metadata in liquidDefaultWallets) {
       try {
-        await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+        final wallet = WalletModel.fromMetadata(metadata);
+        await _coordinator.runExclusive<void>(
+          _sourceKey(wallet),
+          (_) => _lwkWallet.delete(wallet: wallet),
+        );
       } on WalletNotFound {
         log.warning('deleteLwkDb: LWK file already absent for ${metadata.id}');
       }
@@ -514,21 +552,12 @@ class WalletRepository {
     _lwkWallet.walletSyncFinishedStream,
   ]);
 
-  Future<void> _updateWalletSyncTime(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      return;
-    }
-
-    final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
-
-    await _walletMetadataDatasource.store(updatedWalletMetadata);
-  }
-
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
+    bool revalidateMetadata = true,
+    bool allowRetired = false,
+    Future<void> Function()? finalizeSource,
   }) async {
     BalanceModel balance;
     if (metadata.isLiquid) {
@@ -537,12 +566,31 @@ class WalletRepository {
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
-
-      if (sync) {
-        await _syncWallet(wallet);
-      }
-
-      balance = await _lwkWallet.getBalance(wallet: wallet);
+      balance = await _coordinator.runExclusive<BalanceModel>(
+        _sourceKey(wallet),
+        (session) async {
+          final currentMetadata = revalidateMetadata
+              ? await _walletMetadataDatasource.fetch(metadata.id)
+              : metadata;
+          if (currentMetadata == null) {
+            throw WalletError.notFound(metadata.id);
+          }
+          final currentWallet = WalletModel.publicLwk(
+            combinedCtDescriptor: currentMetadata.externalPublicDescriptor,
+            isTestnet: currentMetadata.isTestnet,
+            id: currentMetadata.id,
+          );
+          if (sync) await _syncWalletUncoordinated(currentWallet);
+          final result = await _lwkWallet.getBalance(wallet: currentWallet);
+          await finalizeSource?.call();
+          if (allowRetired) session.reactivate();
+          return result;
+        },
+        allowRetired: allowRetired,
+        kind: sync
+            ? WalletOperationKind.synchronize
+            : WalletOperationKind.refresh,
+      );
     } else {
       final wallet = WalletModel.publicBdk(
         externalDescriptor: metadata.externalPublicDescriptor,
@@ -551,11 +599,32 @@ class WalletRepository {
         id: metadata.id,
       );
 
-      if (sync) {
-        await _syncWallet(wallet);
-      }
-
-      balance = await _bdkWallet.getBalance(wallet: wallet);
+      balance = await _coordinator.runExclusive<BalanceModel>(
+        _sourceKey(wallet),
+        (session) async {
+          final currentMetadata = revalidateMetadata
+              ? await _walletMetadataDatasource.fetch(metadata.id)
+              : metadata;
+          if (currentMetadata == null) {
+            throw WalletError.notFound(metadata.id);
+          }
+          final currentWallet = WalletModel.publicBdk(
+            externalDescriptor: currentMetadata.externalPublicDescriptor,
+            internalDescriptor: currentMetadata.internalPublicDescriptor,
+            isTestnet: currentMetadata.isTestnet,
+            id: currentMetadata.id,
+          );
+          if (sync) await _syncWalletUncoordinated(currentWallet);
+          final result = await _bdkWallet.getBalance(wallet: currentWallet);
+          await finalizeSource?.call();
+          if (allowRetired) session.reactivate();
+          return result;
+        },
+        allowRetired: allowRetired,
+        kind: sync
+            ? WalletOperationKind.synchronize
+            : WalletOperationKind.refresh,
+      );
     }
 
     return balance;
@@ -581,6 +650,15 @@ class WalletRepository {
   }
 
   Future<void> _syncWallet(WalletModel wallet) async {
+    await _coordinator.runExclusive<void>(
+      _sourceKey(wallet),
+      (_) => _syncWalletUncoordinated(wallet),
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
+    );
+  }
+
+  Future<void> _syncWalletUncoordinated(WalletModel wallet) async {
     final isLiquid = wallet is PublicLwkWalletModel;
     final network = ElectrumServerNetwork.fromEnvironment(
       isTestnet: wallet.isTestnet,
@@ -588,32 +666,69 @@ class WalletRepository {
     );
 
     try {
-      await _serversPort.runWithFallback<void>(
-        network: network,
-        operation: (connection) async {
-          if (isLiquid) {
+      if (isLiquid) {
+        await _serversPort.runWithFallback<void>(
+          network: network,
+          operation: (connection) async {
             await _lwkWallet.sync(wallet: wallet, electrumServer: connection);
-          } else {
+          },
+        );
+      } else {
+        await _serversPort.runWithFallback<void>(
+          network: network,
+          operation: (connection) async {
             await _bdkWallet.sync(wallet: wallet, electrumServer: connection);
-          }
-        },
-      );
+          },
+        );
+      }
       _electrumSyncResultController.add(
         ElectrumSyncResult(isLiquid: isLiquid, success: true),
       );
-    } on ElectrumFallbackException catch (e, stackTrace) {
+      try {
+        await _syncMetadata.recordLegacyForegroundSuccess(
+          _networkKey(wallet),
+          DateTime.now().toUtc(),
+        );
+      } catch (_) {
+        log.warning('Unable to persist foreground sync metadata');
+      }
+    } on ElectrumFallbackException catch (e) {
       // Both NoElectrumServersConfigured and AllElectrumServersFailed land
-      // here. Emit the failed result, log the rich `e.message` (per-server
-      // attempts on failure, network on no-config), then rethrow the typed
-      // exception so callers keep the diagnostic instead of receiving a
-      // flat string they have to parse.
-      log.severe(message: e.message, error: e, trace: stackTrace);
+      // here. Keep endpoints and raw transport exceptions out of persisted
+      // logs, then rethrow the typed exception for the caller.
+      log.warning(
+        'Wallet Electrum synchronization failed category=${_electrumFailureCategory(e)} chain=${isLiquid ? 'liquid' : 'bitcoin'} network=${wallet.isTestnet ? 'testnet' : 'mainnet'}',
+      );
       _electrumSyncResultController.add(
         ElectrumSyncResult(isLiquid: isLiquid, success: false),
       );
       rethrow;
     }
   }
+
+  WalletSourceKey _sourceKey(WalletModel wallet) => WalletSourceKey(
+    wallet.id,
+    wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
+    wallet.isTestnet ? 'testnet' : 'mainnet',
+  );
+
+  WalletNetworkKey _networkKey(WalletModel wallet) => WalletNetworkKey(
+    wallet.id,
+    wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
+    wallet.isTestnet ? 'testnet' : 'mainnet',
+  );
+
+  String _electrumFailureCategory(ElectrumFallbackException failure) =>
+      switch (failure) {
+        NoElectrumServersConfiguredException() => 'no_servers',
+        OnionServerWithoutTorException() => 'onion_without_tor',
+        ClearnetServerWithoutConfiguredTorException() =>
+          'clearnet_without_configured_tor',
+        AllElectrumServersFailedException(:final triedCustomServers) =>
+          triedCustomServers
+              ? 'custom_servers_failed'
+              : 'default_servers_failed',
+      };
 
   Future<bool> isTorRequired() async {
     final defaultWallets = await _readWallets(
@@ -643,10 +758,13 @@ class WalletRepository {
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
-      return await _lwkWallet.getAmountSentToAddress(
-        psbtOrPset,
-        address,
-        wallet: wallet,
+      return await _coordinator.runExclusive(
+        _sourceKey(wallet),
+        (_) => _lwkWallet.getAmountSentToAddress(
+          psbtOrPset,
+          address,
+          wallet: wallet,
+        ),
       );
     } else {
       return await _bdkWallet.getAmountSentToAddress(

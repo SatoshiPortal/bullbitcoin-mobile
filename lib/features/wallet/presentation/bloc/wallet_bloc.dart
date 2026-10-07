@@ -276,41 +276,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletSyncStarted event,
     Emitter<WalletState> emit,
   ) async {
-    // Update sync status for the wallet that started syncing
+    // Only refresh/load events own failure; sync starts update the spinner.
     final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-    newSyncStatus[event.wallet.id] = true;
-
+    newSyncStatus[event.walletId] = true;
     emit(state.copyWith(syncStatus: newSyncStatus));
-
-    // Only _onStarted and _onRefreshed own `failure`. These per-wallet sync
-    // events fire constantly (including from a `finally` after a failed sync),
-    // so writing it here would wipe a refresh failure before anyone saw it.
-    // A failed read here is logged and the list already on screen is kept.
-    final List<Wallet> wallets;
-    switch (await _getWalletsUsecase.execute()) {
-      case Ok(:final value):
-        wallets = value;
-      case Err(:final failure):
-        log.warning('Wallets read on sync start: ${failure.runtimeType}');
-        return;
-    }
-
-    if (wallets.isNotEmpty) {
-      final walletIds = wallets.map((w) => w.id).toList();
-      // A failed read leaves the previous figure in place rather than
-      // zeroing a balance the user is looking at.
-      final unconfirmedIncomingBalance =
-          switch (await _getUnconfirmedIncomingBalanceUsecase.execute(
-            walletIds: walletIds,
-          )) {
-            Ok(:final value) => value,
-            Err() => state.unconfirmedIncomingBalance,
-          };
-
-      emit(
-        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
-      );
-    }
   }
 
   Future<void> _onWalletSyncFinished(

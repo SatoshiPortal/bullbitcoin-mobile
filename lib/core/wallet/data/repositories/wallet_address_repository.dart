@@ -9,26 +9,28 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final LabelsFacade _labelsFacade;
+  final WalletSourceOperationCoordinator _coordinator;
 
   WalletAddressRepository({
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._labelsFacade,
+    required this._coordinator,
   }) : _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource;
 
   Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,
   }) async {
-    int index;
-    String address;
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
@@ -36,54 +38,41 @@ class WalletAddressRepository {
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);
-
-    if (walletModel is PublicBdkWalletModel) {
-      final addressInfo = await _bdkWallet.getLastRevealedAddressOrNew(
-        wallet: walletModel,
-      );
-      index = addressInfo.index;
-      address = addressInfo.address;
-    } else {
-      final ({String confidential, int index, String standard}) addressInfo =
-          await _lwkWallet.getLastUnusedAddress(wallet: walletModel);
-
-      index = addressInfo.index;
-      address = addressInfo.confidential;
-    }
-
-    var labels = await _labelsFacade.fetchByReference(address);
-
-    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
-      index++;
+    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+      int index;
+      String address;
       if (walletModel is PublicBdkWalletModel) {
-        address = await _bdkWallet.getAddressByIndex(
-          index,
+        final addressInfo = await _bdkWallet.getLastRevealedAddressOrNew(
           wallet: walletModel,
         );
+        index = addressInfo.index;
+        address = addressInfo.address;
       } else {
-        final addressInfo = await _lwkWallet.getAddressByIndex(
-          index,
+        final addressInfo = await _lwkWallet.getLastUnusedAddress(
           wallet: walletModel,
         );
+        index = addressInfo.index;
         address = addressInfo.confidential;
       }
-      labels = await _labelsFacade.fetchByReference(address);
-    }
 
-    final walletAddressModel = WalletAddressModel(
-      walletId: walletId,
-      index: index,
-      address: address,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
+      var labels = await _labelsFacade.fetchByReference(address);
+      while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+        index++;
+        address = await _addressAtIndex(index, walletModel);
+        labels = await _labelsFacade.fetchByReference(address);
+      }
 
-    final walletAddress = WalletAddressMapper.toEntity(
-      walletAddressModel,
-      labels: labels,
-    );
-
-    return walletAddress;
+      return WalletAddressMapper.toEntity(
+        WalletAddressModel(
+          walletId: walletId,
+          index: index,
+          address: address,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        labels: labels,
+      );
+    });
   }
 
   Future<WalletAddress> generateNewReceiveAddress({
@@ -96,63 +85,43 @@ class WalletAddressRepository {
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);
-    int index;
-    String address;
-    if (walletModel is PublicBdkWalletModel) {
-      // For BDK wallets, we can directly get a new address. As the index is
-      // incremented automatically by calling getNewAddress. No need to check
-      // for address re-use.
-      final addressInfo = await _bdkWallet.getNewAddress(wallet: walletModel);
-      index = addressInfo.index;
-      address = addressInfo.address;
-    } else {
-      final lastUnusedAddressInfo = await _lwkWallet.getLastUnusedAddress(
-        wallet: walletModel,
-      );
-
-      // Generate a new address with the next index.
-      final addressInfo = await _lwkWallet.getAddressByIndex(
-        lastUnusedAddressInfo.index + 1,
-        wallet: walletModel,
-      );
-
-      index = addressInfo.index;
-      address = addressInfo.confidential;
-    }
-
-    var labels = await _labelsFacade.fetchByReference(address);
-
-    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
-      index++;
+    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+      int index;
+      String address;
       if (walletModel is PublicBdkWalletModel) {
-        address = await _bdkWallet.getAddressByIndex(
-          index,
-          wallet: walletModel,
-        );
+        final addressInfo = await _bdkWallet.getNewAddress(wallet: walletModel);
+        index = addressInfo.index;
+        address = addressInfo.address;
       } else {
-        final addressInfo = await _lwkWallet.getAddressByIndex(
-          index,
+        final lastUnusedAddressInfo = await _lwkWallet.getLastUnusedAddress(
           wallet: walletModel,
         );
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          lastUnusedAddressInfo.index + 1,
+          wallet: walletModel,
+        );
+        index = addressInfo.index;
         address = addressInfo.confidential;
       }
-      labels = await _labelsFacade.fetchByReference(address);
-    }
 
-    final walletAddressModel = WalletAddressModel(
-      walletId: walletId,
-      index: index,
-      address: address,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
+      var labels = await _labelsFacade.fetchByReference(address);
+      while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+        index++;
+        address = await _addressAtIndex(index, walletModel);
+        labels = await _labelsFacade.fetchByReference(address);
+      }
 
-    final walletAddress = WalletAddressMapper.toEntity(
-      walletAddressModel,
-      labels: labels,
-    );
-
-    return walletAddress;
+      return WalletAddressMapper.toEntity(
+        WalletAddressModel(
+          walletId: walletId,
+          index: index,
+          address: address,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        labels: labels,
+      );
+    });
   }
 
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(
@@ -168,38 +137,44 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
 
-    final from =
-        fromIndex ??
-        (isBdkWallet
-            ? await _bdkWallet.getLastRevealedAddressIndex(wallet: walletModel)
-            : await _lwkWallet.getLastUnusedAddressIndex(wallet: walletModel));
-    final to = limit != null ? max(from - limit + 1, 0) : 0;
+    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+      final from =
+          fromIndex ??
+          (isBdkWallet
+              ? await _bdkWallet.getLastRevealedAddressIndex(
+                  wallet: walletModel,
+                )
+              : await _lwkWallet.getLastUnusedAddressIndex(
+                  wallet: walletModel,
+                ));
+      final to = limit != null ? max(from - limit + 1, 0) : 0;
 
-    // This is already in case we want to support both ascending and descending in the future
-    final step = from <= to ? 1 : -1;
-    final indexes = List.generate(
-      (to - from).abs() + 1,
-      (i) => from + i * step,
-    );
+      // This is already in case we want to support both ascending and descending in the future
+      final step = from <= to ? 1 : -1;
+      final indexes = List.generate(
+        (to - from).abs() + 1,
+        (i) => from + i * step,
+      );
 
-    final addresses = await Future.wait(
-      indexes.map((index) async {
-        return await _generateAddressModel(
-          index: index,
-          walletModel: walletModel,
-          walletId: walletId,
-          isBdkWallet: isBdkWallet,
-          isChange: false,
-        );
-      }),
-    );
+      final addresses = await Future.wait(
+        indexes.map((index) async {
+          return _generateAddressModel(
+            index: index,
+            walletModel: walletModel,
+            walletId: walletId,
+            isBdkWallet: isBdkWallet,
+            isChange: false,
+          );
+        }),
+      );
 
-    // Enrich addresses with balance and transaction data in parallel
-    return await _enrichAddresses(
-      addresses: addresses,
-      walletModel: walletModel,
-      isBdkWallet: isBdkWallet,
-    );
+      // Enrich addresses with balance and transaction data in parallel
+      return _enrichAddresses(
+        addresses: addresses,
+        walletModel: walletModel,
+        isBdkWallet: isBdkWallet,
+      );
+    });
   }
 
   Future<WalletAddressModel> _generateAddressModel({
@@ -292,43 +267,42 @@ class WalletAddressRepository {
       return [];
     }
 
-    final from =
-        fromIndex ??
-        await _bdkWallet.getLastRevealedAddressIndex(
-          wallet: walletModel,
-          isChange: true,
-        );
-    if (from < 0) {
-      // No change addresses have been revealed yet, so we return an empty list.
-      return [];
-    }
-    final to = limit != null ? max(from - limit + 1, 0) : 0;
+    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+      final from =
+          fromIndex ??
+          await _bdkWallet.getLastRevealedAddressIndex(
+            wallet: walletModel,
+            isChange: true,
+          );
+      if (from < 0) return <WalletAddress>[];
+      final to = limit != null ? max(from - limit + 1, 0) : 0;
 
-    // This is already in case we want to support both ascending and descending in the future
-    final step = from <= to ? 1 : -1;
-    final indexes = List.generate(
-      (to - from).abs() + 1,
-      (i) => from + i * step,
-    );
+      // This is already in case we want to support both ascending and descending in the future
+      final step = from <= to ? 1 : -1;
+      final indexes = List.generate(
+        (to - from).abs() + 1,
+        (i) => from + i * step,
+      );
 
-    final addresses = await Future.wait(
-      indexes.map((index) async {
-        return await _generateAddressModel(
-          index: index,
-          walletModel: walletModel,
-          walletId: walletId,
-          isBdkWallet: isBdkWallet,
-          isChange: true,
-        );
-      }),
-    );
+      final addresses = await Future.wait(
+        indexes.map((index) async {
+          return _generateAddressModel(
+            index: index,
+            walletModel: walletModel,
+            walletId: walletId,
+            isBdkWallet: isBdkWallet,
+            isChange: true,
+          );
+        }),
+      );
 
-    // Enrich addresses with balance and transaction data in parallel
-    return await _enrichAddresses(
-      addresses: addresses,
-      walletModel: walletModel,
-      isBdkWallet: isBdkWallet,
-    );
+      // Enrich addresses with balance and transaction data in parallel
+      return _enrichAddresses(
+        addresses: addresses,
+        walletModel: walletModel,
+        isBdkWallet: isBdkWallet,
+      );
+    });
   }
 
   Future<WalletAddress> getAddressAtIndex({
@@ -343,31 +317,43 @@ class WalletAddressRepository {
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);
-    String address;
-
-    if (walletModel is PublicBdkWalletModel) {
-      address = await _bdkWallet.getAddressByIndex(
+    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+      final address = await _addressAtIndex(
         index,
-        wallet: walletModel,
+        walletModel,
         isChange: isChange,
       );
-    } else {
-      final addressInfo = await _lwkWallet.getAddressByIndex(
-        index,
-        wallet: walletModel,
+      final walletAddressModel = WalletAddressModel(
+        walletId: walletId,
+        index: index,
+        address: address,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
-      address = addressInfo.confidential;
+      final labels = await _labelsFacade.fetchByReference(address);
+      return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
+    });
+  }
+
+  WalletSourceKey _sourceKey(WalletModel wallet) => WalletSourceKey(
+    wallet.id,
+    wallet is PublicBdkWalletModel ? 'bitcoin' : 'liquid',
+    wallet.isTestnet ? 'testnet' : 'mainnet',
+  );
+
+  Future<String> _addressAtIndex(
+    int index,
+    WalletModel wallet, {
+    bool isChange = false,
+  }) async {
+    if (wallet is PublicBdkWalletModel) {
+      return _bdkWallet.getAddressByIndex(
+        index,
+        wallet: wallet,
+        isChange: isChange,
+      );
     }
-
-    final walletAddressModel = WalletAddressModel(
-      walletId: walletId,
-      index: index,
-      address: address,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
-    final labels = await _labelsFacade.fetchByReference(address);
-    return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
+    final address = await _lwkWallet.getAddressByIndex(index, wallet: wallet);
+    return address.confidential;
   }
 }
