@@ -60,6 +60,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
 
   /// Whether this bootstrap has served its readiness hold; until then Arti's readiness is republished as full progress, not as ready.
   bool _announced = false;
+  TorBootstrapDetail? _lastDetail;
   Future<void> _lifecycleTail = Future<void>.value();
   Future<void> _dormancyTail = Future<void>.value();
   int _generation = 0;
@@ -116,6 +117,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _publish(const EmbeddedTorStopped());
     _publish(EmbeddedTorConnecting(progress: 0, transport: transport));
     _lastDiagnostic = null;
+    _lastDetail = null;
 
     try {
       final support = await getApplicationSupportDirectory();
@@ -197,7 +199,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       await _cleanup();
       rethrow;
     } on onion.TorFailure catch (error) {
-      final failure = _mapFailure(error, _lastDiagnostic);
+      final failure = failureFor(error, _lastDiagnostic, _lastDetail);
       _logStartFailure(transport, failure);
       await _cleanup();
       throw TorBackendException(failure);
@@ -239,7 +241,12 @@ final class OnionTorBackend implements EmbeddedTorPort {
     final blockage = status.blockage;
     final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
     final transport = _mapTransport(status.transport);
+    final detail = switch (eventFor(status, endpoint)) {
+      EmbeddedTorConnecting(:final detail) => detail,
+      _ => null,
+    };
     _lastDiagnostic = diagnostic;
+    _lastDetail = detail;
     if (status.readyForTraffic && !_trafficReady.isCompleted) {
       _trafficReady.complete();
     }
@@ -261,7 +268,32 @@ final class OnionTorBackend implements EmbeddedTorPort {
               progress: status.readyForTraffic ? 1 : status.fraction,
               transport: transport,
               diagnostic: diagnostic,
+              detail: detail,
             ),
+    );
+  }
+
+  /// Maps one arti status snapshot to the event this port publishes.
+  @visibleForTesting
+  static EmbeddedTorEvent eventFor(
+    onion.TorStatus status,
+    TorProxyEndpoint endpoint,
+  ) {
+    final transport = _mapTransport(status.transport);
+    if (status.readyForTraffic) return EmbeddedTorReady(endpoint, transport);
+
+    final blockage = status.blockage;
+    final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
+    final message = blockage?.message.trim();
+    return EmbeddedTorConnecting(
+      progress: status.fraction,
+      transport: transport,
+      diagnostic: diagnostic,
+      // A blockage that maps to no diagnostic is not a fault, and its message
+      // would put a bogus explanation on screen.
+      detail: diagnostic == null || message == null || message.isEmpty
+          ? null
+          : TorBootstrapDetail(blockage: message),
     );
   }
 
@@ -289,15 +321,18 @@ final class OnionTorBackend implements EmbeddedTorPort {
         onion.TorTransport.snowflake => TorTransport.snowflake,
       };
 
-  static TorFailure _mapFailure(
+  @visibleForTesting
+  static TorFailure failureFor(
     onion.TorFailure failure,
-    TorDiagnostic? diagnostic,
-  ) => switch (failure.kind) {
+    TorDiagnostic? diagnostic, [
+    TorBootstrapDetail? detail,
+  ]) => switch (failure.kind) {
     onion.TorFailureKind.configuration ||
     onion.TorFailureKind.listenerBind => TorStorageFailure(failure.logMessage),
     onion.TorFailureKind.bootstrap => TorBootstrapFailure(
       failure.logMessage,
       diagnostic,
+      detail,
     ),
     onion.TorFailureKind.timeout => TorBootstrapTimeoutFailure(
       failure.logMessage,
@@ -332,7 +367,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         session.stop,
       );
     } on onion.TorFailure catch (error) {
-      throw TorBackendException(_mapFailure(error, _lastDiagnostic));
+      throw TorBackendException(failureFor(error, _lastDiagnostic));
     }
   }
 
@@ -404,6 +439,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _lastDiagnostic = null;
     _lastReadinessLog = null;
     _announced = false;
+    _lastDetail = null;
     _snowflakeLease = false;
     try {
       await service?.stop();

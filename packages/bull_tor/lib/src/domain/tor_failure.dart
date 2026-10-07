@@ -14,7 +14,10 @@ final class TorExternalProxyUnavailableFailure extends TorFailure {
 final class TorBootstrapFailure extends TorFailure {
   final TorDiagnostic? diagnostic;
 
-  const TorBootstrapFailure([super.logMessage, this.diagnostic]);
+  /// What arti last said before giving up; see [TorBootstrapDetail].
+  final TorBootstrapDetail? detail;
+
+  const TorBootstrapFailure([super.logMessage, this.diagnostic, this.detail]);
 }
 
 final class TorBootstrapTimeoutFailure extends TorFailure {

@@ -102,6 +102,7 @@ void main() {
       'transport': null,
       'progress_percent': null,
       'diagnostic': null,
+      'blockage_detail': null,
       'socks_proxy_configured': true,
     });
     expect(context.toLogMessage(), isNot(contains('event')));
@@ -140,6 +141,20 @@ void main() {
     });
     expect(resources.toJson().containsKey('ram_available_mb'), isFalse);
     expect(resources.toJson().containsKey('disk_available_mb'), isFalse);
+  });
+
+  test('reports arti\'s blockage detail next to the diagnostic', () {
+    const tor = DiagnosticTorContext(
+      source: 'embedded',
+      state: 'connecting',
+      diagnostic: 'clockSkewed',
+      blockageDetail: 'Clock is skewed by 2 hours',
+    );
+
+    expect(
+      tor.toJson(),
+      containsPair('blockage_detail', 'Clock is skewed by 2 hours'),
+    );
   });
 }
 
