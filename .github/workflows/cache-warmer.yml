@@ -84,5 +84,6 @@ jobs:
             **/*.gen.dart
             **/*.gr.dart
             **/*.config.dart
+            **/*.mapper.dart
             !packages/bull_ui_catalogue/lib/main.directories.g.dart
           key: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}

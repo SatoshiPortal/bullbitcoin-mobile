@@ -90,6 +90,7 @@ translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
 	@(cd features/logs && fvm flutter gen-l10n)
+	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -104,6 +105,7 @@ drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
+	cd features/recoverbull && fvm dart run drift_dev make-migrations
 
 ios-pod-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
