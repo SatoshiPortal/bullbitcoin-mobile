@@ -102,7 +102,7 @@ dependencies:
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
+      ref: 293b0d709f6c7775180f775c6a5fe99a39f175ce
   flutter_zxing: ^2.2.1
   webview_cookie_manager:
     git:
