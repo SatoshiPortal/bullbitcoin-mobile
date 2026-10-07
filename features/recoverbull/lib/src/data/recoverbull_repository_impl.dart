@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 
 import './datasources/recoverbull_local_datasource.dart';
@@ -148,6 +149,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         );
         return Err(_mapSocksConnectionFailure(cause));
       }
+      if (_isTransportFailure(e)) {
+        _logTransportFailure('store', e);
+        return const Err(
+          KeyServerUnavailableFailure('Key server connection failed'),
+        );
+      }
       _logUnexpected('store', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -189,6 +196,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         );
         return Err(_mapSocksConnectionFailure(cause));
       }
+      if (_isTransportFailure(e)) {
+        _logTransportFailure('fetch', e);
+        return const Err(
+          KeyServerUnavailableFailure('Key server connection failed'),
+        );
+      }
       _logUnexpected('fetch', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -229,6 +242,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         _logKeyServer('fetch', e, st, cause: cause);
       } else if (e is TimeoutException) {
         log.warning('recoverbull.key.fetch.timeout');
+      } else if (cause == null && _isTransportFailure(e)) {
+        _logTransportFailure('fetch', e);
       } else {
         _logUnexpected('fetch', e, st);
       }
@@ -239,6 +254,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
             ? _mapSocksConnectionFailure(cause)
             : e is TimeoutException
             ? const KeyServerUnavailableFailure()
+            : _isTransportFailure(e)
+            ? const KeyServerUnavailableFailure('Key server connection failed')
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
@@ -265,11 +282,17 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       log.fine('recoverbull.key.trash.succeeded');
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      final cause = e is recoverbull.KeyServerException ? attempt.take() : null;
+      final cause = attempt.take();
       if (e is recoverbull.KeyServerException) {
         _logKeyServer('trash', e, st, cause: cause);
       } else if (e is TimeoutException) {
         log.warning('recoverbull.key.trash.timeout');
+      } else if (cause != null) {
+        log.warning(
+          'recoverbull.key.trash.connection_failed cause=${cause.logValue}',
+        );
+      } else if (_isTransportFailure(e)) {
+        _logTransportFailure('trash', e);
       } else {
         _logUnexpected('trash', e, st);
       }
@@ -280,6 +303,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
             ? _mapSocksConnectionFailure(cause)
             : e is TimeoutException
             ? const KeyServerUnavailableFailure()
+            : _isTransportFailure(e)
+            ? const KeyServerUnavailableFailure('Key server connection failed')
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
@@ -400,6 +425,22 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     } else {
       _logUnexpected(operation, error, trace);
     }
+  }
+
+  /// The SDK rethrows transport exceptions from fetchBackupKey unchanged. A
+  /// dropped connection or an interrupted response after the SOCKS tunnel was
+  /// established leaves no recorded cause, yet it is an actionable connection
+  /// failure, not an unexpected crypto error.
+  bool _isTransportFailure(Object error) =>
+      error is SocketException ||
+      error is HttpException ||
+      error is TimeoutException;
+
+  void _logTransportFailure(String operation, Object error) {
+    log.warning(
+      'recoverbull.key.$operation.connection_failed '
+      'error_type=${error.runtimeType}',
+    );
   }
 
   void _logUnexpected(String operation, Object error, StackTrace trace) {
