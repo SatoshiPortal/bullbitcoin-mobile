@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'entities/tor_connection_state.dart';
 import 'entities/tor_session.dart';
 import 'entities/tor_transport.dart';
+import 'entities/tor_transport_fallback.dart';
 
 /// The embedded Arti client's lifecycle and current readiness.
 ///
@@ -15,6 +16,10 @@ abstract interface class TorRepository {
 
   /// Emits the current state on listen, then every change.
   Stream<TorConnectionState> watch();
+
+  /// Emits each time automatic mode hands a connection attempt over to the
+  /// next transport. Nothing is replayed on listen.
+  Stream<TorTransportFallback> watchFallbacks();
 
   /// Starts the client, or adopts one that is already serving traffic.
   /// Concurrent callers share a single start.

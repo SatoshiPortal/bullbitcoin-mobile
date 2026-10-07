@@ -676,7 +676,9 @@ void main() {
           ];
         final repository = TorRepositoryImpl(embedded);
         final states = <TorConnectionState>[];
+        final fallbacks = <TorTransportFallback>[];
         repository.watch().listen(states.add);
+        repository.watchFallbacks().listen(fallbacks.add);
         TorConnectionState? outcome;
         repository.ensureReady().then((state) => outcome = state);
         async.flushMicrotasks();
@@ -695,6 +697,7 @@ void main() {
           states.skip(1).where((s) => s is TorStopped || s is TorUnavailable),
           isEmpty,
         );
+        expect(fallbacks.map((f) => f.reason), [TorFallbackReason.stalled]);
         repository.close().ignore();
         async.flushMicrotasks();
       });
@@ -780,6 +783,126 @@ void main() {
         },
       );
     }
+
+    group('reports each hand-over', () {
+      List<TorTransportFallback> record(TorRepositoryImpl repository) {
+        final fallbacks = <TorTransportFallback>[];
+        repository.watchFallbacks().listen(fallbacks.add);
+        return fallbacks;
+      }
+
+      test('as censorship when the blockage suggests it', () {
+        fakeAsync((async) {
+          final repository = TorRepositoryImpl(embedded);
+          final fallbacks = record(repository);
+          repository.ensureReady().ignore();
+          async.flushMicrotasks();
+          embedded.events.add(
+            const EmbeddedTorConnecting(
+              progress: 0.1,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.cantReachTor,
+            ),
+          );
+          async.flushMicrotasks();
+
+          expect(fallbacks, hasLength(1));
+          expect(fallbacks.single.from, TorTransport.direct);
+          expect(fallbacks.single.to, TorTransport.snowflake);
+          expect(fallbacks.single.reason, TorFallbackReason.censorship);
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('as stalled after 30 s without progress', () {
+        fakeAsync((async) {
+          final repository = TorRepositoryImpl(embedded);
+          final fallbacks = record(repository);
+          repository.ensureReady().ignore();
+          async.flushMicrotasks();
+          async.elapse(const Duration(seconds: 30));
+
+          expect(fallbacks.map((f) => f.reason), [TorFallbackReason.stalled]);
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('as timeout at the 120 s limit', () {
+        fakeAsync((async) {
+          final repository = TorRepositoryImpl(embedded);
+          final fallbacks = record(repository);
+          repository.ensureReady().ignore();
+          async.flushMicrotasks();
+          for (var step = 1; step <= 6; step++) {
+            async.elapse(const Duration(seconds: 20));
+            embedded.events.add(directAt(step * 0.1));
+          }
+
+          expect(fallbacks.map((f) => f.reason), [TorFallbackReason.timeout]);
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('from the backend\'s own failures', () async {
+        final repository = TorRepositoryImpl(embedded);
+        addTearDown(repository.close);
+        final fallbacks = record(repository);
+
+        final first = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.completeError(
+          const TorBackendException(TorBootstrapTimeoutFailure('timeout')),
+        );
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+        );
+        await first;
+
+        final second = repository.retry();
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.completeError(
+          const TorBackendException(
+            TorBootstrapFailure('filtered', TorDiagnostic.filtering),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41003),
+        );
+        await second;
+
+        expect(fallbacks.map((f) => f.reason), [
+          TorFallbackReason.timeout,
+          TorFallbackReason.censorship,
+        ]);
+      });
+
+      test('never when the attempt ends without Snowflake', () {
+        fakeAsync((async) {
+          final repository = TorRepositoryImpl(embedded);
+          final fallbacks = record(repository);
+          repository.ensureReady().ignore();
+          async.flushMicrotasks();
+          embedded.events.add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          );
+          async.elapse(const Duration(seconds: 120));
+
+          expect(repository.current, isA<TorUnavailable>());
+          expect(fallbacks, isEmpty);
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+    });
 
     test('direct mode never abandons a slow bootstrap', () {
       fakeAsync((async) {
