@@ -832,7 +832,6 @@
   "backupCompletedTitle": "Varmuuskopio tehty!",
   "backupCompletedDescription": "Testataan nyt varmuuskopio varmistaaksemme, että kaikki tehtiin oikein.",
   "testBackupButton": "Testaa varmuuskopio",
-  "keyServerLabel": "Avainpalvelin ",
   "physicalBackupStatusLabel": "Fyysinen varmuuskopio",
   "encryptedVaultStatusLabel": "Salattu holvi",
   "testedStatus": "Testattu",
@@ -882,7 +881,6 @@
   "verifyButton": "Vahvista",
   "passphraseLabel": "Suojaussana",
   "testYourWalletTitle": "Testaa lompakkosi",
-  "vaultSuccessfullyImported": "Holvisi tuotiin onnistuneesti",
   "backupIdLabel": "Varmuuskopio-ID:",
   "createdAtLabel": "Luotu:",
   "enterBackupKeyManuallyButton": "Syötä varmuuskopion avain manuaalisesti >>",
@@ -964,8 +962,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "Sinun täytyy kirjautua Google Driveen",
-  "googleDrivePrivacyMessage": "Google pyytää jakamaan henkilökohtaisia tietoja tämän sovelluksen kanssa.",
   "informationWillNotLeave": "Tämä tieto ",
   "willNot": "eivät poistu ",
   "leaveYourPhone": "puhelimestasi eikä niitä ",
@@ -974,7 +970,6 @@
   "savingToDevice": "Tallennetaan laitteellesi.",
   "loadingBackupFile": "Ladataan varmuuskopiotiedostoa...",
   "pleaseWaitFetching": "Odota, kun haemme varmuuskopiotiedostoasi.",
-  "googleDriveProvider": "Google Drive",
   "appleICloudProvider": "Apple iCloud",
   "customLocationProvider": "Mukautettu sijainti",
   "quickAndEasyTag": "Nopea ja helppo",

@@ -2921,10 +2921,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
-  },
   "physicalBackupStatusLabel": "Physical Backup",
   "@physicalBackupStatusLabel": {
     "description": "Status label for physical backup"
@@ -3068,10 +3064,6 @@
   "testYourWalletTitle": "Apna wallet test karo",
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
-  },
-  "vaultSuccessfullyImported": "Aapka vault kamyabi se import ho gaya",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
@@ -3267,14 +3259,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "Aapko Google Drive mein sign in karna hoga",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
-  },
-  "googleDrivePrivacyMessage": "Google aapki personal jaankari is app ke saath share karne ke liye kahunga.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "informationWillNotLeave": "Yeh jaankari ",
   "@informationWillNotLeave": {
     "description": "First part of privacy assurance message"
@@ -3306,10 +3290,6 @@
   "pleaseWaitFetching": "Kripya rukiye, hum aapki backup file la rahe hain.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
-  },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
