@@ -12,6 +12,7 @@ import '../domain/tor_repository.dart';
 final class TorRepositoryImpl implements TorRepository {
   final EmbeddedTorPort _embeddedTor;
   final Future<void> Function(TorTransport)? _onSuccessfulTransport;
+  final Future<void> Function()? _onSessionInvalidated;
   final StreamController<TorConnectionState> _changes =
       StreamController<TorConnectionState>.broadcast(sync: true);
 
@@ -35,11 +36,13 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode initialMode = TorTransportMode.automatic,
     TorTransport? lastSuccessfulTransport,
     Future<void> Function(TorTransport)? onSuccessfulTransport,
+    Future<void> Function()? onSessionInvalidated,
   }) => TorRepositoryImpl._(
     embeddedTor,
     initialMode,
     lastSuccessfulTransport,
     onSuccessfulTransport,
+    onSessionInvalidated,
   );
 
   TorRepositoryImpl._(
@@ -47,6 +50,7 @@ final class TorRepositoryImpl implements TorRepository {
     this._mode,
     this._lastSuccessfulTransport,
     this._onSuccessfulTransport,
+    this._onSessionInvalidated,
   );
 
   @override
@@ -81,6 +85,8 @@ final class TorRepositoryImpl implements TorRepository {
       return ready;
     }
 
+    if (ready is TorReady) unawaited(_onSessionInvalidated?.call());
+
     return _inFlight ?? _begin(retry: false);
   }
 
@@ -89,6 +95,7 @@ final class TorRepositoryImpl implements TorRepository {
     final inFlight = _inFlight;
     if (inFlight != null && _retryInFlight) return inFlight;
 
+    unawaited(_onSessionInvalidated?.call());
     return _begin(retry: true);
   }
 
@@ -139,6 +146,7 @@ final class TorRepositoryImpl implements TorRepository {
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
+    unawaited(_onSessionInvalidated?.call());
     _generation++;
     await _embeddedSubscription?.cancel();
     await _embeddedTor.close();
