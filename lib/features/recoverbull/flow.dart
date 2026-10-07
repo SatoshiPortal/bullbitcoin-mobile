@@ -62,13 +62,8 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
           });
         }
 
-        return PopScope(
-          canPop: !(_navigatorKey.currentState?.canPop() ?? false),
-          onPopInvokedWithResult: (didPop, result) {
-            if (!didPop && (_navigatorKey.currentState?.canPop() ?? false)) {
-              _navigatorKey.currentState?.pop();
-            }
-          },
+        return NavigatorPopHandler<Object?>(
+          onPopWithResult: (_) => _navigatorKey.currentState?.maybePop(),
           child: Navigator(
             key: _navigatorKey,
             onGenerateRoute: (settings) {
