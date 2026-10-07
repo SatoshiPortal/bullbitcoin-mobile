@@ -19,6 +19,7 @@ workspace:
   - packages/screen_privacy
   - packages/bull_logger
   - features/logs
+  - features/recoverbull
 
 dependencies:
   flutter:
