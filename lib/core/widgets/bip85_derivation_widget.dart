@@ -49,7 +49,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
 
   @override
   void dispose() {
-    _clipboardClearTimer?.cancel();
+    // Clipboard cleanup outlives the card that initiated the copy.
     _aliasController.dispose();
     super.dispose();
   }
@@ -180,13 +180,24 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                 ),
                 IconButton(
                   icon: Icon(Icons.copy, color: context.appColors.onSurface),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: widget.entropy));
+                  onPressed: () async {
+                    final copied = widget.entropy;
                     _clipboardClearTimer?.cancel();
+                    await Clipboard.setData(ClipboardData(text: copied));
                     _clipboardClearTimer = Timer(
                       const Duration(seconds: 30),
-                      () => Clipboard.setData(const ClipboardData(text: '')),
+                      () async {
+                        final current = await Clipboard.getData(
+                          Clipboard.kTextPlain,
+                        );
+                        if (current?.text == copied) {
+                          await Clipboard.setData(
+                            const ClipboardData(text: ''),
+                          );
+                        }
+                      },
                     );
+                    if (!context.mounted) return;
                     SnackBarUtils.showCopiedSnackBar(context);
                   },
                 ),
