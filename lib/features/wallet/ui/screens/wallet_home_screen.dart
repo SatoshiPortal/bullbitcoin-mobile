@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
@@ -81,6 +82,12 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     if (!mounted) return;
     context.read<WalletBloc>().add(const RefreshSpWallet());
     context.read<WalletBloc>().add(const WalletRefreshed());
+    // Only a price that never loaded (e.g. an offline start) is retried here:
+    // re-fetching a working one would hit the price API on every navigation.
+    final priceBloc = context.read<BitcoinPriceBloc>();
+    if (!priceBloc.state.hasValidFiatRate && !priceBloc.state.loadingPrice) {
+      priceBloc.add(const BitcoinPriceFetched());
+    }
   }
 
   @override
@@ -119,7 +126,12 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             ),
             BBPullableBody(
               indicatorKey: _indicatorKey,
-              onRefresh: () => context.read<WalletBloc>().refresh(),
+              onRefresh: () {
+                context.read<BitcoinPriceBloc>().add(
+                  const BitcoinPriceFetched(),
+                );
+                return context.read<WalletBloc>().refresh();
+              },
               // Clearance for the bar pinned at the bottom of this Stack, so
               // the last wallet card can be scrolled out from under it.
               bottomInset:
