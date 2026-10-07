@@ -61,10 +61,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
           log.warning(
             'The vault mnemonic does not match the current default wallet.',
           );
-          await _walletRepository.updateEncryptedBackupTime(
-            time: null,
-            walletId: wallet.id,
-          );
+          // Testing another vault does not invalidate this wallet's backup.
         }
       }
       return const Ok(null);
