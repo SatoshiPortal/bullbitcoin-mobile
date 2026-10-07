@@ -13,6 +13,7 @@ import '../widgets/dial_pad.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
 import 'package:go_router/go_router.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 
 enum InputType { pin, password, vaultKey }
 
@@ -23,7 +24,10 @@ class PasswordInputPage extends StatefulWidget {
   State<PasswordInputPage> createState() => _PasswordInputPageState();
 }
 
-class _PasswordInputPageState extends State<PasswordInputPage> {
+/// The password, PIN or vault key typed here can be revealed, so screen
+/// capture stays blocked while the page is mounted.
+class _PasswordInputPageState extends State<PasswordInputPage>
+    with PrivacyScreen {
   bool isObscured = true;
   InputType inputType = InputType.pin;
   String validatedPassword = '';
@@ -31,7 +35,14 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    enableScreenPrivacy();
+  }
+
+  @override
   void dispose() {
+    disableScreenPrivacy();
     inputController.dispose();
     super.dispose();
   }
