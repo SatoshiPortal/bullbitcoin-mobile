@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcement_l10n.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/widgets.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// A single announcement banner: a tappable [BullInfoCard] body (fires the
@@ -25,6 +27,7 @@ class AnnouncementCard extends StatelessWidget {
     final tone = switch (announcement.tone) {
       AnnouncementTone.info => colors.info,
       AnnouncementTone.warning => colors.warning,
+      AnnouncementTone.error => colors.error,
       AnnouncementTone.success => colors.success,
     };
 
@@ -50,12 +53,16 @@ class AnnouncementCard extends StatelessWidget {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onDismiss,
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: BullIcon(
-                BullIcons.close,
-                size: 18,
-                color: colors.onSurfaceVariant,
+            child: Semantics(
+              button: true,
+              label: context.loc.closeDialogButton,
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: BullIcon(
+                  BullIcons.close,
+                  size: 18,
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
           ),

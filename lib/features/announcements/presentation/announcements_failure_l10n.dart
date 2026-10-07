@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 extension AnnouncementsFailureL10n on AnnouncementsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     AnnouncementStorageFailure() => context.loc.oopsSomethingWentWrong,
+    AnnouncementRecoverBullUnavailableFailure() =>
+      context.loc.oopsSomethingWentWrong,
     AnnouncementUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

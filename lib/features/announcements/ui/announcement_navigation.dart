@@ -1,5 +1,9 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
+import 'package:bb_mobile/features/announcements/domain/entities/recoverbull_announcement.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 /// Resolves each announcement to the route its [NavigateAction] opens.
 ///
@@ -12,5 +16,18 @@ extension AnnouncementNavigation on Announcement {
     AnnouncementId.appUpdateRequired => throw UnsupportedError(
       'The app update announcement does not navigate',
     ),
+    AnnouncementId.recoverBullTargetedActivity ||
+    AnnouncementId.recoverBullServicePressure ||
+    AnnouncementId.recoverBullUnavailable => throw UnsupportedError(
+      'RecoverBull navigation is resolved by the carousel',
+    ),
   };
+
+  void open(BuildContext context) {
+    if (this case final RecoverBullAnnouncement announcement) {
+      openRecoverBullAttemptAlertDetails(context, announcement.sourceAlerts);
+      return;
+    }
+    context.pushNamed(route.name);
+  }
 }
