@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
@@ -89,10 +89,8 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                             .loc
                             .onboardingAdvancedOptionsCustomRecoverbull,
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsPage(),
-                            ),
+                          context.pushNamed(
+                            RecoverBullRoute.recoverbullSettings.name,
                           );
                         },
                       ),
