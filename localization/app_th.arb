@@ -1396,10 +1396,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "Google ไดรฟ์",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "ชื่อบัญชี",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -2340,10 +2336,6 @@
   "buyCompleteKyc": "สมบูรณ์แบบ",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "การเปิดใช้งานของคุณประสบความสําเร็จ",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "ใส่บัญชี",
   "@payAccountNumberHint": {
@@ -4314,10 +4306,6 @@
   "pinCodeConfirmTitle": "ยืนยันเข็มใหม่",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "เซิร์ฟเวอร์ ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "รีวิวการชําระเงิน",
   "@payReviewPayment": {
@@ -7504,10 +7492,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google ขอให้คุณแบ่งปันข้อมูลส่วนบุคคลกับแอปนี้.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "Oops! สิ่งที่ไม่ผิด",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -9400,10 +9384,6 @@
   "paySendMax": "สูงสุด",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "คุณจะต้องลงทะเบียนไปยัง Google Drive",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "เสร็จสมบูรณ์",
   "@transactionDetailLabelCompletedAt": {

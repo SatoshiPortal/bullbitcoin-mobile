@@ -3892,10 +3892,6 @@
   "@testBackupButton": {
     "description": "Button label to test backup"
   },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
-  },
   "physicalBackupStatusLabel": "Physical Backup",
   "@physicalBackupStatusLabel": {
     "description": "Status label for physical backup"
@@ -4039,10 +4035,6 @@
   "testYourWalletTitle": "Test your wallet",
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
-  },
-  "vaultSuccessfullyImported": "Your vault was successfully imported",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
@@ -4238,14 +4230,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "You will need to sign-in to Google Drive",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
-  },
-  "googleDrivePrivacyMessage": "Google will ask you to share personal information with this app.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "informationWillNotLeave": "This information ",
   "@informationWillNotLeave": {
     "description": "First part of privacy assurance message"
@@ -4277,10 +4261,6 @@
   "pleaseWaitFetching": "Please wait while we fetch your backup file.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
-  },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {

@@ -2861,10 +2861,6 @@
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
   },
-  "vaultSuccessfullyImported": "صندلی شما با موفقیت وارد شد",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
-  },
   "payAccountNumberHint": "شماره حساب ورودی",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
@@ -4488,10 +4484,6 @@
   "pinCodeConfirmTitle": "تایید جدید پین",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "پرداخت",
   "@payReviewPayment": {
@@ -9473,10 +9465,6 @@
   "@fundExchangeOnlineBillPaymentHelpBillerName": {
     "description": "Help text for biller name field"
   },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "physicalBackupRecommendationText": "شما به قابلیت های امنیتی عملیاتی خود برای پنهان کردن و حفظ کلمات بذر بیت کوین اعتماد دارید.",
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
@@ -10000,10 +9988,6 @@
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "googleDrivePrivacyMessage": "گوگل از شما می خواهد اطلاعات شخصی را با این برنامه به اشتراک بگذارید.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "transactionSwapDescLnReceiveExpired": "این مبادله منقضی شده است. هرگونه پول ارسال شده به صورت خودکار به فرستنده بازگردانده می شود.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
@@ -10136,10 +10120,6 @@
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "googleDriveSignInMessage": "شما باید به Google Drive وارد شوید",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {

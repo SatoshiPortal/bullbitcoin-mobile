@@ -1379,10 +1379,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "গুগল ড্রাইভ",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "হিসাবের নাম",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -2281,10 +2277,6 @@
   "buyCompleteKyc": "KYC সম্পন্ন করুন",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "আপনার ভল্ট সফলভাবে ইমপোর্ট করা হয়েছে",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "অ্যাকাউন্ট নম্বর লিখুন",
   "@payAccountNumberHint": {
@@ -4178,10 +4170,6 @@
   "pinCodeConfirmTitle": "নতুন PIN নিশ্চিত করুন",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "চাবি সার্ভার ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "পেমেন্ট পর্যালোচনা",
   "@payReviewPayment": {
@@ -7285,10 +7273,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google আপনাকে এই অ্যাপে আপনার ব্যক্তিগত তথ্য শেয়ার করতে বলবে।",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "ওহ! কিছু ভুল হয়েছে",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -9129,10 +9113,6 @@
   "paySendMax": "সর্বোচ্চ",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "Google Drive-এ সাইন-ইন করতে হবে",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "সমাপ্তির সময়",
   "@transactionDetailLabelCompletedAt": {
