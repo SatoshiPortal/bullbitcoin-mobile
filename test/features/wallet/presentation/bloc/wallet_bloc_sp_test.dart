@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -46,7 +46,11 @@ class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 class _MockCheckWalletSyncingUsecase extends Mock
     implements CheckWalletSyncingUsecase {}
 
-class _MockCheckBackupNeeded extends Mock implements CheckBackupNeededUsecase {}
+class _MockCheckBackupNeeded extends Mock implements CheckBackupNeededUsecase {
+  _MockCheckBackupNeeded() {
+    when(execute).thenAnswer((_) async => const Ok(false));
+  }
+}
 
 class _MockWatchStarted extends Mock
     implements WatchStartedWalletSyncsUsecase {}
