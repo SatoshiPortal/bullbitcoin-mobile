@@ -169,6 +169,14 @@
     }
   },
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullAttemptMonitoringServicePressureTitle": "Backup service under load",
+  "@recoverbullAttemptMonitoringServicePressureTitle": {
+    "description": "Title of the home card shown when the backup key server reports load or is nearing its identifier capacity"
+  },
+  "recoverbullAttemptMonitoringUnavailableTitle": "Backup monitoring unavailable",
+  "@recoverbullAttemptMonitoringUnavailableTitle": {
+    "description": "Title of the home card shown when backup attempt monitoring cannot reach the key server"
+  },
   "recoverbullPasswordMismatch": "Passwords do not match",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"
