@@ -9,7 +9,9 @@ import 'bull_aliases.dart';
 import 'with_bull_theme.dart';
 
 /// Copy/reveal adapter retained because no Bull UI component owns secret copy
-/// semantics. It never logs or exposes the clipboard value through semantics.
+/// semantics. It never logs the value, and keeps both the displayed and the
+/// revealed value out of the semantics tree, so accessibility services cannot
+/// read it.
 class CopyInput extends StatelessWidget {
   final String value;
   final bool canShowValueModal;
@@ -68,12 +70,14 @@ class CopyInput extends StatelessWidget {
                           ),
                         ),
                       )
-                    : BBText(
-                        value,
-                        style: context.font.bodyLarge,
-                        color: colors.secondary,
-                        maxLines: maxLines,
-                        overflow: overflow,
+                    : ExcludeSemantics(
+                        child: BBText(
+                          value,
+                          style: context.font.bodyLarge,
+                          color: colors.secondary,
+                          maxLines: maxLines,
+                          overflow: overflow,
+                        ),
                       ),
               ),
             ),
@@ -126,11 +130,13 @@ class CopyInput extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
           content: SingleChildScrollView(
-            child: SelectableText(
-              (modalContent ?? value).toString(),
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(fontSize: 18),
+            child: ExcludeSemantics(
+              child: SelectableText(
+                (modalContent ?? value).toString(),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 18),
+              ),
             ),
           ),
           actions: [
