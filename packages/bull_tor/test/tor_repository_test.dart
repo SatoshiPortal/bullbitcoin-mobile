@@ -172,6 +172,30 @@ void main() {
       expect((state as TorReady).route.endpoint, secondEndpoint);
     });
 
+    test('reports a dead cached session for route invalidation', () async {
+      var invalidations = 0;
+      final repository = TorRepositoryImpl(
+        embedded,
+        onSessionInvalidated: () async => invalidations++,
+      );
+      addTearDown(repository.close);
+      final first = repository.ensureReady();
+      await Future<void>.delayed(Duration.zero);
+      embedded.starts.single.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      );
+      await first;
+
+      embedded.alive = false;
+      final restarted = repository.ensureReady();
+      await Future<void>.delayed(Duration.zero);
+      embedded.starts.last.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+      );
+      await restarted;
+      expect(invalidations, 1);
+    });
+
     test('adopts a client that is still serving traffic', () async {
       final first = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
