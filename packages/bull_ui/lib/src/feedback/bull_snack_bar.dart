@@ -48,7 +48,13 @@ class BullSnackBar {
     _show(context, content);
   }
 
-  static void _show(BuildContext context, Widget content) {
+  static void showIn(OverlayState overlay, {required String message}) =>
+      _showIn(overlay, _BullSnackBarContent(message: message));
+
+  static void _show(BuildContext context, Widget content) =>
+      _showIn(Overlay.of(context, rootOverlay: true), content);
+
+  static void _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
     _entry = OverlayEntry(
       builder: (_) => Positioned(
@@ -68,7 +74,7 @@ class BullSnackBar {
         ),
       ),
     );
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    overlay.insert(_entry!);
     _scheduleAutoDismiss();
   }
 
