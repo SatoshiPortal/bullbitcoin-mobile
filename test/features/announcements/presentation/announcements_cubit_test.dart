@@ -34,7 +34,7 @@ void main() {
   late StreamController<bool> appUpdateController;
 
   setUpAll(() {
-    registerFallbackValue(AnnouncementId.payjoinPrivacy);
+    registerFallbackValue(_announcement());
   });
 
   setUp(() {
@@ -83,10 +83,20 @@ void main() {
       final cubit = build();
       addTearDown(cubit.close);
 
-      await cubit.dismiss(AnnouncementId.payjoinPrivacy);
+      await cubit.dismiss(_announcement());
 
       expect(cubit.state.announcements, hasLength(1));
-      verify(() => dismiss.execute(AnnouncementId.payjoinPrivacy)).called(1);
+      verify(
+        () => dismiss.execute(
+          any(
+            that: isA<Announcement>().having(
+              (a) => a.id,
+              'id',
+              AnnouncementId.payjoinPrivacy,
+            ),
+          ),
+        ),
+      ).called(1);
       verify(() => getVisible.execute()).called(1);
     },
   );
@@ -99,7 +109,7 @@ void main() {
     final cubit = build();
     addTearDown(cubit.close);
 
-    await cubit.dismiss(AnnouncementId.payjoinPrivacy);
+    await cubit.dismiss(_announcement());
 
     expect(cubit.state.failure, isA<AnnouncementStorageFailure>());
     verifyNever(() => getVisible.execute());

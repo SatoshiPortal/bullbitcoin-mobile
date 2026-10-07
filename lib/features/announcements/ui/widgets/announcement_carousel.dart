@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.da
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 /// The home-screen announcements section: a [BullCarousel] of
 /// dismissible banners. Renders nothing (zero height) when there are
@@ -65,7 +64,7 @@ class _CarouselBody extends StatelessWidget {
   void _onTap(BuildContext context, Announcement announcement) {
     switch (announcement.action) {
       case NavigateAction():
-        context.pushNamed(announcement.route.name);
+        announcement.open(context);
       case NoAction():
         break;
     }
@@ -83,7 +82,7 @@ class _CarouselBody extends StatelessWidget {
           _onTap(context, announcement);
         }
       case AnnouncementDismissChoice.dismiss:
-        await cubit.dismiss(announcement.id);
+        await cubit.dismiss(announcement);
       case null:
         break;
     }
@@ -95,6 +94,9 @@ class _CarouselBody extends StatelessWidget {
       children: [
         for (final announcement in announcements)
           AnnouncementCard(
+            key: announcement.stableKey == null
+                ? null
+                : ValueKey(announcement.stableKey),
             announcement: announcement,
             onTap: () => _onTap(context, announcement),
             onDismiss: () => _onDismiss(context, announcement),
