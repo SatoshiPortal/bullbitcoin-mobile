@@ -57,6 +57,8 @@
   },
   "torSettingsActiveTransport": "Transport actif : {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullAttemptMonitoringServicePressureTitle": "Service de sauvegarde surchargé",
+  "recoverbullAttemptMonitoringUnavailableTitle": "Surveillance des sauvegardes indisponible",
   "recoverbullPasswordMismatch": "Les mots de passe ne correspondent pas",
   "recoverbullErrorDecryptFailed": "Échec du déchiffrement du coffre-fort",
   "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation du coffre-fort de Google Drive",
