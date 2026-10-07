@@ -50,7 +50,9 @@ class WalletTransactionMapper {
         isTestnet: walletTransactionModel.isTestnet,
         isLiquid: walletTransactionModel.isLiquid,
       ),
-      direction: walletTransactionModel.isIncoming
+      direction: walletTransactionModel.isToSelf
+          ? WalletTransactionDirection.outgoing
+          : walletTransactionModel.isIncoming
           ? WalletTransactionDirection.incoming
           : WalletTransactionDirection.outgoing,
       status: walletTransactionModel.confirmationTimestamp == null
