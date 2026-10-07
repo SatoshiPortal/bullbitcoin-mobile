@@ -14986,5 +14986,17 @@
   "torSettingsUseSnowflake": "Use Snowflake",
   "@torSettingsUseSnowflake": {
     "description": "Action on the Tor status card that switches the embedded Tor transport to Snowflake."
+  },
+  "torSettingsExternalProxyRefusedDescription": "Nothing answered on this port. Make sure Orbot is running and uses this port.",
+  "@torSettingsExternalProxyRefusedDescription": {
+    "description": "External Tor proxy status description when the connection to the configured local port is refused (nothing listening)."
+  },
+  "torSettingsExternalProxyTimeoutDescription": "The proxy did not answer in time. It may still be starting, so try again in a moment.",
+  "@torSettingsExternalProxyTimeoutDescription": {
+    "description": "External Tor proxy status description when the configured local port did not answer the SOCKS5 probe in time."
+  },
+  "torSettingsExternalProxyNotSocksDescription": "Something answered on this port, but it is not a SOCKS5 proxy. Check the port set in Orbot.",
+  "@torSettingsExternalProxyNotSocksDescription": {
+    "description": "External Tor proxy status description when the configured local port answered, but not with a SOCKS5 greeting."
   }
 }

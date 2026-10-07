@@ -211,4 +211,65 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.torSettingsUseSnowflake), findsNothing);
   });
+
+  group('external proxy that is unavailable', () {
+    Future<void> pumpExternal(
+      WidgetTester tester,
+      TorExternalProxyProblem problem,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: TorConnectionStatusCard(
+              external: true,
+              connection: TorUnavailable(
+                source: TorSource.external,
+                failure: TorExternalProxyUnavailableFailure('probe', problem),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('tells a closed port apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.refused);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyRefusedDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tells a silent proxy apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.timeout);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyTimeoutDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tells a service that is not SOCKS5 apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.notSocks5);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyNotSocksDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('keeps the generic text for an unknown cause', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.unknown);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyUnavailableDescription),
+        findsOneWidget,
+      );
+    });
+  });
 }
