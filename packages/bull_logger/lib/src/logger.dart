@@ -555,9 +555,18 @@ class Logger implements LogSink {
     final tabNewLine = RegExp(r'[\t\n\r]');
     var value = input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
     // Defense in depth for secrets accidentally included in exception text.
-    value = value.replaceAll(
-      RegExp(r'\b(?:[0-9a-fA-F]{32,}|[A-Za-z0-9+/]{32,}={0,2})\b'),
-      '[REDACTED]',
+    // Hex remains unconditionally redacted. A long token is redacted too,
+    // unless it follows one of the closed diagnostic labels below and has the
+    // narrow programming-type shape. Both conditions are deliberate: context
+    // alone does not make a token safe, and shape alone does not make it safe.
+    value = value.replaceAll(RegExp(r'\b[0-9a-fA-F]{32,}\b'), '[REDACTED]');
+    value = value.replaceAllMapped(
+      RegExp(r'\b[A-Za-z0-9+/]{32,}={0,2}\b'),
+      (match) =>
+          _isAllowedTypeContext(value, match.start) &&
+              _isProgrammingTypeName(match.group(0)!)
+          ? match.group(0)!
+          : '[REDACTED]',
     );
     value = value.replaceAll(
       RegExp(r'\b(?:[a-z]+\s+){11,23}[a-z]+\b', caseSensitive: false),
@@ -572,6 +581,16 @@ class Logger implements LogSink {
     );
     return value;
   }
+
+  bool _isAllowedTypeContext(String input, int tokenStart) {
+    final prefix = input.substring(0, tokenStart);
+    return RegExp(
+      r'(?:^|[^A-Za-z0-9_])(?:error_type|failure_type|cause)=\s*$',
+    ).hasMatch(prefix);
+  }
+
+  bool _isProgrammingTypeName(String value) =>
+      RegExp(r'^[A-Z][a-z]+(?:[A-Z][a-z]+)+$').hasMatch(value);
 }
 
 final class _ScopedLogSink implements LogSink {
