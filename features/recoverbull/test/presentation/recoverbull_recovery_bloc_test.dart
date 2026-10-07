@@ -13,14 +13,14 @@ import 'package:mocktail/mocktail.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(MockEncryptedVault());
+    registerFallbackValue(fixtureVault());
     registerFallbackValue(const DecryptedVault());
   });
   setUp(setUpRecoverBullBloc);
   tearDown(tearDownRecoverBullBloc);
 
   test('maps external failure while fetching and does not decrypt', () async {
-    final vault = MockEncryptedVault();
+    final vault = fixtureVault();
     when(() => fetchKey.execute(vault: vault, password: 'pw')).thenAnswer(
       (_) async => const Err(core.ExternalTorProxyUnavailableFailure()),
     );
@@ -47,7 +47,7 @@ void main() {
     'closing while fetching prevents decrypt, restore, emit, and callback',
     () async {
       final pending = Completer<Result<String, core.RecoverBullFailure>>();
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(
         () => fetchKey.execute(vault: vault, password: 'pw'),
       ).thenAnswer((_) => pending.future);
@@ -80,7 +80,7 @@ void main() {
   test(
     'test flow verifies lifecycle without invoking the wallet callback',
     () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       final decrypted = DecryptedVault(mnemonic: const ['abandon']);
       var walletUpdated = false;
       when(
@@ -109,7 +109,7 @@ void main() {
 
   test('drops concurrent decryption events', () async {
     final verified = Completer<void>();
-    final vault = MockEncryptedVault();
+    final vault = fixtureVault();
     final decrypted = DecryptedVault(mnemonic: const ['abandon']);
     when(
       () => decrypt.execute(
@@ -136,7 +136,7 @@ void main() {
   });
 
   test('recovery marks the restored encrypted backup verified', () async {
-    final vault = MockEncryptedVault();
+    final vault = fixtureVault();
     final decrypted = DecryptedVault(mnemonic: const ['abandon']);
     var walletUpdated = false;
     when(
@@ -165,7 +165,7 @@ void main() {
   test(
     'fresh recovery restores before marking the lifecycle verified',
     () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       final decrypted = DecryptedVault(mnemonic: const ['abandon']);
       final restoreStarted = Completer<void>();
       final allowRestore = Completer<Result<Null, core.RecoverBullFailure>>();
@@ -204,7 +204,7 @@ void main() {
   );
   test('mismatched vault does not mark the current backup verified', () async {
     final verifier = MockVerifyVault();
-    final vault = MockEncryptedVault();
+    final vault = fixtureVault();
     final decrypted = const DecryptedVault(masterFingerprint: 'another-wallet');
     when(
       () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
@@ -232,7 +232,7 @@ void main() {
 
   test('vault verification errors remain decryption failures', () async {
     final verifier = MockVerifyVault();
-    final vault = MockEncryptedVault();
+    final vault = fixtureVault();
     final decrypted = const DecryptedVault(masterFingerprint: 'another-wallet');
     when(
       () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
@@ -269,7 +269,7 @@ void main() {
     ]) {
       test('a vault of another wallet never exposes its mnemonic in '
           '${flow.name}', () async {
-        final vault = MockEncryptedVault();
+        final vault = fixtureVault();
         final decrypted = DecryptedVault(mnemonic: const ['other']);
         when(
           () => fetchKey.execute(vault: vault, password: 'pw'),
@@ -294,7 +294,7 @@ void main() {
     }
 
     test('a key that cannot decrypt the vault is not kept', () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       when(
         () => fetchKey.execute(vault: vault, password: 'pw'),
       ).thenAnswer((_) async => const Ok('wrong-key'));
@@ -317,7 +317,7 @@ void main() {
     });
 
     test('a failed restore drops the key and the mnemonic', () async {
-      final vault = MockEncryptedVault();
+      final vault = fixtureVault();
       final decrypted = DecryptedVault(mnemonic: const ['abandon']);
       when(
         () => fetchKey.execute(vault: vault, password: 'pw'),
@@ -345,7 +345,7 @@ void main() {
     test(
       'viewing the vault key publishes the key once it decrypted the vault',
       () async {
-        final vault = MockEncryptedVault();
+        final vault = fixtureVault();
         final decrypted = DecryptedVault(mnemonic: const ['abandon']);
         when(
           () => fetchKey.execute(vault: vault, password: 'pw'),

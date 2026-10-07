@@ -16,7 +16,7 @@ import 'package:bull_tor/tor.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(MockEncryptedVault());
+    registerFallbackValue(fixtureVault());
     registerFallbackValue(const DecryptedVault());
   });
   setUp(setUpRecoverBullBloc);
