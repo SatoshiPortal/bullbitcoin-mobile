@@ -24,6 +24,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
   Future<Result<Null, RecoverBullCoreFailure>> execute({
     required EncryptedVault vault,
     required String vaultKey,
+    bool requireMatchingWallet = true,
   }) async {
     try {
       final inspection = await _secrets.recoverbull.fingerprint(
@@ -55,21 +56,23 @@ class UpdateLatestEncryptedVaultTestUsecase {
           );
       }
 
-      for (final wallet in availableWallets) {
-        if (wallet.masterFingerprint == decodedFingerprint) {
-          await _walletRepository.updateEncryptedBackupTime(
-            time: DateTime.now(),
-            walletId: wallet.id,
-          );
-        } else {
-          log.warning(
-            'The vault mnemonic does not match the current default wallet.',
-          );
-          await _walletRepository.updateEncryptedBackupTime(
-            time: null,
-            walletId: wallet.id,
-          );
-        }
+      final matchingWallets = availableWallets
+          .where((wallet) => wallet.masterFingerprint == decodedFingerprint)
+          .toList();
+      if (requireMatchingWallet && matchingWallets.isEmpty) {
+        return const Err(
+          RecoverBullUnexpectedCoreFailure(
+            'Backup does not match the current default wallet',
+          ),
+        );
+      }
+      // Inspection during restore/key viewing may precede wallet creation.
+      // Unrelated wallets retain their independently verified backup status.
+      for (final wallet in matchingWallets) {
+        await _walletRepository.updateEncryptedBackupTime(
+          time: DateTime.now(),
+          walletId: wallet.id,
+        );
       }
       return const Ok(null);
     } catch (e, st) {

@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
+    as settings_contract;
+import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -5,11 +9,15 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 /// The backup path. A wallet read that fails must not be reported as "no
 /// default Bitcoin wallet found": an onboarded install always has a default
@@ -22,9 +30,18 @@ void main() {
   setUp(() {
     FakeSecureStoragePlatform().install();
     walletRepository = _MockWalletRepository();
+    final settings = _MockSettingsRepository();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
     usecase = CreateEncryptedVaultUsecase(
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
       walletRepository: walletRepository,
+      settingsRepository: settings,
     );
   });
 
@@ -39,6 +56,37 @@ void main() {
       ),
     ).thenAnswer((_) async => result);
   }
+
+  test('vault export selects the active environment', () async {
+    final locator = GetIt.asNewInstance();
+    final settings = _MockSettingsRepository();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    locator.registerSingleton<Secrets>(
+      Secrets(scratchDirectory: () async => '/tmp'),
+    );
+    locator.registerSingleton<WalletRepository>(walletRepository);
+    locator.registerSingleton<settings_contract.SettingsRepository>(settings);
+    RecoverbullLocator.registerUsecases(locator);
+    stubWallets(const Ok([]));
+
+    await locator<CreateEncryptedVaultUsecase>().execute();
+
+    final environment = verify(
+      () => walletRepository.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: captureAny(named: 'environment'),
+      ),
+    ).captured.single;
+    expect(environment, Environment.testnet);
+    await locator.reset();
+  });
 
   test(
     'an unreadable wallet store is not "no default Bitcoin wallet"',

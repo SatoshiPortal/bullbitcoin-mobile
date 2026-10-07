@@ -494,6 +494,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
             vault: vault,
             vaultKey: vaultKey,
+            requireMatchingWallet: state.flow == RecoverBullFlow.testVault,
           );
           if (updated case Err()) {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));
@@ -503,6 +504,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
             vault: vault,
             vaultKey: vaultKey,
+            requireMatchingWallet: false,
           );
           if (updated case Err()) {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));

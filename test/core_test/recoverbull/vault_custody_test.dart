@@ -142,11 +142,16 @@ void main() {
     when(() => defaultWallet.latestEncryptedBackup).thenReturn(encryptedAt);
     when(() => defaultWallet.latestPhysicalBackup).thenReturn(physicalAt);
     when(
-      () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
+      () => wallets.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
     ).thenAnswer((_) async => Ok([defaultWallet]));
     final create = CreateEncryptedVaultUsecase(
       secrets: custody,
       walletRepository: wallets,
+      settingsRepository: settings,
     );
 
     final result = await create.execute();
@@ -193,13 +198,18 @@ void main() {
       Network.bitcoinMainnet,
     );
     when(
-      () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
+      () => wallets.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
     ).thenAnswer((_) async => Ok([defaultWallet]));
     storage.locked = true;
 
     final result = await CreateEncryptedVaultUsecase(
       secrets: custody,
       walletRepository: wallets,
+      settingsRepository: settings,
     ).execute();
 
     expect(result, isA<Err>());
@@ -248,12 +258,60 @@ void main() {
         ),
       ).captured.single;
       expect(recorded, isA<DateTime>());
-      verify(
-        () =>
-            wallets.updateEncryptedBackupTime(time: null, walletId: 'current'),
-      ).called(1);
+      verifyNever(
+        () => wallets.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: 'current',
+        ),
+      );
     },
   );
+
+  test('a different default secret cannot pass the backup test', () async {
+    final current = _value(await custody.import(words: currentWords));
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
+    ).thenAnswer(
+      (_) async =>
+          Ok([wallet('current', current.id.hex, Network.bitcoinMainnet)]),
+    );
+
+    final result = await inspection().execute(vault: vault, vaultKey: vaultKey);
+
+    expect(result, isA<Err<Null, RecoverBullCoreFailure>>());
+    verifyNever(
+      () => wallets.updateEncryptedBackupTime(
+        time: any(named: 'time'),
+        walletId: any(named: 'walletId'),
+      ),
+    );
+  });
+
+  test('recovery inspection permits an empty wallet set', () async {
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+
+    final result = await inspection().execute(
+      vault: vault,
+      vaultKey: vaultKey,
+      requireMatchingWallet: false,
+    );
+
+    expect(result, isA<Ok<Null, RecoverBullCoreFailure>>());
+    verifyNever(
+      () => wallets.updateEncryptedBackupTime(
+        time: any(named: 'time'),
+        walletId: any(named: 'walletId'),
+      ),
+    );
+  });
 
   test('a wrong vault key does not update wallet backup dates', () async {
     final result = await inspection().execute(

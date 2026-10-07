@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:secrets/secrets.dart' as secrets;
 import 'package:primitives/primitives.dart' show Fingerprint;
 
@@ -11,10 +12,12 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateEncryptedVaultUsecase {
   final secrets.Secrets _secrets;
   final WalletRepository _walletRepository;
+  final SettingsRepository _settingsRepository;
 
   CreateEncryptedVaultUsecase({
     required this._secrets,
     required this._walletRepository,
+    required this._settingsRepository,
   });
 
   // Coordinates wallet metadata with the package's sealed backup operation.
@@ -23,10 +26,12 @@ class CreateEncryptedVaultUsecase {
   >
   execute() async {
     try {
+      final settings = await _settingsRepository.fetch();
       final List<Wallet> defaultBitcoinWallets;
       switch (await _walletRepository.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
+        environment: settings.environment,
       )) {
         case Ok(:final value):
           defaultBitcoinWallets = value;

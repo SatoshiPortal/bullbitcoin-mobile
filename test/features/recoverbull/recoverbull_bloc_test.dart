@@ -315,7 +315,11 @@ void main() {
           () => fetchKey.execute(vault: vault, password: 'pw'),
         ).thenAnswer((_) async => const Ok('unverified-key'));
         when(
-          () => updateLatest.execute(vault: vault, vaultKey: 'unverified-key'),
+          () => updateLatest.execute(
+            vault: vault,
+            vaultKey: 'unverified-key',
+            requireMatchingWallet: false,
+          ),
         ).thenAnswer(
           (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
         );
@@ -345,7 +349,11 @@ void main() {
       () async {
         final vault = _MockEncryptedVault();
         when(
-          () => updateLatest.execute(vault: vault, vaultKey: 'invalid-key'),
+          () => updateLatest.execute(
+            vault: vault,
+            vaultKey: 'invalid-key',
+            requireMatchingWallet: false,
+          ),
         ).thenAnswer(
           (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
         );
@@ -409,7 +417,11 @@ void main() {
       () async {
         final vault = _MockEncryptedVault();
         when(
-          () => updateLatest.execute(vault: vault, vaultKey: 'vault-key'),
+          () => updateLatest.execute(
+            vault: vault,
+            vaultKey: 'vault-key',
+            requireMatchingWallet: false,
+          ),
         ).thenAnswer((_) async => const Ok(null));
         when(
           () => restore.execute(vault: vault, vaultKey: 'vault-key'),
