@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -115,7 +117,7 @@ void main() {
         // that reaches this bloc carries no words at all. What is left to test
         // is the bookkeeping.
         when(
-          () => completeUsecase.execute(),
+          () => completeUsecase.execute(masterFingerprint: _fingerprint),
         ).thenAnswer((_) async => const Ok(null));
         final bloc = seeded();
 
@@ -127,17 +129,19 @@ void main() {
             ),
           ),
         );
-        bloc.add(const VerifyPhysicalBackup());
+        bloc.add(const VerifyPhysicalBackup(masterFingerprint: _fingerprint));
         await expectation;
 
-        verify(() => completeUsecase.execute()).called(1);
+        verify(
+          () => completeUsecase.execute(masterFingerprint: _fingerprint),
+        ).called(1);
         await bloc.close();
       },
     );
 
     test('reports a verification that could not be recorded', () async {
       when(
-        () => completeUsecase.execute(),
+        () => completeUsecase.execute(masterFingerprint: _fingerprint),
       ).thenAnswer((_) async => const Err(TestWalletBackupCompletionFailure()));
       final bloc = seeded();
 
@@ -151,7 +155,7 @@ void main() {
           ),
         ),
       );
-      bloc.add(const VerifyPhysicalBackup());
+      bloc.add(const VerifyPhysicalBackup(masterFingerprint: _fingerprint));
       await expectation;
       await bloc.close();
     });
@@ -167,12 +171,74 @@ void main() {
           ),
         ),
       );
-      bloc.add(const VerifyPhysicalBackup());
+      bloc.add(const VerifyPhysicalBackup(masterFingerprint: _fingerprint));
       await expectation;
 
-      verifyNever(() => completeUsecase.execute());
+      verifyNever(
+        () => completeUsecase.execute(masterFingerprint: _fingerprint),
+      );
       await bloc.close();
     });
+
+    test('rejects a solved challenge from a previous wallet', () async {
+      when(
+        () => completeUsecase.execute(
+          masterFingerprint: any(named: 'masterFingerprint'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = seeded();
+      final expectation = expectLater(
+        bloc.stream,
+        emits(
+          predicate<TestWalletBackupState>(
+            (s) =>
+                s.failure is TestWalletBackupCompletionFailure &&
+                s.verificationStatus != BackupVerificationStatus.success,
+          ),
+        ),
+      );
+      bloc.add(const VerifyPhysicalBackup(masterFingerprint: 'ffffffff'));
+      await expectation;
+      verifyNever(
+        () => completeUsecase.execute(
+          masterFingerprint: any(named: 'masterFingerprint'),
+        ),
+      );
+      await bloc.close();
+    });
+
+    test(
+      'a pending failure cannot overwrite a newer wallet selection',
+      () async {
+        final entered = Completer<void>();
+        final pending = Completer<Result<void, TestWalletBackupFailure>>();
+        when(
+          () => completeUsecase.execute(masterFingerprint: _fingerprint),
+        ).thenAnswer((_) {
+          entered.complete();
+          return pending.future;
+        });
+        final bloc = seeded();
+        bloc.add(const VerifyPhysicalBackup(masterFingerprint: _fingerprint));
+        await entered.future;
+        final newer = _wallet(
+          isDefault: false,
+          origin: 'b',
+        ).copyWith(masterFingerprint: 'ffffffff');
+        final selected = bloc.stream.firstWhere(
+          (state) => state.selectedWallet?.masterFingerprint == 'ffffffff',
+        );
+        bloc.add(WalletSelected(wallet: newer));
+        await selected;
+        pending.complete(const Err(TestWalletBackupCompletionFailure()));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.selectedWallet, newer);
+        expect(bloc.state.failure, isNull);
+        expect(bloc.state.verificationStatus, BackupVerificationStatus.idle);
+        await bloc.close();
+      },
+    );
 
     test('hands out a handle, never the words', () async {
       // The bloc cannot return a mnemonic any more: the usecase gives a

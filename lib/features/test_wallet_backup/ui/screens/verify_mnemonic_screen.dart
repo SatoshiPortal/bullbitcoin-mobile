@@ -269,7 +269,7 @@ class _Challenge extends StatelessWidget {
           ),
           onProgress: onProgress,
           onSolved: () => context.read<TestWalletBackupBloc>().add(
-            const VerifyPhysicalBackup(),
+            VerifyPhysicalBackup(masterFingerprint: value.id.hex),
           ),
           onMistake: () => SnackBarUtils.showSnackBar(
             context,

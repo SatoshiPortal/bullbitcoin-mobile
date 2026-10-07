@@ -110,12 +110,24 @@ class TestWalletBackupBloc
       return;
     }
 
-    if (await _completeBackupVerificationUsecase.execute() case Err(
-      :final failure,
-    )) {
-      // The words were right but recording it failed. Reported rather than
-      // swallowed: the flow would otherwise claim success while the wallet
-      // still shows its backup as untested.
+    if (event.masterFingerprint != state.selectedWallet!.masterFingerprint) {
+      emit(
+        state.copyWith(
+          failure: const TestWalletBackupCompletionFailure(),
+          verificationStatus: BackupVerificationStatus.idle,
+        ),
+      );
+      return;
+    }
+
+    final result = await _completeBackupVerificationUsecase.execute(
+      masterFingerprint: event.masterFingerprint,
+    );
+    // A newer selection owns both the success and failure shown after recording.
+    if (state.selectedWallet?.masterFingerprint != event.masterFingerprint) {
+      return;
+    }
+    if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
       return;
     }

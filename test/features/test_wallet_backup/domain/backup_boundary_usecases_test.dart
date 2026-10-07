@@ -233,9 +233,13 @@ void main() {
     test('maps the onboarding exception, which carries e.toString(), into '
         'this feature\'s family', () async {
       final inner = _MockCompletePhysicalBackupVerificationUsecase();
-      when(() => inner.execute()).thenThrow(Exception(_rawReason));
+      when(
+        () => inner.execute(masterFingerprint: _fingerprint),
+      ).thenThrow(Exception(_rawReason));
 
-      final result = await CompleteBackupVerificationUsecase(inner).execute();
+      final result = await CompleteBackupVerificationUsecase(
+        inner,
+      ).execute(masterFingerprint: _fingerprint);
 
       switch (result) {
         case Ok():
@@ -248,9 +252,13 @@ void main() {
 
     test('returns Ok when the verification is recorded', () async {
       final inner = _MockCompletePhysicalBackupVerificationUsecase();
-      when(() => inner.execute()).thenAnswer((_) async {});
+      when(
+        () => inner.execute(masterFingerprint: _fingerprint),
+      ).thenAnswer((_) async {});
 
-      final result = await CompleteBackupVerificationUsecase(inner).execute();
+      final result = await CompleteBackupVerificationUsecase(
+        inner,
+      ).execute(masterFingerprint: _fingerprint);
 
       expect(result, isA<Ok<void, TestWalletBackupFailure>>());
     });

@@ -17,7 +17,9 @@ class WalletSelected extends TestWalletBackupEvent {
 /// `MnemonicChallenge`. Carries no words: the comparison happened inside the
 /// secrets package.
 class VerifyPhysicalBackup extends TestWalletBackupEvent {
-  const VerifyPhysicalBackup();
+  final String masterFingerprint;
+
+  const VerifyPhysicalBackup({required this.masterFingerprint});
 }
 
 class ClearFailure extends TestWalletBackupEvent {
