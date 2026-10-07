@@ -12,6 +12,11 @@ enum TorDiagnostic {
 
   bool get suggestsCensorship =>
       this == TorDiagnostic.filtering || this == TorDiagnostic.cantReachTor;
+
+  /// A problem on the device itself, which no other transport can route
+  /// around: switching to Snowflake would fail the same way.
+  bool get blocksEveryTransport =>
+      this == TorDiagnostic.offline || this == TorDiagnostic.clockSkewed;
 }
 
 /// What arti says about a bootstrap beyond its progress fraction.
