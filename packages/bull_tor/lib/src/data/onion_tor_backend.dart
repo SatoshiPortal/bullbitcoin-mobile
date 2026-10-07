@@ -151,18 +151,30 @@ final class OnionTorBackend implements EmbeddedTorPort {
         '${endpoint.port}',
       );
       return endpoint;
-    } on TorBackendException {
+    } on TorBackendException catch (error) {
+      _logStartFailure(transport, error.failure);
       await _cleanup();
       rethrow;
     } on onion.TorFailure catch (error) {
       final failure = _mapFailure(error, _lastDiagnostic);
+      _logStartFailure(transport, failure);
       await _cleanup();
       throw TorBackendException(failure);
     } catch (error) {
+      final failure = TorUnexpectedFailure(error.toString());
+      _logStartFailure(transport, failure);
       await _cleanup();
-      throw TorBackendException(TorUnexpectedFailure(error.toString()));
+      throw TorBackendException(failure);
     }
   }
+
+  /// Without this a failed start leaves no trace in a field log: the
+  /// repository turns it into a state, and consumers keep only its type.
+  void _logStartFailure(TorTransport transport, TorFailure failure) =>
+      _log.warning(
+        'Embedded Tor ${transport.name} start failed '
+        '(${failure.runtimeType}): ${failure.logMessage}',
+      );
 
   void _handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
     final blockage = status.blockage;
