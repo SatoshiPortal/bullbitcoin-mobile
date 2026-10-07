@@ -70,6 +70,36 @@ void main() {
     expect(find.text(l10n.torSettingsStatusDisconnected), findsOneWidget);
   });
 
+  testWidgets('shows what arti says while Tor is stuck', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        diagnostic: TorDiagnostic.cantBootstrap,
+        detail: TorBootstrapDetail(blockage: "Can't make progress."),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+  });
+
+  testWidgets('keeps showing it once the bootstrap gave up', (tester) async {
+    await pumpCard(
+      tester,
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure(
+          'bootstrap failed',
+          TorDiagnostic.cantBootstrap,
+          TorBootstrapDetail(blockage: "Can't make progress."),
+        ),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+  });
+
   testWidgets('shows the active transport when one is supplied', (
     tester,
   ) async {

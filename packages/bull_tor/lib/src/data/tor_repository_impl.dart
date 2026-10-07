@@ -204,6 +204,7 @@ final class TorRepositoryImpl implements TorRepository {
           :final progress,
           :final diagnostic,
           :final transport,
+          :final detail,
         ):
           _emit(
             TorConnecting(
@@ -211,6 +212,7 @@ final class TorRepositoryImpl implements TorRepository {
               progress: progress,
               diagnostic: diagnostic,
               transport: transport,
+              detail: detail,
             ),
           );
         case EmbeddedTorReady(:final endpoint, :final transport):
