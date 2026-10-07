@@ -11,6 +11,8 @@ import 'domain/usecases/retry_tor_connection_usecase.dart';
 import 'domain/usecases/set_tor_transport_mode_usecase.dart';
 import 'domain/usecases/verify_external_tor_usecase.dart';
 import 'domain/usecases/watch_tor_connection_usecase.dart';
+import 'domain/usecases/watch_tor_transport_fallbacks_usecase.dart';
+import 'domain/entities/tor_transport_fallback.dart';
 
 /// Public Tor facade. Policy lives here in Dart; native packages expose only
 /// the Arti and IPtProxy primitives used by its internal adapters.
@@ -31,6 +33,7 @@ class EmbeddedTor {
   final RetryTorConnectionUsecase _retry;
   final WatchTorConnectionUsecase _watch;
   final SetTorTransportModeUsecase _setMode;
+  final WatchTorTransportFallbacksUsecase _watchFallbacks;
   final TorSessions sessions;
 
   const EmbeddedTor(
@@ -40,6 +43,7 @@ class EmbeddedTor {
     this._retry,
     this._watch,
     this._setMode,
+    this._watchFallbacks,
     this.sessions,
   );
 
@@ -50,6 +54,9 @@ class EmbeddedTor {
   Stream<TorConnectionState> get states => _watch.execute();
 
   WatchTorConnectionUsecase get watcher => _watch;
+
+  /// Each hand-over of automatic mode to another transport, as it happens.
+  Stream<TorTransportFallback> get fallbacks => _watchFallbacks.execute();
 
   Future<TorConnectionState> ensureReady() => _ensureReady.execute();
 
