@@ -162,10 +162,6 @@ class CurrencyBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
