@@ -4873,5 +4873,8 @@
   "receiveErrorBroadcastOriginal": "Nous n’avons pas pu diffuser la transaction. Vérifiez votre connexion Internet et réessayez.",
   "fundExchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "exchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
-  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour."
+  "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour.",
+  "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
+  "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée."
 }
