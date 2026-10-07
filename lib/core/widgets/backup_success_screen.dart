@@ -3,10 +3,9 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +36,7 @@ class BackupSuccessScreen extends StatelessWidget {
                   height: 200,
                   width: 200,
                   child: Gif(
-                    image: AssetImage(Assets.animations.successTick.path),
+                    image: BullAssets.animations.successTick,
                     autostart: Autostart.once,
                     height: 200,
                     width: 200,
