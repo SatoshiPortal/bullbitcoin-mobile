@@ -2187,10 +2187,6 @@
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
   },
-  "vaultSuccessfullyImported": "تم استيراد قبوك بنجاح",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
-  },
   "payAccountNumberHint": "رقم حساب الدخول",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
@@ -4029,10 +4025,6 @@
   "pinCodeConfirmTitle": "دبوس جديد",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "موظف رئيسي ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "إعادة الدفع",
   "@payReviewPayment": {
@@ -9580,10 +9572,6 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "howToDecideVaultLocationText2": "موقع العرف يمكن أن يكون أكثر أمنا بكثير، حسب أي موقع تختار. يجب أن تحرص أيضاً على عدم فقدان الملف الإحتياطي أو فقدان الجهاز الذي يخزن عليه ملفك الإحتياطي.",
   "@howToDecideVaultLocationText2": {
     "description": "Second paragraph explaining custom location benefits"
@@ -9999,10 +9987,6 @@
   "@backupWalletVaultProviderGoogleDrive": {
     "description": "Name of Google Drive vault provider option"
   },
-  "googleDrivePrivacyMessage": "(جوجل) سيطلب منك أن تتشارك معلومات شخصية بهذا التطبيق.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "autoswapMaximumFeeError": "الحد الأقصى للرسوم هو {threshold}٪",
   "@autoswapMaximumFeeError": {
     "description": "Validation error shown when fee threshold exceeds maximum",
@@ -10147,10 +10131,6 @@
   "autoswapRecipientWalletLabel": "Recipient Bitcoin Wallet",
   "@autoswapRecipientWalletLabel": {
     "description": "Label for wallet selection dropdown"
-  },
-  "googleDriveSignInMessage": "عليكِ أن توقعي على (جوجل درايف)",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "autoswapMinimumThresholdErrorBtc": "الحد الأدنى للتوازن هو {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {

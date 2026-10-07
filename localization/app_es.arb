@@ -873,7 +873,6 @@
   "backupCompletedTitle": "¡Respaldo completado!",
   "backupCompletedDescription": "Ahora probemos tu respaldo para asegurarnos de que todo se hizo correctamente.",
   "testBackupButton": "Probar respaldo",
-  "keyServerLabel": "Servidor de claves ",
   "physicalBackupStatusLabel": "Respaldo físico",
   "encryptedVaultStatusLabel": "Bóveda encriptada",
   "testedStatus": "Probado",
@@ -923,7 +922,6 @@
   "verifyButton": "Verificar",
   "passphraseLabel": "Frase de contraseña",
   "testYourWalletTitle": "Prueba tu billetera",
-  "vaultSuccessfullyImported": "Tu bóveda se importó exitosamente",
   "backupIdLabel": "ID de respaldo:",
   "createdAtLabel": "Creado el:",
   "enterBackupKeyManuallyButton": "Ingresar clave de respaldo manualmente >>",
@@ -1005,8 +1003,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "Necesitarás iniciar sesión en Google Drive",
-  "googleDrivePrivacyMessage": "Google te pedirá compartir información personal con esta aplicación.",
   "informationWillNotLeave": "Esta información ",
   "willNot": "no ",
   "leaveYourPhone": "saldrá de tu teléfono y ",
@@ -1015,7 +1011,6 @@
   "savingToDevice": "Guardando en tu dispositivo.",
   "loadingBackupFile": "Cargando archivo de respaldo...",
   "pleaseWaitFetching": "Por favor espera mientras obtenemos tu archivo de respaldo.",
-  "googleDriveProvider": "Google Drive",
   "appleICloudProvider": "Apple iCloud",
   "customLocationProvider": "Ubicación personalizada",
   "quickAndEasyTag": "Rápido y fácil",

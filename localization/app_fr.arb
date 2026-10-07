@@ -870,7 +870,6 @@
   "backupCompletedTitle": "Sauvegarde terminée !",
   "backupCompletedDescription": "Testons maintenant votre sauvegarde pour nous assurer que tout a été fait correctement.",
   "testBackupButton": "Tester la sauvegarde",
-  "keyServerLabel": "Serveur de clés ",
   "physicalBackupStatusLabel": "Sauvegarde physique",
   "encryptedVaultStatusLabel": "Coffre-fort chiffré",
   "testedStatus": "Testé",
@@ -920,7 +919,6 @@
   "verifyButton": "Vérifier",
   "passphraseLabel": "Phrase secrète",
   "testYourWalletTitle": "Testez votre portefeuille",
-  "vaultSuccessfullyImported": "Votre coffre-fort a été importé avec succès",
   "backupIdLabel": "ID de sauvegarde :",
   "createdAtLabel": "Créé le :",
   "enterBackupKeyManuallyButton": "Entrer la clé de sauvegarde manuellement >>",
@@ -1002,8 +1000,6 @@
       }
     }
   },
-  "googleDriveSignInMessage": "Vous devrez vous connecter à Google Drive",
-  "googleDrivePrivacyMessage": "Google vous demandera de partager des informations personnelles avec cette application.",
   "informationWillNotLeave": "Ces informations ",
   "willNot": "ne quitteront pas ",
   "leaveYourPhone": "votre téléphone et ne seront ",
@@ -1012,7 +1008,6 @@
   "savingToDevice": "Enregistrement sur votre appareil.",
   "loadingBackupFile": "Chargement du fichier de sauvegarde...",
   "pleaseWaitFetching": "Veuillez patienter pendant que nous récupérons votre fichier de sauvegarde.",
-  "googleDriveProvider": "Google Drive",
   "appleICloudProvider": "Apple iCloud",
   "customLocationProvider": "Emplacement personnalisé",
   "quickAndEasyTag": "Rapide et facile",

@@ -1227,10 +1227,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "Google Диск",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "Име на сметката",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -1934,10 +1930,6 @@
   "buyCompleteKyc": "Завършете KYC верификацията",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "Вашият сейф беше успешно импортиран",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "Въведете номер на сметка",
   "@payAccountNumberHint": {
@@ -3357,10 +3349,6 @@
   "pinCodeConfirmTitle": "Потвърдете нов PIN",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "Сървър за ключове ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "Преглед на плащането",
   "@payReviewPayment": {
@@ -5723,10 +5711,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google ще ви помоли да споделите лична информация с това приложение.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "Упс! Нещо се обърка",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -7125,10 +7109,6 @@
   "paySendMax": "Макс.",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "Ще трябва да влезете в Google Drive",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "passportStep9": "Щракнете върху бутоните, за да подпишете транзакцията на вашето устройство Passport.",
   "@passportStep9": {

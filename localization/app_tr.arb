@@ -1392,10 +1392,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "Google Drive",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "Hesap Adı",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -2332,10 +2328,6 @@
   "buyCompleteKyc": "Tamamlanan KC",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "Torununuz başarıyla ithal edildi",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "Hesap numarası girin",
   "@payAccountNumberHint": {
@@ -4294,10 +4286,6 @@
   "pinCodeConfirmTitle": "Yeni pin onaylayın",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "İnceleme Ödeme",
   "@payReviewPayment": {
@@ -7429,10 +7417,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google, bu uygulama ile kişisel bilgileri paylaşmanızı isteyecektir.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "Oops! Bir şey ters gitti yanlış bir şey gitti",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -9312,10 +9296,6 @@
   "paySendMax": "Max",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "Google Drive'a imzalamanız gerekecek",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "Tamamlandı",
   "@transactionDetailLabelCompletedAt": {

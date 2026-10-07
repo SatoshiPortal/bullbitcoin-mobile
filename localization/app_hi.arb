@@ -1396,10 +1396,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "गूगल ड्राइव",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "खाता नाम",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -2340,10 +2336,6 @@
   "buyCompleteKyc": "KYC पूरा करें",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "आपका वॉल्ट सफलतापूर्वक आयात किया गया था",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "खाता संख्या दर्ज करें",
   "@payAccountNumberHint": {
@@ -4314,10 +4306,6 @@
   "pinCodeConfirmTitle": "नए PIN की पुष्टि करें",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
-  },
-  "keyServerLabel": "कुंजी सर्वर ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "समीक्षा भुगतान",
   "@payReviewPayment": {
@@ -7504,10 +7492,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google आपको इस ऐप के साथ व्यक्तिगत जानकारी साझा करने के लिए कहता है।।",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "ओप! कुछ गलत हो गया",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -9400,10 +9384,6 @@
   "paySendMax": "मैक्स",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "आपको Google ड्राइव पर हस्ताक्षर करने की आवश्यकता होगी",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "पूरा होने का समय",
   "@transactionDetailLabelCompletedAt": {

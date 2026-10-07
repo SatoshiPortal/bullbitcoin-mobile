@@ -1597,10 +1597,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "Disk Google",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "Název účtu",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -2512,10 +2508,6 @@
   "buyCompleteKyc": "Kompletní KYC",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
-  },
-  "vaultSuccessfullyImported": "Vaše klenba byla úspěšně dovážena",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
   },
   "payAccountNumberHint": "Zadejte číslo účtu",
   "@payAccountNumberHint": {
@@ -4362,10 +4354,6 @@
   "systemLabelPayjoin": "Čeština",
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
-  },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
   },
   "payReviewPayment": "Platba",
   "@payReviewPayment": {
@@ -7435,10 +7423,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "googleDrivePrivacyMessage": "Google vás požádá o sdílení osobních údajů s touto aplikací.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
-  },
   "errorGenericTitle": "Oops! Něco šlo špatně",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
@@ -9227,10 +9211,6 @@
   "paySendMax": "Čeština",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "googleDriveSignInMessage": "Budete muset zaregistrovat do Disku Google",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "Kompletní",
   "@transactionDetailLabelCompletedAt": {
