@@ -266,7 +266,9 @@ void main() {
       expect(state.route.transport, TorTransport.snowflake);
     });
 
-    test('automatic mode remembers Snowflake without downgrading', () async {
+    // Snowflake is the slow road: a session that once needed it, because
+    // direct was merely slow, must get the chance to go back to direct.
+    test('automatic mode retries direct after a Snowflake success', () async {
       final first = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
       embedded.starts.single.completeError(
@@ -281,32 +283,79 @@ void main() {
       embedded.alive = false;
       final restarted = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
-      expect(embedded.startedTransports.last, TorTransport.snowflake);
-      expect(
-        embedded.startedTransports.where((t) => t == TorTransport.direct),
-        hasLength(1),
-      );
+      expect(embedded.startedTransports, [
+        TorTransport.direct,
+        TorTransport.snowflake,
+        TorTransport.direct,
+      ]);
       embedded.starts.last.complete(
         TorProxyEndpoint(host: '127.0.0.1', port: 41003),
       );
       await restarted;
     });
 
-    test('restores the last successful automatic transport', () async {
-      await repository.close();
-      repository = TorRepositoryImpl(
-        embedded,
-        lastSuccessfulTransport: TorTransport.snowflake,
-      );
+    // Censorship is the one reason to keep skipping direct: the network that
+    // filtered it a moment ago will filter it again, and every reconnection
+    // would otherwise pay for rediscovering that.
+    test(
+      'automatic mode stays on Snowflake once direct looked censored',
+      () async {
+        final first = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.single.completeError(
+          const TorBackendException(
+            TorBootstrapFailure('filtered', TorDiagnostic.filtering),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+        );
+        await first;
 
-      final pending = repository.ensureReady();
+        embedded.alive = false;
+        final restarted = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+          TorTransport.snowflake,
+        ]);
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41003),
+        );
+        await restarted;
+      },
+    );
+
+    test('choosing a mode again forgets that direct looked censored', () async {
+      final first = repository.ensureReady();
+      await Future<void>.delayed(Duration.zero);
+      embedded.starts.single.completeError(
+        const TorBackendException(
+          TorBootstrapFailure('filtered', TorDiagnostic.cantReachTor),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      embedded.starts.last.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+      );
+      await first;
+
+      final direct = repository.setMode(TorTransportMode.direct);
+      await Future<void>.delayed(Duration.zero);
+      embedded.starts.last.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41003),
+      );
+      await direct;
+      final automatic = repository.setMode(TorTransportMode.automatic);
       await Future<void>.delayed(Duration.zero);
 
-      expect(embedded.startedTransports, [TorTransport.snowflake]);
-      embedded.starts.single.complete(
-        TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      expect(embedded.startedTransports.last, TorTransport.direct);
+      embedded.starts.last.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41004),
       );
-      await pending;
+      await automatic;
     });
 
     test('reports a successful transport for persistence', () async {
