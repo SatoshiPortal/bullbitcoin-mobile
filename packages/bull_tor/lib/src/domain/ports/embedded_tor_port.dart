@@ -12,11 +12,13 @@ final class EmbeddedTorConnecting extends EmbeddedTorEvent {
   final double progress;
   final TorDiagnostic? diagnostic;
   final TorTransport transport;
+  final TorBootstrapDetail? detail;
 
   const EmbeddedTorConnecting({
     required this.progress,
     required this.transport,
     this.diagnostic,
+    this.detail,
   });
 }
 

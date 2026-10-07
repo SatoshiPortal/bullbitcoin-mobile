@@ -224,9 +224,16 @@ class Bull {
         (progress * 100).round().clamp(0, 100),
       _ => null,
     };
-    final diagnostic = switch (state) {
-      bull_tor.TorConnecting(:final diagnostic) => diagnostic?.name,
-      _ => null,
+    final (diagnostic, detail) = switch (state) {
+      bull_tor.TorConnecting(:final diagnostic, :final detail) => (
+        diagnostic,
+        detail,
+      ),
+      bull_tor.TorUnavailable(
+        failure: bull_tor.TorBootstrapFailure(:final diagnostic, :final detail),
+      ) =>
+        (diagnostic, detail),
+      _ => (null, null),
     };
     return DiagnosticTorContext(
       source: source,
@@ -239,7 +246,8 @@ class Bull {
       },
       transport: transport,
       progressPercent: progress,
-      diagnostic: diagnostic,
+      diagnostic: diagnostic?.name,
+      blockageDetail: detail?.blockage,
       socksProxyConfigured: socksProxyConfigured,
     );
   }

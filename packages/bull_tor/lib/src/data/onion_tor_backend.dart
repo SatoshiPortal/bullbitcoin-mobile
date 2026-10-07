@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bull_sdk/onion.dart' as onion;
+import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/tor_connection_state.dart';
@@ -38,6 +39,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   TorProxyEndpoint? _endpoint;
   TorTransport? _transport;
   TorDiagnostic? _lastDiagnostic;
+  TorBootstrapDetail? _lastDetail;
   Future<void> _lifecycleTail = Future<void>.value();
   Future<void> _dormancyTail = Future<void>.value();
   int _generation = 0;
@@ -90,6 +92,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _publish(const EmbeddedTorStopped());
     _publish(EmbeddedTorConnecting(progress: 0, transport: transport));
     _lastDiagnostic = null;
+    _lastDetail = null;
 
     try {
       final support = await getApplicationSupportDirectory();
@@ -156,7 +159,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       await _cleanup();
       rethrow;
     } on onion.TorFailure catch (error) {
-      final failure = _mapFailure(error, _lastDiagnostic);
+      final failure = failureFor(error, _lastDiagnostic, _lastDetail);
       _logStartFailure(transport, failure);
       await _cleanup();
       throw TorBackendException(failure);
@@ -177,10 +180,16 @@ final class OnionTorBackend implements EmbeddedTorPort {
       );
 
   void _handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
-    final blockage = status.blockage;
-    final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
-    final transport = _mapTransport(status.transport);
+    final event = eventFor(status, endpoint);
+    final (diagnostic, detail) = switch (event) {
+      EmbeddedTorConnecting(:final diagnostic, :final detail) => (
+        diagnostic,
+        detail,
+      ),
+      _ => (null, null),
+    };
     _lastDiagnostic = diagnostic;
+    _lastDetail = detail;
     final percent = (status.fraction * 100).round();
     _log.fine(
       'Embedded Tor readiness ${status.readyForTraffic ? 'ready' : 'waiting'} '
@@ -188,14 +197,30 @@ final class OnionTorBackend implements EmbeddedTorPort {
       '${diagnostic == null ? '' : ' (${diagnostic.name})'}',
     );
 
-    _publish(
-      status.readyForTraffic
-          ? EmbeddedTorReady(endpoint, transport)
-          : EmbeddedTorConnecting(
-              progress: status.fraction,
-              transport: transport,
-              diagnostic: diagnostic,
-            ),
+    _publish(event);
+  }
+
+  /// Maps one arti status snapshot to the event this port publishes.
+  @visibleForTesting
+  static EmbeddedTorEvent eventFor(
+    onion.TorStatus status,
+    TorProxyEndpoint endpoint,
+  ) {
+    final transport = _mapTransport(status.transport);
+    if (status.readyForTraffic) return EmbeddedTorReady(endpoint, transport);
+
+    final blockage = status.blockage;
+    final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
+    final message = blockage?.message.trim();
+    return EmbeddedTorConnecting(
+      progress: status.fraction,
+      transport: transport,
+      diagnostic: diagnostic,
+      // A blockage that maps to no diagnostic is not a fault, and its message
+      // would put a bogus explanation on screen.
+      detail: diagnostic == null || message == null || message.isEmpty
+          ? null
+          : TorBootstrapDetail(blockage: message),
     );
   }
 
@@ -223,15 +248,18 @@ final class OnionTorBackend implements EmbeddedTorPort {
         onion.TorTransport.snowflake => TorTransport.snowflake,
       };
 
-  static TorFailure _mapFailure(
+  @visibleForTesting
+  static TorFailure failureFor(
     onion.TorFailure failure,
-    TorDiagnostic? diagnostic,
-  ) => switch (failure.kind) {
+    TorDiagnostic? diagnostic, [
+    TorBootstrapDetail? detail,
+  ]) => switch (failure.kind) {
     onion.TorFailureKind.configuration ||
     onion.TorFailureKind.listenerBind => TorStorageFailure(failure.logMessage),
     onion.TorFailureKind.bootstrap => TorBootstrapFailure(
       failure.logMessage,
       diagnostic,
+      detail,
     ),
     onion.TorFailureKind.timeout => TorBootstrapTimeoutFailure(
       failure.logMessage,
@@ -265,7 +293,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         session.stop,
       );
     } on onion.TorFailure catch (error) {
-      throw TorBackendException(_mapFailure(error, _lastDiagnostic));
+      throw TorBackendException(failureFor(error, _lastDiagnostic));
     }
   }
 
@@ -333,6 +361,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _endpoint = null;
     _transport = null;
     _lastDiagnostic = null;
+    _lastDetail = null;
     _snowflakeLease = false;
     try {
       await service?.stop();

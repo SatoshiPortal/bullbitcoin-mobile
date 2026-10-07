@@ -155,6 +155,27 @@ void main() {
       },
     );
 
+    test('forwards the bootstrap detail arti gave', () async {
+      final pending = repository.ensureReady();
+      await Future<void>.delayed(Duration.zero);
+
+      embedded.events.add(
+        const EmbeddedTorConnecting(
+          progress: 0.3,
+          transport: TorTransport.direct,
+          diagnostic: TorDiagnostic.clockSkewed,
+          detail: TorBootstrapDetail(blockage: 'Clock is skewed by 2 hours'),
+        ),
+      );
+
+      final connecting = repository.current as TorConnecting;
+      expect(connecting.detail?.blockage, 'Clock is skewed by 2 hours');
+      embedded.starts.single.complete(
+        TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      );
+      await pending;
+    });
+
     test('restarts embedded Tor when the cached listener died', () async {
       final first = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
