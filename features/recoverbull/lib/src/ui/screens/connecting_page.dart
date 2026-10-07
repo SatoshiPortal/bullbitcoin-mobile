@@ -134,10 +134,14 @@ class _ConnectingPageState extends State<ConnectingPage> {
   void _onRetry() {
     // This is the only explicit reset signal. Tor phase changes and Arti
     // republications belong to the same user-visible attempt.
+    //
+    // The blockage clock is left alone: initialization is droppable, so a
+    // retry during an active attempt can produce no new state, and clearing it
+    // here would hide a diagnostic that is still current. It clears when the
+    // diagnostic does.
     setState(() {
       _startedAt = widget.now();
       _elapsed = Duration.zero;
-      _blockageSince = null;
     });
     final bloc = context.read<RecoverBullBloc>();
     if (bloc.state.torConnection is tor.TorReady) {
