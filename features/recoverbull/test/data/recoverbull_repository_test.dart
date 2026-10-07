@@ -385,6 +385,118 @@ void main() {
     expect(logSink.entries.single.trace, isNotNull);
   });
 
+  // The SDK rethrows transport exceptions from fetchBackupKey unchanged. A
+  // dropped connection or interrupted response is actionable, not an
+  // unexpected crypto error.
+  for (final error in <Exception>[
+    const SocketException('Connection reset'),
+    TimeoutException('Response timed out'),
+    const HttpException('Connection closed before full header was received'),
+  ]) {
+    test(
+      '${error.runtimeType} maps to a recoverable connection failure',
+      () async {
+        stubFetchThrows(error);
+        stubFetchWithStatusThrows(error);
+
+        final result = await fetch();
+        final withStatus = await repository.fetchVaultKeyWithStatus(
+          '00',
+          'password',
+          '00',
+          route,
+        );
+
+        expect(
+          (result as Err<String, RecoverBullFailure>).failure,
+          isA<KeyServerUnavailableFailure>(),
+        );
+        expect(
+          (withStatus as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+          isA<KeyServerUnavailableFailure>(),
+        );
+        for (final entry in logSink.entries) {
+          expect(entry.level, 'warning');
+        }
+      },
+    );
+  }
+
+  test(
+    'a SOCKS rejection while fetching maps to a connection failure',
+    () async {
+      final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(proxy.close);
+      proxy.listen((socket) {
+        var greeted = false;
+        final bytes = <int>[];
+        socket.listen((chunk) {
+          bytes.addAll(chunk);
+          if (!greeted && bytes.length >= 3) {
+            greeted = true;
+            bytes.clear();
+            socket.add([0x05, 0x00]);
+          } else if (greeted &&
+              bytes.length >= 5 &&
+              bytes.length >= 7 + bytes[4]) {
+            // Reply 0x04: host unreachable.
+            socket.add([0x05, 0x04, 0x00, 0x01, 0, 0, 0, 0, 0, 0]);
+            socket.close();
+          }
+        });
+      });
+      final settings = _MockSettings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://destination.onion/'));
+      final socksRemote = RecoverBullRemoteDatasource(
+        recoverbullSettingsDatasource: settings,
+        log: logSink,
+        fetchRequest: (url, client, backupId, password, salt) async {
+          final request = await client.postUrl(url);
+          await request.close();
+          throw StateError('the SOCKS proxy rejected the connection');
+        },
+      );
+      final endpoint = TorProxyEndpoint(
+        host: InternetAddress.loopbackIPv4.address,
+        port: proxy.port,
+      );
+      final recorder = TorConnectionFailureRecorder();
+      final socksRoute = RecoverBullTorRoute(
+        TorRoute(
+          source: TorSource.external,
+          endpoint: endpoint,
+          evidence: TorReadinessEvidence.externalSocksHandshake,
+        ),
+        () async {},
+        const TorHttpClientFactory().create(
+          endpoint,
+          failureRecorder: recorder,
+        ),
+        connectionFailureRecorder: recorder,
+      );
+      addTearDown(() => socksRoute.closeQuietly());
+      final socksRepository = RecoverBullRepositoryImpl(
+        log: logSink,
+        remoteDatasource: socksRemote,
+        recoverbullSettingsDatasource: settings,
+      );
+
+      final result = await socksRepository.fetchVaultKeyWithStatus(
+        '00',
+        'password',
+        '00',
+        socksRoute,
+      );
+
+      expect(
+        (result as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+        isA<KeyServerOnionUnreachableFailure>(),
+      );
+    },
+  );
+
   test('opaque key-server failure uses a fresh SOCKS cause', () async {
     when(
       () => remote.fetch(any(), any(), any(), route: any(named: 'route')),
@@ -718,6 +830,91 @@ void main() {
       expect(
         logSink.entries.single.trace.toString(),
         isNot(contains('sentinel')),
+      );
+    });
+
+    for (final error in <Exception>[
+      const SocketException('Connection reset'),
+      const HttpException('Connection closed before full header was received'),
+    ]) {
+      test('${error.runtimeType} while storing or trashing is a connection '
+          'failure', () async {
+        when(
+          () => remote.store(
+            any(),
+            any(),
+            any(),
+            any(),
+            route: any(named: 'route'),
+          ),
+        ).thenThrow(error);
+        when(
+          () => remote.trashWithStatus(
+            any(),
+            any(),
+            any(),
+            route: any(named: 'route'),
+          ),
+        ).thenThrow(error);
+
+        final stored = await repository.storeVaultKey(
+          '00',
+          'password',
+          '00',
+          '00',
+          route,
+        );
+        final trashed = await repository.trashVaultKeyWithStatus(
+          '00',
+          'password',
+          '00',
+          route,
+        );
+
+        expect(
+          (stored as Err<Null, RecoverBullFailure>).failure,
+          isA<KeyServerUnavailableFailure>(),
+        );
+        expect(
+          (trashed as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+          isA<KeyServerUnavailableFailure>(),
+        );
+        expect(logSink.entries.map((entry) => entry.level), [
+          'warning',
+          'warning',
+        ]);
+      });
+    }
+
+    test('a SOCKS failure while trashing names its connection cause', () async {
+      when(
+        () => remote.trashWithStatus(
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenAnswer((_) async {
+        route.connectionFailureRecorder.recordCause(
+          SocksConnectionFailureCause.onionServiceUnreachable,
+        );
+        throw const SocketException('SOCKS connection rejected');
+      });
+
+      final result = await repository.trashVaultKeyWithStatus(
+        '00',
+        'password',
+        '00',
+        route,
+      );
+
+      expect(
+        (result as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+        isA<KeyServerOnionUnreachableFailure>(),
+      );
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.trash.connection_failed cause=onion_unreachable',
       );
     });
   });
