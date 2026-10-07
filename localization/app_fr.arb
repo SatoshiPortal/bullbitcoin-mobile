@@ -4979,5 +4979,8 @@
   "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
   "recoverbullNewRoute": "Autre route",
   "recoverbullTorInitializing": "Initialisation",
-  "recoverbullTorReady": "Prêt"
+  "recoverbullTorReady": "Prêt",
+  "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
+  "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée."
 }
