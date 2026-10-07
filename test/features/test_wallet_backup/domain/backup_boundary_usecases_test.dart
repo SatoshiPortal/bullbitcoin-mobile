@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -67,6 +68,7 @@ void main() {
       usecase = CheckBackupUsecase(
         walletRepository: wallets,
         settingsRepository: settings,
+        recoverBullStatus: () async => const RecoverBullStatus.initial(),
       );
       when(() => settings.fetch()).thenAnswer((_) async => _settings);
     });

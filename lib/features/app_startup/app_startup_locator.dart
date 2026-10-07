@@ -17,11 +17,12 @@ import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exi
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 class AppStartupLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<AppStartupWalletPort>(
-      () => WalletStartupAdapter(locator<WalletRepository>()),
+      () => WalletStartupAdapter(locator<RecoverBullFeature>()),
     );
 
     // Use cases
