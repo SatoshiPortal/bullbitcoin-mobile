@@ -16,6 +16,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     required this._getSettingsUsecase,
     required this._updateTorProxyUsecase,
     required this._updateTorTransportModeUsecase,
+    required this._retryTorConnectionUsecase,
     required this._watchTorConnectionUsecase,
     required this._checkExternalTorConnectionUsecase,
   }) : super(const TorSettingsState());
@@ -23,6 +24,7 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final UpdateTorProxyUsecase _updateTorProxyUsecase;
   final UpdateTorTransportModeUsecase _updateTorTransportModeUsecase;
+  final RetryTorConnectionUsecase _retryTorConnectionUsecase;
   final WatchTorConnectionUsecase _watchTorConnectionUsecase;
   final CheckExternalTorConnectionUsecase _checkExternalTorConnectionUsecase;
   StreamSubscription<TorConnectionState>? _connectionSubscription;
@@ -77,6 +79,12 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   Future<void> updateTransportMode(TorTransportMode mode) async {
     emit(state.copyWith(transportMode: mode));
     await _updateTorTransportModeUsecase.execute(mode);
+  }
+
+  /// Replaces embedded Tor's client, including one stuck mid-bootstrap. The
+  /// outcome arrives through the connection stream like any other change.
+  Future<void> retryEmbedded() async {
+    await _retryTorConnectionUsecase.execute();
   }
 
   Future<void> updateTorSettings({

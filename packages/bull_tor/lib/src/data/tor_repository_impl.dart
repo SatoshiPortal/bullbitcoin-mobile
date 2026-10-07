@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import '../domain/entities/tor_connection_state.dart';
 import '../domain/entities/tor_proxy_endpoint.dart';
@@ -276,6 +277,8 @@ final class TorRepositoryImpl implements TorRepository {
           if (abandoned.censored) _directLooksCensored = true;
           await _embeddedTor.stop();
           if (!_isCurrent(generation)) return _current;
+          final failure = abandoned.failure;
+          if (failure != null) return _fail(generation, failure);
           continue;
         } on TorBackendException catch (error) {
           if (hasFallback && _shouldUseSnowflake(error.failure)) {
@@ -303,26 +306,52 @@ final class TorRepositoryImpl implements TorRepository {
   /// blockage that suggests censorship, or runs past [_directTimeLimit].
   /// Leaving the abandoned start running would hold the backend's serialized
   /// lifecycle, so the caller stops it.
+  ///
+  /// While arti blames the device itself (offline, wrong clock) the stall
+  /// clock is suspended, and if that is still the case at the time limit the
+  /// attempt ends with that diagnosis instead of a pointless Snowflake run.
   Future<TorProxyEndpoint> _startOrAbandon(TorTransport transport) async {
     final abandoned = Completer<TorProxyEndpoint>();
-    void abandon({bool censored = false}) {
+    void abandon({bool censored = false, TorFailure? failure}) {
       if (!abandoned.isCompleted) {
-        abandoned.completeError(_AbandonedAttempt(censored: censored));
+        abandoned.completeError(
+          _AbandonedAttempt(censored: censored, failure: failure),
+        );
       }
     }
 
+    TorDiagnostic? diagnostic;
+    TorBootstrapDetail? detail;
     var bestProgress = double.negativeInfinity;
     Timer? stall = Timer(_directStallLimit, abandon);
-    final limit = Timer(_directTimeLimit, abandon);
+    final limit = Timer(_directTimeLimit, () {
+      final local = diagnostic;
+      if (local == null || !local.blocksEveryTransport) return abandon();
+      abandon(
+        failure: TorBootstrapFailure(
+          'Direct bootstrap ran out of time (${local.name})',
+          local,
+          detail,
+        ),
+      );
+    });
     final progress = _embeddedTor.watch().listen((event) {
       if (event is! EmbeddedTorConnecting || event.transport != transport) {
         return;
       }
+      diagnostic = event.diagnostic;
+      detail = event.detail;
       if (event.diagnostic?.suggestsCensorship ?? false) {
         return abandon(censored: true);
       }
-      if (event.progress <= bestProgress) return;
-      bestProgress = event.progress;
+      if (event.diagnostic?.blocksEveryTransport ?? false) {
+        stall?.cancel();
+        stall = null;
+        return;
+      }
+      if (bestProgress >= _relayFraction) return;
+      if (event.progress <= bestProgress && stall != null) return;
+      bestProgress = max(bestProgress, event.progress);
       stall?.cancel();
       stall = bestProgress >= _relayFraction
           ? null
@@ -405,5 +434,8 @@ final class TorRepositoryImpl implements TorRepository {
 final class _AbandonedAttempt implements Exception {
   final bool censored;
 
-  const _AbandonedAttempt({required this.censored});
+  /// Set when the attempt ends the connection rather than handing over.
+  final TorFailure? failure;
+
+  const _AbandonedAttempt({required this.censored, this.failure});
 }
