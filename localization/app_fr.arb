@@ -4661,5 +4661,12 @@
   "statusCheckDegraded": "Dégradé",
   "statusCheckTemporarilyUnavailableExplanation": "Le service est joignable mais temporairement incapable de traiter les requêtes. Les causes possibles incluent une surcharge, une maintenance, un incident ou une attaque.",
   "statusCheckFeatureUnavailable": "Indisponible",
-  "statusCheckFeatureUnavailableExplanation": "Cette fonctionnalité n’a pas pu démarrer sur cet appareil, son service n’a donc pas été vérifié. Elle réessaiera à la prochaine ouverture de l’application."
+  "statusCheckFeatureUnavailableExplanation": "Cette fonctionnalité n’a pas pu démarrer sur cet appareil, son service n’a donc pas été vérifié. Elle réessaiera à la prochaine ouverture de l’application.",
+  "torSettingsStatusOffline": "Pas de connexion Internet",
+  "torSettingsDescOffline": "Tor se connectera dès que votre appareil sera de nouveau en ligne.",
+  "torSettingsStatusClockSkewed": "L’horloge de l’appareil semble incorrecte",
+  "torSettingsDescClockSkewed": "Tor ne peut pas se connecter tant que la date et l’heure sont incorrectes. Activez leur mise à jour automatique dans les réglages de l’appareil, puis réessayez.",
+  "torSettingsStatusCantBootstrap": "Tor n’arrive pas à terminer la connexion",
+  "torSettingsDescCantBootstrap": "Tor n’a pas pu charger l’annuaire du réseau. Réessayez ou passez à Snowflake.",
+  "torSettingsUseSnowflake": "Utiliser Snowflake"
 }

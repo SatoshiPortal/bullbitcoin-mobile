@@ -14958,5 +14958,33 @@
   "statusCheckFeatureUnavailableExplanation": "This feature could not start on this device, so its service was not checked. It will try again the next time the app opens.",
   "@statusCheckFeatureUnavailableExplanation": {
     "description": "Explanation for a service whose feature could not start on this device"
+  },
+  "torSettingsStatusOffline": "No internet connection",
+  "@torSettingsStatusOffline": {
+    "description": "Tor status title when arti reports that the device has no internet connectivity."
+  },
+  "torSettingsDescOffline": "Tor will connect once your device is back online.",
+  "@torSettingsDescOffline": {
+    "description": "Tor status description when the device has no internet connectivity."
+  },
+  "torSettingsStatusClockSkewed": "Device clock looks wrong",
+  "@torSettingsStatusClockSkewed": {
+    "description": "Tor status title when arti reports that the device clock is skewed, which breaks Tor certificate checks."
+  },
+  "torSettingsDescClockSkewed": "Tor cannot connect while the date and time are wrong. Set them to update automatically in your device settings, then try again.",
+  "@torSettingsDescClockSkewed": {
+    "description": "Tor status description when the device clock is skewed. arti's own wording, including the measured skew, is shown under it."
+  },
+  "torSettingsStatusCantBootstrap": "Tor cannot finish connecting",
+  "@torSettingsStatusCantBootstrap": {
+    "description": "Tor status title when arti cannot assemble the network directory without an obvious connection-level cause."
+  },
+  "torSettingsDescCantBootstrap": "Tor could not load the network directory. Try again, or switch to Snowflake.",
+  "@torSettingsDescCantBootstrap": {
+    "description": "Tor status description when arti cannot finish bootstrapping; offered together with Retry and Use Snowflake actions."
+  },
+  "torSettingsUseSnowflake": "Use Snowflake",
+  "@torSettingsUseSnowflake": {
+    "description": "Action on the Tor status card that switches the embedded Tor transport to Snowflake."
   }
 }

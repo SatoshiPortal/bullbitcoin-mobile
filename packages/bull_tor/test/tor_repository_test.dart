@@ -720,6 +720,67 @@ void main() {
       });
     });
 
+    // Snowflake cannot fix a device that is offline or has a wrong clock, so
+    // these must neither burn the stall budget nor end on Snowflake.
+    test('does not count time spent offline as a stall', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+
+        async.elapse(const Duration(seconds: 5));
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.offline,
+          ),
+        );
+        async.elapse(const Duration(seconds: 55));
+        expect(embedded.startedTransports, [TorTransport.direct]);
+
+        // Back online without progress yet: the stall clock starts again.
+        embedded.events.add(stalled);
+        async.elapse(const Duration(seconds: 29));
+        expect(embedded.startedTransports, [TorTransport.direct]);
+        async.elapse(const Duration(seconds: 1));
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    for (final (diagnostic, detail) in [
+      (TorDiagnostic.offline, 'unable to connect to the internet'),
+      (TorDiagnostic.clockSkewed, 'Clock is skewed by 2 hours'),
+    ]) {
+      test(
+        'gives up without Snowflake when still ${diagnostic.name} at 120 s',
+        () {
+          fakeAsync((async) {
+            final repository = startAutomatic(async);
+            embedded.events.add(
+              EmbeddedTorConnecting(
+                progress: 0,
+                transport: TorTransport.direct,
+                diagnostic: diagnostic,
+                detail: TorBootstrapDetail(blockage: detail),
+              ),
+            );
+
+            async.elapse(const Duration(seconds: 120));
+
+            expect(embedded.startedTransports, [TorTransport.direct]);
+            expect(embedded.stopCalls, 1);
+            final state = repository.current as TorUnavailable;
+            final failure = state.failure as TorBootstrapFailure;
+            expect(failure.diagnostic, diagnostic);
+            expect(failure.detail?.blockage, detail);
+            repository.close().ignore();
+            async.flushMicrotasks();
+          });
+        },
+      );
+    }
+
     test('direct mode never abandons a slow bootstrap', () {
       fakeAsync((async) {
         final repository = TorRepositoryImpl(
