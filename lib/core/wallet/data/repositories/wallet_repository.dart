@@ -396,6 +396,20 @@ class WalletRepository {
         .toList();
   }
 
+  Future<void> recordEncryptedBackupCreation({
+    required DateTime time,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(
+        latestEncryptedBackup: time.millisecondsSinceEpoch,
+        isEncryptedVaultTested: false,
+      ),
+    );
+  }
+
   Future<void> updateEncryptedBackupTime({
     required DateTime? time,
     required String walletId,

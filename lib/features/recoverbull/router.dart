@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/recoverbull/domain/usecases/record_encrypted_backup_creation_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -59,6 +61,8 @@ class RecoverBullRouter {
           pickVaultUsecase: locator<PickVaultUsecase>(),
           saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
           createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
+          recordEncryptedBackupCreationUsecase:
+              RecordEncryptedBackupCreationUsecase(locator<WalletRepository>()),
           storeVaultKeyIntoServerUsecase:
               locator<StoreVaultKeyIntoServerUsecase>(),
           checkKeyServerConnectionUsecase:

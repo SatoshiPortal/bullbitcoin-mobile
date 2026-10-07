@@ -16,6 +16,8 @@ class _MockSeedRepository extends Mock implements SeedRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
+class _MockWallet extends Mock implements Wallet {}
+
 /// The backup path. A wallet read that fails must not be reported as "no
 /// default Bitcoin wallet found": an onboarded install always has a default
 /// bitcoin and a default liquid wallet, so that message would tell a user with
@@ -85,6 +87,40 @@ void main() {
       expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
       expect(failure.logMessage, contains('No default Bitcoin wallet'));
       verifyZeroInteractions(recoverBullRepository);
+    },
+  );
+
+  test(
+    'a seed read failure does not mark an encrypted backup as tested',
+    () async {
+      final wallet = _MockWallet();
+      when(() => wallet.id).thenReturn('default-wallet');
+      when(() => wallet.masterFingerprint).thenReturn('12345678');
+      stubWallets(Ok([wallet]));
+      when(
+        () => walletRepository.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => seedRepository.get('12345678'),
+      ).thenThrow(StateError('Seed storage is unavailable'));
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<RecoverBullUnexpectedCoreFailure>());
+      verify(() => seedRepository.get('12345678')).called(1);
+      verifyZeroInteractions(recoverBullRepository);
+      // A timestamp also sets isEncryptedVaultTested in WalletRepository.
+      // No encrypted backup exists when its source seed could not be read.
+      verifyNever(
+        () => walletRepository.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
     },
   );
 }

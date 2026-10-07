@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/recoverbull/domain/usecases/record_encrypted_backup_creation_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -32,6 +33,9 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
+
+class _MockRecordCreation extends Mock
+    implements RecordEncryptedBackupCreationUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -68,6 +72,7 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
+  late _MockRecordCreation recordCreation;
   late _MockStoreKey storeKey;
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
@@ -89,6 +94,7 @@ void main() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
+    recordCreation = _MockRecordCreation();
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
     when(
@@ -125,6 +131,7 @@ void main() {
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
+    recordEncryptedBackupCreationUsecase: recordCreation,
     storeVaultKeyIntoServerUsecase: storeKey,
     checkKeyServerConnectionUsecase: checkConnection,
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
@@ -202,9 +209,13 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async => Ok((
+            vault: vault,
+            vaultKey: 'deadbeef',
+            walletId: 'default-wallet',
+          )),
+        );
         when(
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
@@ -279,9 +290,10 @@ void main() {
     'maps external failure while storing without announcing creation',
     () async {
       final vault = _MockEncryptedVault();
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async =>
+            Ok((vault: vault, vaultKey: 'key', walletId: 'default-wallet')),
+      );
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));
