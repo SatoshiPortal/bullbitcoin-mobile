@@ -40,6 +40,7 @@ dependencies:
   file_picker: 10.3.6
   meta: ^1.17.0
   primitives:
+  screen_privacy:
   googleapis: ^15.0.0
   google_sign_in: ^6.3.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
