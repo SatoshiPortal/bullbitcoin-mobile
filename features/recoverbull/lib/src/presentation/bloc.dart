@@ -17,6 +17,7 @@ import '../domain/usecases/pick_vault_usecase.dart';
 import '../domain/usecases/restore_vault_usecase.dart';
 import '../domain/usecases/save_file_to_system_usecase.dart';
 import '../domain/usecases/store_vault_key_into_server_usecase.dart';
+import '../domain/usecases/trash_vault_key_usecase.dart';
 import '../domain/usecases/register_monitored_backup_usecase.dart';
 import '../domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import '../domain/usecases/verify_decrypted_vault_usecase.dart';
@@ -29,6 +30,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart' as tor;
+import 'package:meta/meta.dart' show visibleForTesting;
 
 part 'bloc.mapper.dart';
 part 'event.dart';
@@ -43,6 +45,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
   final RegisterMonitoredBackupUsecase? _registerMonitoredBackupUsecase;
+
+  /// Deletes a key the server stored for a vault abandoned before any provider
+  /// save started, so the server keeps no orphan entry. Never used once a save
+  /// started: a save that reported an error may still have landed.
+  final TrashVaultKeyUsecase? _trashVaultKeyUsecase;
 
   /// Single-shot: the pre-flight check before storing a vault key, where the
   /// user is already committed and a retry budget would only delay the error.
@@ -95,6 +102,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._createEncryptedVaultUsecase,
     required this._storeVaultKeyIntoServerUsecase,
     this._registerMonitoredBackupUsecase,
+    this._trashVaultKeyUsecase,
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
@@ -140,11 +148,18 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   /// Only the encrypted vault is retained while a provider save is retried.
   bool get hasPendingProviderSave => _pendingProviderVault != null;
 
+  /// Whether a key stored for a vault abandoned before any provider save is
+  /// trashed when the flow closes.
+  @visibleForTesting
+  bool get trashesAbandonedVaultKeys => _trashVaultKeyUsecase != null;
+
   @override
   Future<void> close() async {
     _closingBloc = true;
     _torReadinessGraceTimer?.cancel();
     _torReadinessGraceTimer = null;
+    // A pending vault already went through at least one provider save, which
+    // may have landed despite an error: its key is kept, never trashed.
     _pendingProviderVault = null;
     await _torSubscription?.cancel();
     final pending = _pendingRoutePreparation;
@@ -162,6 +177,34 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       );
     }
     return super.close();
+  }
+
+  /// Best effort and never awaited by the UI: the flow is already gone, so a
+  /// failure is only logged, without the backup identifier.
+  Future<void> _trashAbandonedVaultKey(
+    EncryptedVault vault,
+    String password,
+  ) async {
+    final trash = _trashVaultKeyUsecase;
+    if (trash == null) return;
+    try {
+      // The flow's route closes with the bloc, so the use case opens its own.
+      final result = await trash.execute(vault: vault, password: password);
+      switch (result) {
+        case Ok():
+          log.fine('recoverbull.vault.abandoned_key_trashed');
+        case Err(:final failure):
+          log.warning(
+            'recoverbull.vault.abandoned_key_trash.failed '
+            'cause=${failure.runtimeType}',
+          );
+      }
+    } catch (error) {
+      log.warning(
+        'recoverbull.vault.abandoned_key_trash.unexpected '
+        'error_type=${error.runtimeType}',
+      );
+    }
   }
 
   Future<void> _onTorConnectionChanged(
@@ -660,14 +703,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       vaultKey: vaultKey,
       route: _route,
     );
-    if (isClosed || _closingBloc || emit.isDone) return;
     if (keyStored case Err(:final failure)) {
+      if (isClosed || _closingBloc || emit.isDone) return;
       emit(state.copyWith(failure: _storeKeyFailure(failure)));
+      return;
+    }
+    if (isClosed || _closingBloc || emit.isDone) {
+      // The flow closed while the key was being stored, before any provider
+      // save started: no backup can hold this key, so it is trashed.
+      unawaited(_trashAbandonedVaultKey(vault, password));
       return;
     }
 
     // Only the encrypted vault crosses the provider retry boundary. The key and
-    // password remain local to this operation and are never kept pending.
+    // password remain local to this operation: once a provider save starts,
+    // the key is never trashed, so the password is no longer needed.
     emit(state.copyWith(failure: null, vaultPassword: null));
     _pendingProviderVault = vault;
     await _saveVaultToProvider(vault, provider, emit);
@@ -678,47 +728,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     VaultProvider provider,
     Emitter<RecoverBullState> emit,
   ) async {
-    try {
-      switch (provider) {
-        case VaultProvider.customLocation:
-          final saved = await _saveFileToSystemUsecase.execute(
-            content: vault.toFile(),
-            filename: vault.filename,
-          );
-          if (isClosed || _closingBloc || emit.isDone) return;
-          if (saved case Err()) {
-            if (!isClosed && !_closingBloc && !emit.isDone) {
-              emit(state.copyWith(failure: const VaultProviderSaveFailure()));
-            }
-            return;
-          }
-        case VaultProvider.googleDrive:
-          final connected = await _connectToGoogleDriveUsecase.execute();
-          if (isClosed || _closingBloc || emit.isDone) return;
-          if (connected case Err()) {
-            emit(state.copyWith(failure: const VaultProviderSaveFailure()));
-            return;
-          }
-          final stored = await _saveToGoogleDriveUsecase.execute(vault);
-          if (isClosed || _closingBloc || emit.isDone) return;
-          if (stored case Err()) {
-            if (!isClosed && !_closingBloc && !emit.isDone) {
-              emit(state.copyWith(failure: const VaultProviderSaveFailure()));
-            }
-            return;
-          }
-        case VaultProvider.iCloud:
-          log.warning('recoverbull.vault.provider.unsupported provider=iCloud');
-          if (!isClosed && !_closingBloc && !emit.isDone) {
-            emit(state.copyWith(failure: const VaultProviderSaveFailure()));
-          }
-          return;
-      }
-    } catch (_) {
-      log.warning('recoverbull.vault.provider.save.unexpected');
-      if (!isClosed && !_closingBloc && !emit.isDone) {
-        emit(state.copyWith(failure: const VaultProviderSaveFailure()));
-      }
+    final saved = await _storeAtProvider(vault, provider);
+    if (isClosed || _closingBloc || emit.isDone) {
+      _pendingProviderVault = null;
+      return;
+    }
+    if (!saved) {
+      emit(state.copyWith(failure: const VaultProviderSaveFailure()));
       return;
     }
 
@@ -747,6 +763,35 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     emit(state.copyWith(failure: null, vault: vault, vaultProvider: provider));
     _pendingProviderVault = null;
     log.fine('recoverbull.vault.created_and_key_stored');
+  }
+
+  /// Whether the provider now holds [vault].
+  Future<bool> _storeAtProvider(
+    EncryptedVault vault,
+    VaultProvider provider,
+  ) async {
+    try {
+      switch (provider) {
+        case VaultProvider.customLocation:
+          final saved = await _saveFileToSystemUsecase.execute(
+            content: vault.toFile(),
+            filename: vault.filename,
+          );
+          return saved is Ok;
+        case VaultProvider.googleDrive:
+          final connected = await _connectToGoogleDriveUsecase.execute();
+          if (connected case Err()) return false;
+          if (isClosed || _closingBloc) return false;
+          final stored = await _saveToGoogleDriveUsecase.execute(vault);
+          return stored is Ok;
+        case VaultProvider.iCloud:
+          log.warning('recoverbull.vault.provider.unsupported provider=iCloud');
+          return false;
+      }
+    } catch (_) {
+      log.warning('recoverbull.vault.provider.save.unexpected');
+      return false;
+    }
   }
 
   Future<void> _onFetchVaultKey(

@@ -31,6 +31,7 @@ import '../domain/usecases/restore_vault_usecase.dart';
 import '../domain/usecases/save_file_to_system_usecase.dart';
 import '../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../domain/usecases/store_vault_key_into_server_usecase.dart';
+import '../domain/usecases/trash_vault_key_usecase.dart';
 import '../domain/usecases/verify_decrypted_vault_usecase.dart';
 import '../domain/usecases/discover_drive_backups_usecase.dart';
 import '../domain/usecases/fetch_recoverbull_server_settings_usecase.dart';
@@ -240,6 +241,11 @@ final class RecoverBullFeature {
       registerMonitoredBackupUsecase: RegisterMonitoredBackupUsecase(
         attemptMonitoringStore,
       ),
+      trashVaultKeyUsecase: TrashVaultKeyUsecase(
+        repository: repository,
+        ensureSession: ensureTor,
+        log: log,
+      ),
       checkKeyServerConnectionUsecase: check,
       connectToKeyServerUsecase: ConnectToKeyServerUsecase(
         check: check,
@@ -383,6 +389,11 @@ final class RecoverBullFeature {
   }
 
   bool get isAvailable => _repository != null;
+
+  /// The bloc the flow routes build, or null when the feature is unavailable.
+  @visibleForTesting
+  RecoverBullBloc? newBlocForTesting({required RecoverBullFlow flow}) =>
+      _newBloc?.call(flow: flow);
 
   /// Fetches, decrypts, and restores one encrypted vault through the feature's
   /// configured Tor/key-server and wallet capabilities.

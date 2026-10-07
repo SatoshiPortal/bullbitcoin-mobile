@@ -19,6 +19,7 @@ import 'package:bull_recoverbull/src/domain/usecases/restore_vault_usecase.dart'
 import 'package:bull_recoverbull/src/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/trash_vault_key_usecase.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/domain/usecases/connect_to_key_server_usecase.dart';
@@ -151,6 +152,7 @@ RecoverBullBloc buildBloc({
   EncryptedVault? preSelectedVault,
   Future<void> Function()? onWalletUpdated,
   VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
+  TrashVaultKeyUsecase? trashVaultKeyUsecase,
   DateTime Function()? now,
   Timer Function(Duration, void Function())? scheduleTimer,
   int maxAttempts = ConnectToKeyServerUsecase.maxAttempts,
@@ -165,6 +167,7 @@ RecoverBullBloc buildBloc({
   registerMonitoredBackupUsecase: RegisterMonitoredBackupUsecase(
     attemptMonitoringStore,
   ),
+  trashVaultKeyUsecase: trashVaultKeyUsecase,
   checkKeyServerConnectionUsecase: checkConnection,
   connectToKeyServerUsecase: ConnectToKeyServerUsecase(
     check: checkConnection,
