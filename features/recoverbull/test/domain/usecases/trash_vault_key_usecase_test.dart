@@ -137,6 +137,53 @@ void main() {
       await database.close();
     },
   );
+
+  test(
+    'trash stays Ok when forgetting the monitored backup fails afterwards',
+    () async {
+      final repository = _Repository();
+      final ensure = _Ensure();
+      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+      await database.ensureState();
+      final recordAttempt = RecordLocalAttemptUsecase(
+        RecoverBullAttemptMonitoringStore(database),
+      );
+      // A closed database makes the local cleanup throw once the server has
+      // already deleted the key.
+      await database.close();
+      final log = TestLogSink.recording();
+      final backup = sdk.RecoverBull.createBackup(
+        secret: [1],
+        backupKey: List<int>.filled(32, 1),
+      );
+      final vault = EncryptedVault(file: backup.toJson());
+      when(() => ensure.execute()).thenAnswer((_) async => Ok(_route()));
+      when(
+        () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),
+      ).thenAnswer(
+        (_) async => const Ok(
+          VaultKeyFetchResult(vaultKey: 'secret-key', attemptStatus: null),
+        ),
+      );
+
+      final result = await TrashVaultKeyUsecase(
+        repository: repository,
+        ensureSession: ensure,
+        recordAttempt: recordAttempt,
+        log: log,
+      ).execute(vault: vault, password: 'secret-password');
+
+      expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
+      final messages = log.entries.map((entry) => entry.message).join('\n');
+      expect(
+        messages,
+        contains('recoverbull.attempts.monitoring.remove.failed'),
+      );
+      expect(messages, isNot(contains('secret-key')));
+      expect(messages, isNot(contains('secret-password')));
+      expect(messages, isNot(contains(vault.id)));
+    },
+  );
 }
 
 final class _AlertPort implements RecoverBullAttemptAlertPort {

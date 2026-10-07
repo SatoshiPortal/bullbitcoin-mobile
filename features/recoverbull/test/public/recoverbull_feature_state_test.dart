@@ -46,7 +46,9 @@ Future<RecoverBullFeature> _createFeature(
   final tor = _Tor();
   final embedded = _EmbeddedTor();
   when(() => tor.embedded).thenReturn(embedded);
-  when(() => embedded.watcher).thenReturn(_Watcher());
+  final watcher = _Watcher();
+  when(watcher.execute).thenAnswer((_) => const Stream.empty());
+  when(() => embedded.watcher).thenReturn(watcher);
   return RecoverBullFeature.create(
     config: RecoverBullConfig(databasePath: path),
     wallets: _Wallets(),
@@ -191,6 +193,29 @@ void main() {
       expect(drive.sessions, 1);
     },
   );
+
+  test(
+    'flows trash the server key of a vault abandoned before any save',
+    () async {
+      final feature = opened = await _createFeature(path);
+
+      final bloc = feature.newBlocForTesting(
+        flow: RecoverBullFlow.secureVault,
+      )!;
+      addTearDown(bloc.close);
+
+      expect(bloc.trashesAbandonedVaultKeys, isTrue);
+    },
+  );
+
+  test('the unavailable feature builds no flow bloc', () {
+    final feature = RecoverBullFeature.unavailable(log: const TestLogSink());
+
+    expect(
+      feature.newBlocForTesting(flow: RecoverBullFlow.secureVault),
+      isNull,
+    );
+  });
 
   testWidgets('every route of the unavailable feature shows an error page', (
     tester,
