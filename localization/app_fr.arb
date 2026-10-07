@@ -4909,5 +4909,8 @@
   "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
   "limitOrdersInsufficientBalance": "Solde insuffisant",
   "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "limitOrdersFundAccount": "Financer votre compte"
+  "limitOrdersFundAccount": "Financer votre compte",
+  "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
+  "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée."
 }
