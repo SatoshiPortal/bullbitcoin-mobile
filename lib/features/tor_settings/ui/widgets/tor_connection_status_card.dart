@@ -219,8 +219,22 @@ class TorConnectionStatusCard extends StatelessWidget {
           context.loc.torSettingsExternalProxyReachableDescription,
         _VisualStatus.connecting =>
           context.loc.torSettingsExternalProxyCheckingDescription,
-        _VisualStatus.offline =>
-          context.loc.torSettingsExternalProxyUnavailableDescription,
+        _VisualStatus.offline => switch (connection) {
+          TorUnavailable(
+            failure: TorExternalProxyUnavailableFailure(:final problem),
+          ) =>
+            switch (problem) {
+              TorExternalProxyProblem.refused =>
+                context.loc.torSettingsExternalProxyRefusedDescription,
+              TorExternalProxyProblem.timeout =>
+                context.loc.torSettingsExternalProxyTimeoutDescription,
+              TorExternalProxyProblem.notSocks5 =>
+                context.loc.torSettingsExternalProxyNotSocksDescription,
+              TorExternalProxyProblem.unknown =>
+                context.loc.torSettingsExternalProxyUnavailableDescription,
+            },
+          _ => context.loc.torSettingsExternalProxyUnavailableDescription,
+        },
         _VisualStatus.unknown =>
           context.loc.torSettingsExternalProxyNotCheckedDescription,
       };
