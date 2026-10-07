@@ -55,14 +55,12 @@ final class TorLocator {
   static void registerRepositories(
     GetIt locator, {
     TorTransportMode initialMode = TorTransportMode.automatic,
-    TorTransport? lastSuccessfulTransport,
     Future<void> Function(TorTransport)? onSuccessfulTransport,
   }) {
     locator.registerLazySingleton<TorRepository>(
       () => TorRepositoryImpl(
         locator<EmbeddedTorPort>(),
         initialMode: initialMode,
-        lastSuccessfulTransport: lastSuccessfulTransport,
         onSuccessfulTransport: onSuccessfulTransport,
         onSessionInvalidated: () =>
             locator<TorRoutePoolTorInvalidator>().invalidateEmbedded(),

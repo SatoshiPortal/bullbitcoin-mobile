@@ -64,7 +64,6 @@ class CoreLocator {
     bull_tor.TorLocator.registerRepositories(
       locator,
       initialMode: appSettings.torTransportMode,
-      lastSuccessfulTransport: appSettings.lastSuccessfulTorTransport,
       onSuccessfulTransport: (transport) async {
         // Best-effort cache of the working transport; the repository already
         // logged the raw reason at its boundary.
