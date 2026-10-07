@@ -835,6 +835,33 @@ m.Widget bullScrollableColumnUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullCarousel)
+m.Widget bullCarouselUseCase(m.BuildContext context) {
+  final count = context.knobs.int.slider(
+    label: 'pages',
+    initialValue: 2,
+    min: 1,
+    max: 4,
+  );
+  return _frame(
+    context,
+    m.SizedBox(
+      width: 360,
+      child: BullCarousel(
+        children: [
+          for (var i = 0; i < count; i++)
+            BullInfoCard(
+              title: 'Warning ${i + 1}',
+              description: 'Swipe to see the next card.',
+              tagColor: context.bull.error,
+              bgColor: context.bull.error.withValues(alpha: 0.12),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullStackedPage)
 m.Widget bullStackedPageUseCase(m.BuildContext context) {
   return BullStackedPage(

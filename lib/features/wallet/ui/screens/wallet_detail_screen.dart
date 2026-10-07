@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -75,6 +76,9 @@ class WalletDetailScreen extends StatelessWidget {
               child: Builder(
                 builder: (context) => BBPullableBody(
                   onRefresh: () async {
+                    context.read<BitcoinPriceBloc>().add(
+                      const BitcoinPriceFetched(),
+                    );
                     await context.read<WalletBloc>().refresh();
                     if (context.mounted) {
                       await context.read<TransactionsCubit>().loadTxs();

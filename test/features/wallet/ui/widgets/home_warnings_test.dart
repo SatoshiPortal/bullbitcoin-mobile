@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:bull_ui/bull_ui.dart' show BullCarousel;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -52,7 +53,7 @@ void main() {
     expect(find.textContaining('could not be loaded'), findsNothing);
   });
 
-  testWidgets('a sync failure is not stacked on top of a server warning', (
+  testWidgets('a sync failure and a server warning are both shown, swipeable', (
     tester,
   ) async {
     await _pump(
@@ -64,9 +65,22 @@ void main() {
       ),
     );
 
-    // The server warning already explains the outage, with its own remedy.
-    expect(find.textContaining('may be out of date'), findsNothing);
-    expect(find.textContaining('Bitcoin'), findsWidgets);
+    // The server warning comes first, with its remedy; the stale-balance
+    // card is one swipe away rather than hidden.
+    final serverCard = find.textContaining('Bitcoin');
+    final syncCard = find.textContaining('may be out of date');
+    expect(serverCard, findsWidgets);
+    expect(syncCard, findsOneWidget);
+    expect(find.byType(BullCarousel), findsOneWidget);
+
+    final screen = tester.getRect(find.byType(BullCarousel));
+    expect(screen.overlaps(tester.getRect(serverCard.first)), isTrue);
+    expect(screen.overlaps(tester.getRect(syncCard)), isFalse);
+
+    await tester.drag(find.byType(BullCarousel), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+
+    expect(screen.overlaps(tester.getRect(syncCard)), isTrue);
   });
 
   testWidgets('a failed load is still reported', (tester) async {
