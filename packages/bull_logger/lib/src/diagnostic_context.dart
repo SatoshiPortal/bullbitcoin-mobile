@@ -38,6 +38,10 @@ final class DiagnosticTorContext {
   final String? transport;
   final int? progressPercent;
   final String? diagnostic;
+
+  /// Arti's own wording for the blockage behind [diagnostic]. Fixed library
+  /// text (plus a clock skew), never an address or a secret.
+  final String? blockageDetail;
   final bool socksProxyConfigured;
 
   const DiagnosticTorContext({
@@ -46,6 +50,7 @@ final class DiagnosticTorContext {
     this.transport,
     this.progressPercent,
     this.diagnostic,
+    this.blockageDetail,
     this.socksProxyConfigured = false,
   });
 
@@ -55,6 +60,7 @@ final class DiagnosticTorContext {
     'transport': transport,
     'progress_percent': _clampPercent(progressPercent),
     'diagnostic': diagnostic,
+    'blockage_detail': blockageDetail,
     'socks_proxy_configured': socksProxyConfigured,
   };
 }

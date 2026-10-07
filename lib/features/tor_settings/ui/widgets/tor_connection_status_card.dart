@@ -33,6 +33,14 @@ class TorConnectionStatusCard extends StatelessWidget {
     _ => false,
   };
 
+  /// Arti's own words about the bootstrap, untranslated, shown beneath the
+  /// localized explanation so support has something precise to go on.
+  TorBootstrapDetail? get _detail => switch (connection) {
+    TorConnecting(:final detail) => detail,
+    TorUnavailable(failure: TorBootstrapFailure(:final detail)) => detail,
+    _ => null,
+  };
+
   _VisualStatus get _status => switch (connection) {
     TorReady() => _VisualStatus.online,
     TorConnecting() => _VisualStatus.connecting,
@@ -83,6 +91,20 @@ class TorConnectionStatusCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                      for (final line in [
+                        ?_detail?.stage,
+                        ?_detail?.blockage,
+                      ]) ...[
+                        const Gap(4),
+                        Text(
+                          line,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                        ),
+                      ],
                       if (routeLabel != null) ...[
                         const Gap(4),
                         Text(routeLabel!, style: context.font.bodySmall),

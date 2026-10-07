@@ -14,6 +14,27 @@ enum TorDiagnostic {
       this == TorDiagnostic.filtering || this == TorDiagnostic.cantReachTor;
 }
 
+/// What arti says about a bootstrap beyond its progress fraction.
+///
+/// Arti's own English wording, shown as a caption and reported in support
+/// diagnostics. It is fixed library text plus, for a skewed clock, the skew,
+/// so it never carries secrets or addresses; it is never localized either,
+/// which is why the UI shows it beneath a translated explanation, not instead
+/// of one.
+final class TorBootstrapDetail {
+  /// Why arti believes it is stuck, e.g. "Clock is skewed by 2 hours".
+  final String? blockage;
+
+  /// The bootstrap step arti is on, e.g. "fetching microdescriptors 120/300".
+  ///
+  /// Null until the `onion` binding reports it; the embedded backend fills it
+  /// from the status stream once it does, and every consumer of this type
+  /// already shows it.
+  final String? stage;
+
+  const TorBootstrapDetail({this.blockage, this.stage});
+}
+
 /// Current truth about the selected Tor source.
 sealed class TorConnectionState {
   const TorConnectionState();
@@ -46,12 +67,14 @@ final class TorConnecting extends TorConnectionState {
   final double? progress;
   final TorDiagnostic? diagnostic;
   final TorTransport? transport;
+  final TorBootstrapDetail? detail;
 
   const TorConnecting({
     required this.source,
     this.progress,
     this.diagnostic,
     this.transport,
+    this.detail,
   });
 }
 
