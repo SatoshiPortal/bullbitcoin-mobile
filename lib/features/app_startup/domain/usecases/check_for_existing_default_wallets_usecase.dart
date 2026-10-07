@@ -81,7 +81,26 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     if (defaultWallets.isEmpty) {
-      log.fine('No default wallets found');
+      // Missing wallet metadata is not a fresh install while custody survives.
+      // Refuse startup before its reset path can remove the protecting PIN.
+      switch (await _secrets.list()) {
+        case Err(failure: KeystoreLockedFailure()):
+          return const Err(AppStartupKeychainLockedFailure());
+        case Err():
+          return const Err(AppStartupDefaultSecretUnreadableFailure());
+        case Ok(:final value):
+          if (value.any((entry) => entry is UnreadableSecret)) {
+            return const Err(AppStartupDefaultSecretUnreadableFailure());
+          }
+          if (value.isNotEmpty) {
+            return const Err(
+              AppStartupWalletCheckFailure(
+                'Default wallet metadata is absent while custody survives',
+              ),
+            );
+          }
+      }
+      log.fine('No default wallets or stored secrets found');
       return const Ok(false);
     }
 

@@ -103,6 +103,46 @@ void main() {
     );
   }
 
+  test('surviving custody refuses a fresh-install reset', () async {
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: any(named: 'onlyDefaults'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+    final storage = FakeSecureStoragePlatform(
+      entries: {'seed_$fingerprint': entry},
+    );
+
+    expect(
+      await usecaseOn(storage).execute(),
+      isA<Err<bool, AppStartupFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<AppStartupWalletCheckFailure>(),
+      ),
+    );
+    expect(storage.entries['seed_$fingerprint'], entry);
+  });
+
+  test('empty metadata and empty custody remain a fresh install', () async {
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: any(named: 'onlyDefaults'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+
+    expect(
+      await usecaseOn(FakeSecureStoragePlatform()).execute(),
+      isA<Ok<bool, AppStartupFailure>>().having(
+        (r) => r.value,
+        'value',
+        isFalse,
+      ),
+    );
+  });
+
   test('a readable seed is a normal start', () async {
     final usecase = usecaseOn(
       FakeSecureStoragePlatform(entries: {'seed_$fingerprint': entry}),
