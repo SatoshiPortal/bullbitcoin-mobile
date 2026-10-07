@@ -97,7 +97,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
     setState(() {
       _startedAt = DateTime.now();
       _elapsed = Duration.zero;
-      _blockageSince = null;
     });
   }
 
