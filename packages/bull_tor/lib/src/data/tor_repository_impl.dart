@@ -6,6 +6,7 @@ import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/entities/tor_route.dart';
 import '../domain/entities/tor_session.dart';
 import '../domain/entities/tor_transport.dart';
+import '../domain/entities/tor_transport_fallback.dart';
 import '../domain/ports/embedded_tor_port.dart';
 import '../domain/tor_failure.dart';
 import '../domain/tor_repository.dart';
@@ -46,6 +47,8 @@ final class TorRepositoryImpl implements TorRepository {
   final Future<void> Function()? _onSessionInvalidated;
   final StreamController<TorConnectionState> _changes =
       StreamController<TorConnectionState>.broadcast(sync: true);
+  final StreamController<TorTransportFallback> _fallbacks =
+      StreamController<TorTransportFallback>.broadcast();
 
   TorConnectionState _current = const TorUninitialized();
   TorTransportMode _mode;
@@ -106,6 +109,9 @@ final class TorRepositoryImpl implements TorRepository {
     sink.add(_current);
     sink.onCancel = subscription.cancel;
   });
+
+  @override
+  Stream<TorTransportFallback> watchFallbacks() => _fallbacks.stream;
 
   @override
   Future<TorConnectionState> ensureReady() async {
@@ -185,6 +191,7 @@ final class TorRepositoryImpl implements TorRepository {
     await _embeddedSubscription?.cancel();
     await _embeddedTor.close();
     await _changes.close();
+    await _fallbacks.close();
   }
 
   Future<TorConnectionState> _begin({required bool retry}) {
@@ -274,15 +281,17 @@ final class TorRepositoryImpl implements TorRepository {
           _emit(ready);
           return ready;
         } on _AbandonedAttempt catch (abandoned) {
-          if (abandoned.censored) _directLooksCensored = true;
           await _embeddedTor.stop();
           if (!_isCurrent(generation)) return _current;
           final failure = abandoned.failure;
           if (failure != null) return _fail(generation, failure);
+          _fallBack(transport, attempts[index + 1], abandoned.reason);
           continue;
         } on TorBackendException catch (error) {
-          if (hasFallback && _shouldUseSnowflake(error.failure)) {
-            if (_suggestsCensorship(error.failure)) _directLooksCensored = true;
+          final reason = _fallbackReason(error.failure);
+          if (hasFallback && reason != null) {
+            if (!_isCurrent(generation)) return _current;
+            _fallBack(transport, attempts[index + 1], reason);
             continue;
           }
           return _fail(generation, error.failure);
@@ -312,22 +321,25 @@ final class TorRepositoryImpl implements TorRepository {
   /// attempt ends with that diagnosis instead of a pointless Snowflake run.
   Future<TorProxyEndpoint> _startOrAbandon(TorTransport transport) async {
     final abandoned = Completer<TorProxyEndpoint>();
-    void abandon({bool censored = false, TorFailure? failure}) {
+    void abandon(TorFallbackReason reason, {TorFailure? failure}) {
       if (!abandoned.isCompleted) {
-        abandoned.completeError(
-          _AbandonedAttempt(censored: censored, failure: failure),
-        );
+        abandoned.completeError(_AbandonedAttempt(reason, failure: failure));
       }
     }
+
+    void stalled() => abandon(TorFallbackReason.stalled);
 
     TorDiagnostic? diagnostic;
     TorBootstrapDetail? detail;
     var bestProgress = double.negativeInfinity;
-    Timer? stall = Timer(_directStallLimit, abandon);
+    Timer? stall = Timer(_directStallLimit, stalled);
     final limit = Timer(_directTimeLimit, () {
       final local = diagnostic;
-      if (local == null || !local.blocksEveryTransport) return abandon();
+      if (local == null || !local.blocksEveryTransport) {
+        return abandon(TorFallbackReason.timeout);
+      }
       abandon(
+        TorFallbackReason.timeout,
         failure: TorBootstrapFailure(
           'Direct bootstrap ran out of time (${local.name})',
           local,
@@ -342,7 +354,7 @@ final class TorRepositoryImpl implements TorRepository {
       diagnostic = event.diagnostic;
       detail = event.detail;
       if (event.diagnostic?.suggestsCensorship ?? false) {
-        return abandon(censored: true);
+        return abandon(TorFallbackReason.censorship);
       }
       if (event.diagnostic?.blocksEveryTransport ?? false) {
         stall?.cancel();
@@ -355,7 +367,7 @@ final class TorRepositoryImpl implements TorRepository {
       stall?.cancel();
       stall = bestProgress >= _relayFraction
           ? null
-          : Timer(_directStallLimit, abandon);
+          : Timer(_directStallLimit, stalled);
     });
 
     try {
@@ -401,14 +413,21 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode.snowflake => transport == TorTransport.snowflake,
   };
 
-  static bool _shouldUseSnowflake(TorFailure failure) =>
-      failure is TorBootstrapTimeoutFailure || _suggestsCensorship(failure);
+  /// Why a failed attempt may hand over to the next transport, if it may.
+  static TorFallbackReason? _fallbackReason(TorFailure failure) =>
+      switch (failure) {
+        TorBootstrapTimeoutFailure() => TorFallbackReason.timeout,
+        TorBootstrapFailure(:final diagnostic?)
+            when diagnostic.suggestsCensorship =>
+          TorFallbackReason.censorship,
+        _ => null,
+      };
 
-  static bool _suggestsCensorship(TorFailure failure) => switch (failure) {
-    TorBootstrapFailure(:final diagnostic) =>
-      diagnostic?.suggestsCensorship ?? false,
-    _ => false,
-  };
+  void _fallBack(TorTransport from, TorTransport to, TorFallbackReason reason) {
+    if (reason == TorFallbackReason.censorship) _directLooksCensored = true;
+    if (_closed) return;
+    _fallbacks.add(TorTransportFallback(from: from, to: to, reason: reason));
+  }
 
   TorConnectionState _fail(int generation, TorFailure failure) {
     if (!_isCurrent(generation)) return _current;
@@ -432,10 +451,11 @@ final class TorRepositoryImpl implements TorRepository {
 
 /// Internal signal that an attempt was given up in favour of the next one.
 final class _AbandonedAttempt implements Exception {
-  final bool censored;
+  /// Why the attempt was given up.
+  final TorFallbackReason reason;
 
   /// Set when the attempt ends the connection rather than handing over.
   final TorFailure? failure;
 
-  const _AbandonedAttempt({required this.censored, this.failure});
+  const _AbandonedAttempt(this.reason, {this.failure});
 }

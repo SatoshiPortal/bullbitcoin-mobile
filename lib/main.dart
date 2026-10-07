@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -349,6 +350,7 @@ class BullBitcoinWalletApp extends StatefulWidget {
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
   late final tor.TorLifecycleController _torLifecycleController;
+  final _torFallbacks = locator<bull_tor.Tor>().embedded.fallbacks;
   // final router = AppRouter.router;
 
   @override
@@ -496,7 +498,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       ...RecoverBullLocalizations.supportedLocales,
                     }.toList(),
                     builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
+                      // Announces automatic Tor fallbacks on whatever screen
+                      // is showing.
+                      final app = TorFallbackListener(
+                        fallbacks: _torFallbacks,
+                        child: AppStartupWidget(app: child!),
+                      );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
                       // banner, so this is how testers tell beta from production.
