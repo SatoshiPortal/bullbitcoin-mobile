@@ -9,6 +9,14 @@ import '../domain/ports/embedded_tor_port.dart';
 import '../domain/tor_failure.dart';
 import '../domain/tor_repository.dart';
 
+/// How long an automatic-mode direct bootstrap may go without its progress
+/// fraction increasing before Snowflake takes over.
+const _directStallLimit = Duration(seconds: 30);
+
+/// The most an automatic-mode direct bootstrap gets, progressing or not. It
+/// matches arti's own bootstrap timeout, which this cuts short when it can.
+const _directTimeLimit = Duration(seconds: 120);
+
 final class TorRepositoryImpl implements TorRepository {
   final EmbeddedTorPort _embeddedTor;
   final Future<void> Function(TorTransport)? _onSuccessfulTransport;
@@ -214,9 +222,12 @@ final class TorRepositoryImpl implements TorRepository {
     final attempts = _attempts();
     for (var index = 0; index < attempts.length; index++) {
       final transport = attempts[index];
+      final hasFallback = index + 1 < attempts.length;
       _emit(TorConnecting(source: TorSource.embedded, transport: transport));
       try {
-        final endpoint = await _embeddedTor.start(transport);
+        final endpoint = hasFallback
+            ? await _startOrAbandon(transport)
+            : await _embeddedTor.start(transport);
         if (!_isCurrent(generation)) return _current;
 
         _lastSuccessfulTransport = transport;
@@ -224,8 +235,11 @@ final class TorRepositoryImpl implements TorRepository {
         final ready = _readyOn(endpoint, transport);
         _emit(ready);
         return ready;
+      } on _AbandonedAttempt {
+        await _embeddedTor.stop();
+        if (!_isCurrent(generation)) return _current;
+        continue;
       } on TorBackendException catch (error) {
-        final hasFallback = index + 1 < attempts.length;
         if (hasFallback && _shouldUseSnowflake(error.failure)) continue;
         return _fail(generation, error.failure);
       } catch (error) {
@@ -236,6 +250,49 @@ final class TorRepositoryImpl implements TorRepository {
       generation,
       const TorUnexpectedFailure('No embedded Tor transport was attempted'),
     );
+  }
+
+  /// Starts [transport] while watching whether it is worth waiting for.
+  ///
+  /// Throws [_AbandonedAttempt] as soon as the bootstrap stops moving for
+  /// [_directStallLimit], reports a blockage that suggests censorship, or runs
+  /// past [_directTimeLimit]. Leaving the abandoned start running would hold
+  /// the backend's serialized lifecycle, so the caller stops it.
+  Future<TorProxyEndpoint> _startOrAbandon(TorTransport transport) async {
+    final abandoned = Completer<TorProxyEndpoint>();
+    void abandon() {
+      if (!abandoned.isCompleted) {
+        abandoned.completeError(const _AbandonedAttempt());
+      }
+    }
+
+    var bestProgress = double.negativeInfinity;
+    var stall = Timer(_directStallLimit, abandon);
+    final limit = Timer(_directTimeLimit, abandon);
+    final progress = _embeddedTor.watch().listen((event) {
+      if (event is! EmbeddedTorConnecting || event.transport != transport) {
+        return;
+      }
+      if (event.diagnostic?.suggestsCensorship ?? false) return abandon();
+      if (event.progress <= bestProgress) return;
+      bestProgress = event.progress;
+      stall.cancel();
+      stall = Timer(_directStallLimit, abandon);
+    });
+
+    try {
+      // Whichever settles first wins; the loser's late result is dropped.
+      return await Future.any([
+        _embeddedTor.start(transport),
+        abandoned.future,
+      ]);
+    } finally {
+      stall.cancel();
+      limit.cancel();
+      // Not awaited: nothing depends on the watcher being gone, and the
+      // attempt that follows must not queue behind it.
+      unawaited(progress.cancel());
+    }
   }
 
   TorReady _readyOn(TorProxyEndpoint endpoint, TorTransport transport) =>
@@ -291,4 +348,9 @@ final class TorRepositoryImpl implements TorRepository {
     _current = state;
     _changes.add(state);
   }
+}
+
+/// Internal signal that an attempt was given up in favour of the next one.
+final class _AbandonedAttempt implements Exception {
+  const _AbandonedAttempt();
 }

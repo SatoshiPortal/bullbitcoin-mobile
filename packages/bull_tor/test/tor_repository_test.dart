@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 import 'package:bull_tor/src/data/tor_repository_impl.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
@@ -381,6 +382,155 @@ void main() {
       // Idempotent: the shell may close a controller that already went away.
       await repository.close();
       expect(embedded.closeCalls, 1);
+    });
+  });
+
+  // Automatic mode gives direct as long as it keeps moving, and no longer:
+  // Snowflake is slower but works on networks where direct never will, so a
+  // stuck direct bootstrap must hand over well before arti's own 120 s budget.
+  group('automatic Snowflake fallback', () {
+    late _FakeEmbeddedTor embedded;
+
+    const stalled = EmbeddedTorConnecting(
+      progress: 0,
+      transport: TorTransport.direct,
+    );
+    EmbeddedTorConnecting directAt(double progress) => EmbeddedTorConnecting(
+      progress: progress,
+      transport: TorTransport.direct,
+    );
+
+    setUp(() => embedded = _FakeEmbeddedTor());
+
+    TorRepositoryImpl startAutomatic(FakeAsync async) {
+      final repository = TorRepositoryImpl(embedded);
+      repository.ensureReady().ignore();
+      async.flushMicrotasks();
+      embedded.events.add(stalled);
+      return repository;
+    }
+
+    test('keeps waiting on direct while its bootstrap progresses', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+
+        for (var step = 1; step <= 4; step++) {
+          async.elapse(const Duration(seconds: 25));
+          embedded.events.add(directAt(step * 0.2));
+        }
+        async.elapse(const Duration(seconds: 15));
+
+        expect(embedded.startedTransports, [TorTransport.direct]);
+        expect(embedded.stopCalls, 0);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('hands over to Snowflake after 30 s without progress', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+
+        async.elapse(const Duration(seconds: 10));
+        embedded.events.add(directAt(0.3));
+        async.elapse(const Duration(seconds: 15));
+        // Repeating the same fraction is not progress.
+        embedded.events.add(directAt(0.3));
+        async.elapse(const Duration(seconds: 14));
+        expect(embedded.startedTransports, [TorTransport.direct]);
+
+        async.elapse(const Duration(seconds: 1));
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+        );
+        async.flushMicrotasks();
+        final ready = repository.current as TorReady;
+        expect(ready.route.transport, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('hands over at once when the blockage suggests censorship', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+
+        async.elapse(const Duration(seconds: 2));
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0.1,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.filtering,
+          ),
+        );
+        async.flushMicrotasks();
+
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('gives direct 120 s at most, even while it progresses', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+
+        for (var step = 1; step <= 5; step++) {
+          async.elapse(const Duration(seconds: 20));
+          embedded.events.add(directAt(step * 0.15));
+        }
+        async.elapse(const Duration(seconds: 19));
+        expect(embedded.startedTransports, [TorTransport.direct]);
+
+        async.elapse(const Duration(seconds: 1));
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('a direct attempt abandoned for Snowflake stays silent', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+        async.elapse(const Duration(seconds: 30));
+
+        // The backend reports the cancelled direct start after the fact.
+        embedded.starts.first.completeError(
+          const TorBackendException(TorUnexpectedFailure('cancelled')),
+        );
+        async.flushMicrotasks();
+
+        expect(repository.current, isA<TorConnecting>());
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('direct mode never abandons a slow bootstrap', () {
+      fakeAsync((async) {
+        final repository = TorRepositoryImpl(
+          embedded,
+          initialMode: TorTransportMode.direct,
+        );
+        repository.ensureReady().ignore();
+        async.flushMicrotasks();
+        embedded.events.add(stalled);
+
+        async.elapse(const Duration(minutes: 5));
+
+        expect(embedded.startedTransports, [TorTransport.direct]);
+        expect(embedded.stopCalls, 0);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
     });
   });
 
