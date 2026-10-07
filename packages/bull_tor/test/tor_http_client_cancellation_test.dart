@@ -5,9 +5,12 @@ import 'package:bull_tor/tor.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-    'closing during SOCKS negotiation does not leak an async error',
-    () async {
+  // Production passes a failure recorder, which wraps the connection task.
+  // Both shapes must keep cancellation failures out of the zone.
+  for (final withRecorder in [false, true]) {
+    final variant = withRecorder ? 'with' : 'without';
+    test('closing during SOCKS negotiation does not leak an async error '
+        '($variant a failure recorder)', () async {
       final uncaught = <Object>[];
       final finished = Completer<void>();
       runZonedGuarded(() async {
@@ -22,6 +25,7 @@ void main() {
         });
         final client = const TorHttpClientFactory().create(
           TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
+          failureRecorder: withRecorder ? TorConnectionFailureRecorder() : null,
         );
         try {
           final request = client
@@ -48,6 +52,6 @@ void main() {
       }, (error, stack) => uncaught.add(error));
       await finished.future.timeout(const Duration(seconds: 10));
       expect(uncaught, isEmpty);
-    },
-  );
+    });
+  }
 }
