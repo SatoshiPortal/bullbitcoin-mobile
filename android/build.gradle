@@ -46,3 +46,35 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// Lock every APK compile/runtime graph, including transitive version ranges.
+// Test-only configurations are independent of the distributed APK.
+allprojects {
+    dependencyLocking {
+        lockMode = LockMode.STRICT
+        lockFile = file("${rootDir}/gradle/dependency-locks/${project.name}.lockfile")
+    }
+    configurations.configureEach {
+        if ((name.endsWith('CompileClasspath') || name.endsWith('RuntimeClasspath')) &&
+            !name.toLowerCase().contains('test')) {
+            resolutionStrategy.activateDependencyLocking()
+        }
+    }
+}
+
+// Refresh only during an explicit dependency update; review lock and hash diffs.
+tasks.register('resolveApkDependencies') {
+    doLast {
+        allprojects.each { p ->
+            p.configurations.findAll { c ->
+                c.canBeResolved &&
+                    (c.name.endsWith('CompileClasspath') || c.name.endsWith('RuntimeClasspath')) &&
+                    !c.name.toLowerCase().contains('test')
+            }.each { c ->
+                c.incoming.artifactView {
+                    componentFilter { id -> id instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier }
+                }.files.files
+            }
+        }
+    }
+}

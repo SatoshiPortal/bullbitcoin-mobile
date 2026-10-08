@@ -13,7 +13,9 @@ Two-file build setup driven by `make android release`:
 - `Containerfile.tools` installs all toolchains (Rust pinned via `RUST_VERSION`, Flutter via FVM, Android SDK, Gradle).
 - `Containerfile.app` copies the repo, runs `pub get` / `build_runner` / `gen-l10n`, and configures Gradle. It does NOT run `flutter build` — that happens via `podman run` against the resulting image so the multi-GB build output is never committed to a layer.
 
-Two environment variables are set at build time to eliminate sources of non-determinism:
+The container uses fixed paths (`/app`, `/home/bull`, `/opt/android-sdk`). Keep these paths when reproducing an APK: Flutter native hooks filter some environment variables, and native libraries can embed paths even when Rust remapping is requested. Build metadata is computed on the host and passed to the container, so Git worktrees are supported without copying host-only `.git` pointers.
+
+Two environment variables are set at build time to reduce sources of non-determinism:
 
 - `SOURCE_DATE_EPOCH` — set to the timestamp of the latest git commit (`git log -1 --format=%ct`). OpenSSL embeds a wall-clock build timestamp in compiled binaries by default; setting this variable makes it use a fixed value instead, so any `.so` that links against OpenSSL (e.g. `libonion.so`) is identical across builds. The exact set of shipped Rust `.so` files is confirmed by a real build, not by this doc; the toolchain-pinned subset that `make verify-rustc-pins` checks is the `TRACKED_RUST_LIBS` list in the [`makefile`](../makefile) — keep that list authoritative and this sentence illustrative.
 - `CARGO_ENCODED_RUSTFLAGS` — three `--remap-path-prefix` flags that rewrite absolute paths baked into Rust binaries at compile time (home directory, `.cargo`, `.rustup`) to fixed strings (`/cargo`, `/rustup`, `/build`). cargokit reads `CARGO_ENCODED_RUSTFLAGS` rather than `RUSTFLAGS`; flags are separated by the ASCII unit separator `\x1f` (octal `\037`).
@@ -96,49 +98,18 @@ adb pull /data/app/com.bullbitcoin.mobile-.../split_config.arm64_v8a.apk ~/bullb
 
 Then pass `--apk ~/bullbitcoin-splits/` to the script.
 
-## Known gaps that need infra/org access to close
+## Keeping inputs stable over time
 
-These came out of a full reproducibility audit (2026-07) but require access
-this repo's tooling doesn't have (a container registry, admin rights on the
-SatoshiPortal GitHub org) — tracked here rather than silently dropped:
+Rust release manifests are checked against reviewed SHA-256 values before installation; they pin the compiler archive hashes as well as version numbers. The Flutter Git revision is checked explicitly after FVM installation, so a moved version tag is refused. APT uses the dated Debian snapshot declared in `Containerfile.tools`, freezing the JDK and transitive system packages. Android platform-tools and platform API revisions use versioned archives and reviewed SHA-256 values in `install-android-pins.sh`; unknown API levels fail closed. NDK, CMake and build-tools archives are also checked against reviewed SHA-256 values.
 
-- **Archive the exact `bull-tools`/`bull-app` image per release.** Everything
-  in `Containerfile.tools` is version-pinned, but several inputs are still
-  fetched live at image-build time with no content pin: apt packages
-  (including the JDK that runs javac/Gradle) resolve to whatever Debian
-  `trixie` currently ships, the FVM and rustup install scripts are fetched
-  unpinned from `fvm.app`/`sh.rustup.rs`, and the Flutter SDK/engine
-  artifacts come from a mutable git tag and Google's CDN respectively.
-  Pinned *versions* make a same-week rebuild match by coincidence, not by
-  guarantee — an apt/JDK point release six months out is a plausible way for
-  a byte-identical rebuild to silently stop matching. Push the built image to
-  a registry (or `podman save` a tarball) per release and record its digest
-  in the release notes; verifiers can then pull the frozen toolchain instead
-  of re-resolving it. **Caveat — never archive an image built with beta signing
-  secrets present.** `.dockerignore` deliberately re-includes
-  `android/app/beta-upload.keystore` and does not exclude
-  `android/key-beta.properties` (which holds the store/key passwords), so a
-  *beta* build's `bull-app` layers contain live signing material — safe only on
-  an ephemeral runner. Only images built for `release`/verification (where
-  `build-android.yml` materializes beta secrets solely for `mode == 'beta'`, so
-  they are absent otherwise) may be pushed or saved. Confirm the keystore and
-  properties are not in the image before archiving.
-- **Mirror personal-account git dependencies into the SatoshiPortal org.**
-  `bull_sdk`'s `Cargo.toml` pins `bitbox-api-rs` from
-  `github.com/ben-kaufman/bitbox-api-rs`, a personal account. Commit-SHA pinning
-  makes these resolve to exact bytes today, but a pin doesn't survive the
-  commit becoming unreachable (account deleted, repo force-pushed/rewritten).
-  Mirroring these forks under the SatoshiPortal org removes that single
-  point of failure. The same applies with lower urgency to `bull_sdk`'s three
-  `branch = "migrate-to-bull-sdk"` cargo dependencies (already SatoshiPortal
-  repos) — convert to `rev =` once that branch is merged/retired upstream so
-  a future branch deletion can't break the pin (already fixed in the current
-  `migrate-to-bull-sdk` checkout; needs review/merge in `bull_sdk`).
-- **Publish build provenance from `build-android.yml`.** The workflow now
-  prints the built artifact's sha256 to the job summary, but there's no
-  cryptographic attestation tying "this GitHub Actions run, at this commit,
-  produced this exact APK" together (e.g. `actions/attest-build-provenance`).
-  Adding it needs `id-token: write` / `attestations: write` permissions on a
-  job that's currently deliberately minimal-permission (`contents: read`
-  only) — a deliberate scope change, not a drop-in fix, so it's flagged here
-  for a decision rather than applied silently.
+Gradle compile/runtime dependency graphs use strict lockfiles under `android/gradle/dependency-locks/`. Maven artifacts and metadata are checked against `android/gradle/verification-metadata.xml`; an unexpected version or checksum fails the build. During an intentional dependency update, regenerate them inside the canonical build container with `./gradlew --write-locks --write-verification-metadata sha256 resolveApkDependencies` from `/app/android`, also run the intended assemble task with `--write-verification-metadata sha256` to include detached build-tool dependencies (such as AAPT2), copy the files back, and review every version/checksum change. Generated checksums record the downloaded bytes; independently check new dependencies before accepting them.
+
+Run `make reproducibility-scripts-test` for the fast script regression suite. Run `bash reproducibility/test.sh release` for two complete builds with `--no-cache` on both image stages. The Build Android workflow offers the same test through `verify_reproducibility` (release/APK only). Every shipped ABI must contain all four tracked Rust libraries with the expected compiler versions. Duplicate ZIP member names are rejected by the APK comparator.
+
+Toolchain updates are deliberate: update the snapshot or archive pins, regenerate dependency locks/checksums as needed, and compare two clean builds from the same commit. Pinning does not guarantee that a remote archive or Git commit remains available forever. Archive or mirror the reviewed inputs and the unsigned release toolchain per release; never publish images containing beta signing secrets. Flutter engine archive hashes and authenticated build provenance remain follow-up work.
+
+## Release archival and remaining availability work
+
+Save or publish the exact unsigned release toolchain image and its digest alongside each release. Pins detect changed content; mirrors or archives are needed when a provider removes the original content. Confirm that neither `android/app/beta-upload.keystore` nor `android/key-beta.properties` is present before archiving an app image: beta images can contain signing secrets in their layers. The tools image contains no app signing material.
+
+Mirror personal-account Git dependencies under the organization while preserving the pinned commits, including the SDK's transitive forks. SDK manifest locking is maintained in the separate `bull_sdk` change; this PR does not change the app's SDK revision. Publish authenticated build provenance when the organization enables the required attestation permissions.
