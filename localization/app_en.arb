@@ -16791,5 +16791,27 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "signingKeyUsedTitle": "Keys already used",
+  "@signingKeyUsedTitle": {},
+  "signingKeyUsedNoDescription": "No description",
+  "@signingKeyUsedNoDescription": {},
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsedSign": {}
 }
