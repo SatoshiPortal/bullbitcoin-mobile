@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -20,20 +22,32 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 /// default Bitcoin wallet found": an onboarded install always has a default
 /// bitcoin and a default liquid wallet, so that message would tell a user with
 /// a perfectly good wallet that there is nothing to back up (#1895).
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
 void main() {
   late _MockRecoverBullRepository recoverBullRepository;
   late _MockSeedRepository seedRepository;
   late _MockWalletRepository walletRepository;
+  late _MockSettingsRepository settingsRepository;
   late CreateEncryptedVaultUsecase usecase;
 
   setUp(() {
     recoverBullRepository = _MockRecoverBullRepository();
     seedRepository = _MockSeedRepository();
     walletRepository = _MockWalletRepository();
+    settingsRepository = _MockSettingsRepository();
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
     usecase = CreateEncryptedVaultUsecase(
       recoverBullRepository: recoverBullRepository,
       seedRepository: seedRepository,
       walletRepository: walletRepository,
+      settingsRepository: settingsRepository,
     );
   });
 
@@ -87,4 +101,41 @@ void main() {
       verifyZeroInteractions(recoverBullRepository);
     },
   );
+  test('looks up the default wallet in the active environment', () async {
+    final recoverBullRepository = _MockRecoverBullRepository();
+    final seedRepository = _MockSeedRepository();
+    final settingsRepository = _MockSettingsRepository();
+    final walletRepository = _MockWalletRepository();
+    final usecase = CreateEncryptedVaultUsecase(
+      recoverBullRepository: recoverBullRepository,
+      seedRepository: seedRepository,
+      settingsRepository: settingsRepository,
+      walletRepository: walletRepository,
+    );
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => walletRepository.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.testnet,
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+
+    final result = await usecase.execute();
+
+    expect(result, isA<Err<dynamic, RecoverBullCoreFailure>>());
+    verify(
+      () => walletRepository.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.testnet,
+      ),
+    ).called(1);
+  });
 }

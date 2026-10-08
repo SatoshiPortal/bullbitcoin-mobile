@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
@@ -22,11 +23,12 @@ class GetDefaultSeedUsecase {
   /// failure: only the exception's runtime type. A `logMessage` is reachable
   /// from presentation, and this is key material (#1895).
   @useResult
-  Future<Result<Seed, SeedFailure>> execute() async {
+  Future<Result<Seed, SeedFailure>> execute({Environment? environment}) async {
     final List<Wallet> wallets;
     switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
+      environment: environment,
     )) {
       case Ok(:final value):
         wallets = value;
