@@ -75,7 +75,6 @@ class SpCubit extends Cubit<SpState> {
             lastScannedHeight: value.wallet.lastScannedHeight,
             isScanning: value.wallet.isScanning,
             network: value.network,
-            backendOnline: value.backendOnline,
             chainTip: value.chainTip,
             minBirthdayHeight: value.minBirthdayHeight,
             isAutoScanEnabled: _getSpAutoScanUsecase.execute(),
@@ -347,7 +346,6 @@ class SpCubit extends Cubit<SpState> {
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
             chainTip: value.chainTip,
-            backendOnline: value.backendOnline,
           ),
         );
       // The wallet feature learns about this balance change independently, by

@@ -40,7 +40,6 @@ sealed class SpState with _$SpState {
     @Default([]) List<SpPayment> history,
     @Default([]) List<SpCoin> coins,
     BitcoinNetwork? network,
-    @Default(false) bool backendOnline,
 
     // Scan progress
     @Default(false) bool isScanning,

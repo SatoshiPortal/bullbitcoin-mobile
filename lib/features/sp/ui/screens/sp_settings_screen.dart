@@ -20,8 +20,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-// Backend online/offline status dot.
-const double _statusDotSize = 10;
 // Fixed height of the scrollable notification debug console.
 const double _consoleHeight = 240;
 
@@ -122,7 +120,6 @@ class _BackendConfigSection extends StatelessWidget {
         SpBackendConfigForm<SpSettingsState>(
           state: state,
           isBusy: state.isSaving,
-          header: const _BackendStatusLine(),
           onFetchDefaults: cubit.fetchRegtestDefaults,
           onBlindbitChanged: cubit.setBlindbitUrl,
           onTestBlindbit: cubit.testBlindbit,
@@ -273,31 +270,6 @@ class _WalletManagementSection extends StatelessWidget {
                   }
                   context.go(exitRedirectPath);
                 },
-        ),
-      ],
-    );
-  }
-}
-
-/// Plain backend reachability line, driven by SpCubit's online/offline state.
-class _BackendStatusLine extends StatelessWidget {
-  const _BackendStatusLine();
-
-  @override
-  Widget build(BuildContext context) {
-    final online = context.select((SpCubit c) => c.state.backendOnline);
-    final color = online ? context.appColors.success : context.appColors.error;
-    return Row(
-      children: [
-        Icon(
-          online ? Icons.circle : Icons.circle_outlined,
-          size: _statusDotSize,
-          color: color,
-        ),
-        const Gap(6),
-        Text(
-          online ? context.loc.spBackendOnline : context.loc.spBackendOffline,
-          style: context.font.bodySmall?.copyWith(color: color),
         ),
       ],
     );

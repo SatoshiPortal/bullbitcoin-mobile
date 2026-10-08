@@ -15305,14 +15305,6 @@
   "@spDeleteWalletContent": {
     "description": "Silent Payments: delete wallet dialog content"
   },
-  "spBackendOnline": "Server online",
-  "@spBackendOnline": {
-    "description": "Silent Payments: backend reachable status"
-  },
-  "spBackendOffline": "Server offline",
-  "@spBackendOffline": {
-    "description": "Silent Payments: backend unreachable status"
-  },
   "spNotificationsDebug": "Notifications (debug)",
   "@spNotificationsDebug": {
     "description": "Silent Payments: notifications debug console title"

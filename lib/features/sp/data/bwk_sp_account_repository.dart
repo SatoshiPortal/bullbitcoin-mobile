@@ -436,16 +436,6 @@ class BwkSpAccountRepository
   }
 
   @override
-  bool backendOnline() {
-    try {
-      return _ffi.backendOnline();
-    } catch (e) {
-      log.warning('SpAccountRepository.backendOnline: $e');
-      return false;
-    }
-  }
-
-  @override
   int? chainTip() {
     return _latestHeaderTip;
   }

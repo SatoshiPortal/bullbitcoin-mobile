@@ -44,7 +44,6 @@ void main() {
     history: history ?? <SpPayment>[],
     coins: const [],
     network: BitcoinNetwork.regtest,
-    backendOnline: true,
   );
 
   SpCubit buildCubit() => harness.build();
@@ -85,7 +84,6 @@ void main() {
     expect(cubit.state.isScanning, false);
     expect(cubit.state.isLoading, false);
     expect(cubit.state.network, BitcoinNetwork.regtest);
-    expect(cubit.state.backendOnline, true);
   });
 
   test('load() sets isLoading to false after completion', () async {

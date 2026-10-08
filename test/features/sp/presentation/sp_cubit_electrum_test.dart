@@ -38,7 +38,6 @@ void main() {
     history: <SpPayment>[],
     coins: const [],
     network: BitcoinNetwork.regtest,
-    backendOnline: true,
   );
 
   setUp(() {

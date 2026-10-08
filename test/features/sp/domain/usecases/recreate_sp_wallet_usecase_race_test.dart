@@ -146,7 +146,6 @@ void main() {
       () => repository.coins(),
     ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
     when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
-    when(() => repository.backendOnline()).thenReturn(true);
     when(() => repository.chainTip()).thenReturn(0);
     when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 

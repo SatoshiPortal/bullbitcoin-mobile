@@ -37,7 +37,6 @@ SpWalletData spWalletData({
   List<SpPayment> history = const <SpPayment>[],
   List<SpCoin> coins = const <SpCoin>[],
   BitcoinNetwork? network = BitcoinNetwork.mainnet,
-  bool backendOnline = true,
   int? chainTip,
   int minBirthdayHeight = 0,
 }) => SpWalletData(
@@ -55,7 +54,6 @@ SpWalletData spWalletData({
   history: history,
   coins: coins,
   network: network,
-  backendOnline: backendOnline,
   chainTip: chainTip,
   minBirthdayHeight: minBirthdayHeight,
 );

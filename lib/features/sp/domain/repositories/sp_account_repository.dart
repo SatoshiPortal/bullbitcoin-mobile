@@ -84,9 +84,6 @@ abstract interface class SpAccountRepository {
   @useResult
   Result<BitcoinNetwork?, SpFailure> network();
 
-  /// Tolerant on purpose: false on an FFI error rather than throwing.
-  bool backendOnline();
-
   /// Latest header-store tip seen from header progress, or null if unknown.
   int? chainTip();
 

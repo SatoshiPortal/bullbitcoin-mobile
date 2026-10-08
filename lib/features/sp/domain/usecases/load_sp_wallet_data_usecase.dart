@@ -56,7 +56,6 @@ class LoadSpWalletDataUsecase {
               history: history,
               coins: coins,
               network: network,
-              backendOnline: _repository.backendOnline(),
               chainTip: _repository.chainTip(),
               minBirthdayHeight: minBirthdayHeight,
             ),

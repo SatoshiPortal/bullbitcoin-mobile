@@ -89,8 +89,6 @@ class BwkSpAccountDatasource {
 
   SpNetwork network() => _live.network();
 
-  bool backendOnline() => _live.backendOnline();
-
   int blockHeight() => _live.blockHeight();
 
   /// Simulate the spend and pin the simulation for the live session. The id is

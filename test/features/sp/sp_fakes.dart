@@ -95,7 +95,6 @@ class FakeSpAccountRepository
     this.sentinel = false,
     this.accountDir = true,
     this.networkValue = BitcoinNetwork.regtest,
-    this.backendOnlineValue = true,
   }) : _wallet =
            wallet ??
            SpWallet(
@@ -112,7 +111,6 @@ class FakeSpAccountRepository
   bool sentinel;
   bool accountDir;
   BitcoinNetwork? networkValue;
-  bool backendOnlineValue;
 
   /// How many times the Rust scan was reached. Stays 0 unless the user
   /// explicitly triggers a scan.
@@ -301,9 +299,6 @@ class FakeSpAccountRepository
 
   @override
   Result<BitcoinNetwork?, SpFailure> network() => Ok(networkValue);
-
-  @override
-  bool backendOnline() => backendOnlineValue;
 
   /// Tip reported to the scan policy; null models "header store has not said".
   int? chainTipValue;
