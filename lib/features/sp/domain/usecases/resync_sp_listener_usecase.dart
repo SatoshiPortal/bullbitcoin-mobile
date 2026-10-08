@@ -12,6 +12,10 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 /// No-op when no session is live (the listener only runs then) or while a scan
 /// is running (the restart would block on the scan's inner lock; the live stores
 /// are already current then).
+///
+/// Registered as a singleton so the in-flight guard merges overlapping calls:
+/// the reconnect watcher and the header retry watcher can both react to the
+/// same drop, and one restart is enough.
 class ResyncSpListenerUsecase {
   final SpAccountRepository _repository;
   final SpScanControlPort _scanControl;
@@ -21,7 +25,12 @@ class ResyncSpListenerUsecase {
     required this._scanControl,
   });
 
-  Future<Result<void, SpFailure>> execute() async {
+  Future<Result<void, SpFailure>>? _inFlight;
+
+  Future<Result<void, SpFailure>> execute() =>
+      _inFlight ??= _run().whenComplete(() => _inFlight = null);
+
+  Future<Result<void, SpFailure>> _run() async {
     if (!_repository.hasSession) return const Ok(null);
     if (_scanControl.isScanningCached) return const Ok(null);
     return _scanControl.restartElectrum();

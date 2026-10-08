@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
@@ -32,6 +34,30 @@ void main() {
       verify(() => repository.restartElectrum()).called(1);
     },
   );
+
+  test('overlapping calls share one restart', () async {
+    when(() => repository.hasSession).thenReturn(true);
+    when(() => repository.isScanningCached).thenReturn(false);
+    final restart = Completer<Result<void, SpFailure>>();
+    when(() => repository.restartElectrum()).thenAnswer((_) => restart.future);
+
+    final first = usecase.execute();
+    final second = usecase.execute();
+    restart.complete(const Ok(null));
+    await Future.wait([first, second]);
+
+    verify(() => repository.restartElectrum()).called(1);
+  });
+
+  test('a call after the previous one finished restarts again', () async {
+    when(() => repository.hasSession).thenReturn(true);
+    when(() => repository.isScanningCached).thenReturn(false);
+
+    await usecase.execute();
+    await usecase.execute();
+
+    verify(() => repository.restartElectrum()).called(2);
+  });
 
   test('no-ops when there is no live session', () async {
     when(() => repository.hasSession).thenReturn(false);
