@@ -128,6 +128,84 @@ void main() {
     });
   });
 
+  test('a sync that keeps failing before any progress stops retrying', () {
+    fakeAsync((async) {
+      unawaited(cubit.load());
+      async.flushMicrotasks();
+
+      // A refused range of old headers: every restart starts it again and it
+      // fails again, with no progress in between.
+      void startThenFail() {
+        notifications
+          ..add(
+            const SpHeaderProgressStarted(
+              phase: SpHeaderValidationPhase.initialSync,
+              start: 800000,
+              end: 899999,
+            ),
+          )
+          ..add(
+            const SpHeaderProgressFailed(SpHeaderValidationPhase.initialSync),
+          );
+        async.flushMicrotasks();
+      }
+
+      startThenFail();
+      for (var attempt = 1; attempt <= maxRetries; attempt++) {
+        async.elapse(backoff);
+        async.flushMicrotasks();
+        startThenFail();
+      }
+      verify(() => harness.resyncUsecase.execute()).called(maxRetries);
+
+      async.elapse(backoff * 10);
+      async.flushMicrotasks();
+      verifyNever(() => harness.resyncUsecase.execute());
+      expect(
+        cubit.state.headerValidationStatus,
+        SpHeaderValidationStatus.failed,
+      );
+    });
+  });
+
+  test('progress after a restart stops the retries', () {
+    fakeAsync((async) {
+      unawaited(cubit.load());
+      async.flushMicrotasks();
+
+      notifications.add(
+        const SpHeaderProgressFailed(SpHeaderValidationPhase.initialSync),
+      );
+      async.flushMicrotasks();
+      async.elapse(backoff);
+      async.flushMicrotasks();
+      notifications
+        ..add(
+          const SpHeaderProgressStarted(
+            phase: SpHeaderValidationPhase.initialSync,
+            start: 900000,
+            end: 970180,
+          ),
+        )
+        ..add(
+          const SpHeaderProgress(
+            phase: SpHeaderValidationPhase.initialSync,
+            current: 910000,
+            end: 970180,
+          ),
+        );
+      async.flushMicrotasks();
+
+      expect(
+        cubit.state.headerValidationStatus,
+        SpHeaderValidationStatus.validating,
+      );
+      async.elapse(backoff * 10);
+      async.flushMicrotasks();
+      verify(() => harness.resyncUsecase.execute()).called(1);
+    });
+  });
+
   test('a header extension below the tip keeps the tip', () async {
     await subscribe();
 

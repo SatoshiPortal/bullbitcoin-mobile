@@ -191,8 +191,10 @@ class SpCubit extends Cubit<SpState> {
       case SpHeaderCheckpointMismatch():
         _onHeaderCheckpointMismatch();
       case SpHeaderProgressStarted(:final phase, :final start, :final end):
+        _headerRetryWatcher.pause();
         _onHeaderProgress(phase, from: start, current: start, to: end);
       case SpHeaderProgress(:final phase, :final current, :final end):
+        _resetHeaderRetry();
         _onHeaderProgress(
           phase,
           from: state.headerValidationFrom ?? current,
@@ -301,7 +303,6 @@ class SpCubit extends Cubit<SpState> {
     // bwk keeps syncing against the same server, which refuses the chain again:
     // the user must still see why, not a fresh sync.
     if (_isInvalidChain) return;
-    _resetHeaderRetry();
     emit(
       state.copyWith(
         headerValidationStatus: SpHeaderValidationStatus.validating,
