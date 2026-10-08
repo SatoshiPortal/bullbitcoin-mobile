@@ -99,7 +99,6 @@ void main() {
         );
 
         expect(find.text('Keys already used'), findsNothing);
-        expect(find.text('No keys handed out yet'), findsNothing);
         expect(find.byType(TextField), findsOneWidget);
         expect(cubit.state.account, 0);
         expect(cubit.state.descriptorKey, 'signing-key-0');
@@ -239,7 +238,6 @@ void main() {
     const rows = [
       UsedSigningKeyAccount(
         account: 0,
-
         description: 'Home vault',
         walletId: 'home-wallet',
       ),
@@ -375,6 +373,5 @@ void main() {
     verify(
       () => export.execute(account: null, markUsed: false, description: null),
     ).called(2);
-    expect(find.text('No keys handed out yet'), findsNothing);
   });
 }

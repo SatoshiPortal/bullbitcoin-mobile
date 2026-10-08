@@ -11,7 +11,8 @@ import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart'
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullButton, BullInputText, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -158,7 +159,7 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                       ],
                       if (widget.onRegisterDescriptor != null) ...[
                         const Gap(16),
-                        BBButton.big(
+                        BullButton.big(
                           label: context.loc.signingKeyRegisterDescriptor,
                           onPressed: widget.onRegisterDescriptor!,
                           bgColor: context.appColors.secondary,

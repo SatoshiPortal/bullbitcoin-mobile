@@ -177,7 +177,7 @@ void main() {
       usecase.execute(seedFingerprint: 'DEADBEEF', coinType: 0);
 
   test(
-    'merges memo, named wallet and sparse legacy rows in account order',
+    'merges labels, wallets and reserved accounts in account order',
     () async {
       labels.labels = [_memo(2), _memo(1)];
       usages.usages = [_usage(0), _usage(2)];
