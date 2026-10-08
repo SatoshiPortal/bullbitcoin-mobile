@@ -43,6 +43,9 @@ const _trafficReadyTimeout = Duration(seconds: 60);
 /// Arti says it can carry traffic before a first onion connection actually succeeds, so announcing it at once sent requests into a client that failed them. The hold is applied once per bootstrap, not on directory-refresh republications.
 const defaultReadinessHold = Duration(seconds: 5);
 
+@visibleForTesting
+const onionConnectTimeout = torConnectBudget;
+
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
@@ -139,6 +142,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
             transport: transport,
             stateDir: stateDir,
             cacheDir: cacheDir,
+            connectTimeout: onionConnectTimeout,
           ),
           _socksPolicy,
         ),
@@ -473,6 +477,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         stateDir: stateDir,
         cacheDir: cacheDir,
         snowflakePort: snowflakePort,
+        connectTimeout: onionConnectTimeout,
       ),
       _socksPolicy,
     );
