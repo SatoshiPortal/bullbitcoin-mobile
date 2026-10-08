@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/labels/application/usecases/import_labels_use
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,11 +17,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
   final ExportLabelsUsecase _exportLabelsUsecase;
   final ImportLabelsUsecase _importLabelsUsecase;
+  final FilePicker _filePicker;
 
   Bip329LabelsCubit({
     required this._exportLabelsUsecase,
     required this._importLabelsUsecase,
-  }) : super(const Bip329LabelsState.initial());
+    FilePicker? filePicker,
+  }) : _filePicker = filePicker ?? FilePicker.platform,
+       super(const Bip329LabelsState.initial());
 
   Future<void> exportLabels(LabelFormat format) async {
     emit(const Bip329LabelsState.loading());
@@ -46,7 +51,7 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
     try {
       // The file picker is a platform channel and the only thing left here
       //  that throws; the use-case above owns its own boundary now.
-      savedTo = await FilePicker.platform.saveFile(
+      savedTo = await _filePicker.saveFile(
         bytes: utf8.encode(jsonl),
         fileName: filename,
       );
@@ -65,6 +70,68 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
     }
 
     emit(const Bip329LabelsState.exportSuccess());
+  }
+
+  /// Lets the user pick a labels file, then imports it.
+  Future<void> importLabelsFromFile(LabelFormat format) async {
+    final PlatformFile picked;
+    try {
+      // FileType.any, not FileType.custom: on iOS, custom without extensions
+      //  resolves to no document types and the picker refuses to open, and
+      //  `.jsonl` has no system type to filter on either. A file that is not
+      //  a labels file is rejected by the use-case with its own message.
+      final result = await _filePicker.pickFiles();
+      // The user dismissed the picker. Not a failure.
+      if (result == null || result.files.isEmpty) return;
+      picked = result.files.first;
+    } on Object catch (e, st) {
+      log.warning('Failed to open the labels file picker', error: e, trace: st);
+      emit(
+        Bip329LabelsState.error(
+          failure: LabelUnexpectedFailure('file picker: ${e.runtimeType}'),
+        ),
+      );
+      return;
+    }
+
+    // Checked on the reported size, before reading, so a huge file is never
+    //  loaded into memory. The codec enforces the same limit on the content.
+    final maxBytes = switch (format) {
+      LabelFormat.bip329 => Bip329LabelsCodec.maxImportBytes,
+    };
+    if (picked.size > maxBytes) {
+      emit(
+        Bip329LabelsState.error(
+          failure: LabelsFileTooLargeFailure(maxBytes: maxBytes),
+        ),
+      );
+      return;
+    }
+
+    final path = picked.path;
+    if (path == null) {
+      emit(
+        const Bip329LabelsState.error(
+          failure: LabelUnexpectedFailure('picked file has no path'),
+        ),
+      );
+      return;
+    }
+
+    final String data;
+    try {
+      data = await File(path).readAsString();
+    } on Object catch (e, st) {
+      // Most often a binary file that is not valid UTF-8: the wrong file,
+      //  not a bug.
+      log.warning('Failed to read the labels file', error: e, trace: st);
+      emit(
+        const Bip329LabelsState.error(failure: LabelsFileUnreadableFailure()),
+      );
+      return;
+    }
+
+    await importLabels(format: format, data: data);
   }
 
   Future<void> importLabels({
