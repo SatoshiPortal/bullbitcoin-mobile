@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// layer behind the `SpAccountRepository` port.
 class SpCubit extends Cubit<SpState> {
   final LoadSpWalletDataUsecase _loadSpWalletDataUsecase;
+  final RestampSpPaymentTimesUsecase _restampSpPaymentTimesUsecase;
   final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final StopSpScanUsecase _stopSpScanUsecase;
@@ -47,6 +49,7 @@ class SpCubit extends Cubit<SpState> {
 
   SpCubit({
     required this._loadSpWalletDataUsecase,
+    required this._restampSpPaymentTimesUsecase,
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
     required this._stopSpScanUsecase,
@@ -92,6 +95,15 @@ class SpCubit extends Cubit<SpState> {
           _subscribeToNotifications();
         }
     }
+  }
+
+  /// Pull-to-refresh: local reads only. Payments the header store can now date
+  /// get their time first, so the reload shows it.
+  Future<void> pullToRefresh() async {
+    if (_restampSpPaymentTimesUsecase.execute() case Err(:final failure)) {
+      log.warning('SpCubit.pullToRefresh: restamp: ${failure.logMessage}');
+    }
+    await load();
   }
 
   /// Reveal a fresh taproot receive address (explicit user action). Each call

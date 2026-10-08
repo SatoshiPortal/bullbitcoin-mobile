@@ -78,6 +78,8 @@ class BwkSpAccountDatasource {
 
   Future<List<UnifiedCoinView>> unifiedCoins() => _live.unifiedCoins();
 
+  bool restampMissingTimestamps() => _live.restampMissingTimestamps();
+
   Future<void> scanOnce({int? startHeight}) =>
       _live.scanOnce(startHeight: startHeight);
 

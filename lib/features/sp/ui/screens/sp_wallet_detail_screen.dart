@@ -65,7 +65,7 @@ class SpWalletDetailScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: BBPullableBody(
-          onRefresh: cubit.load,
+          onRefresh: cubit.pullToRefresh,
           slivers: [
             SliverToBoxAdapter(
               child: WalletDetailBalanceCard(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
@@ -23,12 +24,17 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
     this.disposeError,
     this.stopScanError,
     this.scanOnceError,
+    this.restampError,
   });
 
   final Object? disposeError;
   final Object? stopScanError;
   final Object? scanOnceError;
+  final Object? restampError;
   bool session;
+  int restampCalls = 0;
+  // Holds restartElectrum open until completed, when set.
+  Completer<void>? restart;
 
   @override
   bool get hasSession => session;
@@ -51,6 +57,17 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
     final error = scanOnceError;
     if (error != null) throw error;
   }
+
+  @override
+  bool restampMissingTimestamps() {
+    restampCalls++;
+    final error = restampError;
+    if (error != null) throw error;
+    return true;
+  }
+
+  @override
+  Future<void> restartElectrum() => restart?.future ?? Future.value();
 }
 
 void main() {
@@ -264,6 +281,66 @@ void main() {
 
       expect(result, isA<Ok<void, SpFailure>>());
       expect(repo.isScanningCached, isTrue);
+    });
+  });
+
+  group('restampMissingTimestamps', () {
+    test('restamps through the live session', () {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 1);
+    });
+
+    test('skips with no live session', () {
+      final ffi = _FakeFfiDatasource(session: false);
+      final repo = makeRepo(ffi: ffi);
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 0);
+    });
+
+    test('skips while a scan holds the account lock', () async {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+      await repo.scanOnce();
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 0);
+    });
+
+    test('skips while an electrum restart holds the account lock', () async {
+      final ffi = _FakeFfiDatasource()..restart = Completer<void>();
+      final repo = makeRepo(ffi: ffi);
+      final restarting = repo.restartElectrum();
+
+      final during = repo.restampMissingTimestamps();
+      ffi.restart!.complete();
+      await restarting;
+      final after = repo.restampMissingTimestamps();
+
+      expect(during, isA<Ok<void, SpFailure>>());
+      expect(after, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 1);
+    });
+
+    test('maps an FFI throw to a failure', () {
+      final repo = makeRepo(
+        ffi: _FakeFfiDatasource(
+          restampError: const SpError.other(message: 'lock poisoned'),
+        ),
+      );
+
+      final result = repo.restampMissingTimestamps();
+
+      expect((result as Err<void, SpFailure>).failure, isA<SpUnexpected>());
     });
   });
 

@@ -239,6 +239,15 @@ class FakeSpAccountRepository
   Future<Result<List<SpCoin>, SpFailure>> coins() async =>
       const Ok<List<SpCoin>, SpFailure>(<SpCoin>[]);
 
+  /// How many times the missing tx times were restamped.
+  int restampCount = 0;
+
+  @override
+  Result<void, SpFailure> restampMissingTimestamps() {
+    restampCount++;
+    return const Ok(null);
+  }
+
   @override
   Future<Result<void, SpFailure>> scanOnce({int? startHeight}) async {
     scanOnceCount++;

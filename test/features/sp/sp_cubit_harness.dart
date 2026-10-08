@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecas
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
@@ -70,6 +71,9 @@ class MockWatchSpNotificationsUsecase extends Mock
 
 class MockScanSpWalletUsecase extends Mock implements ScanSpWalletUsecase {}
 
+class MockRestampSpPaymentTimesUsecase extends Mock
+    implements RestampSpPaymentTimesUsecase {}
+
 class MockResyncSpListenerUsecase extends Mock
     implements ResyncSpListenerUsecase {}
 
@@ -90,6 +94,7 @@ class MockEnsureSpSessionUsecase extends Mock
 /// stays in the test's `setUp`.
 class SpCubitHarness {
   final loadUsecase = MockLoadSpWalletDataUsecase();
+  final restampUsecase = MockRestampSpPaymentTimesUsecase();
   final watchUsecase = MockWatchSpNotificationsUsecase();
   final ensureUsecase = MockEnsureSpSessionUsecase();
   final scanUsecase = MockScanSpWalletUsecase();
@@ -111,8 +116,12 @@ class SpCubitHarness {
     when(
       () => resyncUsecase.execute(),
     ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(
+      () => restampUsecase.execute(),
+    ).thenReturn(const Ok<void, SpFailure>(null));
     return SpCubit(
       loadSpWalletDataUsecase: loadUsecase,
+      restampSpPaymentTimesUsecase: restampUsecase,
       spNotificationsWatcher: SpNotificationsWatcher(
         watchSpNotificationsUsecase: watchUsecase,
         ensureSpSessionUsecase: ensureUsecase,

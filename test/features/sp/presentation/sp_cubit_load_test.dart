@@ -222,6 +222,43 @@ void main() {
     verifyNever(() => scanUsecase.execute());
   });
 
+  group('pullToRefresh', () {
+    test('restamps the missing times before the reload', () async {
+      final calls = <String>[];
+      when(() => harness.restampUsecase.execute()).thenAnswer((_) {
+        calls.add('restamp');
+        return const Ok<void, SpFailure>(null);
+      });
+      when(() => loadUsecase.execute()).thenAnswer((_) async {
+        calls.add('load');
+        return Ok<SpWalletData, SpFailure>(buildData());
+      });
+
+      await cubit.pullToRefresh();
+
+      expect(calls, ['restamp', 'load']);
+      expect(cubit.state.spAddress, 'sp1qtest');
+    });
+
+    test('a failed restamp still reloads the wallet', () async {
+      when(
+        () => harness.restampUsecase.execute(),
+      ).thenReturn(const Err<void, SpFailure>(SpUnexpected('lock poisoned')));
+
+      await cubit.pullToRefresh();
+
+      verify(() => loadUsecase.execute()).called(1);
+      expect(cubit.state.spAddress, 'sp1qtest');
+      expect(cubit.state.error, isNull);
+    });
+
+    test('load() alone does not restamp', () async {
+      await cubit.load();
+
+      verifyNever(() => harness.restampUsecase.execute());
+    });
+  });
+
   group('generateTaprootAddress', () {
     test(
       'each call reveals a fresh address via the usecase and updates state',

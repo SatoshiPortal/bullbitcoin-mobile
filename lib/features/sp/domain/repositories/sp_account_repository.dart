@@ -78,6 +78,13 @@ abstract interface class SpAccountRepository {
   @useResult
   Future<Result<List<SpCoin>, SpFailure>> coins();
 
+  /// Stamp the confirmed payments still missing a block time from the header
+  /// store. Local only, no network call. A no-op with no live session or while
+  /// a scan runs: the call is synchronous and the scan can hold the account
+  /// lock for a long time, and bwk restamps by itself when headers arrive.
+  @useResult
+  Result<void, SpFailure> restampMissingTimestamps();
+
   /// `Ok(null)` only when no session is established (a genuine unknown); an FFI
   /// read failure is `Err` so callers can fail closed instead of treating a
   /// transient error as "no network".
