@@ -48,11 +48,16 @@ final class OnionClientConfig {
   /// The loopback port of the Snowflake proxy, for a Snowflake client.
   final int? snowflakePort;
 
+  /// How long a connection through the client's SOCKS listener may take;
+  /// null keeps the onion default.
+  final Duration? connectTimeout;
+
   const OnionClientConfig({
     required this.transport,
     required this.stateDir,
     required this.cacheDir,
     this.snowflakePort,
+    this.connectTimeout,
   });
 }
 
@@ -80,18 +85,20 @@ final class NativeOnionClientLauncher implements OnionClientLauncher {
     OnionClientConfig config,
     onion.SocksPolicy policy,
   ) => switch (config.transport) {
-    TorTransport.direct => onion.TorService.start(
+    TorTransport.direct => onion.TorService.startWithConnectTimeout(
       stateDir: config.stateDir,
       cacheDir: config.cacheDir,
       socksPort: 0,
       policy: policy,
+      connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
     ),
-    TorTransport.snowflake => onion.TorService.startWithSnowflake(
+    TorTransport.snowflake => onion.TorService.startWithSnowflakeConnectTimeout(
       stateDir: config.stateDir,
       cacheDir: config.cacheDir,
       socksPort: 0,
       snowflakePort: config.snowflakePort!,
       policy: policy,
+      connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
     ),
   };
 
@@ -101,3 +108,7 @@ final class NativeOnionClientLauncher implements OnionClientLauncher {
   @override
   Future<void> stopSnowflakeProxy() => onion.SnowflakeTransport.stop();
 }
+
+/// [timeout] as the milliseconds `package:onion` takes, null for its default.
+BigInt? connectTimeoutMs(Duration? timeout) =>
+    timeout == null ? null : BigInt.from(timeout.inMilliseconds);

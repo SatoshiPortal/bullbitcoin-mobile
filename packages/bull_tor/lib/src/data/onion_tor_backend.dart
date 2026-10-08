@@ -30,6 +30,18 @@ import 'tor_logger.dart';
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
 
+/// How long a connection through an embedded SOCKS listener may take, from
+/// the SOCKS request to an open stream.
+///
+/// Reaching a hidden service fetches its descriptor, then builds an
+/// introduction and a rendezvous circuit, any of which arti may retry on a
+/// lossy mobile network. 60 s is what the app effectively had before
+/// bull_sdk#23 lowered the onion default to 30 s. Key-server attempts no
+/// longer carry an app-side cap and rely on this limit alone, so it is the
+/// budget of one attempt.
+@visibleForTesting
+const onionConnectTimeout = Duration(seconds: 60);
+
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
@@ -116,6 +128,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
             transport: transport,
             stateDir: stateDir,
             cacheDir: cacheDir,
+            connectTimeout: onionConnectTimeout,
           ),
           _socksPolicy,
         ),
@@ -294,9 +307,10 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
 
     try {
-      final session = await service.openSession(
+      final session = await service.openSessionWithConnectTimeout(
         socksPort: 0,
         policy: _socksPolicy,
+        connectTimeoutMs: connectTimeoutMs(onionConnectTimeout),
       );
       return TorSession(
         TorProxyEndpoint(
@@ -398,6 +412,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         stateDir: stateDir,
         cacheDir: cacheDir,
         snowflakePort: snowflakePort,
+        connectTimeout: onionConnectTimeout,
       ),
       _socksPolicy,
     );
