@@ -376,6 +376,30 @@ void main() {
     );
   });
 
+  testWidgets('tells the user to switch server on a checkpoint mismatch', (
+    tester,
+  ) async {
+    final notifications = StreamController<SpNotification>.broadcast();
+    addTearDown(notifications.close);
+    when(
+      () => harness.watchUsecase.execute(),
+    ).thenAnswer((_) => notifications.stream);
+    await cubit.load();
+    await pumpPage(tester);
+
+    notifications.add(const SpHeaderCheckpointMismatch());
+    await tester.pump();
+
+    expect(find.text('Electrum server sends a wrong chain'), findsOneWidget);
+    expect(
+      find.text(
+        'This server does not follow the real Bitcoin chain. Switch to '
+        'another Electrum server in the settings.',
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('shows scan strip when scanning', (tester) async {
     when(() => loadUsecase.execute()).thenAnswer(
       (_) async => Ok<SpWalletData, SpFailure>(

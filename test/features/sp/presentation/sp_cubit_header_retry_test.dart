@@ -127,4 +127,94 @@ void main() {
       );
     });
   });
+
+  group('checkpoint mismatch', () {
+    test('cancels a pending retry and shows the invalid chain', () {
+      fakeAsync((async) {
+        unawaited(cubit.load());
+        async.flushMicrotasks();
+
+        // Failed can land before the mismatch: two bwk channels.
+        notifications.add(
+          const SpHeaderProgressFailed(SpHeaderValidationPhase.initialSync),
+        );
+        notifications.add(const SpHeaderCheckpointMismatch());
+        async.flushMicrotasks();
+
+        expect(
+          cubit.state.headerValidationStatus,
+          SpHeaderValidationStatus.invalidChain,
+        );
+        async.elapse(backoff * (maxRetries + 2));
+        async.flushMicrotasks();
+        verifyNever(() => harness.resyncUsecase.execute());
+        expect(
+          cubit.state.headerValidationStatus,
+          SpHeaderValidationStatus.invalidChain,
+        );
+      });
+    });
+
+    test('later sync events and repeats do not retry or hide it', () {
+      fakeAsync((async) {
+        unawaited(cubit.load());
+        async.flushMicrotasks();
+
+        notifications.add(const SpHeaderCheckpointMismatch());
+        notifications.add(
+          const SpHeaderProgressStarted(
+            phase: SpHeaderValidationPhase.initialSync,
+            start: 800000,
+            end: 900000,
+          ),
+        );
+        notifications.add(
+          const SpHeaderProgress(
+            phase: SpHeaderValidationPhase.initialSync,
+            current: 850000,
+            end: 900000,
+          ),
+        );
+        notifications.add(
+          const SpHeaderProgressFailed(SpHeaderValidationPhase.initialSync),
+        );
+        notifications.add(const SpHeaderCheckpointMismatch());
+        async.flushMicrotasks();
+        async.elapse(backoff * (maxRetries + 2));
+        async.flushMicrotasks();
+
+        verifyNever(() => harness.resyncUsecase.execute());
+        expect(
+          cubit.state.headerValidationStatus,
+          SpHeaderValidationStatus.invalidChain,
+        );
+      });
+    });
+
+    test('a completed sync clears it', () async {
+      await subscribe();
+
+      notifications.add(const SpHeaderCheckpointMismatch());
+      notifications.add(
+        const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        cubit.state.headerValidationStatus,
+        SpHeaderValidationStatus.valid,
+      );
+    });
+
+    test('a backend change clears it', () async {
+      await subscribe();
+      notifications.add(const SpHeaderCheckpointMismatch());
+      await Future<void>.delayed(Duration.zero);
+
+      await cubit.reloadAfterBackendChange();
+
+      expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.idle);
+      verify(() => harness.loadUsecase.execute()).called(2);
+    });
+  });
 }

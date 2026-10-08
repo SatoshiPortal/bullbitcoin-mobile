@@ -15462,5 +15462,13 @@
         "type": "int"
       }
     }
+  },
+  "spHeaderValidationInvalidChain": "Electrum server sends a wrong chain",
+  "@spHeaderValidationInvalidChain": {
+    "description": "SP header card title when the Electrum server serves a chain that contradicts the built-in checkpoint"
+  },
+  "spHeaderValidationInvalidChainDetail": "This server does not follow the real Bitcoin chain. Switch to another Electrum server in the settings.",
+  "@spHeaderValidationInvalidChainDetail": {
+    "description": "SP header card detail when the Electrum server serves a chain that contradicts the built-in checkpoint; tells the user to change server"
   }
 }

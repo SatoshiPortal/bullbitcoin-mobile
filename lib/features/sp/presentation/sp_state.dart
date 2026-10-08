@@ -18,7 +18,17 @@ enum SpScanPhase { receive, spend }
 
 /// `reconnecting` is a transient initial-sync failure the cubit is retrying.
 /// `failed` means the retries ran out, or the stored chain itself is bad.
-enum SpHeaderValidationStatus { idle, validating, reconnecting, valid, failed }
+/// `invalidChain` means the Electrum server serves a chain that contradicts the
+/// checkpoint: retrying the same server fails the same way, so only switching
+/// server helps.
+enum SpHeaderValidationStatus {
+  idle,
+  validating,
+  reconnecting,
+  valid,
+  failed,
+  invalidChain,
+}
 
 @freezed
 sealed class SpState with _$SpState {

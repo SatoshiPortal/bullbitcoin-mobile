@@ -60,7 +60,7 @@ class _SpSettingsScreenState extends State<SpSettingsScreen> {
       child: BlocConsumer<SpSettingsCubit, SpSettingsState>(
         listenWhen: (previous, current) => !previous.saved && current.saved,
         listener: (context, state) {
-          unawaited(context.read<SpCubit>().load());
+          unawaited(context.read<SpCubit>().reloadAfterBackendChange());
         },
         builder: (context, state) {
           return Scaffold(

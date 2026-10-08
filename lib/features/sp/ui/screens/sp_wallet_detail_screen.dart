@@ -117,7 +117,9 @@ class SpWalletDetailScreen extends StatelessWidget {
                 state.headerValidationStatus ==
                     SpHeaderValidationStatus.reconnecting ||
                 state.headerValidationStatus ==
-                    SpHeaderValidationStatus.failed) ...[
+                    SpHeaderValidationStatus.failed ||
+                state.headerValidationStatus ==
+                    SpHeaderValidationStatus.invalidChain) ...[
               const SliverToBoxAdapter(child: Gap(16)),
               SliverToBoxAdapter(child: _HeaderValidationCard(state: state)),
               const SliverToBoxAdapter(child: Gap(16)),
@@ -150,7 +152,10 @@ class _HeaderValidationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final invalidChain =
+        state.headerValidationStatus == SpHeaderValidationStatus.invalidChain;
     final failed =
+        invalidChain ||
         state.headerValidationStatus == SpHeaderValidationStatus.failed;
     final progress = state.headerValidationProgress;
     final percent = (progress * 100).round();
@@ -158,7 +163,12 @@ class _HeaderValidationCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
+        // The fix is another server, so go where it is changed.
+        onTap: () => context.pushNamed(
+          invalidChain
+              ? SpRoute.spSettings.name
+              : SpRoute.spHeaderValidation.name,
+        ),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -201,6 +211,15 @@ class _HeaderValidationCard extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (invalidChain) ...[
+                      const Gap(4),
+                      Text(
+                        context.loc.spHeaderValidationInvalidChainDetail,
+                        style: context.font.bodySmall?.copyWith(
+                          color: context.appColors.error,
+                        ),
+                      ),
+                    ],
                     if (!failed) ...[
                       const Gap(6),
                       LinearProgressIndicator(
@@ -231,6 +250,9 @@ class _HeaderValidationCard extends StatelessWidget {
   }
 
   String _title(BuildContext context) {
+    if (state.headerValidationStatus == SpHeaderValidationStatus.invalidChain) {
+      return context.loc.spHeaderValidationInvalidChain;
+    }
     if (state.headerValidationStatus == SpHeaderValidationStatus.failed) {
       return context.loc.spHeaderValidationFailed;
     }

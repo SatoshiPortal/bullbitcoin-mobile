@@ -131,7 +131,7 @@ void main() {
     verifyNever(() => scanUsecase.execute());
   });
 
-  test('checkpoint mismatch marks header validation as failed', () async {
+  test('checkpoint mismatch marks the chain as invalid', () async {
     await cubit.load();
     notifController.add(
       const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
@@ -142,7 +142,10 @@ void main() {
     notifController.add(const SpHeaderCheckpointMismatch());
     await Future.delayed(Duration.zero);
 
-    expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.failed);
+    expect(
+      cubit.state.headerValidationStatus,
+      SpHeaderValidationStatus.invalidChain,
+    );
     verifyNever(() => scanUsecase.execute());
   });
 }
