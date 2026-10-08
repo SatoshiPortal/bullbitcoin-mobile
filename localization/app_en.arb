@@ -15006,5 +15006,13 @@
   "torFallbackSlow": "Tor is connecting slowly. Switching to Snowflake.",
   "@torFallbackSlow": {
     "description": "App-wide snackbar shown when automatic Tor leaves a direct connection for Snowflake because it stopped progressing or ran out of time."
+  },
+  "announcementLegacyEncryptedVaultTitle": "Recreate your encrypted vault",
+  "@announcementLegacyEncryptedVaultTitle": {
+    "description": "Title of the one-time wallet home announcement shown to users whose encrypted vault was created before backups moved to the RecoverBull module"
+  },
+  "announcementLegacyEncryptedVaultDescription": "Encrypted backups are now handled by a new RecoverBull module that does not track your previous vault. That vault can still be used to recover your wallet, but create a new one so the app can show your wallet as backed up.",
+  "@announcementLegacyEncryptedVaultDescription": {
+    "description": "Description of the legacy encrypted vault announcement: explains why the vault must be recreated and that the previous vault still works for recovery"
   }
 }

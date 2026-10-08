@@ -101,6 +101,8 @@ ScrollPosition _carouselScroll(WidgetTester tester) =>
     tester.state<ScrollableState>(find.byType(Scrollable).last).position;
 
 void main() {
+  _refreshesWhenReturningToHome();
+
   testWidgets('shows the update warning on wallet home after HTTP 418', (
     tester,
   ) async {
@@ -354,5 +356,71 @@ void main() {
 
     await gesture.up();
     await tester.pumpAndSettle();
+  });
+}
+
+void _refreshesWhenReturningToHome() {
+  testWidgets('refreshes when a route pushed over home is popped', (
+    tester,
+  ) async {
+    final getVisible = _MockGetVisibleAnnouncementsUsecase();
+    final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
+    when(
+      () => watchUpdate.execute(),
+    ).thenAnswer((_) => const Stream<bool>.empty());
+    var visible = [_announcement(AnnouncementId.appUpdateRequired)];
+    when(() => getVisible.execute()).thenAnswer(
+      (_) async => Ok<List<Announcement>, AnnouncementsFailure>(visible),
+    );
+    final cubit = AnnouncementsCubit(
+      getVisibleAnnouncementsUsecase: getVisible,
+      dismissAnnouncementUsecase: _MockDismissAnnouncementUsecase(),
+      watchAppUpdateAnnouncementUsecase: watchUpdate,
+    );
+    addTearDown(cubit.close);
+    final navigatorKey = GlobalKey<NavigatorState>();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigatorKey,
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          RecoverBullLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: const CustomScrollView(
+              slivers: [SliverToBoxAdapter(child: AnnouncementCarousel())],
+            ),
+          ),
+        ),
+      ),
+    );
+    await cubit.refresh();
+    await tester.pumpAndSettle();
+    expect(find.text('Update BULL'), findsOneWidget);
+
+    // A flow pushed over home, like the encrypted vault flow, clears the
+    // trigger while home is covered.
+    unawaited(
+      navigatorKey.currentState!.push(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    visible = const [];
+    await tester.pumpAndSettle();
+    expect(find.text('Update BULL', skipOffstage: false), findsOneWidget);
+
+    navigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Update BULL'), findsNothing);
+    // Once on mount and once on the return: covering home and rebuilding it
+    // do not reload the announcements.
+    verify(() => getVisible.execute()).called(2);
   });
 }

@@ -7,7 +7,14 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 class AnnouncementSignals {
   final bool isAppUpdateRequired;
 
-  const AnnouncementSignals({required this.isAppUpdateRequired});
+  /// A default mainnet wallet still records an encrypted vault from before
+  /// the RecoverBull module, and RecoverBull reports no encrypted backup.
+  final bool hasLegacyEncryptedVaultToRecreate;
+
+  const AnnouncementSignals({
+    required this.isAppUpdateRequired,
+    this.hasLegacyEncryptedVaultToRecreate = false,
+  });
 }
 
 /// A catalog entry: an [Announcement] definition paired with the predicate that
@@ -43,5 +50,15 @@ final List<AnnouncementCatalogEntry> announcementCatalog = [
       dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
     ),
     trigger: (signals) => signals.isAppUpdateRequired,
+  ),
+  AnnouncementCatalogEntry(
+    announcement: Announcement(
+      id: AnnouncementId.legacyEncryptedVault,
+      priority: 1,
+      tone: AnnouncementTone.warning,
+      action: const NavigateAction(),
+      dismissPolicy: const PermanentDismiss(),
+    ),
+    trigger: (signals) => signals.hasLegacyEncryptedVaultToRecreate,
   ),
 ];

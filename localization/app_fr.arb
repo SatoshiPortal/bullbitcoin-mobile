@@ -4673,5 +4673,7 @@
   "torSettingsExternalProxyTimeoutDescription": "Le proxy n’a pas répondu à temps. Il est peut-être encore en train de démarrer, réessayez dans un instant.",
   "torSettingsExternalProxyNotSocksDescription": "Un service a répondu sur ce port, mais ce n’est pas un proxy SOCKS5. Vérifiez le port configuré dans Orbot.",
   "torFallbackCensorship": "Votre réseau semble bloquer Tor. Passage à Snowflake.",
-  "torFallbackSlow": "Tor se connecte lentement. Passage à Snowflake."
+  "torFallbackSlow": "Tor se connecte lentement. Passage à Snowflake.",
+  "announcementLegacyEncryptedVaultTitle": "Recréez votre coffre-fort chiffré",
+  "announcementLegacyEncryptedVaultDescription": "Les sauvegardes chiffrées sont désormais gérées par un nouveau module RecoverBull qui ne suit pas votre ancien coffre-fort. Celui-ci permet toujours de récupérer votre portefeuille, mais créez-en un nouveau pour que l’application indique votre portefeuille comme sauvegardé."
 }

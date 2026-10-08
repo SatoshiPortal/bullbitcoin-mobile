@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/has_legacy_encrypted_vault_to_recreate_usecase.dart';
 import 'package:bb_mobile/features/announcements/data/announcement_dismissal_repository_impl.dart';
 import 'package:bb_mobile/features/announcements/data/datasources/announcement_dismissal_datasource.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
@@ -30,6 +32,13 @@ class AnnouncementsLocator {
       () => GetVisibleAnnouncementsUsecase(
         locator<AnnouncementDismissalRepository>(),
         locator<SwapFacade>(),
+        hasLegacyEncryptedVault: locator.isRegistered<RecoverBullFeature>()
+            ? HasLegacyEncryptedVaultToRecreateUsecase(
+                walletRepository: locator<WalletRepository>(),
+                fetchRecoverBullStatus: () => locator<RecoverBullFeature>()
+                    .status(RecoverBullNetwork.mainnet),
+              )
+            : null,
       ),
     );
     locator.registerFactory<WatchAppUpdateAnnouncementUsecase>(
