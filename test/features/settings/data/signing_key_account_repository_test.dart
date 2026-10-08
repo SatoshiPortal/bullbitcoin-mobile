@@ -67,7 +67,7 @@ class _Wallets extends Fake implements WalletRepository {
   List<Wallet> wallets = [];
   bool fail = false;
   @override
-  Future<List<Wallet>> getWallets({
+  Future<Result<List<Wallet>, WalletFailure>> getWallets({
     Environment? environment,
     bool? onlyDefaults,
     bool? onlyBitcoin,
@@ -76,8 +76,8 @@ class _Wallets extends Fake implements WalletRepository {
   }) async {
     expect(environment, Environment.mainnet);
     expect(sync, isFalse);
-    if (fail) throw Exception('unavailable');
-    return wallets;
+    if (fail) return const Err(WalletStorageFailure('unavailable'));
+    return Ok(wallets);
   }
 }
 
@@ -177,7 +177,7 @@ void main() {
       usecase.execute(seedFingerprint: 'DEADBEEF', coinType: 0);
 
   test(
-    'merges memo, named wallet and sparse legacy rows in account order',
+    'merges labels, wallets and reserved accounts in account order',
     () async {
       labels.labels = [_memo(2), _memo(1)];
       usages.usages = [_usage(0), _usage(2)];

@@ -56,12 +56,18 @@ class SigningKeyAccountRepositoryImpl implements SigningKeyAccountRepository {
                     seedFingerprint.toLowerCase(),
           )
           .toList();
-      final wallets = usages.isEmpty
-          ? const <Wallet>[]
-          : await _wallets.getWallets(
-              environment: (await _settings.fetch()).environment,
-              onlyBitcoin: true,
-            );
+      List<Wallet> wallets = const [];
+      if (usages.isNotEmpty) {
+        switch (await _wallets.getWallets(
+          environment: (await _settings.fetch()).environment,
+          onlyBitcoin: true,
+        )) {
+          case Ok(:final value):
+            wallets = value;
+          case Err():
+            return const Err(SettingsSigningKeyExportFailure());
+        }
+      }
       for (final usage in usages) {
         if (usage.localSeedFingerprint == null &&
             !await _seedVerification.matchesXpubs(
