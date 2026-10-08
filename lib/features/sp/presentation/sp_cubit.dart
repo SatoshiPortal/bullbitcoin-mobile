@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/set_sp_auto_scan_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
+import 'package:bb_mobile/features/sp/domain/sp_blindbit_lag.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
@@ -191,8 +192,10 @@ class SpCubit extends Cubit<SpState> {
     }
   }
 
+  /// [to] is the Blindbit tip the scan runs up to.
   void _onScanStarted(int from, int to) {
     _etaEstimator.reset();
+    final chainTip = state.chainTip;
     emit(
       state.copyWith(
         isScanning: true,
@@ -203,6 +206,9 @@ class SpCubit extends Cubit<SpState> {
         scanFrom: from,
         scanTo: to,
         scanCurrent: from,
+        blindbitLag: chainTip == null
+            ? null
+            : SpBlindbitLag(blindbitTip: to, chainTip: chainTip),
       ),
     );
   }

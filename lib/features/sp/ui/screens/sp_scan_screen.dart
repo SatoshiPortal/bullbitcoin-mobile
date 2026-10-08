@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
+import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,8 +39,9 @@ class SpScanScreen extends StatelessWidget {
             }
             // Caught up states both facts in its own message, so it needs no
             // strip above it. The other views say nothing about whether
-            // scanning continues on its own, so they do.
-            if (state.isCaughtUp) {
+            // scanning continues on its own, so they do. A server behind the
+            // chain means the wallet is not synced, whatever the cursor says.
+            if (state.isCaughtUp && !state.isBlindbitBehind) {
               return _CaughtUpView(
                 lastDurationSecs: state.scanLastDurationSecs,
                 isAutoScanEnabled: state.isAutoScanEnabled,
@@ -48,6 +50,13 @@ class SpScanScreen extends StatelessWidget {
             return Column(
               children: [
                 _AutoScanStatus(isEnabled: state.isAutoScanEnabled),
+                if (state.isBlindbitBehind)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: SpBlindbitBehindCard(
+                      blocksBehind: state.blindbitLag!.blocksBehind,
+                    ),
+                  ),
                 Expanded(
                   child: state.hasScannedBefore
                       ? _ResumeView(state: state)

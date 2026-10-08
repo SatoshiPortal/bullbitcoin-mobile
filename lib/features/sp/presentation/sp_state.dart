@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
+import 'package:bb_mobile/features/sp/domain/sp_blindbit_lag.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -58,6 +59,8 @@ sealed class SpState with _$SpState {
     // Chain tip + earliest scannable height; bound the start-height chooser.
     int? chainTip,
     int? minBirthdayHeight,
+    // Blindbit and header tips when the last scan started; null until one does.
+    SpBlindbitLag? blindbitLag,
     // Whether the wallet may resume scanning without being asked.
     @Default(true) bool isAutoScanEnabled,
     @Default(SpHeaderValidationStatus.idle)
@@ -95,6 +98,10 @@ sealed class SpState with _$SpState {
     chainTip: chainTip,
     isAutoScanEnabled: isAutoScanEnabled,
   );
+
+  /// True when the last scan stopped well below the header tip because the
+  /// Blindbit server is behind.
+  bool get isBlindbitBehind => blindbitLag?.isBehind ?? false;
 
   /// True when the next scan would start past the tip (nothing left to scan).
   bool get isCaughtUp {

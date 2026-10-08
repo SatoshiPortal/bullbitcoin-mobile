@@ -15453,5 +15453,14 @@
   "limitOrdersFundAccount": "Fund your account",
   "@limitOrdersFundAccount": {
     "description": "Button that opens the fund exchange flow when the user has no balance to create a limit order"
+  },
+  "spBlindbitBehindWarning": "The scan server is {count} blocks behind the chain, so recent payments may be missing until it catches up.",
+  "@spBlindbitBehindWarning": {
+    "description": "Warning on the SP wallet and scan screens when the Blindbit server tip is behind the header chain tip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

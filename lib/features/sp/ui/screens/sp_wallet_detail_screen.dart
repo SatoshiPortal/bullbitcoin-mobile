@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_tx_list_item.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -100,6 +101,15 @@ class SpWalletDetailScreen extends StatelessWidget {
                 child: _SpScanNudgeCard(
                   height: state.lastScannedHeight!,
                   chainTip: state.chainTip!,
+                ),
+              ),
+            if (state.isBlindbitBehind)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: SpBlindbitBehindCard(
+                    blocksBehind: state.blindbitLag!.blocksBehind,
+                  ),
                 ),
               ),
             if (state.headerValidationStatus ==
