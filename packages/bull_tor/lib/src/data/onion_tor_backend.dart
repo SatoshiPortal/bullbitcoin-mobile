@@ -34,7 +34,7 @@ const _socksPolicy = onion.SocksPolicy.onionOnly;
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
   final OnionClientLauncher _launcher;
-  final Future<TorDirectories> Function() _directories;
+  final Future<TorDirectories> Function(TorLogger log) _directories;
   onion.TorService? _service;
   StreamSubscription<onion.TorStatus>? _statusSubscription;
   final StreamController<EmbeddedTorEvent> _events =
@@ -102,7 +102,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _lastDetail = null;
 
     try {
-      final directories = await _directories();
+      final directories = await _directories(_log);
       final stateDir = directories.stateFor(transport);
       final cacheDir = directories.cache;
       await Directory(stateDir).create(recursive: true);
@@ -409,19 +409,64 @@ final class OnionTorBackend implements EmbeddedTorPort {
 }
 
 /// The directories the app's embedded Tor clients use.
-Future<TorDirectories> appTorDirectories() async {
+///
+/// The directory cache used to live in the app's cache directory, which
+/// Android may purge whenever storage runs low; without it the next bootstrap
+/// downloads the consensus and microdescriptors again, 30 to 45 s of silence
+/// measured on a Pixel 6a, a Pixel 5 and a Galaxy S10e. It now lives next to
+/// the Tor state, and the first start of a process adopts a cache left at the
+/// old place.
+Future<TorDirectories> appTorDirectories(TorLogger log) async {
   final support = await getApplicationSupportDirectory();
-  final cache = await getApplicationCacheDirectory();
-  return torDirectoriesUnder(support: support.path, cache: cache.path);
+  final directories = torDirectoriesUnder(support.path);
+  if (!_legacyCacheAdopted) {
+    _legacyCacheAdopted = true;
+    try {
+      final cache = await getApplicationCacheDirectory();
+      await adoptLegacyTorCache(
+        legacy: '${cache.path}/tor',
+        durable: directories.cache,
+        log: log,
+      );
+    } catch (_) {
+      // Only a download is at stake; Tor starts with an empty cache.
+    }
+  }
+  return directories;
 }
 
-/// The Tor directories under the app's [support] and [cache] directories.
+bool _legacyCacheAdopted = false;
+
+/// The Tor directories under the app's [support] directory.
 @visibleForTesting
-TorDirectories torDirectoriesUnder({
-  required String support,
-  required String cache,
-}) => TorDirectories(
+TorDirectories torDirectoriesUnder(String support) => TorDirectories(
   directState: '$support/tor_state',
   snowflakeState: '$support/tor_state_snowflake',
-  cache: '$cache/tor',
+  cache: '$support/tor_cache',
 );
+
+/// Moves the directory cache from [legacy] to [durable].
+///
+/// Best effort, and it never throws: when the move fails, Tor fills the
+/// durable cache from scratch. A durable cache that already exists wins, and
+/// the legacy one is then only taking space.
+@visibleForTesting
+Future<void> adoptLegacyTorCache({
+  required String legacy,
+  required String durable,
+  required TorLogger log,
+}) async {
+  final legacyDirectory = Directory(legacy);
+  try {
+    if (!await legacyDirectory.exists()) return;
+    if (await Directory(durable).exists()) {
+      await legacyDirectory.delete(recursive: true);
+      return;
+    }
+    await Directory(durable).parent.create(recursive: true);
+    await legacyDirectory.rename(durable);
+    log.config('Moved the Tor directory cache to durable storage');
+  } catch (error) {
+    log.warning('Could not move the Tor directory cache: $error');
+  }
+}
