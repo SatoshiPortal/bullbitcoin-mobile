@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -46,6 +47,7 @@ void main() {
     registerFallbackValue(const RelativeFee(25));
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
   });
 
   group('PreparePayBitcoinPayinUsecase', () {
@@ -57,10 +59,16 @@ void main() {
       when(
         () => prepare.execute(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
+          recipients: any(
+            named: 'recipients',
+            that: predicate<List<BitcoinTransactionRecipient>>(
+              (recipients) =>
+                  recipients.length == 1 &&
+                  recipients.single.address == 'bc1qpayin' &&
+                  recipients.single.amountSat == Sats.fromInt(100000),
+            ),
+          ),
           networkFee: any(named: 'networkFee'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
         ),
