@@ -125,14 +125,11 @@ void main() {
     setUp(() async {
       root = await Directory.systemTemp.createTemp('bull_tor_backend_');
       launcher = _RecordingLauncher();
-      final directories = torDirectoriesUnder(
-        support: '${root.path}/support',
-        cache: '${root.path}/cache',
-      );
+      final directories = torDirectoriesUnder('${root.path}/support');
       backend = OnionTorBackend(
         const TorLogger(),
         launcher: launcher,
-        directories: () async => directories,
+        directories: (_) async => directories,
       );
     });
 
@@ -165,6 +162,81 @@ void main() {
       final snowflake = await configFor(TorTransport.snowflake);
 
       expect(snowflake.cacheDir, direct.cacheDir);
+    });
+  });
+
+  // Android may purge an app's cache directory whenever storage runs low,
+  // and a purged directory costs the next bootstrap its 30 to 45 s download.
+  test('keeps the directory cache next to the Tor state', () {
+    final directories = torDirectoriesUnder('/support');
+
+    expect(directories.cache, '/support/tor_cache');
+    expect({
+      directories.directState,
+      directories.snowflakeState,
+      directories.cache,
+    }, hasLength(3));
+  });
+
+  group('adoptLegacyTorCache', () {
+    late Directory root;
+    late String legacy;
+    late String durable;
+    final warnings = <Object?>[];
+    final log = TorLogger(
+      warningCallback: (message, {error, trace}) => warnings.add(message),
+    );
+
+    setUp(() async {
+      root = await Directory.systemTemp.createTemp('bull_tor_cache_');
+      legacy = '${root.path}/cache/tor';
+      durable = '${root.path}/support/tor_cache';
+      warnings.clear();
+    });
+
+    tearDown(() => root.delete(recursive: true));
+
+    Future<void> adopt() =>
+        adoptLegacyTorCache(legacy: legacy, durable: durable, log: log);
+
+    test('moves an existing cache to the durable location', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+
+      await adopt();
+
+      expect(File('$durable/dir.sqlite3').existsSync(), isTrue);
+      expect(Directory(legacy).existsSync(), isFalse);
+    });
+
+    test('keeps a durable cache and drops the legacy one', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+      await File('$legacy/dir.sqlite3').writeAsString('legacy', flush: true);
+      await File('$durable/dir.sqlite3').create(recursive: true);
+      await File('$durable/dir.sqlite3').writeAsString('durable', flush: true);
+
+      await adopt();
+
+      expect(File('$durable/dir.sqlite3').readAsStringSync(), 'durable');
+      expect(Directory(legacy).existsSync(), isFalse);
+    });
+
+    test('does nothing without a legacy cache', () async {
+      await adopt();
+
+      expect(Directory(durable).existsSync(), isFalse);
+      expect(warnings, isEmpty);
+    });
+
+    // A cache is only worth a download: losing it must not stop Tor.
+    test('gives up quietly when the move fails', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+      // The durable location's parent is a file, so nothing can go there.
+      await File('${root.path}/support').create(recursive: true);
+
+      await expectLater(adopt(), completes);
+
+      expect(warnings, isNotEmpty);
+      expect(Directory(durable).existsSync(), isFalse);
     });
   });
 }
