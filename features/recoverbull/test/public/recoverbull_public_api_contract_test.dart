@@ -134,6 +134,7 @@ void _compilePublicApi() {
     recoverBackup = feature.recoverBackup;
     Future<bool> Function() ensureTorReady = feature.ensureTorReady;
     Future<RecoverBullHealth> Function() checkService = feature.checkService;
+    Future<void> Function() warmKeyServerRoute = feature.warmKeyServerRoute;
     Future<RecoverBullStatus> Function(RecoverBullNetwork) readStatus =
         feature.status;
     Future<RecoverBullServerSettings> Function() readSettings =
@@ -150,6 +151,7 @@ void _compilePublicApi() {
     recoverBackup;
     ensureTorReady;
     checkService;
+    warmKeyServerRoute;
     readStatus;
     readSettings;
     setServer;
