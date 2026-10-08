@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemon
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 class TestWalletBackupLocator {
   static void setup(GetIt locator) {
@@ -36,6 +37,7 @@ class TestWalletBackupLocator {
       () => CheckBackupUsecase(
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        recoverBullStatus: locator<RecoverBullFeature>().status,
       ),
     );
   }

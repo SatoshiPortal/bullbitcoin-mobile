@@ -7,14 +7,39 @@ sealed class TorFailure {
   const TorFailure([this.logMessage]);
 }
 
+/// What the probe of a user-managed SOCKS5 proxy ran into.
+enum TorExternalProxyProblem {
+  /// Nothing accepted the connection: the proxy is not running, or listens on
+  /// another port.
+  refused,
+
+  /// The port did not connect, or did not answer the greeting, in time.
+  timeout,
+
+  /// Something answered on the port, but not as an unauthenticated SOCKS5
+  /// proxy.
+  notSocks5,
+
+  /// No probe ran, or it failed in a way none of the above describes.
+  unknown,
+}
+
 final class TorExternalProxyUnavailableFailure extends TorFailure {
-  const TorExternalProxyUnavailableFailure([super.logMessage]);
+  final TorExternalProxyProblem problem;
+
+  const TorExternalProxyUnavailableFailure([
+    super.logMessage,
+    this.problem = TorExternalProxyProblem.unknown,
+  ]);
 }
 
 final class TorBootstrapFailure extends TorFailure {
   final TorDiagnostic? diagnostic;
 
-  const TorBootstrapFailure([super.logMessage, this.diagnostic]);
+  /// What arti last said before giving up; see [TorBootstrapDetail].
+  final TorBootstrapDetail? detail;
+
+  const TorBootstrapFailure([super.logMessage, this.diagnostic, this.detail]);
 }
 
 final class TorBootstrapTimeoutFailure extends TorFailure {

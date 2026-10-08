@@ -39,14 +39,6 @@
   "exchangeDcaUnableToGetConfig": "无法获得发展中国家的组合",
   "psbtFlowClickScan": "浮雕",
   "sellInstitutionNumber": "机构数目",
-  "recoverbullGoogleDriveErrorDisplay": "Rror: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "海关服务器",
   "fundExchangeMethodRegularSepa": "SEPA",
   "addressViewTransactions": "交易",
@@ -93,7 +85,6 @@
   "coreSwapsChainCanCoop": "移交将暂时完成.",
   "importColdcardInstructionsStep2": "1. 如果适用,采用代谢法",
   "satsSuffix": " ats",
-  "recoverbullErrorPasswordNotSet": "密码未设置",
   "sellSendPaymentExchangeRate": "汇率",
   "systemLabelAutoSwap": "Auto Swap",
   "fundExchangeSinpeTitle": "SINPE 转让",
@@ -131,26 +122,14 @@
   "rbfFastest": "快速",
   "buyConfirmExpressWithdrawal": "2. 确认明示退出",
   "sellSendPaymentTitle": "2. 肯定付款",
-  "recoverbullReenterConfirm": "请重新加入{inputType}号],以确认.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "涂料",
   "dcaLightningAddressInvalidError": "请进入有效的电灯地址",
   "ledgerButtonNeedHelp": "需要帮助?",
   "backupInstruction4": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
   "hwKrux": "Krux",
   "transactionFilterTransfer": "转让",
-  "recoverbullSelectVaultImportSuccess": "成功进口",
   "mempoolServerNotUsed": "未使用(海关服务器运行)",
-  "recoverbullSelectErrorPrefix": "错误:",
   "exchangeLandingRecommendedExchange": "提议交换",
-  "backupWalletHowToDecideVaultMoreInfo": "访问后收集更多信息.",
-  "recoverbullGoBackEdit": "<背 景",
   "receiveConfirming": "1. 确认......({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -193,14 +172,6 @@
   "importQrDeviceSpecterName": "专栏",
   "transactionDetailLabelSwapFees": "学费",
   "broadcastSignedTxFee": "Fee",
-  "recoverbullRecoveryBalanceLabel": "余额:{amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyFundYourAccount": "基金",
   "sellReplaceByFeeActivated": "替换",
   "globalDefaultBitcoinWalletLabel": "安保",
@@ -252,7 +223,6 @@
   "payPayoutAmount": "付款金额",
   "autoswapMaxBalanceInfo": "当隔离墙余额超过这一数额的两倍时,汽车转移将引发将余额降至这一水平",
   "payPhone": "电话",
-  "recoverbullTorNetwork": "Tor Network",
   "transactionDetailLabelTransferStatus": "转让状况",
   "importColdcardInstructionsTitle": "冷卡加指示",
   "sendVerifyOnDevice": "装置的验证",
@@ -283,7 +253,6 @@
   "broadcastSignedTxAmount": "数额",
   "hwJade": "B. 集群",
   "keystoneStep14": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
-  "recoverbullErrorConnectionFailed": "未能与目标关键服务器连接。 请再次尝试!",
   "testBackupDigitalCopy": "数字复印件",
   "fundExchangeLabelMemo": "Memo",
   "paySearchPayments": "搜查费......",
@@ -351,13 +320,11 @@
   "testBackupWarningMessage": "如果没有支持,你最终将失去获得你的钱的机会。 提供支持至关重要.",
   "importWatchOnlyYpub": "共和国",
   "ledgerVerifyTitle": "更正",
-  "recoverbullSwitchToPassword": "取而代之",
   "exchangeDcaNetworkBitcoin": "联合国",
   "autoswapWarningTitle": "具备以下条件:",
   "seedsignerStep1": "页: 1",
   "backupWalletHowToDecideBackupLosePhysical": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
   "transactionSwapDescLnSendDefault": "你们的雕刻正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
-  "recoverbullErrorMissingBytes": "从Tor的回复中失踪的tes。 收复,但如果问题继续存在,对与Tor有联系的一些装置来说,这是一个众所周知的问题.",
   "coreScreensReceiveNetworkFeeLabel": "接待网",
   "payEstimatedFee": "估计数",
   "sendSendAmount": "数额",
@@ -369,7 +336,6 @@
   "physicalBackupRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
   "importWatchOnlyDescriptor": "说明",
   "payPaymentInProgress": "支付:!",
-  "recoverbullFailed": "Failed",
   "ledgerProcessingSign": "签署交易",
   "jadeStep6": "   - 提高你的器具的亮度",
   "fundExchangeETransferLabelEmail": "E- transfer to this email",
@@ -405,14 +371,6 @@
   "buyPayoutMethodLiquid": "Liquid 上的 L-BTC",
   "buyPayoutMethodBitcoin": "Bitcoin 链上的 BTC",
   "buyConfirmPayoutMethod": "支付方式",
-  "durationMinutes": "{minutes}分钟",
-  "@durationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmNetworkLiquid": "流动资金",
   "walletDetailsAddressTypeLabel": "地址类型",
   "emptyMnemonicWordsError": "插入你的 m言",
@@ -491,7 +449,6 @@
   "payCorporateNameHint": "进入公司名称",
   "sellExternalWallet": "外墙",
   "backupSettingsFailedToDeriveKey": "未能获得备用钥匙",
-  "googleDriveProvider": "谷歌运动",
   "sellAccountName": "账户名称",
   "statusCheckUnknown": "不详",
   "howToDecideVaultLocationText2": "习俗地点可能更加安全,取决于你选择哪一个地点。 你们还必须保证不要丢失备份文件或丢失贵国备份档案存放的装置.",
@@ -526,17 +483,8 @@
   "importMnemonicSegwit": "Segwit",
   "importQrDeviceJadeStep6": "从围墙菜单中选取“Export Xpub”",
   "buyContinue": "继续",
-  "recoverbullEnterToDecrypt": "请进入您的{inputType},对你的过失进行加密.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "转让",
   "testBackupSuccessTitle": "成功完成试验!",
-  "recoverbullSelectTakeYourTime": "发言时间",
   "sendConfirmCustomFee": "2. 固定习俗费",
   "coreScreensTotalFeesLabel": "总费用",
   "mempoolSettingsDescription": "• 为不同网络配置保密的定制服务器。 每个网络都可使用自己的服务器进行编块勘探和收费估算.",
@@ -579,7 +527,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Valle Drive",
   "systemLabelExchangeBuy": "1. 采购",
   "sendRecipientAddress": "接收人的讲话",
   "exchangeAmountInputValidationInsufficient": "结余不足",
@@ -598,7 +545,6 @@
   "transactionFilterAll": "所有人",
   "transactionDetailLabelAmountReceived": "收到的资金",
   "receivePaymentReceived": "收到的捐款!",
-  "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
   "howToDecideBackupText1": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
   "coldcardStep13": "土木板将请你扫描冷却板上的QR代码。 缩略语.",
   "psbtFlowIncreaseBrightness": "3. 提高你的器具的亮度",
@@ -622,7 +568,6 @@
   "importWatchOnlyImport": "导入",
   "backupWalletBackupButton": "备份",
   "mempoolSettingsTitle": "默思服务器",
-  "recoverbullErrorVaultCreationFailed": "违约,可以是档案或钥匙",
   "sellSendPaymentFeePriority": "妇女优先",
   "bitboxActionSignTransactionProcessing": "签署交易",
   "sellWalletBalance": "余额:{amount}",
@@ -633,7 +578,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveNoBackupsFound": "没有发现的支持",
   "sellSelectNetwork": "选定网络",
   "sellSendPaymentOrderNumber": "命令号数",
   "dcaConfirmPaymentMethod": "支付方法",
@@ -651,10 +595,8 @@
   "walletDeletionConfirmationCancelButton": "Cancel",
   "ledgerErrorDeviceLocked": "液化装置被锁定。 请锁定你的装置并再次尝试.",
   "importQrDeviceSeedsignerStep5": "选择“Single Sig”,然后选择了你喜欢的文字类型(如果无法选择,则选择土著Segwit).",
-  "recoverbullRecoveryErrorWalletMismatch": "已经存在不同的违约墙。 你们只能有一个缺省墙.",
   "payNoRecipientsFound": "没有任何领取者找到工资.",
   "payNoInvoiceData": "无发票数据",
-  "recoverbullErrorInvalidCredentials": "这一备份卷宗的密码",
   "paySinpeMonto": "数额",
   "receiveCopyOrScanAddressOnly": "只读或扫描",
   "transactionDetailAccelerate": "加速",
@@ -699,7 +641,6 @@
   },
   "sellOrderPlaced": "成功签发的Sell订单",
   "ledgerHelpStep4": "确保你安装了Ledger Live的最新版本.",
-  "recoverbullPleaseWait": "请等待我们建立安全联系......",
   "broadcastSignedTxBroadcast": "广播",
   "lastKnownEncryptedVault": "密执安 不详:{date}",
   "@lastKnownEncryptedVault": {
@@ -717,7 +658,6 @@
   "backupInstruction1": "如果您丢失了12个单词备份，您将会无法恢复对该比特币钱包的访问权限",
   "sendErrorInvalidAddressOrInvoice": "Invalid Pay Address or Invoice",
   "sendErrorUnsupportedQrCodeFormat": "不支持的二维码格式",
-  "recoverbullRecoveryTitle": "2. 追回被盗资产",
   "broadcastSignedTxScanQR": "your",
   "transactionStatusTransferInProgress": "B. 进展中的转让",
   "ledgerSuccessSignDescription": "你的交易已成功签署.",
@@ -727,7 +667,6 @@
   "sendSignWithBitBox": "与BitBox的签名",
   "sendSwapRefundInProgress": "增 编",
   "exchangeKycLimited": "有限公司",
-  "backupWalletHowToDecideVaultCustomRecommendationText": "你相信,你不会丢失ault,如果你失去电话,仍然可以查阅.",
   "swapErrorAmountBelowMinimum": "数额低于最低兑换额:{min}克拉",
   "@swapErrorAmountBelowMinimum": {
     "placeholders": {
@@ -782,7 +721,6 @@
   "ledgerConnectingSubtext": "建立安全联系.",
   "electrumPrivacyNoticeCancel": "Cancel",
   "coreSwapsLnSendPending": "尚未开始使用Sap.",
-  "recoverbullVaultCreatedSuccess": "成功制造",
   "payAmount": "数额",
   "sellMaximumAmount": "最大销售额:{amount}",
   "@sellMaximumAmount": {
@@ -820,7 +758,6 @@
   "payAccount": "账户",
   "testBackupGoogleDrivePrivacyPart2": "不 ",
   "buyCompleteKyc": "页: 1",
-  "vaultSuccessfullyImported": "成功进口",
   "payAccountNumberHint": "账面编号",
   "backupWalletGoogleDrivePrivacyMessage2": "不 ",
   "payAddressRequired": "地址要求",
@@ -835,16 +772,7 @@
   "sellCashPickup": "现金保险",
   "coreSwapsLnReceivePaid": "供应商支付了发票.",
   "payInProgress": "支付:!",
-  "recoverbullRecoveryErrorKeyDerivationFailed": "当地背后的主要衍生物失败.",
   "swapValidationInsufficientBalance": "结余不足",
-  "recoverbullErrorRateLimited": "比率有限。 {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyExtendedPublicKey": "扩大公众 关键",
   "autoswapAlwaysBlock": "Always Block High Fees",
   "walletDeletionConfirmationTitle": "删除墙壁",
@@ -852,14 +780,6 @@
   "mempoolNetworkBitcoinMainnet": "页: 1",
   "paySinpeOrigen": "1. 起源",
   "networkFeeLabel": "Fee",
-  "recoverbullMemorizeWarning": "您必须确保对 {inputType} 的记忆，以便于恢复您对钱包的访问。其至少应为 6 位数字。如果您丢失了 {inputType} 您将无法恢复备份",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep15": "该交易将被导入到 Bull Bitcoin 钱包中",
   "fundExchangeETransferLabelSecretQuestion": "保密问题",
   "jadeStep15": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
@@ -868,7 +788,6 @@
   "payActualFee": "实际费用",
   "electrumValidateDomain": "A. 鉴定领域",
   "importQrDeviceJadeFirmwareWarning": "保证将你的装置更新至最新的公司",
-  "recoverbullSelectFileNotSelectedError": "未选定",
   "buyInputContinue": "继续",
   "importQrDeviceJadeStep3": "2. 跟踪装置指示以锁定Jade",
   "paySecurityQuestionLengthError": "必须是1040个性",
@@ -882,19 +801,10 @@
   "swapValidationSelectFromWallet": "请选择一个转出的钱包",
   "sendSwapInitiated": "启动",
   "backupSettingsKeyWarningMessage": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
-  "recoverbullEnterToTest": "请进入您的{inputType},以测试你的过失.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeHelpBeneficiaryName": "利用我们的正式公司名称。 不要使用“Bul>.",
   "payRecipientType": "接收器",
   "sellOrderCompleted": "页: 1!",
   "importQrDeviceSpecterStep10": "贴上你的分光墙标签,并开发进口",
-  "recoverbullSelectVaultSelected": "Vault Selected",
   "dcaWalletTypeBitcoin": "图瓦卢",
   "payNoPayments": "尚未付款",
   "onboardingEncryptedVault": "加密",
@@ -903,7 +813,6 @@
   "buyConfirmationTime": "认可时间",
   "encryptedVaultRecommendation": "加密: ",
   "payLightningInvoice": "闪电",
-  "recoverbullSelectEnterBackupKeyManually": "填写关键手册",
   "exportingVaultButton": "出口......",
   "payCoinjoinInProgress": "B. 共同进步......",
   "testBackupAllWordsSelected": "你选择了所有字句",
@@ -925,7 +834,6 @@
   "pinCodeCreateTitle": "创建新的支柱",
   "swapTransferRefundInProgressTitle": "转款",
   "swapYouReceive": "页: 1",
-  "recoverbullSelectCustomLocationProvider": "习俗地点",
   "electrumInvalidRetryError": "Invalid Retry 数额:{value}",
   "@electrumInvalidRetryError": {
     "placeholders": {
@@ -969,7 +877,6 @@
     }
   },
   "kruxStep16": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
-  "recoverbullRecoveryErrorVaultCorrupted": "某些备案卷被腐败.",
   "buyVerifyIdentity": "身份证明",
   "exchangeDcaCancelDialogConfirmButton": "是的,中止",
   "electrumServerUrlHint": "{network} {environment} 服务器URL",
@@ -1007,14 +914,6 @@
   "payLiquidFee": "流动资金",
   "fundExchangeSepaTitle": "SEPA 转让",
   "autoswapLoadSettingsError": "未能装上汽车交换场",
-  "durationSeconds": "{seconds}秒",
-  "@durationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "broadcastSignedTxReviewTransaction": "审查交易",
   "importQrDeviceKeystoneStep5": "从钱包列表中选择 \"BULL\"",
   "electrumLoadFailedError": "未能装载服务器",
@@ -1030,7 +929,6 @@
   "backupSettingsTested": "测试",
   "receiveLiquidConfirmationMessage": "几秒将予以确认",
   "jadeStep1": "to子",
-  "recoverbullSelectDriveBackups": "驱赶",
   "exchangeAuthOk": "OK",
   "settingsSecurityPinTitle": "安保科",
   "psbtFlowTroubleScanningTitle": "如果你遇到麻烦,就会:",
@@ -1042,8 +940,6 @@
   "seedsignerInstructionsTitle": "见dSigner 指示",
   "exchangeAmountInputValidationEmpty": "请列出数额",
   "bitboxActionPairDeviceProcessingSubtext": "请核实您的Box装置上的配对代码......",
-  "recoverbullKeyServer": "主要服务器 ",
-  "recoverbullPasswordTooCommon": "这一密码太常见。 请选择不同的方法",
   "backupInstruction3": "任何人如果能用你的12个字眼支持的话,就可偷走你的笔记。 这样做是好的.",
   "fundExchangeLabelBeneficiaryAddress": "受益人地址",
   "testBackupVerify": "全权证书",
@@ -1070,7 +966,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "出入地址",
   "withdrawAmountContinue": "继续",
   "allSeedViewSecurityWarningMessage": "显示种子短语是一种安全风险。 任何人如果看到你的种子,就可以获得你们的资金。 确保你位于一个私人地点,没有人能够看到你的屏幕.",
-  "recoverbullSeeMoreVaults": "See more vaults",
   "sellPayFromWallet": "付款钱包",
   "pinProtectionDescription": "您的 PIN 码用于保护对钱包和设置的访问，请确保它便于记忆",
   "kruxStep5": "扫描 Bull 钱包中显示的二维码",
@@ -1095,7 +990,6 @@
   "exchangeDcaAddressLabelLiquid": "流动资金",
   "backupWalletGoogleDrivePrivacyMessage5": "提 交点.",
   "settingsDevModeUnderstandButton": "我的理解是:",
-  "recoverbullSelectQuickAndEasy": "快速和容易",
   "exchangeFileUploadTitle": "1. 安全档案库",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
   "sendErrorAmountAboveSwapLimits": "数额高于互换限额",
@@ -1106,7 +1000,6 @@
   "seedsignerStep11": "在 Bull Bitcoin 钱包中点击“我完成了”",
   "transactionDetailLabelPayjoinStatus": "薪酬状况",
   "fundExchangeBankTransferSubtitle": "修改从贵国银行账户转账的银行转账",
-  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
   "sellProcessingOrder": "处理令......",
   "sellUpdatingRate": "更新汇率......",
   "importQrDeviceKeystoneStep6": "在您的手机上，点击「打开相机」",
@@ -1122,7 +1015,6 @@
   "importColdcardSuccess": "Coldcard 钱包已导入",
   "withdrawUnauthenticatedError": "你没有认证。 请继续发言.",
   "sellBitcoinAmount": "数额",
-  "recoverbullTestCompletedTitle": "成功完成试验!",
   "transactionFilterReceive": "收 款",
   "exchangeDcaFrequencyDay": "日 本",
   "payBumpFee": "Bump Fee",
@@ -1151,7 +1043,6 @@
   },
   "transactionSwapProgressInProgress": "A. 进展",
   "fundExchangeWarningConfirmation": "我确认,我没有被问到别的人.",
-  "recoverbullSelectCustomLocationError": "未能从海关地点选择档案",
   "mempoolCustomServerDeleteTitle": "删除习俗服务器?",
   "confirmSendTitle": "Confirm Send",
   "buyKYCLevel1": "1级——基本",
@@ -1194,7 +1085,6 @@
   "startBackupButton": "启动",
   "buyInputTitle": "采购",
   "importMnemonicImport": "导入",
-  "recoverbullPasswordTooShort": "密码必须至少具有6个长期性",
   "payNetwork": "网络",
   "sendBuildFailed": "未能建立交易",
   "paySwapFee": "Swap Fee",
@@ -1222,7 +1112,6 @@
   "bitboxActionImportWalletProcessing": "导入钱包中",
   "swapConfirmTransferTitle": "1. 集体转让",
   "payTransitNumberHint": "入境过境",
-  "recoverbullSwitchToPIN": "反之",
   "payQrCode": "QR 法典",
   "exchangeAccountInfoVerificationLevelLabel": "核查水平",
   "walletDetailsDerivationPathLabel": "抵达之路",
@@ -1324,7 +1213,6 @@
   "ledgerWalletTypeLabel": "挂号:",
   "bip85ExperimentalWarning": "试验\n• 人工支持你的衍生途径",
   "addressViewBalance": "结余",
-  "recoverbullSelectNoBackupsFound": "没有发现的支持",
   "importMnemonicNestedSegwit": "Nest",
   "sendReplaceByFeeActivated": "替换",
   "coreSwapsLnReceiveFailed": "Swap Failed.",
@@ -1350,14 +1238,6 @@
   "sellFromAnotherWallet": "Sell from another Plaza",
   "automaticallyFetchKeyButton": "Fetch Key",
   "importColdcardButtonOpenCamera": "开放照相机",
-  "recoverbullReenterRequired": "重新加入{inputType}",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "payFeePriority": "妇女优先",
   "buyInsufficientBalanceDescription": "你们没有足够的平衡来建立这一秩序.",
   "sendSelectNetworkFee": "选择网络收费",
@@ -1378,7 +1258,6 @@
   "sellHowToPayInvoice": "你想支付这一发票如何?",
   "payUseCoinjoin": "十五、使用",
   "autoswapWarningExplanation": "当余额超过最大余额时，将触发自动换币。目标余额将保留在您的即时支付钱包中，剩余金额将被换到您的安全比特币钱包。",
-  "recoverbullVaultRecoveryTitle": "2. 追回被盗资产",
   "passportStep14": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "settingsCurrencyTitle": "货币",
   "transactionSwapDescChainClaimable": "锁定交易得到了确认。 你们现在要求资金完成转让.",
@@ -1400,7 +1279,6 @@
   "buyInputKycMessage": "您必须首先完成身份证明核查",
   "ledgerSuccessAddressVerified": "成功核查的地址!",
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
-  "backupWalletHowToDecideVaultCustomRecommendation": "习俗地点: ",
   "sendSats": "ats",
   "electrumInvalidTimeoutError": "失效时差值:{value}",
   "@electrumInvalidTimeoutError": {
@@ -1427,7 +1305,6 @@
   "swapExternalTransferLabel": "外部转移",
   "importQrDevicePassportStep4": "选择“Connect Wallet”",
   "payAddRecipient": "加入",
-  "recoverbullVaultImportedSuccess": "成功进口",
   "backupKeySeparationWarning": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
   "coreSwapsStatusInProgress": "A. 进展",
   "confirmAccessPinTitle": "固定出入{pinOrPassword}",
@@ -1455,15 +1332,6 @@
   "systemLabelPayjoin": "Payjoin",
   "onboardingScreenTitle": "致欢迎辞",
   "pinCodeConfirmTitle": "1. 确认新的支柱",
-  "keyServerLabel": "主要服务器 ",
-  "recoverbullEnterToView": "请进入您的{inputType}处,查看你的过失钥匙.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "payReviewPayment": "审核",
   "transactionTitle": "交易",
   "sellQrCode": "QR 法典",
@@ -1495,7 +1363,6 @@
   "payLoadingRecipients": "D. 接收者......",
   "sendSignatureReceived": "收到的签名",
   "failedToDeriveBackupKey": "未能获得备用钥匙",
-  "recoverbullGoogleDriveErrorExportFailed": "未能从谷歌猛进出口",
   "exchangeKycLevelLight": "灯光",
   "bip329LabelsExportSuccess": "标签导出成功",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "最低选择,但可以通过在线银行进行(3-4个工作日)",
@@ -1600,15 +1467,12 @@
   "autoswapAlwaysBlockInfoEnabled": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "importMnemonicSelectScriptType": "导入助记词",
   "sellSendPaymentCadBalance": "大会 结余",
-  "recoverbullConnectingTor": "连接Tor。\n时间可长达一分钟.",
   "fundExchangeCanadaPostStep2": "2. 结 论 Ask the moneyier to scan the “Loadhub” QR Code",
-  "recoverbullEnterVaultKeyInstead": "A. 取而代之",
   "exchangeAccountInfoEmailLabel": "电子邮件",
   "keystoneStep5": "   - 提高你的器具的亮度",
   "sendSelectCoinsManually": "手工选编",
   "importMnemonicEmpty": "就业",
   "electrumBitcoinServerInfo": "正式服务器地址: 东道:port(例如:com:50001)",
-  "recoverbullErrorServiceUnavailable": "无法提供的服务。 请检查您的联系.",
   "sendErrorInsufficientBalanceForSwap": "没有足够的余额通过流动资金支付这笔冲销,而不是通过蒸汽支付.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "在 BULL 钱包中，选择您偏好的派生类型。如果不确定，请选择「Segwit (BIP84)」",
@@ -1649,7 +1513,6 @@
   "ledgerErrorBitcoinAppNotOpen": "请打开您的Ledger装置并再次尝试.",
   "physicalBackupTag": "无信托能力(时间)",
   "payCompletedDescription": "你的付款已经完成,收款人已收到资金.",
-  "recoverbullConnecting": "连接",
   "swapExternalAddressHint": "输入外部钱包地址",
   "torSettingsDescConnecting": "成立 联系",
   "ledgerWalletTypeLegacyDescription": "P2PKH - 旧格式",
@@ -1690,7 +1553,6 @@
   "payFeeBumpSuccessful": "女性消费",
   "importQrDeviceKruxStep1": "页: 1",
   "transactionSwapProgressFundsClaimed": "资金\n索赔",
-  "recoverbullSelectAppleIcloud": "页: 1",
   "keystoneStep13": "该交易将被导入到 Bull Bitcoin 钱包中",
   "receiveGenerationFailed": "未能产生{type}",
   "@receiveGenerationFailed": {
@@ -1718,12 +1580,10 @@
   "withdrawOwnershipMyAccount": "这是我的说法",
   "payAddMemo": "加入:",
   "transactionNetworkBitcoin": "页: 1",
-  "recoverbullSelectVaultProvider": "选择Vault Provider",
   "replaceByFeeOriginalTransactionTitle": "原始交易",
   "testBackupPhysicalBackupTag": "无信托能力(时间)",
   "testBackupTitle": "检验您的墙壁",
   "coreSwapsLnSendFailed": "Swap Failed.",
-  "recoverbullErrorDecryptFailed": "未能加密",
   "keystoneStep9": "Click the buttons to sign the trade on You Keystone.",
   "totalFeesLabel": "总费用",
   "payInProgressDescription": "你的付款已经启动,在交易收到1个链条确认书后,收款人将收到资金.",
@@ -1743,7 +1603,6 @@
   },
   "sendBroadcastTransaction": "广播交易",
   "receiveBitcoinConfirmationMessage": "交易将同时确认.",
-  "recoverbullDecryptVault": "加密",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "转账随时可以退款.",
   "buyInputCompleteKyc": "页: 1",
@@ -1773,13 +1632,10 @@
   "payInvalidInvoice": "无效发票",
   "receiveTotalFee": "共计",
   "importQrDeviceButtonOpenCamera": "开放照相机",
-  "recoverbullFetchingVaultKey": "Fetching Vault 关键",
   "dcaConfirmFrequency": "频率",
-  "recoverbullGoogleDriveDeleteVaultTitle": "删除",
   "advancedOptionsTitle": "A. 先进选择",
   "dcaConfirmOrderType": "命令类型",
   "payPriceWillRefreshIn": "价格上涨 ",
-  "recoverbullGoogleDriveErrorDeleteFailed": "页: 1",
   "broadcastSignedTxTo": "致",
   "payPaymentDetails": "付款细节",
   "bitboxActionVerifyAddressTitle": "1. 核实Bibinox的地址",
@@ -1795,7 +1651,6 @@
   "bitboxActionImportWalletSuccess": "进口",
   "nextButton": "下一步",
   "ledgerSignButton": "开始签署",
-  "recoverbullPassword": "密码",
   "payFromAnotherWallet": "从其他比特币钱包支付",
   "importMnemonicHasBalance": "1. 平衡",
   "dcaLightningAddressEmptyError": "请进入电灯地址",
@@ -1858,14 +1713,6 @@
   "fundExchangeMethodCanadaPostSubtitle": "更愿意亲自支付报酬的人",
   "importColdcardMultisigPrompt": "多西墙壁画,扫描墙壁描述器QR代码",
   "passphraseLabel": "Passphrase",
-  "recoverbullConfirmInput": "Confirm {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "你的wa子已经成功完成! 这些资金现在应当放在你的墙上.",
   "psbtFlowSignTransaction": "签字交易",
   "payAllPayments": "所有付款",
@@ -1909,7 +1756,6 @@
   "fundExchangeOnlineBillPaymentDescription": "贵银行利用以下信息通过网上账单付款地址发送的任何款项,将在3-4个工作日内贷记到您的Burt账户余额.",
   "receiveAwaitingPayment": "退款......",
   "onboardingRecover": "恢复",
-  "recoverbullGoogleDriveScreenTitle": "页: 1",
   "receiveQRCode": "QR 法典",
   "appSettingsDevModeTitle": "D. 德 国",
   "exchangeTestnetBasicAuthTitle": "测试网交易所凭证",
@@ -1933,7 +1779,6 @@
   "psbtFlowTransactionImported": "该交易将被导入到 Bull Bitcoin 钱包中",
   "testBackupGoogleDriveSignIn": "你们将需要在谷歌运动上签字",
   "sendTransactionSignedLedger": "与Ledger成功签署的交易",
-  "recoverbullRecoveryContinueButton": "继续",
   "payTimeoutError": "支付时间。 请检查情况",
   "kruxStep4": "Click Load",
   "sellErrorRecalculateFees": "未收回费用:{error}",
@@ -1978,7 +1823,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "连接失败",
   "transactionDetailLabelPayinMethod": "薪酬办法",
   "sellCurrentRate": "现行标准",
   "payAmountTooLow": "数额低于最低",
@@ -1989,7 +1833,6 @@
   "coreScreensServerNetworkFeesLabel": "服务器网",
   "payAllCountries": "所有国家",
   "sellCopBalance": "缔约方会议 结余",
-  "recoverbullVaultSelected": "Vault Selected",
   "receiveTransferFee": "汇款",
   "exchangeDcaFrequencyHour": "小时",
   "payRBFDisabled": "RBF 残疾",
@@ -2058,7 +1901,6 @@
   "transactionSwapDescChainDefault": "你的移交工作正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
   "onboardingBullBitcoin": "页: 1",
   "coreSwapsChainClaimable": "转让可以提出.",
-  "backupWalletHowToDecideVaultCloudRecommendationText": "你们想要确保,即使你失去装置,你也永远不会失去接触你的ault.",
   "backupKeyExampleWarning": "例如,如果你用谷歌驱使你的备份,就不使用谷歌驱使的主机.",
   "importColdcardInstructionsStep3": "加入“先进/先进”",
   "buyPhotoID": "照片:",
@@ -2082,7 +1924,6 @@
   "allSeedViewDeleteWarningTitle": "WARNING!",
   "backupSettingsBackupKey": "背 景",
   "payInvoiceCopied": "Invoice copied to clippad",
-  "recoverbullEncryptedVaultCreated": "• 建立加密的Vault!",
   "addressViewChangeAddressesComingSoon": "不久将来的变革地址",
   "psbtFlowScanQrShown": "扫描 Bull 钱包中显示的二维码",
   "testBackupErrorInvalidFile": "无效文件内容",
@@ -2175,7 +2016,6 @@
   "electrumUnknownError": "发生错误",
   "payWhichWallet": "你们想要从哪条墙上花钱?",
   "autoswapBaseBalanceInfoText": "在自动换币后，您的即时支付钱包余额将恢复到该目标余额。",
-  "recoverbullSelectDecryptVault": "加密",
   "buyUpgradeKYC": "升级 职等",
   "autoswapEnableToggleLabel": "通用自动转让",
   "sendDustAmount": "数额太小(最多)",
@@ -2211,7 +2051,6 @@
   "submitButton": "排放",
   "bitboxScreenTryAgainButton": "再次",
   "dcaConfirmTitle": "同意 1. 采购",
-  "recoverbullPasswordMismatch": "密码不匹配",
   "fundExchangeCrIbanUsdTransferCodeWarning": "在付款时,必须将转让法作为“对象”或“理由”或“说明”。 如果你忘记列入这一法典,你的支付可能会被拒绝.",
   "sendAdvancedSettings": "先进环境",
   "backupSettingsPhysicalBackup": "实物补偿",
@@ -2254,7 +2093,6 @@
   },
   "transactionOrderLabelReferenceNumber": "参考数字",
   "backupWalletHowToDecide": "如何决定?",
-  "recoverbullTestBackupDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "fundExchangeSpeiInfo": "采用SPEI转让进行存款.",
   "screenshotLabel": "放映",
   "bitboxErrorOperationTimeout": "该行动已经停止。 请再次审判.",
@@ -2267,7 +2105,6 @@
   "swapProgressPending": "尚未移交",
   "exchangeDcaAddressLabelBitcoin": "页: 1",
   "loadingBackupFile": "备份文件......",
-  "recoverbullContinue": "继续",
   "receiveAddressCopied": "地址抄录在纸板上",
   "transactionDetailLabelStatus": "现况",
   "sellSendPaymentPayinAmount": "薪酬数额",
@@ -2283,7 +2120,6 @@
   "connectHardwareWalletColdcardQ": "Coldcard Q",
   "seedsignerStep2": "浮雕",
   "addressCardIndexLabel": "指数: ",
-  "recoverbullErrorVaultNotSet": "无",
   "dcaSetupContinue": "继续",
   "electrumFormatError": "使用地:港口形式(例如:50001)",
   "transactionFeesDeductedFrom": "这笔费用将从所付数额中扣除",
@@ -2291,7 +2127,6 @@
   "importWatchOnlyTitle": "导入观察钱包",
   "cancel": "Cancel",
   "walletDetailsWalletFingerprintLabel": "Wallet finger",
-  "recoverbullTorNotStarted": "未开始收监",
   "testBackupCreatedAt": "创建:",
   "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the trade on their {device}.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -2314,7 +2149,6 @@
   "receiveCopyAddressOnly": "只读或扫描",
   "payLightningFee": "F. 照明",
   "payLabelOptional": "Label (optional)",
-  "recoverbullGoogleDriveDeleteButton": "删除",
   "exchangeDcaDeactivateTitle": "2. 启动",
   "fundExchangeMethodEmailETransferSubtitle": "最容易和最快的方法(不变)",
   "testBackupLastBackupTest": "后续测试:{timestamp}",
@@ -2383,7 +2217,6 @@
   "testCompletedSuccessTitle": "成功完成试验!",
   "payBitcoinAmount": "数额",
   "fundExchangeSpeiTransfer": "SPEI 转让",
-  "recoverbullUnexpectedError": "未预见的错误",
   "coreSwapsStatusFailed": "失败",
   "transactionFilterSell": "Sell",
   "fundExchangeSinpeWarningNoBitcoinDescription": " 付款说明中的“现金”或“现金”一词。 这将阻碍你们的支付.",
@@ -2396,7 +2229,6 @@
   "receiveVerifyAddressLedger": "更正",
   "howToDecideButton": "如何决定?",
   "testBackupFetchingFromDevice": "摘自你的装置.",
-  "backupWalletHowToDecideVaultCustomLocation": "习俗地点可能更加安全,取决于你选择哪一个地点。 你们还必须保证不要丢失备份文件或丢失贵国备份档案存放的装置.",
   "exchangeLegacyTransactionsComingSoon": "遗产交易 -  So",
   "buyProofOfAddress": "地址证明",
   "backupWalletInstructionNoDigitalCopies": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
@@ -2406,30 +2238,19 @@
   "exchangeAmountInputValidationZero": "数额必须大于零",
   "importWatchOnlyRequired": "所需",
   "payWalletNotSynced": "Wallet没有合成。 等候",
-  "recoverbullRecoveryLoadingMessage": "寻找平衡和交易..…",
   "transactionSwapInfoChainDelay": "由于环链确认时间有限,链上转让可能需要一段时间才能完成.",
   "sellExchangeRate": "汇率",
   "importMnemonicLegacy": "遗产",
   "settingsDevModeWarningMessage": "这种方式具有风险。 你们承认你可能失去金钱",
   "sellTitle": "Sell:",
-  "recoverbullVaultKey": "Vault Key",
   "transactionListToday": "今天",
   "keystoneStep12": "土木板将请你扫描基岩上的QR代码。 缩略语.",
   "ledgerErrorRejectedByUser": "用户在Ledger装置上拒绝交易.",
   "payFeeRate": "收费率",
   "autoswapWarningDescription": "自动换币可确保您不会无意中在即时支付钱包中持有过多资金，这对长期存储不安全。",
   "fundExchangeSinpeAddedToBalance": "一旦收到付款,将列入你的账户结余.",
-  "durationMinute": "{minutes}分钟",
-  "@durationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "pinCodeMismatchError": "PIN不匹配",
   "autoswapRecipientWalletPlaceholderRequired": "选择一个比特币钱包 *",
-  "recoverbullGoogleDriveErrorGeneric": "发生错误。 请再次审判.",
   "sellUnauthenticatedError": "你没有认证。 请继续发言.",
   "coreScreensConfirmSend": "Confirm Send",
   "transactionDetailLabelSwapStatus": "差距",
@@ -2447,7 +2268,6 @@
   "psbtInstructions": "指示",
   "swapProgressCompletedMessage": "你们等待! 移交工作已顺利完成.",
   "sellCalculating": "计算......",
-  "recoverbullPIN": "PIN",
   "swapInternalTransferTitle": "内部转让",
   "withdrawConfirmPayee": "收款人",
   "importQrDeviceJadeStep8": "Click the “ open UK” button",
@@ -2481,12 +2301,10 @@
   "seedsignerStep7": "   -  device把你的装置退回一小块",
   "sendAmount": "数额",
   "buyInputInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
-  "recoverbullSelectBackupFileNotValidError": "收回备用文件无效",
   "swapErrorInsufficientFunds": "不能建立交易。 同样,由于资金不足,无法支付费用和数额.",
   "dcaConfirmAmount": "数额",
   "seedsignerStep8": "一旦交易在贵岛进口,你应选择你希望签署的种子.",
   "sellSendPaymentPriceRefresh": "价格上涨 ",
-  "recoverbullPasswordRequired": "需要密码",
   "receiveNoteLabel": "说明",
   "payFirstName": "姓名",
   "recoverViaCloudDescription": "利用你的PIN,通过云层回收.",
@@ -2536,7 +2354,6 @@
   "sellSendPaymentPayoutAmount": "薪酬数额",
   "payOrderNumber": "命令号数",
   "sendErrorConfirmationFailed": "证明",
-  "recoverbullWaiting": "放弃",
   "notTestedStatus": "未经测试",
   "paySinpeNumeroOrden": "命令号数",
   "backupBestPracticesTitle": "B. 反馈最佳做法",
@@ -2555,7 +2372,6 @@
   "transactionDetailLabelTransferFees": "转账费",
   "importWalletSectionGeneric": "通用钱包",
   "backupSettingsNotTested": "未经测试",
-  "googleDrivePrivacyMessage": "谷歌将请你与本信分享个人信息.",
   "errorGenericTitle": "Oops! 某些错误",
   "bitboxActionPairDeviceSuccess": "有偿成功使用的设备",
   "bitboxErrorNoDevicesFound": "没有发现任何BitBox装置。 保证你的装置通过USB电能和连接.",
@@ -2577,13 +2393,11 @@
     }
   },
   "swapValidationEnterAmount": "请列出数额",
-  "recoverbullErrorVaultCreatedKeyNotStored": "失败:制造了Vault文档,但钥匙没有储存在服务器上",
   "exchangeSupportChatWalletIssuesInfo": "这份聊天仅用于交换供资/Buy/Sell/Withdraw/Pay方面的相关问题。\n关于隔离墙相关问题,通过在这里点击加入电报组.",
   "exchangeLoginButton": "标志",
   "ledgerProcessingVerify": "Ledger.",
   "coreScreensFeePriorityLabel": "妇女优先",
   "coreScreensLogsTitle": "记录",
-  "recoverbullVaultKeyInput": "Vault Key",
   "testBackupErrorWalletMismatch": "备份与已有钱包不匹配",
   "bip329LabelsHeading": "BIP329 进口/出口",
   "jadeStep2": "添加一个字句,如果你有的话(选择)",
@@ -2662,7 +2476,6 @@
   "sendErrorAmountBelowSwapLimitsBitcoin": "考虑为即时支付充值以进行小额支付。",
   "payPrivatePayment": "私人支付",
   "autoswapDefaultWalletLabel": "页: 1",
-  "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
   "exchangeAuthLoginFailedTitle": "旅行",
   "autoswapRecipientWallet": "Recipient Wallet",
   "pickPasswordOrPinButton": "Pick a {pinOrPassword} Bright",
@@ -2678,7 +2491,6 @@
   "autoswapWarningSettingsLink": "让我把汽车环境自动化",
   "payLiquidNetwork": "流动网络",
   "backupSettingsKeyWarningExample": "例如,如果你用谷歌驱使你的备份,就不使用谷歌驱使的主机.",
-  "backupWalletHowToDecideVaultCloudRecommendation": "谷歌 肥料云: ",
   "testBackupEncryptedVaultDescription": "匿名背书,使用你的云层进行强有力的加密.",
   "payNetworkType": "网络",
   "addressViewChangeType": "变化",
@@ -2733,7 +2545,6 @@
   "settingsAppVersionLabel": "申请文本: ",
   "bip329LabelsExportButton": "出口标签",
   "jadeStep4": "扫描 Bull 钱包中显示的二维码",
-  "recoverbullRecoveryErrorWalletExists": "这个钱包已存在",
   "payBillerNameValue": "选定的账簿名称",
   "sendSelectCoins": "Select",
   "fundExchangeLabelRoutingNumber": "序号",
@@ -2748,7 +2559,6 @@
   "sellAccountNumber": "账户编号",
   "backupWalletLastKnownEncryptedVault": "密执安 不详: ",
   "dcaSetupInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
-  "recoverbullGotIt": "签字",
   "sendAdvancedOptions": "A. 先进选择",
   "sellRateValidFor": "汇率{seconds}",
   "@sellRateValidFor": {
@@ -2802,7 +2612,6 @@
   "fundExchangeCrIbanUsdLabelPaymentDescription": "付款说明",
   "fundExchangeInfoBeneficiaryNameLeonod": "受益人的名称应为LEONOD。 如果你做任何事情,你的支付将被拒绝.",
   "importWalletLedger": "Ledger",
-  "recoverbullCheckingConnection": "RecoverBull检查连接",
   "exchangeLandingTitle": "BUL BITCOIN",
   "doneButton": "Done",
   "withdrawSuccessTitle": "撤回",
@@ -2896,7 +2705,6 @@
   "fundExchangeLabelIban": "IBAN账户",
   "swapDoNotUninstallWarning": "在转让完成之前,不要 app!",
   "sendViewDetails": "观点细节",
-  "recoverbullErrorUnexpected": "未预见的错误,见记录",
   "sendSubmarineSwap": "3. 潜艇",
   "payNotAvailable": "N/A",
   "payFastest": "快速",
@@ -2911,7 +2719,6 @@
   },
   "coreSwapsLnReceiveExpired": "页: 1.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "• 寻找贵国银行的账单人名单以证明这一名称",
-  "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
   "exchangeAccountInfoVerificationLimitedVerification": "有限的核查",
   "sendBuildingTransaction": "房舍管理.",
   "fundExchangeMethodEmailETransfer": "Email E-transfer",
@@ -2928,7 +2735,6 @@
   "backupWalletEncryptedVaultDescription": "匿名背书,使用你的云层进行强有力的加密.",
   "sellRateExpired": "汇率过期。 重述......",
   "payExternalWallet": "外墙",
-  "recoverbullConfirm": "执 行",
   "fundExchangeInfoBankCountryUk": "我国是联合王国.",
   "dcaConfirmNetworkBitcoin": "页: 1",
   "seedsignerStep14": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
@@ -2961,14 +2767,6 @@
   "ledgerErrorMissingScriptType": "需要脚本类型",
   "ledgerProcessingVerifySubtext": "请确认您的Ledger装置上的地址.",
   "transactionOrderLabelOriginCedula": "来源:Cedula",
-  "recoverbullRecoveryTransactionsLabel": "交易:{count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "buyViewDetails": "观点细节",
   "paySwapFailed": "Swap失败",
   "autoswapMaxFeeLabel": "Max Transfer Fee",
@@ -3009,7 +2807,6 @@
   "bitboxActionSignTransactionSuccessSubtext": "你的交易已成功签署.",
   "transactionStatusTransferExpired": "到期的转让",
   "backupWalletInstructionLosePhone": "如果没有支持,如果你丢失或打断你的电话,或者如果你不停地拿到火焰,你就会永远失去光彩.",
-  "recoverbullConnected": "连接",
   "dcaConfirmLightningAddress": "照明地址",
   "coreSwapsLnReceiveCompleted": "蒸汽完成.",
   "backupWalletErrorGoogleDriveSave": "未能拯救 go角",
@@ -3063,15 +2860,6 @@
   "coldcardStep2": "添加一个字句,如果你有的话(选择)",
   "electrumInvalidNumberError": "进入有效编号",
   "coreWalletTransactionStatusConfirmed": "1. 确认",
-  "recoverbullSelectGoogleDrive": "谷歌运动",
-  "recoverbullEnterInput": "{inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDevicePassportStep12": "组建工作已经完成.",
   "payRecipientDetails": "收款人详细情况",
   "fundExchangeRestrictedTitle": "无法充值",
@@ -3083,12 +2871,10 @@
   "jadeStep12": "在 Bull Bitcoin 钱包中点击“我完成了”",
   "payFilterByType": "按类型分列的过滤",
   "importMnemonicImporting": "导入中...",
-  "recoverbullGoogleDriveExportButton": "出口",
   "bip329LabelsDescription": "采用BIP329标准格式的进出口标签.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "你不相信,你需要更多时间了解后备安保做法.",
   "backupWalletImportanceWarning": "如果没有支持,你最终将失去获得你的钱的机会。 提供支持至关重要.",
   "autoswapMaxFeeInfoText": "如果总转账费高于规定的百分比,则将冻结汽车转让",
-  "recoverbullGoogleDriveCancelButton": "Cancel",
   "backupWalletSuccessDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
   "rbfBroadcast": "广播",
   "sendEstimatedDeliveryFewHours": "小时数",
@@ -3124,7 +2910,6 @@
   "electrumSaveFailedError": "未能节省先进选择",
   "bitboxScreenWalletTypeLabel": "挂号:",
   "importQrDeviceKruxStep6": "这!",
-  "recoverbullRecoveryErrorMissingDerivationPath": "后备档案缺失衍生物.",
   "payUnauthenticatedError": "你没有认证。 请继续发言.",
   "payClabe": "CLABE",
   "mempoolCustomServerDelete": "删除",
@@ -3188,7 +2973,6 @@
   "swapTotalFees": "总费用 ",
   "keystoneStep11": "在 Bull Bitcoin 钱包中点击“我完成了”",
   "scanningCompletedMessage": "已完成的扫描",
-  "recoverbullSecureBackup": "确保你们的支持",
   "payDone": "Done",
   "receiveContinue": "继续",
   "buyUnauthenticatedError": "你没有认证。 请继续发言.",
@@ -3207,7 +2991,6 @@
       }
     }
   },
-  "recoverbullErrorFetchKeyFailed": "未能从服务器中取出电子键",
   "sendSwapInProgressInvoice": "该轮车正在铺设。 发票将分几秒支付.",
   "electrumRetryCountNegativeError": "收复数可能为负数",
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "添加这一编号为账户编号",
@@ -3221,13 +3004,10 @@
   "autoswapRecipientWalletLabel": "Recipient Wallet",
   "coreScreensConfirmTransfer": "1. 集体转让",
   "payPaymentInProgressDescription": "你的付款已经启动,在交易收到1个链条确认书后,收款人将收到资金.",
-  "recoverbullRetry": "学历",
   "receiveCopyInvoice": "印 度",
   "exchangeAccountInfoLastNameLabel": "姓 名",
   "importQrDeviceJadeInstructionsTitle": "B. 集体指示",
   "paySendMax": "Max",
-  "recoverbullGoogleDriveDeleteConfirmation": "你们是否希望删除这一ault? 这一行动是不可放弃的.",
-  "googleDriveSignInMessage": "你们将需要在谷歌运动上签字",
   "transactionDetailLabelCompletedAt": "页: 1",
   "passportStep9": "• 点击 but子在你护照上签字.",
   "electrumDeleteConfirmation": "你们是否希望删除这一服务器?\n\n{serverUrl}",
@@ -3260,7 +3040,6 @@
   "buyInputMinAmountError": "你们至少应当购买",
   "ledgerScanningTitle": "装置扫描",
   "payInstitutionCode": "机构法",
-  "recoverbullFetchVaultKey": "Fetch Vault 关键",
   "coreSwapsActionClaim": "索赔",
   "bitboxActionUnlockDeviceSuccessSubtext": "你们的BitBox装置现在没有锁定,准备使用.",
   "payShareInvoice": "份额",
@@ -3323,7 +3102,6 @@
   "withdrawConfirmBankAccount": "银行帐户",
   "kruxStep1": "2.  Kru入你的Krux装置",
   "dcaUseDefaultLightningAddress": "利用我的缺省电灯.",
-  "recoverbullErrorRejected": "关键服务器重新启用",
   "sellEstimatedArrival": "抵达估计数:{time}",
   "@sellEstimatedArrival": {
     "placeholders": {
@@ -3389,7 +3167,6 @@
   "importWatchOnlyErrorImportFailed": "无法导入此只读钱包。请检查信息后重试。",
   "broadcastSignedTxErrorInvalidTransaction": "这看起来不是有效的已签名交易。请确认您粘贴了完整的 PSBT 或交易。",
   "broadcastSignedTxErrorInvalidPushTx": "无法从此标签读取交易。请重新扫描。",
-  "recoverbullSelectRecoverWallet": "恢复钱包",
   "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",
   "psbtFlowMoveLaser": "over  red  las",
@@ -3408,7 +3185,6 @@
   "fundExchangeLabelInstitutionNumber": "机构数目",
   "encryptedVaultDescription": "匿名背书,使用你的云层进行强有力的加密.",
   "swapAmountLabel": "数额",
-  "recoverbullSelectCustomLocation": "习俗地点",
   "sellConfirmOrder": "Confirm Sell Order",
   "exchangeAccountInfoUserNumberLabel": "用户数",
   "buyVerificationComplete": "核查完成情况",
@@ -3440,11 +3216,9 @@
   "ledgerErrorMissingAddress": "核查需要解决",
   "enterBackupKeyManuallyTitle": "手工操作",
   "transactionDetailLabelRecipientAddress": "客户地址",
-  "recoverbullCreatingVault": "建立加密 缩略语",
   "importWalletColdcardQ": "Coldcard Q",
   "backupSettingsStartBackup": "启动",
   "sendReceiveAmount": "收款情况",
-  "recoverbullTestRecovery": "试验恢复",
   "sellNetAmount": "净额",
   "willNot": "不 ",
   "receiveReceiveAmount": "收款情况",
@@ -3462,7 +3236,6 @@
   "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
   "buyInstantPaymentWallet": "经常付款墙",
   "autoswapMaxBalanceLabel": "最大即时钱包余额",
-  "recoverbullRecoverBullServer": "RecoverBull服务器",
   "satsBitcoinUnitSettingsLabel": "Ats的显示器",
   "exchangeDcaViewSettings": "观点环境",
   "payRetryPayment": "工资",
@@ -3471,7 +3244,6 @@
   "exchangeReferralsJoinMissionTitle": "加入特派团",
   "exchangeSettingsLogInTitle": "后勤",
   "customLocationRecommendation": "习俗地点: ",
-  "recoverbullErrorSelectVault": "未选定过失",
   "paySwapCompleted": "完成学业",
   "receiveDescription": "说明(选择)",
   "bitboxScreenVerifyAddress": "更正",
@@ -3489,7 +3261,6 @@
   "exchangeFeatureUnifiedHistory": "• 统一交易史",
   "payViewDetails": "观点细节",
   "autoswapSelectWallet": "选择一个比特币钱包",
-  "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault",
   "autoswapRecipientWalletRequired": "* E/CN.6/2009/1",
   "pinCodeLoading": "抢劫",
   "fundExchangeCrIbanUsdLabelRecipientName": "客户名称",
@@ -4000,22 +3771,6 @@
   "mempoolCustomServerNoSsl": "无 SSL",
   "autoswapTargetBalanceLabel": "目标即时钱包余额",
   "autoswapMaximumBalanceLabel": "最大即时钱包余额",
-  "recoverbullServerConfirmTitle": "保险库恢复服务器",
-  "recoverbullServerUsingDefault": "使用默认服务器",
-  "recoverbullServerUsingCustom": "使用自定义服务器",
-  "recoverbullServerUrlLabel": "服务器 URL：",
-  "recoverbullServerCustomWarning": "您正在使用自定义的 Recoverbull 服务器。请确保您信任此服务器。",
-  "recoverbullServerTorNotice": "我们将通过 Tor 连接到此服务器",
-  "recoverbullLearnMore": "了解更多关于 Recoverbull 的信息",
-  "recoverbullSettingsTitle": "Recoverbull 设置",
-  "recoverbullSettingsKeyServerUrl": "密钥服务器 URL",
-  "recoverbullSettingsEdit": "编辑",
-  "recoverbullSettingsCancel": "取消",
-  "recoverbullSettingsSave": "保存",
-  "recoverbullSettingsUrlRequired": "URL 为必填项",
-  "recoverbullSettingsUrlInvalid": "URL 无效",
-  "recoverbullSettingsUrlMustBeHttp": "URL 必须为 HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL 必须以 .onion 结尾",
   "onboardingAdvancedOptionsTitle": "高级选项",
   "onboardingAdvancedOptionsDescription": "在创建或恢复钱包前配置高级设置",
   "onboardingAdvancedOptionsCustomElectrum": "自定义 Electrum 服务器",
@@ -4552,7 +4307,6 @@
   "exchangeSupportChatAttachLogsFailed": "添加日志失败，请重试。",
   "exchangeSupportChatFetchFileDataFailed": "获取文件数据失败",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "低于 1 sat/vB 的交易可能需要更长时间才能确认，也可能无法传播到所有节点。",
   "sendBelowMinFeeRateError": "费率必须至少为 0.1 sat/vB。",
@@ -4619,12 +4373,6 @@
   "torSettingsStatusCensored": "连接似乎被过滤",
   "torSettingsDescCensored": "Tor 无法连接到网络。这通常意味着连接正在被过滤。",
   "torSettingsBootstrapProgress": "正在连接… {percent}%",
-  "recoverbullPhaseNetworkInfo": "正在获取网络信息",
-  "recoverbullLongestStep": "这是最长的一步。首次启动可能超过一分钟。",
-  "recoverbullTorOffline": "似乎没有网络连接。",
-  "recoverbullTorClockSkewed": "设备时钟不准，Tor 无法验证中继证书。请检查日期和时间设置。",
-  "recoverbullTorCantStart": "Tor 暂时无法连接。请重试。",
-  "recoverbullServerUnreachableTorOk": "Tor 正常运行，但备份服务器没有响应。首次启动后这可能需要一点时间。",
   "torSettingsEmbeddedTitle": "内置 Tor",
   "torSettingsEmbeddedDescription": "内置 Tor 由 RecoverBull 和 Bitcoin Electrum 的 .onion 服务器使用。应用的其他流量仍为直连。",
   "torSettingsTransportMode": "连接方式",

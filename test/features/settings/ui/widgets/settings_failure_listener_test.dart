@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -43,6 +44,7 @@ void main() {
           resolveOverlay: () =>
               overlayReady ? navigatorKey.currentState?.overlay : null,
           child: MaterialApp(
+            theme: AppTheme.themeData(AppThemeType.light),
             navigatorKey: navigatorKey,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,

@@ -13,6 +13,11 @@ final class AnnouncementStorageFailure extends AnnouncementsFailure {
   const AnnouncementStorageFailure([super.logMessage]);
 }
 
+final class AnnouncementRecoverBullUnavailableFailure
+    extends AnnouncementsFailure {
+  const AnnouncementRecoverBullUnavailableFailure();
+}
+
 /// Catch-all for anything not modeled above. The UI renders a generic
 /// localized message for this — never the raw [logMessage].
 final class AnnouncementUnexpectedFailure extends AnnouncementsFailure {

@@ -27,6 +27,9 @@ class _MockUpdateTorTransportModeUsecase extends Mock
 class _MockWatchTorConnectionUsecase extends Mock
     implements WatchTorConnectionUsecase {}
 
+class _MockRetryTorConnectionUsecase extends Mock
+    implements RetryTorConnectionUsecase {}
+
 CheckExternalTorConnectionUsecase _resolverFromPort(
   ExternalTorPort port, {
   int portNumber = 9050,
@@ -131,6 +134,7 @@ void main() {
       getSettingsUsecase: getSettings,
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: _MockWatchTorConnectionUsecase(),
       checkExternalTorConnectionUsecase: _resolverFromPort(
         _FakeExternalTorPort(),
@@ -175,6 +179,7 @@ void main() {
         getSettingsUsecase: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(
           _FakeExternalTorPort(),
@@ -217,6 +222,7 @@ void main() {
           VerifyExternalTorUsecase(externalPort),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -305,6 +311,7 @@ void main() {
       getSettingsUsecase: getSettings,
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
@@ -336,6 +343,7 @@ void main() {
         getSettingsUsecase: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(
           _FakeExternalTorPort(),
@@ -387,6 +395,7 @@ void main() {
         VerifyExternalTorUsecase(externalPort),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
@@ -441,6 +450,7 @@ void main() {
         verifier,
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
@@ -491,6 +501,7 @@ void main() {
         VerifyExternalTorUsecase(externalPort),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
@@ -542,6 +553,7 @@ void main() {
           VerifyExternalTorUsecase(externalPort),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -590,6 +602,7 @@ void main() {
         VerifyExternalTorUsecase(externalPort),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
     );
@@ -627,6 +640,7 @@ void main() {
       getSettingsUsecase: getSettings,
       updateTorProxyUsecase: updateProxy,
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
       watchTorConnectionUsecase: watchTor,
       checkExternalTorConnectionUsecase: _resolverFromPort(
         _FakeExternalTorPort(),
@@ -684,6 +698,7 @@ void main() {
           verifier,
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -732,6 +747,7 @@ void main() {
           verifier,
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -767,6 +783,7 @@ void main() {
         getSettingsUsecase: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -799,6 +816,7 @@ void main() {
         getSettingsUsecase: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+        retryTorConnectionUsecase: _MockRetryTorConnectionUsecase(),
         watchTorConnectionUsecase: watchTor,
         checkExternalTorConnectionUsecase: _resolverFromPort(externalPort),
       );
@@ -810,4 +828,26 @@ void main() {
       expect(cubit.state.connection, isA<TorUnavailable>());
     },
   );
+
+  test('retries embedded Tor through its use case', () async {
+    final retry = _MockRetryTorConnectionUsecase();
+    when(
+      retry.execute,
+    ).thenAnswer((_) async => const TorConnecting(source: TorSource.embedded));
+    final cubit = TorSettingsCubit(
+      getSettingsUsecase: _MockGetSettingsUsecase(),
+      updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
+      updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
+      retryTorConnectionUsecase: retry,
+      watchTorConnectionUsecase: _MockWatchTorConnectionUsecase(),
+      checkExternalTorConnectionUsecase: _resolverFromPort(
+        _FakeExternalTorPort(),
+      ),
+    );
+    addTearDown(cubit.close);
+
+    await cubit.retryEmbedded();
+
+    verify(retry.execute).called(1);
+  });
 }

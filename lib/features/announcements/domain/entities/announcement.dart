@@ -15,10 +15,17 @@ enum AnnouncementId {
   /// inviting the user to enable payjoin for better on-chain privacy.
   payjoinPrivacy,
   appUpdateRequired,
+  recoverBullTargetedActivity,
+  recoverBullServicePressure,
+  recoverBullUnavailable,
+
+  /// Shown once to users whose mainnet encrypted vault was recorded before
+  /// backups moved to the RecoverBull module, which does not track it.
+  legacyEncryptedVault,
 }
 
 /// Visual/semantic tone of an announcement, mapped to theme colors in the UI.
-enum AnnouncementTone { info, warning, success }
+enum AnnouncementTone { info, warning, error, success }
 
 /// What tapping the announcement's body does.
 sealed class AnnouncementAction {
@@ -77,6 +84,7 @@ class Announcement {
   final AnnouncementTone tone;
   final AnnouncementAction action;
   final DismissPolicy dismissPolicy;
+  final String? stableKey;
 
   Announcement({
     required this.id,
@@ -84,6 +92,7 @@ class Announcement {
     required this.tone,
     required this.action,
     required this.dismissPolicy,
+    this.stableKey,
   }) {
     if (priority < 0) {
       throw ArgumentError.value(priority, 'priority', 'must be non-negative');
