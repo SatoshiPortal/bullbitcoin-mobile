@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -14,7 +12,6 @@ import 'package:bb_mobile/features/labels/presentation/cubit.dart';
 import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -28,7 +25,7 @@ class Bip329LabelsPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => Bip329LabelsCubit(
         exportLabelsUsecase: locator<ExportLabelsUsecase>(),
-        importLabelsUsecase: locator<ImportLabelsUsecase>(),
+        importLabelsFromFileUsecase: locator<ImportLabelsFromFileUsecase>(),
       ),
       child: Scaffold(
         appBar: AppBar(
@@ -111,20 +108,7 @@ class Bip329LabelsPage extends StatelessWidget {
                       label: context.loc.bip329LabelsImportButton,
                       onPressed: () async {
                         if (isLoading) return;
-
-                        final result = await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                        );
-
-                        if (result != null && result.files.isNotEmpty) {
-                          final file = File(result.files.first.path!);
-                          if (file.lengthSync() > 1024 * 1024) return;
-                          final data = await file.readAsString();
-                          await cubit.importLabels(
-                            format: LabelFormat.bip329,
-                            data: data,
-                          );
-                        }
+                        await cubit.importLabelsFromFile(LabelFormat.bip329);
                       },
                       bgColor: context.appColors.secondary,
                       textColor: context.appColors.onSecondary,
