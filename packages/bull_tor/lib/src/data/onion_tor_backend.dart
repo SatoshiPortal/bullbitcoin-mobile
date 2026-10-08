@@ -11,6 +11,7 @@ import '../domain/entities/tor_session.dart';
 import '../domain/entities/tor_transport.dart';
 import '../domain/ports/embedded_tor_port.dart';
 import '../domain/tor_failure.dart';
+import 'onion_client_launcher.dart';
 import 'tor_logger.dart';
 
 /// What Bull lets its embedded Tor listener relay.
@@ -32,6 +33,8 @@ const _socksPolicy = onion.SocksPolicy.onionOnly;
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
+  final OnionClientLauncher _launcher;
+  final Future<TorDirectories> Function() _directories;
   onion.TorService? _service;
   StreamSubscription<onion.TorStatus>? _statusSubscription;
   final StreamController<EmbeddedTorEvent> _events =
@@ -46,7 +49,11 @@ final class OnionTorBackend implements EmbeddedTorPort {
   bool _dormant = false;
   bool _snowflakeLease = false;
 
-  OnionTorBackend(this._log);
+  OnionTorBackend(
+    this._log, {
+    this._launcher = const NativeOnionClientLauncher(),
+    this._directories = appTorDirectories,
+  });
 
   static Future<void> initialize() => onion.OnionCore.init();
 
@@ -95,24 +102,24 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _lastDetail = null;
 
     try {
-      final support = await getApplicationSupportDirectory();
-      final cache = await getApplicationCacheDirectory();
-      final stateDir = await Directory('${support.path}/tor_state').create();
-      final cacheDir = await Directory('${cache.path}/tor').create();
+      final directories = await _directories();
+      final stateDir = directories.stateFor(transport);
+      final cacheDir = directories.cache;
+      await Directory(stateDir).create(recursive: true);
+      await Directory(cacheDir).create(recursive: true);
 
       _log.config('Starting embedded Tor with ${transport.name} transport...');
       final startedAt = DateTime.now();
       final service = switch (transport) {
-        TorTransport.direct => await onion.TorService.start(
-          stateDir: stateDir.path,
-          cacheDir: cacheDir.path,
-          socksPort: 0,
-          policy: _socksPolicy,
+        TorTransport.direct => await _launcher.startClient(
+          OnionClientConfig(
+            transport: transport,
+            stateDir: stateDir,
+            cacheDir: cacheDir,
+          ),
+          _socksPolicy,
         ),
-        TorTransport.snowflake => await _startWithSnowflake(
-          stateDir.path,
-          cacheDir.path,
-        ),
+        TorTransport.snowflake => await _startWithSnowflake(stateDir, cacheDir),
       };
       if (generation != _generation) {
         await service.stop();
@@ -375,7 +382,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     } catch (error) {
       _log.warning('Failed to stop the embedded Tor service: $error');
     } finally {
-      if (snowflakeLease) await onion.SnowflakeTransport.stop();
+      if (snowflakeLease) await _launcher.stopSnowflakeProxy();
     }
   }
 
@@ -383,14 +390,16 @@ final class OnionTorBackend implements EmbeddedTorPort {
     String stateDir,
     String cacheDir,
   ) async {
-    final snowflakePort = await onion.SnowflakeTransport.start();
+    final snowflakePort = await _launcher.startSnowflakeProxy();
     _snowflakeLease = true;
-    return onion.TorService.startWithSnowflake(
-      stateDir: stateDir,
-      cacheDir: cacheDir,
-      socksPort: 0,
-      snowflakePort: snowflakePort,
-      policy: _socksPolicy,
+    return _launcher.startClient(
+      OnionClientConfig(
+        transport: TorTransport.snowflake,
+        stateDir: stateDir,
+        cacheDir: cacheDir,
+        snowflakePort: snowflakePort,
+      ),
+      _socksPolicy,
     );
   }
 
@@ -398,3 +407,21 @@ final class OnionTorBackend implements EmbeddedTorPort {
     TorUnexpectedFailure('Embedded Tor start was cancelled'),
   );
 }
+
+/// The directories the app's embedded Tor clients use.
+Future<TorDirectories> appTorDirectories() async {
+  final support = await getApplicationSupportDirectory();
+  final cache = await getApplicationCacheDirectory();
+  return torDirectoriesUnder(support: support.path, cache: cache.path);
+}
+
+/// The Tor directories under the app's [support] and [cache] directories.
+@visibleForTesting
+TorDirectories torDirectoriesUnder({
+  required String support,
+  required String cache,
+}) => TorDirectories(
+  directState: '$support/tor_state',
+  snowflakeState: '$support/tor_state_snowflake',
+  cache: '$cache/tor',
+);
