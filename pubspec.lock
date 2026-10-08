@@ -329,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -838,40 +838,21 @@ packages:
     source: hosted
     version: "2.12.0"
   flutter_secure_storage:
-    dependency: "direct main"
+    dependency: transitive
     description:
-      path: flutter_secure_storage
-      ref: "0a0869d0ff0ba2b3cb3576c4a2350428dec30f77"
-      resolved-ref: "0a0869d0ff0ba2b3cb3576c4a2350428dec30f77"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
-    source: git
-    version: "10.0.0"
+      name: flutter_secure_storage
+      sha256: "6a79c298171e6165823c41db058e10ad0e0d1f10af361a7e7c8d74f058435f50"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.3.3"
   flutter_secure_storage_darwin:
     dependency: transitive
     description:
       name: flutter_secure_storage_darwin
-      sha256: "8878c25136a79def1668c75985e8e193d9d7d095453ec28730da0315dc69aee3"
+      sha256: "82329fa5cdf343773b1b6897dea959105a29f092454259edff92f9f6637e8149"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
-  flutter_secure_storage_legacy:
-    dependency: "direct main"
-    description:
-      path: flutter_secure_storage
-      ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      resolved-ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
-    source: git
-    version: "9.2.3"
-  flutter_secure_storage_legacy_platform_interface:
-    dependency: transitive
-    description:
-      path: flutter_secure_storage_platform_interface
-      ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      resolved-ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
-    source: git
-    version: "1.1.2"
+    version: "0.3.2"
   flutter_secure_storage_linux:
     dependency: transitive
     description:
@@ -1481,9 +1462,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
   package_config:
@@ -1788,9 +1769,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      resolved-ref: c3a9853540aa69c45df55d1286249e91bcbe420f
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:

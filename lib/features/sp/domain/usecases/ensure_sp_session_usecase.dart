@@ -1,15 +1,15 @@
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
-import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
-/// Establishes the live SP session, reconstructing it via `createFromMnemonic`
+/// Establishes the live SP session, reconstructing it via `createFromScanKey`
 /// from the persisted backend config (the FFI create path never writes a
 /// reloadable config file, so `SpAccount.load` cannot be used).
 ///
@@ -19,18 +19,20 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 ///
 /// Registered as a singleton so the in-flight guard serializes establishment:
 /// concurrent callers (the SP shell `load()` and the wallet-side refresh on cold
-/// start) share one `createFromMnemonic` instead of racing two live sessions.
+/// start) share one `createFromScanKey` instead of racing two live sessions.
 class EnsureSpSessionUsecase {
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetSpScanKeyUsecase _getSpScanKeyUsecase;
+  final SpSessionGuard _guard;
 
   EnsureSpSessionUsecase({
     required this._repository,
     required this._files,
     required this._configRepository,
-    required this._getDefaultSeedUsecase,
+    required this._getSpScanKeyUsecase,
+    required this._guard,
   });
 
   Future<Result<SpWallet?, SpFailure>>? _inFlight;
@@ -43,6 +45,20 @@ class EnsureSpSessionUsecase {
   /// session while its own bracket is still held.
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
+  }) {
+    // Rollback already owns the non-reentrant guard. It must not join a
+    // public establishment queued behind that same owner either.
+    if (allowDuringTeardown) return _execute(allowDuringTeardown: true);
+    if (_repository.teardownInProgress) return Future.value(const Ok(null));
+    return _inFlight ??= _guard
+        .exclusive(() => _execute(allowDuringTeardown: false))
+        .whenComplete(() {
+          _inFlight = null;
+        });
+  }
+
+  Future<Result<SpWallet?, SpFailure>> _execute({
+    required bool allowDuringTeardown,
   }) async {
     // A recreate/revoke is disposing (and maybe re-establishing) the session;
     // do not start a competing establishment while it runs.
@@ -68,10 +84,7 @@ class EnsureSpSessionUsecase {
       }
       return _repository.snapshot();
     }
-    return _inFlight ??= _establish(allowDuringTeardown: allowDuringTeardown)
-        .whenComplete(() {
-          _inFlight = null;
-        });
+    return _establish(allowDuringTeardown: allowDuringTeardown);
   }
 
   Future<Result<SpWallet?, SpFailure>> _establish({
@@ -107,20 +120,12 @@ class EnsureSpSessionUsecase {
         return const Ok(null);
     }
 
-    final String mnemonic;
-    try {
-      final Seed seed;
-      switch (await _getDefaultSeedUsecase.execute()) {
-        case Ok(:final value):
-          seed = value;
-        case Err():
-          return const Err(SpUnexpected('SP session establish failed'));
-      }
-      mnemonic = spMnemonicFromSeed(seed);
-    } on Exception catch (_) {
-      // Fixed text: this block reads the seed and derives the mnemonic, so the
-      // caught exception never reaches a log.
-      return const Err(SpUnexpected('SP session establish failed'));
+    final SilentPaymentDescriptors scanKey;
+    switch (await _getSpScanKeyUsecase.execute(network: config.network)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        scanKey = value;
     }
 
     // Re-check right before creating: a revoke/recreate may have begun teardown
@@ -129,9 +134,8 @@ class EnsureSpSessionUsecase {
       return const Ok(null);
     }
 
-    final created = await _repository.createFromMnemonic(
-      network: config.network,
-      mnemonic: mnemonic,
+    final created = await _repository.createFromScanKey(
+      scanKey: scanKey,
       blindbitUrl: config.blindbitUrl,
       electrumUrl: config.electrumUrl,
       fetchConcurrencyFactor: config.fetchConcurrencyFactor,

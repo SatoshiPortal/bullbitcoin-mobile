@@ -13,19 +13,9 @@ final class AppStartupKeychainLockedFailure extends AppStartupFailure {
   const AppStartupKeychainLockedFailure([super.logMessage]);
 }
 
-/// The default wallets could not be read, or their seeds are missing.
+/// The default wallet metadata could not be read.
 final class AppStartupWalletCheckFailure extends AppStartupFailure {
   const AppStartupWalletCheckFailure([super.logMessage]);
-}
-
-/// Whether this is a pre-v5 install could not be determined.
-final class AppStartupLegacyCheckFailure extends AppStartupFailure {
-  const AppStartupLegacyCheckFailure([super.logMessage]);
-}
-
-/// The legacy seeds could not be enumerated for the backup screen.
-final class AppStartupLegacySeedsFailure extends AppStartupFailure {
-  const AppStartupLegacySeedsFailure([super.logMessage]);
 }
 
 /// Clearing data left behind by a previous install failed.
@@ -37,4 +27,19 @@ final class AppStartupResetFailure extends AppStartupFailure {
 /// failure at the boundary, so this feature never holds a foreign type.
 final class AppStartupPinCheckFailure extends AppStartupFailure {
   const AppStartupPinCheckFailure([super.logMessage]);
+}
+
+/// Wallet metadata exists, but its secret is absent from the readable store.
+final class AppStartupDefaultSecretMissingFailure extends AppStartupFailure {
+  const AppStartupDefaultSecretMissingFailure([super.logMessage]);
+}
+
+/// The stored secret cannot be read; preserve the install for support.
+final class AppStartupDefaultSecretUnreadableFailure extends AppStartupFailure {
+  const AppStartupDefaultSecretUnreadableFailure([super.logMessage]);
+}
+
+/// Android legacy storage is no longer supported by this build.
+final class AppStartupLegacyStorageFailure extends AppStartupFailure {
+  const AppStartupLegacyStorageFailure([super.logMessage]);
 }

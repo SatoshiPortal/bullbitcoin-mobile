@@ -97,5 +97,39 @@ void main() {
         isA<SpConfigInvalid>(),
       );
     });
+
+    // bwk has no Tor route; resolving an onion name leaks it to the DNS.
+    test('reports an onion backend as unsupported', () {
+      expect(
+        failureOf(parse(blindbitUrl: 'http://abc.onion')),
+        isA<SpBackendOnionUnsupported>(),
+      );
+      expect(
+        failureOf(parse(electrumUrl: 'ssl://abc.ONION:50002')),
+        isA<SpBackendOnionUnsupported>(),
+      );
+    });
+
+    test('rejects ambiguous userinfo in backend URLs', () {
+      expect(
+        parse(electrumUrl: 'tcp://x.onion@real.host:50001'),
+        isA<Err<SpBackendConfig, SpFailure>>(),
+      );
+      expect(
+        parse(blindbitUrl: 'https://user@blindbit.example'),
+        isA<Err<SpBackendConfig, SpFailure>>(),
+      );
+    });
+
+    test('an onion-looking path or subdomain label is not an onion host', () {
+      expect(
+        parse(blindbitUrl: 'https://onion.example/path.onion'),
+        isA<Ok<SpBackendConfig, SpFailure>>(),
+      );
+      expect(
+        parse(electrumUrl: 'ssl://abc.onion.example:50002'),
+        isA<Ok<SpBackendConfig, SpFailure>>(),
+      );
+    });
   });
 }

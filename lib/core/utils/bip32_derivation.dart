@@ -6,30 +6,6 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bs58check/bs58check.dart' as base58;
 
 class Bip32Derivation {
-  static Future<bip32.Bip32Keys> getAccountXpub({
-    required Uint8List seedBytes,
-    required ScriptType scriptType,
-    required Network network,
-    int accountIndex = 0,
-  }) async {
-    final root = bip32.Bip32Keys.fromSeed(seedBytes);
-    final derivationPath =
-        "m/${scriptType.purpose}'/${network.coinType}'/$accountIndex'";
-    final derivedAccountKey = root.derivePath(derivationPath);
-    return derivedAccountKey.neutered;
-  }
-
-  static String getXprvFromSeed(Uint8List seedBytes, Network network) {
-    final nw = network == Network.bitcoinTestnet
-        ? bip32.NetworkType(
-            wif: 0x80,
-            bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
-          )
-        : null;
-    final root = bip32.Bip32Keys.fromSeed(seedBytes, network: nw);
-    return root.toBase58();
-  }
-
   static bip32.Bip32Keys getBip32Xpub(String xpub) {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes

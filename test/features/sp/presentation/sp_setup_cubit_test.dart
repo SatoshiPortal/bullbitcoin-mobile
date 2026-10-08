@@ -286,7 +286,7 @@ void main() {
     });
 
     test(
-      'create() surfaces a failure from the usecase (BytesSeed path)',
+      'create() surfaces a failure from the usecase (seed-only secret path)',
       () async {
         when(
           () => mockCreate.execute(
@@ -298,7 +298,7 @@ void main() {
         ).thenAnswer(
           (_) async => const Err<void, SpFailure>(
             SpUnexpected(
-              'SP setup requires a mnemonic-backed seed; got BytesSeed',
+              'scan credential unavailable: MnemonicRequiredFailure',
             ),
           ),
         );
@@ -313,7 +313,7 @@ void main() {
         expect(cubit.state.error, isA<SpUnexpected>());
         expect(
           (cubit.state.error! as SpUnexpected).logMessage,
-          contains('mnemonic-backed seed'),
+          contains('MnemonicRequiredFailure'),
         );
         expect(cubit.state.created, isFalse);
         expect(cubit.state.isCreating, isFalse);

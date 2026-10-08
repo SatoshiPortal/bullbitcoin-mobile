@@ -13,9 +13,13 @@ class WalletSelected extends TestWalletBackupEvent {
   final Wallet wallet;
 }
 
+/// The user re-entered their backup correctly, as judged by
+/// `MnemonicChallenge`. Carries no words: the comparison happened inside the
+/// secrets package.
 class VerifyPhysicalBackup extends TestWalletBackupEvent {
-  const VerifyPhysicalBackup({required this.reorderedWords});
-  final List<String> reorderedWords;
+  final String masterFingerprint;
+
+  const VerifyPhysicalBackup({required this.masterFingerprint});
 }
 
 class ClearFailure extends TestWalletBackupEvent {

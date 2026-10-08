@@ -4,10 +4,13 @@ import 'package:flutter/widgets.dart';
 
 extension AppStartupFailureL10n on AppStartupFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    AppStartupDefaultSecretMissingFailure() =>
+      context.loc.appStartupDefaultSecretMissing,
+    AppStartupDefaultSecretUnreadableFailure() =>
+      context.loc.appStartupDefaultSecretUnreadable,
+    AppStartupLegacyStorageFailure() => context.loc.appStartupLegacyStorage,
     AppStartupKeychainLockedFailure() ||
     AppStartupWalletCheckFailure() ||
-    AppStartupLegacyCheckFailure() ||
-    AppStartupLegacySeedsFailure() ||
     AppStartupResetFailure() ||
     AppStartupPinCheckFailure() => context.loc.appStartupErrorMessage,
   };

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
@@ -37,7 +36,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._syncWalletsUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
     required this._deleteWalletUsecase,
-    required this._checkLegacySeedStorageUsecase,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -55,7 +53,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<RefreshSpWallet>(_onRefreshSpWallet, transformer: restartable());
     on<SetSpWalletBalance>(_onSetSpWalletBalance);
     on<DismissBackupWarning>(_onDismissBackupWarning);
-    on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
   }
 
@@ -66,7 +63,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final CheckLegacySeedStorageUsecase _checkLegacySeedStorageUsecase;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
@@ -127,18 +123,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       Ok(:final value) => value,
       Err() => false,
     };
-    // Keep the last known value rather than assuming "not legacy": a user who
-    // really is on legacy storage would otherwise silently lose the migration
-    // warning because of a transient shared-preferences read.
-    final bool isOnLegacyStorage;
-    switch (await _checkLegacySeedStorageUsecase.execute()) {
-      case Ok(:final value):
-        isOnLegacyStorage = value;
-      case Err(:final failure):
-        log.warning('Seed store read: ${failure.logMessage}');
-        isOnLegacyStorage = state.isOnLegacyStorage;
-    }
-
     // copyWith, not a fresh WalletState: the Silent Payments fields are owned
     // by their own events and must survive a reload.
     emit(
@@ -148,7 +132,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         failure: null,
         // If a global sync is running, every wallet is syncing.
         syncStatus: {for (final wallet in wallets) wallet.id: isSyncing},
-        isOnLegacyStorage: isOnLegacyStorage,
       ),
     );
 
@@ -520,13 +503,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     emit(state.copyWith(backupWarningDismissed: true));
-  }
-
-  void _onDismissLegacyStorageWarning(
-    DismissLegacyStorageWarning event,
-    Emitter<WalletState> emit,
-  ) {
-    emit(state.copyWith(legacyStorageWarningDismissed: true));
   }
 
   Future<void> _onVerifyBackupStatus(

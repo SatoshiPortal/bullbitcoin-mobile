@@ -2,6 +2,10 @@ import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+// freezed copies a line-level ignore into its output, which already ignores
+// this lint for the whole file; at file level it stays in the source.
+// ignore_for_file: invalid_annotation_target
+
 part 'recipient_model.freezed.dart';
 
 /// MODEL: Gateway model for Recipient API serialization/deserialization
@@ -15,7 +19,6 @@ sealed class RecipientModel with _$RecipientModel {
     required bool isArchived,
     required String createdAt,
     required String updatedAt,
-    // ignore: invalid_annotation_target
     @JsonKey(includeFromJson: false, includeToJson: false)
     required RecipientDetailsModel details,
   }) = _RecipientModel;

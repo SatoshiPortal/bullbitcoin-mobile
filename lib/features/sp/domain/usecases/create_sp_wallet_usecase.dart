@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
@@ -6,30 +5,33 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repo
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 /// Orchestrates SP wallet creation for the setup flow: gate on superuser +
 /// dev mode, block a double setup, clear any stale revoked state, then create
 /// the on-disk account.
 class CreateSpWalletUsecase {
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetSpScanKeyUsecase _getSpScanKeyUsecase;
   final SettingsRepository _settingsRepository;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
+  final SpSessionGuard _guard;
 
   CreateSpWalletUsecase({
-    required this._getDefaultSeedUsecase,
+    required this._getSpScanKeyUsecase,
     required this._settingsRepository,
     required this._repository,
     required this._files,
     required this._configRepository,
     required this._scanSpWalletUsecase,
+    required this._guard,
   });
 
   /// [scanFromNow] seeds the scan cursor at the current tip so the wallet skips
@@ -40,10 +42,9 @@ class CreateSpWalletUsecase {
     required String blindbitUrl,
     required String electrumUrl,
     required bool scanFromNow,
-  }) async {
-    // Outer boundary: any Exception from the settings/seed/sentinel/save reads
-    // becomes an Err so execute() is total. A non-mnemonic seed still throws a
-    // StateError (a programmer bug, never caught) per spMnemonicFromSeed.
+  }) => _guard.exclusive(() async {
+    // Outer boundary: any Exception from the settings/sentinel/save reads
+    // becomes an Err so execute() is total.
     try {
       final settings = await _settingsRepository.fetch();
       if (settings.isSuperuser != true) {
@@ -53,15 +54,15 @@ class CreateSpWalletUsecase {
         return const Err(SpRequiresDevMode());
       }
 
-      // Same fixed text as the catch below: the seed path never logs a reason.
-      final Seed seed;
-      switch (await _getDefaultSeedUsecase.execute()) {
+      // Derived before any side effect, so a missing default wallet or a
+      // locked keystore aborts with nothing to undo.
+      final SilentPaymentDescriptors scanKey;
+      switch (await _getSpScanKeyUsecase.execute(network: network)) {
+        case Err(:final failure):
+          return Err(failure);
         case Ok(:final value):
-          seed = value;
-        case Err():
-          return const Err(SpUnexpected('SP wallet create failed'));
+          scanKey = value;
       }
-      final mnemonic = spMnemonicFromSeed(seed);
 
       final bool hasSentinel;
       switch (await _files.hasRevokedSentinel()) {
@@ -90,6 +91,13 @@ class CreateSpWalletUsecase {
       // "succeed" yet be unreachable, since loads are blocked while the
       // sentinel exists.
       if (hasSentinel) {
+        // A failed revoke can retain a live native handle. Close it before
+        // removing its marker, so a failed setup cannot publish that session.
+        if (_repository.hasSession) {
+          if (await _repository.dispose() case Err(:final failure)) {
+            return Err(failure);
+          }
+        }
         if (await _files.deleteAccountDir() case Err(:final failure)) {
           return Err(
             SpSetupCleanupFailed(
@@ -120,9 +128,8 @@ class CreateSpWalletUsecase {
       if (await _configRepository.save(config) case Err(:final failure)) {
         return Err(failure);
       }
-      final created = await _repository.createFromMnemonic(
-        network: config.network,
-        mnemonic: mnemonic,
+      final created = await _repository.createFromScanKey(
+        scanKey: scanKey,
         blindbitUrl: config.blindbitUrl,
         electrumUrl: config.electrumUrl,
         fetchConcurrencyFactor: config.fetchConcurrencyFactor,
@@ -142,7 +149,7 @@ class CreateSpWalletUsecase {
             '${deleteFailure.logMessage}',
           );
         }
-        // Forwarded as-is: no SP failure text is derived from the mnemonic.
+        // Forwarded as-is: no SP failure text is derived from the scan key.
         return Err(failure);
       }
       // Set before returning so a redirect in the same turn as the navigation
@@ -151,11 +158,11 @@ class CreateSpWalletUsecase {
       if (scanFromNow) await _seedScanCursor();
       return const Ok(null);
     } on Exception catch (_) {
-      // Fixed text: this block reads the seed and derives the mnemonic, so the
-      // caught exception never reaches a log.
+      // Fixed text: this block handles the scan key, so the caught exception
+      // never reaches a log.
       return const Err(SpUnexpected('SP wallet create failed'));
     }
-  }
+  });
 
   /// Scan tip to tip, which covers roughly no blocks and exists only to record
   /// a cursor. A failure leaves the cursor unset, which just means the user

@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/features/sp/data/mappers/sp_payment_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_recipient_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_tx_draft_mapper.dart';
 import 'package:bb_mobile/features/sp/data/sp_payment_join.dart';
+import 'package:bb_mobile/features/sp/data/sp_signed_transaction_check.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart'
     as dom;
@@ -30,6 +32,15 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bull_sdk/bwk.dart';
 import 'package:meta/meta.dart';
+import 'package:secrets/secrets.dart'
+    show
+        KeystoreLockedFailure,
+        Secret,
+        SecretExtension,
+        SecretFailure,
+        Secrets,
+        SilentPaymentDescriptors,
+        UseSecretFailure;
 
 /// Secondary (driven) adapter that owns the single live `SpAccount` FFI
 /// session and implements [SpAccountRepository].
@@ -38,7 +49,7 @@ import 'package:meta/meta.dart';
 /// session per app lifetime / data dir. This absorbs what used to be split
 /// across `SpWalletEntity` (notification stream + dispose retry/memo),
 /// `GetSpWalletUsecase` (sentinel/db checks + `SpAccount.load`), the setup
-/// cubit (`SpAccount.createFromMnemonic`), and the SP cubit (send-flow FFI
+/// cubit (`SpAccount` creation), and the SP cubit (send-flow FFI
 /// calls). The two external systems it speaks to sit behind one datasource
 /// each: the bwk FFI and the account directory on disk. FFI view types are
 /// mapped to domain entities at this boundary.
@@ -58,7 +69,15 @@ class BwkSpAccountRepository
   // this same instance.
   final SpAccountFilesDatasource _files;
 
-  BwkSpAccountRepository({required this._ffi, required this._files});
+  // Signs with the secret the live session watches. The account itself holds
+  // no spend authority.
+  final Secrets _secrets;
+
+  BwkSpAccountRepository({
+    required this._ffi,
+    required this._files,
+    required this._secrets,
+  });
 
   // Notification stream plumbing (single-take Rust receiver -> mapped
   // broadcast of domain notifications).
@@ -100,6 +119,9 @@ class BwkSpAccountRepository
   // See SpAccountRepository.teardownInProgress.
   int _teardownDepth = 0;
 
+  // The secret the live session was opened from; null without a session.
+  Fingerprint? _sessionFingerprint;
+
   // Debug console: bounded notification log + a live broadcast of new lines.
   // Never cleared on session recycle; the controller lives for the app.
   final List<SpNotifLogLine> _notifLog = [];
@@ -113,14 +135,33 @@ class BwkSpAccountRepository
   // Single boundary that turns a raw FFI throw into a typed [SpFailure]. The
   // raw string is kept only as `logMessage` (logs, never UI).
   //
-  // bwk-dart returns a typed `SpError` over FRB, so the cases the UI branches
-  // on are matched by variant. A non-SpError throw is a genuine surprise
-  // (a panic, a codec failure) and collapses to the catch-all.
+  // bwk-dart returns a typed `SpError` over FRB, so every variant is matched
+  // by name: a new one breaks the build here instead of becoming a generic. A
+  // non-SpError throw is a genuine surprise (a panic, a codec failure) and
+  // collapses to the catch-all.
   SpFailure _mapFfiError(Object e) => switch (e) {
-    SpError_SimulationDrifted(:final detail) => SpSimulationDrifted(detail),
-    SpError_DisposeTimedOut() => SpSessionBusy('$e'),
-    SpError_ScannerAlreadyRunning() => SpScanBusy('$e'),
-    SpError_Other(:final message) => SpUnexpected(message),
+    SpError() => switch (e) {
+      SpError_SimulationDrifted(:final detail) => SpSimulationDrifted(detail),
+      SpError_DisposeTimedOut() => SpSessionBusy('$e'),
+      SpError_ScannerAlreadyRunning() => SpScanBusy('$e'),
+      SpError_TooManyCoins(:final count, :final max) => SpTooManyCoins(
+        count: count,
+        max: max,
+        logMessage: '$e',
+      ),
+      SpError_NothingToSendAfterFee() => SpNothingToSendAfterFee('$e'),
+      // Fixed text: the descriptors carry the scan private key.
+      SpError_InvalidDescriptor() => const SpCredentialRefused(
+        'the account refused its descriptors',
+      ),
+      // Only the custody package signs; bwk's reason describes the PSBT.
+      SpError_Signing() => const SpSigningRefused('bwk refused to sign'),
+      SpError_SignedPsbtMismatch(:final detail) => SpSignedTransactionMismatch(
+        detail,
+      ),
+      SpError_Verification(:final reason) => SpVerificationFailed(reason),
+      SpError_Other(:final message) => SpUnexpected(message),
+    },
     _ => SpUnexpected('$e'),
   };
 
@@ -145,6 +186,11 @@ class BwkSpAccountRepository
   @override
   bool get hasSession => _ffi.hasSession;
 
+  /// The fingerprint of the secret the live session watches, or null when no
+  /// session was opened (or it was disposed).
+  Fingerprint? get sessionFingerprint =>
+      _ffi.hasSession ? _sessionFingerprint : null;
+
   @override
   bool get teardownInProgress => _teardownDepth > 0;
 
@@ -159,9 +205,8 @@ class BwkSpAccountRepository
   }
 
   @override
-  Future<Result<void, SpFailure>> createFromMnemonic({
-    required BitcoinNetwork network,
-    required String mnemonic,
+  Future<Result<void, SpFailure>> createFromScanKey({
+    required SilentPaymentDescriptors scanKey,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -174,13 +219,13 @@ class BwkSpAccountRepository
     if (hasSession) {
       return const Err(
         SpSessionBusy(
-          'createFromMnemonic called while a session is live; dispose first',
+          'createFromScanKey called while a session is live; dispose first',
         ),
       );
     }
-    // This is the one call that carries the mnemonic across the FFI boundary.
-    // Its failures return fixed text with no error interpolation, so nothing
-    // derived from the argument can ever reach the logs.
+    // This is the one call that carries the scan private key across the FFI
+    // boundary. Its failures return fixed text with no error interpolation, so
+    // nothing derived from the argument can ever reach the logs.
     final String dataDir;
     try {
       dataDir = await _files.dataDir();
@@ -190,6 +235,7 @@ class BwkSpAccountRepository
     _resetNotificationState();
     _scanning = false;
     _clearReadCaches();
+    _sessionFingerprint = null;
     // Clear any lingering advisory locks. On mobile (single process) a present
     // lock is a disposed session whose Rust handle is not GC'd yet, so it can
     // never be a real second owner; the in-app single-establishment guard
@@ -198,21 +244,30 @@ class BwkSpAccountRepository
     // "already opened by another instance".
     await _files.clearStaleLocks();
     try {
-      await _ffi.createFromMnemonic(
-        network: SpNetworkMapper.toFfi(network),
-        mnemonic: mnemonic,
+      await _ffi.createFromDescriptors(
+        network: SpNetworkMapper.toFfi(scanKey.network),
+        spDescriptor: scanKey.sp,
+        taprootDescriptor: scanKey.taproot,
         blindbitUrl: blindbitUrl,
         electrumUrl: electrumUrl,
         dataDir: dataDir,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
       );
+    } on SpError_InvalidDescriptor {
+      // Fixed text on purpose: see the scan key note above.
+      return const Err(
+        SpCredentialRefused('SP account create refused its descriptors'),
+      );
     } catch (_) {
-      // Fixed text on purpose: see the mnemonic note above.
+      // Fixed text on purpose: see the scan key note above.
       return const Err(SpUnexpected('SP account create failed'));
     }
+    // The secret this session watches: spending fetches it again by this
+    // fingerprint and borrows its keys for one call.
+    _sessionFingerprint = scanKey.fingerprint;
     // Start the always-on taproot sub-account electrum listener so incoming txs
-    // are pushed without a manual scan. createFromMnemonic does not propagate the
+    // are pushed without a manual scan. createFromScanKey does not propagate the
     // electrum URL into the sub-account, so set it first (mirrors the silent
     // wallet). The URL is non-empty by the SpBackendConfig invariant. Failures
     // here must not abort session setup.
@@ -348,8 +403,15 @@ class BwkSpAccountRepository
         SpSimulationDrifted('pinned simulation no longer available'),
       );
     }
+    final String txHex;
+    switch (await _sign(simulation)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        txHex = value;
+    }
     try {
-      return Ok(await _finalizeSignBroadcast(simulation: simulation));
+      return Ok(await _broadcast(txHex: txHex));
     } on _BroadcastOutcomeUnknown catch (e) {
       return Err(SpBroadcastUncertain('$e'));
     } catch (e) {
@@ -357,10 +419,132 @@ class BwkSpAccountRepository
     }
   }
 
-  Future<String> _finalizeSignBroadcast({
-    required TxSimulation simulation,
-  }) async {
-    final txHex = await _ffi.finalizeAndSignToHex(simulation);
+  /// Signs the pinned simulation's PSBT through the custody package, which
+  /// lends the spend keys to bwk's stateless signer for that one call, then
+  /// has the live account finalize it: bwk refuses a signed PSBT that differs
+  /// from the confirmed simulation, a coin store that drifted since, and any
+  /// failed BIP375 verification, so a tx other than the one the Confirm page
+  /// showed is never extracted. The extracted tx is then checked against the
+  /// simulation here as well (inputs, each output, the recipients, fee, and
+  /// the change as bwk's receiving path finds it), and a tx that differs is
+  /// refused before it can reach the broadcast.
+  Future<Result<String, SpFailure>> _sign(TxSimulation simulation) async {
+    final fingerprint = sessionFingerprint;
+    if (fingerprint == null) {
+      return const Err(SpNotSetUp('no live SP session to sign with'));
+    }
+    // The account is taken before the fetch below: the session can be
+    // disposed or replaced while the keystore is read or the PSBT signed, and
+    // finalize must run on the account the simulation was pinned to or not at
+    // all.
+    final SpAccount account;
+    final SpNetwork ffiNetwork;
+    final BitcoinNetwork network;
+    try {
+      account = _ffi.liveAccount;
+      ffiNetwork = _ffi.network();
+      network = SpNetworkMapper.toDomain(ffiNetwork);
+    } catch (e) {
+      return Err(_mapFfiError(e));
+    }
+    final Secret secret;
+    switch (await _secrets.fetch(fingerprint)) {
+      case Err(:final failure):
+        return Err(_mapSecretFailure(failure));
+      case Ok(:final value):
+        secret = value;
+    }
+    if (!_isLiveAccount(account, fingerprint)) {
+      return const Err(
+        SpNotSetUp('the SP session changed while the secret was fetched'),
+      );
+    }
+    final Uint8List signedPsbt;
+    switch (await secret.sign.silentPayment(
+      simulation.psbt,
+      network: network,
+    )) {
+      case Err(:final failure):
+        return Err(_mapSecretFailure(failure));
+      case Ok(:final value):
+        signedPsbt = value;
+    }
+    if (!_isLiveAccount(account, fingerprint)) {
+      return const Err(
+        SpNotSetUp('the SP session changed while the payment was signed'),
+      );
+    }
+    final Uint8List tx;
+    try {
+      tx = await account.finalize(
+        simulation: simulation,
+        signedPsbt: signedPsbt,
+      );
+    } catch (e) {
+      final failure = _mapFfiError(e);
+      log.warning(
+        'SpAccountRepository: finalize refused the signed PSBT: '
+        '${failure.runtimeType} ${failure.logMessage}',
+      );
+      return Err(failure);
+    }
+    return _checkSigned(account, tx, simulation, ffiNetwork);
+  }
+
+  // Whether [account] is still the live session's account, opened from the
+  // secret [fingerprint] names.
+  bool _isLiveAccount(SpAccount account, Fingerprint fingerprint) =>
+      sessionFingerprint == fingerprint && identical(_ffi.liveAccount, account);
+
+  // The extracted tx as hex for the broadcast, or a refusal when it differs
+  // from the simulation the user confirmed. The structure is compared first;
+  // the change is then looked for through bwk's receiving path on the account
+  // that finalized, independently of the sending code that derived it.
+  Future<Result<String, SpFailure>> _checkSigned(
+    SpAccount account,
+    Uint8List tx,
+    TxSimulation simulation,
+    SpNetwork network,
+  ) async {
+    var mismatch = SpSignedTransactionCheck.mismatch(
+      signed: tx,
+      simulation: simulation,
+      network: network,
+    );
+    if (mismatch == null) {
+      try {
+        mismatch = SpSignedTransactionCheck.change(
+          owned: await account.ownedOutputs(txBytes: tx),
+          simulation: simulation,
+        );
+      } catch (_) {
+        // Fixed text: the receiving path reads the scan key, so its message is
+        // never carried along.
+        mismatch = 'the receiving path could not read the signed transaction';
+      }
+    }
+    if (mismatch != null) {
+      log.warning(
+        'SpAccountRepository: signed transaction refused, it differs from '
+        'its simulation: $mismatch',
+      );
+      return Err(SpSignedTransactionMismatch(mismatch));
+    }
+    return Ok(tx.map((b) => b.toRadixString(16).padLeft(2, '0')).join());
+  }
+
+  // A custody failure becomes an SP failure by type. The text is fixed: a
+  // signing error comes from bwk handling the lent keys, so its message is
+  // never carried along.
+  SpFailure _mapSecretFailure(SecretFailure failure) => switch (failure) {
+    UseSecretFailure() => SpSigningRefused(
+      'SP signing refused: ${failure.runtimeType}',
+    ),
+    KeystoreLockedFailure() => const SpKeystoreLocked('KeystoreLockedFailure'),
+    _ => SpUnexpected('SP signing failed: ${failure.runtimeType}'),
+  };
+
+  Future<String> _broadcast({required String txHex}) async {
     // Listen before broadcasting, and on the session stream itself rather than
     // the header-replay wrapper: that wrapper is an async generator, so it only
     // reaches the underlying stream a few microtasks after listen. An outcome
@@ -461,7 +645,7 @@ class BwkSpAccountRepository
   }
 
   // Set up the Rust notification forwarding (init) + source listener exactly
-  // once per session. Called from createFromMnemonic so recording (and electrum
+  // once per session. Called from createFromScanKey so recording (and electrum
   // pushes) flow as soon as a session exists, independent of any UI subscriber;
   // `init()` is taken-once per account, so doing it here avoids the double-init
   // ("receiver already taken") that broke recording. Each FFI notification is

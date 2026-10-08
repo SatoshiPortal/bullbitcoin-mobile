@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/features/sp/data/mappers/sp_tx_draft_mapper.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
@@ -38,8 +40,11 @@ void main() {
               isMax: false,
             ),
           ],
+          txOutputs: const [],
           feeSat: BigInt.from(250),
           changeSat: BigInt.from(1750),
+          feeRateSatVb: BigInt.two,
+          psbt: Uint8List(0),
         ),
         'draft-1',
       );
@@ -65,8 +70,11 @@ void main() {
         bwk.TxSimulation(
           inputs: const [],
           outputs: const [],
+          txOutputs: const [],
           feeSat: BigInt.from(100),
           changeSat: BigInt.zero,
+          feeRateSatVb: BigInt.one,
+          psbt: Uint8List(0),
         ),
         'draft-2',
       );

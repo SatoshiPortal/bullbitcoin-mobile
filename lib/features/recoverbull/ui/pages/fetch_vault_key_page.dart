@@ -79,8 +79,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
         listenWhen: (previous, current) =>
             previous.failure != current.failure ||
-            current.decryptedVault != null &&
-                previous.decryptedVault != current.decryptedVault ||
+            previous.isVaultVerified != current.isVaultVerified ||
             current.vaultKey != null && previous.vaultKey != current.vaultKey ||
             previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
@@ -105,7 +104,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             context.goNamed(WalletRoute.walletHome.name);
             return;
           }
-          if (state.decryptedVault != null && state.vaultKey != null) {
+          if (state.isVaultVerified && state.vaultKey != null) {
             _hasNavigatedAway = true;
             switch (state.flow) {
               case RecoverBullFlow.viewVaultKey:

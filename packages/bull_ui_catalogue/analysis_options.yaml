@@ -5,10 +5,7 @@ include: package:flutter_lints/flutter.yaml
 # use-cases are illustrative sample code, not production API surface.
 analyzer:
   errors:
-    # Generated *.directories.g.dart is checked into the tree; never lint it.
     todo: ignore
-  exclude:
-    - "**/*.g.dart"
 
 linter:
   rules:

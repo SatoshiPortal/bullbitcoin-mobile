@@ -3,8 +3,11 @@ part of 'all_seed_view_cubit.dart';
 @freezed
 abstract class AllSeedViewState with _$AllSeedViewState {
   const factory AllSeedViewState({
-    @Default(<MnemonicSeed>[]) List<MnemonicSeed> existingWallets,
-    @Default(<MnemonicSeed>[]) List<MnemonicSeed> oldWallets,
+    @Default(<Secret>[]) List<Secret> existingWallets,
+    @Default(<Secret>[]) List<Secret> oldWallets,
+    // Entries under the secrets prefix the package could not read. Shown, so
+    // a shorter list is never mistaken for a smaller keystore (R6).
+    @Default(0) int unreadableEntries,
     @Default(true) bool loading,
     @Default(false) bool seedsVisible,
     // Step-up authentication gate: raw seed phrases never leave secure
@@ -15,5 +18,5 @@ abstract class AllSeedViewState with _$AllSeedViewState {
   }) = _AllSeedViewState;
   const AllSeedViewState._();
 
-  List<MnemonicSeed> get allSeeds => [...existingWallets, ...oldWallets];
+  List<Secret> get allSeeds => [...existingWallets, ...oldWallets];
 }

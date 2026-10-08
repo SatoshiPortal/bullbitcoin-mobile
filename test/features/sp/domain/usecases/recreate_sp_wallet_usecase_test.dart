@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart' show SilentPaymentDescriptors;
 
 import '../../sp_fakes.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
@@ -28,13 +29,16 @@ SpBackendConfig _previousConfig() => spBackendConfig(
 // the use case wires dispose/backup/create/discard (and the rollback) in the
 // right order.
 void main() {
-  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late SilentPaymentDescriptors spScanKey;
+  late MockGetSpScanKeyUsecase getSpScanKeyUsecase;
   late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
   late _MockEnsureSpSessionUsecase ensureSpSessionUsecase;
   late RecreateSpWalletUsecase usecase;
 
-  setUpAll(() {
+  setUpAll(() async {
+    spScanKey = await deriveSpScanKey(network: BitcoinNetwork.mainnet);
+    registerFallbackValue(spScanKey);
     registerFallbackValue(BitcoinNetwork.regtest);
     registerFallbackValue(
       SpBackendConfig(
@@ -46,12 +50,12 @@ void main() {
   });
 
   setUp(() {
-    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
+    getSpScanKeyUsecase = MockGetSpScanKeyUsecase();
     repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
-      getDefaultSeedUsecase: getDefaultSeedUsecase,
+      getSpScanKeyUsecase: getSpScanKeyUsecase,
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -60,8 +64,8 @@ void main() {
     );
 
     when(
-      () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
+      () => getSpScanKeyUsecase.execute(network: any(named: 'network')),
+    ).thenAnswer((_) async => Ok(spScanKey));
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
@@ -86,11 +90,10 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => repository.createFromMnemonic(
-        network: any(named: 'network'),
+      () => repository.createFromScanKey(
+        scanKey: any(named: 'scanKey'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
       ),
     ).thenAnswer((_) async => const Ok(null));
   });
@@ -106,6 +109,7 @@ void main() {
 
       expect(result, isA<Ok<void, SpFailure>>());
       verifyInOrder([
+        () => getSpScanKeyUsecase.execute(network: BitcoinNetwork.mainnet),
         () => repository.beginTeardown(),
         () => repository.dispose(),
         () => repository.backupAccountDir(),
@@ -125,11 +129,10 @@ void main() {
                 ),
           ),
         ),
-        () => repository.createFromMnemonic(
-          network: BitcoinNetwork.mainnet,
+        () => repository.createFromScanKey(
+          scanKey: spScanKey,
           blindbitUrl: 'https://blindbit.example',
           electrumUrl: 'ssl://electrum.example:50002',
-          mnemonic: any(named: 'mnemonic'),
         ),
         () => repository.discardBackup(),
         () => repository.endTeardown(),
@@ -143,11 +146,10 @@ void main() {
     'previous config, then re-establishes before releasing the teardown',
     () async {
       when(
-        () => repository.createFromMnemonic(
-          network: any(named: 'network'),
+        () => repository.createFromScanKey(
+          scanKey: any(named: 'scanKey'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -181,11 +183,10 @@ void main() {
         () => repository.restoreAccountDir(),
       ).thenAnswer((_) async => const Ok(false));
       when(
-        () => repository.createFromMnemonic(
-          network: any(named: 'network'),
+        () => repository.createFromScanKey(
+          scanKey: any(named: 'scanKey'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -206,11 +207,10 @@ void main() {
 
   test('rollback releases the teardown bracket exactly once', () async {
     when(
-      () => repository.createFromMnemonic(
-        network: any(named: 'network'),
+      () => repository.createFromScanKey(
+        scanKey: any(named: 'scanKey'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
       ),
     ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -242,11 +242,10 @@ void main() {
         () => repository.restoreAccountDir(),
       ).thenAnswer((_) async => const Ok(false));
       when(
-        () => repository.createFromMnemonic(
-          network: any(named: 'network'),
+        () => repository.createFromScanKey(
+          scanKey: any(named: 'scanKey'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -294,7 +293,7 @@ void main() {
       failure.logMessage,
       'SP wallet recreate failed',
       reason:
-          'the block derives the mnemonic, so nothing caught may be '
+          'the block handles the scan key, so nothing caught may be '
           'written to the exportable log',
     );
     verify(() => repository.endTeardown()).called(1);
@@ -315,4 +314,27 @@ void main() {
     verifyNever(() => repository.backupAccountDir());
     verifyNever(() => configRepository.save(any()));
   });
+
+  for (final failure in const <SpFailure>[
+    SpNoDefaultWallet('no default'),
+    SpKeystoreLocked('KeystoreLockedFailure'),
+  ]) {
+    test('a ${failure.runtimeType} from the scan credential aborts before the '
+        'session is torn down', () async {
+      when(
+        () => getSpScanKeyUsecase.execute(network: any(named: 'network')),
+      ).thenAnswer((_) async => Err(failure));
+
+      final result = await usecase.execute(
+        network: BitcoinNetwork.mainnet,
+        blindbitUrl: 'https://blindbit.example',
+        electrumUrl: 'ssl://electrum.example:50002',
+      );
+
+      expect((result as Err).failure, same(failure));
+      verifyNever(() => repository.beginTeardown());
+      verifyNever(() => repository.dispose());
+      verifyNever(() => configRepository.save(any()));
+    });
+  }
 }

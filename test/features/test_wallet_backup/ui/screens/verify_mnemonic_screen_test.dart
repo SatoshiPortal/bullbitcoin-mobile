@@ -7,9 +7,8 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
@@ -19,6 +18,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 class _MockCompleteBackupVerificationUsecase extends Mock
     implements CompleteBackupVerificationUsecase {}
@@ -26,11 +27,8 @@ class _MockCompleteBackupVerificationUsecase extends Mock
 class _MockLoadWalletsForNetworkUsecase extends Mock
     implements LoadWalletsForNetworkUsecase {}
 
-class _MockGetMnemonicFromFingerprintUsecase extends Mock
-    implements GetMnemonicFromFingerprintUsecase {}
-
-class _MockVerifyPhysicalBackupUsecase extends Mock
-    implements VerifyPhysicalBackupUsecase {}
+class _MockGetSecretFromFingerprintUsecase extends Mock
+    implements GetSecretFromFingerprintUsecase {}
 
 /// Lets a test put the bloc into an exact state, standing in for the
 /// asynchronous `LoadWallets` and a wallet switch from the picker.
@@ -38,15 +36,13 @@ class _SeedableTestWalletBackupBloc extends TestWalletBackupBloc {
   _SeedableTestWalletBackupBloc({
     required super.completeBackupVerificationUsecase,
     required super.loadWalletsForNetworkUsecase,
-    required super.getMnemonicFromFingerprintUsecase,
-    required super.verifyPhysicalBackupUsecase,
+    required super.getSecretFromFingerprintUsecase,
   });
 
   void seed(TestWalletBackupState state) => emit(state);
 }
 
-typedef _MnemonicResult =
-    Result<(List<String>, String?), TestWalletBackupFailure>;
+typedef _SecretResult = Result<Secret, TestWalletBackupFailure>;
 
 /// The `no_screenshot` plugin behind `PrivacyScreen` talks over this channel;
 /// answering it keeps the screen's privacy future from failing in tests.
@@ -57,9 +53,24 @@ const _noScreenshotChannel = MethodChannel(
 const _fingerprintA = 'aaaa1111';
 const _fingerprintB = 'bbbb2222';
 
-// Two word lists with no word in common, so a word on screen identifies the
-// wallet it belongs to without ambiguity.
+// BIP39 test vectors: two real secrets, so the screen shows a real sealed
+// challenge. The words are painted, not text, so a test tells the wallets
+// apart by the secret the challenge was given, never by reading a word.
 const _wordsA = [
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'abandon',
+  'about',
+];
+const _wordsB = [
   'legal',
   'winner',
   'thank',
@@ -68,24 +79,10 @@ const _wordsA = [
   'sausage',
   'worth',
   'useful',
-  'abandon',
-  'ability',
-  'able',
-  'about',
-];
-const _wordsB = [
-  'raise',
-  'beach',
-  'verb',
-  'shell',
-  'soft',
-  'tumble',
-  'satoshi',
-  'wink',
-  'clown',
-  'enjoy',
-  'more',
-  'senior',
+  'legal',
+  'winner',
+  'thank',
+  'yellow',
 ];
 
 Wallet _wallet(String fingerprint) => Wallet(
@@ -113,20 +110,32 @@ TestWalletBackupState _selected(Wallet wallet) => TestWalletBackupState(
 );
 
 void main() {
-  late _MockGetMnemonicFromFingerprintUsecase getMnemonicUsecase;
+  late Secret secretA;
+  late Secret secretB;
+  late _MockGetSecretFromFingerprintUsecase getSecretUsecase;
   late _SeedableTestWalletBackupBloc bloc;
+
+  setUpAll(() async {
+    FakeSecureStoragePlatform().install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secretA =
+        ((await secrets.import(words: _wordsA)) as Ok<Secret, SecretFailure>)
+            .value;
+    secretB =
+        ((await secrets.import(words: _wordsB)) as Ok<Secret, SecretFailure>)
+            .value;
+  });
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_noScreenshotChannel, (_) async => true);
 
-    getMnemonicUsecase = _MockGetMnemonicFromFingerprintUsecase();
+    getSecretUsecase = _MockGetSecretFromFingerprintUsecase();
     bloc = _SeedableTestWalletBackupBloc(
       completeBackupVerificationUsecase:
           _MockCompleteBackupVerificationUsecase(),
       loadWalletsForNetworkUsecase: _MockLoadWalletsForNetworkUsecase(),
-      getMnemonicFromFingerprintUsecase: getMnemonicUsecase,
-      verifyPhysicalBackupUsecase: _MockVerifyPhysicalBackupUsecase(),
+      getSecretFromFingerprintUsecase: getSecretUsecase,
     );
   });
 
@@ -136,10 +145,10 @@ void main() {
         .setMockMethodCallHandler(_noScreenshotChannel, null);
   });
 
-  void stubMnemonic(String fingerprint, List<String> words) {
+  void stubSecret(String fingerprint, Secret secret) {
     when(
-      () => getMnemonicUsecase.execute(fingerprint),
-    ).thenAnswer((_) async => Ok((words, null)));
+      () => getSecretUsecase.execute(fingerprint),
+    ).thenAnswer((_) async => Ok(secret));
   }
 
   Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
@@ -156,17 +165,18 @@ void main() {
 
   // The spinner animates forever, so pumpAndSettle would never return while
   // it is on screen. A few plain frames are enough to flush the bloc stream,
-  // the listener and the awaited mnemonic read.
+  // the listener and the awaited secret read.
   Future<void> flush(WidgetTester tester) async {
     for (var i = 0; i < 3; i++) {
       await tester.pump();
     }
   }
 
-  void expectWords(List<String> words, Matcher matcher) {
-    for (final word in words) {
-      expect(find.text(word), matcher, reason: word);
-    }
+  /// The secret the sealed challenge on screen was handed, if any.
+  Secret? shownSecret(WidgetTester tester) {
+    final challenges = find.byType(MnemonicChallenge);
+    if (challenges.evaluate().isEmpty) return null;
+    return tester.widget<MnemonicChallenge>(challenges).secret;
   }
 
   // SnackBarUtils is an overlay entry on a 3 second timer, not a Material
@@ -179,44 +189,42 @@ void main() {
 
   final spinner = find.byType(CircularProgressIndicator);
 
-  testWidgets('loads the words once the wallet arrives after mount', (
+  testWidgets('loads the secret once the wallet arrives after mount', (
     tester,
   ) async {
-    stubMnemonic(_fingerprintA, _wordsA);
+    stubSecret(_fingerprintA, secretA);
 
     // The test flow opens this screen while LoadWallets is still running, so
     // there is no selected wallet yet and nothing to show but the spinner.
     await pumpScreen(tester);
     await flush(tester);
     expect(spinner, findsOneWidget);
-    verifyNever(() => getMnemonicUsecase.execute(any()));
+    verifyNever(() => getSecretUsecase.execute(any()));
 
     bloc.seed(_selected(_walletA));
     await flush(tester);
 
-    expect(spinner, findsNothing);
-    expectWords(_wordsA, findsOneWidget);
+    expect(shownSecret(tester)?.id, secretA.id);
   });
 
-  testWidgets('loads the words at once when a wallet is already selected', (
+  testWidgets('loads the secret at once when a wallet is already selected', (
     tester,
   ) async {
-    stubMnemonic(_fingerprintA, _wordsA);
+    stubSecret(_fingerprintA, secretA);
     bloc.seed(_selected(_walletA));
 
     await pumpScreen(tester);
     await flush(tester);
 
-    expect(spinner, findsNothing);
-    expectWords(_wordsA, findsOneWidget);
-    verify(() => getMnemonicUsecase.execute(_fingerprintA)).called(1);
+    expect(shownSecret(tester)?.id, secretA.id);
+    verify(() => getSecretUsecase.execute(_fingerprintA)).called(1);
   });
 
-  testWidgets('reloads the words when the selected wallet changes', (
+  testWidgets('reloads the secret when the selected wallet changes', (
     tester,
   ) async {
-    stubMnemonic(_fingerprintA, _wordsA);
-    stubMnemonic(_fingerprintB, _wordsB);
+    stubSecret(_fingerprintA, secretA);
+    stubSecret(_fingerprintB, secretB);
     bloc.seed(_selected(_walletA));
     await pumpScreen(tester);
     await flush(tester);
@@ -224,14 +232,13 @@ void main() {
     bloc.seed(_selected(_walletB));
     await flush(tester);
 
-    expectWords(_wordsB, findsOneWidget);
-    expectWords(_wordsA, findsNothing);
+    expect(shownSecret(tester)?.id, secretB.id);
   });
 
   testWidgets('does not reload for a state change that keeps the wallet', (
     tester,
   ) async {
-    stubMnemonic(_fingerprintA, _wordsA);
+    stubSecret(_fingerprintA, secretA);
     bloc.seed(_selected(_walletA));
     await pumpScreen(tester);
     await flush(tester);
@@ -243,21 +250,20 @@ void main() {
     );
     await flush(tester);
 
-    verify(() => getMnemonicUsecase.execute(_fingerprintA)).called(1);
-    expectWords(_wordsA, findsOneWidget);
-    await drainSnackBar(tester);
+    verify(() => getSecretUsecase.execute(_fingerprintA)).called(1);
+    expect(shownSecret(tester)?.id, secretA.id);
   });
 
   testWidgets('drops a load overtaken by a later wallet switch', (
     tester,
   ) async {
     // Wallet A's read is held open until after wallet B's has landed, so the
-    // stale result arrives last and must not replace B's words.
-    final slowReadOfA = Completer<_MnemonicResult>();
+    // stale result arrives last and must not replace B's challenge.
+    final slowReadOfA = Completer<_SecretResult>();
     when(
-      () => getMnemonicUsecase.execute(_fingerprintA),
+      () => getSecretUsecase.execute(_fingerprintA),
     ).thenAnswer((_) => slowReadOfA.future);
-    stubMnemonic(_fingerprintB, _wordsB);
+    stubSecret(_fingerprintB, secretB);
 
     bloc.seed(_selected(_walletA));
     await pumpScreen(tester);
@@ -266,20 +272,19 @@ void main() {
 
     bloc.seed(_selected(_walletB));
     await flush(tester);
-    expectWords(_wordsB, findsOneWidget);
+    expect(shownSecret(tester)?.id, secretB.id);
 
-    slowReadOfA.complete(const Ok((_wordsA, null)));
+    slowReadOfA.complete(Ok(secretA));
     await flush(tester);
 
-    expectWords(_wordsB, findsOneWidget);
-    expectWords(_wordsA, findsNothing);
+    expect(shownSecret(tester)?.id, secretB.id);
   });
 
-  testWidgets('clears the previous words when the new wallet read fails', (
+  testWidgets('clears the previous challenge when the new wallet read fails', (
     tester,
   ) async {
-    stubMnemonic(_fingerprintA, _wordsA);
-    when(() => getMnemonicUsecase.execute(_fingerprintB)).thenAnswer(
+    stubSecret(_fingerprintA, secretA);
+    when(() => getSecretUsecase.execute(_fingerprintB)).thenAnswer(
       (_) async => const Err(TestWalletBackupSeedUnavailableFailure()),
     );
     bloc.seed(_selected(_walletA));
@@ -289,9 +294,9 @@ void main() {
     bloc.seed(_selected(_walletB));
     await flush(tester);
 
-    // Wallet A's words must not sit under wallet B's name, and the screen
-    // must not fall back to the spinner either.
-    expectWords(_wordsA, findsNothing);
+    // Wallet A's challenge must not sit under wallet B's name, and the
+    // screen must not fall back to the spinner either.
+    expect(shownSecret(tester), isNull);
     expect(spinner, findsNothing);
     final context = tester.element(find.byType(VerifyMnemonicScreen));
     expect(
@@ -300,9 +305,8 @@ void main() {
       ),
       findsOneWidget,
     );
-    // An empty word list is a failed read, not a finished test.
+    // A failed read is not a finished test.
     expect(find.text(context.loc.testBackupAllWordsSelected), findsNothing);
-    await drainSnackBar(tester);
   });
 
   testWidgets('ends the spinner when the wallets fail to load', (tester) async {
@@ -320,7 +324,7 @@ void main() {
     await flush(tester);
 
     expect(spinner, findsNothing);
-    verifyNever(() => getMnemonicUsecase.execute(any()));
+    verifyNever(() => getSecretUsecase.execute(any()));
     final context = tester.element(find.byType(VerifyMnemonicScreen));
     expect(
       find.text(

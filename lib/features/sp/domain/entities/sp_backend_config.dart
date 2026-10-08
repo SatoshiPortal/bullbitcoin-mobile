@@ -6,8 +6,8 @@ import 'package:meta/meta.dart';
 /// The SP backend config (network + node URLs) bb-mobile persists itself.
 ///
 /// The FFI create path does not write a reloadable config file, so the session
-/// is reconstructed via `createFromMnemonic` from this stored config plus the
-/// wallet mnemonic (matching how the silent wallet rebuilds its account).
+/// is reconstructed via `createFromScanKey` from this stored config plus the
+/// scan credential the custody package derives for the default wallet.
 ///
 /// Pure domain entity: serialization lives in `data/SpBackendConfigModel`.
 ///
@@ -29,13 +29,13 @@ class SpBackendConfig {
     this.fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     this.matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) {
-    final reason = _invalidReason(
+    final failure = _invalid(
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
     );
-    if (reason != null) throw ArgumentError(reason);
+    if (failure != null) throw ArgumentError(failure.logMessage);
   }
 
   /// Build from unvalidated input, reporting a broken invariant as
@@ -50,13 +50,13 @@ class SpBackendConfig {
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
   }) {
-    final reason = _invalidReason(
+    final failure = _invalid(
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
     );
-    if (reason != null) return Err(SpConfigInvalid(reason));
+    if (failure != null) return Err(failure);
     return Ok(
       SpBackendConfig(
         network: network,
@@ -68,24 +68,48 @@ class SpBackendConfig {
     );
   }
 
+  /// Whether [url] names a Tor `.onion` host. The SP client (bwk) opens its
+  /// own sockets with no proxy, so such a host is unreachable, and resolving
+  /// it would hand the hidden-service name to the network's DNS resolver.
+  /// The core Electrum connector refuses the same case for the same reason.
+  static bool isOnionUrl(String url) {
+    final normalized = url.trim();
+    final uri = Uri.tryParse(
+      normalized.contains('://') ? normalized : '//$normalized',
+    );
+    if (uri == null || !uri.hasAuthority) return false;
+    final name = uri.host.toLowerCase();
+    return name.endsWith('.onion') || name.endsWith('.onion.');
+  }
+
   /// The one place the invariants live, so the constructor and [parse] cannot
   /// disagree. Null when the values are valid.
-  static String? _invalidReason({
+  static SpFailure? _invalid({
     required String blindbitUrl,
     required String electrumUrl,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
   }) {
     if (blindbitUrl.trim().isEmpty || electrumUrl.trim().isEmpty) {
-      return 'SP backend URLs must not be empty';
+      return const SpConfigInvalid('SP backend URLs must not be empty');
+    }
+    if (blindbitUrl.contains('@') || electrumUrl.contains('@')) {
+      return const SpConfigInvalid('SP backend URLs must not contain userinfo');
+    }
+    if (isOnionUrl(blindbitUrl) || isOnionUrl(electrumUrl)) {
+      return const SpBackendOnionUnsupported('SP backend URL is an onion host');
     }
     if (fetchConcurrencyFactor < 1 ||
         fetchConcurrencyFactor > SpConfig.maxFetchConcurrencyFactor) {
-      return 'SP fetch concurrency factor is out of range';
+      return const SpConfigInvalid(
+        'SP fetch concurrency factor is out of range',
+      );
     }
     if (matchConcurrencyFactor < 1 ||
         matchConcurrencyFactor > SpConfig.maxMatchConcurrencyFactor) {
-      return 'SP match concurrency factor is out of range';
+      return const SpConfigInvalid(
+        'SP match concurrency factor is out of range',
+      );
     }
     return null;
   }

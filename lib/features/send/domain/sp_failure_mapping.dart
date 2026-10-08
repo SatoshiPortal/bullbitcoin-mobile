@@ -14,6 +14,10 @@ extension SpFailureToSendFailure on SpFailure {
     SpInvalidAddress() => SendInvalidPaymentRequestFailure(
       logMessage: logMessage,
     ),
+    SpTooManyCoins() => SendTooManyCoinsFailure(logMessage),
+    SpNothingToSendAfterFee() => SendInsufficientFundsForFeesFailure(
+      logMessage,
+    ),
     // Listed one by one, never a wildcard: a new SpFailure variant must break
     // the build here rather than silently become a generic (AGENTS.md #15).
     SpRequiresSuperuser() ||
@@ -23,10 +27,17 @@ extension SpFailureToSendFailure on SpFailure {
     SpSessionBusy() ||
     SpScanBusy() ||
     SpSimulationDrifted() ||
+    SpNoDefaultWallet() ||
+    SpKeystoreLocked() ||
     SpBackendUnreachable() ||
     SpConfigInvalid() ||
+    SpBackendOnionUnsupported() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
+    SpSignedTransactionMismatch() ||
+    SpCredentialRefused() ||
+    SpSigningRefused() ||
+    SpVerificationFailed() ||
     SpUnexpected() => null,
   };
 }

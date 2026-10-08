@@ -25,7 +25,8 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -41,8 +42,6 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
-
-class _MockSeedDatasource extends Mock implements SeedDatasource {}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
@@ -95,12 +94,14 @@ void main() {
   });
 
   setUp(() {
+    FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: _MockSeedDatasource(),
+      // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
+      secrets: Secrets(scratchDirectory: () async => '/tmp'),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
     );

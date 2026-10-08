@@ -7,7 +7,7 @@
 /// unlocked since boot AND the item's accessibility class requires
 /// post-unlock access (BULL uses
 /// `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` for all keychain
-/// items — see `lib/core/storage/storage_locator.dart`).
+/// items — configured inside `packages/secrets`).
 ///
 /// Callers decide whether this is fatal or recoverable:
 ///
@@ -24,9 +24,8 @@
 /// indicates a real failure: the caller MUST surface or rethrow,
 /// because silently swallowing means data was not persisted.
 ///
-/// Debug context (which operation, which key) is emitted as a
-/// `log.warning` line at the datasource layer *before* this exception
-/// is thrown, so the exception itself doesn't need to carry it.
+/// The secrets package logs the locked state without carrying stored values.
+/// This legacy adapter exception preserves the callers' existing contract.
 class KeychainLockedException implements Exception {
   const KeychainLockedException();
 

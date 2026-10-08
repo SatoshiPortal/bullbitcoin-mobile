@@ -13,12 +13,12 @@ class CompletePhysicalBackupVerificationUsecase {
     required this._settingsRepository,
   });
 
-  Future<void> execute() async {
+  Future<void> execute({String? masterFingerprint}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final defaultWallets = switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
-        environment: settings.environment,
+        onlyDefaults: masterFingerprint == null,
+        environment: masterFingerprint == null ? settings.environment : null,
       )) {
         Ok(:final value) => value,
         // Wrapped into this use-case's own exception by the catch below.
@@ -27,12 +27,19 @@ class CompletePhysicalBackupVerificationUsecase {
             'default wallets read failed: ${failure.runtimeType}',
           ),
       };
-      if (defaultWallets.isEmpty) {
+      final verifiedWallets = masterFingerprint == null
+          ? defaultWallets
+          : defaultWallets
+                .where(
+                  (wallet) => wallet.masterFingerprint == masterFingerprint,
+                )
+                .toList();
+      if (verifiedWallets.isEmpty) {
         throw Exception('No default wallet found');
       }
       // There should only be one default Bitcoin wallet
 
-      for (final defaultWallet in defaultWallets) {
+      for (final defaultWallet in verifiedWallets) {
         await _walletRepository.updateBackupInfo(
           walletId: defaultWallet.id,
           isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,

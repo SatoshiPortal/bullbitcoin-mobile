@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -16,7 +13,7 @@ import 'package:socks5_proxy/exceptions.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 
-/// Data boundary for the RecoverBull key server and vault crypto. Catches the
+/// Data boundary for the RecoverBull key server. Catches the
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
 /// returns a [RecoverBullCoreFailure] — no exception crosses this boundary.
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
@@ -35,62 +32,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     this._remoteDatasource,
     this._recoverbullSettingsDatasource,
   );
-
-  /// Builds an encrypted vault file for [plaintext] under [vaultKey] and stamps
-  /// the BIP85 [derivationPath] into it. (Assembly lives here, not in the
-  /// use-case.)
-  @override
-  Result<EncryptedVault, RecoverBullCoreFailure> createVault({
-    required String vaultKey,
-    required String plaintext,
-    required String derivationPath,
-  }) {
-    try {
-      final encryptedBackup = RecoverBullDatasource.create(
-        utf8.encode(plaintext),
-        convert.hex.decode(_normalizeHex(vaultKey)),
-      );
-      final mapBackup = json.decode(encryptedBackup) as Map<String, dynamic>;
-      mapBackup['path'] = derivationPath;
-      return Ok(EncryptedVault(file: json.encode(mapBackup)));
-    } catch (e, st) {
-      log.severe(
-        message: 'createVault failed',
-        error: 'Vault processing failed',
-        trace: st,
-      );
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
-      );
-    }
-  }
-
-  /// Decrypts [vault] with [vaultKey] and decodes it into a [DecryptedVault].
-  /// Wrong key / corrupt data surface as a failure, never an exception.
-  @override
-  Result<DecryptedVault, RecoverBullCoreFailure> restoreVault({
-    required EncryptedVault vault,
-    required String vaultKey,
-  }) {
-    try {
-      final decryptedBytes = RecoverBullDatasource.restore(
-        vault.toFile(),
-        convert.hex.decode(_normalizeHex(vaultKey)),
-      );
-      final plaintext = utf8.decode(decryptedBytes);
-      final decoded = json.decode(plaintext) as Map<String, dynamic>;
-      return Ok(DecryptedVault.fromJson(decoded));
-    } catch (e, st) {
-      log.severe(
-        message: 'restoreVault failed',
-        error: 'Vault processing failed',
-        trace: st,
-      );
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
-      );
-    }
-  }
 
   @override
   Future<Result<Null, RecoverBullCoreFailure>> storeVaultKey(

@@ -1,11 +1,21 @@
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fake_async/fake_async.dart';
 
 void main() {
   late SpSessionGuard guard;
 
   setUp(() {
     guard = SpSessionGuard();
+  });
+
+  test('initial scheduling follows the first caller zone', () {
+    fakeAsync((async) {
+      var completed = false;
+      guard.exclusive(() async => 1).then((_) => completed = true);
+      async.flushMicrotasks();
+      expect(completed, isTrue);
+    });
   });
 
   test('runs bodies one at a time, in the order they were submitted', () async {

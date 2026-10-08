@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -8,16 +9,19 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/app_startup/domain/repositories/startup_storage_repository.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
+  final StartupStorageRepository _startupStorageRepository;
 
   CheckForExistingDefaultWalletsUsecase({
     required this._settingsRepository,
     required this._walletRepository,
-    required this._seedRepository,
+    required this._secrets,
+    required this._startupStorageRepository,
   });
 
   @useResult
@@ -37,6 +41,15 @@ class CheckForExistingDefaultWalletsUsecase {
   }
 
   Future<Result<bool, AppStartupFailure>> _check() async {
+    switch (await _startupStorageRepository.requiresLegacyRestore()) {
+      case Ok(value: true):
+        return const Err(AppStartupLegacyStorageFailure());
+      case Ok(value: false):
+        break;
+      case Err(:final failure):
+        return Err(failure);
+    }
+
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
 
@@ -68,7 +81,26 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     if (defaultWallets.isEmpty) {
-      log.fine('No default wallets found');
+      // Missing wallet metadata is not a fresh install while custody survives.
+      // Refuse startup before its reset path can remove the protecting PIN.
+      switch (await _secrets.list()) {
+        case Err(failure: KeystoreLockedFailure()):
+          return const Err(AppStartupKeychainLockedFailure());
+        case Err():
+          return const Err(AppStartupDefaultSecretUnreadableFailure());
+        case Ok(:final value):
+          if (value.any((entry) => entry is UnreadableSecret)) {
+            return const Err(AppStartupDefaultSecretUnreadableFailure());
+          }
+          if (value.isNotEmpty) {
+            return const Err(
+              AppStartupWalletCheckFailure(
+                'Default wallet metadata is absent while custody survives',
+              ),
+            );
+          }
+      }
+      log.fine('No default wallets or stored secrets found');
       return const Ok(false);
     }
 
@@ -83,9 +115,15 @@ class CheckForExistingDefaultWalletsUsecase {
         trace: StackTrace.current,
       );
       try {
-        final seed = await _seedRepository.get(
-          defaultWallets.first.masterFingerprint,
-        );
+        final secret = switch (await _secrets.fetch(
+          Fingerprint.tryParse(defaultWallets.first.masterFingerprint) ??
+              (throw const FormatException('invalid default fingerprint')),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw Exception(
+            'default secret unavailable: ${failure.runtimeType}',
+          ),
+        };
         final network = !hasBitcoin
             ? (environment.isMainnet
                   ? Network.bitcoinMainnet
@@ -94,7 +132,7 @@ class CheckForExistingDefaultWalletsUsecase {
                   ? Network.liquidMainnet
                   : Network.liquidTestnet);
         await _walletRepository.createWallet(
-          seed: seed,
+          secret: secret,
           network: network,
           scriptType: ScriptType.bip84,
           isDefault: true,
@@ -123,21 +161,25 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     log.fine('FINE: found default wallet');
-    await Future.wait(
-      defaultWallets.map((wallet) async {
-        try {
-          await _seedRepository.get(wallet.masterFingerprint);
-          log.fine('FINE: Seed Found');
-        } catch (e) {
-          log.severe(
-            message: 'Seed not found for default wallet ',
-            error: e,
-            trace: StackTrace.current,
+    for (final wallet in defaultWallets) {
+      final id = Fingerprint.tryParse(wallet.masterFingerprint);
+      if (id == null) {
+        return const Err(AppStartupDefaultSecretUnreadableFailure());
+      }
+      switch (await _secrets.fetch(id)) {
+        case Ok():
+          break;
+        case Err(failure: KeystoreLockedFailure()):
+          return const Err(AppStartupKeychainLockedFailure());
+        case Err(failure: SecretNotFoundFailure()):
+          return Err(
+            AppStartupDefaultSecretMissingFailure('default secret absent: $id'),
           );
-          rethrow;
-        }
-      }),
-    );
+        case Err(:final failure):
+          log.warning('Default secret unreadable: ${failure.runtimeType}');
+          return const Err(AppStartupDefaultSecretUnreadableFailure());
+      }
+    }
     return const Ok(true);
   }
 

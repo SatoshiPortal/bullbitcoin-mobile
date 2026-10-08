@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_recipient_address_validator.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
@@ -32,6 +32,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_balance_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_scan_key_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_network_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
@@ -62,6 +63,7 @@ import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:secrets/secrets.dart' show Secrets;
 
 /// DI wiring for the Silent Payments feature:
 /// adapter (single live session) -> use cases -> facade -> presentation.
@@ -122,6 +124,7 @@ class SpLocator {
       () => BwkSpAccountRepository(
         ffi: locator<BwkSpAccountDatasource>(),
         files: locator<SpAccountFilesDatasource>(),
+        secrets: locator<Secrets>(),
       ),
     );
     locator.registerLazySingleton<SpAccountRepository>(
@@ -155,14 +158,21 @@ class SpLocator {
   }
 
   static void _registerUseCases(GetIt locator) {
-    // Singleton: its in-flight guard serializes session establishment so
-    // concurrent callers never race two live SpAccount instances.
+    locator.registerFactory<GetSpScanKeyUsecase>(
+      () => GetSpScanKeyUsecase(
+        walletRepository: locator<WalletRepository>(),
+        secrets: locator<Secrets>(),
+      ),
+    );
+    // Establishment coalesces callers and shares the lifecycle guard with
+    // create, recreate and revoke.
     locator.registerLazySingleton<EnsureSpSessionUsecase>(
       () => EnsureSpSessionUsecase(
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
-        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSpScanKeyUsecase: locator<GetSpScanKeyUsecase>(),
+        guard: locator<SpSessionGuard>(),
       ),
     );
     locator.registerFactory<GetSpWalletUsecase>(
@@ -294,17 +304,18 @@ class SpLocator {
     );
     locator.registerFactory<CreateSpWalletUsecase>(
       () => CreateSpWalletUsecase(
-        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSpScanKeyUsecase: locator<GetSpScanKeyUsecase>(),
         settingsRepository: locator<SettingsRepository>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+        guard: locator<SpSessionGuard>(),
       ),
     );
     locator.registerFactory<RecreateSpWalletUsecase>(
       () => RecreateSpWalletUsecase(
-        getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        getSpScanKeyUsecase: locator<GetSpScanKeyUsecase>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
