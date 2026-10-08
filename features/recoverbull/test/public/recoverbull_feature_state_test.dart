@@ -42,9 +42,11 @@ final class _CountingDriveDiscovery implements RecoverBullDriveDiscoveryPort {
 Future<RecoverBullFeature> _createFeature(
   String path, {
   RecoverBullDriveDiscoveryPort? driveDiscovery,
+  _EmbeddedTor? embeddedTor,
+  RecoverBullSettingsPort? settings,
 }) {
   final tor = _Tor();
-  final embedded = _EmbeddedTor();
+  final embedded = embeddedTor ?? _EmbeddedTor();
   when(() => tor.embedded).thenReturn(embedded);
   final watcher = _Watcher();
   when(watcher.execute).thenAnswer((_) => const Stream.empty());
@@ -54,7 +56,7 @@ Future<RecoverBullFeature> _createFeature(
     wallets: _Wallets(),
     seeds: _Seeds(),
     defaultWallets: _Defaults(),
-    settings: _Settings(),
+    settings: settings ?? _Settings(),
     tor: tor,
     log: const TestLogSink(),
     driveDiscovery: driveDiscovery ?? _CountingDriveDiscovery(),
@@ -193,6 +195,73 @@ void main() {
       expect(drive.sessions, 1);
     },
   );
+
+  group('key-server warm-up', () {
+    late _EmbeddedTor embedded;
+    late _Settings settings;
+
+    setUp(() {
+      embedded = _EmbeddedTor();
+      settings = _Settings();
+      when(settings.fetch).thenAnswer(
+        (_) async => const RecoverBullTorSettings(
+          useTorProxy: false,
+          torProxyPort: 9050,
+        ),
+      );
+      when(embedded.ensureReady).thenAnswer(
+        (_) async => const TorUnavailable(
+          source: TorSource.embedded,
+          failure: TorUnexpectedFailure('offline in tests'),
+        ),
+      );
+    });
+
+    test('waits for Tor once for a user with an encrypted backup', () async {
+      final feature = opened = await _createFeature(
+        path,
+        embeddedTor: embedded,
+        settings: settings,
+      );
+      await feature.markBackupStored(RecoverBullNetwork.mainnet);
+
+      await feature.warmKeyServerRoute();
+
+      verify(embedded.ensureReady).called(1);
+    });
+
+    test('stays off Tor for a user with only a testnet backup', () async {
+      final feature = opened = await _createFeature(
+        path,
+        embeddedTor: embedded,
+        settings: settings,
+      );
+      await feature.markBackupStored(RecoverBullNetwork.testnet);
+
+      await feature.warmKeyServerRoute();
+
+      verifyNever(embedded.ensureReady);
+    });
+
+    test('stays off Tor for a user without an encrypted backup', () async {
+      final feature = opened = await _createFeature(
+        path,
+        embeddedTor: embedded,
+        settings: settings,
+      );
+
+      await feature.warmKeyServerRoute();
+
+      verifyNever(embedded.ensureReady);
+      verifyNever(settings.fetch);
+    });
+
+    test('does nothing when the feature is unavailable', () async {
+      final feature = RecoverBullFeature.unavailable(log: const TestLogSink());
+
+      await expectLater(feature.warmKeyServerRoute(), completes);
+    });
+  });
 
   test(
     'flows trash the server key of a vault abandoned before any save',

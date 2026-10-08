@@ -54,12 +54,13 @@ final class RecoverBullSetup {
     locator.registerSingleton<RecoverBullLifecycle>(composed.lifecycle);
     locator.registerSingleton<RecoverBullLifecyclePort>(composed.lifecycle);
 
-    // Advisory only: neither the attempt check nor Drive discovery may delay
-    // app startup. The background composition passes false so that neither
-    // network call runs outside the foreground app.
+    // Advisory only: neither the attempt check, Drive discovery nor the
+    // key-server warm-up may delay app startup. The background composition
+    // passes false so that no network call runs outside the foreground app.
     if (startAttemptMonitoring && composed.isAvailable) {
       unawaited(checkRecoverBullOnAppLaunch(composed.attemptMonitoring));
       unawaited(composed.discoverDriveBackups());
+      unawaited(composed.warmKeyServerRoute());
     }
   }
 

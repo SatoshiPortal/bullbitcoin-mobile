@@ -34,6 +34,7 @@ import '../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../domain/usecases/store_vault_key_into_server_usecase.dart';
 import '../domain/usecases/trash_vault_key_usecase.dart';
 import '../domain/usecases/verify_decrypted_vault_usecase.dart';
+import '../domain/usecases/warm_key_server_route_usecase.dart';
 import '../domain/usecases/discover_drive_backups_usecase.dart';
 import '../domain/usecases/fetch_recoverbull_server_settings_usecase.dart';
 import '../domain/usecases/fetch_recoverbull_status_usecase.dart';
@@ -94,6 +95,7 @@ final class RecoverBullFeature {
   _recoverBackup;
   final Future<bool> Function()? _ensureTorReady;
   final Future<void> Function()? _discoverDriveBackups;
+  final Future<void> Function()? _warmKeyServerRoute;
   final CheckServerConnectionUsecase? _check;
   final RecoverBullAttemptMonitoringController _attemptMonitoring;
 
@@ -106,6 +108,7 @@ final class RecoverBullFeature {
     this._recoverBackup,
     this._ensureTorReady,
     this._discoverDriveBackups,
+    this._warmKeyServerRoute,
     this._check,
     this._attemptMonitoring,
   );
@@ -114,6 +117,7 @@ final class RecoverBullFeature {
     : this._(
         log,
         RecoverBullLifecycle(log: log),
+        null,
         null,
         null,
         null,
@@ -393,6 +397,11 @@ final class RecoverBullFeature {
       recoverBackup,
       ensureTorReady,
       discoverDriveBackups,
+      WarmKeyServerRouteUsecase(
+        repository: repository,
+        check: check,
+        log: log,
+      ).execute,
       check,
       attemptMonitoring,
     );
@@ -426,6 +435,11 @@ final class RecoverBullFeature {
   /// signs in to Google silently and lists Drive outside Tor.
   Future<void> discoverDriveBackups() async =>
       await _discoverDriveBackups?.call();
+
+  /// Sends one background health check to the key server for a user who
+  /// already has an encrypted backup, so the first onion circuit is built
+  /// before they open a flow. Does nothing otherwise, and never throws.
+  Future<void> warmKeyServerRoute() async => await _warmKeyServerRoute?.call();
 
   RecoverBullAttemptMonitoringController get attemptMonitoring =>
       _attemptMonitoring;
