@@ -66,7 +66,7 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.da
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
@@ -132,7 +132,7 @@ class SendCubit extends Cubit<SendState>
     required this._sendSpPaymentForSendUsecase,
     required this._refreshSpWalletForSendUsecase,
     required this._resolveSelectedInputsUsecase,
-    required this._validateSweepPaymentRequestUsecase,
+    required this._validateCoinControlPaymentRequestUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
        super(
@@ -142,6 +142,8 @@ class SendCubit extends Cubit<SendState>
            sendType:
                initialSweepOutpoints.isEmpty && initialSelectedOutpoints.isEmpty
                ? SendType.lightning
+               : _wallet?.isLiquid == true
+               ? SendType.liquid
                : SendType.bitcoin,
            sendMax: initialSweepOutpoints.isNotEmpty,
            loadingBestWallet:
@@ -213,7 +215,8 @@ class SendCubit extends Cubit<SendState>
   SpRecipient? _spRecipient;
   SpTxDraft? _spDraft;
   final ResolveSelectedInputsUsecase _resolveSelectedInputsUsecase;
-  final ValidateSweepPaymentRequestUsecase _validateSweepPaymentRequestUsecase;
+  final ValidateCoinControlPaymentRequestUsecase
+  _validateCoinControlPaymentRequestUsecase;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
@@ -262,6 +265,7 @@ class SendCubit extends Cubit<SendState>
     required String address,
     required int? amountSat,
     required bool drain,
+    Set<Outpoint>? selectedInputs,
   }) async {
     if (fee is RelativeFee) return Ok(fee);
     if (fee is! AbsoluteFee) {
@@ -275,6 +279,7 @@ class SendCubit extends Cubit<SendState>
       amountSat: amountSat,
       feeRate: const RelativeFee(25),
       drain: drain,
+      selectedInputs: selectedInputs,
     );
     final vsize = await _calculateLiquidPsetSizeUsecase.execute(
       pset: placeholderPset,
@@ -399,7 +404,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> _initializeSweep(Set<Outpoint> outpoints) async {
     final wallet = _wallet;
-    if (wallet == null || !wallet.isBitcoin) {
+    if (wallet == null) {
       emit(
         state.copyWith(
           sweepOutpoints: outpoints,
@@ -428,7 +433,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> _initializeSelectedInputs() async {
     final wallet = _wallet;
-    if (wallet == null || !wallet.isBitcoin) {
+    if (wallet == null) {
       emit(
         state.copyWith(
           sendType: SendType.bitcoin,
@@ -681,7 +686,11 @@ class SendCubit extends Cubit<SendState>
 
   Future<bool> addRecipient() async {
     final inputGeneration = _paymentRequestInputGeneration;
-    if (state.selectedInputsUnavailable) return false;
+    if (state.selectedInputsUnavailable ||
+        (state.usesSelectedInputsOnly &&
+            state.selectedWallet?.isLiquid == true)) {
+      return false;
+    }
     emit(state.copyWith(loadingBestWallet: true, failure: null));
     final paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
     if (paymentRequest == null) return false;
@@ -1062,6 +1071,19 @@ class SendCubit extends Cubit<SendState>
         return;
       }
       confirmedRequest = paymentRequest;
+      if (state.usesSelectedInputsOnly &&
+          !state.isSweep &&
+          state.selectedWallet?.isLiquid == true) {
+        final validation = _validateCoinControlPaymentRequestUsecase.execute(
+          wallet: state.selectedBitcoinWallet!,
+          paymentRequest: paymentRequest,
+          isSweep: state.isSweep,
+        );
+        if (validation case Err(:final failure)) {
+          emit(state.copyWith(loadingBestWallet: false, failure: failure));
+          return;
+        }
+      }
       if (state.supportsRecipientList &&
           state.recipientDrafts.any((recipient) => !recipient.isValid)) {
         emit(
@@ -1084,7 +1106,7 @@ class SendCubit extends Cubit<SendState>
           );
           return;
         }
-        switch (_validateSweepPaymentRequestUsecase.execute(
+        switch (_validateCoinControlPaymentRequestUsecase.execute(
           wallet: wallet,
           paymentRequest: paymentRequest,
         )) {
@@ -1097,7 +1119,10 @@ class SendCubit extends Cubit<SendState>
         await _setSelectedWallet(wallet, manual: true);
         if (isStale()) return;
         emit(
-          state.copyWith(sendType: SendType.bitcoin, loadingBestWallet: false),
+          state.copyWith(
+            sendType: wallet.isLiquid ? SendType.liquid : SendType.bitcoin,
+            loadingBestWallet: false,
+          ),
         );
         await loadFees(inputGeneration: inputGeneration);
         if (isStale()) return;
@@ -1437,10 +1462,7 @@ class SendCubit extends Cubit<SendState>
       return false;
     }
     final paymentRequest = state.paymentRequest!;
-    // D7: frozen coins are never spendable, so every balance check compares
-    // against the spendable balance (wallet balance − frozen total), not the
-    // raw wallet balance. Degrades to the full balance on Liquid / before
-    // utxos load (nothing frozen there).
+    // Balance checks exclude frozen coins once UTXOs have loaded.
     final spendableSat = state.spendableBalanceSat;
     switch (paymentRequest) {
       case Bolt11PaymentRequest _:
@@ -1947,6 +1969,7 @@ class SendCubit extends Cubit<SendState>
       // consolidating.
       final consolidationRequired =
           wallet.isLiquid &&
+          !state.usesSelectedInputsOnly &&
           await _checkLiquidConsolidationUsecase.execute(walletId: wallet.id);
       if (isStale()) return;
       // Resolve the persisted intent against fresh wallet data. On failure the
@@ -2444,6 +2467,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           buildingTransaction: true,
           bitcoinAbsoluteFeesSat: null,
+          liquidAbsoluteFees: null,
           recipientAmountsSat: state.usesRecipientList
               ? const []
               : state.recipientAmountsSat,
@@ -2489,6 +2513,9 @@ class SendCubit extends Cubit<SendState>
           address: address,
           amountSat: amount,
           drain: drain,
+          selectedInputs: state.usesSelectedInputsOnly
+              ? state.requiredInputOutpoints
+              : null,
         );
         if (isStale()) return false;
         final RelativeFee liquidFeeRate;
@@ -2505,6 +2532,9 @@ class SendCubit extends Cubit<SendState>
           feeRate: liquidFeeRate,
           amountSat: amount,
           drain: drain,
+          selectedInputs: state.usesSelectedInputsOnly
+              ? state.requiredInputOutpoints
+              : null,
         );
         if (isStale()) return false;
         if (state.lightningOrder case final order?) {
@@ -3042,7 +3072,7 @@ class SendCubit extends Cubit<SendState>
       // SP diverts in onConfirmTransactionClicked, so this path is bitcoin
       // and liquid only and the entity is always there.
       final wallet = state.selectedBitcoinWallet!;
-      if (!await _validateSelectedBitcoinInputsForBroadcast(wallet)) return;
+      if (!await _validateSelectedInputsForBroadcast(wallet)) return;
       final label = state.label;
       final chainSwap = state.chainSwap;
 
@@ -3199,8 +3229,8 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<bool> _validateSelectedBitcoinInputsForBroadcast(Wallet wallet) async {
-    if (wallet.isLiquid || !state.usesSelectedInputsOnly) return true;
+  Future<bool> _validateSelectedInputsForBroadcast(Wallet wallet) async {
+    if (!state.usesSelectedInputsOnly) return true;
     if (state.selectedInputsUnavailable) {
       emit(
         state.copyWith(
@@ -3213,6 +3243,24 @@ class SendCubit extends Cubit<SendState>
       return false;
     }
     try {
+      if (wallet.isLiquid) {
+        final availableUtxos = await _getWalletUtxosUsecase.execute(
+          walletId: wallet.id,
+        );
+        final result = await _resolveSelectedInputsUsecase.execute(
+          outpoints: state.requiredInputOutpoints,
+          availableUtxos: availableUtxos,
+        );
+        if (result is Ok) return true;
+        _invalidateSignedTransaction();
+        emit(
+          state.copyWith(
+            failure: const SendSelectedCoinsUnavailableFailure(),
+            broadcastingTransaction: false,
+          ),
+        );
+        return false;
+      }
       await _validateBitcoinSelectionUsecase.execute(
         walletId: wallet.id,
         selectedInputs: state.selectedUtxos,
