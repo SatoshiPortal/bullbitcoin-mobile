@@ -261,22 +261,12 @@ class FakeSpAccountRepository
     return const Ok<void, SpFailure>(null);
   }
 
-  /// How many times the listener was restarted, and a switch to model a
-  /// restart that fails (a dead socket, DNS down).
+  /// How many times the listener was restarted.
   int restartElectrumCount = 0;
-  bool restartElectrumShouldFail = false;
-
-  /// Set to hold [restartElectrum] open, so a test can suspend a sync tick
-  /// mid-flight and fire a second one against it.
-  Completer<void>? restartElectrumGate;
 
   @override
   Future<Result<void, SpFailure>> restartElectrum() async {
     restartElectrumCount++;
-    await restartElectrumGate?.future;
-    if (restartElectrumShouldFail) {
-      return const Err(SpUnexpected('restart failed'));
-    }
     return const Ok(null);
   }
 

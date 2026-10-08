@@ -93,12 +93,9 @@ class SpLocator {
     });
   }
 
-  // Wire the SP electrum-listener resync into the core sync coordinator here,
-  // so core never imports the SP feature (rule #7). The coordinator is
-  // foreground-only, so it may be absent (e.g. the background isolate).
   // The sync tick usually runs before the header store reports a tip, so the
   // scan policy has to be re-judged once it lands. Foreground-only, like the
-  // coordinator wiring above.
+  // coordinator, which is absent in the background isolate.
   static void _startTipWatcher(GetIt locator) {
     if (!locator.isRegistered<SyncCoordinator>()) return;
     locator<SpTipWatcher>().start();
@@ -223,7 +220,6 @@ class SpLocator {
         repository: locator<SpAccountRepository>(),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
-        resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
       ),
