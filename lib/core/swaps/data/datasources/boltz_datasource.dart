@@ -15,6 +15,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
+import 'package:meta/meta.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
@@ -24,6 +25,20 @@ typedef BoltzWebSocketFactory =
       void Function()? onDone,
       void Function(Object error)? onError,
     });
+
+/// Reports the swaps a boltz restore scan returned but could not rebuild.
+///
+/// Only the swap kind and the count reach the log: a skipped entry carries a
+/// swap id and a library error string, neither of which belongs in a log.
+@visibleForTesting
+void logSkippedBoltzRestores(
+  LogSink sink, {
+  required String kind,
+  required List<SkippedRestoreSwap> skipped,
+}) {
+  if (skipped.isEmpty) return;
+  sink.warning('boltz.restore.skipped kind=$kind count=${skipped.length}');
+}
 
 BoltzWebSocket _createBoltzWebSocket(
   String boltzUrl, {
@@ -272,31 +287,43 @@ class BoltzDatasource {
   Future<List<BtcLnSwap>> restoreBtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
-  }) => boltz.restoreLnBtcSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
-    electrumUrl: electrumUrl,
-    boltzUrl: _httpsUrl,
-  );
+  }) async {
+    final restored = await boltz.restoreLnBtcSwaps(
+      swapMasterKey: swapMasterKey.toBoltz(),
+      electrumUrl: electrumUrl,
+      boltzUrl: _httpsUrl,
+    );
+    logSkippedBoltzRestores(log, kind: 'ln_btc', skipped: restored.skipped);
+    return restored.swaps;
+  }
 
   Future<List<LbtcLnSwap>> restoreLbtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
-  }) => boltz.restoreLnLbtcSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
-    electrumUrl: electrumUrl,
-    boltzUrl: _httpsUrl,
-  );
+  }) async {
+    final restored = await boltz.restoreLnLbtcSwaps(
+      swapMasterKey: swapMasterKey.toBoltz(),
+      electrumUrl: electrumUrl,
+      boltzUrl: _httpsUrl,
+    );
+    logSkippedBoltzRestores(log, kind: 'ln_lbtc', skipped: restored.skipped);
+    return restored.swaps;
+  }
 
   Future<List<ChainSwap>> restoreChainSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-  }) => boltz.restoreChainSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
-    btcElectrumUrl: btcElectrumUrl,
-    lbtcElectrumUrl: lbtcElectrumUrl,
-    boltzUrl: _httpsUrl,
-  );
+  }) async {
+    final restored = await boltz.restoreChainSwaps(
+      swapMasterKey: swapMasterKey.toBoltz(),
+      btcElectrumUrl: btcElectrumUrl,
+      lbtcElectrumUrl: lbtcElectrumUrl,
+      boltzUrl: _httpsUrl,
+    );
+    logSkippedBoltzRestores(log, kind: 'chain', skipped: restored.skipped);
+    return restored.swaps;
+  }
 
   // Highest swap-key index boltz has on record for this wallet's xpub, or -1
   // when it knows of none.
