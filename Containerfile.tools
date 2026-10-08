@@ -6,9 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Freeze APT resolution, including transitive dependencies and the JDK.
 # Updating this date is an explicit toolchain change requiring two clean builds.
+# The base has no CA bundle yet. APT authenticates the snapshot via signed
+# InRelease metadata and package hashes before installing ca-certificates.
 ARG DEBIAN_SNAPSHOT="20261008T000000Z"
 RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/* && \
-    printf 'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/%s/ trixie main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian/%s/ trixie-updates main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/%s/ trixie-security main\n' \
+    printf 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/%s/ trixie main\ndeb [check-valid-until=no] http://snapshot.debian.org/archive/debian/%s/ trixie-updates main\ndeb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/%s/ trixie-security main\n' \
       "$DEBIAN_SNAPSHOT" "$DEBIAN_SNAPSHOT" "$DEBIAN_SNAPSHOT" > /etc/apt/sources.list
 
 ARG USERNAME="bull"
