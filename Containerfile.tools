@@ -4,6 +4,13 @@ FROM --platform=linux/amd64 debian:trixie@sha256:fe7312b5f05bf5f43fad76bcd894564
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Freeze APT resolution, including transitive dependencies and the JDK.
+# Updating this date is an explicit toolchain change requiring two clean builds.
+ARG DEBIAN_SNAPSHOT="20261008T000000Z"
+RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/* && \
+    printf 'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/%s/ trixie main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian/%s/ trixie-updates main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/%s/ trixie-security main\n' \
+      "$DEBIAN_SNAPSHOT" "$DEBIAN_SNAPSHOT" "$DEBIAN_SNAPSHOT" > /etc/apt/sources.list
+
 ARG USERNAME="bull"
 ENV USER=$USERNAME
 # IMPORTANT: these ARG defaults are the single source of truth ONLY for the dev
@@ -14,6 +21,8 @@ ENV USER=$USERNAME
 # and the reproducible release build never diverge on toolchain versions.
 ARG FVM_VERSION="4.1.2"
 ARG FLUTTER_VERSION="3.44.9"
+# Review this commit pin together with FLUTTER_VERSION / .fvmrc.
+ARG FLUTTER_REVISION="6b182d2c7585eba26d4edce0f97630effd256c33"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)
@@ -173,6 +182,12 @@ RUN rustup toolchain install ${BDK_RUST_VERSION}
 RUN rustup component add --toolchain ${BDK_RUST_VERSION} clippy rustfmt
 RUN rustup target add --toolchain ${BDK_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
 
+# Payjoin has its own native hook toolchain; do not couple it to BDK updates.
+ARG PAYJOIN_RUST_VERSION="1.85.1"
+RUN rustup toolchain install ${PAYJOIN_RUST_VERSION} && \
+    rustup component add --toolchain ${PAYJOIN_RUST_VERSION} clippy rustfmt && \
+    rustup target add --toolchain ${PAYJOIN_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
 # Belt-and-suspenders verification: abort if the installed Rust does not match
 # EXPECTED_RUST_VERSION when provided.
 ARG EXPECTED_RUST_VERSION=""
@@ -211,6 +226,7 @@ ENV PATH="/home/$USER/fvm/bin:${PATH}"
 ENV CI=true
 ENV FVM_USE_GIT_CACHE=false
 RUN fvm install ${FLUTTER_VERSION} --verbose --no-setup
+RUN test "$(git -C /home/$USER/fvm/versions/${FLUTTER_VERSION} rev-parse HEAD)" = "$FLUTTER_REVISION"
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 
@@ -238,10 +254,11 @@ USER $USER
 
 # Install Android SDK components
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
+# Freeze every Android component to a versioned archive with a reviewed SHA256.
+# In particular, sdkmanager's platform/platform-tools IDs allow revision drift.
+COPY --chown=$USER:$USER reproducibility/install-android-pins.sh /tmp/install-android-pins.sh
+RUN bash /tmp/install-android-pins.sh "$ANDROID_HOME" "$ANDROID_API_LEVEL" "$ANDROID_BUILD_TOOLS" "$ANDROID_NDK" && \
+    rm /tmp/install-android-pins.sh
 
 # AGP resolves an NDK/CMake version per-subproject: flutter_zxing pins NDK
 # 27.0.12077973 for its vendored C++ build, and any plugin without an explicit
@@ -253,9 +270,7 @@ RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
 # Keep these two NDK versions in sync with `android.ndkVersion` overrides in
 # the plugin dependency tree and the Flutter Gradle plugin's default per
 # .fvmrc; keep CMake in sync with whatever that NDK/AGP combination requests.
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;27.0.12077973"
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;28.2.13676358"
-RUN sdkmanager --sdk_root=${ANDROID_HOME} "cmake;3.22.1"
+# These three additional archives are installed by install-android-pins.sh above.
 
 # Pre-cache Flutter engine artifacts for the platforms we build for.
 RUN fvm flutter precache --android --linux
