@@ -23,6 +23,8 @@ extension AnnouncementL10n on Announcement {
     AnnouncementId.recoverBullUnavailable => RecoverBullLocalizations.of(
       context,
     ).recoverbullAttemptMonitoringUnavailableTitle,
+    AnnouncementId.legacyEncryptedVault =>
+      context.loc.announcementLegacyEncryptedVaultTitle,
   };
 
   String description(BuildContext context) => switch (id) {
@@ -37,6 +39,8 @@ extension AnnouncementL10n on Announcement {
     AnnouncementId.recoverBullUnavailable => RecoverBullLocalizations.of(
       context,
     ).recoverbullAttemptMonitoringUnavailableUnknownDuration,
+    AnnouncementId.legacyEncryptedVault =>
+      context.loc.announcementLegacyEncryptedVaultDescription,
   };
 
   String _targetedActivityTitle(BuildContext context, Announcement value) {
