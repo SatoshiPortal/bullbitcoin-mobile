@@ -527,6 +527,60 @@ void main() {
       });
     });
 
+    // A long microdescriptor fetch advances its counters without moving the
+    // fraction; that is still a bootstrap worth waiting for.
+    test('counts a new bootstrap stage as progress', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+        EmbeddedTorConnecting fetching(int done) => EmbeddedTorConnecting(
+          progress: 0.3,
+          transport: TorTransport.direct,
+          detail: TorBootstrapDetail(
+            stage: '30%: directory is fetching microdescriptors ($done/300)',
+          ),
+        );
+
+        async.elapse(const Duration(seconds: 10));
+        embedded.events.add(fetching(10));
+        async.elapse(const Duration(seconds: 25));
+        embedded.events.add(fetching(120));
+        async.elapse(const Duration(seconds: 15));
+        // Repeating the same stage is not progress.
+        embedded.events.add(fetching(120));
+        async.elapse(const Duration(seconds: 14));
+        expect(embedded.startedTransports, [TorTransport.direct]);
+
+        async.elapse(const Duration(seconds: 1));
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('does not count a blocked bootstrap restating its stage', () {
+      fakeAsync((async) {
+        final repository = startAutomatic(async);
+        EmbeddedTorConnecting stuck(int attempt) => EmbeddedTorConnecting(
+          progress: 0.3,
+          transport: TorTransport.direct,
+          diagnostic: TorDiagnostic.cantBootstrap,
+          detail: TorBootstrapDetail(
+            blockage: 'Directory download failed ($attempt attempts)',
+            stage: 'Stuck at 30%: directory download failed ($attempt)',
+          ),
+        );
+
+        embedded.events.add(stuck(1));
+        async.elapse(const Duration(seconds: 20));
+        embedded.events.add(stuck(2));
+        async.elapse(const Duration(seconds: 10));
+
+        expect(embedded.startedTransports.last, TorTransport.snowflake);
+        repository.close().ignore();
+        async.flushMicrotasks();
+      });
+    });
+
     test('hands over at once when the blockage suggests censorship', () {
       fakeAsync((async) {
         final repository = startAutomatic(async);

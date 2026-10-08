@@ -200,15 +200,22 @@ final class OnionTorBackend implements EmbeddedTorPort {
     final blockage = status.blockage;
     final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
     final message = blockage?.message.trim();
+    // A blockage that maps to no diagnostic is not a fault, and its message
+    // would put a bogus explanation on screen.
+    final blockageDetail =
+        diagnostic == null || message == null || message.isEmpty
+        ? null
+        : message;
+    // Arti's own wording, for display only: never branch on it.
+    final stage = status.stage.trim();
+    final stageDetail = stage.isEmpty ? null : stage;
     return EmbeddedTorConnecting(
       progress: status.fraction,
       transport: transport,
       diagnostic: diagnostic,
-      // A blockage that maps to no diagnostic is not a fault, and its message
-      // would put a bogus explanation on screen.
-      detail: diagnostic == null || message == null || message.isEmpty
+      detail: blockageDetail == null && stageDetail == null
           ? null
-          : TorBootstrapDetail(blockage: message),
+          : TorBootstrapDetail(blockage: blockageDetail, stage: stageDetail),
     );
   }
 

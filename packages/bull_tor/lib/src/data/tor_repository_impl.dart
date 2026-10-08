@@ -274,10 +274,11 @@ final class TorRepositoryImpl implements TorRepository {
 
   /// Starts [transport] while watching whether it is worth waiting for.
   ///
-  /// Throws [_AbandonedAttempt] as soon as the bootstrap stops moving for
-  /// [_directStallLimit], reports a blockage that suggests censorship, or runs
-  /// past [_directTimeLimit]. Leaving the abandoned start running would hold
-  /// the backend's serialized lifecycle, so the caller stops it.
+  /// Throws [_AbandonedAttempt] as soon as the bootstrap stops moving — no
+  /// higher fraction and no new stage — for [_directStallLimit], reports a
+  /// blockage that suggests censorship, or runs past [_directTimeLimit].
+  /// Leaving the abandoned start running would hold the backend's serialized
+  /// lifecycle, so the caller stops it.
   ///
   /// While arti blames the device itself (offline, wrong clock) the stall
   /// clock is suspended, and if that is still the case at the time limit the
@@ -295,6 +296,7 @@ final class TorRepositoryImpl implements TorRepository {
     TorDiagnostic? diagnostic;
     TorBootstrapDetail? detail;
     var bestProgress = double.negativeInfinity;
+    String? lastStage;
     Timer? stall = Timer(_directStallLimit, stalled);
     final limit = Timer(_directTimeLimit, () {
       final local = diagnostic;
@@ -324,7 +326,16 @@ final class TorRepositoryImpl implements TorRepository {
         stall = null;
         return;
       }
-      if (event.progress <= bestProgress && stall != null) return;
+      // A long directory fetch advances its counters in the stage text
+      // without moving the fraction; that is progress too. A blocked
+      // bootstrap's stage only restates the blockage, so it does not count.
+      final stage = event.detail?.stage;
+      final stageMoved =
+          event.diagnostic == null && stage != null && stage != lastStage;
+      lastStage = stage;
+      if (event.progress <= bestProgress && !stageMoved && stall != null) {
+        return;
+      }
       bestProgress = max(bestProgress, event.progress);
       stall?.cancel();
       stall = Timer(_directStallLimit, stalled);
