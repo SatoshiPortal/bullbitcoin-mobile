@@ -30,4 +30,9 @@ class LabelsConverterAdapter implements LabelsConverterPort {
         return FormattedLabelsBIP329(jsonl: jsonl);
     }
   }
+
+  @override
+  int maxImportBytes(LabelFormat format) => switch (format) {
+    LabelFormat.bip329 => Bip329LabelsCodec.maxImportBytes,
+  };
 }

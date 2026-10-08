@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -25,7 +25,7 @@ class Bip329LabelsPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => Bip329LabelsCubit(
         exportLabelsUsecase: locator<ExportLabelsUsecase>(),
-        importLabelsUsecase: locator<ImportLabelsUsecase>(),
+        importLabelsFromFileUsecase: locator<ImportLabelsFromFileUsecase>(),
       ),
       child: Scaffold(
         appBar: AppBar(

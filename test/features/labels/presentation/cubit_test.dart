@@ -1,14 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/presentation/cubit.dart';
-import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
@@ -17,43 +12,45 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockExport extends Mock implements ExportLabelsUsecase {}
 
-class _MockImport extends Mock implements ImportLabelsUsecase {}
+class _MockImportFromFile extends Mock implements ImportLabelsFromFileUsecase {}
 
 class _MockFilePicker extends Mock implements FilePicker {}
 
+const _path = '/tmp/picked/labels.jsonl';
+
 void main() {
   late _MockExport export;
-  late _MockImport import;
+  late _MockImportFromFile importFromFile;
   late _MockFilePicker picker;
 
   setUp(() {
     export = _MockExport();
-    import = _MockImport();
+    importFromFile = _MockImportFromFile();
     picker = _MockFilePicker();
-    registerFallbackValue(FormattedLabelsBIP329(jsonl: ''));
     registerFallbackValue(LabelFormat.bip329);
+    registerFallbackValue(FileType.any);
   });
 
   Bip329LabelsCubit buildCubit() => Bip329LabelsCubit(
     exportLabelsUsecase: export,
-    importLabelsUsecase: import,
+    importLabelsFromFileUsecase: importFromFile,
     filePicker: picker,
   );
 
-  void pickReturns(FilePickerResult? result) =>
-      when(() => picker.pickFiles()).thenAnswer((_) async => result);
+  void pickReturns(FilePickerResult? result) => when(
+    () => picker.pickFiles(type: any(named: 'type')),
+  ).thenAnswer((_) async => result);
 
-  Future<PlatformFile> writeFile(List<int> bytes) async {
-    final dir = await Directory.systemTemp.createTemp('labels_test');
-    addTearDown(() => dir.delete(recursive: true));
-    final file = File('${dir.path}/labels.jsonl');
-    await file.writeAsBytes(bytes);
-    return PlatformFile(
-      name: 'labels.jsonl',
-      path: file.path,
-      size: bytes.length,
-    );
-  }
+  FilePickerResult picked({String? path = _path}) => FilePickerResult([
+    PlatformFile(name: 'labels.jsonl', path: path, size: 10),
+  ]);
+
+  void importReturns(Result<int, LabelFailure> result) => when(
+    () => importFromFile.execute(
+      format: any(named: 'format'),
+      path: any(named: 'path'),
+    ),
+  ).thenAnswer((_) async => result);
 
   group('import from file', () {
     test('opens the picker without a type filter', () async {
@@ -65,7 +62,7 @@ void main() {
 
       await cubit.importLabelsFromFile(LabelFormat.bip329);
 
-      verify(() => picker.pickFiles()).called(1);
+      verify(() => picker.pickFiles(type: FileType.any)).called(1);
     });
 
     test('a dismissed picker is not a failure', () async {
@@ -76,12 +73,17 @@ void main() {
       await cubit.importLabelsFromFile(LabelFormat.bip329);
 
       expect(cubit.state, const Bip329LabelsState.initial());
-      verifyNever(() => import.call(any()));
+      verifyNever(
+        () => importFromFile.execute(
+          format: any(named: 'format'),
+          path: any(named: 'path'),
+        ),
+      );
     });
 
     test('a picker that throws is reported, not swallowed', () async {
       when(
-        () => picker.pickFiles(),
+        () => picker.pickFiles(type: any(named: 'type')),
       ).thenThrow(PlatformException(code: 'Unsupported file extension'));
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -94,35 +96,39 @@ void main() {
       );
     });
 
-    test('an oversized file is reported without being read', () async {
-      pickReturns(
-        FilePickerResult([
-          PlatformFile(
-            name: 'big.jsonl',
-            path: '/does/not/exist',
-            size: Bip329LabelsCodec.maxImportBytes + 1,
-          ),
-        ]),
-      );
+    test('a picked file without a path is reported', () async {
+      pickReturns(picked(path: null));
       final cubit = buildCubit();
       addTearDown(cubit.close);
 
       await cubit.importLabelsFromFile(LabelFormat.bip329);
 
-      final failure = (cubit.state as Bip329LabelsFailureState).failure;
       expect(
-        (failure as LabelsFileTooLargeFailure).maxBytes,
-        Bip329LabelsCodec.maxImportBytes,
+        (cubit.state as Bip329LabelsFailureState).failure,
+        isA<LabelUnexpectedFailure>(),
       );
-      verifyNever(() => import.call(any()));
     });
 
-    test('a file that is not text reads as the wrong file', () async {
-      pickReturns(
-        FilePickerResult([
-          await writeFile([0xff, 0xfe, 0xfd]),
-        ]),
-      );
+    test(
+      'hands the picked path to the use-case and reports the count',
+      () async {
+        pickReturns(picked());
+        importReturns(const Ok(3));
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+
+        await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+        verify(
+          () => importFromFile.execute(format: LabelFormat.bip329, path: _path),
+        ).called(1);
+        expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 3);
+      },
+    );
+
+    test('forwards the specific failure rather than collapsing it', () async {
+      pickReturns(picked());
+      importReturns(const Err(LabelsFileUnreadableFailure()));
       final cubit = buildCubit();
       addTearDown(cubit.close);
 
@@ -132,50 +138,6 @@ void main() {
         (cubit.state as Bip329LabelsFailureState).failure,
         isA<LabelsFileUnreadableFailure>(),
       );
-      verifyNever(() => import.call(any()));
-    });
-
-    test('imports the picked file content', () async {
-      const jsonl = '{"type":"tx","ref":"abc","label":"rent"}';
-      pickReturns(FilePickerResult([await writeFile(utf8.encode(jsonl))]));
-      when(() => import.call(any())).thenAnswer((_) async => const Ok(1));
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-
-      await cubit.importLabelsFromFile(LabelFormat.bip329);
-
-      final passed =
-          verify(() => import.call(captureAny())).captured.single
-              as FormattedLabelsBIP329;
-      expect(passed.jsonl, jsonl);
-      expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 1);
-    });
-  });
-
-  group('import', () {
-    test('forwards the specific failure rather than collapsing it', () async {
-      // The cubit used to catch a thrown string and emit
-      // LabelUnexpectedFailure, so every bad file read "Oops".
-      when(
-        () => import.call(any()),
-      ).thenAnswer((_) async => const Err(LabelsFileUnreadableFailure()));
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-
-      await cubit.importLabels(format: LabelFormat.bip329, data: 'nonsense');
-
-      final state = cubit.state as Bip329LabelsFailureState;
-      expect(state.failure, isA<LabelsFileUnreadableFailure>());
-    });
-
-    test('reports the count on success', () async {
-      when(() => import.call(any())).thenAnswer((_) async => const Ok(7));
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-
-      await cubit.importLabels(format: LabelFormat.bip329, data: '{}');
-
-      expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 7);
     });
   });
 
