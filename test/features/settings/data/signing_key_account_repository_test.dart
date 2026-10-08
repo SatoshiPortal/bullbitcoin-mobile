@@ -1,4 +1,11 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/core/seed/data/secrets_seed_verification.dart';
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
+import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:bs58check/bs58check.dart' as base58;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -68,7 +75,7 @@ class _Wallets extends Fake implements WalletRepository {
   List<Wallet> wallets = [];
   bool fail = false;
   @override
-  Future<List<Wallet>> getWallets({
+  Future<Result<List<Wallet>, WalletFailure>> getWallets({
     Environment? environment,
     bool? onlyDefaults,
     bool? onlyBitcoin,
@@ -77,8 +84,8 @@ class _Wallets extends Fake implements WalletRepository {
   }) async {
     expect(environment, Environment.mainnet);
     expect(sync, isFalse);
-    if (fail) throw Exception('unavailable');
-    return wallets;
+    if (fail) return const Err(WalletStorageFailure('unavailable'));
+    return Ok(wallets);
   }
 }
 
@@ -178,7 +185,7 @@ void main() {
       usecase.execute(seedFingerprint: 'DEADBEEF', coinType: 0);
 
   test(
-    'merges memo, named wallet and sparse legacy rows in account order',
+    'merges labels, wallets and reserved accounts in account order',
     () async {
       labels.labels = [_memo(2), _memo(1)];
       usages.usages = [_usage(0), _usage(2)];
@@ -200,11 +207,13 @@ void main() {
   );
 
   test(
-    'ignores an unverified descriptor origin when reserving accounts',
+    'ignores unverified descriptor and label origins when reserving accounts',
     () async {
       usages.usages = [_usage(0), _usage(1)];
       wallets.wallets = [_wallet(0), _wallet(1)];
       verification.rejectedXpubs.add('wallet-xpub-0');
+      labels.labels = [_memo(2)];
+      verification.rejectedXpubs.add('xpub-2');
       final rows =
           (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
               .value;
@@ -263,33 +272,75 @@ void main() {
   });
 
   test(
-    'restored memos rebuild empty local reservations and survive restart',
+    'restored memos reserve verified accounts across label export and restart',
     () async {
+      FakeSecureStoragePlatform().install();
+      final secrets = Secrets(scratchDirectory: () async => '');
+      final secret =
+          (await secrets.import(words: [...List.filled(11, 'abandon'), 'about'])
+                  as Ok<Secret, SecretFailure>)
+              .value;
+      final verification = SecretsSeedVerification(secrets);
+      final source = <LabelEntity>[];
+      for (final account in [0, 1, 2]) {
+        final key =
+            (await secret.derive.account(
+                      derivationPath: "m/48'/0'/$account'/2'",
+                      network: BitcoinNetwork.mainnet,
+                    )
+                    as Ok<PublicAccountKey, SecretFailure>)
+                .value;
+        final bytes = base58.decode(key.xpub);
+        if (account == 2) {
+          bytes[45] = 2;
+          bytes.fillRange(46, 78, 0);
+        }
+        source.add(
+          LabelEntity(
+            id: account,
+            type: LabelType.extendedPublicKey,
+            label: 'Wallet $account',
+            reference: base58.encode(bytes),
+            origin: "[${secret.id.hex}/48'/0'/$account'/2']",
+          ),
+        );
+      }
+      final codec = Bip329LabelsCodec();
+      labels.labels = codec.decode(codec.encode(source)).labels.indexed.map((
+        entry,
+      ) {
+        final (index, label) = entry;
+        return Label(
+          id: index,
+          type: label.type,
+          reference: label.reference,
+          label: label.label,
+          origin: label.origin,
+        );
+      }).toList();
       final storage = _Storage();
       Bip48AccountRepository repository() => Bip48AccountRepositoryImpl(
         Bip48AccountDatasource(storage),
         usages,
-        _SeedVerification(),
+        verification,
       );
-      final repositoryBeforeRestart = repository();
-      labels.labels = [_memo(1), _memo(0)];
       usecase = SyncUsedSigningKeyAccountsUsecase(
         SigningKeyAccountRepositoryImpl(
           labels: labels,
-          accounts: repositoryBeforeRestart,
+          accounts: repository(),
           usages: usages,
           wallets: wallets,
           settings: _Settings(),
           seedVerification: verification,
         ),
       );
-      expect(storage.values, isEmpty);
       final result =
-          (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
+          (await usecase.execute(seedFingerprint: secret.id.hex, coinType: 0)
+                  as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
               .value;
       expect(result.map((a) => a.account), [0, 1]);
       final next = await repository().nextAvailable(
-        seedFingerprint: 'deadbeef',
+        seedFingerprint: secret.id.hex,
         coinType: 0,
       );
       expect((next as Ok).value, 2);

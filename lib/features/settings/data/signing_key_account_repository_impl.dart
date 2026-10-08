@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -56,12 +57,18 @@ class SigningKeyAccountRepositoryImpl implements SigningKeyAccountRepository {
                     seedFingerprint.toLowerCase(),
           )
           .toList();
-      final wallets = usages.isEmpty
-          ? const <Wallet>[]
-          : await _wallets.getWallets(
-              environment: (await _settings.fetch()).environment,
-              onlyBitcoin: true,
-            );
+      List<Wallet> wallets = const [];
+      if (usages.isNotEmpty) {
+        switch (await _wallets.getWallets(
+          environment: (await _settings.fetch()).environment,
+          onlyBitcoin: true,
+        )) {
+          case Ok(:final value):
+            wallets = value;
+          case Err():
+            return const Err(SettingsSigningKeyExportFailure());
+        }
+      }
       for (final usage in usages) {
         if (usage.localSeedFingerprint == null &&
             !await _seedVerification.matchesXpubs(
@@ -98,7 +105,19 @@ class SigningKeyAccountRepositoryImpl implements SigningKeyAccountRepository {
           seedFingerprint: seedFingerprint,
           coinType: coinType,
         );
-        if (account != null) {
+        if (account != null &&
+            await _seedVerification.matchesXpubs(
+              fingerprint: seedFingerprint,
+              keys: [
+                (
+                  derivationPath: Bip48Derivation.path(
+                    coinType: coinType,
+                    account: account,
+                  ),
+                  xpub: label.reference,
+                ),
+              ],
+            )) {
           rows[account] = UsedSigningKeyAccount(
             account: account,
             description: label.label,
