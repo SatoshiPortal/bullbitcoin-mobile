@@ -124,6 +124,14 @@ class TorProxyWidget extends StatelessWidget {
           const Gap(16),
           TorConnectionStatusCard(
             connection: torState.embeddedConnection,
+            onRetry: () =>
+                context.read<TorSettingsCubit>().retryEmbedded().ignore(),
+            onUseSnowflake: torState.transportMode == TorTransportMode.snowflake
+                ? null
+                : () => context
+                      .read<TorSettingsCubit>()
+                      .updateTransportMode(TorTransportMode.snowflake)
+                      .ignore(),
             routeLabel: activeTransport == null
                 ? null
                 : context.loc.torSettingsActiveTransport(

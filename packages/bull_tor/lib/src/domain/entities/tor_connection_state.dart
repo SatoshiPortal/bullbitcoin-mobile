@@ -12,6 +12,30 @@ enum TorDiagnostic {
 
   bool get suggestsCensorship =>
       this == TorDiagnostic.filtering || this == TorDiagnostic.cantReachTor;
+
+  /// A problem on the device itself, which no other transport can route
+  /// around: switching to Snowflake would fail the same way.
+  bool get blocksEveryTransport =>
+      this == TorDiagnostic.offline || this == TorDiagnostic.clockSkewed;
+}
+
+/// What arti says about a bootstrap beyond its progress fraction.
+///
+/// Arti's own English wording, shown as a caption and reported in support
+/// diagnostics. It is fixed library text plus, for a skewed clock, the skew,
+/// so it never carries secrets or addresses; it is never localized either,
+/// which is why the UI shows it beneath a translated explanation, not instead
+/// of one.
+final class TorBootstrapDetail {
+  /// Why arti believes it is stuck, e.g. "Clock is skewed by 2 hours".
+  final String? blockage;
+
+  /// The bootstrap step arti is on, e.g. "fetching microdescriptors 120/300".
+  ///
+  /// Null when arti reports none, e.g. once the service has stopped.
+  final String? stage;
+
+  const TorBootstrapDetail({this.blockage, this.stage});
 }
 
 /// Current truth about the selected Tor source.
@@ -46,12 +70,14 @@ final class TorConnecting extends TorConnectionState {
   final double? progress;
   final TorDiagnostic? diagnostic;
   final TorTransport? transport;
+  final TorBootstrapDetail? detail;
 
   const TorConnecting({
     required this.source,
     this.progress,
     this.diagnostic,
     this.transport,
+    this.detail,
   });
 }
 

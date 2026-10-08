@@ -396,24 +396,6 @@ class WalletRepository {
         .toList();
   }
 
-  Future<void> updateEncryptedBackupTime({
-    required DateTime? time,
-    required String walletId,
-  }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw WalletError.notFound(walletId);
-    }
-
-    await _walletMetadataDatasource.store(
-      metadata.copyWith(
-        latestEncryptedBackup: time?.millisecondsSinceEpoch,
-        isEncryptedVaultTested: time != null,
-      ),
-    );
-  }
-
   Future<void> updateBackupInfo({
     required bool isEncryptedVaultTested,
     required bool isPhysicalBackupTested,
@@ -613,18 +595,6 @@ class WalletRepository {
       );
       rethrow;
     }
-  }
-
-  Future<bool> isTorRequired() async {
-    final defaultWallets = await _readWallets(
-      onlyDefaults: true,
-      onlyBitcoin: true,
-      environment: Environment.mainnet,
-    );
-
-    if (defaultWallets.isEmpty) return false;
-
-    return defaultWallets.first.latestEncryptedBackup != null;
   }
 
   Future<int> getAmountSentToAddress({

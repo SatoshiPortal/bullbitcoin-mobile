@@ -38,6 +38,15 @@ final class DiagnosticTorContext {
   final String? transport;
   final int? progressPercent;
   final String? diagnostic;
+
+  /// Arti's own wording for the blockage behind [diagnostic]. Fixed library
+  /// text (plus a clock skew), never an address or a secret.
+  final String? blockageDetail;
+
+  /// Arti's one-line summary of where bootstrap is, e.g. "40%: directory is
+  /// fetching microdescriptors (120/300)". Fixed library text with counters,
+  /// never an address or a secret.
+  final String? bootstrapStage;
   final bool socksProxyConfigured;
 
   const DiagnosticTorContext({
@@ -46,6 +55,8 @@ final class DiagnosticTorContext {
     this.transport,
     this.progressPercent,
     this.diagnostic,
+    this.blockageDetail,
+    this.bootstrapStage,
     this.socksProxyConfigured = false,
   });
 
@@ -55,6 +66,8 @@ final class DiagnosticTorContext {
     'transport': transport,
     'progress_percent': _clampPercent(progressPercent),
     'diagnostic': diagnostic,
+    'blockage_detail': blockageDetail,
+    'bootstrap_stage': bootstrapStage,
     'socks_proxy_configured': socksProxyConfigured,
   };
 }

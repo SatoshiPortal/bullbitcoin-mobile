@@ -70,6 +70,71 @@ void main() {
     expect(find.text(l10n.torSettingsStatusDisconnected), findsOneWidget);
   });
 
+  testWidgets('shows what arti says while Tor is stuck', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        diagnostic: TorDiagnostic.cantBootstrap,
+        detail: TorBootstrapDetail(blockage: "Can't make progress."),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+  });
+
+  testWidgets('shows the bootstrap stage while Tor connects', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        detail: TorBootstrapDetail(
+          stage: '40%: directory is fetching microdescriptors (120/300)',
+        ),
+      ),
+    );
+
+    expect(
+      find.text('40%: directory is fetching microdescriptors (120/300)'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows only the blockage when arti is stuck', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        detail: TorBootstrapDetail(
+          stage: "Stuck at 40%: Can't make progress.",
+          blockage: "Can't make progress.",
+        ),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+    expect(find.textContaining('Stuck at 40%'), findsNothing);
+  });
+
+  testWidgets('keeps showing it once the bootstrap gave up', (tester) async {
+    await pumpCard(
+      tester,
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure(
+          'bootstrap failed',
+          TorDiagnostic.cantBootstrap,
+          TorBootstrapDetail(blockage: "Can't make progress."),
+        ),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+  });
+
   testWidgets('shows the active transport when one is supplied', (
     tester,
   ) async {
@@ -96,5 +161,150 @@ void main() {
     await tester.pump();
 
     expect(find.text('Active transport: Snowflake'), findsOneWidget);
+  });
+
+  testWidgets('tells the user the device is offline', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.1,
+        diagnostic: TorDiagnostic.offline,
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusOffline), findsOneWidget);
+    expect(find.text(l10n.torSettingsDescOffline), findsOneWidget);
+  });
+
+  testWidgets('asks to fix the clock and shows the measured skew', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure(
+          'skewed',
+          TorDiagnostic.clockSkewed,
+          TorBootstrapDetail(blockage: 'Clock is skewed by 2 hours'),
+        ),
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusClockSkewed), findsOneWidget);
+    expect(find.text(l10n.torSettingsDescClockSkewed), findsOneWidget);
+    expect(find.text('Clock is skewed by 2 hours'), findsOneWidget);
+  });
+
+  testWidgets('offers retry and Snowflake when Tor cannot bootstrap', (
+    tester,
+  ) async {
+    var retries = 0;
+    var snowflake = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: TorConnectionStatusCard(
+            connection: const TorConnecting(
+              source: TorSource.embedded,
+              progress: 0.5,
+              diagnostic: TorDiagnostic.cantBootstrap,
+            ),
+            onRetry: () => retries++,
+            onUseSnowflake: () => snowflake++,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsStatusCantBootstrap), findsOneWidget);
+    await tester.tap(find.text(l10n.torSettingsRetry));
+    await tester.tap(find.text(l10n.torSettingsUseSnowflake));
+    expect((retries, snowflake), (1, 1));
+  });
+
+  testWidgets('offers no Snowflake switch that has nowhere to go', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.5,
+        diagnostic: TorDiagnostic.cantBootstrap,
+      ),
+    );
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.torSettingsUseSnowflake), findsNothing);
+  });
+
+  group('external proxy that is unavailable', () {
+    Future<void> pumpExternal(
+      WidgetTester tester,
+      TorExternalProxyProblem problem,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: TorConnectionStatusCard(
+              external: true,
+              connection: TorUnavailable(
+                source: TorSource.external,
+                failure: TorExternalProxyUnavailableFailure('probe', problem),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('tells a closed port apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.refused);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyRefusedDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tells a silent proxy apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.timeout);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyTimeoutDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tells a service that is not SOCKS5 apart', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.notSocks5);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyNotSocksDescription),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('keeps the generic text for an unknown cause', (tester) async {
+      await pumpExternal(tester, TorExternalProxyProblem.unknown);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(
+        find.text(l10n.torSettingsExternalProxyUnavailableDescription),
+        findsOneWidget,
+      );
+    });
   });
 }

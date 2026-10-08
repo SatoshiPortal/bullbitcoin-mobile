@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/price/price_locator.dart';
-import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
@@ -42,7 +41,6 @@ class CoreLocator {
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
-    RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
     SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
@@ -66,7 +64,6 @@ class CoreLocator {
     bull_tor.TorLocator.registerRepositories(
       locator,
       initialMode: appSettings.torTransportMode,
-      lastSuccessfulTransport: appSettings.lastSuccessfulTorTransport,
       onSuccessfulTransport: (transport) async {
         // Best-effort cache of the working transport; the repository already
         // logged the raw reason at its boundary.
@@ -89,7 +86,6 @@ class CoreLocator {
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
-    RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
@@ -112,7 +108,6 @@ class CoreLocator {
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
-    RecoverbullLocator.registerUsecases(locator);
     SeedLocator.registerUsecases(locator);
     StorageLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);

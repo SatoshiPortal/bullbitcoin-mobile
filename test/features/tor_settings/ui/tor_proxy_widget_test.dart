@@ -12,6 +12,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockTorSettingsCubit extends Mock implements TorSettingsCubit {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(TorTransportMode.automatic));
+
   Future<_MockTorSettingsCubit> pumpWidgetWithState(
     WidgetTester tester,
     TorSettingsState state,
@@ -26,6 +28,8 @@ void main() {
         torProxyPort: any(named: 'torProxyPort'),
       ),
     ).thenAnswer((_) async {});
+    when(() => cubit.retryEmbedded()).thenAnswer((_) async {});
+    when(() => cubit.updateTransportMode(any())).thenAnswer((_) async {});
 
     await tester.pumpWidget(
       MaterialApp(
@@ -207,5 +211,36 @@ void main() {
 
     expect(find.text('Unable to open the Orbot website.'), findsOneWidget);
     await tester.pump(const Duration(seconds: 3));
+  });
+
+  group('embedded Tor that cannot finish bootstrapping', () {
+    const stuck = TorSettingsState(
+      embeddedConnection: TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure('stuck', TorDiagnostic.cantBootstrap),
+      ),
+    );
+
+    testWidgets('retries embedded Tor', (tester) async {
+      final cubit = await pumpWidgetWithState(tester, stuck);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      await tester.ensureVisible(find.text(l10n.torSettingsRetry));
+      await tester.tap(find.text(l10n.torSettingsRetry));
+
+      verify(cubit.retryEmbedded).called(1);
+    });
+
+    testWidgets('switches embedded Tor to Snowflake', (tester) async {
+      final cubit = await pumpWidgetWithState(tester, stuck);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      await tester.ensureVisible(find.text(l10n.torSettingsUseSnowflake));
+      await tester.tap(find.text(l10n.torSettingsUseSnowflake));
+
+      verify(
+        () => cubit.updateTransportMode(TorTransportMode.snowflake),
+      ).called(1);
+    });
   });
 }
