@@ -87,6 +87,7 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
             failure: LabelUnexpectedFailure('picked file has no path'),
           ),
         );
+        await _clearPickedFileCopies();
         return;
       }
       path = pickedPath;
@@ -101,14 +102,32 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
     }
 
     emit(const Bip329LabelsState.loading());
-    switch (await _importLabelsFromFileUsecase.execute(
-      format: format,
-      path: path,
-    )) {
-      case Ok(:final value):
-        emit(Bip329LabelsState.importSuccess(labelsCount: value));
-      case Err(:final failure):
-        emit(Bip329LabelsState.error(failure: failure));
+    try {
+      switch (await _importLabelsFromFileUsecase.execute(
+        format: format,
+        path: path,
+      )) {
+        case Ok(:final value):
+          emit(Bip329LabelsState.importSuccess(labelsCount: value));
+        case Err(:final failure):
+          emit(Bip329LabelsState.error(failure: failure));
+      }
+    } finally {
+      await _clearPickedFileCopies();
+    }
+  }
+
+  /// On iOS and Android the picker hands back a copy of the document in the
+  ///  app's temp directory. A labels file carries txids and addresses, so the
+  ///  copy is removed once the import is done, whatever the outcome.
+  Future<void> _clearPickedFileCopies() async {
+    try {
+      await _filePicker.clearTemporaryFiles();
+    } on UnimplementedError {
+      // Desktop pickers return the real path, so there is no copy to clear.
+    } on Object catch (e, st) {
+      // Housekeeping only: never let it mask the import result.
+      log.warning('Failed to clear picked file copies', error: e, trace: st);
     }
   }
 }

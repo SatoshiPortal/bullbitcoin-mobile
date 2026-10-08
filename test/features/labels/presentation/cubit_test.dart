@@ -29,6 +29,7 @@ void main() {
     picker = _MockFilePicker();
     registerFallbackValue(LabelFormat.bip329);
     registerFallbackValue(FileType.any);
+    when(() => picker.clearTemporaryFiles()).thenAnswer((_) async => true);
   });
 
   Bip329LabelsCubit buildCubit() => Bip329LabelsCubit(
@@ -107,6 +108,7 @@ void main() {
         (cubit.state as Bip329LabelsFailureState).failure,
         isA<LabelUnexpectedFailure>(),
       );
+      verify(() => picker.clearTemporaryFiles()).called(1);
     });
 
     test(
@@ -138,6 +140,68 @@ void main() {
         (cubit.state as Bip329LabelsFailureState).failure,
         isA<LabelsFileUnreadableFailure>(),
       );
+    });
+
+    test('clears the picked copy after a successful import', () async {
+      pickReturns(picked());
+      importReturns(const Ok(1));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+      verify(() => picker.clearTemporaryFiles()).called(1);
+    });
+
+    test('clears the picked copy after a failed import', () async {
+      pickReturns(picked());
+      importReturns(const Err(LabelsFileEmptyFailure()));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+      verify(() => picker.clearTemporaryFiles()).called(1);
+    });
+
+    test('a failed cleanup does not mask the import result', () async {
+      pickReturns(picked());
+      importReturns(const Ok(2));
+      when(
+        () => picker.clearTemporaryFiles(),
+      ).thenThrow(PlatformException(code: 'clear'));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+      expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 2);
+    });
+
+    test('a picker without temp files is left alone', () async {
+      // Desktop pickers do not implement clearTemporaryFiles, and there is
+      // no copy to clear there either.
+      pickReturns(picked());
+      importReturns(const Ok(2));
+      when(
+        () => picker.clearTemporaryFiles(),
+      ).thenThrow(UnimplementedError('clearTemporaryFiles'));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+      expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 2);
+    });
+
+    test('a dismissed picker leaves nothing to clear', () async {
+      pickReturns(null);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      await cubit.importLabelsFromFile(LabelFormat.bip329);
+
+      verifyNever(() => picker.clearTemporaryFiles());
     });
   });
 
