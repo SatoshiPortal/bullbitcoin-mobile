@@ -8,15 +8,20 @@ import '../domain/tor_failure.dart';
 /// Builds an HTTP client for an already-selected Tor route.
 ///
 /// [endpoint] is deliberately non-nullable. Accepting null meant "return a
-/// plain, unproxied client", and the only consumer is the RecoverBull key
-/// server — an onion address. A caller that passed null would have shipped its
-/// request over clearnet to a hidden-service name, so the route is a
-/// requirement the compiler enforces rather than a default the caller can
-/// forget.
+/// plain, unproxied client". A caller that passed null could ship a request over
+/// clearnet, so the route is a requirement the compiler enforces rather than a
+/// default the caller can forget.
 final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
-  HttpClient create(TorProxyEndpoint endpoint) {
+  /// Creates a client that can only connect through [endpoint].
+  ///
+  /// Certificate validation stays enabled unless [allowBadCertificate] is
+  /// explicitly selected for a user-controlled server.
+  HttpClient create(
+    TorProxyEndpoint endpoint, {
+    bool allowBadCertificate = false,
+  }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
     // ATYP DOMAINNAME instead of resolving it on the device.
@@ -37,7 +42,12 @@ final class TorHttpClientFactory {
         uri.port,
       );
       final Future<Socket> socket = uri.scheme == 'https'
-          ? connection.then((value) => value.secure(uri.host))
+          ? connection.then(
+              (value) => value.secure(
+                uri.host,
+                onBadCertificate: allowBadCertificate ? (_) => true : null,
+              ),
+            )
           : connection;
       return ConnectionTask.fromSocket(socket, () {
         // Cancellation owns cleanup, not the request's error reporting.
