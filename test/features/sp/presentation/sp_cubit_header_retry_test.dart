@@ -128,6 +128,45 @@ void main() {
     });
   });
 
+  test('a header extension below the tip keeps the tip', () async {
+    await subscribe();
+
+    notifications
+      ..add(
+        const SpHeaderProgressStarted(
+          phase: SpHeaderValidationPhase.initialSync,
+          start: 900000,
+          end: 970180,
+        ),
+      )
+      ..add(
+        const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
+      )
+      // Extension down to an old coin: same phase, a range below the tip.
+      ..add(
+        const SpHeaderProgressStarted(
+          phase: SpHeaderValidationPhase.initialSync,
+          start: 800000,
+          end: 899999,
+        ),
+      );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.chainTip, 970180);
+    expect(
+      cubit.state.headerValidationStatus,
+      SpHeaderValidationStatus.validating,
+    );
+
+    notifications.add(
+      const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.chainTip, 970180);
+    expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.valid);
+  });
+
   group('checkpoint mismatch', () {
     test('cancels a pending retry and shows the invalid chain', () {
       fakeAsync((async) {

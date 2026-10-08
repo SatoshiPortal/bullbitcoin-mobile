@@ -533,7 +533,10 @@ class BwkSpAccountRepository
       _latestHeaderNotification = n;
       if (n is dom.SpHeaderProgressStarted) _latestHeaderStarted = n;
       final tip = n.headerTip;
-      if (tip != null && tip != _latestHeaderTip) {
+      final latest = _latestHeaderTip;
+      // Extending the chain down to older coins reports a range below the tip
+      // (same phase as the first sync), so the tip only ever moves up.
+      if (tip != null && (latest == null || tip > latest)) {
         _latestHeaderTip = tip;
         _emit(SpChainTipChanged(tip));
       }

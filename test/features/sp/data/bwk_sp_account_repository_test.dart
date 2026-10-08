@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bull_sdk/bwk.dart';
 import 'package:flutter/services.dart';
@@ -25,12 +26,14 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
     this.stopScanError,
     this.scanOnceError,
     this.restampError,
+    this.notifications = const Stream.empty(),
   });
 
   final Object? disposeError;
   final Object? stopScanError;
   final Object? scanOnceError;
   final Object? restampError;
+  final Stream<SpNotification> notifications;
   bool session;
   int restampCalls = 0;
   // Holds restartElectrum open until completed, when set.
@@ -57,6 +60,9 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
     final error = scanOnceError;
     if (error != null) throw error;
   }
+
+  @override
+  Stream<SpNotification> init() => notifications;
 
   @override
   bool restampMissingTimestamps() {
@@ -211,6 +217,47 @@ void main() {
 
       expect(await repo.dispose(), isA<Ok<void, SpFailure>>());
       expect(repo.notifStreamTornDown, isFalse);
+    });
+  });
+
+  group('header tip', () {
+    test('a header extension below the tip does not lower it', () async {
+      final ffi = StreamController<SpNotification>();
+      addTearDown(ffi.close);
+      final repo = makeRepo(ffi: _FakeFfiDatasource(notifications: ffi.stream));
+      final tips = <int>[];
+      final updates = repo.updates.listen((update) {
+        if (update is SpChainTipChanged) tips.add(update.tip);
+      });
+      addTearDown(updates.cancel);
+      final sub = repo.notifications.listen((_) {});
+      addTearDown(sub.cancel);
+
+      ffi
+        ..add(
+          const SpNotification.headerProgressStarted(
+            phase: HeaderProgressPhase.initialSync,
+            start: 900000,
+            end: 970180,
+          ),
+        )
+        ..add(
+          const SpNotification.headerProgressCompleted(
+            phase: HeaderProgressPhase.initialSync,
+          ),
+        )
+        // Extension down to an old coin: same phase, a range below the tip.
+        ..add(
+          const SpNotification.headerProgressStarted(
+            phase: HeaderProgressPhase.initialSync,
+            start: 800000,
+            end: 899999,
+          ),
+        );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repo.chainTip(), 970180);
+      expect(tips, [970180]);
     });
   });
 

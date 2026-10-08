@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -308,7 +309,9 @@ class SpCubit extends Cubit<SpState> {
         headerValidationFrom: from,
         headerValidationTo: to,
         headerValidationCurrent: current,
-        chainTip: to,
+        // Extending the chain down to older coins reports a range below the
+        // tip (same phase as the first sync), so the tip only ever moves up.
+        chainTip: max(to, state.chainTip ?? to),
       ),
     );
   }
