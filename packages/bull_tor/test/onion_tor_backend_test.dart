@@ -157,6 +157,27 @@ void main() {
       expect(Directory(snowflake.stateDir).existsSync(), isTrue);
     });
 
+    // Key-server attempts rely on this timeout alone; see
+    // [onionConnectTimeout].
+    test('gives onion connections 60 s on either transport', () async {
+      final direct = await configFor(TorTransport.direct);
+      final snowflake = await configFor(TorTransport.snowflake);
+
+      expect(direct.connectTimeout, const Duration(seconds: 60));
+      expect(snowflake.connectTimeout, const Duration(seconds: 60));
+    });
+
+    test('gives a session\'s onion connections 60 s', () async {
+      final service = _FakeTorService();
+      launcher.service = service;
+
+      await backend.start(TorTransport.direct);
+      final session = await backend.openSession();
+
+      expect(session.endpoint.port, _FakeTorService.sessionPort);
+      expect(service.sessionConnectTimeouts, [BigInt.from(60000)]);
+    });
+
     test('shares the directory cache between transports', () async {
       final direct = await configFor(TorTransport.direct);
       final snowflake = await configFor(TorTransport.snowflake);
@@ -246,13 +267,16 @@ final class _RecordingLauncher implements OnionClientLauncher {
 
   final configs = <OnionClientConfig>[];
 
+  /// What a start returns; null fails it.
+  onion.TorService? service;
+
   @override
   Future<onion.TorService> startClient(
     OnionClientConfig config,
     onion.SocksPolicy policy,
   ) async {
     configs.add(config);
-    throw StateError('no native Tor in tests');
+    return service ?? (throw StateError('no native Tor in tests'));
   }
 
   @override
@@ -260,4 +284,53 @@ final class _RecordingLauncher implements OnionClientLauncher {
 
   @override
   Future<void> stopSnowflakeProxy() async {}
+}
+
+/// A bootstrapped client whose sessions record their connect timeout.
+final class _FakeTorService implements onion.TorService {
+  static const sessionPort = 41003;
+
+  final sessionConnectTimeouts = <BigInt?>[];
+
+  @override
+  Future<void> bootstrap() async {}
+
+  @override
+  Future<bool> proxyIsAlive() async => true;
+
+  @override
+  Future<int> socksPort() async => 41002;
+
+  @override
+  Stream<onion.TorStatus> watchStatus() => const Stream.empty();
+
+  @override
+  Future<void> setDormant({required bool dormant}) async {}
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<onion.TorSession> openSessionWithConnectTimeout({
+    required int socksPort,
+    required onion.SocksPolicy policy,
+    BigInt? connectTimeoutMs,
+  }) async {
+    sessionConnectTimeouts.add(connectTimeoutMs);
+    return _FakeTorSession();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _FakeTorSession implements onion.TorSession {
+  @override
+  Future<int> socksPort() async => _FakeTorService.sessionPort;
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
