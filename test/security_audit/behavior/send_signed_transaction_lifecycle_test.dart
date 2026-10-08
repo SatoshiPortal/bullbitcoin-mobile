@@ -43,7 +43,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -245,7 +245,7 @@ class _TestSendCubit extends SendCubit {
     required super.prepareSpPaymentForSendUsecase,
     required super.sendSpPaymentForSendUsecase,
     required super.refreshSpWalletForSendUsecase,
-    required super.resolveSweepInputsUsecase,
+    required super.resolveSelectedInputsUsecase,
     required super.validateSweepPaymentRequestUsecase,
   });
 
@@ -354,7 +354,7 @@ void main() {
       prepareSpPaymentForSendUsecase: _MockPrepareSpPaymentForSendUsecase(),
       sendSpPaymentForSendUsecase: _MockSendSpPaymentForSendUsecase(),
       refreshSpWalletForSendUsecase: _MockRefreshSpWalletForSendUsecase(),
-      resolveSweepInputsUsecase: ResolveSweepInputsUsecase(
+      resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(
         _MockPayjoinSessions(),
       ),
       validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
