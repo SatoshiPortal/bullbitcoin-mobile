@@ -18,6 +18,10 @@ enum AnnouncementId {
   recoverBullTargetedActivity,
   recoverBullServicePressure,
   recoverBullUnavailable,
+
+  /// Shown once to users whose mainnet encrypted vault was recorded before
+  /// backups moved to the RecoverBull module, which does not track it.
+  legacyEncryptedVault,
 }
 
 /// Visual/semantic tone of an announcement, mapped to theme colors in the UI.

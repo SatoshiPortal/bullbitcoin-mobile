@@ -18,14 +18,22 @@ extension AnnouncementNavigation on Announcement {
     ),
     AnnouncementId.recoverBullTargetedActivity ||
     AnnouncementId.recoverBullServicePressure ||
-    AnnouncementId.recoverBullUnavailable => throw UnsupportedError(
-      'RecoverBull navigation is resolved by the carousel',
+    AnnouncementId.recoverBullUnavailable ||
+    AnnouncementId.legacyEncryptedVault => throw UnsupportedError(
+      'RecoverBull navigation is resolved by open',
     ),
   };
 
   void open(BuildContext context) {
     if (this case final RecoverBullAnnouncement announcement) {
       openRecoverBullAttemptAlertDetails(context, announcement.sourceAlerts);
+      return;
+    }
+    if (id == AnnouncementId.legacyEncryptedVault) {
+      context.pushNamed(
+        RecoverBullRoute.recoverbullFlows.name,
+        extra: const RecoverBullFlowsExtra(flow: RecoverBullFlow.secureVault),
+      );
       return;
     }
     context.pushNamed(route.name);
