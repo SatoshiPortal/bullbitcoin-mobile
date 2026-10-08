@@ -12,6 +12,7 @@ void main() {
         fraction: 0.4,
         readyForTraffic: false,
         blockage: onion.Blockage(kind: kind, message: message),
+        stage: '',
         transport: onion.TorTransport.direct,
       );
 
@@ -47,6 +48,7 @@ void main() {
         const onion.TorStatus(
           fraction: 0.4,
           readyForTraffic: false,
+          stage: '',
           transport: onion.TorTransport.direct,
         ),
         endpoint,

@@ -117,11 +117,11 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
-      resolved-ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
+      ref: "44b143f743cf02a9aec92a46cfcd534120a781c5"
+      resolved-ref: "44b143f743cf02a9aec92a46cfcd534120a781c5"
       url: "https://github.com/bitcoindevkit/bdk-dart"
     source: git
-    version: "1.0.0-rc.3"
+    version: "1.0.0-rc.4"
   bech32:
     dependency: transitive
     description:
@@ -329,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      resolved-ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1489,9 +1489,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      resolved-ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   package_config:
@@ -1796,9 +1796,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      resolved-ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
-      url: "https://github.com/pythcoiner/bull_sdk"
+      ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      resolved-ref: "39ac3d0b2969417d384f3e088e44363c29c4bb8d"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
