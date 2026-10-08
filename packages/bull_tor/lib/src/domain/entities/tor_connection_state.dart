@@ -32,9 +32,7 @@ final class TorBootstrapDetail {
 
   /// The bootstrap step arti is on, e.g. "fetching microdescriptors 120/300".
   ///
-  /// Null until the `onion` binding reports it; the embedded backend fills it
-  /// from the status stream once it does, and every consumer of this type
-  /// already shows it.
+  /// Null when arti reports none, e.g. once the service has stopped.
   final String? stage;
 
   const TorBootstrapDetail({this.blockage, this.stage});

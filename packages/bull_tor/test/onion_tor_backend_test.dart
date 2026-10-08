@@ -43,6 +43,45 @@ void main() {
       expect((event as EmbeddedTorConnecting).detail, isNull);
     });
 
+    test('carries arti\'s bootstrap stage next to the blockage', () {
+      final event = OnionTorBackend.eventFor(
+        const onion.TorStatus(
+          fraction: 0.4,
+          readyForTraffic: false,
+          blockage: onion.Blockage(
+            kind: onion.BlockageKind.clockSkewed,
+            message: 'Clock is skewed by 2 hours',
+          ),
+          stage: 'Stuck at 40%: Clock is skewed by 2 hours',
+          transport: onion.TorTransport.direct,
+        ),
+        endpoint,
+      );
+
+      final detail = (event as EmbeddedTorConnecting).detail;
+      expect(detail?.stage, 'Stuck at 40%: Clock is skewed by 2 hours');
+      expect(detail?.blockage, 'Clock is skewed by 2 hours');
+    });
+
+    test('reports the bootstrap stage when arti reports no blockage', () {
+      final event = OnionTorBackend.eventFor(
+        const onion.TorStatus(
+          fraction: 0.4,
+          readyForTraffic: false,
+          stage: '40%: directory is fetching microdescriptors (120/300)',
+          transport: onion.TorTransport.direct,
+        ),
+        endpoint,
+      );
+
+      final detail = (event as EmbeddedTorConnecting).detail;
+      expect(
+        detail?.stage,
+        '40%: directory is fetching microdescriptors (120/300)',
+      );
+      expect(detail?.blockage, isNull);
+    });
+
     test('carries no detail when arti reports no blockage', () {
       final event = OnionTorBackend.eventFor(
         const onion.TorStatus(
