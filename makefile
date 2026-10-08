@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: reproducibility-scripts-test all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -147,6 +147,7 @@ ios-release:
 # Container runtime — default podman, override with CONTAINER=docker for
 # environments without podman.
 CONTAINER ?= podman
+CONTAINER_BUILD_FLAGS ?=
 
 # Pick the host-appropriate dev container config: macos on Darwin, linux
 # elsewhere. The two differ only in host integration (GPU/X11/Rosetta); both
@@ -182,19 +183,20 @@ container-tools:
 			exit 1; \
 		fi; \
 	done; \
-	$(CONTAINER) build -f Containerfile.tools -t bull-tools \
+	$(CONTAINER) build $(CONTAINER_BUILD_FLAGS) -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$flutter_version \
 		--build-arg JVM_TARGET=$$jvm_target \
 		--build-arg ANDROID_API_LEVEL=$$android_api \
 		--build-arg ANDROID_BUILD_TOOLS=$$android_build_tools \
 		--build-arg ANDROID_NDK=$$android_ndk \
 		--build-arg BDK_RUST_VERSION=$(BDK_RUST_VERSION) \
+		--build-arg PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION) \
 		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
 
 container-app: container-tools
 	@echo "📦 Building app image"
-	@$(CONTAINER) build -f Containerfile.app -t bull-app \
+	@$(CONTAINER) build $(CONTAINER_BUILD_FLAGS) -f Containerfile.app -t bull-app \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		.
 
@@ -256,10 +258,11 @@ endif
 android: container-app
 	@echo "🔨 Building $(FORMAT) ($(FLAVOR) $(MODE)) via $(CONTAINER)"
 	@$(CONTAINER) rm -f bull-build > /dev/null 2>&1 || true
-	@$(CONTAINER) run --name bull-build \
+	@epoch=$$(git log -1 --format=%ct) && \
+	$(CONTAINER) run --name bull-build \
+		-e SOURCE_DATE_EPOCH="$$epoch" \
 		--ulimit nofile=65536:65536 \
 		bull-app bash -c '\
-			SOURCE_DATE_EPOCH=$$(git -C /app log -1 --format=%ct) && \
 			CARGO_ENCODED_RUSTFLAGS=$$(printf "%s\037%s\037%s" \
 				"--remap-path-prefix=$$HOME/.cargo=/cargo" \
 				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
@@ -281,14 +284,14 @@ android: container-app
 # (this is exactly how it broke before — two builds on the same day matched by
 # coincidence, not by pinning). Compares the rustc version string every compiler
 # embeds in its output against the pinned toolchains running live inside bull-app.
+# Read the main pin through rustc (RUSTUP_TOOLCHAIN), never through `run stable`:
+# a broken shim would make both the build and a stable lookup drift together.
 #
 # Fails CLOSED: an empty/failed toolchain lookup, a tracked lib present with no
 # embedded version, a version mismatch, or zero tracked Rust libs found all
 # ABORT — a green result must mean the pins were actually checked, never that a
 # check was skipped. Keep TRACKED_RUST_LIBS in sync with the case below; a lib
-# from that list that is absent from the APK is reported loudly (a build should
-# ship all of them, but we only warn rather than hard-fail here because the exact
-# shipped set is confirmed by a real build, not by this static guard). Any
+# from that list that is absent from any shipped ABI fails the build. Any
 # shipped Rust .so NOT in the list (e.g. a newly added plugin, or ark/boltz if
 # they ever ship as standalone OpenSSL-linking libs rather than statically
 # linked into librust_lib_bull_sdk.so) prints an ℹ️ line naming it and its
@@ -300,7 +303,8 @@ android: container-app
 # read the live pin out of bull-app. Keep in sync with the `channel` in
 # bdk-dart's native/rust-toolchain.toml (bdk_dart is transitive via bull_sdk).
 BDK_RUST_VERSION ?= 1.85.1
-TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_flutter.so librust_lib_bull_sdk.so
+PAYJOIN_RUST_VERSION ?= 1.85.1
+TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_ffi_wrapper.so librust_lib_bull_sdk.so
 verify-rustc-pins:
 	@command -v strings >/dev/null 2>&1 || { echo "❌ 'strings' (binutils) not found — cannot verify rustc pins. Install binutils; failing closed rather than skipping the check (a skipped check must never read as green)."; exit 1; }
 	@tmpdir=$$(mktemp -d); \
@@ -309,10 +313,11 @@ verify-rustc-pins:
 	abi_dirs=$$(find "$$tmpdir/lib" -mindepth 1 -maxdepth 1 -type d 2>/dev/null); \
 	if [ -z "$$abi_dirs" ]; then echo "❌ no native libraries extracted from $(APK) (unreadable APK, or no lib/*/*.so) — cannot verify rustc pins"; exit 1; fi; \
 	echo "🔎 Verifying Rust libraries embed the pinned rustc versions..."; \
-	cargokit_rustc=$$($(CONTAINER) run --rm bull-app rustup run stable rustc --version | awk '{print $$2}'); \
+	cargokit_rustc=$$($(CONTAINER) run --rm bull-app rustc --version | awk '{print $$2}'); \
 	bdk_rustc=$$($(CONTAINER) run --rm bull-app rustup run $(BDK_RUST_VERSION) rustc --version | awk '{print $$2}'); \
-	if [ -z "$$cargokit_rustc" ] || [ -z "$$bdk_rustc" ]; then \
-		echo "❌ could not read pinned toolchain versions from bull-app (cargokit='$$cargokit_rustc' bdk='$$bdk_rustc') — cannot verify rustc pins"; \
+	payjoin_rustc=$$($(CONTAINER) run --rm bull-app rustup run $(PAYJOIN_RUST_VERSION) rustc --version | awk '{print $$2}'); \
+	if [ -z "$$cargokit_rustc" ] || [ -z "$$bdk_rustc" ] || [ -z "$$payjoin_rustc" ]; then \
+		echo "❌ could not read pinned toolchain versions from bull-app (cargokit='$$cargokit_rustc' bdk='$$bdk_rustc' payjoin='$$payjoin_rustc') — cannot verify rustc pins"; \
 		exit 1; \
 	fi; \
 	fail=0; seen=" "; \
@@ -324,7 +329,8 @@ verify-rustc-pins:
 			name=$$(basename "$$so"); \
 			case "$$name" in \
 				libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
-				libonion.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
+				libpayjoin_ffi_wrapper.so) expected="$$payjoin_rustc" ;; \
+				libonion.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
 				*) expected="" ;; \
 			esac; \
 			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
@@ -343,6 +349,9 @@ verify-rustc-pins:
 			else \
 				echo "      ✅ $$name: rustc $$embedded (matches pin)"; \
 			fi; \
+		done; \
+		for want in $(TRACKED_RUST_LIBS); do \
+			case "$$seen" in *"$$abi/$$want "*) ;; *) echo "❌ missing $$want for ABI $$abi"; fail=1 ;; esac; \
 		done; \
 	done; \
 	checked=0; \
@@ -431,3 +440,7 @@ catalogue:
 	@cd packages/bull_ui_catalogue && \
 		fvm dart run build_runner build --delete-conflicting-outputs && \
 		fvm flutter run -d chrome
+
+# Fast regression checks; no compiler/container runtime is required.
+reproducibility-scripts-test:
+	python3 reproducibility/test_scripts.py

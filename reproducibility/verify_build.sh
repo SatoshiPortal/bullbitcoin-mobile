@@ -243,6 +243,10 @@ officialVersion="$appVersion"
 versionCode=""
 appHash=""
 
+if [[ "$verificationMode" == "github" && -n "$apkDir" ]]; then
+    appHash=$(sha256sum "$apkDir/base.apk" | awk '{print $1}')
+fi
+
 if [[ "$verificationMode" == "device" ]]; then
     echo "Extracting metadata from base.apk..."
     tempDir=$(mktemp -d)
@@ -274,7 +278,8 @@ if [[ "$verificationMode" == "device" ]]; then
     for split in "$apkDir"/split_config.*.apk; do
         [[ -f "$split" ]] || continue
         if [[ $(basename "$split") =~ split_config\.(arm64_v8a|armeabi-v7a|x86|x86_64)\.apk ]]; then
-            abi="${BASH_REMATCH[1]//_/-}"
+            abi="${BASH_REMATCH[1]}"
+            [[ "$abi" == "arm64_v8a" ]] && abi="arm64-v8a"
             abis+=("\"$abi\"")
         fi
     done
@@ -285,9 +290,9 @@ if [[ "$verificationMode" == "device" ]]; then
     for split in "$apkDir"/split_config.*.apk; do
         [[ -f "$split" ]] || continue
         case $(basename "$split") in
-            *ldpi*) density=120 ;; *mdpi*) density=160 ;;
-            *hdpi*) density=240 ;; *xhdpi*) density=320 ;;
-            *xxhdpi*) density=480 ;; *xxxhdpi*) density=640 ;;
+            *xxxhdpi*) density=640 ;; *xxhdpi*) density=480 ;;
+            *xhdpi*) density=320 ;; *hdpi*) density=240 ;;
+            *mdpi*) density=160 ;; *ldpi*) density=120 ;;
         esac
     done
 

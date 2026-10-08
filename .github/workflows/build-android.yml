@@ -7,6 +7,10 @@ on:
         type: choice
         options: [release, debug, beta]
         default: release
+      verify_reproducibility:
+        description: Build production release APK twice without image cache
+        type: boolean
+        default: false
       format:
         type: choice
         options: [apk, aab]
@@ -75,7 +79,20 @@ jobs:
 
       - name: Build
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
-        run: make android ${{ inputs.mode }} FORMAT=${{ inputs.format }}
+        env:
+          VERIFY_REPRODUCIBILITY: ${{ inputs.verify_reproducibility }}
+          BUILD_MODE: ${{ inputs.mode }}
+          BUILD_FORMAT: ${{ inputs.format }}
+        run: |
+          if [ "$VERIFY_REPRODUCIBILITY" = true ]; then
+            if [ "$BUILD_MODE" != release ] || [ "$BUILD_FORMAT" != apk ]; then
+              echo "::error::Reproducibility verification requires release mode and APK format."
+              exit 1
+            fi
+            bash reproducibility/test.sh release
+          else
+            make android "$BUILD_MODE" FORMAT="$BUILD_FORMAT"
+          fi
 
       # Publishes the sha256 of the exact bytes uploaded below, so anyone
       # comparing this run's artifact against a locally reproduced build (or
@@ -95,3 +112,13 @@ jobs:
           name: BULL-${{ inputs.mode }}-${{ steps.meta.outputs.sha_short }}-${{ inputs.format }}
           path: BULL-${{ inputs.mode }}.${{ inputs.format }}
           retention-days: 30
+
+      - name: Preserve independent build outputs
+        if: ${{ always() && inputs.verify_reproducibility }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reproducibility-${{ steps.meta.outputs.sha_short }}
+          path: |
+            reproducibility/reproducibility_test_*/build*.apk
+            reproducibility/reproducibility_test_*/*diff.txt
+          retention-days: 14

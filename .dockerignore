@@ -59,3 +59,7 @@ bull_logs.tsv
 # Host-extracted build artifacts that don't match the BULL-*.apk/aab globs
 # above (e.g. verification-workflow output named without an extension)
 BULL-release-*
+
+# Git worktree pointers refer to host-only paths; build metadata is passed by make.
+.git
+android/local.properties

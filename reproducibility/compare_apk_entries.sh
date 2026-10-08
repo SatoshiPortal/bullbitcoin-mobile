@@ -33,6 +33,10 @@ hash_entries() {
     # yield a false IDENTICAL. `set -e` does not catch a failure mid-pipeline,
     # so the listing is captured and checked explicitly.
     entries=$(unzip -Z1 "$1") || { echo "error: cannot read zip entries from $1" >&2; return 3; }
+    if printf '%s\n' "$entries" | LC_ALL=C sort | uniq -d | grep -q .; then
+        echo "error: duplicate ZIP member names in $1" >&2
+        return 3
+    fi
     entry_tmp=$(mktemp)
     printf '%s\n' "$entries" | grep -Ev "$exclude_re" | LC_ALL=C sort | while IFS= read -r entry; do
         [ -n "$entry" ] || continue
