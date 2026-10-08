@@ -27,6 +27,7 @@ extension WalletFailureL10n on WalletFailure {
     WalletLwkStatusConflictFailure() ||
     NoWalletsFoundFailure() => context.loc.walletLoadFailed,
     // Never `logMessage`: the reason is for the log, not the screen.
+    SignedTransactionVerificationFailure() ||
     WalletUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

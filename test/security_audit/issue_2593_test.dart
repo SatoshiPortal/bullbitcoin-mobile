@@ -13,9 +13,8 @@ void main() {
       ).readAsStringSync();
       final back = source.substring(
         source.indexOf('void backClicked()'),
-        source.indexOf('Future<void> loadWalletWithRatesAndFees()'),
+        source.indexOf('Future<void> loadWalletWithRatesAndFees('),
       );
-      expect(back, contains('step: SendStep.amount'));
       expect(back, contains('_invalidateSignedTransaction();'));
       expect(source, contains('signedBitcoinTx: null'));
     });

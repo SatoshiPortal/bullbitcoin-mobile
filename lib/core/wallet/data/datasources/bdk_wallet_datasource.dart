@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -227,6 +228,7 @@ class BdkWalletDatasource {
     List<({String txId, int vout})>? unspendable,
     bool? drain,
     List<WalletUtxoModel>? selected,
+    bool selectedOnly = false,
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
@@ -253,6 +255,11 @@ class BdkWalletDatasource {
       );
     }
 
+    if (selectedOnly && (selected == null || selected.isEmpty)) {
+      throw SelectedInputsUnavailableException(
+        'Selected-only transaction requires at least one input',
+      );
+    }
     if (selected != null && selected.isNotEmpty) {
       final selectableOutPoints = selected
           .map(
@@ -262,10 +269,8 @@ class BdkWalletDatasource {
             ),
           )
           .toList();
-      // bdk_dart's TxBuilder is immutable — every method returns a NEW
-      // builder instance rather than mutating in place. Discarding the
-      // return value (as this call did before) silently drops the manual
-      // UTXO selection and leaves BDK to pick inputs automatically.
+      // TxBuilder is immutable; retain the returned builder so the selected
+      // inputs are applied.
       txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
       txBuilder = txBuilder.manuallySelectedOnly();
     }
