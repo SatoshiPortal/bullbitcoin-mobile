@@ -118,10 +118,11 @@ class TorConnectionStatusCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                      // A stuck bootstrap's stage restates the blockage
+                      // ("Stuck at N%: …"), so it is shown only without one.
                       for (final line in [
-                        ?_detail?.stage,
-                        ?_detail?.blockage,
-                      ]) ...[
+                        _detail?.blockage ?? _detail?.stage,
+                      ].nonNulls) ...[
                         const Gap(4),
                         Text(
                           line,

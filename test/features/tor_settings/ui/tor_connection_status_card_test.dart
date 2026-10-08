@@ -84,6 +84,41 @@ void main() {
     expect(find.text("Can't make progress."), findsOneWidget);
   });
 
+  testWidgets('shows the bootstrap stage while Tor connects', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        detail: TorBootstrapDetail(
+          stage: '40%: directory is fetching microdescriptors (120/300)',
+        ),
+      ),
+    );
+
+    expect(
+      find.text('40%: directory is fetching microdescriptors (120/300)'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows only the blockage when arti is stuck', (tester) async {
+    await pumpCard(
+      tester,
+      const TorConnecting(
+        source: TorSource.embedded,
+        progress: 0.4,
+        detail: TorBootstrapDetail(
+          stage: "Stuck at 40%: Can't make progress.",
+          blockage: "Can't make progress.",
+        ),
+      ),
+    );
+
+    expect(find.text("Can't make progress."), findsOneWidget);
+    expect(find.textContaining('Stuck at 40%'), findsNothing);
+  });
+
   testWidgets('keeps showing it once the bootstrap gave up', (tester) async {
     await pumpCard(
       tester,

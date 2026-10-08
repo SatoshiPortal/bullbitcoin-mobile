@@ -248,6 +248,7 @@ class Bull {
       progressPercent: progress,
       diagnostic: diagnostic?.name,
       blockageDetail: detail?.blockage,
+      bootstrapStage: detail?.stage,
       socksProxyConfigured: socksProxyConfigured,
     );
   }
