@@ -30,6 +30,7 @@ class BwkSpAccountDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     _account = await SpAccount.createFromMnemonicWithScanRuntime(
       name: SpStorageNames.accountName,
@@ -41,6 +42,7 @@ class BwkSpAccountDatasource {
       dustLimit: BigInt.from(SpConfig.dustLimitSat),
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      headerCheckpoint: headerCheckpoint,
     );
   }
 

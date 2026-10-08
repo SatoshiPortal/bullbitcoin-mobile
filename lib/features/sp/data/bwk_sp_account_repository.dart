@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_balance_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_coin_mapper.dart';
+import 'package:bb_mobile/features/sp/data/mappers/sp_header_checkpoint_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_network_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_notification_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_payment_mapper.dart';
@@ -197,6 +198,7 @@ class BwkSpAccountRepository
     // header store locks its own sentinel, so missing it fails the create with
     // "already opened by another instance".
     await _files.clearStaleLocks();
+    final checkpoint = SpConfig.headerCheckpoint(network);
     try {
       await _ffi.createFromMnemonic(
         network: SpNetworkMapper.toFfi(network),
@@ -206,6 +208,9 @@ class BwkSpAccountRepository
         dataDir: dataDir,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
+        headerCheckpoint: checkpoint == null
+            ? null
+            : SpHeaderCheckpointMapper.toFfi(checkpoint),
       );
     } catch (_) {
       // Fixed text on purpose: see the mnemonic note above.
