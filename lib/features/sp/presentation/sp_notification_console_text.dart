@@ -34,14 +34,14 @@ extension SpNotificationConsoleText on SpNotification {
       ):
         final at = height == null ? '' : ' @$height';
         return 'ElectrumTx ${kind.name} $txid ${amountSat}sat$at';
-      case SpBackendOffline():
-        return 'BackendOffline';
-      case SpBackendOnline():
-        return 'BackendOnline';
+      case SpElectrumDisconnected():
+        return 'ElectrumDisconnected';
       case SpReorg(:final forkHeight):
-        return 'Reorg @$forkHeight';
+        return 'Reorg from $forkHeight';
       case SpHeaderCheckpointMismatch():
         return 'HeaderCheckpointMismatch';
+      case SpElectrumConnected():
+        return 'ElectrumConnected';
       case SpPaymentHistoryUpdated():
         return 'PaymentHistoryUpdated';
       case SpHeaderProgressStarted(:final phase, :final start, :final end):

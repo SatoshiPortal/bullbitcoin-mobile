@@ -11,13 +11,14 @@ sealed class SpNotification {
   const SpNotification();
 
   /// Whether this event changed the coin set, so the balance moved with it.
-  /// Scan progress and start do not; events that add or spend a coin, or invalidate the chain, do.
+  /// Scan progress and start do not; only events that add, spend or roll back
+  /// a coin do.
   bool get affectsBalance => switch (this) {
     SpNewOutput() ||
     SpOutputSpent() ||
     SpElectrumTx() ||
-    SpScanCompleted() ||
-    SpReorg() => true,
+    SpReorg() ||
+    SpScanCompleted() => true,
     SpScanStarted() ||
     SpScanReceiveProgress() ||
     SpScanSpendProgress() ||
@@ -25,8 +26,8 @@ sealed class SpNotification {
     SpScanFailed() ||
     SpBroadcasted() ||
     SpBroadcastFailed() ||
-    SpBackendOffline() ||
-    SpBackendOnline() ||
+    SpElectrumDisconnected() ||
+    SpElectrumConnected() ||
     SpHeaderCheckpointMismatch() ||
     SpPaymentHistoryUpdated() ||
     SpHeaderProgressStarted() ||
@@ -41,8 +42,7 @@ sealed class SpNotification {
     SpHeaderProgressStarted() ||
     SpHeaderProgress() ||
     SpHeaderProgressCompleted() ||
-    SpHeaderProgressFailed() ||
-    SpHeaderCheckpointMismatch() => true,
+    SpHeaderProgressFailed() => true,
     SpScanStarted() ||
     SpScanReceiveProgress() ||
     SpScanSpendProgress() ||
@@ -54,10 +54,11 @@ sealed class SpNotification {
     SpBroadcasted() ||
     SpBroadcastFailed() ||
     SpElectrumTx() ||
-    SpBackendOffline() ||
-    SpBackendOnline() ||
-    SpPaymentHistoryUpdated() ||
-    SpReorg() => false,
+    SpElectrumDisconnected() ||
+    SpElectrumConnected() ||
+    SpReorg() ||
+    SpHeaderCheckpointMismatch() ||
+    SpPaymentHistoryUpdated() => false,
   };
 
   /// The chain tip this event reports, when it carries one. Completed and
@@ -77,11 +78,11 @@ sealed class SpNotification {
     SpBroadcasted() ||
     SpBroadcastFailed() ||
     SpElectrumTx() ||
-    SpBackendOffline() ||
-    SpBackendOnline() ||
+    SpElectrumDisconnected() ||
+    SpElectrumConnected() ||
+    SpReorg() ||
     SpHeaderCheckpointMismatch() ||
-    SpPaymentHistoryUpdated() ||
-    SpReorg() => null,
+    SpPaymentHistoryUpdated() => null,
   };
 
   /// Whether a scan is running once this event has been seen. Null when the
@@ -96,15 +97,15 @@ sealed class SpNotification {
     SpBroadcasted() ||
     SpBroadcastFailed() ||
     SpElectrumTx() ||
-    SpBackendOffline() ||
-    SpBackendOnline() ||
+    SpElectrumDisconnected() ||
+    SpElectrumConnected() ||
+    SpReorg() ||
     SpHeaderCheckpointMismatch() ||
     SpPaymentHistoryUpdated() ||
     SpHeaderProgressStarted() ||
     SpHeaderProgress() ||
     SpHeaderProgressCompleted() ||
-    SpHeaderProgressFailed() ||
-    SpReorg() => null,
+    SpHeaderProgressFailed() => null,
   };
 }
 
@@ -173,8 +174,21 @@ final class SpElectrumTx extends SpNotification {
   });
 }
 
-final class SpBackendOffline extends SpNotification {
-  const SpBackendOffline();
+final class SpElectrumDisconnected extends SpNotification {
+  const SpElectrumDisconnected();
+}
+
+final class SpReorg extends SpNotification {
+  final int forkHeight;
+  const SpReorg(this.forkHeight);
+}
+
+final class SpHeaderCheckpointMismatch extends SpNotification {
+  const SpHeaderCheckpointMismatch();
+}
+
+final class SpElectrumConnected extends SpNotification {
+  const SpElectrumConnected();
 }
 
 final class SpPaymentHistoryUpdated extends SpNotification {
@@ -211,18 +225,4 @@ final class SpHeaderProgressCompleted extends SpNotification {
 final class SpHeaderProgressFailed extends SpNotification {
   final SpHeaderValidationPhase phase;
   const SpHeaderProgressFailed(this.phase);
-}
-
-final class SpBackendOnline extends SpNotification {
-  const SpBackendOnline();
-}
-
-final class SpReorg extends SpNotification {
-  final int forkHeight;
-
-  const SpReorg(this.forkHeight);
-}
-
-final class SpHeaderCheckpointMismatch extends SpNotification {
-  const SpHeaderCheckpointMismatch();
 }

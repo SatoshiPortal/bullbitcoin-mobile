@@ -151,13 +151,12 @@ class SpCubit extends Cubit<SpState> {
         if (!state.isScanning) unawaited(_refreshWalletData());
       case SpBroadcastFailed(:final message):
         log.warning('SpCubit.broadcast: broadcast failed: $message');
-      case SpBackendOffline():
-        emit(state.copyWith(backendOnline: false));
-      case SpBackendOnline():
-        emit(state.copyWith(backendOnline: true));
-        unawaited(_refreshWalletData());
+      case SpPaymentHistoryUpdated():
       case SpReorg():
         unawaited(_refreshWalletData());
+      case SpElectrumDisconnected():
+      case SpElectrumConnected():
+        break;
       case SpHeaderCheckpointMismatch():
         _resetHeaderRetry();
         emit(
@@ -165,8 +164,6 @@ class SpCubit extends Cubit<SpState> {
             headerValidationStatus: SpHeaderValidationStatus.failed,
           ),
         );
-      case SpPaymentHistoryUpdated():
-        unawaited(_refreshWalletData());
       case SpHeaderProgressStarted(:final phase, :final start, :final end):
         _onHeaderProgress(phase, from: start, current: start, to: end);
       case SpHeaderProgress(:final phase, :final current, :final end):

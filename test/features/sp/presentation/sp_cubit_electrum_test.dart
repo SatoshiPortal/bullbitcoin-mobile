@@ -119,43 +119,6 @@ void main() {
     verifyNever(() => scanUsecase.execute());
   });
 
-  test('backend status goes online -> offline -> online', () async {
-    await cubit.load();
-    expect(cubit.state.backendOnline, true);
-
-    notifController.add(const SpBackendOffline());
-    await Future.delayed(Duration.zero);
-    expect(cubit.state.backendOnline, false);
-
-    // Any backend activity refreshes wallet data, which re-reads a live
-    // (online) backend, flipping the status back.
-    notifController.add(
-      SpElectrumTx(
-        kind: SpCoinSource.segwit,
-        txid: 'aabbcc',
-        amountSat: Sats.fromInt(1000),
-      ),
-    );
-    await Future.delayed(Duration.zero);
-    expect(cubit.state.backendOnline, true);
-
-    verifyNever(() => scanUsecase.execute());
-  });
-  test('electrum reconnect refreshes wallet data without scanning', () async {
-    await cubit.load();
-    notifController.add(const SpBackendOffline());
-    await Future.delayed(Duration.zero);
-    expect(cubit.state.backendOnline, false);
-    clearInteractions(loadUsecase);
-
-    notifController.add(const SpBackendOnline());
-    await Future.delayed(Duration.zero);
-
-    expect(cubit.state.backendOnline, true);
-    verify(() => loadUsecase.execute()).called(greaterThanOrEqualTo(1));
-    verifyNever(() => scanUsecase.execute());
-  });
-
   test('reorg refreshes wallet data even during a scan', () async {
     await cubit.load();
     notifController.add(const SpScanStarted(100, 200));
