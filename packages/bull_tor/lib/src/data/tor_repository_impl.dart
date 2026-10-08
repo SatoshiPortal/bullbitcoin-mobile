@@ -37,6 +37,12 @@ const _directStallLimit = Duration(seconds: 30);
 /// reports and the time limit still cover that case.
 const _relayFraction = 0.14;
 
+/// How soon a start that follows a teardown must fail to be blamed on it.
+const _teardownRefusalWindow = Duration(seconds: 5);
+
+/// How long a refused start waits before its single retry.
+const _teardownReleaseWait = Duration(seconds: 3);
+
 /// The most an automatic-mode direct bootstrap gets, progressing or not. It
 /// matches arti's own bootstrap timeout, which this cuts short when it can.
 const _directTimeLimit = Duration(seconds: 120);
@@ -271,9 +277,18 @@ final class TorRepositoryImpl implements TorRepository {
         final hasFallback = index + 1 < attempts.length;
         _emit(TorConnecting(source: TorSource.embedded, transport: transport));
         try {
+          // A retry stopped a client before this loop, and every later
+          // attempt follows the one it abandoned. Only bridges need the
+          // state-directory lock, so only Snowflake can be refused for it.
+          final followsTeardown =
+              transport == TorTransport.snowflake && (retry || index > 0);
           final endpoint = hasFallback
-              ? await _startOrAbandon(transport)
-              : await _embeddedTor.start(transport);
+              ? await _startOrAbandon(transport, generation, followsTeardown)
+              : await _start(
+                  transport,
+                  followsTeardown,
+                  wanted: () => _isCurrent(generation),
+                );
           if (!_isCurrent(generation)) return _current;
 
           unawaited(_onSuccessfulTransport?.call(transport));
@@ -320,7 +335,11 @@ final class TorRepositoryImpl implements TorRepository {
   /// While arti blames the device itself (offline, wrong clock) the stall
   /// clock is suspended, and if that is still the case at the time limit the
   /// attempt ends with that diagnosis instead of a pointless Snowflake run.
-  Future<TorProxyEndpoint> _startOrAbandon(TorTransport transport) async {
+  Future<TorProxyEndpoint> _startOrAbandon(
+    TorTransport transport,
+    int generation,
+    bool followsTeardown,
+  ) async {
     final abandoned = Completer<TorProxyEndpoint>();
     void abandon(TorFallbackReason reason, {TorFailure? failure}) {
       if (!abandoned.isCompleted) {
@@ -384,7 +403,11 @@ final class TorRepositoryImpl implements TorRepository {
     try {
       // Whichever settles first wins; the loser's late result is dropped.
       return await Future.any([
-        _embeddedTor.start(transport),
+        _start(
+          transport,
+          followsTeardown,
+          wanted: () => _isCurrent(generation) && !abandoned.isCompleted,
+        ),
         abandoned.future,
       ]);
     } finally {
@@ -393,6 +416,46 @@ final class TorRepositoryImpl implements TorRepository {
       // Not awaited: nothing depends on the watcher being gone, and the
       // attempt that follows must not queue behind it.
       unawaited(progress.cancel());
+    }
+  }
+
+  /// Starts [transport], once more if a client torn down just before still
+  /// held the state directory.
+  ///
+  /// Arti only lets a client that holds the state-directory lock use bridges,
+  /// and a stopped client releases it when arti's background tasks drop their
+  /// last reference, which nothing in the onion API lets us await. Snowflake
+  /// owns a state directory apart from direct's, but a Snowflake client that
+  /// replaces another one, as a retry in Snowflake mode does, still contends
+  /// for it. When the two shared one directory, Snowflake right after the
+  /// direct client failed in 0.2 s on a Pixel 5 with "Error setting up the
+  /// guard manager", and nothing makes a Snowflake predecessor let go any
+  /// faster. Arti's error kind does not survive the
+  /// bindings, so the refusal is recognised by its shape: a start following a
+  /// teardown that fails within [_teardownRefusalWindow] without arti ever
+  /// reporting a blockage. It is retried once, after [_teardownReleaseWait],
+  /// if the attempt is still [wanted] by then.
+  Future<TorProxyEndpoint> _start(
+    TorTransport transport,
+    bool followsTeardown, {
+    required bool Function() wanted,
+  }) async {
+    if (!followsTeardown) return _embeddedTor.start(transport);
+    var early = true;
+    final window = Timer(_teardownRefusalWindow, () => early = false);
+    try {
+      return await _embeddedTor.start(transport);
+    } on TorBackendException catch (error) {
+      final refusedByTeardown =
+          early &&
+          error.failure is TorBootstrapFailure &&
+          (error.failure as TorBootstrapFailure).diagnostic == null;
+      if (!refusedByTeardown) rethrow;
+      await Future<void>.delayed(_teardownReleaseWait);
+      if (!wanted()) rethrow;
+      return _embeddedTor.start(transport);
+    } finally {
+      window.cancel();
     }
   }
 

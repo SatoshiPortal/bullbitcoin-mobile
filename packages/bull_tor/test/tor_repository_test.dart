@@ -757,6 +757,182 @@ void main() {
       });
     });
 
+    // Bridges need the state-directory lock, which a torn-down client
+    // releases only once arti's tasks let go of it, and nothing in the onion
+    // API can be awaited for that. Snowflake owns its state directory, so the
+    // direct hand-over no longer contends for it, but a Snowflake client that
+    // replaces another one still does. When both transports shared one
+    // directory, Snowflake right after direct failed in 0.2 s on a Pixel 5
+    // with arti's "Error setting up the guard manager".
+    group('a start refused while the previous client lets go', () {
+      const refused = TorBackendException(
+        TorBootstrapFailure(
+          'tor: operation not implemented: '
+          'Error setting up the guard manager',
+        ),
+      );
+
+      TorRepositoryImpl restartOn(FakeAsync async, TorTransportMode mode) {
+        final repository = TorRepositoryImpl(embedded, initialMode: mode);
+        repository.ensureReady().ignore();
+        async.flushMicrotasks();
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+        );
+        async.flushMicrotasks();
+        expect(repository.current, isA<TorReady>());
+        repository.retry().ignore();
+        async.flushMicrotasks();
+        expect(embedded.startedTransports, hasLength(2));
+        return repository;
+      }
+
+      TorRepositoryImpl handOver(FakeAsync async) =>
+          restartOn(async, TorTransportMode.snowflake);
+
+      test('is not retried for direct, which needs no lock', () {
+        fakeAsync((async) {
+          final repository = restartOn(async, TorTransportMode.direct);
+
+          embedded.starts.last.completeError(refused);
+          async.elapse(const Duration(seconds: 10));
+
+          expect(embedded.startedTransports, hasLength(2));
+          expect(repository.current, isA<TorUnavailable>());
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('is started once more after a short wait', () {
+        fakeAsync((async) {
+          final repository = handOver(async);
+          final fallbacks = <TorTransportFallback>[];
+          repository.watchFallbacks().listen(fallbacks.add);
+          TorConnectionState? outcome;
+          repository.ensureReady().then((state) => outcome = state);
+          async.flushMicrotasks();
+
+          async.elapse(const Duration(milliseconds: 200));
+          embedded.starts.last.completeError(refused);
+          async.flushMicrotasks();
+          expect(repository.current, isA<TorConnecting>());
+          expect(embedded.startedTransports, [
+            TorTransport.snowflake,
+            TorTransport.snowflake,
+          ]);
+
+          async.elapse(const Duration(seconds: 3));
+          expect(embedded.startedTransports, [
+            TorTransport.snowflake,
+            TorTransport.snowflake,
+            TorTransport.snowflake,
+          ]);
+          embedded.starts.last.complete(
+            TorProxyEndpoint(host: '127.0.0.1', port: 41002),
+          );
+          async.flushMicrotasks();
+
+          expect(
+            (outcome as TorReady?)?.route.transport,
+            TorTransport.snowflake,
+          );
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('fails if refused again', () {
+        fakeAsync((async) {
+          final repository = handOver(async);
+
+          embedded.starts.last.completeError(refused);
+          async.elapse(const Duration(seconds: 3));
+          embedded.starts.last.completeError(refused);
+          async.elapse(const Duration(seconds: 10));
+
+          expect(embedded.startedTransports, hasLength(3));
+          expect(repository.current, isA<TorUnavailable>());
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('is not retried once it bootstrapped for a while', () {
+        fakeAsync((async) {
+          final repository = handOver(async);
+
+          async.elapse(const Duration(seconds: 40));
+          embedded.starts.last.completeError(refused);
+          async.elapse(const Duration(seconds: 10));
+
+          expect(embedded.startedTransports, hasLength(2));
+          expect(repository.current, isA<TorUnavailable>());
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('is not retried when arti reported a blockage', () {
+        fakeAsync((async) {
+          final repository = handOver(async);
+
+          embedded.starts.last.completeError(
+            const TorBackendException(
+              TorBootstrapFailure('offline', TorDiagnostic.offline),
+            ),
+          );
+          async.elapse(const Duration(seconds: 10));
+
+          expect(embedded.startedTransports, hasLength(2));
+          expect(repository.current, isA<TorUnavailable>());
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      // A retry joins the one in flight, so the newer connection here takes
+      // over an automatic sequence, whose Snowflake start also follows a
+      // teardown.
+      test('is not retried once a newer connection took over', () {
+        fakeAsync((async) {
+          final repository = startAutomatic(async);
+          async.elapse(const Duration(seconds: 30));
+          expect(embedded.startedTransports.last, TorTransport.snowflake);
+
+          embedded.starts.last.completeError(refused);
+          async.flushMicrotasks();
+          repository.retry().ignore();
+          async.flushMicrotasks();
+          final started = embedded.startedTransports.length;
+          async.elapse(const Duration(seconds: 3));
+
+          expect(embedded.startedTransports, hasLength(started));
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+
+      test('is not retried on the first start of a connection', () {
+        fakeAsync((async) {
+          final repository = TorRepositoryImpl(
+            embedded,
+            initialMode: TorTransportMode.snowflake,
+          );
+          repository.ensureReady().ignore();
+          async.flushMicrotasks();
+
+          embedded.starts.last.completeError(refused);
+          async.elapse(const Duration(seconds: 10));
+
+          expect(embedded.startedTransports, hasLength(1));
+          expect(repository.current, isA<TorUnavailable>());
+          repository.close().ignore();
+          async.flushMicrotasks();
+        });
+      });
+    });
+
     test('still reports Tor stopping once it was ready', () {
       fakeAsync((async) {
         embedded.announcesStart = true;
@@ -1089,5 +1265,67 @@ final class _FakeEmbeddedTor implements EmbeddedTorPort {
   }
 
   @override
-  Stream<EmbeddedTorEvent> watch() => events.stream;
+  Stream<EmbeddedTorEvent> watch() => _CancelInZone(events.stream);
+}
+
+/// A stream whose cancellation future belongs to the zone that cancels it.
+///
+/// A broadcast subscription cancels with a future of the root zone, which
+/// `FakeAsync.flushMicrotasks` never runs: a retry awaiting that cancellation
+/// would stall a fake-time test forever.
+final class _CancelInZone<T> extends Stream<T> {
+  final Stream<T> _inner;
+
+  _CancelInZone(this._inner);
+
+  @override
+  bool get isBroadcast => _inner.isBroadcast;
+
+  @override
+  StreamSubscription<T> listen(
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => _CancelInZoneSubscription(
+    _inner.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    ),
+  );
+}
+
+final class _CancelInZoneSubscription<T> implements StreamSubscription<T> {
+  final StreamSubscription<T> _inner;
+
+  _CancelInZoneSubscription(this._inner);
+
+  @override
+  Future<void> cancel() {
+    _inner.cancel().ignore();
+    return Future<void>.value();
+  }
+
+  @override
+  void onData(void Function(T data)? handleData) => _inner.onData(handleData);
+
+  @override
+  void onError(Function? handleError) => _inner.onError(handleError);
+
+  @override
+  void onDone(void Function()? handleDone) => _inner.onDone(handleDone);
+
+  @override
+  void pause([Future<void>? resumeSignal]) => _inner.pause(resumeSignal);
+
+  @override
+  void resume() => _inner.resume();
+
+  @override
+  bool get isPaused => _inner.isPaused;
+
+  @override
+  Future<E> asFuture<E>([E? futureValue]) => _inner.asFuture(futureValue);
 }
