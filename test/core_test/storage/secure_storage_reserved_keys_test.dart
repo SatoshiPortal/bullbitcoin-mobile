@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
@@ -10,11 +9,16 @@ void main() {
 
   setUp(() {
     FakeSecureStoragePlatform().install();
-    store = SecureStorageDatasourceImpl(const FlutterSecureStorage());
+    store = SecureStorageDatasourceImpl(
+      Secrets(
+        scratchDirectory: () async => '/tmp/pr2938-storage-test',
+      ).applicationStorage,
+    );
   });
 
   for (final key in [
     'seed_73c5da0a',
+    'securityKey',
     'com.bullbitcoin.secrets/dek/swaps/main',
   ]) {
     test('$key is refused on every operation', () {
@@ -32,18 +36,27 @@ void main() {
       entries: {
         'seed_73c5da0a': 'a seed',
         'com.bullbitcoin.secrets/dek/swaps/main': 'a database key',
+        'securityKey': '123456',
         'settings_environment': 'mainnet',
       },
     )..install();
-    store = SecureStorageDatasourceImpl(const FlutterSecureStorage());
+    store = SecureStorageDatasourceImpl(
+      Secrets(
+        scratchDirectory: () async => '/tmp/pr2938-storage-test',
+      ).applicationStorage,
+    );
 
     expect(await store.getAll(), {'settings_environment': 'mainnet'});
-    expect(storage.entries, hasLength(3), reason: 'hidden, not deleted');
+    expect(storage.entries, hasLength(4), reason: 'hidden, not deleted');
   });
 
   test('the refusal is written against the package own prefixes', () {
     // Not a second list to keep in step: if the package adds a namespace,
     // this is what makes the app refuse it too.
-    expect(Secrets.reservedKeyPrefixes, {'seed_', 'com.bullbitcoin.secrets'});
+    expect(Secrets.reservedKeyPrefixes, {
+      'seed_',
+      'com.bullbitcoin.secrets',
+      'securityKey',
+    });
   });
 }

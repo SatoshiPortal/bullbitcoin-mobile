@@ -9,7 +9,7 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>Database, Storage Adapters,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
@@ -23,7 +23,7 @@ graph TB
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
-    SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
+    SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup, app unlock]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
@@ -66,6 +66,7 @@ graph TB
     %% Instead, we note this in the documentation below
 
     %% Extracted package dependencies
+    CORE --> SECRETS
     CORE --> PRIMITIVES
     CORE --> BULL_LOGGER
     LOGS --> BULL_LOGGER
@@ -117,6 +118,7 @@ graph TB
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
+    PIN_CODE --> SECRETS
     RECEIVE --> BULL_PAYJOIN
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
@@ -216,14 +218,14 @@ graph TB
 1. **Infrastructure Services**:
 
    - Database (Drift/SQLite)
-   - Secure Storage instance (Flutter Secure Storage)
+   - Application storage adapter backed by the Secrets package
    - API Clients (REST/GraphQL clients)
    - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
    - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
    - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
-   - PIN encrypted storage
+   - Unlock-attempt persistence; the unlock credential is owned by Secrets
 
 2. **Core Primitives**:
    - Canonical location: `packages/primitives`; compatibility exports remain in `lib/core` during migration.

@@ -17,3 +17,6 @@ export 'silent_payment_descriptors.dart' show SilentPaymentDescriptors;
 export 'swap_master_key.dart' show SwapMasterKey;
 export 'mnemonic_word.dart';
 export 'mnemonic_word_count.dart' show MnemonicWordCount;
+
+export 'repositories/app_unlock_credential_repository.dart';
+export 'repositories/application_storage_repository.dart';

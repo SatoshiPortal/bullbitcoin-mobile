@@ -45,6 +45,7 @@ void main() {
       'lib/src/data/boundary.dart', // exception → failure, the one try/catch
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
+      'lib/src/data/app_unlock_credential_repository_impl.dart', // not-found on credential verification
     };
 
     final offenders = <String>[];
@@ -234,7 +235,7 @@ void main() {
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification', 'DatabaseKeys',
-      'Recoverbull',
+      'Recoverbull', 'AppUnlockCredential', 'ApplicationStorage',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int

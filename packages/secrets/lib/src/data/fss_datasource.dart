@@ -32,7 +32,7 @@ typedef StoredListing = ({
 ///
 /// The only holder of a `FlutterSecureStorage` instance here, and the only place that composes a key. Not exported, and `Secrets` builds it itself, so nothing outside can obtain the instance.
 ///
-/// Two namespaces with deliberately different read semantics: a corrupt seed is skipped so it cannot hide the others, a corrupt module key is refused and kept. See doc/design.md, § The package owns the keystore.
+/// The historical PIN key and two namespaces with deliberately different read semantics: a corrupt seed is skipped so it cannot hide the others, a corrupt module key is refused and kept. See doc/design.md, § The package owns the keystore.
 ///
 /// **The lock is `static` and not reentrant**: the primitives ([_readRaw], [_writeRaw], [_deleteRaw], [_readAllRaw]) never take it, and a composed operation takes it exactly once and calls only primitives. A nested take hangs rather than throwing. Why it is per process and why single calls go unguarded: doc/design.md, § One lock.
 class FlutterSecureStorageDatasource {
@@ -43,6 +43,9 @@ class FlutterSecureStorageDatasource {
   /// stored secret. Bare rather than reverse-DNS because it predates the
   /// convention below — do not "harmonise" the two.
   static const secretNamespace = 'seed_';
+
+  /// Historical application PIN key, preserved without a migration.
+  static const pinKey = 'securityKey';
 
   /// Keys this package holds for other modules. Reverse-DNS so that no
   /// other component of the app — nor any plugin sharing the keystore —
@@ -110,6 +113,49 @@ class FlutterSecureStorageDatasource {
         ),
         iOptions: _iosOptions,
       );
+
+  // --------------------------------------------------------- application data
+
+  /// Starts Android's lazy cipher initialization without enumerating stored values.
+  Future<void> prewarm() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _translate(
+        () => _storage.containsKey(key: '__bull_secure_storage_prewarm__'),
+      );
+    } on Exception catch (e) {
+      log.warning('Secure storage prewarm failed: ${describeSafely(e)}');
+    }
+  }
+
+  Future<String?> readApplicationValue(String key) => _readRaw(key);
+  Future<void> writeApplicationValue(String key, String value) =>
+      _lock.synchronized(() => _writeRaw(key, value));
+  Future<void> deleteApplicationValue(String key) =>
+      _lock.synchronized(() => _deleteRaw(key));
+  Future<bool> containsApplicationValue(String key) =>
+      _translate(() => _storage.containsKey(key: key));
+  Future<Map<String, String>> readApplicationValues() async {
+    final all = await _translate(_storage.readAll);
+    return {
+      for (final entry in all.entries)
+        if (!isCustodyKey(entry.key)) entry.key: entry.value,
+    };
+  }
+
+  /// The generic application capability cannot access wallet material or the unlock credential.
+  static bool isCustodyKey(String key) =>
+      [secretNamespace, keyNamespace, pinKey].any(key.startsWith);
+
+  // --------------------------------------------------------------------- PIN
+
+  /// PIN operations use the same plugin options as the former app store. They do not trigger seed keychain re-binding.
+  Future<String?> fetchPin() => _readRaw(pinKey);
+
+  Future<void> storePin(String value) =>
+      _lock.synchronized(() => _writeRaw(pinKey, value));
+
+  Future<void> deletePin() => _lock.synchronized(() => _deleteRaw(pinKey));
 
   // ------------------------------------------------------------------ secrets
 

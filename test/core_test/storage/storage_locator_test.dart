@@ -1,58 +1,28 @@
 import 'package:bb_mobile/core/storage/storage_locator.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
-  final calls = <MethodCall>[];
-
-  setUp(() {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (call) async {
-          calls.add(call);
-          return false;
-        });
-  });
-
-  tearDown(() {
-    debugDefaultTargetPlatformOverride = null;
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
-    calls.clear();
-  });
-
-  test('prewarm initializes the secure storage on Android', () async {
-    await StorageLocator.prewarmSecureStorage();
-
-    expect(calls, hasLength(1));
-    expect(calls.single.method, 'containsKey');
-    expect(calls.single.arguments, {
-      'key': '__bull_secure_storage_prewarm__',
-      'options': containsPair('migrateOnAlgorithmChange', 'false'),
-    });
-  });
-
-  test('prewarm does nothing off Android', () async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-
-    await StorageLocator.prewarmSecureStorage();
-
-    expect(calls, isEmpty);
-  });
-
-  test('prewarm leaves initialization failures to the first read', () async {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (call) {
-          calls.add(call);
-          throw PlatformException(code: 'storage_error');
-        });
-
-    await expectLater(StorageLocator.prewarmSecureStorage(), completes);
-
-    expect(calls, hasLength(1));
+  test('resolves the application store after Secrets registration', () async {
+    final storage = FakeSecureStoragePlatform().install();
+    final locator = GetIt.asNewInstance();
+    addTearDown(locator.reset);
+    await StorageLocator.registerDatasources(locator);
+    locator.registerSingleton(
+      Secrets(scratchDirectory: () async => '/tmp/pr2938-storage-test'),
+    );
+    final store = locator<KeyValueStorageDatasource<String>>(
+      instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+    );
+    await store.saveValue(key: 'exchange_test_key', value: 'dummy');
+    expect(storage.entries, {'exchange_test_key': 'dummy'});
+    expect(await store.getValue('exchange_test_key'), 'dummy');
+    expect(await store.hasValue('exchange_test_key'), isTrue);
+    await store.deleteValue('exchange_test_key');
+    expect(storage.entries, isEmpty);
   });
 }

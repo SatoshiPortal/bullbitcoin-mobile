@@ -120,10 +120,7 @@ class _KeyMaterialVisitor extends RecursiveAstVisitor<void> {
       return;
     }
     final symbol = materialSymbol(element);
-    if (symbol == null ||
-        (symbol.startsWith('package:flutter_secure_storage') &&
-            _secureStorageImporters.contains(path)) ||
-        _isException(path, node, symbol)) {
+    if (symbol == null || _isException(path, node, symbol)) {
       return;
     }
     violations.add('$path: $symbol');
@@ -156,8 +153,7 @@ class _KeyMaterialVisitor extends RecursiveAstVisitor<void> {
   }
 
   void checkChannel(String? value) {
-    if (!_secureStorageImporters.contains(path) &&
-        value == 'plugins.it_nomads.com/flutter_secure_storage') {
+    if (value == 'plugins.it_nomads.com/flutter_secure_storage') {
       violations.add('$path: flutter_secure_storage platform channel');
     }
   }
@@ -213,14 +209,6 @@ const _unresolvedSensitiveMembers = {
   'signSilentPaymentPsbt',
   'dartBwkApiSpSignerSignSilentPaymentPsbt',
   'initMock',
-};
-
-// Kept identical to the text custody policy's narrow app-store allowlist.
-const _secureStorageImporters = {
-  'lib/core/storage/storage_locator.dart',
-  'lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart',
-  'test/core_test/storage/secure_storage_reserved_keys_test.dart',
-  'test/core_test/storage/storage_locator_test.dart',
 };
 
 const _dartBwk = 'package:bull_sdk/src/rust/third_party/dart_bwk/';

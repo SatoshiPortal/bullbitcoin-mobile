@@ -29,6 +29,8 @@ import 'package:secrets/src/public/secret.dart';
 final class Secrets {
   final _repository = SecretRepository();
   final DatabaseKeyRepository _databaseKeys;
+  final _pin = AppUnlockCredentialRepositoryImpl();
+  final _applicationStorage = ApplicationStorageRepositoryImpl();
   final Future<String> Function() _scratchDirectory;
 
   /// Opens the store the user's secrets live in.
@@ -59,7 +61,19 @@ final class Secrets {
   static const reservedKeyPrefixes = {
     FlutterSecureStorageDatasource.secretNamespace,
     FlutterSecureStorageDatasource.keyNamespace,
+    FlutterSecureStorageDatasource.pinKey,
   };
+
+  /// Application unlock credential operations. The stored value never leaves the package.
+  AppUnlockCredential get appUnlockCredential => AppUnlockCredential._(_pin);
+
+  /// Compatibility access to application data. Seed, database-key and unlock-credential entries are inaccessible through this capability.
+  ApplicationStorage get applicationStorage =>
+      ApplicationStorage._(_applicationStorage);
+
+  /// Starts Android storage initialization early without requiring application DI.
+  static Future<void> prewarmStorage() =>
+      FlutterSecureStorageDatasource().prewarm();
 
   // ---------------------------------------------------------------- creation
 
@@ -250,4 +264,82 @@ void _requireKeySegment(String segment, String label) {
       'must be non-empty and free of "/"',
     );
   }
+}
+
+/// A restricted capability for application PIN storage, preserving existing installations.
+final class AppUnlockCredential {
+  final AppUnlockCredentialRepository _repository;
+
+  AppUnlockCredential._(this._repository);
+
+  /// Whether a PIN is configured. A locked keystore remains a failure.
+  @useResult
+  Future<Result<bool, SecretFailure>> exists() => _repository.exists();
+
+  /// Stores the supplied PIN under the historical key. Release the input after use.
+  @useResult
+  Future<Result<void, SecretFailure>> set(String value) =>
+      _repository.set(value);
+
+  /// Compares a candidate internally. Absence returns [SecretNotFoundFailure].
+  @useResult
+  Future<Result<bool, SecretFailure>> verify(String candidate) =>
+      _repository.verify(candidate);
+
+  /// Removes only the application PIN, leaving wallet custody intact.
+  @useResult
+  Future<Result<void, SecretFailure>> delete() => _repository.delete();
+}
+
+/// Secure application data stored by this package, with custody-owned keys excluded.
+final class ApplicationStorage {
+  final ApplicationStorageRepository _repository;
+
+  ApplicationStorage._(this._repository);
+
+  static void _requireApplicationKey(String key) {
+    if (FlutterSecureStorageDatasource.isCustodyKey(key)) {
+      throw ArgumentError.value(
+        key,
+        'key',
+        'requires a dedicated Secrets capability',
+      );
+    }
+  }
+
+  /// Reads an application entry. The stored unlock credential and wallet keys are refused.
+  @useResult
+  Future<Result<String?, SecretFailure>> read(String key) {
+    _requireApplicationKey(key);
+    return _repository.read(key);
+  }
+
+  /// Writes an application entry without changing its historical key.
+  @useResult
+  Future<Result<void, SecretFailure>> write({
+    required String key,
+    required String value,
+  }) {
+    _requireApplicationKey(key);
+    return _repository.write(key, value);
+  }
+
+  /// Deletes one application entry. There is deliberately no delete-all operation.
+  @useResult
+  Future<Result<void, SecretFailure>> delete(String key) {
+    _requireApplicationKey(key);
+    return _repository.delete(key);
+  }
+
+  /// Checks whether an application entry exists.
+  @useResult
+  Future<Result<bool, SecretFailure>> contains(String key) {
+    _requireApplicationKey(key);
+    return _repository.contains(key);
+  }
+
+  /// Lists application entries only; custody-owned values never reach the caller.
+  @useResult
+  Future<Result<Map<String, String>, SecretFailure>> readAll() =>
+      _repository.readAll();
 }

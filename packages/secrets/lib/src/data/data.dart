@@ -11,3 +11,8 @@ export 'exceptions.dart';
 export 'fss_datasource.dart' show FlutterSecureStorageDatasource;
 export 'models/key_model.dart' show KeyKind;
 export 'secret_repository.dart' show SecretRepository;
+
+export 'app_unlock_credential_repository_impl.dart'
+    show AppUnlockCredentialRepositoryImpl;
+export 'application_storage_repository_impl.dart'
+    show ApplicationStorageRepositoryImpl;

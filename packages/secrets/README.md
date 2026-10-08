@@ -1,6 +1,8 @@
 # secrets
 
-User secret material — BIP39 mnemonics and raw seeds — behind a custody boundary. `Secrets` manages creation, storage and recovery. A `Secret` is a handle for operations on one stored secret; neither object holds mnemonic words or a seed.
+User secret material — BIP39 mnemonics and raw seeds — behind a custody boundary. `Secrets` manages creation, storage, recovery and the application unlock credential. `secrets.appUnlockCredential` exposes existence, set, verify and delete operations; it never returns the stored PIN and preserves the historical `securityKey` entry and plugin options. A `Secret` is a handle for operations on one stored secret; neither object holds mnemonic words or a seed.
+
+The package is the sole owner of `flutter_secure_storage`. `secrets.applicationStorage` preserves application entries used by swaps, exchange and unlock-attempt tracking, while refusing seed, database-key and unlock-credential keys on every operation and excluding them from listings. It has no delete-all operation.
 
 ## Public API
 
@@ -12,6 +14,17 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
+|-- appUnlockCredential
+|   |-- exists() -> bool
+|   |-- set(value) -> void
+|   |-- verify(candidate) -> bool
+|   `-- delete() -> void
+|-- applicationStorage
+|   |-- read(key) -> String?
+|   |-- write(key:, value:) -> void
+|   |-- delete(key) -> void
+|   |-- contains(key) -> bool
+|   `-- readAll() -> Map<String, String>
 |-- generate([wordCount: MnemonicWordCount.words12]) -> Secret
 |-- import(words:, [passphrase:]) -> Secret
 |-- fetch(id) -> Secret

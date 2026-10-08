@@ -85,11 +85,11 @@ export 'package:flutter_secure_storage/flutter_secure_storage.dart';
       expect(await inspect('keystore_use', source), isNotEmpty);
       expect(
         await inspect(
-          'allowed_keystore',
+          'former_allowlisted_keystore',
           source,
           policyPath: 'lib/core/storage/storage_locator.dart',
         ),
-        isEmpty,
+        isNotEmpty,
       );
     },
   );

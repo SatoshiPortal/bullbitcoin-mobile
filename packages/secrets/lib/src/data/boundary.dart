@@ -8,7 +8,7 @@ import 'package:secrets/src/domain/domain.dart';
 
 /// The package's one `try/catch`: an exception becomes a [SecretFailure] here and nowhere else.
 ///
-/// Called by the two repositories only, so `public/` never catches. Two rules live in the table: a sealed keystore is never an absence, and no foreign message travels — anything this package did not raise is reported by type ([describeSafely]).
+/// Called by repositories only, so `public/` never catches. Two rules live in the table: a sealed keystore is never an absence, and no foreign message travels — anything this package did not raise is reported by type ([describeSafely]).
 ///
 /// [orElse] names the failure an unrecognised `Exception` becomes; it is the repository method's category — a read, a write, a delete, a derivation — not a message.
 Future<Result<T, SecretFailure>> boundary<T>(

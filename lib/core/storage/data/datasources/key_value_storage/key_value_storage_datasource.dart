@@ -3,7 +3,7 @@
 /// Deliberately blind to the user's seeds. Those live in the same OS
 /// keystore under a `seed_` prefix, but they belong to the `secrets`
 /// package, which owns its own `flutter_secure_storage` instance. This
-/// interface serves pin_code, swaps, exchange and app_unlock.
+/// interface adapts the package-owned application storage for swaps, exchange and app_unlock; the unlock credential uses its dedicated capability.
 ///
 /// There is no `deleteAll`: on a store that shares a keystore with seed
 /// material, one call would destroy every wallet on the device, and

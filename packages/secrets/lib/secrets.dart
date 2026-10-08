@@ -1,6 +1,6 @@
 /// Stored mnemonics and raw seeds behind a custody boundary.
 ///
-/// [Secrets] manages creation, import, lookup, listing, deletion, RecoverBull restoration and scoped database keys. It returns [Secret] handles containing only metadata; [SecretEntry] also represents unreadable entries when listing.
+/// [Secrets] manages creation, import, lookup, listing, deletion, RecoverBull restoration, scoped database keys and application PIN operations. It returns [Secret] handles containing only metadata; [SecretEntry] also represents unreadable entries when listing.
 ///
 /// Operations use the grouped API: `secret.derive`, `secret.sign`, `secret.backup`, `secret.verify` and `secret.widgets`. Implementations are internal; no public operation returns the stored words or seed. BIP85 children, the swap master key and the silent payment scan key are the documented derived-material outputs.
 ///
@@ -20,6 +20,12 @@ export 'src/public/extensions.dart'
         SecretVerification;
 export 'src/public/secret.dart' show Secret, SecretEntry, UnreadableSecret;
 export 'src/public/secrets.dart'
-    show DatabaseKeys, Recoverbull, RestoredVault, Secrets;
+    show
+        ApplicationStorage,
+        AppUnlockCredential,
+        DatabaseKeys,
+        Recoverbull,
+        RestoredVault,
+        Secrets;
 export 'src/public/types.dart';
 export 'src/public/widgets.dart';

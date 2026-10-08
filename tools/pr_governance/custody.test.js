@@ -19,12 +19,12 @@ test('ignore_for_file and a list of codes are flagged too', () => {
   assert.deepEqual(rules(result), ['seal-ignore']);
 });
 
-test('a new importer of flutter_secure_storage is flagged, the package and the app store are not', () => {
+test('a new importer of flutter_secure_storage is flagged, only the package is exempt', () => {
   const line = "+import 'package:flutter_secure_storage/flutter_secure_storage.dart';";
   assert.deepEqual(rules(reviewFiles([file('lib/features/swap/data/store.dart', [line])])), ['fss-import']);
   assert.deepEqual(rules(reviewFiles([file('packages/bull_tor/lib/x.dart', [line])])), ['fss-import']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/lib/src/data/fss_datasource.dart', [line])])), []);
-  assert.deepEqual(rules(reviewFiles([file('lib/core/storage/storage_locator.dart', [line])])), []);
+  assert.deepEqual(rules(reviewFiles([file('lib/core/storage/storage_locator.dart', [line])])), ['fss-import']);
 });
 
 test('a federated or platform-interface import of the plugin is flagged', () => {
@@ -41,7 +41,7 @@ test('a conditional import of the plugin is flagged, on its own line or a contin
   assert.deepEqual(rules(reviewFiles([file('lib/a.dart', [internals])])), ['secrets-src-import']);
 });
 
-test("the plugin's platform channel is flagged outside the package and the app store", () => {
+test("the plugin's platform channel is flagged outside the package", () => {
   const line = "+const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');";
   assert.deepEqual(rules(reviewFiles([file('lib/features/x/y.dart', [line])])), ['fss-channel']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/lib/src/data/x.dart', [line])])), []);
@@ -56,6 +56,7 @@ test('an import of package:secrets internals is flagged outside the package', ()
 test('a keystore dependency in another pubspec is flagged', () => {
   const result = reviewFiles([file('packages/bull_ui/pubspec.yaml', ['+  flutter_secure_storage: ^10.3.3'])]);
   assert.deepEqual(rules(result), ['fss-dependency']);
+  assert.deepEqual(rules(reviewFiles([file('pubspec.yaml', ['+  flutter_secure_storage: ^10.3.3'])])), ['fss-dependency']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/pubspec.yaml', ['+  flutter_secure_storage: ^10.3.4'])])), []);
 });
 
