@@ -22,6 +22,22 @@ class ShowPsbtScreen extends StatelessWidget {
         signerDevice == SignerDeviceEntity.coldcardQ ||
         signerDevice == SignerDeviceEntity.coldcardMk4;
 
+    if (psbt.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.loc.psbtFlowSignTransaction)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              context.loc.psbtFlowMissingPsbt,
+              style: TextStyle(color: context.appColors.error),
+              textAlign: .center,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.psbtFlowSignTransaction)),
       body: Padding(
