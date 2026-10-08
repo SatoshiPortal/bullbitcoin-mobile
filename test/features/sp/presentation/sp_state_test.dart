@@ -63,20 +63,22 @@ void main() {
     final may12 = DateTime(2024, 5, 12);
     final may13 = DateTime(2024, 5, 13);
 
-    // The bucket unconfirmed payments get: DateTime's max millisecond value,
-    // so it always sorts above a real day.
-    const pendingKey = 8640000000000000;
-
     BigInt secondsAt(DateTime at) =>
         BigInt.from(at.millisecondsSinceEpoch ~/ 1000);
 
-    SpPayment payment(String txid, DateTime? at) => SpPayment(
+    SpPayment payment(
+      String txid,
+      DateTime? at, {
+      SpPaymentStatus? status,
+      int? height,
+    }) => SpPayment(
       txid: txid,
       direction: SpPaymentDirection.receive,
-      status: at == null
-          ? SpPaymentStatus.unconfirmed
-          : SpPaymentStatus.verified,
+      status:
+          status ??
+          (at == null ? SpPaymentStatus.unconfirmed : SpPaymentStatus.verified),
       amountSat: Sats.fromInt(1000),
+      height: height,
       timestamp: at == null ? null : secondsAt(at),
     );
 
@@ -96,7 +98,7 @@ void main() {
       ).historyByDay;
 
       expect(grouped.keys.toList(), [
-        pendingKey,
+        spPendingGroupKey,
         may13.millisecondsSinceEpoch,
         may12.millisecondsSinceEpoch,
       ]);
@@ -111,12 +113,67 @@ void main() {
       ]);
     });
 
-    test('a payment with no timestamp goes to the pending bucket', () {
+    test('an unconfirmed payment goes to the pending group', () {
       final grouped = SpState(history: [nextDay, pending]).historyByDay;
 
-      expect(grouped.keys.first, pendingKey);
-      expect(txidsOf(grouped[pendingKey]), ['dd' * 32]);
+      expect(grouped.keys.first, spPendingGroupKey);
+      expect(txidsOf(grouped[spPendingGroupKey]), ['dd' * 32]);
       expect(txidsOf(grouped[may13.millisecondsSinceEpoch]), ['cc' * 32]);
+    });
+
+    test('an unconfirmed payment with a time still goes to pending', () {
+      final seen = payment(
+        'ee' * 32,
+        DateTime(2024, 5, 13, 9),
+        status: SpPaymentStatus.unconfirmed,
+      );
+
+      final grouped = SpState(history: [nextDay, seen]).historyByDay;
+
+      expect(txidsOf(grouped[spPendingGroupKey]), ['ee' * 32]);
+      expect(txidsOf(grouped[may13.millisecondsSinceEpoch]), ['cc' * 32]);
+    });
+
+    test('a confirmed payment with no time goes to verifying, not pending', () {
+      final undated = [
+        for (final status in [
+          SpPaymentStatus.confirmedUnverified,
+          SpPaymentStatus.verified,
+          SpPaymentStatus.verifyFailed,
+        ])
+          payment('${status.index}' * 64, null, status: status, height: 800),
+      ];
+
+      final grouped = SpState(
+        history: [nextDay, ...undated, pending],
+      ).historyByDay;
+
+      expect(grouped.keys.toList(), [
+        spPendingGroupKey,
+        spVerifyingGroupKey,
+        may13.millisecondsSinceEpoch,
+      ]);
+      expect(txidsOf(grouped[spPendingGroupKey]), ['dd' * 32]);
+      expect(txidsOf(grouped[spVerifyingGroupKey]), hasLength(3));
+    });
+
+    test('orders the verifying group highest block first', () {
+      final low = payment(
+        '11' * 32,
+        null,
+        status: SpPaymentStatus.confirmedUnverified,
+        height: 800,
+      );
+      final high = payment(
+        '22' * 32,
+        null,
+        status: SpPaymentStatus.confirmedUnverified,
+        height: 900,
+      );
+
+      final grouped = SpState(history: [low, high]).historyByDay;
+
+      expect(txidsOf(grouped[spVerifyingGroupKey]), ['22' * 32, '11' * 32]);
     });
 
     test('an empty history gives an empty map', () {

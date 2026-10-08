@@ -104,22 +104,18 @@ sealed class SpState with _$SpState {
   }
 
   /// History grouped by day, newest day first and newest payment first inside
-  /// each day, keyed by the day's epoch milliseconds.
+  /// each group, keyed by the day's epoch milliseconds. Unconfirmed payments go
+  /// to [spPendingGroupKey], confirmed ones bwk has not dated yet to
+  /// [spVerifyingGroupKey], both above every real day.
   Map<int, List<SpPayment>> get historyByDay {
     final grouped = <int, List<SpPayment>>{};
 
     for (final payment in history) {
-      final timestamp = payment.timestamp;
-      // An unconfirmed payment has no day yet, so it goes in a bucket that
-      // always sorts above every real day.
-      final day = timestamp == null
-          ? _pendingDayKey
-          : _dayStart(_paymentDate(timestamp));
-      grouped.putIfAbsent(day, () => []).add(payment);
+      grouped.putIfAbsent(_groupKey(payment), () => []).add(payment);
     }
 
     for (final payments in grouped.values) {
-      payments.sort((a, b) => _sortDate(b).compareTo(_sortDate(a)));
+      payments.sort(_newestFirst);
     }
 
     final sorted = SplayTreeMap<int, List<SpPayment>>.from(
@@ -129,9 +125,23 @@ sealed class SpState with _$SpState {
     return LinkedHashMap<int, List<SpPayment>>.from(sorted);
   }
 
-  DateTime _sortDate(SpPayment payment) => payment.timestamp == null
-      ? DateTime.fromMillisecondsSinceEpoch(0)
-      : _paymentDate(payment.timestamp!);
+  int _groupKey(SpPayment payment) {
+    final timestamp = payment.timestamp;
+    if (payment.status == SpPaymentStatus.unconfirmed) return spPendingGroupKey;
+    // Confirmed, but its block header is not stored yet; bwk fills the time
+    // later and sends PaymentHistoryUpdated.
+    if (timestamp == null) return spVerifyingGroupKey;
+    return _dayStart(_paymentDate(timestamp));
+  }
+
+  /// Newest time first, then highest block first for payments without a time.
+  int _newestFirst(SpPayment a, SpPayment b) {
+    final byTime = (b.timestamp ?? BigInt.zero).compareTo(
+      a.timestamp ?? BigInt.zero,
+    );
+    if (byTime != 0) return byTime;
+    return (b.height ?? 0).compareTo(a.height ?? 0);
+  }
 
   int _dayStart(DateTime date) =>
       DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
@@ -146,9 +156,12 @@ sealed class SpState with _$SpState {
   );
 }
 
-/// Max milliseconds value for [DateTime], the bucket key pending payments get
-/// so they sort above every real day.
-const int _pendingDayKey = 8640000000000000;
+/// Max milliseconds value for [DateTime], the group key of unconfirmed
+/// payments, so they sort above every real day.
+const int spPendingGroupKey = 8640000000000000;
+
+/// Group key of confirmed payments with no time yet, right below pending.
+const int spVerifyingGroupKey = spPendingGroupKey - 1;
 
 const int _millisPerSecond = 1000;
 

@@ -317,6 +317,33 @@ void main() {
     expect(find.byType(TxListItem), findsOneWidget);
   });
 
+  testWidgets('a confirmed payment with no time sits under Verifying', (
+    tester,
+  ) async {
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: 'cc' * 32,
+              direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.verified,
+              amountSat: Sats.fromInt(1000),
+              height: 800000,
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    expect(find.text('Verifying'), findsOneWidget);
+    expect(find.text('Confirmed'), findsOneWidget);
+    expect(find.text('Pending'), findsNothing);
+  });
+
   testWidgets('shows scan strip when scanning', (tester) async {
     when(() => loadUsecase.execute()).thenAnswer(
       (_) async => Ok<SpWalletData, SpFailure>(

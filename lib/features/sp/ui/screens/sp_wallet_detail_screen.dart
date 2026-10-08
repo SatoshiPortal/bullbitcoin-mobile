@@ -399,6 +399,8 @@ class _SpActivitySection extends StatelessWidget {
     return TransactionsByDayList<SpPayment>(
       sliver: true,
       itemsByDay: state.history.isEmpty ? null : state.historyByDay,
+      dayLabel: (context, dayKey) =>
+          dayKey == spVerifyingGroupKey ? context.loc.spVerifying : null,
       itemBuilder: (context, payment) =>
           TxListItem(spPaymentListItemData(context, payment)),
       loadingMessage: context.loc.transactionListLoadingTransactions,
