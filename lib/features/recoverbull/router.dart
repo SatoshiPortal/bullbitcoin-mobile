@@ -40,7 +40,7 @@ void openRecoverBullFlow(
   BuildContext context, {
   required RecoverBullFlow flow,
   EncryptedVault? vault,
-}) => context.goNamed(
+}) => context.pushNamed(
   RecoverBullRoute.recoverbullFlows.name,
   extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
 );
