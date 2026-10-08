@@ -294,9 +294,8 @@ android: container-app
 # from that list that is absent from any shipped ABI fails the build. Any
 # shipped Rust .so NOT in the list (e.g. a newly added plugin, or ark/boltz if
 # they ever ship as standalone OpenSSL-linking libs rather than statically
-# linked into librust_lib_bull_sdk.so) prints an ℹ️ line naming it and its
-# embedded rustc, so a real build surfaces the gap — add it to the list + case
-# to promote it from info to a verified pin.
+# linked into librust_lib_bull_sdk.so) also fails when its Rust version is
+# detectable. Add an explicit pin before distributing a new Rust plugin.
 #
 # Single source of truth for bdk_dart's pinned Rust channel: passed as a
 # --build-arg to Containerfile.tools (overriding its default) AND used below to
@@ -335,7 +334,7 @@ verify-rustc-pins:
 			esac; \
 			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
 			if [ -z "$$expected" ]; then \
-				[ -n "$$embedded" ] && echo "      ℹ️  $$name: rustc $$embedded (no pin tracked, add it to TRACKED_RUST_LIBS + the case above if this is a new Rust plugin)"; \
+				if [ -n "$$embedded" ]; then echo "      ❌ $$name: rustc $$embedded has no tracked pin; add it to TRACKED_RUST_LIBS and the case above"; fail=1; fi; \
 				continue; \
 			fi; \
 			seen="$$seen$$abi/$$name "; \

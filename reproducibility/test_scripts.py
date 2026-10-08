@@ -176,6 +176,7 @@ guard('one tracked library cannot prove complete coverage', native('native-incom
 guard('Payjoin compiler mismatch must fail', native('native-payjoin-wrong', baseline + [('arm64-v8a', 'libpayjoin_ffi_wrapper.so', '9.99.0')]), [2])
 guard('missing ABI counterpart must fail completeness check', native('native-abi-incomplete', baseline + [('x86_64', 'libonion.so', '1.95.0')]), [2])
 
+guard('new Rust plugin requires an explicit pin', native('native-new-plugin', baseline + [('arm64-v8a', 'libpayjoin_ffi_wrapper.so', '1.85.1'), ('arm64-v8a', 'libnew_rust.so', '1.95.0')]), [2])
 guard('ambient stable drift does not change expected pin', native('native-stable-drift', baseline + [('arm64-v8a', 'libpayjoin_ffi_wrapper.so', '1.85.1')]), [0], AUDIT_FLOATING_STABLE='1')
 
 # Exercise the genuine double-build script and Makefile orchestration with a
