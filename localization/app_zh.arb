@@ -4828,5 +4828,8 @@
   "fundExchangeErrorNetwork": "请检查您的网络连接后重试。",
   "exchangeErrorNetwork": "请检查您的网络连接后重试。",
   "walletBalancesMayBeStale": "无法更新您的余额，余额可能不是最新的。",
-  "settingsSearchTorKeywords": "Tor 代理|Orbot|洋葱路由|内置 Tor|隐私网络"
+  "settingsSearchTorKeywords": "Tor 代理|Orbot|洋葱路由|内置 Tor|隐私网络",
+  "limitOrdersInsufficientBalance": "结余不足",
+  "limitOrdersInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
+  "limitOrdersFundAccount": "基金"
 }

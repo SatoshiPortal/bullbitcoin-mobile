@@ -48,9 +48,7 @@ class LoadLimitOrderCreationUsecase {
         )
         .toList();
     if (balances.isEmpty) {
-      return const Err(
-        LimitOrdersAccountUnavailableFailure('no funded balance'),
-      );
+      return const Err(LimitOrdersNoFundedBalanceFailure('no funded balance'));
     }
 
     final preferredCurrency = FiatCurrency.tryFromCode(summary.currency ?? '');

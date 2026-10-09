@@ -12003,5 +12003,8 @@
   "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
   "exchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
   "walletBalancesMayBeStale": "आपके बैलेंस अपडेट नहीं हो सके और वे पुराने हो सकते हैं।",
-  "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क"
+  "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क",
+  "limitOrdersInsufficientBalance": "अपर्याप्त संतुलन",
+  "limitOrdersInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
+  "limitOrdersFundAccount": "अपने खाते को फंड करें"
 }

@@ -122,7 +122,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(failureOf(result), isA<LimitOrdersAccountUnavailableFailure>());
+    expect(failureOf(result), isA<LimitOrdersNoFundedBalanceFailure>());
     verifyZeroInteractions(repository);
   });
 

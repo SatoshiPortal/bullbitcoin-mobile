@@ -3621,5 +3621,8 @@
   "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "walletBalancesMayBeStale": "Ձեր մնացորդները չհաջողվեց թարմացնել, և դրանք կարող են հնացած լինել։",
-  "settingsSearchTorKeywords": "Tor պրոքսի|Orbot|onion երթուղավորում|ներկառուցված Tor|գաղտնիության ցանց"
+  "settingsSearchTorKeywords": "Tor պրոքսի|Orbot|onion երթուղավորում|ներկառուցված Tor|գաղտնիության ցանց",
+  "limitOrdersInsufficientBalance": "Անբավարար մնացորդ",
+  "limitOrdersInsufficientBalanceMessage": "Այս պատվերը ստեղծելու համար բավարար մնացորդ չունեք։",
+  "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը"
 }

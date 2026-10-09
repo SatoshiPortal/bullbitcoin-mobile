@@ -3633,5 +3633,8 @@
   "fundExchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "exchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "walletBalancesMayBeStale": "Salio lako halikuweza kusasishwa na huenda si la sasa.",
-  "settingsSearchTorKeywords": "proksi ya Tor|Orbot|uelekezaji wa onion|Tor iliyojengewa ndani|mtandao wa faragha"
+  "settingsSearchTorKeywords": "proksi ya Tor|Orbot|uelekezaji wa onion|Tor iliyojengewa ndani|mtandao wa faragha",
+  "limitOrdersInsufficientBalance": "Salio halitoshi",
+  "limitOrdersInsufficientBalanceMessage": "Huna salio la kutosha kuunda agizo hili.",
+  "limitOrdersFundAccount": "Weka fedha kwenye akaunti yako"
 }

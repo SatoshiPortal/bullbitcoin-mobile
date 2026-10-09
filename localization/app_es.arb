@@ -4825,5 +4825,8 @@
   "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
   "exchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
   "walletBalancesMayBeStale": "No se pudieron actualizar tus saldos y es posible que no estén al día.",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|enrutamiento onion|Tor integrado|red de privacidad"
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|enrutamiento onion|Tor integrado|red de privacidad",
+  "limitOrdersInsufficientBalance": "Saldo insuficiente",
+  "limitOrdersInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",
+  "limitOrdersFundAccount": "Financiar su cuenta"
 }
