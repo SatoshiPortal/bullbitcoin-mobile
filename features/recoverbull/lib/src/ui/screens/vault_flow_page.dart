@@ -128,6 +128,10 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
         padding: const EdgeInsets.symmetric(vertical: BullSpacing.sm),
         child: BullButton.small(
           label: label,
+          maxLines: widget.flow == RecoverBullFlow.viewVaultKey ? null : 1,
+          width: widget.flow == RecoverBullFlow.viewVaultKey
+              ? double.infinity
+              : null,
           onPressed: action,
           disabled: disabled,
           bgColor: context.bull.primary,
