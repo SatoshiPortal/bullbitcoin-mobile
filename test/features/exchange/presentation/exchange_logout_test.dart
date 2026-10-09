@@ -197,6 +197,30 @@ void main() {
         ),
       ).called(1);
     });
+
+    // The write replaces the stored set, so without the current values it
+    // would push stale ones back (e.g. undo a currency change made elsewhere).
+    test('a failed summary read blocks the write and is surfaced', () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      when(
+        getAccount.execute,
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
+
+      await cubit.stopDca();
+
+      expect(cubit.state.stopDcaFailure, isNotNull);
+      expect(cubit.state.isSaving, isFalse);
+      verifyNever(
+        () => savePreferences.execute(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+        ),
+      );
+    });
   });
 
   group('deleteAccount', () {

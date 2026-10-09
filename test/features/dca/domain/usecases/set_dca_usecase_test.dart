@@ -395,7 +395,11 @@ void main() {
       ).called(1);
     });
 
-    test('still enables the DCA flag when the summary read fails', () async {
+    test('skips the preference write when the summary read fails', () async {
+      // The exchange replaces the whole stored preference set, so a write
+      // without the current values would reset an active AutoBuy. A transient
+      // summary failure (the network can recover before the next request)
+      // must therefore skip the write, not degrade to a partial one.
       when(
         () => mainnetOrders.createDca(
           amount: any(named: 'amount'),
@@ -406,17 +410,8 @@ void main() {
         ),
       ).thenAnswer((_) async => dca);
       when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
+        (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
       );
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(
         amount: 10,
@@ -426,16 +421,17 @@ void main() {
         lightningAddress: 'user@lightning.address',
       );
 
+      // The recurring buy exists on the exchange, so the flow still succeeds.
       expect(result, isA<Ok<Dca, DcaFailure>>());
-      verify(
+      verifyNever(
         () => mainnetUsers.saveUserPreference(
-          language: null,
-          currency: null,
-          dcaEnabled: true,
-          autoBuyEnabled: null,
-          emailNotificationsEnabled: null,
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
         ),
-      ).called(1);
+      );
     });
   });
 }

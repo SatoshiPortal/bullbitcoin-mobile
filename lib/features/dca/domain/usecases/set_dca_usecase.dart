@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -122,30 +123,28 @@ class SetDcaUsecase {
 
     // saveUserPreferences replaces the whole preference set on the exchange:
     // omitted keys are reset, which was disabling an active AutoBuy. Send the
-    // current values alongside the DCA flag, like the exchange web client.
-    String? summaryLanguage;
-    String? summaryCurrency;
-    String? summaryAutoBuyEnabled;
-    bool? summaryEmailNotificationsEnabled;
+    // current values alongside the DCA flag, like the exchange web client —
+    // and when the summary cannot be read, skip the write entirely: a partial
+    // write would reset the other preferences, and the DCA flag is only a
+    // display flag on the exchange side.
+    final UserSummary summary;
     switch (await userRepository.getUserSummary()) {
       case Ok(:final value):
-        summaryLanguage = value.language;
-        summaryCurrency = value.currency;
-        summaryAutoBuyEnabled = value.autoBuy.isActive.toString();
-        summaryEmailNotificationsEnabled = value.emailNotificationsEnabled;
+        summary = value;
       case Err(:final failure):
         log.warning(
-          'DCA preference: user summary unavailable, sending DCA flag alone: '
-          '${failure.logMessage ?? failure.runtimeType}',
+          'DCA created but the preference flag was not enabled: user summary '
+          'unavailable: ${failure.logMessage ?? failure.runtimeType}',
         );
+        return Ok(dca);
     }
 
     if (await userRepository.saveUserPreference(
-          language: summaryLanguage,
-          currency: summaryCurrency,
+          language: summary.language,
+          currency: summary.currency,
           dcaEnabled: true,
-          autoBuyEnabled: summaryAutoBuyEnabled,
-          emailNotificationsEnabled: summaryEmailNotificationsEnabled,
+          autoBuyEnabled: summary.autoBuy.isActive.toString(),
+          emailNotificationsEnabled: summary.emailNotificationsEnabled,
         )
         case Err(:final failure)) {
       // The recurring buy already exists on the exchange at this point, so
