@@ -28,11 +28,10 @@ class _Remote extends Mock implements RecoverBullRemoteDatasource {}
 class _Settings extends Mock implements RecoverbullSettingsDatasource {}
 
 void main() {
-  // Historical vectors retained from 52dca6e53. A legacy unhardened index
-  // derives a different key; never normalize its final apostrophe.
+  // Hardened and unhardened backup indices derive different keys.
   const expectedKey =
       '8f2c4b36f3a0b36058481ea6e2d740ae9b27d46986e24d92cc288bcacbab58d0';
-  const legacyKey =
+  const unhardenedKey =
       '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
   final words = [...List.filled(11, 'zoo'), 'wrong'];
   final mnemonic = Mnemonic.fromWords(words: words);
@@ -117,11 +116,11 @@ void main() {
   for (final (path, key) in [
     ("1608'/0'/586053381'", expectedKey),
     ("m/1608'/0'/586053381'", expectedKey),
-    ("1608'/0'/586053381", legacyKey),
-    ("m/1608'/0'/586053381", legacyKey),
+    ("1608'/0'/586053381", unhardenedKey),
+    ("m/1608'/0'/586053381", unhardenedKey),
   ]) {
     test(
-      'derives the recorded historical path $path without any server',
+      'derives the recorded path $path without contacting the server',
       () async {
         final result = await derive(backup(path: path, key: key));
         expect((result as Ok<String, RecoverBullFailure>).value, key);

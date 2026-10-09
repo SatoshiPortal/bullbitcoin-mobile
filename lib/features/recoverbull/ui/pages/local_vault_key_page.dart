@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
@@ -9,6 +10,8 @@ import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullScaffold, BullSpacing, BullText, Gap;
 import 'package:flutter/material.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
@@ -37,7 +40,7 @@ class _LocalVaultKeyPageState extends State<LocalVaultKeyPage>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => BullScaffold(
     appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
     body: SafeArea(
       child: FutureBuilder<Result<String, RecoverBullFailure>>(
@@ -46,38 +49,51 @@ class _LocalVaultKeyPageState extends State<LocalVaultKeyPage>
           final busy =
               _key != null && snapshot.connectionState != ConnectionState.done;
           return ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(BullSpacing.lg),
             children: [
-              Text(context.loc.recoverbullKeyLocalInstructions),
-              const SizedBox(height: 24),
+              BullText(
+                context.loc.recoverbullKeyLocalInstructions,
+                style: context.font.bodyMedium,
+              ),
+              const Gap(BullSpacing.lg),
               if (busy)
                 const Center(child: CircularProgressIndicator())
               else if (snapshot.hasError)
-                Text(context.loc.recoverbullErrorUnexpected)
+                BullText(
+                  context.loc.recoverbullErrorUnexpected,
+                  style: context.font.bodyMedium,
+                )
               else if (snapshot.data case final result?)
                 switch (result) {
-                  Err(:final failure) => Text(failure.toTranslated(context)),
+                  Err(:final failure) => BullText(
+                    failure.toTranslated(context),
+                    style: context.font.bodyMedium,
+                  ),
                   Ok(:final value) => ExcludeSemantics(
                     child: CopyInput(text: value),
                   ),
                 },
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: busy
-                    ? null
-                    : () => setState(() {
-                        _key = _load();
-                      }),
-                child: Text(context.loc.recoverbullKeyChooseFile),
+              const Gap(BullSpacing.lg),
+              BullButton.big(
+                label: context.loc.recoverbullKeyChooseFile,
+                onPressed: () => setState(() {
+                  _key = _load();
+                }),
+                disabled: busy,
+                bgColor: context.appColors.primary,
+                textColor: context.appColors.onPrimary,
               ),
-              TextButton(
-                onPressed: busy
-                    ? null
-                    : () => openRecoverBullFlow(
-                        context,
-                        flow: RecoverBullFlow.viewVaultKey,
-                      ),
-                child: Text(context.loc.recoverbullKeyUseServer),
+              const Gap(BullSpacing.sm),
+              BullButton.big(
+                label: context.loc.recoverbullKeyUseServer,
+                onPressed: () => openRecoverBullFlow(
+                  context,
+                  flow: RecoverBullFlow.viewVaultKey,
+                ),
+                disabled: busy,
+                outlined: true,
+                bgColor: context.appColors.surface,
+                textColor: context.appColors.secondary,
               ),
             ],
           );

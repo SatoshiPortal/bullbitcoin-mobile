@@ -16796,19 +16796,19 @@
   "@recoverbullKeyChooseFile": {
     "description": "RecoverBull View Backup Key"
   },
-  "recoverbullKeyLocalInstructions": "Select your encrypted backup file. BULL will use its original backup path and the wallet seeds on this device to find the matching key, then check that it opens the file. No backup PIN or server connection is needed. This does not test your PIN or server recovery.",
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file to find its key using a wallet on this device. No backup PIN or server connection is needed. Viewing the key does not test your PIN or server recovery.",
   "@recoverbullKeyLocalInstructions": {
     "description": "RecoverBull View Backup Key"
   },
-  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. It may belong to another wallet, or the file may be damaged. No key has been revealed. Try another copy or use the server.",
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. The file may belong to another wallet or be damaged. Try another copy or use the server.",
   "@recoverbullKeyLocalMismatch": {
     "description": "RecoverBull View Backup Key"
   },
-  "recoverbullKeyPathUnavailable": "This backup’s original key-derivation path is missing or unsupported. BULL cannot safely guess it. Try another saved copy, or use the server if it still has the matching record.",
+  "recoverbullKeyPathUnavailable": "This backup cannot be opened locally because its key information is missing or unsupported. Try another saved copy or use the server.",
   "@recoverbullKeyPathUnavailable": {
     "description": "RecoverBull View Backup Key"
   },
-  "recoverbullKeySeedUnavailable": "The wallet seed needed to derive this key is not available. Unlock the matching wallet and try again, or use this file and its backup PIN or password with the server.",
+  "recoverbullKeySeedUnavailable": "The matching wallet seed is unavailable on this device. Use the backup file and its PIN or password with the server.",
   "@recoverbullKeySeedUnavailable": {
     "description": "RecoverBull View Backup Key"
   },

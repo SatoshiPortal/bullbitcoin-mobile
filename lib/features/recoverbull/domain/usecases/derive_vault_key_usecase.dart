@@ -36,7 +36,7 @@ class DeriveVaultKeyUsecase {
     } on EncryptedVaultMissingPath {
       return const Err(VaultKeyPathUnavailableFailure());
     }
-    // Retain the recorded index's hardening: legacy files can be unhardened.
+    // Preserve the recorded path: hardening changes the encryption key.
     final match = RegExp(r"^(?:m/)?1608'/0'/([0-9]{1,10})'?$").firstMatch(path);
     if (match == null ||
         match.end != path.length ||
@@ -58,8 +58,7 @@ class DeriveVaultKeyUsecase {
             );
             switch (_recoverBull.restoreVault(vault: vault, vaultKey: key)) {
               case Ok(value: final decrypted):
-                // A generic RecoverBull envelope is not necessarily a money
-                // backup. Verify its payload as well as authenticated decryption.
+                // Verify that the decrypted payload contains valid seed words.
                 Mnemonic.fromWords(words: decrypted.mnemonic);
                 return Ok(key);
               case Err():

@@ -27,11 +27,16 @@ void main() {
       '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
   late _Derive derive;
   late GoRouter router;
+  final privacyCalls = <String>[];
   setUp(() {
+    privacyCalls.clear();
     derive = _Derive();
     locator.registerSingleton<DeriveVaultKeyUsecase>(derive);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(privacyChannel, (_) async => true);
+        .setMockMethodCallHandler(privacyChannel, (call) async {
+          privacyCalls.add(call.method);
+          return true;
+        });
     router = GoRouter(
       routes: [
         GoRoute(
@@ -86,7 +91,14 @@ void main() {
   testWidgets(
     'local entry needs no server and clears the previous key on retry',
     (tester) async {
-      when(() => derive.execute()).thenAnswer((_) async => const Ok(key));
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      when(() => derive.execute()).thenAnswer((_) async {
+        expect(privacyCalls.last, 'screenshotOff');
+        return const Ok(key);
+      });
       await open(tester);
       await tester.tap(find.text('Choose backup file'));
       await tester.pumpAndSettle();
@@ -105,7 +117,7 @@ void main() {
       await tester.pump();
       expect(find.text(key), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      await tester.tap(find.text('Choose backup file'));
+      await tester.tap(find.text('Choose backup file'), warnIfMissed: false);
       verify(() => derive.execute()).called(1);
       pending.complete(const Err(VaultKeyPathUnavailableFailure()));
       await tester.pumpAndSettle();
@@ -113,6 +125,8 @@ void main() {
       await tester.tap(find.text('Use server instead'));
       await tester.pumpAndSettle();
       expect(find.text('existing server flow'), findsOneWidget);
+      expect(privacyCalls.last, 'screenshotOn');
+      expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await tester.pumpAndSettle();
     },
