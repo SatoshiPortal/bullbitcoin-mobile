@@ -33,6 +33,9 @@ class _RealCodecConverter implements LabelsConverterPort {
     required labels,
     frozen = const [],
   }) => throw UnimplementedError();
+
+  @override
+  int maxImportBytes(format) => Bip329LabelsCodec.maxImportBytes;
 }
 
 String _validLine() =>

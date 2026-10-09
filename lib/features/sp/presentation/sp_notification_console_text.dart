@@ -36,6 +36,12 @@ extension SpNotificationConsoleText on SpNotification {
         return 'ElectrumTx ${kind.name} $txid ${amountSat}sat$at';
       case SpBackendOffline():
         return 'BackendOffline';
+      case SpBackendOnline():
+        return 'BackendOnline';
+      case SpReorg(:final forkHeight):
+        return 'Reorg @$forkHeight';
+      case SpHeaderCheckpointMismatch():
+        return 'HeaderCheckpointMismatch';
       case SpPaymentHistoryUpdated():
         return 'PaymentHistoryUpdated';
       case SpHeaderProgressStarted(:final phase, :final start, :final end):

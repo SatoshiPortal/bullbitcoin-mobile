@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
@@ -138,6 +139,48 @@ void main() {
     await Future.delayed(Duration.zero);
     expect(cubit.state.backendOnline, true);
 
+    verifyNever(() => scanUsecase.execute());
+  });
+  test('electrum reconnect refreshes wallet data without scanning', () async {
+    await cubit.load();
+    notifController.add(const SpBackendOffline());
+    await Future.delayed(Duration.zero);
+    expect(cubit.state.backendOnline, false);
+    clearInteractions(loadUsecase);
+
+    notifController.add(const SpBackendOnline());
+    await Future.delayed(Duration.zero);
+
+    expect(cubit.state.backendOnline, true);
+    verify(() => loadUsecase.execute()).called(greaterThanOrEqualTo(1));
+    verifyNever(() => scanUsecase.execute());
+  });
+
+  test('reorg refreshes wallet data even during a scan', () async {
+    await cubit.load();
+    notifController.add(const SpScanStarted(100, 200));
+    await Future.delayed(Duration.zero);
+    clearInteractions(loadUsecase);
+
+    notifController.add(const SpReorg(150));
+    await Future.delayed(Duration.zero);
+
+    verify(() => loadUsecase.execute()).called(greaterThanOrEqualTo(1));
+    verifyNever(() => scanUsecase.execute());
+  });
+
+  test('checkpoint mismatch marks header validation as failed', () async {
+    await cubit.load();
+    notifController.add(
+      const SpHeaderProgressCompleted(SpHeaderValidationPhase.initialSync),
+    );
+    await Future.delayed(Duration.zero);
+    expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.valid);
+
+    notifController.add(const SpHeaderCheckpointMismatch());
+    await Future.delayed(Duration.zero);
+
+    expect(cubit.state.headerValidationStatus, SpHeaderValidationStatus.failed);
     verifyNever(() => scanUsecase.execute());
   });
 }

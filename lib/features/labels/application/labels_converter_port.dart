@@ -14,4 +14,8 @@ abstract class LabelsConverterPort {
 
   /// Parses a file into annotations plus freeze state (two channels).
   DecodedLabels convertFrom(FormattedLabels formattedLabels);
+
+  /// Largest file [format] accepts on import, so a caller can reject an
+  /// oversized file before reading it.
+  int maxImportBytes(LabelFormat format);
 }

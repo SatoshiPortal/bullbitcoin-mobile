@@ -24,6 +24,9 @@ class _StubConverter implements LabelsConverterPort {
 
   @override
   convertFrom(FormattedLabels labels) => throw UnimplementedError();
+
+  @override
+  int maxImportBytes(format) => throw UnimplementedError();
 }
 
 void main() {
