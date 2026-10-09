@@ -153,6 +153,18 @@ class SpCubit extends Cubit<SpState> {
         log.warning('SpCubit.broadcast: broadcast failed: $message');
       case SpBackendOffline():
         emit(state.copyWith(backendOnline: false));
+      case SpBackendOnline():
+        emit(state.copyWith(backendOnline: true));
+        unawaited(_refreshWalletData());
+      case SpReorg():
+        unawaited(_refreshWalletData());
+      case SpHeaderCheckpointMismatch():
+        _resetHeaderRetry();
+        emit(
+          state.copyWith(
+            headerValidationStatus: SpHeaderValidationStatus.failed,
+          ),
+        );
       case SpPaymentHistoryUpdated():
         unawaited(_refreshWalletData());
       case SpHeaderProgressStarted(:final phase, :final start, :final end):

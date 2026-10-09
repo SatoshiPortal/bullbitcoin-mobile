@@ -56,8 +56,8 @@ dependencies:
   file_picker: 10.3.6
   bull_sdk:
     git:
-      url: https://github.com/pythcoiner/bull_sdk
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
       path: packages/bull_sdk
   boltz_stream:
     git:
@@ -152,8 +152,8 @@ dependencies:
 dependency_overrides:
   bull_sdk:
     git:
-      url: https://github.com/pythcoiner/bull_sdk
-      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
       path: packages/bull_sdk
 
 dev_dependencies:

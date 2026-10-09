@@ -11,12 +11,13 @@ sealed class SpNotification {
   const SpNotification();
 
   /// Whether this event changed the coin set, so the balance moved with it.
-  /// Scan progress and start do not; only events that add or spend a coin do.
+  /// Scan progress and start do not; events that add or spend a coin, or invalidate the chain, do.
   bool get affectsBalance => switch (this) {
     SpNewOutput() ||
     SpOutputSpent() ||
     SpElectrumTx() ||
-    SpScanCompleted() => true,
+    SpScanCompleted() ||
+    SpReorg() => true,
     SpScanStarted() ||
     SpScanReceiveProgress() ||
     SpScanSpendProgress() ||
@@ -25,6 +26,8 @@ sealed class SpNotification {
     SpBroadcasted() ||
     SpBroadcastFailed() ||
     SpBackendOffline() ||
+    SpBackendOnline() ||
+    SpHeaderCheckpointMismatch() ||
     SpPaymentHistoryUpdated() ||
     SpHeaderProgressStarted() ||
     SpHeaderProgress() ||
@@ -38,7 +41,8 @@ sealed class SpNotification {
     SpHeaderProgressStarted() ||
     SpHeaderProgress() ||
     SpHeaderProgressCompleted() ||
-    SpHeaderProgressFailed() => true,
+    SpHeaderProgressFailed() ||
+    SpHeaderCheckpointMismatch() => true,
     SpScanStarted() ||
     SpScanReceiveProgress() ||
     SpScanSpendProgress() ||
@@ -51,7 +55,9 @@ sealed class SpNotification {
     SpBroadcastFailed() ||
     SpElectrumTx() ||
     SpBackendOffline() ||
-    SpPaymentHistoryUpdated() => false,
+    SpBackendOnline() ||
+    SpPaymentHistoryUpdated() ||
+    SpReorg() => false,
   };
 
   /// The chain tip this event reports, when it carries one. Completed and
@@ -72,7 +78,10 @@ sealed class SpNotification {
     SpBroadcastFailed() ||
     SpElectrumTx() ||
     SpBackendOffline() ||
-    SpPaymentHistoryUpdated() => null,
+    SpBackendOnline() ||
+    SpHeaderCheckpointMismatch() ||
+    SpPaymentHistoryUpdated() ||
+    SpReorg() => null,
   };
 
   /// Whether a scan is running once this event has been seen. Null when the
@@ -88,11 +97,14 @@ sealed class SpNotification {
     SpBroadcastFailed() ||
     SpElectrumTx() ||
     SpBackendOffline() ||
+    SpBackendOnline() ||
+    SpHeaderCheckpointMismatch() ||
     SpPaymentHistoryUpdated() ||
     SpHeaderProgressStarted() ||
     SpHeaderProgress() ||
     SpHeaderProgressCompleted() ||
-    SpHeaderProgressFailed() => null,
+    SpHeaderProgressFailed() ||
+    SpReorg() => null,
   };
 }
 
@@ -199,4 +211,18 @@ final class SpHeaderProgressCompleted extends SpNotification {
 final class SpHeaderProgressFailed extends SpNotification {
   final SpHeaderValidationPhase phase;
   const SpHeaderProgressFailed(this.phase);
+}
+
+final class SpBackendOnline extends SpNotification {
+  const SpBackendOnline();
+}
+
+final class SpReorg extends SpNotification {
+  final int forkHeight;
+
+  const SpReorg(this.forkHeight);
+}
+
+final class SpHeaderCheckpointMismatch extends SpNotification {
+  const SpHeaderCheckpointMismatch();
 }

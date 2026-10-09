@@ -103,13 +103,42 @@ void main() {
       expect((mapped as SpBroadcastFailed).message, 'rejected by node');
     });
 
-    test('backendOffline maps to its singleton', () {
+    test('electrumDisconnected maps to backend offline', () {
       expect(
         SpNotificationMapper.toDomain(
-          const bwk.SpNotification.backendOffline(),
+          const bwk.SpNotification.electrumDisconnected(),
         ),
         isA<SpBackendOffline>(),
       );
+    });
+
+    test('electrumConnected maps to backend online', () {
+      final mapped = SpNotificationMapper.toDomain(
+        const bwk.SpNotification.electrumConnected(),
+      );
+      expect(mapped, isA<SpBackendOnline>());
+      expect(mapped.affectsBalance, false);
+      expect(mapped.scanRunningAfter, isNull);
+    });
+
+    test('reorg preserves the fork height and invalidates balances', () {
+      final mapped = SpNotificationMapper.toDomain(
+        const bwk.SpNotification.reorg(forkHeight: 123),
+      );
+      expect((mapped as SpReorg).forkHeight, 123);
+      expect(mapped.affectsBalance, true);
+      expect(mapped.scanRunningAfter, isNull);
+      expect(mapped.isHeaderProgress, false);
+    });
+
+    test('checkpoint mismatch does not imply valid headers', () {
+      final mapped = SpNotificationMapper.toDomain(
+        const bwk.SpNotification.headerCheckpointMismatch(),
+      );
+      expect(mapped, isA<SpHeaderCheckpointMismatch>());
+      expect(mapped.affectsBalance, false);
+      expect(mapped.headerTip, isNull);
+      expect(mapped.isHeaderProgress, true);
     });
 
     test('paymentHistoryUpdated maps to its singleton', () {
