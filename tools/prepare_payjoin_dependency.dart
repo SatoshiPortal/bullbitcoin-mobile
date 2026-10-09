@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 
 const _archiveUrl =
-    'https://pub.dev/api/archives/payjoin-0.2.1%2Bpayjoin-1.0.0-rc.8.tar.gz';
+    'https://pub.dev/api/archives/payjoin-0.3.0%2Bpayjoin-1.2.0.tar.gz';
 const _archiveSha256 =
-    '52696fe34ef3c05f9827f5dd08a984e8ea86642677ba934f65a7f3a722755985';
+    '5f4c3e74dbab75bd8600d2cb0d1492e14ae18f47983edc9a76b8b9dfc3d60947';
 const _bindingSha256 =
-    'aee74c23bf5076c5db8dda79c9ac1866446d3c4e237dbafeddd52c3efe499500';
+    '53f426db0faa1c71f9029e9fd1b759633efe6d8f4ee90f7f647d6271ce0ad37f';
 
 Future<void> main() async {
   Directory? temporaryDirectory;

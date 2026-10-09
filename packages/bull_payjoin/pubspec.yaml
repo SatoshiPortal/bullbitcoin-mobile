@@ -22,7 +22,7 @@ dependencies:
   payjoin:
     git:
       url: https://github.com/SatoshiPortal/payjoin-rust
-      ref: 51da8ed79ee57536f4be223a01e6ecb163986f28
+      ref: 243508c3d3580a1f07f37426fe09d32f736bacd1
       path: payjoin-ffi/dart
   primitives:
   sqlite3: ^2.9.4
