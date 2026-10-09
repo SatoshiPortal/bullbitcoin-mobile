@@ -7,6 +7,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bullvault_records_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_backup_table.dart';
+import 'package:bb_mobile/core/storage/tables/keychain_nostr_keys_table.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
@@ -64,6 +66,9 @@ part 'sqlite_database.g.dart';
     SendTransactionPolicyChoices,
     BullVaultRecords,
     BullVaultGenerationReservations,
+    WalletBackupStates,
+    WalletBackupControls,
+    KeychainNostrKeys,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -110,9 +115,8 @@ class SqliteDatabase extends _$SqliteDatabase {
   SqliteDatabase([QueryExecutor? executor])
     : super(executor ?? _openConnection());
 
-  /// Current drift schema version. Bump in lockstep with adding a new
-  /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
-  /// schema snapshots (`make drift-migrations`).
+  /// Keep unreleased changes in the single revision after the published schema.
+  /// Regenerate its snapshot and migration helpers with `make drift-migrations`.
   static const int currentSchemaVersion = 16;
 
   @override

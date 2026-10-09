@@ -20,6 +20,8 @@ class BullVaultRecords extends Table {
   BoolColumn get recoveryPackageConfirmed => boolean()();
   BoolColumn get mobileBackupDeferred => boolean()();
   TextColumn get createdAt => text()();
+  DateTimeColumn get descriptorTestedAt => dateTime().nullable()();
+  DateTimeColumn get serverTestedAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {walletId};
