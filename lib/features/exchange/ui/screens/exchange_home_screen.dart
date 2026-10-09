@@ -63,6 +63,7 @@ class ExchangeHomeScreen extends StatelessWidget {
       children: [
         BBPullableBody(
           onRefresh: () async {
+            locator<LimitOrdersFacade>().refreshDashboard();
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
