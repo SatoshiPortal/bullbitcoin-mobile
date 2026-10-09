@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
@@ -35,7 +37,9 @@ class LimitOrdersFacade {
   final ValidateLightningAddressUsecase _validateLnAddress;
   final ExchangeNotificationService _notifications;
 
-  const LimitOrdersFacade(
+  final _dashboardRefreshRequests = StreamController<void>.broadcast();
+
+  LimitOrdersFacade(
     this._listActive,
     this._cancelAll,
     this._canCreate,
@@ -50,11 +54,17 @@ class LimitOrdersFacade {
   );
 
   Widget buildDashboardCard() => BlocProvider(
-    create: (_) =>
-        LimitOrdersCubit(_listActive, _cancelAll, _canCreate, _notifications)
-          ..load(),
+    create: (_) => LimitOrdersCubit(
+      _listActive,
+      _cancelAll,
+      _canCreate,
+      _notifications,
+      refreshRequests: _dashboardRefreshRequests.stream,
+    )..load(),
     child: const LimitOrdersDashboardCard(),
   );
+
+  void refreshDashboard() => _dashboardRefreshRequests.add(null);
 
   Widget buildCreateScreen() => BlocProvider(
     create: (_) => CreateLimitOrderCubit(

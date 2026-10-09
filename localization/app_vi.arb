@@ -3621,5 +3621,8 @@
   "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
   "exchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
   "walletBalancesMayBeStale": "Không thể cập nhật số dư của bạn và số dư có thể chưa chính xác.",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|định tuyến onion|Tor tích hợp|mạng riêng tư"
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|định tuyến onion|Tor tích hợp|mạng riêng tư",
+  "limitOrdersInsufficientBalance": "Số dư không đủ",
+  "limitOrdersInsufficientBalanceMessage": "Bạn không có đủ số dư để tạo đơn hàng này.",
+  "limitOrdersFundAccount": "Nạp tiền vào tài khoản của bạn"
 }

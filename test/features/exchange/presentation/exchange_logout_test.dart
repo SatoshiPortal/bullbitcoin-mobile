@@ -150,6 +150,37 @@ void main() {
     });
   });
 
+  group('stopDca', () {
+    // The use-case owns the full-set merge over a fresh summary; the cubit
+    // only names the field it changes.
+    test('changes only the DCA flag through the use-case', () async {
+      when(
+        () => savePreferences.execute(dcaEnabled: false),
+      ).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+
+      await cubit.stopDca();
+
+      verify(() => savePreferences.execute(dcaEnabled: false)).called(1);
+      expect(cubit.state.stopDcaFailure, isNull);
+      expect(cubit.state.isSaving, isFalse);
+    });
+
+    test('a use-case failure is surfaced on the tile', () async {
+      when(
+        () => savePreferences.execute(dcaEnabled: false),
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
+      final cubit = build();
+      addTearDown(cubit.close);
+
+      await cubit.stopDca();
+
+      expect(cubit.state.stopDcaFailure, isNotNull);
+      expect(cubit.state.isSaving, isFalse);
+    });
+  });
+
   group('deleteAccount', () {
     test('a failed request is reported and nothing is cleared', () async {
       when(requestDeletion.execute).thenAnswer(

@@ -11819,5 +11819,8 @@
   "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة.",
-  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية"
+  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
+  "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
+  "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
+  "limitOrdersFundAccount": "صندوق حسابك"
 }

@@ -4816,5 +4816,8 @@
   "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita.",
-  "settingsSearchTorKeywords": "Tor-välityspalvelin|Orbot|onion-reititys|sisäinen Tor|yksityisyysverkko"
+  "settingsSearchTorKeywords": "Tor-välityspalvelin|Orbot|onion-reititys|sisäinen Tor|yksityisyysverkko",
+  "limitOrdersInsufficientBalance": "Riittämätön saldo",
+  "limitOrdersInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
+  "limitOrdersFundAccount": "Talletus"
 }

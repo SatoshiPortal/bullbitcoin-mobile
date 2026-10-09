@@ -157,4 +157,28 @@ void main() {
     },
     verify: (_) => verifyNever(() => listActive.execute()),
   );
+
+  final refreshRequests = StreamController<void>.broadcast();
+  tearDownAll(refreshRequests.close);
+
+  blocTest<LimitOrdersCubit, LimitOrdersState>(
+    'reloads when the host screen requests a refresh',
+    setUp: () =>
+        when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(1))),
+    build: () => LimitOrdersCubit(
+      listActive,
+      cancelAll,
+      canCreate,
+      notifications,
+      refreshRequests: refreshRequests.stream,
+    ),
+    act: (cubit) async {
+      refreshRequests.add(null);
+      await Future<void>.delayed(Duration.zero);
+    },
+    verify: (cubit) {
+      verify(() => listActive.execute()).called(1);
+      expect(cubit.state.orders, hasLength(1));
+    },
+  );
 }

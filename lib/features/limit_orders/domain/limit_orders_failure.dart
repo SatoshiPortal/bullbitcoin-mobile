@@ -8,6 +8,10 @@ final class LimitOrdersAccountUnavailableFailure extends LimitOrdersFailure {
   const LimitOrdersAccountUnavailableFailure([super.logMessage]);
 }
 
+final class LimitOrdersNoFundedBalanceFailure extends LimitOrdersFailure {
+  const LimitOrdersNoFundedBalanceFailure([super.logMessage]);
+}
+
 final class LimitOrdersMaximumActiveFailure extends LimitOrdersFailure {
   const LimitOrdersMaximumActiveFailure([super.logMessage]);
 }

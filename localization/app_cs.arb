@@ -11816,5 +11816,8 @@
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální.",
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí"
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí",
+  "limitOrdersInsufficientBalance": "Nedostatečná rovnováha",
+  "limitOrdersInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "limitOrdersFundAccount": "Fond vašeho účtu"
 }

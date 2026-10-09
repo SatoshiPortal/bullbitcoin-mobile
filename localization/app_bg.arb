@@ -9923,5 +9923,8 @@
   "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "exchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "walletBalancesMayBeStale": "Балансите ви не можаха да бъдат обновени и може да не са актуални.",
-  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност"
+  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност",
+  "limitOrdersInsufficientBalance": "Недостатъчен баланс",
+  "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "limitOrdersFundAccount": "Захрани сметката си"
 }

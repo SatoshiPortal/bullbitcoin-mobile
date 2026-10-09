@@ -5038,5 +5038,8 @@
   "spLastScannedAgo": "Zuletzt vor {ago} gescannt",
   "spFailureInvalidAddress": "Dies ist keine gültige Bitcoin- oder Silent-Payment-Adresse.",
   "spFailureBroadcastUncertain": "Ihre Transaktion wurde möglicherweise bereits gesendet. Prüfen Sie Ihren Transaktionsverlauf, bevor Sie es erneut versuchen.",
-  "settingsDevModeSpRevokeFailed": "Die Silent-Payments-Wallet konnte nicht vollständig gelöscht werden. Sie wurde deaktiviert und kann nicht erneut geladen werden. Deaktivieren Sie den Entwicklermodus erneut, um einen weiteren Versuch zu starten."
+  "settingsDevModeSpRevokeFailed": "Die Silent-Payments-Wallet konnte nicht vollständig gelöscht werden. Sie wurde deaktiviert und kann nicht erneut geladen werden. Deaktivieren Sie den Entwicklermodus erneut, um einen weiteren Versuch zu starten.",
+  "limitOrdersInsufficientBalance": "Unzureichendes Guthaben",
+  "limitOrdersInsufficientBalanceMessage": "Sie haben nicht genug Guthaben, um diese Bestellung zu erstellen.",
+  "limitOrdersFundAccount": "Konto aufladen"
 }

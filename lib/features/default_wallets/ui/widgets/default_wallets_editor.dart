@@ -37,13 +37,13 @@ class DefaultWalletsEditor extends StatelessWidget {
           (!previous.saveSuccess && current.saveSuccess) ||
           (previous.saveError == null && current.saveError != null),
       listener: (context, state) {
-        if (state.saveSuccess) {
+        if (state.saveError != null) {
+          SnackBarUtils.showSnackBar(context, state.saveError!);
+        } else if (state.saveSuccess) {
           SnackBarUtils.showSnackBar(
             context,
             context.loc.exchangeBitcoinWalletsSaveSuccess,
           );
-        } else if (state.saveError != null) {
-          SnackBarUtils.showSnackBar(context, state.saveError!);
         }
       },
       child: _EditorContent(

@@ -2,13 +2,16 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
@@ -91,7 +94,14 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                   ? const LimitOrdersLoadingBar()
                   : null,
             ),
-            Expanded(child: _body(context, state)),
+            Expanded(
+              child: BBKeyboardActions(
+                disableScroll: true,
+                nextFocus: false,
+                focusNodes: [_limitPriceNode, _discountNode, _amountNode],
+                child: _body(context, state),
+              ),
+            ),
           ],
         ),
       ),
@@ -177,6 +187,10 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   Widget _body(BuildContext context, CreateLimitOrderState state) {
     if (state.isLoading && state.rate == null) {
       return const SizedBox.shrink();
+    }
+    if (state.failure is LimitOrdersNoFundedBalanceFailure &&
+        state.rate == null) {
+      return const _NoBalanceView();
     }
     if (state.failure != null && state.rate == null) {
       return _FailureView(
@@ -619,6 +633,39 @@ final class _Bullet extends StatelessWidget {
         const Text('•'),
         const Gap(8),
         Expanded(child: Text(text)),
+      ],
+    ),
+  );
+}
+
+// TODO: Importing the fund_exchange router directly closes a cycle in the
+// feature graph (EXCHANGE -> LIMIT_ORDERS -> FUNDING -> EXCHANGE). DCA and buy
+// do the same; all three will be refactored together later to remove the
+// direct dependency.
+final class _NoBalanceView extends StatelessWidget {
+  const _NoBalanceView();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Spacer(),
+        BullInfoCard(
+          title: context.loc.limitOrdersInsufficientBalance,
+          description: context.loc.limitOrdersInsufficientBalanceMessage,
+          bgColor: context.bull.tertiary.withValues(alpha: 0.1),
+          tagColor: context.bull.onTertiary,
+        ),
+        const Gap(16),
+        BullButton.big(
+          label: context.loc.limitOrdersFundAccount,
+          onPressed: () =>
+              context.pushReplacementNamed(FundExchangeRoute.fundExchange.name),
+          bgColor: context.bull.primary,
+          textColor: context.bull.onPrimary,
+        ),
       ],
     ),
   );

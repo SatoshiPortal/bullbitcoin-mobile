@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_a
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -39,6 +40,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setBitcoinUnitUsecase,
     required this._setLanguageUsecase,
     required this._setCurrencyUsecase,
+    required this._syncExchangeCurrencyUsecase,
     required this._setHideAmountsUsecase,
     required this._setIsSuperuserUsecase,
     required this._setIsDevModeUsecase,
@@ -66,6 +68,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
   final SetCurrencyUsecase _setCurrencyUsecase;
+  final SyncExchangeCurrencyUsecase _syncExchangeCurrencyUsecase;
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final SetThemeModeUsecase _setThemeModeUsecase;
@@ -190,6 +193,12 @@ class SettingsCubit extends Cubit<SettingsState> {
         storedSettings: settings?.copyWith(currencyCode: currencyCode),
       ),
     );
+
+    final syncResult = await _syncExchangeCurrencyUsecase.execute(currencyCode);
+    if (isClosed) return;
+    if (syncResult case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+    }
   }
 
   Future<void> toggleHideAmounts(bool hide) async {

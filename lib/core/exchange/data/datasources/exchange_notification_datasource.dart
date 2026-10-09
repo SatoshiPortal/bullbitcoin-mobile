@@ -7,6 +7,10 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ExchangeNotificationDatasource {
+  // A missed pong closes the socket, so a connection the OS dropped silently
+  // reaches _handleDisconnect and auto-reconnects.
+  static const _pingInterval = Duration(seconds: 30);
+
   final String _baseUrl;
   final BullbitcoinApiKeyDatasource _apiKeyDatasource;
   final bool _isTestnet;
@@ -84,6 +88,7 @@ class ExchangeNotificationDatasource {
       _channel = IOWebSocketChannel.connect(
         uri,
         headers: {'X-API-Key': apiKey.key},
+        pingInterval: _pingInterval,
       );
 
       // Wait for the connection to be ready
@@ -126,10 +131,14 @@ class ExchangeNotificationDatasource {
       final parsed = message is String
           ? jsonDecode(message) as Map<String, dynamic>
           : message as Map<String, dynamic>;
-      log.fine('WebSocket message received: $parsed');
+      // Type only: the payload carries account data (group/kyc/balance
+      // notifications) and the on-device log can be exported.
+      log.fine('WebSocket message received: type=${parsed['type']}');
       _messageController.add(parsed);
     } catch (e) {
-      log.warning('Error parsing WebSocket message: $e');
+      // Type only: FormatException.toString() embeds the malformed frame,
+      // which can carry account data.
+      log.warning('Error parsing WebSocket message: ${e.runtimeType}');
     }
   }
 

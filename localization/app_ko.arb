@@ -11816,5 +11816,8 @@
   "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다.",
-  "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크"
+  "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크",
+  "limitOrdersInsufficientBalance": "충분한 균형",
+  "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
+  "limitOrdersFundAccount": "계정 생성"
 }

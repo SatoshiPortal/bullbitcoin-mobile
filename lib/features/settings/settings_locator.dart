@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
@@ -21,6 +22,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
@@ -43,6 +45,17 @@ class SettingsLocator {
     locator.registerFactory<SetLanguageUsecase>(
       () =>
           SetLanguageUsecase(settingsRepository: locator<SettingsRepository>()),
+    );
+    locator.registerFactory<SyncExchangeCurrencyUsecase>(
+      () => SyncExchangeCurrencyUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
+        ),
+      ),
     );
     locator.registerFactory<SetCurrencyUsecase>(
       () =>
@@ -148,6 +161,7 @@ class SettingsLocator {
         setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
         setLanguageUsecase: locator<SetLanguageUsecase>(),
         setCurrencyUsecase: locator<SetCurrencyUsecase>(),
+        syncExchangeCurrencyUsecase: locator<SyncExchangeCurrencyUsecase>(),
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),

@@ -3744,5 +3744,8 @@
   "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "walletBalancesMayBeStale": "თქვენი ნაშთების განახლება ვერ მოხერხდა და ისინი შეიძლება მოძველებული იყოს.",
-  "settingsSearchTorKeywords": "Tor პროქსი|Orbot|ონიონ მარშრუტიზაცია|ჩაშენებული Tor|კონფიდენციალურობის ქსელი"
+  "settingsSearchTorKeywords": "Tor პროქსი|Orbot|ონიონ მარშრუტიზაცია|ჩაშენებული Tor|კონფიდენციალურობის ქსელი",
+  "limitOrdersInsufficientBalance": "არასაკმარისი ბალანსი",
+  "limitOrdersInsufficientBalanceMessage": "ამ შეკვეთის შესაქმნელად საკმარისი ბალანსი არ გაქვთ.",
+  "limitOrdersFundAccount": "შეავსეთ თქვენი ანგარიში"
 }

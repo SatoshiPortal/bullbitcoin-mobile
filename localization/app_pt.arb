@@ -4864,5 +4864,8 @@
   "fundExchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
   "exchangeErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
   "walletBalancesMayBeStale": "Não foi possível atualizar os seus saldos e podem estar desatualizados.",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|encaminhamento onion|Tor integrado|rede de privacidade"
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|encaminhamento onion|Tor integrado|rede de privacidade",
+  "limitOrdersInsufficientBalance": "Balança insuficiente",
+  "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
+  "limitOrdersFundAccount": "Fina sua conta"
 }

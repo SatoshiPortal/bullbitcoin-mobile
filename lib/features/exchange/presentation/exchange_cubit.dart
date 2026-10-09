@@ -115,12 +115,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
     emit(state.copyWith(isSaving: true, savePreferencesFailure: null));
 
+    // Only the fields this screen edits: the use-case fills the DCA and
+    // AutoBuy flags from a fresh summary, so stale state cannot clobber them.
     final result = await _saveExchangePreferencesUsecase.execute(
       language: state.selectedLanguage,
       currency: state.selectedCurrency,
       emailNotificationsEnabled: state.selectedEmailNotifications,
-      dcaEnabled: state.userSummary?.dca.isActive,
-      autoBuyEnabled: state.userSummary?.autoBuy.isActive.toString(),
     );
     if (isClosed) return;
 
@@ -146,6 +146,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   Future<void> stopDca() async {
     emit(state.copyWith(isSaving: true, stopDcaFailure: null));
 
+    // The use-case reads a fresh summary and fills the rest of the
+    // preference set; the DCA flag is the only field this call changes.
     final result = await _saveExchangePreferencesUsecase.execute(
       dcaEnabled: false,
     );

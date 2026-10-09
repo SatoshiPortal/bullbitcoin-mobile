@@ -4834,5 +4834,8 @@
   "fundExchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
   "exchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
   "walletBalancesMayBeStale": "Не удалось обновить балансы, они могут быть неактуальными.",
-  "settingsSearchTorKeywords": "Tor-прокси|Orbot|onion-маршрутизация|встроенный Tor|сеть конфиденциальности"
+  "settingsSearchTorKeywords": "Tor-прокси|Orbot|onion-маршрутизация|встроенный Tor|сеть конфиденциальности",
+  "limitOrdersInsufficientBalance": "Недостаточный баланс",
+  "limitOrdersInsufficientBalanceMessage": "У вас нет достаточного баланса для создания этого порядка.",
+  "limitOrdersFundAccount": "Фонд вашего счета"
 }

@@ -11816,5 +11816,8 @@
   "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "exchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "walletBalancesMayBeStale": "Δεν ήταν δυνατή η ενημέρωση των υπολοίπων σας και ενδέχεται να μην είναι ενημερωμένα.",
-  "settingsSearchTorKeywords": "διακομιστής μεσολάβησης Tor|Orbot|δρομολόγηση onion|ενσωματωμένο Tor|δίκτυο ιδιωτικότητας"
+  "settingsSearchTorKeywords": "διακομιστής μεσολάβησης Tor|Orbot|δρομολόγηση onion|ενσωματωμένο Tor|δίκτυο ιδιωτικότητας",
+  "limitOrdersInsufficientBalance": "Ανεπαρκή ισορροπία",
+  "limitOrdersInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
+  "limitOrdersFundAccount": "Χρηματοδότηση του λογαριασμού σας"
 }

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
@@ -38,6 +39,9 @@ class _MockSetBitcoinUnitUsecase extends Mock
 class _MockSetLanguageUsecase extends Mock implements SetLanguageUsecase {}
 
 class _MockSetCurrencyUsecase extends Mock implements SetCurrencyUsecase {}
+
+class _MockSyncExchangeCurrencyUsecase extends Mock
+    implements SyncExchangeCurrencyUsecase {}
 
 class _MockSetHideAmountsUsecase extends Mock
     implements SetHideAmountsUsecase {}
@@ -83,6 +87,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setBitcoinUnitUsecase,
     required super.setLanguageUsecase,
     required super.setCurrencyUsecase,
+    required super.syncExchangeCurrencyUsecase,
     required super.setHideAmountsUsecase,
     required super.setIsSuperuserUsecase,
     required super.setIsDevModeUsecase,
@@ -125,6 +130,7 @@ void main() {
       setBitcoinUnitUsecase: setBitcoinUnit,
       setLanguageUsecase: _MockSetLanguageUsecase(),
       setCurrencyUsecase: _MockSetCurrencyUsecase(),
+      syncExchangeCurrencyUsecase: _MockSyncExchangeCurrencyUsecase(),
       setHideAmountsUsecase: _MockSetHideAmountsUsecase(),
       setIsSuperuserUsecase: _MockSetIsSuperuserUsecase(),
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),

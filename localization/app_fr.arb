@@ -4906,5 +4906,8 @@
   "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats.",
   "settingsSearchBackupKeywords": "sauvegarde|récupération|restaurer le portefeuille|sauvegarde de la seed",
   "settingsSearchTorKeywords": "proxy Tor|Orbot|routage onion|Tor intégré|réseau de confidentialité|socks5|anonyme",
-  "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille"
+  "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
+  "limitOrdersInsufficientBalance": "Solde insuffisant",
+  "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
+  "limitOrdersFundAccount": "Financer votre compte"
 }
