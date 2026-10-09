@@ -33,6 +33,9 @@ class _ExchangeListenerState extends State<ExchangeListener> {
     final exchangeCubit = context.read<ExchangeCubit>();
     if (exchangeCubit.state.userSummary != null) {
       exchangeCubit.reconnectWebSocket();
+      // The reconnect covers pushes from now on; this covers whatever was
+      // pushed while the app was hidden and the socket was down.
+      exchangeCubit.fetchUserSummary();
     }
   }
 
