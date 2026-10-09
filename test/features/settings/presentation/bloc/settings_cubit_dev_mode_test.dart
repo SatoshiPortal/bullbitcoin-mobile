@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setu
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
@@ -36,6 +37,9 @@ class _MockSetBitcoinUnitUsecase extends Mock
 class _MockSetLanguageUsecase extends Mock implements SetLanguageUsecase {}
 
 class _MockSetCurrencyUsecase extends Mock implements SetCurrencyUsecase {}
+
+class _MockSyncExchangeCurrencyUsecase extends Mock
+    implements SyncExchangeCurrencyUsecase {}
 
 class _MockSetHideAmountsUsecase extends Mock
     implements SetHideAmountsUsecase {}
@@ -114,6 +118,7 @@ void main() {
       setBitcoinUnitUsecase: _MockSetBitcoinUnitUsecase(),
       setLanguageUsecase: _MockSetLanguageUsecase(),
       setCurrencyUsecase: _MockSetCurrencyUsecase(),
+      syncExchangeCurrencyUsecase: _MockSyncExchangeCurrencyUsecase(),
       setHideAmountsUsecase: _MockSetHideAmountsUsecase(),
       setIsSuperuserUsecase: _MockSetIsSuperuserUsecase(),
       setIsDevModeUsecase: setIsDevModeUsecase,
