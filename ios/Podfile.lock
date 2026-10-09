@@ -1,322 +1,59 @@
 PODS:
-  - AppAuth (1.7.6):
-    - AppAuth/Core (= 1.7.6)
-    - AppAuth/ExternalUserAgent (= 1.7.6)
-  - AppAuth/Core (1.7.6)
-  - AppAuth/ExternalUserAgent (1.7.6):
-    - AppAuth/Core
-  - AppCheckCore (11.3.2):
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/UserDefaults (~> 8.0)
-    - PromisesObjC (~> 2.4)
-    - PromisesSwift (~> 2.4)
-    - RecaptchaInterop (~> 101.0)
-  - battery_plus (1.0.0):
-    - Flutter
   - bull_tor (0.0.1):
     - Flutter
-  - camera_avfoundation (0.0.1):
-    - Flutter
-  - connectivity_plus (0.0.1):
-    - Flutter
-  - device_info_plus (0.0.1):
-    - Flutter
-  - DKImagePickerController/Core (4.3.9):
-    - DKImagePickerController/ImageDataManager
-    - DKImagePickerController/Resource
-  - DKImagePickerController/ImageDataManager (4.3.9)
-  - DKImagePickerController/PhotoGallery (4.3.9):
-    - DKImagePickerController/Core
-    - DKPhotoGallery
-  - DKImagePickerController/Resource (4.3.9)
-  - DKPhotoGallery (0.0.19):
-    - DKPhotoGallery/Core (= 0.0.19)
-    - DKPhotoGallery/Model (= 0.0.19)
-    - DKPhotoGallery/Preview (= 0.0.19)
-    - DKPhotoGallery/Resource (= 0.0.19)
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Core (0.0.19):
-    - DKPhotoGallery/Model
-    - DKPhotoGallery/Preview
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Model (0.0.19):
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Preview (0.0.19):
-    - DKPhotoGallery/Model
-    - DKPhotoGallery/Resource
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Resource (0.0.19):
-    - SDWebImage
-    - SwiftyGif
-  - file_picker (0.0.1):
-    - DKImagePickerController/PhotoGallery
-    - Flutter
   - Flutter (1.0.0)
-  - flutter_nfc_kit (3.6.0):
-    - Flutter
-  - flutter_secure_storage_darwin (10.0.0):
-    - Flutter
-    - FlutterMacOS
   - flutter_secure_storage_legacy (6.0.0):
     - Flutter
-  - flutter_zxing (0.0.1):
-    - Flutter
-  - google_sign_in_ios (0.0.1):
-    - AppAuth (>= 1.7.4)
-    - Flutter
-    - FlutterMacOS
-    - GoogleSignIn (~> 8.0)
-    - GTMSessionFetcher (>= 3.4.0)
-  - GoogleSignIn (8.0.0):
-    - AppAuth (< 2.0, >= 1.7.3)
-    - AppCheckCore (~> 11.0)
-    - GTMAppAuth (< 5.0, >= 4.1.1)
-    - GTMSessionFetcher/Core (~> 3.3)
-  - GoogleUtilities/Environment (8.1.4):
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.1.4):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.1.4)
-  - GoogleUtilities/UserDefaults (8.1.4):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
-  - GTMAppAuth (4.1.1):
-    - AppAuth/Core (~> 1.7)
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3)
-  - GTMSessionFetcher (3.5.0):
-    - GTMSessionFetcher/Full (= 3.5.0)
-  - GTMSessionFetcher/Core (3.5.0)
-  - GTMSessionFetcher/Full (3.5.0):
-    - GTMSessionFetcher/Core
-  - image_picker_ios (0.0.1):
-    - Flutter
-  - integration_test (0.0.1):
-    - Flutter
   - IPtProxy (5.6.0)
-  - no_screenshot (1.2.0):
-    - Flutter
   - onion (0.1.0):
     - Flutter
     - IPtProxy (= 5.6.0)
-  - package_info_plus (0.4.5):
-    - Flutter
-  - permission_handler_apple (9.4.8):
-    - Flutter
-  - PromisesObjC (2.4.1)
-  - PromisesSwift (2.4.1):
-    - PromisesObjC (= 2.4.1)
-  - RecaptchaInterop (101.0.0)
   - rust_lib_bull_sdk (0.0.1):
     - Flutter
-  - SDWebImage (5.21.7):
-    - SDWebImage/Core (= 5.21.7)
-  - SDWebImage/Core (5.21.7)
-  - Sentry/HybridSDK (8.58.4)
-  - sentry_flutter (9.26.0):
-    - Flutter
-    - FlutterMacOS
-    - Sentry/HybridSDK (= 8.58.4)
-  - share_plus (0.0.1):
-    - Flutter
-  - shared_preferences_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - sqlite3 (3.52.0):
-    - sqlite3/common (= 3.52.0)
-  - sqlite3/common (3.52.0)
-  - sqlite3/dbstatvtab (3.52.0):
-    - sqlite3/common
-  - sqlite3/fts5 (3.52.0):
-    - sqlite3/common
-  - sqlite3/math (3.52.0):
-    - sqlite3/common
-  - sqlite3/perf-threadsafe (3.52.0):
-    - sqlite3/common
-  - sqlite3/rtree (3.52.0):
-    - sqlite3/common
-  - sqlite3/session (3.52.0):
-    - sqlite3/common
-  - sqlite3_flutter_libs (0.0.1):
-    - Flutter
-    - FlutterMacOS
-    - sqlite3 (~> 3.52.0)
-    - sqlite3/dbstatvtab
-    - sqlite3/fts5
-    - sqlite3/math
-    - sqlite3/perf-threadsafe
-    - sqlite3/rtree
-    - sqlite3/session
-  - SwiftyGif (5.4.5)
   - universal_ble (0.0.1):
     - Flutter
     - FlutterMacOS
-  - url_launcher_ios (0.0.1):
-    - Flutter
   - webview_cookie_manager (0.0.1):
-    - Flutter
-  - webview_flutter_wkwebview (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - workmanager_apple (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - battery_plus (from `.symlinks/plugins/battery_plus/ios`)
   - bull_tor (from `.symlinks/plugins/bull_tor/ios`)
-  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
-  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
-  - flutter_nfc_kit (from `.symlinks/plugins/flutter_nfc_kit/ios`)
-  - flutter_secure_storage_darwin (from `.symlinks/plugins/flutter_secure_storage_darwin/darwin`)
   - flutter_secure_storage_legacy (from `.symlinks/plugins/flutter_secure_storage_legacy/ios`)
-  - flutter_zxing (from `.symlinks/plugins/flutter_zxing/ios`)
-  - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
-  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
-  - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - no_screenshot (from `.symlinks/plugins/no_screenshot/ios`)
   - onion (from `.symlinks/plugins/onion/ios`)
-  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
-  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
-  - share_plus (from `.symlinks/plugins/share_plus/ios`)
-  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/darwin`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
-  - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
 
 SPEC REPOS:
   trunk:
-    - AppAuth
-    - AppCheckCore
-    - DKImagePickerController
-    - DKPhotoGallery
-    - GoogleSignIn
-    - GoogleUtilities
-    - GTMAppAuth
-    - GTMSessionFetcher
     - IPtProxy
-    - PromisesObjC
-    - PromisesSwift
-    - RecaptchaInterop
-    - SDWebImage
-    - Sentry
-    - sqlite3
-    - SwiftyGif
 
 EXTERNAL SOURCES:
-  battery_plus:
-    :path: ".symlinks/plugins/battery_plus/ios"
   bull_tor:
     :path: ".symlinks/plugins/bull_tor/ios"
-  camera_avfoundation:
-    :path: ".symlinks/plugins/camera_avfoundation/ios"
-  connectivity_plus:
-    :path: ".symlinks/plugins/connectivity_plus/ios"
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
-  file_picker:
-    :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
-  flutter_nfc_kit:
-    :path: ".symlinks/plugins/flutter_nfc_kit/ios"
-  flutter_secure_storage_darwin:
-    :path: ".symlinks/plugins/flutter_secure_storage_darwin/darwin"
   flutter_secure_storage_legacy:
     :path: ".symlinks/plugins/flutter_secure_storage_legacy/ios"
-  flutter_zxing:
-    :path: ".symlinks/plugins/flutter_zxing/ios"
-  google_sign_in_ios:
-    :path: ".symlinks/plugins/google_sign_in_ios/darwin"
-  image_picker_ios:
-    :path: ".symlinks/plugins/image_picker_ios/ios"
-  integration_test:
-    :path: ".symlinks/plugins/integration_test/ios"
-  no_screenshot:
-    :path: ".symlinks/plugins/no_screenshot/ios"
   onion:
     :path: ".symlinks/plugins/onion/ios"
-  package_info_plus:
-    :path: ".symlinks/plugins/package_info_plus/ios"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
   rust_lib_bull_sdk:
     :path: ".symlinks/plugins/rust_lib_bull_sdk/ios"
-  sentry_flutter:
-    :path: ".symlinks/plugins/sentry_flutter/ios"
-  share_plus:
-    :path: ".symlinks/plugins/share_plus/ios"
-  shared_preferences_foundation:
-    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
-  sqlite3_flutter_libs:
-    :path: ".symlinks/plugins/sqlite3_flutter_libs/darwin"
   universal_ble:
     :path: ".symlinks/plugins/universal_ble/darwin"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_cookie_manager:
     :path: ".symlinks/plugins/webview_cookie_manager/ios"
-  webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
-  workmanager_apple:
-    :path: ".symlinks/plugins/workmanager_apple/ios"
 
 SPEC CHECKSUMS:
-  AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
-  AppCheckCore: be8fce5469f68d7f6a29aa94b25f097409ff7fdc
-  battery_plus: b42253f6d2dde71712f8c36fef456d99121c5977
   bull_tor: 9080cbf03c4a3f0df35c65eb126c1bff89517365
-  camera_avfoundation: 968a9a5323c79a99c166ad9d7866bfd2047b5a9b
-  connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
-  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
-  DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
-  DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_nfc_kit: e1b71583eafd2c9650bc86844a7f2d185fb414f6
-  flutter_secure_storage_darwin: acdb3f316ed05a3e68f856e0353b133eec373a23
   flutter_secure_storage_legacy: 2b1517bd98433d760370884d3e2cc3ed8eeb2538
-  flutter_zxing: fe1338b6d79b8a455d209a28381e336b6cfb4161
-  google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
-  GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
-  GoogleUtilities: db34c1c11c6f2eccb6fab2340cb8ceb1451299dc
-  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
-  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   IPtProxy: e74c1d7266f5d81da3e22d9a2bf27556f5bba004
-  no_screenshot: bd925a9ff0aaa3841cc46b0e9b7ef5cc5ae0a0bd
   onion: 8fc0f5b26dd48808801b116f6376d6d5951347b9
-  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
-  PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
-  PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
-  RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   rust_lib_bull_sdk: 160980033dfde220ad447a6dffa22d4269f8ea6c
-  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
-  Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
-  sentry_flutter: 01a996130a18996b59600c51e68b0e6364cde8b3
-  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
-  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  sqlite3: a51c07cf16e023d6c48abd5e5791a61a47354921
-  sqlite3_flutter_libs: b3e120efe9a82017e5552a620f696589ed4f62ab
-  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
-  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
-  webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
-  workmanager_apple: 1fc2a64e6a63ed3540fbb91b65f0c0d501881248
 
 PODFILE CHECKSUM: 57721febcc4eb8705754804ee8553d269d7fc0cb
 
