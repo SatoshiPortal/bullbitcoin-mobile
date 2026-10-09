@@ -7,6 +7,10 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ExchangeNotificationDatasource {
+  // A missed pong closes the socket, so a connection the OS dropped silently
+  // reaches _handleDisconnect and auto-reconnects.
+  static const _pingInterval = Duration(seconds: 30);
+
   final String _baseUrl;
   final BullbitcoinApiKeyDatasource _apiKeyDatasource;
   final bool _isTestnet;
@@ -84,6 +88,7 @@ class ExchangeNotificationDatasource {
       _channel = IOWebSocketChannel.connect(
         uri,
         headers: {'X-API-Key': apiKey.key},
+        pingInterval: _pingInterval,
       );
 
       // Wait for the connection to be ready
