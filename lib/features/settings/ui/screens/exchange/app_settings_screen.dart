@@ -37,7 +37,10 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
 
     final hasUnsetValues = selectedLanguage == null || selectedCurrency == null;
     return BlocListener<ExchangeCubit, ExchangeState>(
-      listenWhen: (previous, current) => previous.isSaving && !current.isSaving,
+      listenWhen: (previous, current) =>
+          previous.isSaving &&
+          !current.isSaving &&
+          current.savePreferencesFailure == null,
       listener: (context, state) {
         SnackBarUtils.showSnackBar(
           context,
