@@ -353,6 +353,7 @@ class BwkSpAccountRepository
     final (id, simulation) = await _ffi.preparePsbt(
       recipients: recipients.map(SpRecipientMapper.toFfi).toList(),
       feerateSatVb: feerateSatVb,
+      changeDustThreshold: BigInt.from(SpConfig.changeDustThresholdSat),
     );
     return SpTxDraftMapper.toDomain(simulation, id);
   });

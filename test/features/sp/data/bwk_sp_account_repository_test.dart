@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bull_sdk/bwk.dart';
@@ -36,6 +37,7 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   final Stream<SpNotification> notifications;
   bool session;
   int restampCalls = 0;
+  BigInt? changeDustThreshold;
   // Holds restartElectrum open until completed, when set.
   Completer<void>? restart;
 
@@ -74,6 +76,24 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
 
   @override
   Future<void> restartElectrum() => restart?.future ?? Future.value();
+
+  @override
+  Future<(String, TxSimulation)> preparePsbt({
+    required List<RecipientView> recipients,
+    required BigInt feerateSatVb,
+    required BigInt changeDustThreshold,
+  }) async {
+    this.changeDustThreshold = changeDustThreshold;
+    return (
+      '0',
+      TxSimulation(
+        inputs: const [],
+        outputs: const [],
+        feeSat: BigInt.zero,
+        changeSat: BigInt.zero,
+      ),
+    );
+  }
 }
 
 void main() {
@@ -388,6 +408,21 @@ void main() {
       final result = repo.restampMissingTimestamps();
 
       expect((result as Err<void, SpFailure>).failure, isA<SpUnexpected>());
+    });
+  });
+
+  group('preparePsbt', () {
+    test('asks bwk to keep a change of 600 sats or more', () async {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+
+      final result = await repo.preparePsbt(
+        recipients: const [],
+        feerateSatVb: BigInt.one,
+      );
+
+      expect(result, isA<Ok<SpTxDraft, SpFailure>>());
+      expect(ffi.changeDustThreshold, BigInt.from(600));
     });
   });
 

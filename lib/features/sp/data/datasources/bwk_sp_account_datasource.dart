@@ -98,10 +98,12 @@ class BwkSpAccountDatasource {
   Future<(String, TxSimulation)> preparePsbt({
     required List<RecipientView> recipients,
     required BigInt feerateSatVb,
+    required BigInt changeDustThreshold,
   }) async {
     final simulation = await _live.preparePsbt(
       recipients: recipients,
       feerateSatVb: feerateSatVb,
+      changeDustThreshold: changeDustThreshold,
     );
     final id = (_nextDraftId++).toString();
     _simulations[id] = simulation;

@@ -9,6 +9,9 @@ import 'package:primitives/primitives.dart';
 abstract class SpConfig {
   static const int dustLimitSat = 600;
 
+  /// A change below it goes to the fee. About twice the P2TR dust limit.
+  static const int changeDustThresholdSat = 600;
+
   static const int defaultFetchConcurrencyFactor = 12;
   static const int defaultMatchConcurrencyFactor = 1;
   static const int maxFetchConcurrencyFactor = 32;
