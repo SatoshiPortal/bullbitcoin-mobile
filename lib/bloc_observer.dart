@@ -16,7 +16,7 @@ class AppBlocObserver extends BlocObserver {
   void onEvent(Bloc bloc, Object? event) {
     super.onEvent(bloc, event);
     if (_showConsoleLogs) {
-      log.fine('Event $event added to bloc ${bloc.runtimeType}');
+      log.fine('Event ${event.runtimeType} added to bloc ${bloc.runtimeType}');
     }
   }
 
@@ -24,8 +24,12 @@ class AppBlocObserver extends BlocObserver {
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
     if (_showConsoleLogs) {
+      // Types only: full states embed exchange account data (user summary
+      // with groups and balances) and the on-device log can be exported.
       log.fine(
-        'State in bloc ${bloc.runtimeType} changed from ${change.currentState} to ${change.nextState}',
+        'State in bloc ${bloc.runtimeType} changed from '
+        '${change.currentState.runtimeType} to '
+        '${change.nextState.runtimeType}',
       );
     }
   }
@@ -46,7 +50,11 @@ class AppBlocObserver extends BlocObserver {
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
     if (_showConsoleLogs) {
-      log.fine('Transition in bloc ${bloc.runtimeType}: $transition');
+      log.fine(
+        'Transition in bloc ${bloc.runtimeType}: '
+        '${transition.event.runtimeType} -> '
+        '${transition.nextState.runtimeType}',
+      );
     }
   }
 

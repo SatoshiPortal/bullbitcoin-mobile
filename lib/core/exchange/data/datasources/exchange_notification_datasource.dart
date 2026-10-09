@@ -126,7 +126,9 @@ class ExchangeNotificationDatasource {
       final parsed = message is String
           ? jsonDecode(message) as Map<String, dynamic>
           : message as Map<String, dynamic>;
-      log.fine('WebSocket message received: $parsed');
+      // Type only: the payload carries account data (group/kyc/balance
+      // notifications) and the on-device log can be exported.
+      log.fine('WebSocket message received: type=${parsed['type']}');
       _messageController.add(parsed);
     } catch (e) {
       log.warning('Error parsing WebSocket message: $e');
