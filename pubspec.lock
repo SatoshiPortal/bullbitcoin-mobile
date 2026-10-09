@@ -114,14 +114,14 @@ packages:
     source: hosted
     version: "2.0.1"
   bdk_dart:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
-      resolved-ref: fbf8952ed7056c9663e4bd47dddc8b4994580532
+      ref: db0ec383250979143f1f3ce6acc3406fe2fdc535
+      resolved-ref: db0ec383250979143f1f3ce6acc3406fe2fdc535
       url: "https://github.com/bitcoindevkit/bdk-dart"
     source: git
-    version: "1.0.0-rc.3"
+    version: "1.0.0"
   bech32:
     dependency: transitive
     description:
