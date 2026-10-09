@@ -233,6 +233,9 @@ void main() {
     test('maps an exchange rejection to OrderCreationFailure without carrying '
         'the raw reason', () async {
       when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Ok(userSummary));
+      when(
         () => mainnetOrders.createDca(
           amount: any(named: 'amount'),
           currency: any(named: 'currency'),
@@ -395,43 +398,38 @@ void main() {
       ).called(1);
     });
 
-    test('skips the preference write when the summary read fails', () async {
-      // The exchange replaces the whole stored preference set, so a write
-      // without the current values would reset an active AutoBuy. A transient
-      // summary failure (the network can recover before the next request)
-      // must therefore skip the write, not degrade to a partial one.
-      when(
-        () => mainnetOrders.createDca(
-          amount: any(named: 'amount'),
-          currency: any(named: 'currency'),
-          frequency: any(named: 'frequency'),
-          network: any(named: 'network'),
-          address: any(named: 'address'),
-        ),
-      ).thenAnswer((_) async => dca);
-      when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
-      );
+    test(
+      'aborts before creating anything when the summary read fails',
+      () async {
+        // The DCA flag is operative on the exchange (stopping a recurring buy
+        // writes it), and the enabling write must carry the full current set.
+        // A failed summary read therefore aborts the flow while nothing exists
+        // on the exchange yet, instead of creating a DCA it cannot enable.
+        when(() => mainnetUsers.getUserSummary()).thenAnswer(
+          (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
+        );
 
-      final result = await usecase.execute(
-        amount: 10,
-        currency: FiatCurrency.cad,
-        frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
-        lightningAddress: 'user@lightning.address',
-      );
+        final result = await usecase.execute(
+          amount: 10,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.lightning,
+          lightningAddress: 'user@lightning.address',
+        );
 
-      // The recurring buy exists on the exchange, so the flow still succeeds.
-      expect(result, isA<Ok<Dca, DcaFailure>>());
-      verifyNever(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      );
-    });
+        final failure = failureOf(result);
+        expect(failure, isA<DcaAccountUnavailableFailure>());
+        verifyZeroInteractions(mainnetOrders);
+        verifyNever(
+          () => mainnetUsers.saveUserPreference(
+            language: any(named: 'language'),
+            currency: any(named: 'currency'),
+            dcaEnabled: any(named: 'dcaEnabled'),
+            autoBuyEnabled: any(named: 'autoBuyEnabled'),
+            emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+          ),
+        );
+      },
+    );
   });
 }

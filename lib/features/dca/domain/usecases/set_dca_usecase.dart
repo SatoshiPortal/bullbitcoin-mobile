@@ -99,6 +99,29 @@ class SetDcaUsecase {
       }
     }
 
+    // Read the preference set BEFORE creating anything on the exchange. The
+    // DCA flag is operative — the exchange web client stops a recurring buy
+    // by writing it — and saveUserPreferences replaces the whole stored set,
+    // so the enabling write must carry the current values. Aborting here is
+    // clean: nothing exists on the exchange yet.
+    final userRepository = environment.isTestnet
+        ? _testnetExchangeUserRepository
+        : _mainnetExchangeUserRepository;
+
+    final UserSummary summary;
+    switch (await userRepository.getUserSummary()) {
+      case Ok(:final value):
+        summary = value;
+      case Err(:final failure):
+        log.warning(
+          'DCA aborted before creation: user summary unavailable: '
+          '${failure.logMessage ?? failure.runtimeType}',
+        );
+        return const Err(
+          DcaAccountUnavailableFailure('user summary unavailable'),
+        );
+    }
+
     final Dca dca;
     try {
       final repository = environment.isMainnet
@@ -117,28 +140,6 @@ class SetDcaUsecase {
       return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
 
-    final userRepository = environment.isTestnet
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
-
-    // saveUserPreferences replaces the whole preference set on the exchange:
-    // omitted keys are reset, which was disabling an active AutoBuy. Send the
-    // current values alongside the DCA flag, like the exchange web client —
-    // and when the summary cannot be read, skip the write entirely: a partial
-    // write would reset the other preferences, and the DCA flag is only a
-    // display flag on the exchange side.
-    final UserSummary summary;
-    switch (await userRepository.getUserSummary()) {
-      case Ok(:final value):
-        summary = value;
-      case Err(:final failure):
-        log.warning(
-          'DCA created but the preference flag was not enabled: user summary '
-          'unavailable: ${failure.logMessage ?? failure.runtimeType}',
-        );
-        return Ok(dca);
-    }
-
     if (await userRepository.saveUserPreference(
           language: summary.language,
           currency: summary.currency,
@@ -149,9 +150,8 @@ class SetDcaUsecase {
         case Err(:final failure)) {
       // The recurring buy already exists on the exchange at this point, so
       // this must NOT be reported as a failure: the user would be told
-      // nothing happened and could create a second one. The preference is a
-      // display flag on the exchange side; the repository already logged the
-      // reason, so note the outcome and continue.
+      // nothing happened and could create a second one. The repository
+      // already logged the reason, so note the outcome and continue.
       log.warning(
         'DCA created but enabling the preference failed: '
         '${failure.logMessage ?? failure.runtimeType}',
