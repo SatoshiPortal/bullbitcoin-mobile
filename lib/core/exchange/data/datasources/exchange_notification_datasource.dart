@@ -136,7 +136,9 @@ class ExchangeNotificationDatasource {
       log.fine('WebSocket message received: type=${parsed['type']}');
       _messageController.add(parsed);
     } catch (e) {
-      log.warning('Error parsing WebSocket message: $e');
+      // Type only: FormatException.toString() embeds the malformed frame,
+      // which can carry account data.
+      log.warning('Error parsing WebSocket message: ${e.runtimeType}');
     }
   }
 

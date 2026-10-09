@@ -38,9 +38,10 @@ class AppBlocObserver extends BlocObserver {
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
     if (_showConsoleLogs) {
+      // Type only: the raw error can carry a full API response body.
       log.severe(
         message: 'Error in bloc ${bloc.runtimeType}',
-        error: error,
+        error: error.runtimeType,
         trace: stackTrace,
       );
     }
