@@ -98,6 +98,10 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   }
 
   Future<void> saveWallet(WalletAddressType type) async {
+    if (state.saveError != null || state.saveSuccess) {
+      emit(state.copyWith(saveError: null, saveSuccess: false));
+    }
+
     final address = state.getInputValue(type);
 
     if (address.isEmpty) {
@@ -105,7 +109,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       return;
     }
 
-    emit(state.copyWith(isSaving: true, saveError: null, saveSuccess: false));
+    emit(state.copyWith(isSaving: true));
 
     try {
       final existingWallet = state.defaultWallets?.getWallet(type);
@@ -141,6 +145,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         state.copyWith(
           isSaving: false,
           saveError: 'Failed to save wallet address',
+          saveSuccess: false,
         ),
       );
     }
@@ -153,7 +158,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       return;
     }
 
-    emit(state.copyWith(isSaving: true, saveError: null));
+    emit(state.copyWith(isSaving: true, saveError: null, saveSuccess: false));
 
     try {
       await _deleteDefaultWalletUsecase.execute(
@@ -188,6 +193,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         state.copyWith(
           isSaving: false,
           saveError: 'Failed to delete wallet address',
+          saveSuccess: false,
         ),
       );
     }
