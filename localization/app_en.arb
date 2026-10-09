@@ -16791,5 +16791,29 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file to find its key using a wallet on this device. No backup PIN or server connection is needed. Viewing the key does not test your PIN or server recovery.",
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. The file may belong to another wallet or be damaged. Try another copy or use the server.",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyPathUnavailable": "This backup cannot be opened locally because its key information is missing or unsupported. Try another saved copy or use the server.",
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeySeedUnavailable": "The matching wallet seed is unavailable on this device. Use the backup file and its PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  }
 }

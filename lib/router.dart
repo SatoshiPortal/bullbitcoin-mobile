@@ -230,6 +230,7 @@ class AppRouter {
       MempoolSettingsRoute.route,
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
+      RecoverBullRouter.localKeyRoute,
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,

@@ -528,7 +528,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
 
       switch (state.flow) {
-        case RecoverBullFlow.viewVaultKey || RecoverBullFlow.testVault:
+        case RecoverBullFlow.viewVaultKey:
+          emit(state.copyWith(decryptedVault: decryptedVault));
+        case RecoverBullFlow.testVault:
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
             decryptedVault: decryptedVault,
           );
