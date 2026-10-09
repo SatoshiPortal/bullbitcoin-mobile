@@ -23,7 +23,9 @@ class OrderModel {
   final String? sentAt;
   final String payinMethod;
   final String payoutMethod;
-  final String triggerType;
+  // Nullable per the server contract: not every order carries a trigger type
+  // (the exchange web client reads it defensively too).
+  final String? triggerType;
   final String? confirmationDeadline;
   final String? bitcoinTransactionId;
   final String? lnUrl;
@@ -78,7 +80,7 @@ class OrderModel {
     this.sentAt,
     required this.payinMethod,
     required this.payoutMethod,
-    required this.triggerType,
+    this.triggerType,
     this.confirmationDeadline,
     this.bitcoinTransactionId,
     this.lnUrl,
@@ -133,7 +135,7 @@ class OrderModel {
       sentAt: json['sentAt'] as String?,
       payinMethod: json['payinMethod'] as String? ?? '',
       payoutMethod: json['payoutMethod'] as String? ?? '',
-      triggerType: json['triggerType'] as String,
+      triggerType: json['triggerType'] as String?,
       confirmationDeadline: json['confirmationDeadline'] as String?,
       bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
       lnUrl: json['lnUrl'] as String?,
