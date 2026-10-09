@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -7,8 +8,12 @@ import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
 import 'package:meta/meta.dart';
 
-/// Saves language, currency, notification and DCA preferences. The repository
-/// sanitizes; this only lifts the core failure into the feature's family.
+/// Saves language, currency, notification, DCA and AutoBuy preferences.
+///
+/// The exchange's `saveUserPreferences` replaces the whole stored set, so
+/// every field the caller leaves out is filled from a fresh user summary
+/// before the write. A failed summary read aborts the write: pushing a
+/// partial or stale set would silently reset the other preferences.
 class SaveExchangePreferencesUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
@@ -42,12 +47,28 @@ class SaveExchangePreferencesUsecase {
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 
+    final UserSummary summary;
+    switch (await repo.getUserSummary()) {
+      case Ok(:final value):
+        summary = value;
+      case Err(:final failure):
+        return Err(switch (failure) {
+          ExchangeUserNotAuthenticatedFailure() =>
+            ExchangeNotAuthenticatedFailure(failure.logMessage),
+          ExchangeUserNetworkFailure() => ExchangeNetworkFailure(
+            failure.logMessage,
+          ),
+          _ => ExchangePreferencesSaveFailure(failure.logMessage),
+        });
+    }
+
     final result = await repo.saveUserPreference(
-      language: language,
-      currency: currency,
-      dcaEnabled: dcaEnabled,
-      autoBuyEnabled: autoBuyEnabled,
-      emailNotificationsEnabled: emailNotificationsEnabled,
+      language: language ?? summary.language,
+      currency: currency ?? summary.currency,
+      dcaEnabled: dcaEnabled ?? summary.dca.isActive,
+      autoBuyEnabled: autoBuyEnabled ?? summary.autoBuy.isActive.toString(),
+      emailNotificationsEnabled:
+          emailNotificationsEnabled ?? summary.emailNotificationsEnabled,
     );
 
     return result.mapErr(

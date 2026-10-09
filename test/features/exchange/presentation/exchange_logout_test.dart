@@ -96,15 +96,7 @@ void main() {
     // re-show its banner to whoever signs in next.
     test('a clean sign-out leaves no failure behind', () async {
       when(clearSession.execute).thenAnswer((_) async => const Ok(null));
-      when(
-        () => savePreferences.execute(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-        ),
-      ).thenAnswer(
+      when(() => savePreferences.execute(dcaEnabled: false)).thenAnswer(
         (_) async => const Err(ExchangePreferencesSaveFailure('nope')),
       );
       final cubit = build();
@@ -159,67 +151,33 @@ void main() {
   });
 
   group('stopDca', () {
-    // saveUserPreferences replaces the stored preference set on the exchange,
-    // so stopping the recurring buy must carry the other preferences along or
-    // an active AutoBuy gets reset.
-    test('sends the full preference set, keeping AutoBuy as it is', () async {
-      final account = _account.copyWith(
-        language: 'en',
-        currency: 'CAD',
-        autoBuy: const UserAutoBuy(
-          isActive: true,
-          addresses: UserAutoBuyAddresses(),
-        ),
-      );
-      when(getAccount.execute).thenAnswer((_) async => Ok(account));
+    // The use-case owns the full-set merge over a fresh summary; the cubit
+    // only names the field it changes.
+    test('changes only the DCA flag through the use-case', () async {
       when(
-        () => savePreferences.execute(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-        ),
+        () => savePreferences.execute(dcaEnabled: false),
       ).thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
-      await cubit.fetchUserSummary();
 
       await cubit.stopDca();
 
-      verify(
-        () => savePreferences.execute(
-          language: 'en',
-          currency: 'CAD',
-          emailNotificationsEnabled: true,
-          dcaEnabled: false,
-          autoBuyEnabled: 'true',
-        ),
-      ).called(1);
+      verify(() => savePreferences.execute(dcaEnabled: false)).called(1);
+      expect(cubit.state.stopDcaFailure, isNull);
+      expect(cubit.state.isSaving, isFalse);
     });
 
-    // The write replaces the stored set, so without the current values it
-    // would push stale ones back (e.g. undo a currency change made elsewhere).
-    test('a failed summary read blocks the write and is surfaced', () async {
+    test('a use-case failure is surfaced on the tile', () async {
+      when(
+        () => savePreferences.execute(dcaEnabled: false),
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
       final cubit = build();
       addTearDown(cubit.close);
-      when(
-        getAccount.execute,
-      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
 
       await cubit.stopDca();
 
       expect(cubit.state.stopDcaFailure, isNotNull);
       expect(cubit.state.isSaving, isFalse);
-      verifyNever(
-        () => savePreferences.execute(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-        ),
-      );
     });
   });
 

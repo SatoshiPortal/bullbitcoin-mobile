@@ -269,7 +269,30 @@ void main() {
   });
 
   group('SaveExchangePreferencesUsecase', () {
+    // An account whose stored preferences all differ from the test inputs,
+    // so a field surviving or being overwritten is always distinguishable.
+    const summary = UserSummary(
+      userNumber: 1,
+      groups: [],
+      profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+      email: 'sat@example.com',
+      balances: [],
+      language: 'en',
+      currency: 'CAD',
+      dca: UserDca(isActive: true),
+      autoBuy: UserAutoBuy(isActive: true, addresses: UserAutoBuyAddresses()),
+    );
+
+    SaveExchangePreferencesUsecase build() => SaveExchangePreferencesUsecase(
+      mainnetExchangeUserRepository: mainnetUsers,
+      testnetExchangeUserRepository: testnetUsers,
+      settingsRepository: settings,
+    );
+
     test('a repository failure is lifted into the feature family', () async {
+      when(
+        mainnetUsers.getUserSummary,
+      ).thenAnswer((_) async => const Ok(summary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -282,13 +305,59 @@ void main() {
         (_) async => const Err(ExchangeUserPreferencesSaveFailure('nope')),
       );
 
-      final result = await SaveExchangePreferencesUsecase(
-        mainnetExchangeUserRepository: mainnetUsers,
-        testnetExchangeUserRepository: testnetUsers,
-        settingsRepository: settings,
-      ).execute(language: 'en');
+      final result = await build().execute(language: 'en');
 
       expect(_failureOf(result), isA<ExchangePreferencesSaveFailure>());
+    });
+
+    // The exchange replaces the whole stored set, so every field the caller
+    // leaves out must be carried over from a fresh summary.
+    test('fields the caller leaves out are filled from a fresh '
+        'summary', () async {
+      when(
+        mainnetUsers.getUserSummary,
+      ).thenAnswer((_) async => const Ok(summary));
+      when(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+
+      final result = await build().execute(currency: 'EUR');
+
+      expect(result, isA<Ok<void, ExchangeFailure>>());
+      verify(
+        () => mainnetUsers.saveUserPreference(
+          language: 'en',
+          currency: 'EUR',
+          dcaEnabled: true,
+          autoBuyEnabled: 'true',
+          emailNotificationsEnabled: true,
+        ),
+      ).called(1);
+    });
+
+    test('a failed summary read aborts the write', () async {
+      when(mainnetUsers.getUserSummary).thenAnswer(
+        (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
+      );
+
+      final result = await build().execute(currency: 'EUR');
+
+      expect(_failureOf(result), isA<ExchangeNetworkFailure>());
+      verifyNever(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      );
     });
   });
 

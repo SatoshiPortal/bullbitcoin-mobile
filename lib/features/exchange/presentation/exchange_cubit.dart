@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
@@ -116,12 +115,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
     emit(state.copyWith(isSaving: true, savePreferencesFailure: null));
 
+    // Only the fields this screen edits: the use-case fills the DCA and
+    // AutoBuy flags from a fresh summary, so stale state cannot clobber them.
     final result = await _saveExchangePreferencesUsecase.execute(
       language: state.selectedLanguage,
       currency: state.selectedCurrency,
       emailNotificationsEnabled: state.selectedEmailNotifications,
-      dcaEnabled: state.userSummary?.dca.isActive,
-      autoBuyEnabled: state.userSummary?.autoBuy.isActive.toString(),
     );
     if (isClosed) return;
 
@@ -147,28 +146,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   Future<void> stopDca() async {
     emit(state.copyWith(isSaving: true, stopDcaFailure: null));
 
-    // Full preference set: saveUserPreferences replaces the stored object on
-    // the exchange, so sending the DCA flag alone resets AUTO_BUY_ENABLED.
-    // Read a fresh summary rather than state.userSummary: another surface
-    // (the app currency sync, the web client) may have changed the
-    // preferences since the last fetch, and this write pushes the whole set.
-    final UserSummary summary;
-    switch (await _getExchangeAccountUsecase.execute()) {
-      case Ok(:final value):
-        summary = value;
-      case Err(:final failure):
-        if (isClosed) return;
-        emit(state.copyWith(isSaving: false, stopDcaFailure: failure));
-        return;
-    }
-    if (isClosed) return;
-
+    // The use-case reads a fresh summary and fills the rest of the
+    // preference set; the DCA flag is the only field this call changes.
     final result = await _saveExchangePreferencesUsecase.execute(
-      language: summary.language,
-      currency: summary.currency,
-      emailNotificationsEnabled: summary.emailNotificationsEnabled,
       dcaEnabled: false,
-      autoBuyEnabled: summary.autoBuy.isActive.toString(),
     );
     if (isClosed) return;
 
