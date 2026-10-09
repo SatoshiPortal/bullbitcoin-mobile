@@ -146,8 +146,14 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   Future<void> stopDca() async {
     emit(state.copyWith(isSaving: true, stopDcaFailure: null));
 
+    // Full preference set: saveUserPreferences replaces the stored object on
+    // the exchange, so sending the DCA flag alone resets AUTO_BUY_ENABLED.
     final result = await _saveExchangePreferencesUsecase.execute(
+      language: state.userSummary?.language,
+      currency: state.userSummary?.currency,
+      emailNotificationsEnabled: state.userSummary?.emailNotificationsEnabled,
       dcaEnabled: false,
+      autoBuyEnabled: state.userSummary?.autoBuy.isActive.toString(),
     );
     if (isClosed) return;
 

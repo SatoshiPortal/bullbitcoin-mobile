@@ -120,9 +120,34 @@ class SetDcaUsecase {
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 
-    if (await userRepository.saveUserPreference(dcaEnabled: true) case Err(
-      :final failure,
-    )) {
+    // saveUserPreferences replaces the whole preference set on the exchange:
+    // omitted keys are reset, which was disabling an active AutoBuy. Send the
+    // current values alongside the DCA flag, like the exchange web client.
+    String? summaryLanguage;
+    String? summaryCurrency;
+    String? summaryAutoBuyEnabled;
+    bool? summaryEmailNotificationsEnabled;
+    switch (await userRepository.getUserSummary()) {
+      case Ok(:final value):
+        summaryLanguage = value.language;
+        summaryCurrency = value.currency;
+        summaryAutoBuyEnabled = value.autoBuy.isActive.toString();
+        summaryEmailNotificationsEnabled = value.emailNotificationsEnabled;
+      case Err(:final failure):
+        log.warning(
+          'DCA preference: user summary unavailable, sending DCA flag alone: '
+          '${failure.logMessage ?? failure.runtimeType}',
+        );
+    }
+
+    if (await userRepository.saveUserPreference(
+          language: summaryLanguage,
+          currency: summaryCurrency,
+          dcaEnabled: true,
+          autoBuyEnabled: summaryAutoBuyEnabled,
+          emailNotificationsEnabled: summaryEmailNotificationsEnabled,
+        )
+        case Err(:final failure)) {
       // The recurring buy already exists on the exchange at this point, so
       // this must NOT be reported as a failure: the user would be told
       // nothing happened and could create a second one. The preference is a

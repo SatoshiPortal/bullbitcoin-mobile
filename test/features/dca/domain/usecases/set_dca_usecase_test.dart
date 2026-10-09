@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -66,6 +67,20 @@ void main() {
     environment: Environment.mainnet,
     bitcoinUnit: BitcoinUnit.sats,
     currencyCode: 'CAD',
+  );
+
+  // An account with AutoBuy already on: enabling the recurring buy must not
+  // flip it off, since saveUserPreferences replaces the whole preference set.
+  const userSummary = UserSummary(
+    userNumber: 1,
+    groups: [],
+    profile: UserProfile(firstName: 'First', lastName: 'Last'),
+    email: 'user@example.com',
+    balances: [],
+    language: 'en',
+    currency: 'CAD',
+    dca: UserDca(isActive: false),
+    autoBuy: UserAutoBuy(isActive: true, addresses: UserAutoBuyAddresses()),
   );
 
   final dca = Dca(
@@ -256,7 +271,18 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => dca);
-      when(() => mainnetUsers.saveUserPreference(dcaEnabled: true)).thenAnswer(
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Ok(userSummary));
+      when(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      ).thenAnswer(
         (_) async =>
             const Err(ExchangeUserPreferencesSaveFailure('prefs write failed')),
       );
@@ -301,7 +327,16 @@ void main() {
         ),
       ).thenAnswer((_) async => dca);
       when(
-        () => mainnetUsers.saveUserPreference(dcaEnabled: true),
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Ok(userSummary));
+      when(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
       ).thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(
@@ -314,6 +349,93 @@ void main() {
 
       expect(result, isA<Ok<Dca, DcaFailure>>());
       expect((result as Ok<Dca, DcaFailure>).value, same(dca));
+    });
+
+    test('sends the full preference set so an active AutoBuy survives '
+        'enabling the recurring buy', () async {
+      when(
+        () => mainnetOrders.createDca(
+          amount: any(named: 'amount'),
+          currency: any(named: 'currency'),
+          frequency: any(named: 'frequency'),
+          network: any(named: 'network'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => dca);
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Ok(userSummary));
+      when(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.lightning,
+        lightningAddress: 'user@lightning.address',
+      );
+
+      expect(result, isA<Ok<Dca, DcaFailure>>());
+      verify(
+        () => mainnetUsers.saveUserPreference(
+          language: 'en',
+          currency: 'CAD',
+          dcaEnabled: true,
+          autoBuyEnabled: 'true',
+          emailNotificationsEnabled: true,
+        ),
+      ).called(1);
+    });
+
+    test('still enables the DCA flag when the summary read fails', () async {
+      when(
+        () => mainnetOrders.createDca(
+          amount: any(named: 'amount'),
+          currency: any(named: 'currency'),
+          frequency: any(named: 'frequency'),
+          network: any(named: 'network'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => dca);
+      when(() => mainnetUsers.getUserSummary()).thenAnswer(
+        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
+      );
+      when(
+        () => mainnetUsers.saveUserPreference(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.lightning,
+        lightningAddress: 'user@lightning.address',
+      );
+
+      expect(result, isA<Ok<Dca, DcaFailure>>());
+      verify(
+        () => mainnetUsers.saveUserPreference(
+          language: null,
+          currency: null,
+          dcaEnabled: true,
+          autoBuyEnabled: null,
+          emailNotificationsEnabled: null,
+        ),
+      ).called(1);
     });
   });
 }

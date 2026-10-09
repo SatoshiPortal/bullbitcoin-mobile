@@ -96,7 +96,15 @@ void main() {
     // re-show its banner to whoever signs in next.
     test('a clean sign-out leaves no failure behind', () async {
       when(clearSession.execute).thenAnswer((_) async => const Ok(null));
-      when(() => savePreferences.execute(dcaEnabled: false)).thenAnswer(
+      when(
+        () => savePreferences.execute(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ExchangePreferencesSaveFailure('nope')),
       );
       final cubit = build();
@@ -147,6 +155,47 @@ void main() {
 
       verify(notifications.disconnect).called(greaterThanOrEqualTo(1));
       verify(notifications.connect).called(greaterThanOrEqualTo(1));
+    });
+  });
+
+  group('stopDca', () {
+    // saveUserPreferences replaces the stored preference set on the exchange,
+    // so stopping the recurring buy must carry the other preferences along or
+    // an active AutoBuy gets reset.
+    test('sends the full preference set, keeping AutoBuy as it is', () async {
+      final account = _account.copyWith(
+        language: 'en',
+        currency: 'CAD',
+        autoBuy: const UserAutoBuy(
+          isActive: true,
+          addresses: UserAutoBuyAddresses(),
+        ),
+      );
+      when(getAccount.execute).thenAnswer((_) async => Ok(account));
+      when(
+        () => savePreferences.execute(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+          dcaEnabled: any(named: 'dcaEnabled'),
+          autoBuyEnabled: any(named: 'autoBuyEnabled'),
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.fetchUserSummary();
+
+      await cubit.stopDca();
+
+      verify(
+        () => savePreferences.execute(
+          language: 'en',
+          currency: 'CAD',
+          emailNotificationsEnabled: true,
+          dcaEnabled: false,
+          autoBuyEnabled: 'true',
+        ),
+      ).called(1);
     });
   });
 
