@@ -10,6 +10,15 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [6.14.0] - 2026-10-04
 
+### Updates In Build 223
+
+- Fixed fiat-price loading after starting offline, retrying after connectivity returns and when refreshing wallet screens. Wallet sync errors and server warnings are now separately accessible in a swipeable carousel. ([#2933](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2933))
+- Fixed back navigation through encrypted-vault flows: returning from the key flow reaches Settings, and system back follows nested flow pages. ([#2937](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2937))
+- Fixed label-file import on iOS, moved file reading behind a use case while retaining the size bound, and removed the temporary picked-file copy after import. ([#2945](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2945))
+- Restored French Settings search strings and updated German translations. ([#2942](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2942), [#2921](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2921))
+- Pinned the merged SatoshiPortal SDK, upgrading BDK Dart from 1.0.0-rc.3 to 1.0.0 and using the SDK's locked BWK revision. Adapted Boltz restore result envelopes and Silent Payments notifications for Electrum disconnect/reconnect, chain reorganizations and invalid header checkpoints. The iOS Tor plugin now requires IPtProxy 5.6.0 instead of 5.5.1. ([#2948](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2948))
+- Extracted the announcement carousel into the shared UI kit and added its catalogue preview and regression tests. ([#2933](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2933))
+
 ### New Features
 
 - **Experimental Silent Payments**: added a Silent Payments wallet, receive and send flows, wallet scanning, and controls in Settings, gated behind Superuser and Developer modes. ([#2408](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2408), [#2879](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2879))
