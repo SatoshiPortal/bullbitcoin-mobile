@@ -3,9 +3,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
-/// A bordered menu row with an optional leading icon and a title — duplicated
-/// from `core/widgets/navbar/tab_menu_vertical_button.dart`
-/// (`TabMenuVerticalButton`).
+/// A bordered menu row with an optional leading icon and a title.
 ///
 /// When [onTap] is null the row is dimmed (disabled).
 class BullTabMenuVerticalButton extends StatelessWidget {
@@ -46,12 +44,7 @@ class BullTabMenuVerticalButton extends StatelessWidget {
             children: [
               ?icon,
               const Gap(8),
-              BullText(
-                title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              BullText(title, style: Theme.of(context).textTheme.headlineLarge),
             ],
           ),
         ),

@@ -53,8 +53,8 @@ symbols plus every `Bull*` component and the theme. Internals live under `lib/sr
 Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 `BB*`/core originals are left untouched). Grouped by barrel category:
 
-**Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`
-(`TabMenuVerticalButton`), `BullViewerActionButton` (`ViewerActionButton`).
+**Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`,
+`BullViewerActionButton`.
 
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText` (`BBInputText`),
 `BullPasteInput` (`PasteInput`), `BullDropdown` (`BBDropdown`),
