@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class HowToDecideBackupOption extends StatelessWidget {
   const HowToDecideBackupOption({super.key});
@@ -26,7 +25,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   const Spacer(),
-                  BBText(
+                  BullText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
                     style: context.font.headlineMedium,
                     textAlign: .center,
@@ -50,7 +49,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideBackupLosePhysical,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,
@@ -59,7 +58,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                         maxLines: 8,
                       ),
                       const Gap(32),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideBackupEncryptedVault,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,
@@ -112,7 +111,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                         ),
                       ),
                       const Gap(12),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideBackupMoreInfo,
                         style: context.font.labelMedium?.copyWith(
                           height: 1.5,

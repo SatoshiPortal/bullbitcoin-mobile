@@ -4,15 +4,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInfoCard, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,7 +72,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
         ),
-        title: BBText(
+        title: BullText(
           context.loc.recoverbullServerConfirmTitle,
           style: context.font.headlineMedium,
           color: context.appColors.onSurface,
@@ -98,7 +96,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         : context.appColors.tertiary,
                   ),
                   const Gap(32),
-                  BBText(
+                  BullText(
                     _isUsingDefaultServer
                         ? context.loc.recoverbullServerUsingDefault
                         : context.loc.recoverbullServerUsingCustom,
@@ -119,14 +117,14 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     child: Column(
                       crossAxisAlignment: .start,
                       children: [
-                        BBText(
+                        BullText(
                           context.loc.recoverbullServerUrlLabel,
                           style: context.font.labelSmall?.copyWith(
                             color: context.appColors.textMuted,
                           ),
                         ),
                         const Gap(8),
-                        BBText(
+                        BullText(
                           _serverUrl ?? SettingsConstants.recoverbullUrl,
                           style: context.font.bodyMedium?.copyWith(
                             fontFamily: 'monospace',
@@ -137,14 +135,14 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                   ),
                   const Gap(24),
                   if (!_isUsingDefaultServer) ...[
-                    InfoCard(
+                    BullInfoCard(
                       description: context.loc.recoverbullServerCustomWarning,
                       tagColor: context.appColors.error,
                       bgColor: context.appColors.errorContainer,
                     ),
                     const Gap(24),
                   ],
-                  BBText(
+                  BullText(
                     context.loc.recoverbullServerTorNotice,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.textMuted,
@@ -152,7 +150,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     textAlign: .center,
                   ),
                   const Spacer(),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.recoverbullContinue,
                     onPressed: () async {
                       await _allowPermissionUsecase.execute(true);
@@ -181,7 +179,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           color: context.appColors.primary,
                         ),
                         const Gap(8),
-                        BBText(
+                        BullText(
                           context.loc.recoverbullLearnMore,
                           style: context.font.bodyMedium,
                           color: context.appColors.primary,

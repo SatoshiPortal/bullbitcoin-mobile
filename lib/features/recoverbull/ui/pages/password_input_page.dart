@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/fetch_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
@@ -11,7 +8,8 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -97,7 +95,10 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(onBack: () => context.pop(), title: title),
+            flexibleSpace: BullTopBar(
+              onBack: () => context.pop(),
+              title: title,
+            ),
             actions: const [
               Padding(
                 padding: EdgeInsets.only(right: 20),
@@ -115,7 +116,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                   SizedBox(
                     height: 50,
                     child: Center(
-                      child: BBText(
+                      child: BullText(
                         description,
                         textAlign: .center,
                         style: context.font.labelMedium?.copyWith(
@@ -126,7 +127,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     ),
                   ),
                   const Gap(12),
-                  BBText(
+                  BullText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
                         : inputTypeString,
@@ -189,7 +190,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                   ),
                   const Gap(16),
                   if (needPasswordConfirmation && validatedPassword.isNotEmpty)
-                    BBButton.small(
+                    BullButton.small(
                       label: context.loc.recoverbullGoBackEdit,
                       bgColor: context.appColors.transparent,
                       textColor: context.appColors.info,
@@ -205,7 +206,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.big(
                             label: inputType == InputType.pin
                                 ? context.loc.recoverbullSwitchToPassword
                                 : context.loc.recoverbullSwitchToPIN,
@@ -224,7 +225,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                         ),
                         if (inputType != InputType.vaultKey && hasVaultKeyInput)
                           Expanded(
-                            child: BBButton.small(
+                            child: BullButton.small(
                               label:
                                   context.loc.recoverbullEnterVaultKeyInstead,
                               bgColor: context.appColors.transparent,
@@ -259,7 +260,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                   if (inputType == InputType.pin) const Gap(12),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 60),
-                    child: BBButton.big(
+                    child: BullButton.big(
                       label:
                           needPasswordConfirmation &&
                               validatedPassword.isNotEmpty
