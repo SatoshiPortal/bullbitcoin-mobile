@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_item.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});
@@ -127,7 +126,7 @@ class MempoolServerList extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: BBButton.small(
+                child: BullButton.small(
                   label: context.loc.cancel,
                   onPressed: () => Navigator.of(dialogContext).pop(),
                   bgColor: context.appColors.transparent,
@@ -138,7 +137,7 @@ class MempoolServerList extends StatelessWidget {
               ),
               const Gap(12),
               Expanded(
-                child: BBButton.small(
+                child: BullButton.small(
                   label: context.loc.delete,
                   onPressed: () {
                     Navigator.of(dialogContext).pop();

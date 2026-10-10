@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
 class DeleteCustomServerDialog {
   static Future<bool?> show(
@@ -34,7 +33,7 @@ class DeleteCustomServerDialog {
           Row(
             children: [
               Expanded(
-                child: BBButton.small(
+                child: BullButton.small(
                   label: context.loc.electrumCancel,
                   onPressed: () => Navigator.of(dialogContext).pop(false),
                   bgColor: context.appColors.transparent,
@@ -45,7 +44,7 @@ class DeleteCustomServerDialog {
               ),
               const Gap(12),
               Expanded(
-                child: BBButton.small(
+                child: BullButton.small(
                   label: context.loc.electrumDelete,
                   onPressed: () => Navigator.of(dialogContext).pop(true),
                   bgColor: context.appColors.error,
