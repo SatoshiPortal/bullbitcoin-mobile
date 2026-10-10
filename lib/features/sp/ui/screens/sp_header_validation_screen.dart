@@ -13,7 +13,10 @@ class SpHeaderValidationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SpCubit>().state;
+    final invalidChain =
+        state.headerValidationStatus == SpHeaderValidationStatus.invalidChain;
     final failed =
+        invalidChain ||
         state.headerValidationStatus == SpHeaderValidationStatus.failed;
     final progress = _progressValue(state);
     final percent = (progress * 100).round();
@@ -52,37 +55,49 @@ class SpHeaderValidationScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-                const Gap(12),
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: context.appColors.surfaceContainerHighest,
-                  color: failed
-                      ? context.appColors.error
-                      : context.appColors.success,
-                ),
-                const Gap(8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _progressLabel(context, state),
+                if (invalidChain) ...[
+                  const Gap(8),
+                  Text(
+                    context.loc.spHeaderValidationInvalidChainDetail,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                  ),
+                ],
+                // The chain was wiped, so there is no progress to show.
+                if (!invalidChain) ...[
+                  const Gap(12),
+                  LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: context.appColors.surfaceContainerHighest,
+                    color: failed
+                        ? context.appColors.error
+                        : context.appColors.success,
+                  ),
+                  const Gap(8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _progressLabel(context, state),
+                          style: context.font.bodySmall?.copyWith(
+                            color: failed
+                                ? context.appColors.error
+                                : context.appColors.textMuted,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        context.loc.spScanPercent('$percent'),
                         style: context.font.bodySmall?.copyWith(
                           color: failed
                               ? context.appColors.error
                               : context.appColors.textMuted,
                         ),
                       ),
-                    ),
-                    Text(
-                      context.loc.spScanPercent('$percent'),
-                      style: context.font.bodySmall?.copyWith(
-                        color: failed
-                            ? context.appColors.error
-                            : context.appColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -109,6 +124,8 @@ class SpHeaderValidationScreen extends StatelessWidget {
         return context.loc.spHeaderValidationValid;
       case SpHeaderValidationStatus.failed:
         return context.loc.spHeaderValidationFailed;
+      case SpHeaderValidationStatus.invalidChain:
+        return context.loc.spHeaderValidationInvalidChain;
     }
   }
 
@@ -125,6 +142,7 @@ class SpHeaderValidationScreen extends StatelessWidget {
         SpHeaderValidationStatus.validating => state.headerValidationProgress,
         SpHeaderValidationStatus.reconnecting => state.headerValidationProgress,
         SpHeaderValidationStatus.failed => state.headerValidationProgress,
+        SpHeaderValidationStatus.invalidChain => 0.0,
         SpHeaderValidationStatus.idle => 0.0,
       };
 }

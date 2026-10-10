@@ -19,6 +19,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
     this.header,
     this.errorMessage,
     this.sliver = false,
+    this.dayLabel,
   });
 
   /// Items keyed by the day's epoch milliseconds. Null means still loading.
@@ -35,6 +36,10 @@ class TransactionsByDayList<T> extends StatelessWidget {
   /// When true, returns Sliver* widgets so the list can live inside a
   /// CustomScrollView and share the parent's scroll/refresh gesture.
   final bool sliver;
+
+  /// Label for a group key that is not a day; null falls back to
+  /// [transactionDayLabel].
+  final String? Function(BuildContext, int dayKey)? dayLabel;
 
   Widget _wrapPlaceholder(Widget child) =>
       sliver ? SliverToBoxAdapter(child: child) : child;
@@ -110,7 +115,8 @@ class TransactionsByDayList<T> extends StatelessWidget {
           crossAxisAlignment: .start,
           children: [
             BBText(
-              transactionDayLabel(context, date),
+              dayLabel?.call(context, entry.key) ??
+                  transactionDayLabel(context, date),
               style: context.font.titleSmall?.copyWith(
                 color: context.appColors.onSurface,
               ),

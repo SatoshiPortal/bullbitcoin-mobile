@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_balance_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_coin_mapper.dart';
+import 'package:bb_mobile/features/sp/data/mappers/sp_header_checkpoint_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_network_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_notification_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_payment_mapper.dart';
@@ -83,12 +84,16 @@ class BwkSpAccountRepository
   // Scanning flag tracked from notifications (no FFI), so reads/dispose can be
   // skipped while a scan holds the inner lock and would block the UI isolate.
   bool _scanning = false;
+  // Set around an electrum restart, which holds the same lock across a
+  // blocking connect.
+  bool _restarting = false;
+  bool _balanceSkippedDuringRestart = false;
 
   // Last good values of the two sync FFI reads the SP shell makes on every
   // entry. Both are fixed for the life of a session, and the reads take the
   // account's inner mutex which a scan can hold for around 30 seconds, so the
-  // cached value is served while a scan runs. `snapshot()` is deliberately not
-  // cached: it carries the live scan progress.
+  // cached value is served while a scan or a restart runs. `snapshot()` is
+  // deliberately not cached: it carries the live scan progress.
   BitcoinNetwork? _cachedNetwork;
   int? _cachedMinBirthdayHeight;
 
@@ -197,6 +202,7 @@ class BwkSpAccountRepository
     // header store locks its own sentinel, so missing it fails the create with
     // "already opened by another instance".
     await _files.clearStaleLocks();
+    final checkpoint = SpConfig.headerCheckpoint(network);
     try {
       await _ffi.createFromMnemonic(
         network: SpNetworkMapper.toFfi(network),
@@ -206,6 +212,9 @@ class BwkSpAccountRepository
         dataDir: dataDir,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
+        headerCheckpoint: checkpoint == null
+            ? null
+            : SpHeaderCheckpointMapper.toFfi(checkpoint),
       );
     } catch (_) {
       // Fixed text on purpose: see the mnemonic note above.
@@ -277,6 +286,12 @@ class BwkSpAccountRepository
     return views.map(SpCoinMapper.toDomain).toList();
   });
 
+  @override
+  Result<void, SpFailure> restampMissingTimestamps() {
+    if (!_ffi.hasSession || _scanOrRestartRunning) return const Ok(null);
+    return _guard(_ffi.restampMissingTimestamps);
+  }
+
   // This is the single Dart call site of `scanOnce`; it is
   // reached only via `ScanSpWalletUsecase`. Do not add other callers; the
   // audited scan policy depends on it.
@@ -310,13 +325,24 @@ class BwkSpAccountRepository
   @override
   Future<Result<void, SpFailure>> restartElectrum() async {
     if (!_ffi.hasSession) return const Ok(null);
-    return _guardAsync(_ffi.restartElectrum);
+    _restarting = true;
+    try {
+      return await _guardAsync(_ffi.restartElectrum);
+    } finally {
+      _restarting = false;
+      if (_balanceSkippedDuringRestart) {
+        _balanceSkippedDuringRestart = false;
+        _readAndEmitBalance();
+      }
+    }
   }
+
+  bool get _scanOrRestartRunning => _scanning || _restarting;
 
   @override
   Result<int, SpFailure> minBirthdayHeight() {
     final cached = _cachedMinBirthdayHeight;
-    if (_scanning && cached != null) return Ok(cached);
+    if (_scanOrRestartRunning && cached != null) return Ok(cached);
     return _guard(() {
       final height = _ffi.minBirthdayHeight();
       _cachedMinBirthdayHeight = height;
@@ -332,6 +358,7 @@ class BwkSpAccountRepository
     final (id, simulation) = await _ffi.preparePsbt(
       recipients: recipients.map(SpRecipientMapper.toFfi).toList(),
       feerateSatVb: feerateSatVb,
+      changeDustThreshold: BigInt.from(SpConfig.changeDustThresholdSat),
     );
     return SpTxDraftMapper.toDomain(simulation, id);
   });
@@ -422,22 +449,12 @@ class BwkSpAccountRepository
     // a transient error instead of silently skipping validation.
     if (!_ffi.hasSession) return const Ok(null);
     final cached = _cachedNetwork;
-    if (_scanning && cached != null) return Ok(cached);
+    if (_scanOrRestartRunning && cached != null) return Ok(cached);
     return _guard(() {
       final network = SpNetworkMapper.toDomain(_ffi.network());
       _cachedNetwork = network;
       return network;
     });
-  }
-
-  @override
-  bool backendOnline() {
-    try {
-      return _ffi.backendOnline();
-    } catch (e) {
-      log.warning('SpAccountRepository.backendOnline: $e');
-      return false;
-    }
   }
 
   @override
@@ -498,6 +515,16 @@ class BwkSpAccountRepository
     // Skip the per-event balance read during a scan to avoid churn; the
     // ScanCompleted event reconciles the balance once the scan ends.
     if (_scanning) return;
+    // A restart holds the account lock, so the read would block the UI isolate
+    // until it returns; the restart reads the balance once it ends instead.
+    if (_restarting) {
+      _balanceSkippedDuringRestart = true;
+      return;
+    }
+    _readAndEmitBalance();
+  }
+
+  void _readAndEmitBalance() {
     try {
       if (balance() case Ok(:final value)) {
         _emit(SpBalanceChanged(value.totalUnifiedSat));
@@ -522,7 +549,10 @@ class BwkSpAccountRepository
       _latestHeaderNotification = n;
       if (n is dom.SpHeaderProgressStarted) _latestHeaderStarted = n;
       final tip = n.headerTip;
-      if (tip != null && tip != _latestHeaderTip) {
+      final latest = _latestHeaderTip;
+      // Extending the chain down to older coins reports a range below the tip
+      // (same phase as the first sync), so the tip only ever moves up.
+      if (tip != null && (latest == null || tip > latest)) {
         _latestHeaderTip = tip;
         _emit(SpChainTipChanged(tip));
       }

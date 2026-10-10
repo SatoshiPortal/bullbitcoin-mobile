@@ -8,12 +8,12 @@ import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_url_field.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 
-/// The backend-config form shared by the setup and settings pages: an optional
-/// header, the (page-supplied) network field, the regtest-defaults button, the
-/// two backend URL fields, the (page-supplied) submit action, and the inline
-/// error. Reads values through the [SpBackendFormState] mixin and drives edits
-/// through the page-supplied callbacks (like sibling [SpBackendUrlField]), so
-/// it never holds a cubit reference.
+/// The backend-config form shared by the setup and settings pages: the
+/// (page-supplied) network field, the regtest-defaults button, the two backend
+/// URL fields, the (page-supplied) submit action, and the inline error. Reads
+/// values through the [SpBackendFormState] mixin and drives edits through the
+/// page-supplied callbacks (like sibling [SpBackendUrlField]), so it never
+/// holds a cubit reference.
 ///
 /// It owns the two URL [TextEditingController]s: a user edit already matches the
 /// state, so a programmatic URL change (defaults loaded, network switched) is
@@ -22,7 +22,6 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
     extends StatefulWidget {
   const SpBackendConfigForm({
     super.key,
-    this.header,
     required this.networkField,
     required this.state,
     required this.isBusy,
@@ -34,9 +33,6 @@ class SpBackendConfigForm<S extends SpBackendFormState<S>>
     this.extraFields,
     required this.submit,
   });
-
-  /// Shown above the network field (e.g. the settings backend-status line).
-  final Widget? header;
 
   /// Network selector: editable at setup, read-only in settings.
   final Widget networkField;
@@ -100,7 +96,6 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (widget.header != null) ...[widget.header!, const Gap(12)],
         widget.networkField,
         const Gap(16),
         if (state.network == BitcoinNetwork.regtest) ...[
