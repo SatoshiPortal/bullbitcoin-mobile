@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
+import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class BullSelectableListItem {
     required this.subtitle1,
     required this.subtitle2,
     required this.value,
+    this.isSubtitle2Loading = false,
   });
 
   /// Optional leading asset path (resolved by the host app's asset bundle).
@@ -28,6 +30,10 @@ class BullSelectableListItem {
 
   /// The value returned via `Navigator.pop` when this row is tapped.
   final String value;
+
+  /// Renders a shimmering placeholder in place of [subtitle2] while the value
+  /// it displays is still being fetched.
+  final bool isSubtitle2Loading;
 }
 
 /// A vertical list of single-select cards — duplicated from
@@ -88,7 +94,7 @@ class _BullSelectableRow extends StatelessWidget {
       onTap: onSelected,
       child: Material(
         elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(BullRadius.xs),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         clipBehavior: Clip.hardEdge,
         color: colors.surface,
         shadowColor: colors.border,
@@ -106,8 +112,7 @@ class _BullSelectableRow extends StatelessWidget {
                   children: [
                     BullText(
                       item.title,
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
                     const Gap(4),
                     BullText(
@@ -115,10 +120,17 @@ class _BullSelectableRow extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                     const Gap(2),
-                    BullText(
-                      item.subtitle2,
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
+                    if (item.isSubtitle2Loading)
+                      const BullShimmerLine(
+                        width: 160,
+                        height: 12,
+                        padding: EdgeInsets.zero,
+                      )
+                    else
+                      BullText(
+                        item.subtitle2,
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
                   ],
                 ),
               ),
