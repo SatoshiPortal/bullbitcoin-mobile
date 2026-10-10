@@ -6,6 +6,8 @@ extension LimitOrdersFailureL10n on LimitOrdersFailure {
   String toTranslated(BuildContext context) => switch (this) {
     LimitOrdersAccountUnavailableFailure() =>
       context.loc.limitOrdersAccountUnavailableError,
+    LimitOrdersNoFundedBalanceFailure() =>
+      context.loc.limitOrdersInsufficientBalanceMessage,
     LimitOrdersMaximumActiveFailure() =>
       context.loc.limitOrdersMaximumActiveError,
     LimitOrderNotFoundFailure() => context.loc.limitOrderNotFoundError,

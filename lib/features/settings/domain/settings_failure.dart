@@ -20,6 +20,12 @@ final class SettingsLogsFailure extends SettingsFailure {
   const SettingsLogsFailure([super.logMessage]);
 }
 
+/// The app-side setting saved, but mirroring it onto the exchange account
+/// did not — the exchange still holds the previous value.
+final class SettingsExchangeSyncFailure extends SettingsFailure {
+  const SettingsExchangeSyncFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class SettingsUnexpectedFailure extends SettingsFailure {

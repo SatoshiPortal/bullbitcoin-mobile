@@ -99,6 +99,15 @@ void main() {
       expect(order.confirmationDeadline, isNull);
     });
 
+    test('absent triggerType parses instead of throwing', () {
+      final json = orderJsonFixture()..remove('triggerType');
+
+      final model = OrderModel.fromJson(json);
+
+      expect(model.triggerType, isNull);
+      expect(model.toEntity(isTestnet: false), isA<BuyOrder>());
+    });
+
     test('absent exchange rate, deadline and amounts parse', () {
       final json = orderJsonFixture()
         ..remove('exchangeRateAmount')

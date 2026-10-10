@@ -1,4 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart' show kLongPressTimeout;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -106,6 +108,75 @@ void main() {
         findTextField(tester).keyboardType,
         const TextInputType.numberWithOptions(decimal: true),
       );
+    });
+  });
+
+  group('BullInputText trailing icon', () {
+    const iconKey = Key('trailing-icon');
+
+    Future<void> pumpWithIcon(
+      WidgetTester tester, {
+      VoidCallback? onRightTap,
+    }) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullInputText(
+            value: '500000',
+            onlyNumbers: true,
+            rightIcon: const Text('sats', key: iconKey),
+            onRightTap: onRightTap,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+    }
+
+    testWidgets(
+      'a long press on the icon does not open the magnifier',
+      (tester) async {
+        await pumpWithIcon(tester);
+
+        final gesture = await tester.startGesture(
+          tester.getCenter(find.byKey(iconKey)),
+        );
+        await tester.pump(kLongPressTimeout * 2);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(CupertinoTextMagnifier), findsNothing);
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
+
+    testWidgets(
+      'a long press on the text still opens the magnifier',
+      (tester) async {
+        await pumpWithIcon(tester);
+
+        final gesture = await tester.startGesture(
+          tester.getTopLeft(find.byType(EditableText)) + const Offset(10, 10),
+        );
+        await tester.pump(kLongPressTimeout * 2);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(CupertinoTextMagnifier), findsOneWidget);
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
+
+    testWidgets('a tap on the icon still calls onRightTap', (tester) async {
+      var taps = 0;
+      await pumpWithIcon(tester, onRightTap: () => taps++);
+
+      await tester.tap(find.byKey(iconKey));
+      await tester.pump();
+
+      expect(taps, 1);
     });
   });
 }

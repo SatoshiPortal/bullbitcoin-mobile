@@ -27,25 +27,15 @@ class LoadLimitOrderCreationUsecase {
   @useResult
   Future<Result<LimitOrderCreationContext, LimitOrdersFailure>>
   execute() async {
+    final defaultWalletsFuture = _loadDefaultWallets();
+    final appWalletsFuture = _loadAppWallets();
+
     final UserSummary summary;
-    try {
-      summary = await _getExchangeUserSummaryUsecase.execute();
-    } on Error {
-      rethrow;
-    } on GetExchangeUserSummaryException catch (e, st) {
-      log.severe(
-        message: 'Failed to load the account before creating a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersAccountUnavailableFailure('$e'));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load the account before creating a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersUnexpectedFailure('$e'));
+    switch (await _loadSummary()) {
+      case Ok(:final value):
+        summary = value;
+      case Err(:final failure):
+        return Err(failure);
     }
 
     final balances = summary.balances
@@ -58,9 +48,7 @@ class LoadLimitOrderCreationUsecase {
         )
         .toList();
     if (balances.isEmpty) {
-      return const Err(
-        LimitOrdersAccountUnavailableFailure('no funded balance'),
-      );
+      return const Err(LimitOrdersNoFundedBalanceFailure('no funded balance'));
     }
 
     final preferredCurrency = FiatCurrency.tryFromCode(summary.currency ?? '');
@@ -71,18 +59,15 @@ class LoadLimitOrderCreationUsecase {
         )
         .currency;
 
+    // The rate needs the selected currency, so it starts after the summary.
+    final rateFuture = _repository.getRate(selectedCurrency.code);
+
     final DefaultWallets defaultWallets;
-    try {
-      defaultWallets = await _defaultWalletsFacade.getDefaultWallets();
-    } on Error {
-      rethrow;
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to read the default wallets for a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersUnexpectedFailure('$e'));
+    switch (await defaultWalletsFuture) {
+      case Ok(:final value):
+        defaultWallets = value;
+      case Err(:final failure):
+        return Err(failure);
     }
 
     final wallets = <LimitOrderWallet>[
@@ -103,33 +88,9 @@ class LoadLimitOrderCreationUsecase {
         ),
     ];
 
-    List<Wallet> appWallets;
-    try {
-      switch (await _getWalletsUsecase.execute()) {
-        case Ok(:final value):
-          appWallets = value
-              .where((w) => w.network.isBitcoin || w.network.isLiquid)
-              .toList();
-        // Same degrade as the catch below; the wallet repository already
-        // logged the raw reason.
-        case Err(:final failure):
-          log.warning(
-            'Failed to list wallets for a limit order: ${failure.runtimeType}',
-          );
-          appWallets = const [];
-      }
-    } on Error {
-      rethrow;
-    } catch (e, st) {
-      log.warning(
-        'Failed to list wallets for a limit order',
-        error: e,
-        trace: st,
-      );
-      appWallets = const [];
-    }
+    final appWallets = await appWalletsFuture;
 
-    final rateResult = await _repository.getRate(selectedCurrency.code);
+    final rateResult = await rateFuture;
     return switch (rateResult) {
       Err(:final failure) => Err(failure),
       Ok(:final value) => Ok(
@@ -142,5 +103,70 @@ class LoadLimitOrderCreationUsecase {
         ),
       ),
     };
+  }
+
+  Future<Result<UserSummary, LimitOrdersFailure>> _loadSummary() async {
+    try {
+      return Ok(await _getExchangeUserSummaryUsecase.execute());
+    } on Error {
+      rethrow;
+    } on GetExchangeUserSummaryException catch (e, st) {
+      log.severe(
+        message: 'Failed to load the account before creating a limit order',
+        error: e,
+        trace: st,
+      );
+      return Err(LimitOrdersAccountUnavailableFailure('$e'));
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to load the account before creating a limit order',
+        error: e,
+        trace: st,
+      );
+      return Err(LimitOrdersUnexpectedFailure('$e'));
+    }
+  }
+
+  Future<Result<DefaultWallets, LimitOrdersFailure>>
+  _loadDefaultWallets() async {
+    try {
+      return Ok(await _defaultWalletsFacade.getDefaultWallets());
+    } on Error {
+      rethrow;
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to read the default wallets for a limit order',
+        error: e,
+        trace: st,
+      );
+      return Err(LimitOrdersUnexpectedFailure('$e'));
+    }
+  }
+
+  Future<List<Wallet>> _loadAppWallets() async {
+    try {
+      switch (await _getWalletsUsecase.execute()) {
+        case Ok(:final value):
+          return value
+              .where((w) => w.network.isBitcoin || w.network.isLiquid)
+              .toList();
+        // Same degrade as the catch below; the wallet repository already
+        // logged the raw reason.
+        case Err(:final failure):
+          log.warning(
+            'Failed to list wallets for a limit order: ${failure.runtimeType}',
+          );
+          return const [];
+      }
+    } on Error {
+      rethrow;
+    } catch (e, st) {
+      log.warning(
+        'Failed to list wallets for a limit order',
+        error: e,
+        trace: st,
+      );
+      return const [];
+    }
   }
 }

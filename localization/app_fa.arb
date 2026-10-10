@@ -11816,5 +11816,8 @@
   "fundExchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند.",
-  "settingsSearchTorKeywords": "پروکسی Tor|Orbot|مسیریابی پیازی|Tor داخلی|شبکه حریم خصوصی"
+  "settingsSearchTorKeywords": "پروکسی Tor|Orbot|مسیریابی پیازی|Tor داخلی|شبکه حریم خصوصی",
+  "limitOrdersInsufficientBalance": "عدم تعادل",
+  "limitOrdersInsufficientBalanceMessage": "شما تعادل کافی برای ایجاد این دستور ندارید.",
+  "limitOrdersFundAccount": "بودجه حساب شما"
 }

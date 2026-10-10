@@ -16,16 +16,19 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   final ExchangeNotificationService _notifications;
 
   StreamSubscription<NotificationMessage>? _subscription;
+  StreamSubscription<void>? _refreshSubscription;
 
   LimitOrdersCubit(
     this._listActive,
     this._cancelAll,
     this._canCreate,
-    this._notifications,
-  ) : super(const LimitOrdersState()) {
+    this._notifications, {
+    Stream<void>? refreshRequests,
+  }) : super(const LimitOrdersState()) {
     _subscription = _notifications.messageStream
         .where((message) => message.kind == NotificationMessageKind.limitOrder)
         .listen((_) => load());
+    _refreshSubscription = refreshRequests?.listen((_) => load());
   }
 
   Future<void> load() async {
@@ -67,6 +70,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   @override
   Future<void> close() {
     _subscription?.cancel();
+    _refreshSubscription?.cancel();
     return super.close();
   }
 }

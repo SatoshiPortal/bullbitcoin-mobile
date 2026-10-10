@@ -15449,5 +15449,17 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "limitOrdersInsufficientBalance": "Insufficient balance",
+  "@limitOrdersInsufficientBalance": {
+    "description": "Title of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersInsufficientBalanceMessage": "You do not have enough balance to create this order.",
+  "@limitOrdersInsufficientBalanceMessage": {
+    "description": "Message of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersFundAccount": "Fund your account",
+  "@limitOrdersFundAccount": {
+    "description": "Button that opens the fund exchange flow when the user has no balance to create a limit order"
   }
 }

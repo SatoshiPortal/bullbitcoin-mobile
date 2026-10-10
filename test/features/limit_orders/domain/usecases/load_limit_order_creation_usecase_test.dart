@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -120,7 +122,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(failureOf(result), isA<LimitOrdersAccountUnavailableFailure>());
+    expect(failureOf(result), isA<LimitOrdersNoFundedBalanceFailure>());
     verifyZeroInteractions(repository);
   });
 
@@ -196,6 +198,27 @@ void main() {
       isA<LimitOrdersUnexpectedFailure>(),
     );
   });
+
+  test(
+    'fetches default and app wallets concurrently with the user summary, and the rate after it',
+    () async {
+      final summary = Completer<UserSummary>();
+      when(() => getUserSummary.execute()).thenAnswer((_) => summary.future);
+
+      final result = usecase.execute();
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => defaultWallets.getDefaultWallets()).called(1);
+      verify(() => getWallets.execute()).called(1);
+      verifyNever(() => repository.getRate(any()));
+
+      summary.complete(userSummary());
+      expect(
+        await result,
+        isA<Ok<LimitOrderCreationContext, LimitOrdersFailure>>(),
+      );
+    },
+  );
 
   test('does not convert programmer errors into recoverable failures', () {
     when(() => getUserSummary.execute()).thenThrow(StateError('bug'));
