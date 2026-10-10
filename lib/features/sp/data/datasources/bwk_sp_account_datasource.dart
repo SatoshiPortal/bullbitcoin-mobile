@@ -30,6 +30,7 @@ class BwkSpAccountDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     _account = await SpAccount.createFromMnemonicWithScanRuntime(
       name: SpStorageNames.accountName,
@@ -41,6 +42,7 @@ class BwkSpAccountDatasource {
       dustLimit: BigInt.from(SpConfig.dustLimitSat),
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      headerCheckpoint: headerCheckpoint,
     );
   }
 
@@ -76,6 +78,8 @@ class BwkSpAccountDatasource {
 
   Future<List<UnifiedCoinView>> unifiedCoins() => _live.unifiedCoins();
 
+  bool restampMissingTimestamps() => _live.restampMissingTimestamps();
+
   Future<void> scanOnce({int? startHeight}) =>
       _live.scanOnce(startHeight: startHeight);
 
@@ -87,8 +91,6 @@ class BwkSpAccountDatasource {
 
   SpNetwork network() => _live.network();
 
-  bool backendOnline() => _live.backendOnline();
-
   int blockHeight() => _live.blockHeight();
 
   /// Simulate the spend and pin the simulation for the live session. The id is
@@ -96,10 +98,12 @@ class BwkSpAccountDatasource {
   Future<(String, TxSimulation)> preparePsbt({
     required List<RecipientView> recipients,
     required BigInt feerateSatVb,
+    required BigInt changeDustThreshold,
   }) async {
     final simulation = await _live.preparePsbt(
       recipients: recipients,
       feerateSatVb: feerateSatVb,
+      changeDustThreshold: changeDustThreshold,
     );
     final id = (_nextDraftId++).toString();
     _simulations[id] = simulation;

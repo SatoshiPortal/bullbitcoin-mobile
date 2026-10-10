@@ -63,10 +63,10 @@ class SyncCoordinator {
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final Future<void> Function()? _syncSwaps;
-  // The SP side of a sync tick: restart the taproot listener, then resume
-  // the chain scan when the SP feature's policy allows it. Passed as a lazy
-  // closure from the composition root, like the swap callbacks, so this core
-  // orchestrator never imports the SP feature (rule #7).
+  // The SP side of a sync tick: resume the chain scan when the SP feature's
+  // policy allows it. Passed as a lazy closure from the composition root, like
+  // the swap callbacks, so this core orchestrator never imports the SP feature
+  // (rule #7).
   final Future<void> Function()? _syncSp;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
@@ -96,7 +96,7 @@ class SyncCoordinator {
   final Map<SyncKind, List<Completer<Object?>>> _waiters =
       <SyncKind, List<Completer<Object?>>>{};
 
-  /// Schedule `kinds` (or bitcoin, liquid and sp when `only` is null) and
+  /// Schedule `kinds` (or the trigger's default kinds when `only` is null) and
   /// resolve once every requested kind that actually runs has settled. Resolution tracks
   /// this call's own kinds (via per-kind completers), so it is correct even
   /// when those kinds are drained by a pass another caller started. Execution
@@ -114,8 +114,7 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
-    final requestedKinds =
-        only ?? const {SyncKind.bitcoin, SyncKind.liquid, SyncKind.sp};
+    final requestedKinds = only ?? _defaultKinds(trigger);
     final requested = SyncKind.values
         .where(requestedKinds.contains)
         .toList(growable: false);
@@ -163,6 +162,18 @@ class SyncCoordinator {
     );
     throw SyncCoordinatorException(failures);
   }
+
+  /// The sp kind only resumes the SP chain scan, which a user gesture must not
+  /// start: the SP side of a pull-to-refresh is the snapshot read the wallet
+  /// does right after.
+  static Set<SyncKind> _defaultKinds(SyncTrigger trigger) => switch (trigger) {
+    SyncTrigger.user => const {SyncKind.bitcoin, SyncKind.liquid},
+    SyncTrigger.automatic => const {
+      SyncKind.bitcoin,
+      SyncKind.liquid,
+      SyncKind.sp,
+    },
+  };
 
   /// Returns null when the kind was enqueued, or a short reason it was dropped:
   /// 'gated' (app not resumed), 'throttled' (synced within [_minSyncInterval]),

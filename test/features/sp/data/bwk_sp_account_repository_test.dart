@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bull_sdk/bwk.dart';
 import 'package:flutter/services.dart';
@@ -23,12 +26,21 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
     this.disposeError,
     this.stopScanError,
     this.scanOnceError,
+    this.restampError,
+    this.notifications = const Stream.empty(),
   });
 
   final Object? disposeError;
   final Object? stopScanError;
   final Object? scanOnceError;
+  final Object? restampError;
+  final Stream<SpNotification> notifications;
   bool session;
+  int restampCalls = 0;
+  int balanceReads = 0;
+  BigInt? changeDustThreshold;
+  // Holds restartElectrum open until completed, when set.
+  Completer<void>? restart;
 
   @override
   bool get hasSession => session;
@@ -50,6 +62,47 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   Future<void> scanOnce({int? startHeight}) async {
     final error = scanOnceError;
     if (error != null) throw error;
+  }
+
+  @override
+  Stream<SpNotification> init() => notifications;
+
+  @override
+  bool restampMissingTimestamps() {
+    restampCalls++;
+    final error = restampError;
+    if (error != null) throw error;
+    return true;
+  }
+
+  @override
+  Future<void> restartElectrum() => restart?.future ?? Future.value();
+
+  @override
+  SpBalanceView unifiedBalance() {
+    balanceReads++;
+    return SpBalanceView(
+      confirmedSat: BigInt.from(1000),
+      totalUnifiedSat: BigInt.from(1000),
+    );
+  }
+
+  @override
+  Future<(String, TxSimulation)> preparePsbt({
+    required List<RecipientView> recipients,
+    required BigInt feerateSatVb,
+    required BigInt changeDustThreshold,
+  }) async {
+    this.changeDustThreshold = changeDustThreshold;
+    return (
+      '0',
+      TxSimulation(
+        inputs: const [],
+        outputs: const [],
+        feeSat: BigInt.zero,
+        changeSat: BigInt.zero,
+      ),
+    );
   }
 }
 
@@ -197,6 +250,84 @@ void main() {
     });
   });
 
+  group('header tip', () {
+    test('a header extension below the tip does not lower it', () async {
+      final ffi = StreamController<SpNotification>();
+      addTearDown(ffi.close);
+      final repo = makeRepo(ffi: _FakeFfiDatasource(notifications: ffi.stream));
+      final tips = <int>[];
+      final updates = repo.updates.listen((update) {
+        if (update is SpChainTipChanged) tips.add(update.tip);
+      });
+      addTearDown(updates.cancel);
+      final sub = repo.notifications.listen((_) {});
+      addTearDown(sub.cancel);
+
+      ffi
+        ..add(
+          const SpNotification.headerProgressStarted(
+            phase: HeaderProgressPhase.initialSync,
+            start: 900000,
+            end: 970180,
+          ),
+        )
+        ..add(
+          const SpNotification.headerProgressCompleted(
+            phase: HeaderProgressPhase.initialSync,
+          ),
+        )
+        // Extension down to an old coin: same phase, a range below the tip.
+        ..add(
+          const SpNotification.headerProgressStarted(
+            phase: HeaderProgressPhase.initialSync,
+            start: 800000,
+            end: 899999,
+          ),
+        );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repo.chainTip(), 970180);
+      expect(tips, [970180]);
+    });
+  });
+
+  group('balance read on notification', () {
+    test('waits for an electrum restart to end', () async {
+      final notifications = StreamController<SpNotification>();
+      addTearDown(notifications.close);
+      final ffi = _FakeFfiDatasource(notifications: notifications.stream)
+        ..restart = Completer<void>();
+      final repo = makeRepo(ffi: ffi);
+      final balances = <SpBalanceChanged>[];
+      final updates = repo.updates.listen((update) {
+        if (update is SpBalanceChanged) balances.add(update);
+      });
+      addTearDown(updates.cancel);
+      final sub = repo.notifications.listen((_) {});
+      addTearDown(sub.cancel);
+
+      final restarting = repo.restartElectrum();
+      notifications.add(
+        SpNotification.electrumTx(
+          kind: CoinSource.sp,
+          txid: 'cafe',
+          amountSat: BigInt.from(1000),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(ffi.balanceReads, 0);
+      expect(balances, isEmpty);
+
+      ffi.restart!.complete();
+      await restarting;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(ffi.balanceReads, 1);
+      expect(balances.single.totalUnified, Sats.fromInt(1000));
+    });
+  });
+
   group('teardown bracket', () {
     test('a nested teardown keeps the guard held for the outer one', () {
       final repo = makeRepo(ffi: _FakeFfiDatasource());
@@ -264,6 +395,81 @@ void main() {
 
       expect(result, isA<Ok<void, SpFailure>>());
       expect(repo.isScanningCached, isTrue);
+    });
+  });
+
+  group('restampMissingTimestamps', () {
+    test('restamps through the live session', () {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 1);
+    });
+
+    test('skips with no live session', () {
+      final ffi = _FakeFfiDatasource(session: false);
+      final repo = makeRepo(ffi: ffi);
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 0);
+    });
+
+    test('skips while a scan holds the account lock', () async {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+      await repo.scanOnce();
+
+      final result = repo.restampMissingTimestamps();
+
+      expect(result, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 0);
+    });
+
+    test('skips while an electrum restart holds the account lock', () async {
+      final ffi = _FakeFfiDatasource()..restart = Completer<void>();
+      final repo = makeRepo(ffi: ffi);
+      final restarting = repo.restartElectrum();
+
+      final during = repo.restampMissingTimestamps();
+      ffi.restart!.complete();
+      await restarting;
+      final after = repo.restampMissingTimestamps();
+
+      expect(during, isA<Ok<void, SpFailure>>());
+      expect(after, isA<Ok<void, SpFailure>>());
+      expect(ffi.restampCalls, 1);
+    });
+
+    test('maps an FFI throw to a failure', () {
+      final repo = makeRepo(
+        ffi: _FakeFfiDatasource(
+          restampError: const SpError.other(message: 'lock poisoned'),
+        ),
+      );
+
+      final result = repo.restampMissingTimestamps();
+
+      expect((result as Err<void, SpFailure>).failure, isA<SpUnexpected>());
+    });
+  });
+
+  group('preparePsbt', () {
+    test('asks bwk to keep a change of 600 sats or more', () async {
+      final ffi = _FakeFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+
+      final result = await repo.preparePsbt(
+        recipients: const [],
+        feerateSatVb: BigInt.one,
+      );
+
+      expect(result, isA<Ok<SpTxDraft, SpFailure>>());
+      expect(ffi.changeDustThreshold, BigInt.from(600));
     });
   });
 

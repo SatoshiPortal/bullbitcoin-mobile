@@ -88,6 +88,7 @@ void main() {
     ).thenReturn(const SpState(network: BitcoinNetwork.mainnet));
     when(() => spCubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => spCubit.load()).thenAnswer((_) async {});
+    when(() => spCubit.reloadAfterBackendChange()).thenAnswer((_) async {});
     when(() => spCubit.scan()).thenAnswer((_) async {});
     when(() => spCubit.revokeWallet()).thenAnswer((_) async => true);
     when(() => settingsCubit.state).thenReturn(

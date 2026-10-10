@@ -40,6 +40,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/load_sp_backend_config_use
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
@@ -57,10 +58,13 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_header_retry_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/widgets.dart'
+    show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
 import 'package:get_it/get_it.dart';
 
 /// DI wiring for the Silent Payments feature:
@@ -74,7 +78,7 @@ class SpLocator {
     _registerUseCases(locator);
     _registerFacade(locator);
     _registerPresentation(locator);
-    _startTipWatcher(locator);
+    _startWatchers(locator);
     _loadAutoScanSetting(locator);
   }
 
@@ -93,15 +97,27 @@ class SpLocator {
     });
   }
 
-  // Wire the SP electrum-listener resync into the core sync coordinator here,
-  // so core never imports the SP feature (rule #7). The coordinator is
-  // foreground-only, so it may be absent (e.g. the background isolate).
   // The sync tick usually runs before the header store reports a tip, so the
-  // scan policy has to be re-judged once it lands. Foreground-only, like the
-  // coordinator wiring above.
-  static void _startTipWatcher(GetIt locator) {
+  // scan policy has to be re-judged once it lands, and a dropped electrum
+  // connection has to be restarted. Foreground-only, like the coordinator,
+  // which is absent in the background isolate.
+  static void _startWatchers(GetIt locator) {
     if (!locator.isRegistered<SyncCoordinator>()) return;
     locator<SpTipWatcher>().start();
+    locator<SpElectrumReconnectWatcher>().start();
+  }
+
+  // The Flutter lifecycle as a stream, listened to only while subscribed.
+  static Stream<AppLifecycleState> _appLifecycleStates() {
+    AppLifecycleListener? listener;
+    final controller = StreamController<AppLifecycleState>.broadcast();
+    controller.onListen = () =>
+        listener = AppLifecycleListener(onStateChange: controller.add);
+    controller.onCancel = () {
+      listener?.dispose();
+      listener = null;
+    };
+    return controller.stream;
   }
 
   static void _registerAdapters(GetIt locator) {
@@ -216,6 +232,17 @@ class SpLocator {
         syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
       ),
     );
+    locator.registerLazySingleton<SpElectrumReconnectWatcher>(
+      () => SpElectrumReconnectWatcher(
+        watchSpNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
+        lifecycleStates: _appLifecycleStates(),
+        // Null before the first lifecycle event: the app is starting in the
+        // foreground.
+        initialLifecycleState:
+            WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed,
+      ),
+    );
     // Singleton so its in-flight guard covers both callers: SpTipWatcher holds
     // one directly, and the sync coordinator reaches another through SpFacade.
     locator.registerLazySingleton<SyncSpWalletUsecase>(
@@ -223,7 +250,6 @@ class SpLocator {
         repository: locator<SpAccountRepository>(),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
-        resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
       ),
@@ -278,6 +304,11 @@ class SpLocator {
         ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
       ),
     );
+    locator.registerFactory<RestampSpPaymentTimesUsecase>(
+      () => RestampSpPaymentTimesUsecase(
+        repository: locator<SpAccountRepository>(),
+      ),
+    );
     locator.registerFactory<WatchSpNotificationsUsecase>(
       () => WatchSpNotificationsUsecase(
         repository: locator<SpAccountRepository>(),
@@ -320,7 +351,9 @@ class SpLocator {
         repository: locator<SpAccountRepository>(),
       ),
     );
-    locator.registerFactory<ResyncSpListenerUsecase>(
+    // Singleton so its in-flight guard covers both watchers that restart the
+    // listener.
+    locator.registerLazySingleton<ResyncSpListenerUsecase>(
       () => ResyncSpListenerUsecase(
         repository: locator<SpAccountRepository>(),
         scanControl: locator<SpScanControlPort>(),
@@ -355,6 +388,7 @@ class SpLocator {
     locator.registerFactory<SpCubit>(
       () => SpCubit(
         loadSpWalletDataUsecase: locator<LoadSpWalletDataUsecase>(),
+        restampSpPaymentTimesUsecase: locator<RestampSpPaymentTimesUsecase>(),
         spNotificationsWatcher: locator<SpNotificationsWatcher>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         stopSpScanUsecase: locator<StopSpScanUsecase>(),

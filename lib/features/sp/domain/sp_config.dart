@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_header_checkpoint.dart';
 import 'package:primitives/primitives.dart';
 
 /// Static configuration for the Silent Payments feature.
@@ -7,6 +8,9 @@ import 'package:primitives/primitives.dart';
 /// the domain network enum.
 abstract class SpConfig {
   static const int dustLimitSat = 600;
+
+  /// A change below it goes to the fee. About twice the P2TR dust limit.
+  static const int changeDustThresholdSat = 600;
 
   static const int defaultFetchConcurrencyFactor = 12;
   static const int defaultMatchConcurrencyFactor = 1;
@@ -51,4 +55,20 @@ abstract class SpConfig {
         // Regtest URLs come from the running infra at runtime, not from here.
         BitcoinNetwork.regtest => null,
       };
+
+  /// The block the header chain is pinned to. bwk refuses to open a mainnet
+  /// header store without one. On null, bwk anchors one retarget interval
+  /// below the server tip on proof of work alone.
+  static SpHeaderCheckpoint? headerCheckpoint(
+    BitcoinNetwork network,
+  ) => switch (network) {
+    // A retarget boundary (2016 * 481).
+    BitcoinNetwork.mainnet => SpHeaderCheckpoint(
+      height: 969696,
+      hash: '000000000000000000001e39df127cbab82a824ac43cfcdbf62e59f6a08b9f0b',
+    ),
+    BitcoinNetwork.signet ||
+    BitcoinNetwork.testnet ||
+    BitcoinNetwork.regtest => null,
+  };
 }

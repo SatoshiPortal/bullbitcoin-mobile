@@ -76,7 +76,7 @@ void main() {
 
     var done = false;
     final future = coordinator
-        .sync(trigger: SyncTrigger.user)
+        .sync(trigger: SyncTrigger.automatic)
         .then((_) => done = true);
 
     await pumpEventQueue();
@@ -264,7 +264,7 @@ void main() {
 
       Object? thrown;
       try {
-        await coordinator.sync(trigger: SyncTrigger.user);
+        await coordinator.sync(trigger: SyncTrigger.automatic);
       } catch (e) {
         thrown = e;
       }
@@ -294,8 +294,25 @@ void main() {
       await coordinator.sync(trigger: SyncTrigger.automatic);
       expect(spCalls, 1, reason: 'second automatic sp sync is throttled');
 
-      await coordinator.sync(trigger: SyncTrigger.user);
+      await coordinator.sync(only: {SyncKind.sp}, trigger: SyncTrigger.user);
       expect(spCalls, 2, reason: 'a user sync bypasses the sp throttle');
+    });
+
+    test('a user sync leaves sp out unless asked for it', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      var spCalls = 0;
+      spCallback = () async => spCalls++;
+
+      await coordinator.sync(trigger: SyncTrigger.user);
+
+      verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
+      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      expect(spCalls, 0);
     });
   });
 }

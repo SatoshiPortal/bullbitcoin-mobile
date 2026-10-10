@@ -57,7 +57,7 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
+      ref: 7f3956c9a648bb19833694ec2e5b0c06bd200eca
       path: packages/bull_sdk
   boltz_stream:
     git:
@@ -153,7 +153,7 @@ dependency_overrides:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
+      ref: 7f3956c9a648bb19833694ec2e5b0c06bd200eca
       path: packages/bull_sdk
 
 dev_dependencies:

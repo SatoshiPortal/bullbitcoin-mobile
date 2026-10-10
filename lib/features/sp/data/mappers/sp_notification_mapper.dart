@@ -46,11 +46,6 @@ abstract final class SpNotificationMapper {
         amountSat: Sats(amountSat),
         height: height,
       ),
-    bwk.SpNotification_ElectrumDisconnected() => const SpBackendOffline(),
-    bwk.SpNotification_ElectrumConnected() => const SpBackendOnline(),
-    bwk.SpNotification_Reorg(:final forkHeight) => SpReorg(forkHeight),
-    bwk.SpNotification_HeaderCheckpointMismatch() =>
-      const SpHeaderCheckpointMismatch(),
     bwk.SpNotification_HeaderProgressStarted(
       :final phase,
       :final start,
@@ -77,5 +72,10 @@ abstract final class SpNotificationMapper {
       SpHeaderProgressFailed(_headerPhaseToDomain(phase)),
     bwk.SpNotification_PaymentHistoryUpdated() =>
       const SpPaymentHistoryUpdated(),
+    bwk.SpNotification_ElectrumDisconnected() => const SpElectrumDisconnected(),
+    bwk.SpNotification_Reorg(:final forkHeight) => SpReorg(forkHeight),
+    bwk.SpNotification_HeaderCheckpointMismatch() =>
+      const SpHeaderCheckpointMismatch(),
+    bwk.SpNotification_ElectrumConnected() => const SpElectrumConnected(),
   };
 }

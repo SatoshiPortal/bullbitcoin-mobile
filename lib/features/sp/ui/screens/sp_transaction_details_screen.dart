@@ -1,14 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
+import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +33,7 @@ class SpTransactionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIncoming = payment.direction == SpPaymentDirection.receive;
+    final network = context.select((SpCubit cubit) => cubit.state.network);
 
     return TransactionDetailsPage(
       title: context.loc.spTransactionTitle,
@@ -95,7 +98,10 @@ class SpTransactionDetailsScreen extends StatelessWidget {
           const Gap(4),
           Align(
             alignment: Alignment.centerLeft,
-            child: AddressViewer(payment.txid),
+            child: TransactionViewer.bitcoin(
+              payment.txid,
+              isTestnet: network?.isMainnet == false,
+            ),
           ),
         ],
       ),

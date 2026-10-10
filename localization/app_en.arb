@@ -15305,14 +15305,6 @@
   "@spDeleteWalletContent": {
     "description": "Silent Payments: delete wallet dialog content"
   },
-  "spBackendOnline": "Server online",
-  "@spBackendOnline": {
-    "description": "Silent Payments: backend reachable status"
-  },
-  "spBackendOffline": "Server offline",
-  "@spBackendOffline": {
-    "description": "Silent Payments: backend unreachable status"
-  },
   "spNotificationsDebug": "Notifications (debug)",
   "@spNotificationsDebug": {
     "description": "Silent Payments: notifications debug console title"
@@ -15461,5 +15453,22 @@
   "limitOrdersFundAccount": "Fund your account",
   "@limitOrdersFundAccount": {
     "description": "Button that opens the fund exchange flow when the user has no balance to create a limit order"
+  },
+  "spBlindbitBehindWarning": "The scan server is {count} blocks behind the chain, so recent payments may be missing until it catches up.",
+  "@spBlindbitBehindWarning": {
+    "description": "Warning on the SP wallet and scan screens when the Blindbit server tip is behind the header chain tip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spHeaderValidationInvalidChain": "Electrum server sends a wrong chain",
+  "@spHeaderValidationInvalidChain": {
+    "description": "SP header card title when the Electrum server serves a chain that contradicts the built-in checkpoint"
+  },
+  "spHeaderValidationInvalidChainDetail": "This server does not follow the real Bitcoin chain. Switch to another Electrum server in the settings.",
+  "@spHeaderValidationInvalidChainDetail": {
+    "description": "SP header card detail when the Electrum server serves a chain that contradicts the built-in checkpoint; tells the user to change server"
   }
 }

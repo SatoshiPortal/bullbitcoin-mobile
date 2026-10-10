@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
-      resolved-ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
+      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1481,8 +1481,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
-      resolved-ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
+      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1788,8 +1788,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
-      resolved-ref: a6c78f7aaa56e8f76c1a6053fa8acac0a2a04445
+      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"

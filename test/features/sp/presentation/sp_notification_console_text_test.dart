@@ -31,7 +31,19 @@ void main() {
         'NewOutput ab:0 1000sat',
       );
       expect(const SpOutputSpent('ab:0').consoleText, 'OutputSpent ab:0');
-      expect(const SpBackendOffline().consoleText, 'BackendOffline');
+    });
+
+    test('chain variants', () {
+      expect(
+        const SpElectrumDisconnected().consoleText,
+        'ElectrumDisconnected',
+      );
+      expect(const SpReorg(840000).consoleText, 'Reorg from 840000');
+      expect(
+        const SpHeaderCheckpointMismatch().consoleText,
+        'HeaderCheckpointMismatch',
+      );
+      expect(const SpElectrumConnected().consoleText, 'ElectrumConnected');
     });
 
     test('electrum tx shows kind, txid, amount and height', () {

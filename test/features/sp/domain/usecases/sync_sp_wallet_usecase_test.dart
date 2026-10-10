@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.d
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/sync_sp_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,10 +27,6 @@ void main() {
     repository: repo,
     getSpWalletUsecase: getWallet,
     isSpScanningUsecase: IsSpScanningUsecase(repository: repo),
-    resyncSpListenerUsecase: ResyncSpListenerUsecase(
-      repository: repo,
-      scanControl: repo,
-    ),
     scanSpWalletUsecase: ScanSpWalletUsecase(repository: repo),
     getSpAutoScanUsecase: GetSpAutoScanUsecase(repository: autoScanRepo),
   );
@@ -99,11 +94,6 @@ void main() {
       await usecase.execute();
 
       expect(repo.scanOnceCount, 0);
-      expect(
-        repo.restartElectrumCount,
-        1,
-        reason: 'being up to date must not skip the listener restart',
-      );
     });
 
     test('does not scan when the cursor is ahead of the tip', () async {
@@ -136,14 +126,13 @@ void main() {
       },
     );
 
-    test('does not scan or restart while a scan is already running', () async {
+    test('does not scan while a scan is already running', () async {
       repo.setScanningForTest(true);
 
       final result = await usecase.execute();
 
       expect(result, isA<Ok<void, SpFailure>>());
       expect(repo.scanOnceCount, 0);
-      expect(repo.restartElectrumCount, 0);
     });
   });
 
@@ -157,14 +146,6 @@ void main() {
       expect(result, isA<Ok<void, SpFailure>>());
       expect(repo.scanOnceCount, 0);
     });
-
-    test('still restarts the listener, so coins keep arriving', () async {
-      autoScanRepo.save(isEnabled: false);
-
-      await usecase.execute();
-
-      expect(repo.restartElectrumCount, 1);
-    });
   });
 
   group('SyncSpWalletUsecase serializes ticks', () {
@@ -173,7 +154,10 @@ void main() {
       // the isScanning check cannot separate them: two awaits elapse before
       // scanOnce sets the flag.
       final gate = Completer<void>();
-      repo.restartElectrumGate = gate;
+      when(() => getWallet.execute()).thenAnswer((_) async {
+        await gate.future;
+        return Ok(spWallet(lastScannedHeight: tip - 10));
+      });
 
       final first = usecase.execute();
       final second = usecase.execute();
@@ -182,7 +166,7 @@ void main() {
 
       expect(results.first, isA<Ok<void, SpFailure>>());
       expect(results.last, isA<Ok<void, SpFailure>>());
-      expect(repo.restartElectrumCount, 1);
+      verify(() => getWallet.execute()).called(1);
       expect(repo.scanOnceCount, 1);
     });
 
@@ -194,20 +178,21 @@ void main() {
     });
   });
 
-  group('SyncSpWalletUsecase listener restart', () {
-    test('restarts the listener before scanning', () async {
+  group('SyncSpWalletUsecase leaves the electrum listener alone', () {
+    test('a tick that scans does not restart the listener', () async {
       await usecase.execute();
 
-      expect(repo.restartElectrumCount, 1);
+      expect(repo.scanOnceCount, 1);
+      expect(repo.restartElectrumCount, 0);
     });
 
-    test('a restart failure aborts before the scan', () async {
-      repo.restartElectrumShouldFail = true;
+    test('a tick that does not scan does not restart the listener', () async {
+      walletAt(tip);
 
-      final result = await usecase.execute();
+      await usecase.execute();
 
-      expect(result, isA<Err<void, SpFailure>>());
       expect(repo.scanOnceCount, 0);
+      expect(repo.restartElectrumCount, 0);
     });
   });
 }

@@ -54,7 +54,6 @@ void main() {
           () => repository.coins(),
         ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>(coins));
         when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
-        when(() => repository.backendOnline()).thenReturn(true);
         when(() => repository.chainTip()).thenReturn(101);
         when(() => repository.minBirthdayHeight()).thenReturn(const Ok(42));
 
@@ -67,7 +66,6 @@ void main() {
         expect(data.history, same(history));
         expect(data.coins, same(coins));
         expect(data.network, BitcoinNetwork.regtest);
-        expect(data.backendOnline, isTrue);
         expect(data.chainTip, 101);
         expect(data.minBirthdayHeight, 42);
         verify(

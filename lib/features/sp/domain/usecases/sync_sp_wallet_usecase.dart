@@ -6,13 +6,12 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.d
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 
-/// The SP side of a sync tick: restart the taproot listener, then resume the
-/// chain scan when [SpScanPolicy] says the wallet is close enough to the tip
-/// to do it without asking. A wallet with no cursor, or one far enough behind
-/// that the scan would be long, is left for the user to start by hand.
+/// The SP side of an automatic sync tick: resume the chain scan when
+/// [SpScanPolicy] says the wallet is close enough to the tip to do it without
+/// asking. A wallet with no cursor, or one far enough behind that the scan
+/// would be long, is left for the user to start by hand.
 ///
 /// Registered as a singleton so the in-flight guard serializes ticks: the tip
 /// watcher and the sync coordinator drive this independently, and the
@@ -22,7 +21,6 @@ class SyncSpWalletUsecase {
   final SpAccountRepository _repository;
   final GetSpWalletUsecase _getSpWalletUsecase;
   final IsSpScanningUsecase _isSpScanningUsecase;
-  final ResyncSpListenerUsecase _resyncSpListenerUsecase;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final GetSpAutoScanUsecase _getSpAutoScanUsecase;
 
@@ -30,7 +28,6 @@ class SyncSpWalletUsecase {
     required this._repository,
     required this._getSpWalletUsecase,
     required this._isSpScanningUsecase,
-    required this._resyncSpListenerUsecase,
     required this._scanSpWalletUsecase,
     required this._getSpAutoScanUsecase,
   });
@@ -41,12 +38,7 @@ class SyncSpWalletUsecase {
       _inFlight ??= _run().whenComplete(() => _inFlight = null);
 
   Future<Result<void, SpFailure>> _run() async {
-    // A scan already running owns the session; restarting the listener under it
-    // would block on the scan's inner lock.
     if (_isSpScanningUsecase.execute()) return const Ok(null);
-
-    final resync = await _resyncSpListenerUsecase.execute();
-    if (resync case Err(:final failure)) return Err(failure);
 
     // Ok(null) when the feature gate is closed or the wallet is not set up.
     final SpWallet wallet;
