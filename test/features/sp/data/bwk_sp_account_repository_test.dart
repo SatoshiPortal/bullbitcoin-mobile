@@ -37,6 +37,7 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   final Stream<SpNotification> notifications;
   bool session;
   int restampCalls = 0;
+  int balanceReads = 0;
   BigInt? changeDustThreshold;
   // Holds restartElectrum open until completed, when set.
   Completer<void>? restart;
@@ -76,6 +77,15 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
 
   @override
   Future<void> restartElectrum() => restart?.future ?? Future.value();
+
+  @override
+  SpBalanceView unifiedBalance() {
+    balanceReads++;
+    return SpBalanceView(
+      confirmedSat: BigInt.from(1000),
+      totalUnifiedSat: BigInt.from(1000),
+    );
+  }
 
   @override
   Future<(String, TxSimulation)> preparePsbt({
@@ -278,6 +288,43 @@ void main() {
 
       expect(repo.chainTip(), 970180);
       expect(tips, [970180]);
+    });
+  });
+
+  group('balance read on notification', () {
+    test('waits for an electrum restart to end', () async {
+      final notifications = StreamController<SpNotification>();
+      addTearDown(notifications.close);
+      final ffi = _FakeFfiDatasource(notifications: notifications.stream)
+        ..restart = Completer<void>();
+      final repo = makeRepo(ffi: ffi);
+      final balances = <SpBalanceChanged>[];
+      final updates = repo.updates.listen((update) {
+        if (update is SpBalanceChanged) balances.add(update);
+      });
+      addTearDown(updates.cancel);
+      final sub = repo.notifications.listen((_) {});
+      addTearDown(sub.cancel);
+
+      final restarting = repo.restartElectrum();
+      notifications.add(
+        SpNotification.electrumTx(
+          kind: CoinSource.sp,
+          txid: 'cafe',
+          amountSat: BigInt.from(1000),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(ffi.balanceReads, 0);
+      expect(balances, isEmpty);
+
+      ffi.restart!.complete();
+      await restarting;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(ffi.balanceReads, 1);
+      expect(balances.single.totalUnified, Sats.fromInt(1000));
     });
   });
 

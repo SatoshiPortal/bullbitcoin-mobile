@@ -87,6 +87,7 @@ class BwkSpAccountRepository
   // Set around an electrum restart, which holds the same lock across a
   // blocking connect.
   bool _restarting = false;
+  bool _balanceSkippedDuringRestart = false;
 
   // Last good values of the two sync FFI reads the SP shell makes on every
   // entry. Both are fixed for the life of a session, and the reads take the
@@ -329,6 +330,10 @@ class BwkSpAccountRepository
       return await _guardAsync(_ffi.restartElectrum);
     } finally {
       _restarting = false;
+      if (_balanceSkippedDuringRestart) {
+        _balanceSkippedDuringRestart = false;
+        _readAndEmitBalance();
+      }
     }
   }
 
@@ -510,6 +515,16 @@ class BwkSpAccountRepository
     // Skip the per-event balance read during a scan to avoid churn; the
     // ScanCompleted event reconciles the balance once the scan ends.
     if (_scanning) return;
+    // A restart holds the account lock, so the read would block the UI isolate
+    // until it returns; the restart reads the balance once it ends instead.
+    if (_restarting) {
+      _balanceSkippedDuringRestart = true;
+      return;
+    }
+    _readAndEmitBalance();
+  }
+
+  void _readAndEmitBalance() {
     try {
       if (balance() case Ok(:final value)) {
         _emit(SpBalanceChanged(value.totalUnifiedSat));
