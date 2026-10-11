@@ -3223,6 +3223,26 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "descriptor_tested_at",
+            "getter_name": "descriptorTestedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_tested_at",
+            "getter_name": "serverTestedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -3662,7 +3682,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, \"descriptor_tested_at\" TEXT NULL, \"server_tested_at\" TEXT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
         }
       ]
     },

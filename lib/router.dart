@@ -72,6 +72,15 @@ class AppRouter {
     // error-reporting scope (consent-gated) rather than perf tracing.
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     redirect: (BuildContext context, GoRouterState state) {
+      final isBullVault =
+          state.uri.path == '/bullvault' ||
+          state.uri.path.startsWith('/bullvault/') ||
+          state.uri.path ==
+              '${SettingsRoute.settings.path}/${SettingsRoute.signingKeyExport.path}';
+      if (isBullVault &&
+          context.read<SettingsCubit>().state.isSuperuser != true) {
+        return SettingsRoute.settings.path;
+      }
       final path = state.uri.path;
       // Only read the gate providers for SP routes; the decision itself lives
       // in the SP feature's pure `spRedirect` (unit-testable, no widget tree).
@@ -236,7 +245,9 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      ...BullVaultRouter.routes,
+      ...BullVaultRouter.routes(
+        registerExternalRouteName: ImportWatchOnlyWalletRoutes.import.name,
+      ),
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,

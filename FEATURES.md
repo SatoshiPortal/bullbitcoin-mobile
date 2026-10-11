@@ -63,6 +63,7 @@ graph TB
     PSBT_FLOW[PSBT Flow]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     IMPORT_WALLET[Import Wallet]
+    IMPORT_WATCH_ONLY[Import Watch-only Wallet]
     BULLVAULT[BullVault]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
@@ -153,6 +154,8 @@ graph TB
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    BULLVAULT -->|Import route injected by app router| IMPORT_WATCH_ONLY
+    BULLVAULT -->|Selected-wallet route only| PSBT_SIGNING
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN

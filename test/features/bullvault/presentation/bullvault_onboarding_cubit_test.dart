@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
@@ -12,7 +14,6 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_sourc
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/check_bullvault_mobile_backups_usecase.dart';
@@ -53,7 +54,46 @@ class _MockActivateInitialBullVaultUsecase extends Mock
 class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
     implements UpdateBullVaultRegistrationNameUsecase {}
 
+class _MockPickFile extends Mock implements PickBullVaultRecoveryFileUsecase {}
+
+class _NoRecoveryFile extends Fake
+    implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
+  test('the practice shortcut preselects hours for new creation', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    when(load.execute).thenAnswer(
+      (_) async =>
+          const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
+    );
+    final cubit = _cubit(load: load);
+    await cubit.load(practice: true);
+    expect(cubit.state.schedule.unit, BullVaultScheduleUnit.hours);
+    await cubit.close();
+  });
+  test('the practice shortcut preserves a resumed setup schedule', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    final encode = _MockEncodeRecoveryPackageUsecase();
+    final result = _completionResult();
+    when(load.execute).thenAnswer(
+      (_) async => Ok(
+        BullVaultOnboardingLoad(
+          network: Network.bitcoinMainnet,
+          snapshot: BullVaultOnboardingSnapshot(
+            result: result,
+            mobileBackupStatus: null,
+          ),
+        ),
+      ),
+    );
+    when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
+    final cubit = _cubit(load: load, encode: encode);
+    await cubit.load(practice: true);
+    expect(cubit.state.schedule.unit, BullVaultScheduleUnit.years);
+    expect(cubit.state.result, same(result));
+    await cubit.close();
+  });
+
   setUpAll(() {
     registerFallbackValue(
       BullVaultCreateRequest(
@@ -428,16 +468,23 @@ void main() {
         () => update.execute(
           walletId: result.wallet.id,
           recoveryPackageConfirmed: true,
+          descriptorReadBack: 'saved-copy',
         ),
-      ).thenAnswer((_) async => Ok(result.record));
+      ).thenAnswer(
+        (_) async => Ok(
+          result.record.copyWith(
+            recoveryPackageConfirmed: true,
+            descriptorTestedAt: DateTime.utc(2026, 9, 18),
+          ),
+        ),
+      );
       when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
       final cubit = _cubit(load: load, update: update, encode: encode);
 
       await cubit.load();
       expect(cubit.state.step, BullVaultOnboardingStep.recoveryPackage);
 
-      cubit.markRecoveryPackageExported();
-      await cubit.confirmRecoveryPackage();
+      await cubit.confirmRecoveryPackage('saved-copy');
       await cubit.next();
       expect(cubit.state.step, BullVaultOnboardingStep.hardwareSetup);
 
@@ -452,6 +499,34 @@ void main() {
     });
   }
 
+  test(
+    'cancelled file input does not confirm setup or replace its state',
+    () async {
+      final picker = _MockPickFile();
+      when(picker.execute).thenAnswer((_) async => const Ok(null));
+      final cubit = _cubit(pickFile: picker);
+      final previous = cubit.state;
+      await cubit.importRecoveryPackage();
+      expect(cubit.state, same(previous));
+      await cubit.close();
+    },
+  );
+
+  test(
+    'file read failure leaves setup unconfirmed and reports its failure',
+    () async {
+      final picker = _MockPickFile();
+      when(
+        picker.execute,
+      ).thenAnswer((_) async => const Err(BullVaultInvalidRecoveryFailure()));
+      final cubit = _cubit(pickFile: picker);
+      await cubit.importRecoveryPackage();
+      expect(cubit.state.recoveryPackageConfirmed, isFalse);
+      expect(cubit.state.failure, isA<BullVaultInvalidRecoveryFailure>());
+      await cubit.close();
+    },
+  );
+
   test('does not infer setup deferral for a newly restored vault', () async {
     final load = _MockLoadBullVaultOnboardingUsecase();
     final encode = _MockEncodeRecoveryPackageUsecase();
@@ -459,6 +534,7 @@ void main() {
     final record = initial.record.copyWith(
       status: BullVaultLifecycleStatus.active,
       recoveryPackageConfirmed: true,
+      descriptorTestedAt: DateTime.utc(2026, 9, 18),
     );
     final result = BullVaultCreateResult(
       wallet: initial.wallet,
@@ -495,6 +571,7 @@ void main() {
     final record = initial.record.copyWith(
       status: BullVaultLifecycleStatus.active,
       recoveryPackageConfirmed: true,
+      descriptorTestedAt: DateTime.utc(2026, 9, 18),
     );
     final result = BullVaultCreateResult(
       wallet: initial.wallet,
@@ -639,6 +716,7 @@ BullVaultOnboardingCubit _cubit({
   _MockUpdateBullVaultSetupUsecase? update,
   _MockActivateInitialBullVaultUsecase? activate,
   _MockEncodeRecoveryPackageUsecase? encode,
+  PickBullVaultRecoveryFileUsecase? pickFile,
 }) => BullVaultOnboardingCubit(
   create ?? _MockCreateBullVaultOnboardingUsecase(),
   prepare ?? _MockPrepareBullVaultTimeReferenceUsecase(),
@@ -648,6 +726,7 @@ BullVaultOnboardingCubit _cubit({
   activate ?? _MockActivateInitialBullVaultUsecase(),
   encode ?? _MockEncodeRecoveryPackageUsecase(),
   _MockUpdateBullVaultRegistrationNameUsecase(),
+  pickRecoveryFile: pickFile ?? _NoRecoveryFile(),
 );
 
 Future<void> _moveToReview(BullVaultOnboardingCubit cubit) async {
@@ -696,6 +775,7 @@ BullVaultCreateResult _readyPendingResult() {
   final record = result.record.copyWith(
     completedHardwareSignerIds: const {'cold'},
     recoveryPackageConfirmed: true,
+    descriptorTestedAt: DateTime.utc(2026, 9, 18),
   );
   return BullVaultCreateResult(wallet: result.wallet, record: record);
 }

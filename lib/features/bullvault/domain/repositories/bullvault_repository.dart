@@ -6,11 +6,24 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 import 'package:meta/meta.dart';
 
 abstract interface class BullVaultRepository {
+  Stream<void> get changes;
+
+  @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll();
+
+  @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getVisible(
+    Network network,
+  );
+
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
     String source,
   );
 
   String encodeRecoveryPackage(BullVaultRecoveryPackage recoveryPackage);
+
+  @useResult
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile();
 
   @useResult
   Future<Result<int, BullVaultFailure>> reserveNextGeneration(
@@ -46,6 +59,13 @@ abstract interface class BullVaultRepository {
 
   @useResult
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record);
+
+  @useResult
+  Future<Result<DateTime, BullVaultFailure>> recordBackupTest({
+    required BullVaultRecord expected,
+    required BullVaultBackupTestKind kind,
+    required DateTime testedAt,
+  });
 
   @useResult
   Future<Result<void, BullVaultFailure>> publishRestored(

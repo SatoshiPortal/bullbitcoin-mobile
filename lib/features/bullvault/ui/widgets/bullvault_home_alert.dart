@@ -44,7 +44,7 @@ final class _BullVaultHomeAlertState extends State<BullVaultHomeAlert> {
         tagColor: context.appColors.error,
         bgColor: context.appColors.errorContainer,
         onTap: () => context.pushNamed(
-          BullVaultFacade.settingsRouteName,
+          BullVaultFacade.renewRouteName,
           pathParameters: {'walletId': walletId},
           extra: context.loc.bullVaultSettingsTitle,
         ),

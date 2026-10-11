@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_policy_setup_flow.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_steps.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_fields.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -613,8 +612,9 @@ final class _RenewalSetup extends StatelessWidget {
     return switch (state.step) {
       BullVaultRenewalStep.review => const SizedBox.shrink(),
       BullVaultRenewalStep.recoveryPackage => BullVaultRecoveryPackageStep(
-        exported: state.recoveryPackageExported,
+        descriptor: result.policy.descriptor,
         confirmed: state.recoveryPackageConfirmed,
+        onImport: context.read<BullVaultRenewalCubit>().importRecoveryPackage,
         onSave: () => _shareRecoveryPackage(context, state),
         onConfirm: context.read<BullVaultRenewalCubit>().confirmRecoveryPackage,
       ),
@@ -668,9 +668,6 @@ final class _RenewalSetup extends StatelessWidget {
       context,
       content: state.recoveryPackageContent!,
       policyId: state.renewal!.replacement.policy.id,
-      onExported: context
-          .read<BullVaultRenewalCubit>()
-          .markRecoveryPackageExported,
     );
   }
 }

@@ -6,46 +6,105 @@ import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_ste
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('saves recovery data before confirmation', (tester) async {
-    var saveCalls = 0;
-    var confirmCalls = 0;
-    final localization = AppLocalizationsEn();
-
+  testWidgets('sharing a recovery file does not confirm a saved copy', (
+    tester,
+  ) async {
+    var saves = 0;
+    final confirmations = <String>[];
     await _pump(
       tester,
       BullVaultRecoveryPackageStep(
-        exported: false,
+        descriptor: 'selected-descriptor',
         confirmed: false,
-        onSave: () async => saveCalls++,
-        onConfirm: () async => confirmCalls++,
+        onSave: () async {
+          saves++;
+        },
+        onConfirm: (source) async {
+          confirmations.add(source);
+        },
+        onImport: () async {},
       ),
     );
+    await tester.tap(find.text(AppLocalizationsEn().bullVaultSaveRecoveryData));
+    await tester.pump();
+    expect(saves, 1);
+    expect(confirmations, isEmpty);
+    expect(find.byType(CheckboxListTile), findsNothing);
+  });
 
-    expect(find.text('Save recovery data'), findsOneWidget);
-    expect(
-      find.text(localization.bullVaultRecoveryPackageConfirmation),
-      findsNothing,
-    );
+  testWidgets(
+    'copy verifies clipboard readback, not the displayed descriptor',
+    (tester) async {
+      final confirmations = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.getData') {
+            return {'text': 'actual-clipboard-copy'};
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      await _pump(
+        tester,
+        BullVaultRecoveryPackageStep(
+          descriptor: 'selected-descriptor',
+          confirmed: false,
+          onSave: () async {},
+          onConfirm: (source) async {
+            confirmations.add(source);
+          },
+          onImport: () async {},
+        ),
+      );
+      await tester.tap(find.text(AppLocalizationsEn().copyDialogButton));
+      await tester.pumpAndSettle();
+      expect(confirmations, ['actual-clipboard-copy']);
+    },
+  );
 
-    await tester.tap(find.text('Save recovery data'));
-    expect(saveCalls, 1);
-
+  testWidgets('paste and file actions verify only their supplied copy', (
+    tester,
+  ) async {
+    final confirmations = <String>[];
+    var imports = 0;
     await _pump(
       tester,
       BullVaultRecoveryPackageStep(
-        exported: true,
+        descriptor: 'selected-descriptor',
         confirmed: false,
-        onSave: () async => saveCalls++,
-        onConfirm: () async => confirmCalls++,
+        onSave: () async {},
+        onConfirm: (source) async {
+          confirmations.add(source);
+        },
+        onImport: () async {
+          imports++;
+        },
       ),
     );
-    await tester.tap(
-      find.text(localization.bullVaultRecoveryPackageConfirmation),
-    );
-    expect(confirmCalls, 1);
+    await tester.enterText(find.byType(TextField), 'saved-descriptor');
+    await tester.pump();
+    final verify = find.text(AppLocalizationsEn().bullVaultVerifyDescriptor);
+    await tester.ensureVisible(verify);
+    await tester.tap(verify);
+    await tester.pumpAndSettle();
+    expect(confirmations, ['saved-descriptor']);
+    final file = find.text(AppLocalizationsEn().bullVaultImportFile);
+    await tester.ensureVisible(file);
+    await tester.tap(file);
+    await tester.pumpAndSettle();
+    expect(imports, 1);
+    expect(confirmations, ['saved-descriptor']);
   });
 
   testWidgets('offers hardware setup until the signer is registered', (

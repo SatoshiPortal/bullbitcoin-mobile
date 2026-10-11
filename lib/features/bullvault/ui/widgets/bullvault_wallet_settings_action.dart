@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,9 @@ final class BullVaultWalletSettingsAction extends StatelessWidget {
       BullVaultLifecycleStatus.pending ||
       BullVaultLifecycleStatus.cancelled => details.record.previousVaultId,
     };
-    if (routeWalletId == null) return const SizedBox.shrink();
+    if (details.hasPreviousFunds && routeWalletId == null) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: BullButton.big(
@@ -32,8 +33,12 @@ final class BullVaultWalletSettingsAction extends StatelessWidget {
             ? context.loc.bullVaultPreviousFundsAction
             : context.loc.bullVaultSettingsTitle,
         onPressed: () => context.pushNamed(
-          BullVaultFacade.settingsRouteName,
-          pathParameters: {'walletId': routeWalletId},
+          details.hasPreviousFunds
+              ? BullVaultFacade.renewRouteName
+              : BullVaultFacade.settingsRouteName,
+          pathParameters: {
+            'walletId': details.hasPreviousFunds ? routeWalletId! : wallet.id,
+          },
           extra: wallet.displayLabel(context),
         ),
         bgColor: context.appColors.primary,

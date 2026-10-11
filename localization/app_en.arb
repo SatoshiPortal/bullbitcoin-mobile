@@ -17464,5 +17464,154 @@
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
   "@bullVaultRestoreCompleteTitle": {},
   "bullVaultRestoreCompleteTitle": "BullVault restored",
-  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@bullVaultExperimentalWarningMessage": {
+    "description": "Warning requiring explicit acknowledgement before entering the experimental BullVault feature."
+  },
+  "bullVaultCreatedDate": "Created: {date}",
+  "bullVaultCreatePracticeEntry": "Create practice BullVault",
+  "bullVaultCosignerContinue": "Continue to key import",
+  "bullVaultCosignerStored": "The matching seed will be saved securely on this device. Its passphrase is never saved; enter it again when signing.",
+  "bullVaultDescriptorMismatch": "This descriptor does not match this vault. Check that you selected the correct vault and generation.",
+  "@bullVaultKeyInheritance": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "@bullVaultImportFile": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultIdentifier": "Vault ID: {id}",
+  "bullVaultCosignerWarningClarification": "The vault’s required signatures and timelocks still apply. Importing a key does not move funds; you must separately review and approve a transaction.",
+  "bullVaultDescriptorVerified": "Saved copy verified",
+  "bullVaultExpiryDate": "First recovery: {date}",
+  "bullVaultRestoreMobilePassphraseAction": "Use mobile passphrase",
+  "@bullVaultCosignerMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultImportCosigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultExperimentalWarningMessage": "BullVault is experimental. Do not use it for real funds.",
+  "bullVaultRegisterExternalEntry": "Register an external multisig",
+  "@bullVaultCosignerWarningTitle": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyOnDevice": "On this device",
+  "@bullVaultCreatePracticeEntry": {
+    "description": "Secondary BullVault menu entry that starts creation with the practice timeline preselected."
+  },
+  "bullVaultKeyInheritance": "Inheritance key",
+  "@bullVaultExperimentalWarningTitle": {
+    "description": "Title of the warning shown each time BullVault is opened from Settings."
+  },
+  "@bullVaultCosignerWarningClarification": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultUseBullAsSigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultImportFile": "Import file",
+  "@bullVaultDescriptorMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultVerifyDescriptor": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultViewKeys": "View keys",
+  "@bullVaultMenuTitle": {
+    "description": "BullVault menu title and Settings entry"
+  },
+  "@bullVaultExpiryDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultBackupRecovery": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultViewPolicy": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyMobile": "Mobile key",
+  "bullVaultRestoreMobilePassphraseFailure": "Could not restore mobile access. You can still continue with this vault.",
+  "bullVaultViewPolicy": "View policy",
+  "bullVaultVerifyDescriptor": "Verify your saved copy",
+  "bullVaultUseBullAsSigner": "Use BULL as signer",
+  "@bullVaultRecoverEntry": {
+    "description": "Settings entry for restoring a BullVault"
+  },
+  "bullVaultMenuTitle": "BullVault (multisig)",
+  "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
+  "@bullVaultCosignerContinue": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultIdentifier": {
+    "description": "Labels the short prefix of a vault wallet identifier on a vault card. Not a master key fingerprint.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultImportCosigner": "Import cosigner key",
+  "bullVaultCosignerWarningTitle": "Are you sure?",
+  "@bullVaultRegisterExternalEntry": {},
+  "@bullVaultCosignerStored": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultKeyMobile": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultRecoverEntry": "Recover BullVault",
+  "@bullVaultKeyOnDevice": {
+    "description": "BullVault settings and recovery"
+  },
+  "@walletPolicyEarlierOptions": {
+    "description": "Reminder beneath alternative spending options, without claiming current chain or key availability."
+  },
+  "bullVaultExperimentalWarningTitle": "Experimental feature",
+  "@bullVaultViewKeys": {
+    "description": "BullVault settings and recovery"
+  },
+  "walletPolicyEarlierOptions": "Earlier options remain available. Dates do not move funds automatically.",
+  "bullVaultRegisterVault": "Register vault on another device",
+  "@bullVaultRestoreMobilePassphraseFailure": {
+    "description": "The optional mobile-access attempt failed after the vault was successfully restored"
+  },
+  "@bullVaultCosignerWarning": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultRestoreMobilePassphraseAction": {
+    "description": "After recovering a vault, verify the existing passphrase for its mobile key"
+  },
+  "bullVaultCosignerWarning": "Doing this will make funds available for spending by this wallet. Only do this if you want to permanently remove funds from the vault. This is acceptable if you are the beneficiary of an inheritance key, or if the other cosign devices are not available.",
+  "@bullVaultKeyExternal": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerMismatch": "These words and passphrase do not match a cosigner in this vault. Nothing was imported.",
+  "@bullVaultRegisterVault": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultDescriptorActionHelp": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "@bullVaultCreatedDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultKeyPassphraseRequired": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyPassphraseRequired": "Passphrase required — not currently verified",
+  "bullVaultKeyExternal": "External key",
+  "@bullVaultDescriptorVerified": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultBackupRecovery": "Backup & recovery"
 }
