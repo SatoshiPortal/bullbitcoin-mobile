@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -42,8 +42,8 @@ class _MockGetBitcoinSigningPlanUsecase extends Mock
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetSendExchangeRateUsecase extends Mock
+    implements GetSendExchangeRateUsecase {}
 
 void main() {
   late _MockGetPendingBitcoinTransactionUsecase getPending;
@@ -53,7 +53,7 @@ void main() {
   late _MockValidatePendingBitcoinTransactionUsecase validatePending;
   late _MockGetBitcoinSigningPlanUsecase getSigningPlan;
   late _MockCalculateBitcoinAbsoluteFeesUsecase calculateFees;
-  late _MockConvertSatsToCurrencyAmountUsecase convertSats;
+  late _MockGetSendExchangeRateUsecase getExchangeRate;
   late RestorePendingBitcoinTransactionUsecase usecase;
 
   setUp(() {
@@ -64,7 +64,7 @@ void main() {
     validatePending = _MockValidatePendingBitcoinTransactionUsecase();
     getSigningPlan = _MockGetBitcoinSigningPlanUsecase();
     calculateFees = _MockCalculateBitcoinAbsoluteFeesUsecase();
-    convertSats = _MockConvertSatsToCurrencyAmountUsecase();
+    getExchangeRate = _MockGetSendExchangeRateUsecase();
     usecase = RestorePendingBitcoinTransactionUsecase(
       getPending,
       getWallet,
@@ -73,7 +73,7 @@ void main() {
       validatePending,
       getSigningPlan,
       calculateFees,
-      convertSats,
+      getExchangeRate,
     );
 
     when(() => getWallet.execute(_wallet.id)).thenAnswer((_) async => _wallet);
@@ -94,7 +94,9 @@ void main() {
         (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(draft),
       );
       when(
-        () => detectBitcoinString.execute(data: draft.recipient),
+        () => detectBitcoinString.execute(
+          data: draft.recipients.single.recipient,
+        ),
       ).thenThrow('Incomplete payment request');
 
       final result = await usecase.execute(draft.id);
@@ -104,6 +106,110 @@ void main() {
       expect(restored.paymentRequest, isNull);
       expect(restored.selectedUtxos, [_selectedUtxo]);
       verifyNever(() => validatePending.execute(draft));
+    },
+  );
+
+  test(
+    'restores all sweep recipients without losing selected inputs',
+    () async {
+      final draft =
+          _pendingTransaction(
+            stage: PendingBitcoinTransactionStage.draft,
+            recipient: 'tb1qfirst',
+            selectedOutpoints: {'funding:0', 'unavailable:1'},
+          ).copyWith(
+            isSweep: true,
+            recipients: [
+              (
+                recipient: 'tb1qfirst',
+                amount: '10000',
+                receivesRemainder: false,
+              ),
+              (recipient: 'tb1qsecond', amount: '', receivesRemainder: true),
+            ],
+          );
+      when(
+        () => getPending.execute(draft.id),
+      ).thenAnswer((_) async => Ok(draft));
+      for (final recipient in draft.recipients) {
+        when(
+          () => detectBitcoinString.execute(data: recipient.recipient),
+        ).thenAnswer(
+          (_) async => PaymentRequest.bitcoin(
+            address: recipient.recipient,
+            isTestnet: true,
+          ),
+        );
+      }
+      final result = await usecase.execute(draft.id);
+      final restored =
+          (result as Ok<RestoredPendingBitcoinTransaction, SendFailure>).value;
+      expect(restored.transaction.recipients, draft.recipients);
+      expect(
+        restored.paymentRequests.map(
+          (request) => (request as BitcoinPaymentRequest).address,
+        ),
+        ['tb1qfirst', 'tb1qsecond'],
+      );
+      expect(restored.transaction.isSweep, isTrue);
+      expect(restored.transaction.selectedOutpoints, {
+        'funding:0',
+        'unavailable:1',
+      });
+      expect(restored.selectedUtxos, [_selectedUtxo]);
+    },
+  );
+
+  test(
+    'keeps incompatible saved sweep recipients open for correction',
+    () async {
+      for (final request in [
+        const PaymentRequest.bip21(
+          network: Network.bitcoinTestnet,
+          uri: 'bitcoin:tb1qsecond?amount=0.0001',
+          address: 'tb1qsecond',
+          amountSat: 10000,
+        ),
+        const PaymentRequest.bitcoin(address: 'bc1qsecond', isTestnet: false),
+      ]) {
+        final draft =
+            _pendingTransaction(
+              stage: PendingBitcoinTransactionStage.draft,
+              recipient: 'tb1qfirst',
+              selectedOutpoints: {'funding:0'},
+            ).copyWith(
+              isSweep: true,
+              recipients: [
+                (
+                  recipient: 'tb1qfirst',
+                  amount: '10000',
+                  receivesRemainder: false,
+                ),
+                (recipient: 'saved-input', amount: '', receivesRemainder: true),
+              ],
+            );
+        when(
+          () => getPending.execute(draft.id),
+        ).thenAnswer((_) async => Ok(draft));
+        when(() => detectBitcoinString.execute(data: 'tb1qfirst')).thenAnswer(
+          (_) async => const PaymentRequest.bitcoin(
+            address: 'tb1qfirst',
+            isTestnet: true,
+          ),
+        );
+        when(
+          () => detectBitcoinString.execute(data: 'saved-input'),
+        ).thenAnswer((_) async => request);
+
+        final result = await usecase.execute(draft.id);
+        final restored =
+            (result as Ok<RestoredPendingBitcoinTransaction, SendFailure>)
+                .value;
+
+        expect(restored.paymentRequests.first, isA<BitcoinPaymentRequest>());
+        expect(restored.paymentRequests.last, isNull);
+        expect(restored.transaction.recipients.last.recipient, 'saved-input');
+      }
     },
   );
 
@@ -123,7 +229,9 @@ void main() {
         (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
       );
       when(
-        () => detectBitcoinString.execute(data: stored.recipient),
+        () => detectBitcoinString.execute(
+          data: stored.recipients.single.recipient,
+        ),
       ).thenAnswer((_) async => request);
       when(() => validatePending.execute(stored)).thenAnswer(
         (_) async => Ok<ValidatedPendingBitcoinTransaction, SendFailure>((
@@ -168,7 +276,10 @@ void main() {
     when(() => getPending.execute(stored.id)).thenAnswer(
       (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
     );
-    when(() => detectBitcoinString.execute(data: stored.recipient)).thenAnswer(
+    when(
+      () =>
+          detectBitcoinString.execute(data: stored.recipients.single.recipient),
+    ).thenAnswer(
       (_) async => const PaymentRequest.bitcoin(
         address: 'tb1qrecipient',
         isTestnet: true,
@@ -232,7 +343,10 @@ void main() {
     when(() => getPending.execute(stored.id)).thenAnswer(
       (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
     );
-    when(() => detectBitcoinString.execute(data: stored.recipient)).thenAnswer(
+    when(
+      () =>
+          detectBitcoinString.execute(data: stored.recipients.single.recipient),
+    ).thenAnswer(
       (_) async => const PaymentRequest.lnAddress(address: 'user@example.com'),
     );
 
@@ -241,7 +355,10 @@ void main() {
     final restored =
         (result as Ok<RestoredPendingBitcoinTransaction, SendFailure>).value;
     expect(restored.paymentRequest, isNull);
-    expect(restored.transaction.recipient, 'user@example.com');
+    expect(
+      restored.transaction.recipients.single.recipient,
+      'user@example.com',
+    );
   });
 
   test('rejects a stored transaction whose wallet is unavailable', () async {
@@ -270,7 +387,10 @@ void main() {
     when(() => getPending.execute(stored.id)).thenAnswer(
       (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
     );
-    when(() => detectBitcoinString.execute(data: stored.recipient)).thenAnswer(
+    when(
+      () =>
+          detectBitcoinString.execute(data: stored.recipients.single.recipient),
+    ).thenAnswer(
       (_) async => const PaymentRequest.bitcoin(
         address: 'tb1qrecipient',
         isTestnet: true,
@@ -297,7 +417,10 @@ void main() {
     when(() => getPending.execute(stored.id)).thenAnswer(
       (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
     );
-    when(() => detectBitcoinString.execute(data: stored.recipient)).thenAnswer(
+    when(
+      () =>
+          detectBitcoinString.execute(data: stored.recipients.single.recipient),
+    ).thenAnswer(
       (_) async => const PaymentRequest.bitcoin(
         address: 'tb1qrecipient',
         isTestnet: true,
@@ -409,12 +532,16 @@ PendingBitcoinTransaction _pendingTransaction({
   id: 'pending-id',
   walletId: _wallet.id,
   stage: stage,
-  recipient: recipient,
-  amount: stage == PendingBitcoinTransactionStage.draft ? '' : '500',
+  recipients: [
+    (
+      recipient: recipient,
+      amount: stage == PendingBitcoinTransactionStage.draft ? '' : '500',
+      receivesRemainder: false,
+    ),
+  ],
   amountCurrencyCode: stage == PendingBitcoinTransactionStage.draft
       ? ''
       : 'sats',
-  sendMax: false,
   feeSelection: FeeSelection.fastest,
   replaceByFee: true,
   selectedOutpoints: selectedOutpoints,

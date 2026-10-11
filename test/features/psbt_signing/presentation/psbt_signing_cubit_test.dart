@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok, Result;
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_failure.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_review.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/usecases/review_psbt_usecase.dart';

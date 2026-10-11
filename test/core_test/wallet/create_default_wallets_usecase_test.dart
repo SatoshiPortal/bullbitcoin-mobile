@@ -167,9 +167,9 @@ void main() {
         var attempts = 0;
         final bitcoin = _Wallet();
         final liquid = _Wallet();
-        when(() => bitcoin.id).thenReturn('bitcoin');
+        when(() => liquid.id).thenReturn('liquid');
         when(
-          () => wallets.deleteWallet(walletId: 'bitcoin'),
+          () => wallets.deleteWallet(walletId: 'liquid'),
         ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
         when(
           () => wallets.createWallet(
@@ -199,10 +199,10 @@ void main() {
         final persisted = Map<String, String>.of(storage.entries);
         expect(persisted, contains('seed_${stored.id.hex}'));
         if (failedAttempt == 2) {
-          verify(() => wallets.deleteWallet(walletId: 'bitcoin')).called(1);
+          verify(() => wallets.deleteWallet(walletId: 'liquid')).called(1);
         }
 
-        expect(await create.execute(mnemonicWords: words), [bitcoin, liquid]);
+        expect(await create.execute(mnemonicWords: words), [liquid, bitcoin]);
         expect(storage.entries, persisted);
         expect(
           await secrets.import(words: words),
@@ -235,7 +235,7 @@ void main() {
     verify(
       () => wallets.createWallet(
         secret: any(named: 'secret'),
-        network: Network.bitcoinMainnet,
+        network: Network.liquidMainnet,
         scriptType: ScriptType.bip84,
         isDefault: true,
         birthday: null,

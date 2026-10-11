@@ -2,14 +2,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
-import 'package:bb_mobile/features/send/ui/send_router.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_pending_transactions_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show Gap, BullBorderedTile, BullButton, BullText;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -40,7 +37,7 @@ class SendPendingTransactionsSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BBText(
+            BullText(
               context.loc.sendPendingTransactionsTitle,
               style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
               color: context.appColors.secondary,
@@ -55,7 +52,7 @@ class SendPendingTransactionsSection extends StatelessWidget {
                 ),
                 const Gap(8),
               ],
-              BBButton.small(
+              BullButton.small(
                 label: context.loc.retry,
                 onPressed: context.read<SendPendingTransactionsCubit>().retry,
                 bgColor: context.appColors.secondary,
@@ -90,11 +87,21 @@ class _PendingTransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = transaction.label?.trim();
-    final parsedAmount = int.tryParse(transaction.amount);
+    final displayAmount = transaction.isDraft
+        ? transaction.recipients.length == 1
+              ? transaction.recipients.single.amount
+              : ''
+        : transaction.recipients
+              .fold<BigInt>(
+                BigInt.zero,
+                (sum, recipient) => sum + BigInt.parse(recipient.amount),
+              )
+              .toString();
+    final parsedAmount = int.tryParse(displayAmount);
     final amount = switch ((parsedAmount, transaction.amountCurrencyCode)) {
       (final sats?, 'sats') when sats > 0 => FormatAmount.sats(sats),
-      _ when transaction.amount.trim().isNotEmpty =>
-        '${transaction.amount} ${transaction.amountCurrencyCode}',
+      _ when displayAmount.trim().isNotEmpty =>
+        '$displayAmount ${transaction.amountCurrencyCode}',
       _ => null,
     };
     final fallback = transaction.isDraft
@@ -104,7 +111,7 @@ class _PendingTransactionTile extends StatelessWidget {
         : amount == null
         ? context.loc.sendTransactionFallback
         : context.loc.sendTransactionFallbackAmount(amount);
-    return BorderedTappableTile(
+    return BullBorderedTile(
       onTap: () => context.pushNamed(
         SendRoute.send.name,
         extra: SendRouteArgs(pendingTransactionId: transaction.id),
@@ -120,7 +127,7 @@ class _PendingTransactionTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   label == null || label.isEmpty ? fallback : label,
                   style: context.font.bodyMedium,
                   color: context.appColors.secondary,
@@ -128,7 +135,7 @@ class _PendingTransactionTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const Gap(2),
-                BBText(
+                BullText(
                   _status(context),
                   style: context.font.bodySmall,
                   color: transaction.isConflict && !transaction.isSubmission

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -69,7 +70,6 @@ import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_tra
 import 'package:bb_mobile/features/send/domain/usecases/prepare_pending_bitcoin_submission_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -79,7 +79,6 @@ import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
@@ -321,7 +320,7 @@ class SendLocator {
         locator<ValidatePendingBitcoinTransactionUsecase>(),
         locator<GetBitcoinSigningPlanUsecase>(),
         locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        locator<ConvertSatsToCurrencyAmountUsecase>(),
+        locator<GetSendExchangeRateUsecase>(),
       ),
     );
     locator.registerFactory<WatchPendingBitcoinTransactionsUsecase>(

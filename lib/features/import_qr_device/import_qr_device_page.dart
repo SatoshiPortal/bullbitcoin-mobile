@@ -35,7 +35,7 @@ class ImportQrDevicePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BBText(
+            BullText(
               accountKeyDerivationPath == null
                   ? context.loc.importQrDeviceScanPrompt(deviceName)
                   : context.loc.bullVaultDeviceKeyPath(

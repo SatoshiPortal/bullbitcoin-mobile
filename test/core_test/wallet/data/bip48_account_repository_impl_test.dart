@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/data/bip48_account_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bip48_account_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
@@ -11,9 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 final class _MemoryStorage implements KeyValueStorageDatasource<String> {
   final Map<String, String> values = {};
-
-  @override
-  Future<void> deleteAll() async => values.clear();
 
   @override
   Future<void> deleteValue(String key) async => values.remove(key);

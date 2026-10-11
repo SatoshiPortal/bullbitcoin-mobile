@@ -67,9 +67,11 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     // "No wallets yet" is normal here: seeds can exist before any wallet is
     // created, and every seed is then simply treated as "old".
     final existingFingerprints = <String>{};
-    switch (await _getWalletsUsecase.execute()) {
+    switch (await _getWalletsUsecase.execute(includeHidden: true)) {
       case Ok(:final value):
-        existingFingerprints.addAll(value.expand((w) => w.localSeedFingerprints));
+        existingFingerprints.addAll(
+          value.expand((w) => w.localSeedFingerprints),
+        );
       case Err(failure: NoWalletsFoundFailure()):
         break;
       case Err(:final failure):

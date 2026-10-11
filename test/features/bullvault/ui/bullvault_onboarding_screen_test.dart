@@ -1,7 +1,13 @@
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_mnemonic_cubit.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
+import 'package:secrets/secrets.dart';
+import '../bullvault_secrets_fixture.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullIcons, BullSecretTextInput;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
@@ -29,6 +35,12 @@ import 'package:mocktail/mocktail.dart';
 
 import '../bullvault_test_fixture.dart';
 
+class _MockDeriveInheritance extends Mock
+    implements DeriveBullVaultMnemonicKeyUsecase {}
+
+class _MockGenerateInheritance extends Mock
+    implements GenerateBullVaultInheritanceMnemonicUsecase {}
+
 class _MockCreateBullVaultOnboardingUsecase extends Mock
     implements CreateBullVaultOnboardingUsecase {}
 
@@ -54,6 +66,64 @@ class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
     implements UpdateBullVaultRegistrationNameUsecase {}
 
 void main() {
+  testWidgets('requires matching passphrases before completing mobile setup', (
+    tester,
+  ) async {
+    const privacyChannel = MethodChannel(
+      'com.flutterplaza.no_screenshot_methods',
+    );
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      privacyChannel,
+      (_) async => true,
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        privacyChannel,
+        null,
+      ),
+    );
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    when(load.execute).thenAnswer(
+      (_) async =>
+          const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
+    );
+    final cubit = BullVaultOnboardingCubit(
+      _MockCreateBullVaultOnboardingUsecase(),
+      _MockPrepareBullVaultTimeReferenceUsecase(),
+      load,
+      _MockCheckBullVaultMobileBackupsUsecase(),
+      _MockUpdateBullVaultSetupUsecase(),
+      _MockActivateInitialBullVaultUsecase(),
+      _MockEncodeBullVaultRecoveryPackageUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    cubit.setMobilePassphraseProtection(enabled: true);
+    await cubit.next();
+    cubit.setInheritance(false);
+    await cubit.next();
+    cubit.useGenericColdSigner();
+    cubit.setColdInput('cold-account-key');
+    await cubit.next();
+    final router = _completionRouter(cubit);
+    addTearDown(router.dispose);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(BullSecretTextInput),
+      matching: find.byType(TextField),
+    );
+    const passphrase = '  café vault  ';
+    await tester.enterText(fields.first, passphrase);
+    await tester.enterText(fields.last, passphrase.trim());
+    expect(cubit.state.mobilePassphraseReady, isFalse);
+    await tester.enterText(fields.last, passphrase);
+    expect(cubit.state.mobilePassphraseReady, isTrue);
+    await tester.enterText(fields.first, 'changed');
+    expect(cubit.state.mobilePassphraseReady, isFalse);
+  });
+
   testWidgets('fits the setup illustration on a narrow screen', (tester) async {
     const screenSize = Size(320, 740);
     Device.screen = screenSize;
@@ -150,7 +220,54 @@ void main() {
           null,
         ),
       );
-      var words = <String>[];
+      final fixture = BullVaultSecretsFixture();
+      final first = await tester.runAsync(
+        () async =>
+            (await fixture.secrets.generateEphemeral()
+                    as Ok<EphemeralMnemonic, SecretFailure>)
+                .value,
+      );
+      final second = await tester.runAsync(
+        () async =>
+            (await fixture.secrets.generateEphemeral()
+                    as Ok<EphemeralMnemonic, SecretFailure>)
+                .value,
+      );
+      if (first == null || second == null) fail('Generation did not finish');
+      final derive = DeriveBullVaultMnemonicKeyUsecase(fixture.secrets);
+      final expected = await tester.runAsync(
+        () => derive.fromGenerated(
+          mnemonic: second,
+          network: Network.bitcoinMainnet,
+        ),
+      );
+      final deriveFlow = _MockDeriveInheritance();
+      when(
+        () => deriveFlow.fromGenerated(
+          mnemonic: second,
+          network: Network.bitcoinMainnet,
+        ),
+      ).thenAnswer(
+        (_) async => expected ?? const Err(BullVaultCreationFailure()),
+      );
+      final generated = [first, second].iterator;
+      final generate = _MockGenerateInheritance();
+      when(generate.execute).thenAnswer((_) async {
+        generated.moveNext();
+        return Ok(generated.current);
+      });
+      locator.registerSingleton<GenerateBullVaultInheritanceMnemonicUsecase>(
+        generate,
+      );
+      locator.registerSingleton<DeriveBullVaultMnemonicKeyUsecase>(deriveFlow);
+      locator.registerFactory<BullVaultInheritanceMnemonicCubit>(
+        () => BullVaultInheritanceMnemonicCubit(generate, deriveFlow),
+      );
+      addTearDown(() {
+        locator.unregister<BullVaultInheritanceMnemonicCubit>();
+        locator.unregister<GenerateBullVaultInheritanceMnemonicUsecase>();
+        locator.unregister<DeriveBullVaultMnemonicKeyUsecase>();
+      });
       final load = _MockLoadBullVaultOnboardingUsecase();
       when(load.execute).thenAnswer(
         (_) async =>
@@ -195,56 +312,35 @@ void main() {
         await tester.tap(button);
         await tester.pumpAndSettle();
         expect(find.byType(ShowMnemonicScreen), findsOneWidget);
-        words = List.generate(24, (index) {
-          final number = (index + 1).toString().padLeft(2, '0');
-          final entry = find
-              .ancestor(of: find.text(number), matching: find.byType(Row))
-              .first;
-          return tester
-              .widgetList<Text>(
-                find.descendant(of: entry, matching: find.byType(Text)),
-              )
-              .map((text) => text.data!)
-              .singleWhere((text) => text != number);
-        });
+        expect(find.byType(MnemonicView), findsOneWidget);
         await tester.tap(find.text(loc.testBackupNext));
         await tester.pumpAndSettle();
         expect(find.byType(VerifyMnemonicScreen), findsOneWidget);
       }
 
       await openMnemonic();
-      await tester.pageBack();
+      await tester.tap(find.byIcon(BullIcons.arrowBack));
       await tester.pumpAndSettle();
       expect(find.byType(ShowMnemonicScreen), findsOneWidget);
-      await tester.pageBack();
+      await tester.tap(find.byIcon(BullIcons.arrowBack));
       await tester.pumpAndSettle();
       expect(cubit.state.inheritanceInput, isEmpty);
 
       await openMnemonic();
-      Future<void> selectWord(String word) async {
-        final tile = find
-            .widgetWithText(InkWell, word)
-            .evaluate()
-            .firstWhere((element) => (element.widget as InkWell).onTap != null);
-        final finder = find.byWidget(tile.widget);
-        await tester.ensureVisible(finder);
-        await tester.pumpAndSettle();
-        await tester.tap(finder);
-        await tester.pumpAndSettle();
-      }
-
-      await selectWord(words.firstWhere((word) => word != words.first));
+      final challenge = tester.widget<MnemonicChallenge>(
+        find.byType(MnemonicChallenge),
+      );
+      challenge.onMistake();
       expect(cubit.state.inheritanceInput, isEmpty);
-      for (final word in words) {
-        await selectWord(word);
-      }
-      final expected =
-          const DeriveBullVaultMnemonicKeyUsecase().execute(
-                words: words,
-                network: Network.bitcoinMainnet,
-              )
-              as Ok<String, BullVaultFailure>;
-      expect(cubit.state.inheritanceInput, expected.value);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+      challenge.onSolved();
+      await tester.pumpAndSettle();
+      expect(
+        cubit.state.inheritanceInput,
+        (expected as Ok<String, BullVaultFailure>).value,
+      );
+      expect(fixture.storage.entries, isEmpty);
       expect(cubit.state.seedBackupVerified, isFalse);
       expect(find.byType(BullVaultOnboardingScreen), findsOneWidget);
     },

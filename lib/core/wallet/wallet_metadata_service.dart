@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
@@ -7,6 +6,9 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.da
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
+import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -126,10 +128,10 @@ class WalletMetadataService {
     if (network.isBitcoin) {
       descriptor =
           DescriptorDerivation.derivePublicBitcoinMultipathDescriptorFromXpub(
-            xpub.toBase58(),
+            xpub,
             scriptType: scriptType,
             isTestnet: network.isTestnet,
-            masterFingerprint: seed.masterFingerprint,
+            masterFingerprint: secret.id.hex,
             derivationPath: _accountDerivationPath(
               network: network,
               scriptType: scriptType,
@@ -159,9 +161,11 @@ class WalletMetadataService {
             WalletDescriptorKeyModel(
               id: 'key-0',
               signerId: 'signer-0',
-              masterFingerprint: seed.masterFingerprint,
-              xpubFingerprint: xpub.fingerprintHex,
-              xpub: xpub.convert(scriptType.getXpubType(network)),
+              masterFingerprint: fingerprint,
+              xpubFingerprint: Bip32Derivation.getBip32Xpub(
+                xpub,
+              ).fingerprintHex,
+              xpub: xpub,
               derivationPath: _accountDerivationPath(
                 network: network,
                 scriptType: scriptType,
@@ -181,6 +185,13 @@ class WalletMetadataService {
       birthday: birthday,
     );
   }
+
+  static T _unwrap<T>(Result<T, SecretFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw MnemonicSeedNeededException(
+      'Secret derivation failed: ${failure.runtimeType}',
+    ),
+  };
 
   static String _accountDerivationPath({
     required Network network,

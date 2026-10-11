@@ -39,22 +39,6 @@ class DescriptorDerivation {
     return descriptor.toString();
   }
 
-  static Future<String> derivePublicLiquidDescriptorFromMnemonic(
-    String mnemonic, {
-    required ScriptType scriptType,
-    required bool isTestnet,
-  }) async {
-    final lwk.Descriptor confidentialDescriptor =
-        await lwk.Descriptor.newConfidential(
-          network: isTestnet
-              ? lwk.LiquidNetwork.testnet
-              : lwk.LiquidNetwork.mainnet,
-          mnemonic: mnemonic,
-        );
-
-    return confidentialDescriptor.ctDescriptor;
-  }
-
   static String _withoutMasterPrefix(String derivationPath) =>
       derivationPath.startsWith('m/')
       ? derivationPath.substring(2)

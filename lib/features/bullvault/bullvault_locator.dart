@@ -1,7 +1,9 @@
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_mnemonic_cubit.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
+import 'package:secrets/secrets.dart' show Secrets;
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
@@ -43,7 +45,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
-import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
@@ -53,6 +55,18 @@ import 'package:go_router/go_router.dart';
 
 abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<BullVaultInheritanceMnemonicCubit>(
+      () => BullVaultInheritanceMnemonicCubit(
+        locator<GenerateBullVaultInheritanceMnemonicUsecase>(),
+        locator<DeriveBullVaultMnemonicKeyUsecase>(),
+      ),
+    );
+    locator.registerFactory<GenerateBullVaultInheritanceMnemonicUsecase>(
+      () => GenerateBullVaultInheritanceMnemonicUsecase(locator<Secrets>()),
+    );
+    locator.registerFactory<DeriveBullVaultMnemonicKeyUsecase>(
+      () => DeriveBullVaultMnemonicKeyUsecase(locator<Secrets>()),
+    );
     locator<SettingsFacade>().registerEntry(
       SettingsEntryContribution(
         id: 'bullvault-create',
@@ -87,11 +101,14 @@ abstract final class BullVaultLocator {
         codec,
       );
     });
+    locator.registerLazySingleton<GetBullVaultSecretUsecase>(
+      () => GetBullVaultSecretUsecase(locator(), locator<Secrets>()),
+    );
     locator.registerLazySingleton<CreateBullVaultUsecase>(
       () => CreateBullVaultUsecase(
         locator(),
         locator<BitcoinDescriptorPort>(),
-        locator<GetDefaultSeedUsecase>(),
+        locator<GetBullVaultSecretUsecase>(),
         locator<GetSettingsUsecase>(),
         locator<DeleteWalletUsecase>(),
         locator<Bip48AccountRepository>(),
@@ -107,13 +124,12 @@ abstract final class BullVaultLocator {
         locator<BitcoinDescriptorPort>(),
         locator<BullVaultDescriptorService>(),
         locator<GetSettingsUsecase>(),
-        locator<GetDefaultSeedUsecase>(),
+        locator<GetBullVaultSecretUsecase>(),
         locator<GetWalletUsecase>(),
         locator<ReserveBip48AccountUsecase>(),
         locator<DeleteWalletUsecase>(),
         locator<WalletSignerOwnershipPort>(),
-        locator<GetAllSeedsUsecase>(),
-        locator<EnsureCanonicalSeedUsecase>(),
+        locator<Secrets>(),
       ),
     );
     locator.registerFactory<PrepareBullVaultTimeReferenceUsecase>(
@@ -124,7 +140,7 @@ abstract final class BullVaultLocator {
     locator.registerFactory<CheckBullVaultMobileBackupsUsecase>(
       () => CheckBullVaultMobileBackupsUsecase(
         locator<TestWalletBackupFacade>(),
-        locator<RecoverBullFacade>(),
+        locator<RecoverBullFacade>().status,
       ),
     );
     locator.registerFactory<CreateBullVaultOnboardingUsecase>(

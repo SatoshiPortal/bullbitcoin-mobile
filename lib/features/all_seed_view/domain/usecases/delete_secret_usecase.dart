@@ -27,11 +27,7 @@ class DeleteSecretUsecase {
         // with the same origin fingerprint does not, whatever its spelling.
         // Same rule as DeleteWalletUsecase and ImportWalletUsecase.
         case Ok(value: final wallets)
-            when wallets.any(
-              (w) =>
-                  w.signsLocally &&
-                  Fingerprint.tryParse(w.masterFingerprint) == id,
-            ):
+            when wallets.any((w) => w.localSeedFingerprints.contains(id.hex)):
           log.warning('Refused to delete secret $id: a wallet still uses it');
           return const Err(
             AllSeedViewDeleteFailure('a wallet still uses this secret'),

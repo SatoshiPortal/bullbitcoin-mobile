@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_net
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
@@ -35,10 +34,10 @@ import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
+import 'package:secrets/secrets.dart';
 
 class WalletRepository
     implements
@@ -140,8 +139,8 @@ class WalletRepository
         ? 'Instant Payments'
         : label;
 
-    var metadata = await WalletMetadataService.deriveFromSeed(
-      seed: seed,
+    var metadata = await WalletMetadataService.deriveFromSecret(
+      secret: secret,
       network: network,
       scriptType: scriptType,
       label: walletLabel,

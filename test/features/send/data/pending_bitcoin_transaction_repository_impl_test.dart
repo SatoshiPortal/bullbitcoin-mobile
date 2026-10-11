@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_repository_impl.dart';
@@ -37,10 +37,8 @@ void main() {
       id: 'draft',
       walletId: 'wallet-id',
       stage: PendingBitcoinTransactionStage.draft,
-      recipient: address,
-      amount: '',
+      recipients: [(recipient: address, amount: '', receivesRemainder: false)],
       amountCurrencyCode: 'sats',
-      sendMax: false,
       feeSelection: FeeSelection.fastest,
       replaceByFee: true,
       createdAt: DateTime.utc(2026),
@@ -50,7 +48,11 @@ void main() {
     for (final invalid in ['', 'bc1qincomplete', 'unrelated clipboard text']) {
       expect(
         await repository.save(
-          draft.copyWith(recipient: invalid),
+          draft.copyWith(
+            recipients: [
+              (recipient: invalid, amount: '', receivesRemainder: false),
+            ],
+          ),
           expectedRevision: 0,
         ),
         isA<Err<PendingBitcoinTransaction, SendFailure>>().having(
@@ -59,17 +61,24 @@ void main() {
           isA<SendInvalidPaymentRequestFailure>(),
         ),
       );
-      expect((await datasource.get('draft'))!.recipient, address);
+      expect(
+        (await datasource.get('draft'))?.recipients.single.recipient,
+        address,
+      );
     }
     final bip21 = 'bitcoin:$address?amount=0.001';
     expect(
       await repository.save(
-        draft.copyWith(recipient: bip21),
+        draft.copyWith(
+          recipients: [
+            (recipient: bip21, amount: '', receivesRemainder: false),
+          ],
+        ),
         expectedRevision: 0,
       ),
       isA<Ok>(),
     );
-    expect((await datasource.get('draft'))!.recipient, bip21);
+    expect((await datasource.get('draft'))?.recipients.single.recipient, bip21);
   });
   test('maps an invalid stored policy selection to a typed failure', () async {
     final datasource = _MockPendingBitcoinTransactionDatasource();
@@ -78,10 +87,14 @@ void main() {
         id: 'pending-id',
         walletId: 'wallet-id',
         stage: 'needsSignatures',
-        recipient: 'tb1qrecipient',
-        amount: '50000',
+        recipients: [
+          (
+            recipient: 'tb1qrecipient',
+            amount: '50000',
+            receivesRemainder: false,
+          ),
+        ],
         amountCurrencyCode: 'sats',
-        sendMax: false,
         feeSelection: 'fastest',
         replaceByFee: true,
         selectedOutpoints: const {},
@@ -114,10 +127,8 @@ void main() {
           id: 'pending-id',
           walletId: 'wallet-id',
           stage: 'draft',
-          recipient: '',
-          amount: '',
+          recipients: [(recipient: '', amount: '', receivesRemainder: false)],
           amountCurrencyCode: '',
-          sendMax: false,
           feeSelection: 'custom',
           customFeeKind: 'unknown',
           customFeeValue: 1,

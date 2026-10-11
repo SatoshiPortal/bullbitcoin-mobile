@@ -1,14 +1,12 @@
+import 'package:secrets/secrets.dart' show Secret, Secrets;
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
 import 'dart:async';
 
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -34,9 +32,8 @@ class RestoreBullVaultUsecase {
   final BitcoinDescriptorPort _descriptorPort;
   final BullVaultDescriptorService _descriptorService;
   final GetSettingsUsecase _getSettingsUsecase;
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
-  final GetAllSeedsUsecase _getAllSeedsUsecase;
-  final EnsureCanonicalSeedUsecase _ensureCanonicalSeedUsecase;
+  final GetBullVaultSecretUsecase _getSecretUsecase;
+  final Secrets _secrets;
   final GetWalletUsecase _getWalletUsecase;
   final ReserveBip48AccountUsecase _reserveBip48AccountUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
@@ -48,13 +45,12 @@ class RestoreBullVaultUsecase {
     this._descriptorPort,
     this._descriptorService,
     this._getSettingsUsecase,
-    this._getDefaultSeedUsecase,
+    this._getSecretUsecase,
     this._getWalletUsecase,
     this._reserveBip48AccountUsecase,
     this._deleteWalletUsecase,
     this._walletSignerOwnershipPort,
-    this._getAllSeedsUsecase,
-    this._ensureCanonicalSeedUsecase,
+    this._secrets,
   );
 
   @useResult
@@ -92,29 +88,36 @@ class RestoreBullVaultUsecase {
       final wallet = importedWallet;
       if (wallet == null || !importedNewWallet) return;
       try {
-        await _deleteWalletUsecase.execute(walletId: wallet.id);
+        switch (await _deleteWalletUsecase.execute(walletId: wallet.id)) {
+          case Ok():
+            return;
+          case Err(:final failure):
+            log.warning(
+              'Failed to roll back BullVault restoration: ${failure.runtimeType}',
+            );
+        }
       } on Exception catch (error, stackTrace) {
         log.severe(
           message: 'Failed to roll back BullVault restoration',
           error: error.runtimeType,
           trace: stackTrace,
         );
-        final fingerprint = importedSeedFingerprint;
-        final coinType = importedCoinType;
-        final account = importedMobileAccount;
-        if (fingerprint == null || coinType == null || account == null) return;
-        final reserved = await _reserveBip48AccountUsecase.execute(
-          seedFingerprint: fingerprint,
-          coinType: coinType,
-          account: account,
+      }
+      final fingerprint = importedSeedFingerprint;
+      final coinType = importedCoinType;
+      final account = importedMobileAccount;
+      if (fingerprint == null || coinType == null || account == null) return;
+      final reserved = await _reserveBip48AccountUsecase.execute(
+        seedFingerprint: fingerprint,
+        coinType: coinType,
+        account: account,
+      );
+      if (reserved case Err(:final failure)) {
+        log.severe(
+          message: 'Failed to preserve a restored BullVault BIP48 account',
+          error: failure.runtimeType,
+          trace: StackTrace.current,
         );
-        if (reserved case Err(:final failure)) {
-          log.severe(
-            message: 'Failed to preserve a restored BullVault BIP48 account',
-            error: failure.runtimeType,
-            trace: StackTrace.current,
-          );
-        }
       }
     }
 
@@ -142,60 +145,93 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final seed = await _getDefaultSeedUsecase.execute(
+      final Secret secret;
+      switch (await _getSecretUsecase.execute(
         environment: settings.environment,
-      );
-      Seed? verifiedSeed;
+      )) {
+        case Ok(:final value):
+          secret = value;
+        case Err():
+          return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      Secret? verifiedSecret;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,
       );
       var matchesPassphrase = mobilePassphrase?.isNotEmpty != true;
-      void verifySeed(Seed candidate) {
+      Future<Result<void, BullVaultFailure>> verifySecret(
+        Secret candidate,
+      ) async {
         if (mobilePassphrase?.isNotEmpty == true) {
-          if (!_descriptorService.matchesEverydaySeed(
+          switch (await _descriptorService.matchesEverydaySecret(
             decodedPackage.policy,
             candidate,
             passphrase: mobilePassphrase,
           )) {
-            return;
+            case Ok(value: false):
+              return const Ok(null);
+            case Ok():
+              matchesPassphrase = true;
+            case Err(:final failure):
+              return Err(failure);
           }
-          matchesPassphrase = true;
         }
-        final verified = _descriptorService.withVerifiedMobileSeed(
+        switch (await _descriptorService.withVerifiedMobileSecret(
           decodedPackage.policy,
           candidate,
           passphrase: mobilePassphrase,
-        );
-        if (verified != null) {
-          verifiedSeed = candidate;
-          policy = verified;
+        )) {
+          case Ok(value: final verified?):
+            verifiedSecret = candidate;
+            policy = verified;
+          case Ok():
+            break;
+          case Err(:final failure):
+            return Err(failure);
         }
+        return const Ok(null);
       }
 
-      verifySeed(seed);
-      if (verifiedSeed == null) {
-        switch (await _getAllSeedsUsecase.execute()) {
+      if (await verifySecret(secret) case Err(:final failure)) {
+        return Err(failure);
+      }
+      if (verifiedSecret == null) {
+        switch (await _secrets.list()) {
           case Err():
             return const Err(BullVaultInvalidRecoveryFailure());
           case Ok(:final value):
-            for (final candidate in value) {
-              verifySeed(candidate);
-              if (verifiedSeed != null) break;
+            for (final candidate in value.whereType<Secret>()) {
+              if (candidate.id == secret.id) continue;
+              if (await verifySecret(candidate) case Err(:final failure)) {
+                return Err(failure);
+              }
+              if (verifiedSecret != null) break;
+            }
+            if (verifiedSecret == null &&
+                value.any((entry) => entry is! Secret)) {
+              return const Err(BullVaultInvalidRecoveryFailure());
             }
         }
       }
       if (!matchesPassphrase) {
         return const Err(BullVaultInvalidRecoveryFailure());
       }
-      final mobileAccess = verifiedSeed == null
-          ? BullVaultMobileAccess.unavailable
-          : _descriptorService.matchesEverydaySeed(
-              policy,
-              verifiedSeed!,
-              passphrase: mobilePassphrase,
-            )
-          ? BullVaultMobileAccess.available
-          : BullVaultMobileAccess.recoveryOnly;
+      final verified = verifiedSecret;
+      var mobileAccess = BullVaultMobileAccess.unavailable;
+      if (verified != null) {
+        switch (await _descriptorService.matchesEverydaySecret(
+          policy,
+          verified,
+          passphrase: mobilePassphrase,
+        )) {
+          case Ok(:final value):
+            mobileAccess = value
+                ? BullVaultMobileAccess.available
+                : BullVaultMobileAccess.recoveryOnly;
+          case Err(:final failure):
+            return Err(failure);
+        }
+      }
       final package = BullVaultRecoveryPackage(
         previousVaultId: decodedPackage.previousVaultId,
         policy: policy,
@@ -214,9 +250,18 @@ class RestoreBullVaultUsecase {
               coinType: network.coinType,
             )
           : null;
-      final mobileSeedFingerprint = mobileAccount == null
-          ? null
-          : await _ensureCanonicalSeedUsecase.execute(verifiedSeed!);
+      String? mobileSeedFingerprint;
+      if (mobileAccount != null) {
+        if (verified == null) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        switch (await _secrets.retainCanonical(verified.id)) {
+          case Ok(:final value):
+            mobileSeedFingerprint = value.id.hex;
+          case Err():
+            return const Err(BullVaultInvalidRecoveryFailure());
+        }
+      }
       importedSeedFingerprint = mobileSeedFingerprint;
       importedCoinType = mobileAccount == null ? null : network.coinType;
       importedMobileAccount = mobileAccount;

@@ -109,28 +109,6 @@ class ImportWalletUsecase {
 
       return Ok(wallet);
     } catch (e, st) {
-      if (e is WalletAlreadyExistsException) {
-        if (seedCreatedByThisImport != null) {
-          try {
-            final wallets = await _wallet.getWallets();
-            final seedIsInUse = wallets.any(
-              (wallet) => wallet.localSeedFingerprints.contains(
-                seedCreatedByThisImport,
-              ),
-            );
-            if (!seedIsInUse) {
-              await _deleteOrphanedSeed(seedCreatedByThisImport);
-            }
-          } catch (cleanupError, cleanupStackTrace) {
-            log.warning(
-              'Failed to check duplicate wallet seed ownership',
-              error: cleanupError,
-              trace: cleanupStackTrace,
-            );
-          }
-        }
-        return const Err(ImportMnemonicDuplicateFailure());
-      }
       // Remove the orphaned seed so a later import of the same mnemonic is
       // not rejected as a duplicate (issue #2634). Only a seed this call
       // created is orphaned; a pre-existing one belongs to another wallet.
@@ -138,13 +116,32 @@ class ImportWalletUsecase {
       if (seedCreatedByThisImport != null) {
         await _deleteOrphanedSeed(seedCreatedByThisImport);
       }
+      if (e is WalletAlreadyExistsException) {
+        return const Err(ImportMnemonicDuplicateFailure());
+      }
       log.severe(message: 'Import wallet failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
     }
   }
 
-  Future<void> _deleteOrphanedSeed(String fingerprint) async {
-    final deletion = await _seedRepository.delete(fingerprint);
+  Future<void> _deleteOrphanedSeed(Fingerprint fingerprint) async {
+    // A failed wallet lookup cannot establish that a secret is unused.
+    try {
+      switch (await _wallet.getWallets()) {
+        case Ok(:final value):
+          if (value.any(
+            (wallet) => wallet.localSeedFingerprints.contains(fingerprint.hex),
+          )) {
+            return;
+          }
+        case Err():
+          return;
+      }
+    } catch (e) {
+      log.warning('Could not check wallet references before cleanup: $e');
+      return;
+    }
+    final deletion = await _secrets.trash(fingerprint);
     if (deletion case Err(:final failure)) {
       log.warning(
         'Failed to clean up orphaned seed after import failure',

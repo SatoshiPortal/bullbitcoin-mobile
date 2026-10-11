@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_stat
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, BullPasteInput, Gap;
+    show BullButton, BullInputText, BullSecretTextInput, BullPasteInput, Gap;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,7 +98,7 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
                       ),
                       const Gap(24),
                       Text(
-                        context.loc.labelInputLabel,
+                        context.loc.importWatchOnlyLabel,
                         style: context.font.bodyMedium,
                       ),
                       const Gap(8),
@@ -109,22 +109,20 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
                         maxLines: 1,
                       ),
                       const Gap(16),
-                      Text(
-                        context.loc.bullVaultRestoreMobilePassphraseLabel,
-                        style: context.font.bodyMedium,
-                      ),
-                      const Gap(8),
-                      BullInputText(
-                        value: _mobilePassphrase,
-                        onChanged: (value) =>
-                            setState(() => _mobilePassphrase = value),
-                        disabled: state.isRestoring,
-                        obscure: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        smartQuotesType: SmartQuotesType.disabled,
-                        smartDashesType: SmartDashesType.disabled,
-                        maxLines: 1,
+                      ExcludeFocus(
+                        excluding: state.isRestoring,
+                        child: AbsorbPointer(
+                          absorbing: state.isRestoring,
+                          child: BullSecretTextInput(
+                            label: context
+                                .loc
+                                .bullVaultRestoreMobilePassphraseLabel,
+                            showLabel: context.loc.passphraseShow,
+                            hideLabel: context.loc.passphraseHide,
+                            onChanged: (value) =>
+                                setState(() => _mobilePassphrase = value),
+                          ),
+                        ),
                       ),
                       const Gap(8),
                       Text(

@@ -82,18 +82,10 @@ void main() {
         );
 
     test('unavailable selected coins have a specific failure', () async {
-      stubThrow(SelectedBitcoinCoinsUnavailableException());
+      stubFailure(const WalletSelectedInputsUnavailableFailure());
       expect(
         (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
         isA<PaySelectedCoinsUnavailableFailure>(),
-      );
-    });
-
-    test('insufficient selected coins have a specific failure', () async {
-      stubThrow(SelectedBitcoinCoinsInsufficientException());
-      expect(
-        (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
-        isA<PaySelectedCoinsInsufficientFailure>(),
       );
     });
 

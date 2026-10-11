@@ -51,9 +51,11 @@ class TestWalletBackupBloc
     if (wallet == null) {
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
-    return _getMnemonicFromFingerprintUsecase.execute(
-      wallet.localSeedFingerprints.single,
-    );
+    final fingerprint = wallet.singleLocalSeedFingerprint;
+    if (fingerprint == null) {
+      return const Err(TestWalletBackupNoWalletSelectedFailure());
+    }
+    return _getSecretFromFingerprintUsecase.execute(fingerprint);
   }
 
   Future<void> _onLoadWallets(
@@ -66,9 +68,15 @@ class TestWalletBackupBloc
         final fingerprint = event.fingerprint?.toLowerCase();
         final Wallet? selected = fingerprint == null
             ? value.firstWhere((w) => w.isDefault, orElse: () => value.first)
-            : value.where((w) => w.localSeedFingerprints.any((f) => f.toLowerCase() == fingerprint)).firstOrNull;
+            : value
+                  .where((w) => w.singleLocalSeedFingerprint == fingerprint)
+                  .firstOrNull;
         if (selected == null) {
-          emit(state.copyWith(failure: const TestWalletBackupNoWalletSelectedFailure()));
+          emit(
+            state.copyWith(
+              failure: const TestWalletBackupNoWalletSelectedFailure(),
+            ),
+          );
           return;
         }
         emit(
@@ -106,7 +114,8 @@ class TestWalletBackupBloc
     VerifyPhysicalBackup event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    if (state.selectedWallet == null) {
+    final fingerprint = state.selectedWallet?.singleLocalSeedFingerprint;
+    if (fingerprint == null) {
       emit(
         state.copyWith(
           failure: const TestWalletBackupNoWalletSelectedFailure(),
@@ -115,30 +124,10 @@ class TestWalletBackupBloc
       return;
     }
 
-    final bool isCorrect;
-    switch (await _verifyPhysicalBackupUsecase.execute(
-      fingerprint: wallet.localSeedFingerprints.single,
-      mnemonic: event.reorderedWords,
-    )) {
-      case Ok(:final value):
-        isCorrect = value;
-      case Err(:final failure):
-        emit(state.copyWith(failure: failure));
-        return;
-    }
-
-    if (!isCorrect) {
-      // A wrong answer is an outcome of the test, not a failure: it has its
-      // own status and its own screen, and must not surface an error.
-      emit(
-        state.copyWith(verificationStatus: BackupVerificationStatus.failure),
-      );
-      return;
-    }
-
-    if (await _completeBackupVerificationUsecase.execute(fingerprint: wallet.localSeedFingerprints.single) case Err(
-      :final failure,
-    )) {
+    if (await _completeBackupVerificationUsecase.execute(
+          fingerprint: fingerprint,
+        )
+        case Err(:final failure)) {
       // The words were right but recording it failed. Reported rather than
       // swallowed: the flow would otherwise claim success while the wallet
       // still shows its backup as untested.

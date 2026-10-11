@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
@@ -106,6 +106,61 @@ void main() {
       expect(readyValue.signersNeeded, 0);
     },
   );
+
+  test('validates every recipient including repeated outputs', () async {
+    final transaction = _pendingTransaction.copyWith(
+      recipients: [
+        (recipient: 'tb1qfirst', amount: '20000', receivesRemainder: false),
+        (recipient: 'tb1qsecond', amount: '15000', receivesRemainder: false),
+        (recipient: 'tb1qsecond', amount: '15000', receivesRemainder: true),
+      ],
+    );
+    BitcoinPsbtOutputReview output(
+      int index,
+      String address,
+      int amount, {
+      bool change = false,
+    }) => BitcoinPsbtOutputReview(
+      index: index,
+      address: address,
+      amountSat: BigInt.from(amount),
+      scriptHex: '0014',
+      isWalletOwned: change,
+    );
+    final expected = [
+      output(0, 'tb1qsecond', 15000),
+      output(1, 'tb1qchange', 1000, change: true),
+      output(2, 'tb1qfirst', 20000),
+      output(3, 'tb1qsecond', 15000),
+    ];
+    when(
+      () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
+    ).thenAnswer((_) async => [_utxo]);
+    when(
+      () => signingPort.finalizePsbt('cHNidP8='),
+    ).thenAnswer((_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)));
+    for (final (outputs, valid) in [
+      (expected, true),
+      (expected.take(3).toList(), false),
+      ([...expected.take(3), output(3, 'tb1qsecond', 14999)], false),
+      ([...expected, output(4, 'tb1qunexpected', 1)], false),
+    ]) {
+      when(
+        () => getSigningPlanUsecase.execute(
+          wallet: _wallet,
+          psbt: 'cHNidP8=',
+          selection: const BitcoinPolicySelection.empty(),
+          allowSpentWalletInputs: true,
+          allowFrozenWalletInputs: true,
+        ),
+      ).thenAnswer((_) async => Ok(_details(_review(outputs: outputs))));
+      final result = await usecase.execute(transaction);
+      expect(
+        result is Ok<ValidatedPendingBitcoinTransaction, SendFailure>,
+        valid,
+      );
+    }
+  });
 
   test(
     'rejects a PSBT whose recipient differs from the stored transaction',
@@ -331,10 +386,10 @@ final _pendingTransaction = PendingBitcoinTransaction(
   id: 'pending-id',
   walletId: 'wallet-id',
   stage: PendingBitcoinTransactionStage.needsSignatures,
-  recipient: 'tb1qrecipient',
-  amount: '50000',
+  recipients: [
+    (recipient: 'tb1qrecipient', amount: '50000', receivesRemainder: false),
+  ],
   amountCurrencyCode: 'sats',
-  sendMax: false,
   feeSelection: FeeSelection.fastest,
   replaceByFee: true,
   psbt: 'cHNidP8=',
@@ -355,6 +410,7 @@ BitcoinPsbtReview _review({
   String recipient = 'tb1qrecipient',
   bool recipientWalletOwned = false,
   bool isFinalized = false,
+  List<BitcoinPsbtOutputReview>? outputs,
 }) => BitcoinPsbtReview(
   transactionId: 'transaction-id',
   inputs: [
@@ -366,15 +422,17 @@ BitcoinPsbtReview _review({
       sequence: 0xffffffff,
     ),
   ],
-  outputs: [
-    BitcoinPsbtOutputReview(
-      index: 0,
-      amountSat: BigInt.from(50000),
-      address: recipient,
-      scriptHex: '0014',
-      isWalletOwned: recipientWalletOwned,
-    ),
-  ],
+  outputs:
+      outputs ??
+      [
+        BitcoinPsbtOutputReview(
+          index: 0,
+          amountSat: BigInt.from(50000),
+          address: recipient,
+          scriptHex: '0014',
+          isWalletOwned: recipientWalletOwned,
+        ),
+      ],
   feeSat: BigInt.from(1000),
   estimatedTransactionVsize: 100,
   isFinalized: isFinalized,

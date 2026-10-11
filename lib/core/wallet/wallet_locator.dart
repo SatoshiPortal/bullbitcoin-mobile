@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/core/seed/data/secrets_seed_verification.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -55,6 +54,9 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
+    locator.registerLazySingleton<SeedVerificationPort>(
+      () => SecretsSeedVerification(locator<Secrets>()),
+    );
     locator.registerLazySingleton<BdkWalletDatasource>(
       () => BdkWalletDatasource(),
     );

@@ -4,11 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +56,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(networkLabel, style: context.font.bodyMedium),
+        BullText(networkLabel, style: context.font.bodyMedium),
         const Gap(24),
         BullLabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
@@ -70,7 +66,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         ),
         if (entity.inferredChangePath) ...[
           const Gap(24),
-          InfoCard(
+          BullInfoCard(
             title: context.loc.importWatchOnlyChangePathTitle,
             description: context.loc.importWatchOnlyChangePathDescription,
             bgColor: context.appColors.warning.withValues(alpha: 0.1),
@@ -79,7 +75,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         ],
         if (entity.scriptType case final scriptType?) ...[
           const Gap(24),
-          LabeledTextInput(
+          BullLabeledTextInput(
             label: context.loc.importWatchOnlyType,
             value: _derivationFor(scriptType).label,
             onChanged: null,
@@ -134,7 +130,7 @@ class _SignerDeviceField extends StatelessWidget {
         ? context.loc.walletSignerLabel(index + 1)
         : context.loc.walletSignerLabelWithFingerprint(index + 1, fingerprint);
     if (signer.signer == SignerEntity.local) {
-      return LabeledTextInput(
+      return BullLabeledTextInput(
         label: label,
         value: context.loc.importWatchOnlyBullMobileDevice,
         onChanged: null,
@@ -144,7 +140,7 @@ class _SignerDeviceField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        BBText(label, style: context.font.titleMedium),
+        BullText(label, style: context.font.titleMedium),
         const Gap(8),
         SignerDeviceDropdown(
           key: ValueKey(signer.id),
@@ -182,7 +178,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           style: context.font.titleMedium,
         ),
         const Gap(8),
-        BBText(entity.extendedPublicKey, style: context.font.bodyMedium),
+        BullText(entity.extendedPublicKey, style: context.font.bodyMedium),
         const Gap(24),
         if (!isXpub) ...[
           BullText(
@@ -190,7 +186,7 @@ class _XpubDetailsWidget extends StatelessWidget {
             style: context.font.titleMedium,
           ),
           const Gap(8),
-          BBText(entity.canonicalXpub, style: context.font.bodyMedium),
+          BullText(entity.canonicalXpub, style: context.font.bodyMedium),
           const Gap(24),
         ],
         BullText(
@@ -199,7 +195,7 @@ class _XpubDetailsWidget extends StatelessWidget {
         ),
         const Gap(8),
         if (!canSelectScriptType) ...[
-          BBText(
+          BullText(
             _derivationFor(entity.scriptType).label,
             style: context.font.bodyMedium,
           ),

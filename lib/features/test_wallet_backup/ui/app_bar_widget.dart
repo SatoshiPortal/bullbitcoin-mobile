@@ -7,25 +7,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullBottomSheet, BullButton, BullText, Gap;
-import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({super.key, required this.title});
+  const AppBarWidget({
+    super.key,
+    required this.title,
+    this.showWalletPicker = true,
+  });
 
   final String title;
+  final bool showWalletPicker;
 
   @override
   PreferredSizeWidget build(BuildContext context) {
-    final wallets = context.watch<TestWalletBackupBloc>().state.wallets;
-    final selectedWallet = context
-        .watch<TestWalletBackupBloc>()
-        .state
-        .selectedWallet;
+    final state = showWalletPicker
+        ? context.watch<TestWalletBackupBloc>().state
+        : null;
+    final wallets = state?.wallets ?? const <Wallet>[];
+    final selectedWallet = state?.selectedWallet;
 
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () => context.pop(),
+        onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(title),
       actions: [

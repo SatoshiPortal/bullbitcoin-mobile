@@ -86,7 +86,7 @@ void main() {
     expect(plan.requiresExternalSigning, isFalse);
     expect(
       SendState(
-        selectedWallet: wallet,
+        selectedWallet: SendWalletBitcoin(wallet),
         bitcoinSigningPlan: plan,
       ).requiresBitcoinSigningCoordination,
       isTrue,
@@ -625,7 +625,9 @@ void main() {
 
   group('SendState.requiresExternalBitcoinSigning', () {
     test('routes a mobile wallet to confirmation', () {
-      final state = SendState(selectedWallet: bitcoinWallet());
+      final state = SendState(
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
+      );
 
       expect(state.requiresExternalBitcoinSigning, isFalse);
     });
@@ -642,7 +644,7 @@ void main() {
           ),
         ],
       );
-      final state = SendState(selectedWallet: wallet);
+      final state = SendState(selectedWallet: SendWalletBitcoin(wallet));
 
       expect(state.requiresExternalBitcoinSigning, isTrue);
     });
@@ -671,7 +673,7 @@ void main() {
         internal: BitcoinSpendingPolicy(root: signature, requiresPath: false),
       );
       final state = SendState(
-        selectedWallet: wallet,
+        selectedWallet: SendWalletBitcoin(wallet),
         bitcoinSigningPlan: BitcoinSigningPlan.fromPolicy(
           policy: policy,
           signers: wallet.signers,
@@ -694,7 +696,7 @@ void main() {
     );
 
     SendState state({Set<String> preimages = const {}}) => SendState(
-      selectedWallet: bitcoinWallet(),
+      selectedWallet: SendWalletBitcoin(bitcoinWallet()),
       paymentRequest: const PaymentRequest.bip21(
         network: Network.bitcoinMainnet,
         uri: 'bitcoin:bc1qtest?pj=https://payjo.in',
@@ -787,7 +789,7 @@ void main() {
       final state = SendState(
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
-        selectedWallet: wallet,
+        selectedWallet: SendWalletBitcoin(wallet),
         bitcoinSigningPlan: BitcoinSigningPlan.fromPolicy(
           policy: BitcoinWalletPolicy(
             external: BitcoinSpendingPolicy(
@@ -854,22 +856,24 @@ void main() {
         "device-specific sign button never reaches signTransaction's payjoin "
         'branch, so the indicator must not promise one', () {
       final state = SendState(
-        selectedWallet: SendWalletBitcoin(Wallet(
-          origin: 'test-hw-origin',
-          network: Network.bitcoinMainnet,
-          signers: [
-            WalletSigner.single(
-              masterFingerprint: '',
-              xpubFingerprint: '00000000',
-              xpub: '',
-              signer: SignerEntity.remote,
-              signerDevice: SignerDeviceEntity.ledgerNanoX,
-            ),
-          ],
-          scriptType: ScriptType.bip84,
-          publicDescriptor: '',
-          balanceSat: BigInt.from(100000),
-        )),
+        selectedWallet: SendWalletBitcoin(
+          Wallet(
+            origin: 'test-hw-origin',
+            network: Network.bitcoinMainnet,
+            signers: [
+              WalletSigner.single(
+                masterFingerprint: '',
+                xpubFingerprint: '00000000',
+                xpub: '',
+                signer: SignerEntity.remote,
+                signerDevice: SignerDeviceEntity.ledgerNanoX,
+              ),
+            ],
+            scriptType: ScriptType.bip84,
+            publicDescriptor: '',
+            balanceSat: BigInt.from(100000),
+          ),
+        ),
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
         isToSelf: false,

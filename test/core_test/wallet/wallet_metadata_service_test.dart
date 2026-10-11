@@ -1,11 +1,13 @@
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => FakeSecureStoragePlatform().install());
   test("decodes h and apostrophe hardened origin notation", () {
     const expected = (
       fingerprint: '0f36572d',
@@ -27,13 +29,17 @@ void main() {
   test(
     'records the standard descriptor path for a Bitcoin seed wallet',
     () async {
-      final wallet = await WalletMetadataService.deriveFromSeed(
-        seed: Seed.bytes(
-          bytes: Uint8List.fromList(
-            List<int>.generate(32, (index) => index + 1),
-          ),
-          masterFingerprint: '01020304',
-        ),
+      final secrets = Secrets(scratchDirectory: () async => '');
+      final secret =
+          (await secrets.import(
+                    words:
+                        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                            .split(' '),
+                  )
+                  as Ok<Secret, SecretFailure>)
+              .value;
+      final wallet = await WalletMetadataService.deriveFromSecret(
+        secret: secret,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
         isDefault: false,

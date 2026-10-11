@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -297,8 +297,15 @@ class RenewBullVaultUsecase {
 
   Future<bool> _rollback(String walletId) async {
     try {
-      await _deleteWalletUsecase.execute(walletId: walletId);
-      return true;
+      switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
+        case Ok():
+          return true;
+        case Err(:final failure):
+          log.warning(
+            'Failed to roll back BullVault wallet: ${failure.runtimeType}',
+          );
+          return false;
+      }
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Failed to roll back incomplete BullVault renewal',

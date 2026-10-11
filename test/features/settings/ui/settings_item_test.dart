@@ -79,6 +79,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: AppTheme.themeData(AppThemeType.light),
         routerConfig: router,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

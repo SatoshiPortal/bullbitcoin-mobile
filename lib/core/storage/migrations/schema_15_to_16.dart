@@ -29,137 +29,149 @@ class Schema15To16 {
     final oldWallets = schema15.walletMetadatas;
     final newWallets = schema16.walletMetadatas;
     await m.database.transaction(() async {
-      final existingWallets = await m.database
-          .select(schema15.walletMetadatas)
+      final columns = await m.database
+          .customSelect('PRAGMA table_info(wallet_metadatas)')
           .get();
-      final migrations = [
-        for (final wallet in existingWallets)
-          (
-            wallet: wallet,
-            id: wallet.read<String>('id'),
-            network: _networkNameForOrigin(wallet.read<String>('id')),
-            publicDescriptor: _publicDescriptorForWallet(
-              origin: wallet.read<String>('id'),
-              externalDescriptor: wallet.read<String>(
-                'external_public_descriptor',
+      if (!columns.any(
+        (column) => column.read<String>('name') == 'public_descriptor',
+      )) {
+        final existingWallets = await m.database
+            .select(schema15.walletMetadatas)
+            .get();
+        final migrations = [
+          for (final wallet in existingWallets)
+            (
+              wallet: wallet,
+              id: wallet.read<String>('id'),
+              network: _networkNameForOrigin(wallet.read<String>('id')),
+              publicDescriptor: _publicDescriptorForWallet(
+                origin: wallet.read<String>('id'),
+                externalDescriptor: wallet.read<String>(
+                  'external_public_descriptor',
+                ),
+                internalDescriptor: wallet.read<String>(
+                  'internal_public_descriptor',
+                ),
               ),
-              internalDescriptor: wallet.read<String>(
-                'internal_public_descriptor',
+              derivationPath: _derivationPathForWallet(
+                origin: wallet.read<String>('id'),
+                descriptor: wallet.read<String>('external_public_descriptor'),
+                xpub: wallet.read<String>('xpub'),
+                masterFingerprint: wallet.read<String>('master_fingerprint'),
+                xpubFingerprint: wallet.read<String>('xpub_fingerprint'),
               ),
             ),
-            derivationPath: _derivationPathForWallet(
-              origin: wallet.read<String>('id'),
-              descriptor: wallet.read<String>('external_public_descriptor'),
-              xpub: wallet.read<String>('xpub'),
-              masterFingerprint: wallet.read<String>('master_fingerprint'),
-              xpubFingerprint: wallet.read<String>('xpub_fingerprint'),
-            ),
+        ];
+        final networkByWalletId = {
+          for (final migration in migrations) migration.id: migration.network,
+        };
+        final descriptorByWalletId = {
+          for (final migration in migrations)
+            migration.id: migration.publicDescriptor,
+        };
+
+        await m.alterTable(
+          // ignore: experimental_member_use
+          TableMigration(
+            newWallets,
+            columnTransformer: {
+              newWallets.isHidden: const Constant(false),
+              newWallets.network: networkByWalletId.isEmpty
+                  ? const Constant('bitcoinMainnet')
+                  : CaseWhenExpression(
+                      cases: [
+                        for (final entry in networkByWalletId.entries)
+                          CaseWhen(
+                            oldWallets.id.equals(entry.key),
+                            then: Variable(entry.value),
+                          ),
+                      ],
+                      // Every existing row was parsed above. The fallback keeps
+                      // this expression total if SQLite evaluates another row.
+                      orElse: const Constant('bitcoinMainnet'),
+                    ),
+              newWallets.publicDescriptor: descriptorByWalletId.isEmpty
+                  ? const Constant('')
+                  : CaseWhenExpression(
+                      cases: [
+                        for (final entry in descriptorByWalletId.entries)
+                          CaseWhen(
+                            oldWallets.id.equals(entry.key),
+                            then: Variable(entry.value),
+                          ),
+                      ],
+                      orElse: const Constant(''),
+                    ),
+            },
           ),
-      ];
-      final networkByWalletId = {
-        for (final migration in migrations) migration.id: migration.network,
-      };
-      final descriptorByWalletId = {
-        for (final migration in migrations)
-          migration.id: migration.publicDescriptor,
-      };
-
-      await m.alterTable(
-        // ignore: experimental_member_use
-        TableMigration(
-          newWallets,
-          columnTransformer: {
-            newWallets.isHidden: const Constant(false),
-            newWallets.network: networkByWalletId.isEmpty
-                ? const Constant('bitcoinMainnet')
-                : CaseWhenExpression(
-                    cases: [
-                      for (final entry in networkByWalletId.entries)
-                        CaseWhen(
-                          oldWallets.id.equals(entry.key),
-                          then: Variable(entry.value),
-                        ),
-                    ],
-                    // Every existing row was parsed above. The fallback keeps
-                    // this expression total if SQLite evaluates another row.
-                    orElse: const Constant('bitcoinMainnet'),
-                  ),
-            newWallets.publicDescriptor: descriptorByWalletId.isEmpty
-                ? const Constant('')
-                : CaseWhenExpression(
-                    cases: [
-                      for (final entry in descriptorByWalletId.entries)
-                        CaseWhen(
-                          oldWallets.id.equals(entry.key),
-                          then: Variable(entry.value),
-                        ),
-                    ],
-                    orElse: const Constant(''),
-                  ),
-          },
-        ),
-      );
-
-      await m.createTable(schema16.walletSigners);
-      await m.createTable(schema16.walletDescriptorKeys);
-      for (final migration in migrations) {
-        final wallet = migration.wallet;
-        final signerDevice = wallet.readNullable<String>('signer_device');
-        await m.database
-            .into(schema16.walletSigners)
-            .insert(
-              RawValuesInsertable({
-                'wallet_id': Variable(migration.id),
-                'id': const Constant('signer-0'),
-                'position': const Constant(0),
-                'signer': Variable(wallet.read<String>('signer')),
-                if (signerDevice != null)
-                  'signer_device': Variable(signerDevice),
-              }),
-            );
-        await m.database
-            .into(schema16.walletDescriptorKeys)
-            .insert(
-              RawValuesInsertable({
-                'wallet_id': Variable(migration.id),
-                'id': const Constant('key-0'),
-                'position': const Constant(0),
-                'signer_id': const Constant('signer-0'),
-                'master_fingerprint': Variable(
-                  wallet.read<String>('master_fingerprint'),
-                ),
-                'xpub_fingerprint': Variable(
-                  wallet.read<String>('xpub_fingerprint'),
-                ),
-                'xpub': Variable(wallet.read<String>('xpub')),
-                'derivation_path': Variable(migration.derivationPath),
-                'descriptor_path': Constant(
-                  migration.network.startsWith('bitcoin')
-                      ? standardSingleSignatureDescriptorPath
-                      : '',
-                ),
-              }),
-            );
-      }
-
-      final migratedSigners = await m.database
-          .select(schema16.walletSigners)
-          .get();
-      final migratedKeys = await m.database
-          .select(schema16.walletDescriptorKeys)
-          .get();
-      if (migratedSigners.length != migrations.length ||
-          migratedKeys.length != migrations.length) {
-        throw StateError(
-          'Not every v15 wallet received signer and descriptor-key rows',
         );
+
+        await m.createTable(schema16.walletSigners);
+        await m.createTable(schema16.walletDescriptorKeys);
+        for (final migration in migrations) {
+          final wallet = migration.wallet;
+          final signerDevice = wallet.readNullable<String>('signer_device');
+          await m.database
+              .into(schema16.walletSigners)
+              .insert(
+                RawValuesInsertable({
+                  'wallet_id': Variable(migration.id),
+                  'id': const Constant('signer-0'),
+                  'position': const Constant(0),
+                  'signer': Variable(wallet.read<String>('signer')),
+                  if (signerDevice != null)
+                    'signer_device': Variable(signerDevice),
+                }),
+              );
+          await m.database
+              .into(schema16.walletDescriptorKeys)
+              .insert(
+                RawValuesInsertable({
+                  'wallet_id': Variable(migration.id),
+                  'id': const Constant('key-0'),
+                  'position': const Constant(0),
+                  'signer_id': const Constant('signer-0'),
+                  'master_fingerprint': Variable(
+                    wallet.read<String>('master_fingerprint'),
+                  ),
+                  'xpub_fingerprint': Variable(
+                    wallet.read<String>('xpub_fingerprint'),
+                  ),
+                  'xpub': Variable(wallet.read<String>('xpub')),
+                  'derivation_path': Variable(migration.derivationPath),
+                  'descriptor_path': Constant(
+                    migration.network.startsWith('bitcoin')
+                        ? standardSingleSignatureDescriptorPath
+                        : '',
+                  ),
+                }),
+              );
+        }
+
+        final migratedSigners = await m.database
+            .select(schema16.walletSigners)
+            .get();
+        final migratedKeys = await m.database
+            .select(schema16.walletDescriptorKeys)
+            .get();
+        if (migratedSigners.length != migrations.length ||
+            migratedKeys.length != migrations.length) {
+          throw StateError(
+            'Not every v15 wallet received signer and descriptor-key rows',
+          );
+        }
       }
 
       await m.createTable(schema16.sendTransactions);
+      await m.createTable(schema16.sendTransactionRecipients);
       await m.createTable(schema16.sendTransactionInputs);
       await m.createTable(schema16.sendTransactionPolicyChoices);
-      await m.createIndex(schema16.sendTransactionsWallet);
-      await m.createIndex(schema16.sendTransactionsUpdatedAt);
+      await m.database.customStatement(
+        'CREATE INDEX IF NOT EXISTS send_transactions_wallet ON send_transactions(wallet_id)',
+      );
+      await m.database.customStatement(
+        'CREATE INDEX IF NOT EXISTS send_transactions_updated_at ON send_transactions(updated_at)',
+      );
       await m.createTable(schema16.bullVaultRecords);
       await m.createTable(schema16.bullVaultGenerationReservations);
 

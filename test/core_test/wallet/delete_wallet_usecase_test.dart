@@ -1,9 +1,6 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -17,8 +14,6 @@ import 'package:secrets/testing.dart';
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
-
-class _MockSeedRepository extends Mock implements SeedRepository {}
 
 void main() {
   const words = [
@@ -44,11 +39,10 @@ void main() {
   late DeleteWalletUsecase usecase;
   late String fingerprint;
 
-  const walletId = 'wallet-1';
-  const fingerprint = 'deadbeef';
+  String key() => 'seed_$fingerprint';
 
   Wallet buildWallet({
-    String masterFingerprint = fingerprint,
+    String? masterFingerprint,
     bool isDefault = false,
     SignerEntity signer = SignerEntity.local,
     String? localSeedFingerprint,
@@ -59,7 +53,7 @@ void main() {
       isDefault: isDefault,
       signers: [
         WalletSigner.single(
-          masterFingerprint: masterFingerprint,
+          masterFingerprint: masterFingerprint ?? fingerprint,
           xpubFingerprint: '12345678',
           xpub: 'xpub',
           signer: signer,
@@ -102,7 +96,7 @@ void main() {
       );
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
+      ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
       when(() => walletRepository.getWallets()).thenAnswer((_) async => Ok([]));
 
       final result = await usecase.execute(walletId: walletId);
@@ -127,9 +121,12 @@ void main() {
             () => walletRepository.getWallets(),
           ).thenAnswer((_) async => Ok([sibling]));
 
-          await usecase.execute(walletId: walletId);
+          expect(
+            await usecase.execute(walletId: walletId),
+            isA<Ok<void, WalletFailure>>(),
+          );
 
-          verifyNever(() => seedRepository.delete(any()));
+          expect(storage.entries, contains(key()));
         },
       );
     }
@@ -144,13 +141,19 @@ void main() {
         () => walletRepository.getWallets(),
       ).thenAnswer((_) async => Ok([sibling]));
 
-      await usecase.execute(walletId: walletId);
+      expect(
+        await usecase.execute(walletId: walletId),
+        isA<Ok<void, WalletFailure>>(),
+      );
 
-      verify(() => seedRepository.delete(fingerprint)).called(1);
+      expect(storage.entries, isNot(contains(key())));
     });
 
     test('never touches a seed for a watch-only wallet', () async {
-      final wallet = buildWallet(masterFingerprint: '');
+      final wallet = buildWallet(
+        masterFingerprint: '',
+        signer: SignerEntity.none,
+      );
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
@@ -206,7 +209,7 @@ void main() {
           (_) async => Ok<List<Wallet>, WalletFailure>([
             buildWallet(
               masterFingerprint: fingerprint.toUpperCase(),
-              local: false,
+              signer: SignerEntity.none,
             ),
           ]),
         );
@@ -230,7 +233,10 @@ void main() {
         // already run, so the row was gone and the user still saw an error.
         when(() => walletRepository.getWallet(walletId)).thenAnswer(
           (_) async => Ok<Wallet, WalletFailure>(
-            buildWallet(masterFingerprint: 'A1B2C3D4', local: false),
+            buildWallet(
+              masterFingerprint: 'A1B2C3D4',
+              signer: SignerEntity.none,
+            ),
           ),
         );
 

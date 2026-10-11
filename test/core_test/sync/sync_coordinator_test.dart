@@ -79,7 +79,9 @@ void main() {
     final bitcoin = Completer<void>();
     final liquid = Completer<void>();
     final sp = Completer<void>();
-    when(() => getWallets.execute(onlyBitcoin: true, includeHidden: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer((_) async {
       await bitcoin.future;
       return const Ok<List<Wallet>, WalletFailure>([]);
     });
@@ -188,7 +190,9 @@ void main() {
       // normally, stamping _lastSuccessAt — so the sync would be reported as
       // successful AND the throttle would then suppress the retry that would
       // recover from a transient read failure.
-      when(() => getWallets.execute(onlyBitcoin: true, includeHidden: true)).thenAnswer(
+      when(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).thenAnswer(
         (_) async => const Err<List<Wallet>, WalletFailure>(
           WalletStorageFailure('SqliteException(11): disk image is malformed'),
         ),
@@ -205,7 +209,9 @@ void main() {
       // Not throttled away: the next automatic round retries bitcoin.
       await coordinator.sync(trigger: SyncTrigger.automatic).catchError((_) {});
 
-      verify(() => getWallets.execute(onlyBitcoin: true, includeHidden: true)).called(2);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(2);
     },
   );
 
@@ -306,8 +312,12 @@ void main() {
       }
 
       // The other kinds still ran to completion despite sp failing.
-      verify(() => getWallets.execute(onlyBitcoin: true, includeHidden: true)).called(1);
-      verify(() => getWallets.execute(onlyLiquid: true, includeHidden: true)).called(1);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(1);
+      verify(
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+      ).called(1);
       // sp's failure is reported, not swallowed, and is the only failed kind.
       expect(thrown, isA<SyncCoordinatorException>());
       final failures = (thrown! as SyncCoordinatorException).failures;
@@ -346,8 +356,12 @@ void main() {
 
       await coordinator.sync(trigger: SyncTrigger.user);
 
-      verify(() => getWallets.execute(onlyBitcoin: true, includeHidden: true)).called(1);
-      verify(() => getWallets.execute(onlyLiquid: true, includeHidden: true)).called(1);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(1);
+      verify(
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+      ).called(1);
       expect(spCalls, 0);
     });
   });
@@ -367,10 +381,10 @@ void main() {
 
     void walletsRead(WalletFailure failure) {
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
     }
 

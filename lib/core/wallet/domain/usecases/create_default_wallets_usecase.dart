@@ -94,7 +94,7 @@ class CreateDefaultWalletsUsecase {
         if (!hasLiquid) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: defaultSecret,
               network: liquidNetwork,
               scriptType: scriptType,
               isDefault: true,
@@ -105,7 +105,7 @@ class CreateDefaultWalletsUsecase {
         if (!hasBitcoin) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: defaultSecret,
               network: bitcoinNetwork,
               scriptType: scriptType,
               isDefault: true,

@@ -1,6 +1,7 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
@@ -37,6 +38,9 @@ class _MockResumeRenewal extends Mock
     implements ResumeBullVaultRenewalUsecase {}
 
 void main() {
+  setUpAll(
+    () => registerFallbackValue(testBullVaultCreateResult().policy.network),
+  );
   test('loads a pending vault with backup status for its Bull seed', () async {
     final settings = _MockSettings();
     final resume = _MockResumeOnboarding();
@@ -55,7 +59,10 @@ void main() {
       () => resume.execute(created.wallet.network),
     ).thenAnswer((_) async => Ok(created));
     when(
-      () => checkBackups.execute(created.record.mobileSeedFingerprint!),
+      () => checkBackups.execute(
+        created.record.mobileSeedFingerprint!,
+        network: created.policy.network,
+      ),
     ).thenAnswer((_) async => const Ok((physical: true, recoverBull: false)));
     final usecase = LoadBullVaultOnboardingUsecase(
       settings,
@@ -79,6 +86,7 @@ void main() {
     when(
       () => checkBackups.execute(
         created.policy.everydayKey.accountKey.masterFingerprint,
+        network: created.policy.network,
       ),
     ).thenAnswer((_) async => const Ok((physical: false, recoverBull: true)));
     final usecase = CreateBullVaultOnboardingUsecase(create, checkBackups);
@@ -187,7 +195,10 @@ void main() {
       () => resume.execute(details.record.walletId),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => checkBackups.execute(details.record.mobileSeedFingerprint!),
+      () => checkBackups.execute(
+        details.record.mobileSeedFingerprint!,
+        network: details.policy.network,
+      ),
     ).thenAnswer((_) async => const Ok((physical: false, recoverBull: false)));
     final usecase = LoadBullVaultRenewalUsecase(
       getDetails,
@@ -206,7 +217,7 @@ void main() {
 _MockCheckBackups _backupStatus() {
   final usecase = _MockCheckBackups();
   when(
-    () => usecase.execute(any()),
+    () => usecase.execute(any(), network: any(named: 'network')),
   ).thenAnswer((_) async => const Ok((physical: true, recoverBull: false)));
   return usecase;
 }

@@ -1,11 +1,14 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -17,25 +20,23 @@ import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
+class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 class _MockBip48AccountRepository extends Mock
     implements Bip48AccountRepository {}
 
+class _MockWallet extends Mock implements Wallet {}
+
 void main() {
-  late _MockGetDefaultSeedUsecase getDefaultSeed;
+  late _MockWalletRepository wallets;
   late _MockGetSettingsUsecase getSettings;
   late _MockBip48AccountRepository accountRepository;
   late ExportSigningKeyUsecase usecase;
   late ReleaseSigningKeyAccountUsecase releaseUsecase;
 
-  final seed = Seed.bytes(
-    bytes: Uint8List.fromList(List<int>.generate(32, (index) => index)),
-    masterFingerprint: '5A3469B6',
-  );
+  const fingerprint = '5a3469b6';
 
   setUpAll(() {
     registerFallbackValue(
@@ -44,19 +45,35 @@ void main() {
   });
 
   setUp(() {
-    getDefaultSeed = _MockGetDefaultSeedUsecase();
+    FakeSecureStoragePlatform(
+      entries: {
+        'seed_$fingerprint': jsonEncode({
+          'bytes': List<int>.generate(32, (index) => index),
+          'runtimeType': 'bytes',
+        }),
+      },
+    ).install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final wallet = _MockWallet();
+    when(() => wallet.singleLocalSeedFingerprint).thenReturn(fingerprint);
+    wallets = _MockWalletRepository();
     getSettings = _MockGetSettingsUsecase();
     accountRepository = _MockBip48AccountRepository();
     final accountSession = SigningKeyAccountSession(accountRepository);
     usecase = ExportSigningKeyUsecase(
       accountSession,
-      getDefaultSeedUsecase: getDefaultSeed,
+      walletRepository: wallets,
+      secrets: secrets,
       getSettingsUsecase: getSettings,
     );
     releaseUsecase = ReleaseSigningKeyAccountUsecase(accountSession);
     when(
-      () => getDefaultSeed.execute(environment: any(named: 'environment')),
-    ).thenAnswer((_) async => seed);
+      () => wallets.getWallets(
+        environment: any(named: 'environment'),
+        onlyDefaults: true,
+        onlyBitcoin: true,
+      ),
+    ).thenAnswer((_) async => Ok([wallet]));
     when(
       () => accountRepository.claimNext(
         seedFingerprint: any(named: 'seedFingerprint'),
@@ -121,11 +138,15 @@ void main() {
     expect(export.isReserved, isFalse);
     expect(export.markedAccount, isNull);
     verify(
-      () => getDefaultSeed.execute(environment: Environment.mainnet),
+      () => wallets.getWallets(
+        environment: Environment.mainnet,
+        onlyDefaults: true,
+        onlyBitcoin: true,
+      ),
     ).called(1);
     verify(
       () => accountRepository.claimNext(
-        seedFingerprint: seed.masterFingerprint,
+        seedFingerprint: fingerprint,
         coinType: 0,
       ),
     ).called(1);
@@ -155,7 +176,11 @@ void main() {
       startsWith('[5a3469b6/48h/1h/7h/2h]tpub'),
     );
     verify(
-      () => getDefaultSeed.execute(environment: Environment.testnet),
+      () => wallets.getWallets(
+        environment: Environment.testnet,
+        onlyDefaults: true,
+        onlyBitcoin: true,
+      ),
     ).called(1);
   });
 
@@ -169,7 +194,7 @@ void main() {
     );
     when(
       () => accountRepository.isReserved(
-        seedFingerprint: seed.masterFingerprint,
+        seedFingerprint: fingerprint,
         coinType: 0,
         account: 7,
       ),
@@ -199,7 +224,7 @@ void main() {
     final released =
         verify(
               () => accountRepository.releaseClaim(
-                seedFingerprint: seed.masterFingerprint,
+                seedFingerprint: fingerprint,
                 coinType: 0,
                 claim: captureAny(named: 'claim'),
               ),
@@ -249,7 +274,7 @@ void main() {
     final committed =
         verify(
               () => accountRepository.commitClaim(
-                seedFingerprint: seed.masterFingerprint,
+                seedFingerprint: fingerprint,
                 coinType: 0,
                 claim: captureAny(named: 'claim'),
               ),
@@ -277,7 +302,7 @@ void main() {
       var failed = false;
       when(
         () => accountRepository.claimNext(
-          seedFingerprint: seed.masterFingerprint,
+          seedFingerprint: fingerprint,
           coinType: 0,
         ),
       ).thenAnswer((_) async {
@@ -298,7 +323,7 @@ void main() {
       final committed =
           verify(
                 () => accountRepository.commitClaim(
-                  seedFingerprint: seed.masterFingerprint,
+                  seedFingerprint: fingerprint,
                   coinType: 0,
                   claim: captureAny(named: 'claim'),
                 ),
@@ -310,7 +335,11 @@ void main() {
 
   test('maps seed lookup errors to a settings failure', () async {
     when(
-      () => getDefaultSeed.execute(environment: any(named: 'environment')),
+      () => wallets.getWallets(
+        environment: any(named: 'environment'),
+        onlyDefaults: true,
+        onlyBitcoin: true,
+      ),
     ).thenThrow(Exception('missing seed'));
     when(() => getSettings.execute()).thenAnswer(
       (_) async => const SettingsEntity(

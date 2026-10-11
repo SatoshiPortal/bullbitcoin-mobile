@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/repositories/pending_bitcoin_transaction_repository.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -25,8 +25,13 @@ void main() {
       final unavailable = _draft('unavailable').copyWith(
         stage: PendingBitcoinTransactionStage.needsSignatures,
         psbt: 'cHNidP8=',
-        recipient: 'tb1qrecipient',
-        amount: '1000',
+        recipients: [
+          (
+            recipient: 'tb1qrecipient',
+            amount: '1000',
+            receivesRemainder: false,
+          ),
+        ],
         amountCurrencyCode: 'sats',
       );
       when(() => repository.watchWallet('wallet-id')).thenAnswer(
@@ -73,10 +78,8 @@ PendingBitcoinTransaction _draft(String id) => PendingBitcoinTransaction(
   id: id,
   walletId: 'wallet-id',
   stage: PendingBitcoinTransactionStage.draft,
-  recipient: '',
-  amount: '',
+  recipients: [(recipient: '', amount: '', receivesRemainder: false)],
   amountCurrencyCode: '',
-  sendMax: false,
   feeSelection: FeeSelection.fastest,
   replaceByFee: true,
   createdAt: DateTime.utc(2026, 8, 14),

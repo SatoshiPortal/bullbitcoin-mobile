@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -150,12 +150,9 @@ void main() {
         List<int>.generate(32, (index) => index + 1),
       );
       final rootXpub = bip32.Bip32Keys.fromSeed(seedBytes).neutered.toBase58();
-      final accountOneXpub = (await Bip32Derivation.getAccountXpub(
-        seedBytes: seedBytes,
-        scriptType: ScriptType.bip84,
-        network: Network.bitcoinMainnet,
-        accountIndex: 1,
-      )).toBase58();
+      final accountOneXpub = bip32.Bip32Keys.fromSeed(
+        seedBytes,
+      ).derivePath("m/84'/0'/1'").neutered.toBase58();
 
       for (final input in [
         '[deadbeef/84h/0h]$_xpub',
@@ -261,11 +258,9 @@ void main() {
       final seedBytes = Uint8List.fromList(
         List<int>.generate(32, (index) => index + 1),
       );
-      final localXpub = (await Bip32Derivation.getAccountXpub(
-        seedBytes: seedBytes,
-        scriptType: ScriptType.bip84,
-        network: Network.bitcoinMainnet,
-      )).toBase58();
+      final localXpub = bip32.Bip32Keys.fromSeed(
+        seedBytes,
+      ).derivePath("m/84'/0'/0'").neutered.toBase58();
       when(
         () => descriptorPort.parseBitcoinDescriptor(
           descriptor: input,
@@ -328,12 +323,9 @@ void main() {
         final seedBytes = Uint8List.fromList(
           List<int>.generate(32, (index) => index + 1),
         );
-        final accountOneXpub = (await Bip32Derivation.getAccountXpub(
-          seedBytes: seedBytes,
-          scriptType: ScriptType.bip84,
-          network: Network.bitcoinMainnet,
-          accountIndex: 1,
-        )).toBase58();
+        final accountOneXpub = bip32.Bip32Keys.fromSeed(
+          seedBytes,
+        ).derivePath("m/84'/0'/1'").neutered.toBase58();
         when(
           () => descriptorPort.parseBitcoinDescriptor(
             descriptor: input,

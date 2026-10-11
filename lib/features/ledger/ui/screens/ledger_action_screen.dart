@@ -642,9 +642,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case SignTransactionLedgerAction():
         context.pop(result);
       case RegisterWalletPolicyLedgerAction():
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          widget.action.getSuccessText(context),
+          message: widget.action.getSuccessText(context),
         );
         context.pop(true);
       case VerifyAddressLedgerAction():

@@ -2,6 +2,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'pending_bitcoin_transaction_model.freezed.dart';
 
+typedef PendingBitcoinRecipientModel = ({
+  String recipient,
+  String amount,
+  bool receivesRemainder,
+});
+
 @freezed
 abstract class PendingBitcoinTransactionModel
     with _$PendingBitcoinTransactionModel {
@@ -10,10 +16,9 @@ abstract class PendingBitcoinTransactionModel
     required String walletId,
     required String stage,
     String? label,
-    required String recipient,
-    required String amount,
+    required List<PendingBitcoinRecipientModel> recipients,
     required String amountCurrencyCode,
-    required bool sendMax,
+    @Default(false) bool isSweep,
     required String feeSelection,
     String? customFeeKind,
     int? customFeeValue,

@@ -56,7 +56,7 @@ class DeleteWalletUsecase {
     }
 
     for (final fingerprint in wallet.localSeedFingerprints.toSet()) {
-      await _deleteOrphanSeed(fingerprint, walletId);
+      await _deleteOrphanSeed(Fingerprint(fingerprint), walletId);
     }
 
     return const Ok(null);
@@ -80,7 +80,11 @@ class DeleteWalletUsecase {
         return;
     }
 
-    if (remaining.any((w) => w.localSeedFingerprints.contains(fingerprint))) return;
+    if (remaining.any(
+      (w) => w.localSeedFingerprints.contains(fingerprint.hex),
+    )) {
+      return;
+    }
 
     // Unconditional on the package side; the "still used by a wallet" guard
     // is this usecase's, and was applied above.

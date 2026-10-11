@@ -1,7 +1,8 @@
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -162,7 +163,7 @@ T? findPolicyNode<T extends BitcoinPolicyNode>(BitcoinPolicyNode node) {
   return null;
 }
 
-({String psbt, bool isFinalized}) signPsbt(
+Future<({String psbt, bool isFinalized})> signPsbt(
   BdkWalletDatasource datasource,
   String psbt, {
   required List<SignerDescriptorKeys> signers,
@@ -228,7 +229,7 @@ String buildUnsignedPsbt({
   bdk.Script? recipientScript,
   BitcoinPolicyPath? policyPath,
 }) {
-  final wallet = BdkFacade.createEphemeralDescriptorWallet(
+  final wallet = createFixtureDescriptorWallet(
     descriptor: descriptor,
     isTestnet: true,
   );
@@ -315,4 +316,149 @@ bdk.Transaction fundingTransaction(
       0,
     ]),
   );
+}
+
+/// A fixture-only signing wallet. Production owns private descriptor construction
+/// and signing inside Secrets; these tests isolate the public PSBT boundaries.
+({String descriptor, PublicBdkWalletModel publicWallet}) fixtureSigningWallet({
+  required String id,
+  required ScriptType scriptType,
+  required String mnemonic,
+  required int account,
+  required bool isTestnet,
+}) {
+  final network = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+  final words = bdk.Mnemonic.fromString(mnemonic: mnemonic);
+  final root = bdk.DescriptorSecretKey(
+    networkKind: network,
+    mnemonic: words,
+    password: null,
+  );
+  final path = bdk.DerivationPath(
+    path: "m/${scriptType.purpose}'/${isTestnet ? 1 : 0}'/$account'",
+  );
+  try {
+    final key = root.derive(path: path);
+    try {
+      final publicKey = key.asPublic();
+      try {
+        String descriptor(String key) => switch (scriptType) {
+          ScriptType.bip44 => 'pkh($key/<0;1>/*)',
+          ScriptType.bip49 => 'sh(wpkh($key/<0;1>/*))',
+          ScriptType.bip84 => 'wpkh($key/<0;1>/*)',
+        };
+        return (
+          descriptor: descriptor(key.toString()),
+          publicWallet: PublicBdkWalletModel(
+            id: id,
+            descriptor: descriptor(publicKey.toString()),
+            isTestnet: isTestnet,
+          ),
+        );
+      } finally {
+        publicKey.dispose();
+      }
+    } finally {
+      key.dispose();
+    }
+  } finally {
+    root.dispose();
+    path.dispose();
+    words.dispose();
+  }
+}
+
+extension FixturePsbtSigning on BdkWalletDatasource {
+  Future<({String psbt, bool isFinalized})> signPsbt(
+    String psbt, {
+    required ({String descriptor, PublicBdkWalletModel publicWallet}) wallet,
+    bool allowFinalizedForeignInputs = false,
+  }) => signPsbtWithDescriptor(
+    psbt,
+    descriptor: wallet.descriptor,
+    isTestnet: wallet.publicWallet.isTestnet,
+    foreignInputWallet: allowFinalizedForeignInputs
+        ? wallet.publicWallet
+        : null,
+  );
+
+  Future<({String psbt, bool isFinalized})> signPsbtWithDescriptor(
+    String psbtBase64, {
+    required String descriptor,
+    required bool isTestnet,
+    bool tryFinalize = true,
+    PublicBdkWalletModel? foreignInputWallet,
+  }) async {
+    final prepared = await preparePsbtForSigning(
+      psbtBase64,
+      foreignInputWallet: foreignInputWallet,
+    );
+    final psbt = bdk.Psbt(psbtBase64: prepared.psbt);
+    final wallet = createFixtureDescriptorWallet(
+      descriptor: descriptor,
+      isTestnet: isTestnet,
+    );
+    try {
+      wallet.sign(
+        psbt: psbt,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: false,
+          tryFinalize: false,
+          signWithTapInternalKey: prepared.signWithTapInternalKey,
+          allowGrinding: true,
+        ),
+      );
+      return completePsbtSigning(
+        originalPsbt: prepared.psbt,
+        signedPsbt: psbt.serialize(),
+        tryFinalize: tryFinalize,
+      );
+    } finally {
+      wallet.dispose();
+      psbt.dispose();
+    }
+  }
+}
+
+/// Expands private fixture descriptors without crossing the public app facade.
+bdk.Wallet createFixtureDescriptorWallet({
+  required String descriptor,
+  required bool isTestnet,
+}) {
+  final tuples = RegExp(r'<([0-9]+);([0-9]+)>');
+  final withoutChecksum = descriptor.split('#').first;
+  String expand(int branch) => withoutChecksum.replaceAllMapped(
+    tuples,
+    (match) =>
+        match.group(branch) ??
+        (throw const FormatException('Missing fixture branch')),
+  );
+  final network = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+  final external = bdk.Descriptor(descriptor: expand(1), networkKind: network);
+  try {
+    final internal = bdk.Descriptor(
+      descriptor: expand(2),
+      networkKind: network,
+    );
+    try {
+      final persister = bdk.Persister.newInMemory();
+      try {
+        return bdk.Wallet(
+          descriptor: external,
+          changeDescriptor: internal,
+          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+          persister: persister,
+          lookahead: 25,
+        );
+      } finally {
+        persister.dispose();
+      }
+    } finally {
+      internal.dispose();
+    }
+  } finally {
+    external.dispose();
+  }
 }

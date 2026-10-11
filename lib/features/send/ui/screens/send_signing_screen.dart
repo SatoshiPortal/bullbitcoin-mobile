@@ -1,17 +1,20 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_error.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullInfoCard,
+        Gap,
+        BullBorderedTile,
+        BullFadingLinearProgress,
+        BullButton,
+        BullText;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +49,7 @@ class SendSigningScreen extends StatelessWidget {
                     onPressed: signingActionActive
                         ? null
                         : () => _finishSigningLater(context),
-                    child: BBText(
+                    child: BullText(
                       context.loc.sendFinishLater,
                       style: context.font.bodyMedium,
                       color: context.appColors.secondary,
@@ -57,7 +60,7 @@ class SendSigningScreen extends StatelessWidget {
         ),
         body: Column(
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: signingActionActive,
               backgroundColor: context.appColors.background,
@@ -71,11 +74,11 @@ class SendSigningScreen extends StatelessWidget {
                   children: [
                     _SigningTransactionSummary(state: state),
                     const Gap(16),
-                    BorderedTappableTile(
+                    BullBorderedTile(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          BBText(
+                          BullText(
                             context.loc.sendAuthorization,
                             style: context.font.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w500,
@@ -83,10 +86,10 @@ class SendSigningScreen extends StatelessWidget {
                             color: context.appColors.secondary,
                           ),
                           const Gap(4),
-                          BBText(
+                          BullText(
                             describeSelectedBitcoinPolicyPath(
                               context,
-                              state.selectedWallet,
+                              state.selectedBitcoinWallet,
                               state,
                             ),
                             style: context.font.bodySmall,
@@ -144,7 +147,7 @@ class SendSigningScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBButton.big(
+                BullButton.big(
                   label: context.loc.sendEditTransaction,
                   onPressed: () => _confirmRestartSigning(context),
                   disabled: signingActionActive || state.isPendingSubmission,
@@ -186,17 +189,17 @@ class _SigningTransactionSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BorderedTappableTile(
+    return BullBorderedTile(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             state.formattedConfirmedAmountBitcoin,
             style: context.font.headlineMedium,
             color: context.appColors.secondary,
           ),
           const Gap(8),
-          BBText(
+          BullText(
             state.paymentRequestAddress,
             style: context.font.bodySmall,
             color: context.appColors.textMuted,
@@ -206,13 +209,13 @@ class _SigningTransactionSummary extends StatelessWidget {
           const Gap(8),
           Row(
             children: [
-              BBText(
+              BullText(
                 context.loc.sendNetworkFees,
                 style: context.font.bodySmall,
                 color: context.appColors.textMuted,
               ),
               const Spacer(),
-              BBText(
+              BullText(
                 state.formattedAbsoluteFees,
                 style: context.font.bodySmall,
                 color: context.appColors.secondary,

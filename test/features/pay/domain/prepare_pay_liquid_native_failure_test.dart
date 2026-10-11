@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -14,7 +14,7 @@ import 'package:bull_sdk/src/rust/frb_generated.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/secrets.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
@@ -48,14 +48,11 @@ void main() {
     when(() => metadata.fetch(walletId)).thenAnswer(
       (_) async => const WalletMetadataModel(
         id: walletId,
-        masterFingerprint: '73c5da0a',
-        xpubFingerprint: 'deadbeef',
+        network: Network.liquidTestnet,
+        signers: [],
         isEncryptedVaultTested: false,
         isPhysicalBackupTested: false,
-        xpub: '',
-        externalPublicDescriptor: 'descriptor',
-        internalPublicDescriptor: '',
-        signer: Signer.local,
+        publicDescriptor: 'descriptor',
         isDefault: false,
       ),
     );

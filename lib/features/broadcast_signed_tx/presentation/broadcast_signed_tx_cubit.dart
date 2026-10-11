@@ -102,12 +102,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           if (collectSignerResult) {
             _collectSignerResult(tx.data);
           } else {
-          if (!await _verifyAgainstOriginal(
-            tx.data,
-            isPsbt: tx.format == TxFormat.psbt,
-          )) {
-            return;
-          }
+            if (!await _verifyAgainstOriginal(
+              tx.data,
+              isPsbt: tx.format == TxFormat.psbt,
+            )) {
+              return;
+            }
 
             emit(state.copyWith(transaction: tx));
           }

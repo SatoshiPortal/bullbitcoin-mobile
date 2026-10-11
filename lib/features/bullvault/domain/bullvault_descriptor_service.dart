@@ -1,18 +1,18 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
+import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_key.dart';
-import 'package:bip32_keys/bip32_keys.dart' as bip32;
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:crypto/crypto.dart';
+import 'package:secrets/secrets.dart' show Secret, SecretExtension;
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 final class BullVaultDescriptorService {
   static final _branchPath = RegExp(r'^/<([0-9]+);([0-9]+)>/\*$');
@@ -21,70 +21,100 @@ final class BullVaultDescriptorService {
   final BitcoinDescriptorPort _descriptorPort;
   const BullVaultDescriptorService(this._descriptorPort);
 
-  BullVaultPolicy? withVerifiedMobileSeed(
+  Future<Result<BullVaultPolicy?, BullVaultFailure>> withVerifiedMobileSecret(
     BullVaultPolicy policy,
-    Seed seed, {
+    Secret secret, {
     String? passphrase,
-  }) {
-    final canonicalSeedBytes = _canonicalSeedBytes(seed);
-    final everydayMatchesCanonical = _matchesSeedIdentity(
+  }) async {
+    final bool everydayMatchesCanonical;
+    switch (await _matchesSecret(
       policy.everydayKey,
-      canonicalSeedBytes,
-    );
-    final suppliedPassphrase = passphrase;
-    final everydayMatchesPassphrase =
-        !everydayMatchesCanonical &&
-        suppliedPassphrase != null &&
-        suppliedPassphrase.isNotEmpty &&
-        seed is MnemonicSeed &&
-        _matchesSeedIdentity(
-          policy.everydayKey,
-          Uint8List.fromList(
-            bip39.Mnemonic.fromWords(
-              words: seed.mnemonicWords,
-              passphrase: suppliedPassphrase,
-            ).seed,
-          ),
-        );
+      secret,
+      policy.network,
+      passphrase: '',
+    )) {
+      case Ok(:final value):
+        everydayMatchesCanonical = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    var everydayMatchesPassphrase = false;
+    if (!everydayMatchesCanonical &&
+        passphrase != null &&
+        passphrase.isNotEmpty &&
+        secret.info.isMnemonic) {
+      switch (await _matchesSecret(
+        policy.everydayKey,
+        secret,
+        policy.network,
+        passphrase: passphrase,
+      )) {
+        case Ok(:final value):
+          everydayMatchesPassphrase = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
+    }
     final recoveryKey = policy.delayedMobileRecoveryKey;
-    final recoveryMatches = switch (recoveryKey) {
-      final BullVaultSignerKey recovery => _matchesSeedIdentity(
-        recovery,
-        canonicalSeedBytes,
+    if (recoveryKey != null) {
+      switch (await _matchesSecret(
+        recoveryKey,
+        secret,
+        policy.network,
+        passphrase: '',
+      )) {
+        case Ok(value: false):
+          return const Ok(null);
+        case Ok():
+          break;
+        case Err(:final failure):
+          return Err(failure);
+      }
+    } else if (!everydayMatchesCanonical && !everydayMatchesPassphrase) {
+      return const Ok(null);
+    }
+    return Ok(
+      policy.withEverydayOwnership(
+        SignerEntity.local,
+        requiresPassphrase: recoveryKey != null || !everydayMatchesCanonical,
       ),
-      null => false,
-    };
-    if (recoveryKey != null && !recoveryMatches) {
-      return null;
-    }
-    if (recoveryKey == null &&
-        !everydayMatchesCanonical &&
-        !everydayMatchesPassphrase) {
-      return null;
-    }
-    return policy.withEverydayOwnership(
-      SignerEntity.local,
-      requiresPassphrase: recoveryKey != null || !everydayMatchesCanonical,
     );
   }
 
-  bool matchesEverydaySeed(
+  Future<Result<bool, BullVaultFailure>> matchesEverydaySecret(
     BullVaultPolicy policy,
-    Seed seed, {
+    Secret secret, {
     String? passphrase,
-  }) {
-    final seedBytes = switch ((seed, passphrase)) {
-      (MnemonicSeed(:final mnemonicWords), final String value)
-          when value.isNotEmpty =>
-        Uint8List.fromList(
-          bip39.Mnemonic.fromWords(
-            words: mnemonicWords,
-            passphrase: value,
-          ).seed,
-        ),
-      _ => _canonicalSeedBytes(seed),
+  }) => _matchesSecret(
+    policy.everydayKey,
+    secret,
+    policy.network,
+    passphrase: passphrase ?? '',
+  );
+
+  Future<Result<bool, BullVaultFailure>> _matchesSecret(
+    BullVaultSignerKey signer,
+    Secret secret,
+    Network network, {
+    required String passphrase,
+  }) async {
+    final path = signer.accountKey.derivationPath;
+    if (path == null || (passphrase.isNotEmpty && !secret.info.isMnemonic)) {
+      return const Ok(false);
+    }
+    return switch (await secret.derive.account(
+      derivationPath: path,
+      network: network.bitcoin,
+      passphrase: passphrase,
+    )) {
+      Ok(:final value) => Ok(
+        value.fingerprint.hex ==
+                signer.accountKey.masterFingerprint.toLowerCase() &&
+            _canonicalXpub(value.xpub) ==
+                _canonicalXpub(signer.accountKey.xpub),
+      ),
+      Err() => const Err(BullVaultInvalidRecoveryFailure()),
     };
-    return _matchesSeedIdentity(policy.everydayKey, seedBytes);
   }
 
   BullVaultPolicy? recognizeStructure(String source, Network network) {
@@ -223,28 +253,6 @@ final class BullVaultDescriptorService {
       return false;
     }
   }
-
-  bool _matchesSeedBytes(BullVaultSignerKey signer, Uint8List seedBytes) {
-    final path = signer.accountKey.derivationPath;
-    if (path == null) return false;
-    return Bip32Derivation.seedMatchesXpub(
-      seedBytes: seedBytes,
-      derivationPath: path,
-      xpub: signer.accountKey.xpub,
-    );
-  }
-
-  bool _matchesSeedIdentity(BullVaultSignerKey signer, Uint8List seedBytes) =>
-      signer.accountKey.masterFingerprint.toLowerCase() ==
-          bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex.toLowerCase() &&
-      _matchesSeedBytes(signer, seedBytes);
-
-  Uint8List _canonicalSeedBytes(Seed seed) => switch (seed) {
-    MnemonicSeed(:final mnemonicWords) => Uint8List.fromList(
-      bip39.Mnemonic.fromWords(words: mnemonicWords).seed,
-    ),
-    BytesSeed(:final bytes) => bytes,
-  };
 
   bool matchesExistingWallet(Wallet wallet, BullVaultPolicy policy) =>
       _matchesExistingWallet(wallet, policy, requireOwnership: true);

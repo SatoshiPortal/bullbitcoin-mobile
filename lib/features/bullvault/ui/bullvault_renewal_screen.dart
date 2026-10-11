@@ -384,10 +384,8 @@ final class _RenewalReview extends StatelessWidget {
                   ? context.loc.bullVaultDays(remaining.inDays)
                   : remaining.inHours >= 1
                   ? context.loc.bullVaultHours(remaining.inHours)
-                  : remaining.inMinutes == 1
-                  ? context.loc.durationMinute('1')
-                  : context.loc.durationMinutes(
-                      (remaining.inSeconds / 60).ceil().toString(),
+                  : context.loc.bullVaultMinutes(
+                      (remaining.inSeconds / 60).ceil(),
                     ),
             ),
             style: context.font.bodyMedium?.copyWith(

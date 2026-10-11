@@ -28,9 +28,11 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -211,24 +213,18 @@ class BdkWalletDatasource {
     required String psbt,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-    return (String psbtBase64) {
-      final psbt = _parsePsbt(psbtBase64);
-      // The receiver signs its own inputs; the sender's inputs remain
-      // unsigned until the proposal is returned.
-      bdkWallet.sign(
-        psbt: psbt,
-        signOptions: bdk.SignOptions(
-          trustWitnessUtxo: true,
-          assumeHeight: null,
-          allowAllSighashes: false,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      return psbt.serialize();
-    };
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    try {
+      final parsed = _parsePsbt(psbt);
+      try {
+        bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
+        return parsed.serialize();
+      } finally {
+        parsed.dispose();
+      }
+    } finally {
+      bdkWallet.dispose();
+    }
   }
 
   /// Trusts the witness UTXO a payjoin input carries, and finalizes nothing:
@@ -777,64 +773,36 @@ class BdkWalletDatasource {
 
   // 25000 - 988
 
-  Future<({String psbt, bool isFinalized})> signPsbt(
-    String unsignedPsbt, {
-    required PrivateBdkWalletModel wallet,
-    bool allowFinalizedForeignInputs = false,
+  Future<({String psbt, bool signWithTapInternalKey})> preparePsbtForSigning(
+    String psbtBase64, {
+    PublicBdkWalletModel? foreignInputWallet,
   }) async {
-    final psbt = _parsePsbt(unsignedPsbt);
+    final psbt = _parsePsbt(psbtBase64);
     try {
       final inputs = psbt.input();
       _validatePartialSignatures(
-        unsignedPsbt,
+        psbtBase64,
         inputs: inputs,
-        allowFinalizedTaprootInputs: allowFinalizedForeignInputs,
+        allowFinalizedTaprootInputs: foreignInputWallet != null,
       );
-      if (!allowFinalizedForeignInputs) {
+      if (foreignInputWallet == null) {
         _rejectFinalizedInputs(inputs);
+      } else {
+        final wallet = await BdkFacade.createWallet(foreignInputWallet);
+        try {
+          _rejectFinalizedWalletInputs(psbt, inputs, wallet);
+        } finally {
+          wallet.dispose();
+        }
       }
-      final selectedUnsignedPsbt = _removeFixedBip341NumsKeyOrigins(
-        unsignedPsbt,
-        inputs: inputs,
-        outputs: psbt.output(),
+      return (
+        psbt: _removeFixedBip341NumsKeyOrigins(
+          psbtBase64,
+          inputs: inputs,
+          outputs: psbt.output(),
+        ),
+        signWithTapInternalKey: _shouldSignWithTapInternalKey(inputs),
       );
-      final signWithTapInternalKey = _shouldSignWithTapInternalKey(inputs);
-      final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-      try {
-        if (allowFinalizedForeignInputs) {
-          _rejectFinalizedWalletInputs(psbt, inputs, bdkWallet);
-        }
-        bdkWallet.sign(
-          psbt: psbt,
-          signOptions: bdk.SignOptions(
-            trustWitnessUtxo: true,
-            assumeHeight: null,
-            allowAllSighashes: false,
-            tryFinalize: false,
-            signWithTapInternalKey: signWithTapInternalKey,
-            allowGrinding: true,
-          ),
-        );
-        final signed = inputs.every(_isFinalizedInput)
-            ? (psbt: psbt.serialize(), isFinalized: true)
-            : _finalizeCompletePsbt(psbt);
-        if (!signed.isFinalized) {
-          log.info('Signed PSBT is not finalized');
-        } else {
-          log.info('Signed PSBT is finalized');
-        }
-        return (
-          psbt: signed.isFinalized
-              ? signed.psbt
-              : _restoreSelectedTaprootMetadata(
-                  originalPsbtBase64: selectedUnsignedPsbt,
-                  signedPsbtBase64: signed.psbt,
-                ),
-          isFinalized: signed.isFinalized,
-        );
-      } finally {
-        bdkWallet.dispose();
-      }
     } finally {
       psbt.dispose();
     }
@@ -1260,62 +1228,32 @@ class BdkWalletDatasource {
     }
   }
 
-  /// Partially signs a PSBT with private keys in the supplied descriptors.
-  ///
-  /// The descriptors and wallet are kept in memory only.
-  ({String psbt, bool isFinalized}) signPsbtWithDescriptor(
-    String psbtBase64, {
-    required String descriptor,
-    required bool isTestnet,
+  ({String psbt, bool isFinalized}) completePsbtSigning({
+    required String originalPsbt,
+    required String signedPsbt,
     bool tryFinalize = true,
   }) {
-    final psbt = _parsePsbt(psbtBase64);
+    final psbt = _parsePsbt(signedPsbt);
     try {
-      final inputs = psbt.input();
-      _validatePartialSignatures(psbtBase64, inputs: inputs);
-      _rejectFinalizedInputs(inputs);
-      final selectedUnsignedPsbt = _removeFixedBip341NumsKeyOrigins(
-        psbtBase64,
-        inputs: inputs,
+      final signed = psbt.input().every(_isFinalizedInput)
+          ? (psbt: psbt.serialize(), isFinalized: true)
+          : tryFinalize
+          ? _finalizeCompletePsbt(psbt)
+          : (psbt: psbt.serialize(), isFinalized: false);
+      final normalized = _removeFixedBip341NumsKeyOrigins(
+        signed.psbt,
+        inputs: psbt.input(),
         outputs: psbt.output(),
       );
-      final signWithTapInternalKey = _shouldSignWithTapInternalKey(inputs);
-      final wallet = BdkFacade.createEphemeralDescriptorWallet(
-        descriptor: descriptor,
-        isTestnet: isTestnet,
+      return (
+        psbt: signed.isFinalized
+            ? normalized
+            : _restoreSelectedTaprootMetadata(
+                originalPsbtBase64: originalPsbt,
+                signedPsbtBase64: normalized,
+              ),
+        isFinalized: signed.isFinalized,
       );
-      try {
-        wallet.sign(
-          psbt: psbt,
-          signOptions: bdk.SignOptions(
-            trustWitnessUtxo: true,
-            assumeHeight: null,
-            allowAllSighashes: false,
-            tryFinalize: false,
-            signWithTapInternalKey: signWithTapInternalKey,
-            allowGrinding: true,
-          ),
-        );
-        final signed = tryFinalize
-            ? _finalizeCompletePsbt(psbt)
-            : (psbt: psbt.serialize(), isFinalized: false);
-        final normalizedSignedPsbt = _removeFixedBip341NumsKeyOrigins(
-          signed.psbt,
-          inputs: psbt.input(),
-          outputs: psbt.output(),
-        );
-        return (
-          psbt: signed.isFinalized
-              ? normalizedSignedPsbt
-              : _restoreSelectedTaprootMetadata(
-                  originalPsbtBase64: selectedUnsignedPsbt,
-                  signedPsbtBase64: normalizedSignedPsbt,
-                ),
-          isFinalized: signed.isFinalized,
-        );
-      } finally {
-        wallet.dispose();
-      }
     } finally {
       psbt.dispose();
     }

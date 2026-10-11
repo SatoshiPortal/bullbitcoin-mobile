@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/locator.dart';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -24,14 +25,15 @@ import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_signer_input.d
 import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/import_qr_device/public/import_qr_device_facade.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
-import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBorderedTile,
         BullButton,
+        BullShapesX,
         BullInfoCard,
-        BullInputText,
+        BullSecretTextInput,
         BullPasteInput,
         BullSwitch,
         Gap;
@@ -357,7 +359,7 @@ final class _BullVaultSetupIllustration extends StatelessWidget {
     decoration: BoxDecoration(
       color: context.appColors.surfaceContainer,
       border: Border.all(color: context.appColors.border),
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
     ),
     child: FittedBox(
       fit: BoxFit.scaleDown,
@@ -856,36 +858,18 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
           ),
         ),
         const Gap(24),
-        Text(
-          context.loc.bullVaultPassphraseLabel,
-          style: context.font.titleSmall,
-        ),
-        const Gap(8),
-        BullInputText(
-          value: _passphrase,
+        BullSecretTextInput(
+          label: context.loc.bullVaultPassphraseLabel,
+          showLabel: context.loc.passphraseShow,
+          hideLabel: context.loc.passphraseHide,
           onChanged: (value) => _update(passphrase: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
         ),
         const Gap(16),
-        Text(
-          context.loc.bullVaultConfirmPassphraseLabel,
-          style: context.font.titleSmall,
-        ),
-        const Gap(8),
-        BullInputText(
-          value: _confirmation,
+        BullSecretTextInput(
+          label: context.loc.bullVaultConfirmPassphraseLabel,
+          showLabel: context.loc.passphraseShow,
+          hideLabel: context.loc.passphraseHide,
           onChanged: (value) => _update(confirmation: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
         ),
         if (mismatch) ...[
           const Gap(8),
@@ -1221,10 +1205,20 @@ Future<void> _setUpRecoverBull(
   BuildContext context,
   BullVaultOnboardingState state,
 ) async {
-  final result = state.result!;
-  final fingerprint = result.record.mobileSeedFingerprint;
+  final result = state.result;
+  final value = result?.record.mobileSeedFingerprint;
+  if (result == null || value == null) return;
+  final fingerprint = Fingerprint.tryParse(value);
   if (fingerprint == null) return;
-  await RecoverBullFacade.openSetup(context, seedFingerprint: fingerprint);
+  await locator<RecoverBullFeature>().openSetup(
+    context,
+    backupContext: VaultContext(
+      fingerprint: fingerprint,
+      network: result.policy.network.isTestnet
+          ? BitcoinNetwork.testnet
+          : BitcoinNetwork.mainnet,
+    ),
+  );
   if (context.mounted) {
     await context.read<BullVaultOnboardingCubit>().refreshMobileBackupStatus();
   }

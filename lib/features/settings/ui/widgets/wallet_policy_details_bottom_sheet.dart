@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullBorderedTile;
 import 'package:flutter/material.dart';
 
 class WalletPolicyDetailsBottomSheet extends StatelessWidget {
@@ -92,7 +91,7 @@ class _SpendingPath extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BorderedTappableTile(
+    return BullBorderedTile(
       backgroundColor: context.appColors.surfaceContainerHighest,
       child: Column(
         crossAxisAlignment: .stretch,

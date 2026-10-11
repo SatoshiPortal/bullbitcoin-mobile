@@ -1,4 +1,6 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
@@ -34,16 +36,19 @@ const _settings = SettingsEntity(
 );
 
 Wallet _wallet({bool tested = false}) => Wallet(
+  publicDescriptor: '',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '73c5da0a',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   origin: 'w1',
-  masterFingerprint: '73c5da0a',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
   confirmedBalanceSat: BigInt.zero,
   isPhysicalBackupTested: tested,

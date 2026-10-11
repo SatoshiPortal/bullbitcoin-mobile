@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:path_provider/path_provider.dart';
@@ -129,142 +130,7 @@ class BdkFacade {
     }
   }
 
-  static Future<bdk.Wallet> createPrivateWallet(WalletModel walletModel) async {
-    if (walletModel is! PrivateBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
-    }
-
-    final network = walletModel.isTestnet
-        ? bdk.Network.testnet
-        : bdk.Network.bitcoin;
-    final networkKind = walletModel.isTestnet
-        ? bdk.NetworkKind.test
-        : bdk.NetworkKind.main;
-
-    final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
-    final secretKey = bdk.DescriptorSecretKey(
-      networkKind: networkKind,
-      mnemonic: bdkMnemonic,
-      password: walletModel.passphrase,
-    );
-
-    late final bdk.Descriptor external;
-    late final bdk.Descriptor internal;
-
-    if (walletModel.account == 0) {
-      switch (walletModel.scriptType) {
-        case ScriptType.bip84:
-          external = bdk.Descriptor.newBip84(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.external_,
-            networkKind: networkKind,
-          );
-          internal = bdk.Descriptor.newBip84(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.internal,
-            networkKind: networkKind,
-          );
-        case ScriptType.bip49:
-          external = bdk.Descriptor.newBip49(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.external_,
-            networkKind: networkKind,
-          );
-          internal = bdk.Descriptor.newBip49(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.internal,
-            networkKind: networkKind,
-          );
-        case ScriptType.bip44:
-          external = bdk.Descriptor.newBip44(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.external_,
-            networkKind: networkKind,
-          );
-          internal = bdk.Descriptor.newBip44(
-            secretKey: secretKey,
-            keychainKind: bdk.KeychainKind.internal,
-            networkKind: networkKind,
-          );
-      }
-    } else {
-      final path = bdk.DerivationPath(
-        path:
-            "m/${walletModel.scriptType.purpose}'/"
-            "${walletModel.isTestnet ? 1 : 0}'/${walletModel.account}'",
-      );
-      final accountKey = secretKey.derive(path: path);
-      try {
-        external = bdk.Descriptor(
-          descriptor: _singleSignatureDescriptor(
-            walletModel.scriptType,
-            '$accountKey/0/*',
-          ),
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor(
-          descriptor: _singleSignatureDescriptor(
-            walletModel.scriptType,
-            '$accountKey/1/*',
-          ),
-          networkKind: networkKind,
-        );
-      } finally {
-        accountKey.dispose();
-        path.dispose();
-      }
-    }
-
-    // Get the database path
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-
-    try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
-      // Use load if database exists, otherwise create new
-      final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: dbPersister,
-        lookahead: _lookahead,
-      );
-    }
-  }
-
-  static String _singleSignatureDescriptor(ScriptType scriptType, String key) =>
-      switch (scriptType) {
-        ScriptType.bip44 => 'pkh($key)',
-        ScriptType.bip49 => 'sh(wpkh($key))',
-        ScriptType.bip84 => 'wpkh($key)',
-      };
-
-  /// Creates an in-memory wallet from arbitrary Bitcoin descriptors.
-  ///
-  /// Callers must never persist or log descriptors containing private keys.
+  /// Creates an in-memory wallet from public Bitcoin descriptors.
   static bdk.Wallet createEphemeralDescriptorWallet({
     required String descriptor,
     required bool isTestnet,
@@ -717,12 +583,6 @@ class BdkFacade {
     required bdk.NetworkKind networkKind,
   }) {
     final withoutChecksum = descriptor.split('#').first;
-    if (withoutChecksum.contains('xprv') || withoutChecksum.contains('tprv')) {
-      return _expandPrivateTwoPathDescriptor(
-        descriptor: withoutChecksum,
-        networkKind: networkKind,
-      );
-    }
     final multipath = bdk.Descriptor(
       descriptor: withoutChecksum,
       networkKind: networkKind,
@@ -752,44 +612,6 @@ class BdkFacade {
       }
     } finally {
       multipath.dispose();
-    }
-  }
-
-  static ({String external, String internal}) _expandPrivateTwoPathDescriptor({
-    required String descriptor,
-    required bdk.NetworkKind networkKind,
-  }) {
-    final multipath = RegExp(r'<([0-9]+);([0-9]+)>');
-    if (!multipath.hasMatch(descriptor)) {
-      throw const FormatException(
-        'Descriptor must define receiving and change paths',
-      );
-    }
-
-    String expand(int branch) =>
-        descriptor.replaceAllMapped(multipath, (match) => match.group(branch)!);
-
-    final external = bdk.Descriptor(
-      descriptor: expand(1),
-      networkKind: networkKind,
-    );
-    try {
-      external.sanityCheck();
-      final internal = bdk.Descriptor(
-        descriptor: expand(2),
-        networkKind: networkKind,
-      );
-      try {
-        internal.sanityCheck();
-        return (
-          external: external.toStringWithSecret(),
-          internal: internal.toStringWithSecret(),
-        );
-      } finally {
-        internal.dispose();
-      }
-    } finally {
-      external.dispose();
     }
   }
 

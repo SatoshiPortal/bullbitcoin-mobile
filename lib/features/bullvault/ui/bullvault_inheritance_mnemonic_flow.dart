@@ -1,22 +1,21 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
-import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
-import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_mnemonic_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInfoCard, BullSnackBar, BullScreenPrivacyGate;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:secrets/secrets.dart' show SecretWidgets;
 import 'package:screen_privacy/screen_privacy.dart';
-
-part '../presentation/bullvault_inheritance_mnemonic_cubit.dart';
 
 /// This flow keeps mnemonic material private and returns only the account key.
 Future<String?> showBullVaultInheritanceMnemonic(
@@ -42,31 +41,25 @@ final class _GeneratedInheritanceMnemonicScreen extends StatefulWidget {
 }
 
 final class _GeneratedInheritanceMnemonicScreenState
-    extends State<_GeneratedInheritanceMnemonicScreen>
-    with PrivacyScreen {
-  late final _InheritanceMnemonicCubit _cubit = _InheritanceMnemonicCubit(
-    widget.network,
-  );
-  late final Future<void> _privacyFuture = _protectAndGenerate();
+    extends State<_GeneratedInheritanceMnemonicScreen> {
+  late final _cubit = locator<BullVaultInheritanceMnemonicCubit>();
+  late final Future<Result<SecretWidgets, BullVaultFailure>> _generation =
+      _cubit.generate();
 
-  Future<void> _protectAndGenerate() async {
-    await enableScreenPrivacy();
-    if (!mounted) return;
-    _cubit.generate();
-  }
-
-  Future<void> _verify() async {
+  Future<void> _verify(SecretWidgets mnemonic) async {
     final verified = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => VerifyMnemonicScreen.forMnemonic(
-          mnemonic: _cubit._words,
+        builder: (context) => VerifyMnemonicScreen.forMnemonicWidgets(
+          mnemonic: mnemonic,
           title: context.loc.bullVaultInheritanceMnemonicVerifyTitle,
           onVerified: () => Navigator.of(context).pop(true),
         ),
       ),
     );
     if (!mounted || verified != true) return;
-    switch (_cubit.derive(_cubit._words)) {
+    final result = await _cubit.acceptGenerated(widget.network);
+    if (!mounted) return;
+    switch (result) {
       case Ok(:final value):
         Navigator.of(context).pop(value);
       case Err(:final failure):
@@ -77,39 +70,35 @@ final class _GeneratedInheritanceMnemonicScreenState
   @override
   void dispose() {
     unawaited(_cubit.close());
-    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<void>(
-    future: _privacyFuture,
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done &&
-          !snapshot.hasError &&
-          _cubit.state == null) {
-        return ShowMnemonicScreen.forMnemonic(
-          mnemonic: _cubit._words,
-          title: context.loc.bullVaultInheritanceMnemonicShowTitle,
-          notice: context.loc.bullVaultInheritanceMnemonicWarning,
-          onContinue: _verify,
-        );
-      }
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.bullVaultInheritanceMnemonicShowTitle),
-        ),
-        body: Center(
-          child: snapshot.connectionState != ConnectionState.done
-              ? const CircularProgressIndicator()
-              : Text(
-                  _cubit.state?.toTranslated(context) ??
-                      context.loc.oopsSomethingWentWrong,
-                ),
-        ),
+  Widget build(BuildContext context) =>
+      FutureBuilder<Result<SecretWidgets, BullVaultFailure>>(
+        future: _generation,
+        builder: (context, snapshot) {
+          if (snapshot.data case Ok(:final value)) {
+            return ShowMnemonicScreen.forMnemonicWidgets(
+              mnemonic: value,
+              title: context.loc.bullVaultInheritanceMnemonicShowTitle,
+              notice: context.loc.bullVaultInheritanceMnemonicWarning,
+              onContinue: () => _verify(value),
+            );
+          }
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(context.loc.bullVaultInheritanceMnemonicShowTitle),
+            ),
+            body: Center(
+              child: switch (snapshot.data) {
+                Err(:final failure) => Text(failure.toTranslated(context)),
+                _ => const CircularProgressIndicator(),
+              },
+            ),
+          );
+        },
       );
-    },
-  );
 }
 
 final class _ImportInheritanceMnemonicScreen extends StatefulWidget {
@@ -125,15 +114,8 @@ final class _ImportInheritanceMnemonicScreen extends StatefulWidget {
 final class _ImportInheritanceMnemonicScreenState
     extends State<_ImportInheritanceMnemonicScreen>
     with PrivacyScreen {
-  late final _InheritanceMnemonicCubit _cubit = _InheritanceMnemonicCubit(
-    widget.network,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
+  late final _cubit = locator<BullVaultInheritanceMnemonicCubit>();
+  late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override
   void dispose() {
@@ -142,8 +124,14 @@ final class _ImportInheritanceMnemonicScreenState
     super.dispose();
   }
 
-  void _submitMnemonic(Mnemonic mnemonic) {
-    switch (_cubit.derive(mnemonic.words)) {
+  Future<void> _submitMnemonic(Mnemonic mnemonic) async {
+    final result = await _cubit.import(
+      mnemonic.words,
+      widget.network,
+      language: mnemonic.language,
+    );
+    if (!mounted) return;
+    switch (result) {
       case Ok(:final value):
         Navigator.of(context).pop(value);
       case Err():
@@ -152,30 +140,40 @@ final class _ImportInheritanceMnemonicScreenState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.loc.bullVaultInheritanceImportMnemonic)),
-    body: SafeArea(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: BullInfoCard(
-              description: context.loc.bullVaultInheritanceMnemonicWarning,
-              tagColor: context.appColors.warning,
-              bgColor: context.appColors.warningContainer,
+  Widget build(BuildContext context) => BullScreenPrivacyGate(
+    protection: _privacyFuture,
+    unavailableMessage: context.loc.screenPrivacyUnavailable,
+    retryLabel: context.loc.retry,
+    onRetry: () => setState(() {
+      _privacyFuture = enableScreenPrivacy();
+    }),
+    builder: (context) => Scaffold(
+      appBar: AppBar(
+        title: Text(context.loc.bullVaultInheritanceImportMnemonic),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: BullInfoCard(
+                description: context.loc.bullVaultInheritanceMnemonicWarning,
+                tagColor: context.appColors.warning,
+                bgColor: context.appColors.warningContainer,
+              ),
             ),
-          ),
-          Expanded(
-            child: MnemonicWidget(
-              initialLength: bip39.MnemonicLength.words12,
-              allowPassphrase: false,
-              allowLabel: false,
-              onSubmit: _submitMnemonic,
-              submitLabel: context.loc.continueButton,
-              externalError: _cubit.state?.toTranslated(context),
+            Expanded(
+              child: MnemonicWidget(
+                initialLength: bip39.MnemonicLength.words12,
+                allowPassphrase: false,
+                allowLabel: false,
+                onSubmit: _submitMnemonic,
+                submitLabel: context.loc.continueButton,
+                externalError: _cubit.state?.toTranslated(context),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );

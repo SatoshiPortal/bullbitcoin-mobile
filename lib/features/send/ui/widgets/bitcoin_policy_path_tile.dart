@@ -1,12 +1,12 @@
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_path_bottom_sheet.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullBorderedTile;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,10 +36,10 @@ class BitcoinPolicyPathTile extends StatelessWidget {
         ? context.loc.walletPolicyHashPreimage
         : describeSelectedBitcoinPolicyPath(
             context,
-            state.selectedWallet,
+            state.selectedBitcoinWallet,
             state,
           );
-    return BorderedTappableTile(
+    return BullBorderedTile(
       onTap: () => BlurredBottomSheet.show<void>(
         context: context,
         isDismissible: false,

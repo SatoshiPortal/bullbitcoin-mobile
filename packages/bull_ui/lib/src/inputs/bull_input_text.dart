@@ -236,14 +236,17 @@ class _BullInputTextState extends State<BullInputText> {
               )
             : null,
         suffixIcon: widget.rightIcon != null
-            ? widget.onRightTap == null
-                  ? widget.rightIcon
-                  : IconButton(
-                      padding: const EdgeInsets.all(4),
-                      icon: widget.rightIcon!,
-                      onPressed: () => widget.onRightTap?.call(),
-                       onLongPress: () {},
-                    )
+            ? GestureDetector(
+                // Keep suffix long presses out of the text selection gesture.
+                onLongPress: () {},
+                child: widget.onRightTap == null
+                    ? widget.rightIcon!
+                    : IconButton(
+                        padding: const EdgeInsets.all(4),
+                        icon: widget.rightIcon!,
+                        onPressed: () => widget.onRightTap?.call(),
+                      ),
+              )
             : null,
         border: _getBorder(context),
         enabledBorder: _getBorder(context),

@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_reposit
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_pending_bitcoin_submission_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,12 +36,20 @@ void main() {
 
   tearDown(() => database.close());
 
-  test('stores and replaces normalized inputs and policy choices', () async {
-    final transaction = _transaction();
+  test('stores and replaces recipients, inputs and policy choices', () async {
+    final transaction = _transaction().copyWith(
+      isSweep: true,
+      recipients: [
+        (recipient: 'tb1qfirst', amount: '10000', receivesRemainder: false),
+        (recipient: 'tb1qsecond', amount: '40000', receivesRemainder: true),
+      ],
+    );
 
     await datasource.save(transaction);
     final stored = await datasource.get(transaction.id);
 
+    expect(stored?.recipients, transaction.recipients);
+    expect(stored?.isSweep, isTrue);
     expect(stored?.selectedOutpoints, transaction.selectedOutpoints);
     expect(stored?.policyChoices, transaction.policyChoices);
 
@@ -57,6 +65,12 @@ void main() {
     );
     final updated = await datasource.get(transaction.id);
 
+    expect(updated?.recipients, _transaction().recipients);
+    expect(updated?.isSweep, isFalse);
+    expect(
+      await database.select(database.sendTransactionRecipients).get(),
+      hasLength(1),
+    );
     expect(updated?.selectedOutpoints, {'replacement:3'});
     expect(updated?.policyChoices, {
       'replacement-node': [2],
@@ -232,10 +246,10 @@ PendingBitcoinTransactionModel _transaction({
   walletId: 'wallet-id',
   stage: 'needsSignatures',
   label: 'Shared payment',
-  recipient: 'tb1qrecipient',
-  amount: '50000',
+  recipients: [
+    (recipient: 'tb1qrecipient', amount: '50000', receivesRemainder: false),
+  ],
   amountCurrencyCode: 'sats',
-  sendMax: false,
   feeSelection: 'fastest',
   replaceByFee: true,
   selectedOutpoints: selectedOutpoints,

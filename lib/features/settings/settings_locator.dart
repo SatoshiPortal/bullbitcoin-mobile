@@ -207,7 +207,8 @@ class SettingsLocator {
       return SigningKeyExportCubit(
         exportSigningKeyUsecase: ExportSigningKeyUsecase(
           accountSession,
-          getDefaultSeedUsecase: locator(),
+          walletRepository: locator(),
+          secrets: locator(),
           getSettingsUsecase: locator(),
         ),
         releaseSigningKeyAccountUsecase: ReleaseSigningKeyAccountUsecase(

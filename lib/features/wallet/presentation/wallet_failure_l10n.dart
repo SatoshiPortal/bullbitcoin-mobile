@@ -32,6 +32,8 @@ extension WalletFailureL10n on WalletFailure {
     WalletInsufficientFundsFailure() ||
     WalletConsolidationRequiredFailure() ||
     WalletTransactionBuildFailure() ||
+    Bip48AccountAllocationFailure() ||
+    BitcoinSigningFailure() ||
     WalletUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

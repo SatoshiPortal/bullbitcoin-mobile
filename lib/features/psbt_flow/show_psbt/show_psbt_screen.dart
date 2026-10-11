@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_w
 import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -44,7 +44,7 @@ class ShowPsbtScreen extends StatelessWidget {
                   ),
                   const Gap(16),
                 ] else ...[
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.psbtFlowCopyPsbt,
                     onPressed: () async {
                       await Clipboard.setData(ClipboardData(text: psbt));
@@ -62,7 +62,7 @@ class ShowPsbtScreen extends StatelessWidget {
                   ),
                   const Gap(16),
                   Builder(
-                    builder: (buttonContext) => BBButton.small(
+                    builder: (buttonContext) => BullButton.small(
                       label: context.loc.psbtFlowSharePsbt,
                       onPressed: () => _sharePsbt(buttonContext),
                       bgColor: context.appColors.secondary,
@@ -153,7 +153,7 @@ class ShowPsbtScreen extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: BBButton.big(
+          child: BullButton.big(
             label: context.loc.importSignedPsbtTitle,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,

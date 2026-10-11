@@ -17201,5 +17201,14 @@
   "@bullVaultRestoreCompleteTitle": {},
   "@bullVaultRestoreMobileAvailable": {},
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
-  "@bullVaultRestoreHardwareSetup": {}
+  "@bullVaultRestoreHardwareSetup": {},
+  "bullVaultMinutes": "{count, plural, one{1 minute} other{{count} minutes}}",
+  "@bullVaultMinutes": {
+    "description": "Time remaining until BullVault recovery in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

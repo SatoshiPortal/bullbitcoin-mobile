@@ -2023,144 +2023,6 @@
       "references": [],
       "type": "table",
       "data": {
-        "name": "prices",
-        "was_declared_in_moor": false,
-        "columns": [
-          {
-            "name": "id",
-            "getter_name": "id",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "PRIMARY KEY AUTOINCREMENT"
-            },
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [
-              "auto-increment"
-            ]
-          },
-          {
-            "name": "from_currency",
-            "getter_name": "fromCurrency",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "to_currency",
-            "getter_name": "toCurrency",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "interval",
-            "getter_name": "interval",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "market_price",
-            "getter_name": "marketPrice",
-            "moor_type": "double",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "price",
-            "getter_name": "price",
-            "moor_type": "double",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "price_currency",
-            "getter_name": "priceCurrency",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "precision",
-            "getter_name": "precision",
-            "moor_type": "int",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "index_price",
-            "getter_name": "indexPrice",
-            "moor_type": "double",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "user_price",
-            "getter_name": "userPrice",
-            "moor_type": "double",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "created_at",
-            "getter_name": "createdAt",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": [],
-        "unique_keys": [
-          [
-            "from_currency",
-            "to_currency",
-            "interval",
-            "created_at"
-          ]
-        ]
-      }
-    },
-    {
-      "id": 17,
-      "references": [],
-      "type": "table",
-      "data": {
         "name": "frozen_utxos",
         "was_declared_in_moor": false,
         "columns": [
@@ -2206,7 +2068,7 @@
       }
     },
     {
-      "id": 18,
+      "id": 17,
       "references": [],
       "type": "table",
       "data": {
@@ -2243,7 +2105,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 18,
       "references": [],
       "type": "table",
       "data": {
@@ -2704,7 +2566,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 19,
       "references": [
         1
       ],
@@ -2754,26 +2616,6 @@
             "dsl_features": []
           },
           {
-            "name": "recipient",
-            "getter_name": "recipient",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "amount",
-            "getter_name": "amount",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "amount_currency_code",
             "getter_name": "amountCurrencyCode",
             "moor_type": "string",
@@ -2784,16 +2626,16 @@
             "dsl_features": []
           },
           {
-            "name": "send_max",
-            "getter_name": "sendMax",
+            "name": "is_sweep",
+            "getter_name": "isSweep",
             "moor_type": "bool",
             "nullable": false,
             "customConstraints": null,
-            "defaultConstraints": "CHECK (\"send_max\" IN (0, 1))",
+            "defaultConstraints": "CHECK (\"is_sweep\" IN (0, 1))",
             "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"send_max\" IN (0, 1))"
+              "sqlite": "CHECK (\"is_sweep\" IN (0, 1))"
             },
-            "default_dart": null,
+            "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
           },
@@ -2921,9 +2763,85 @@
       }
     },
     {
+      "id": 20,
+      "references": [
+        19
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_recipients",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recipient",
+            "getter_name": "recipient",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount",
+            "getter_name": "amount",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "receives_remainder",
+            "getter_name": "receivesRemainder",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"receives_remainder\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"receives_remainder\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "position"
+        ]
+      }
+    },
+    {
       "id": 21,
       "references": [
-        20
+        19
       ],
       "type": "table",
       "data": {
@@ -2976,7 +2894,7 @@
     {
       "id": 22,
       "references": [
-        20
+        19
       ],
       "type": "table",
       "data": {
@@ -3280,11 +3198,11 @@
     {
       "id": 25,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_request_id",
         "sql": null,
         "unique": true,
@@ -3299,11 +3217,11 @@
     {
       "id": 26,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_local_status",
         "sql": null,
         "unique": false,
@@ -3318,11 +3236,11 @@
     {
       "id": 27,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_source_wallet",
         "sql": null,
         "unique": false,
@@ -3337,11 +3255,11 @@
     {
       "id": 28,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_destination_wallet",
         "sql": null,
         "unique": false,
@@ -3356,11 +3274,11 @@
     {
       "id": 29,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_bitcoin_txid",
         "sql": null,
         "unique": false,
@@ -3375,11 +3293,11 @@
     {
       "id": 30,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_liquid_txid",
         "sql": null,
         "unique": false,
@@ -3394,11 +3312,11 @@
     {
       "id": 31,
       "references": [
-        19
+        18
       ],
       "type": "index",
       "data": {
-        "on": 19,
+        "on": 18,
         "name": "order_swaps_local_payin_txid",
         "sql": null,
         "unique": false,
@@ -3413,11 +3331,11 @@
     {
       "id": 32,
       "references": [
-        20
+        19
       ],
       "type": "index",
       "data": {
-        "on": 20,
+        "on": 19,
         "name": "send_transactions_wallet",
         "sql": null,
         "unique": false,
@@ -3432,11 +3350,11 @@
     {
       "id": 33,
       "references": [
-        20
+        19
       ],
       "type": "index",
       "data": {
-        "on": 20,
+        "on": 19,
         "name": "send_transactions_updated_at",
         "sql": null,
         "unique": false,
@@ -3595,15 +3513,6 @@
       ]
     },
     {
-      "name": "prices",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"prices\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"from_currency\" TEXT NOT NULL, \"to_currency\" TEXT NOT NULL, \"interval\" TEXT NOT NULL, \"market_price\" REAL NULL, \"price\" REAL NULL, \"price_currency\" TEXT NULL, \"precision\" INTEGER NULL, \"index_price\" REAL NULL, \"user_price\" REAL NULL, \"created_at\" TEXT NOT NULL, UNIQUE (\"from_currency\", \"to_currency\", \"interval\", \"created_at\"));"
-        }
-      ]
-    },
-    {
       "name": "frozen_utxos",
       "sql": [
         {
@@ -3635,7 +3544,16 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"amount_currency_code\" TEXT NOT NULL, \"send_max\" INTEGER NOT NULL CHECK (\"send_max\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"amount_currency_code\" TEXT NOT NULL, \"is_sweep\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_sweep\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_recipients",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_recipients\" (\"transaction_id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"receives_remainder\" INTEGER NOT NULL CHECK (\"receives_remainder\" IN (0, 1)), PRIMARY KEY (\"transaction_id\", \"position\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
         }
       ]
     },

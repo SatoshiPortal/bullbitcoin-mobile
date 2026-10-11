@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -252,14 +253,17 @@ void main() {
               label: 'Other',
               network: Network.bitcoinMainnet,
               isDefault: false,
-              masterFingerprint: '73c5da0a',
-              xpubFingerprint: '73c5da0a',
               scriptType: ScriptType.bip84,
-              xpub: 'xpub',
-              externalPublicDescriptor: 'desc',
-              internalPublicDescriptor: 'desc',
-              signer: SignerEntity.local,
-              signerDevice: null,
+              publicDescriptor: 'desc',
+              signers: [
+                WalletSigner.single(
+                  masterFingerprint: '73c5da0a',
+                  xpubFingerprint: '73c5da0a',
+                  xpub: 'xpub',
+                  signer: SignerEntity.local,
+                  signerDevice: null,
+                ),
+              ],
               balanceSat: BigInt.zero,
             ),
           ]),

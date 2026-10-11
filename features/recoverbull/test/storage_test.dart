@@ -89,7 +89,13 @@ void main() {
       _ok(await repository.markStored(context, vault));
       expect(_ok(await repository.status(context)).isVerified, isFalse);
       _ok(await repository.markVerified(context, vault));
-      expect(_ok(await repository.status(context)).isVerified, isTrue);
+      final tested = _ok(await repository.status(context));
+      expect(tested.isVerified, isTrue);
+      _ok(await repository.markStored(context, vault));
+      expect(
+        _ok(await repository.status(context)).verifiedAt,
+        tested.verifiedAt,
+      );
       for (final other in [
         VaultContext(
           fingerprint: context.fingerprint,

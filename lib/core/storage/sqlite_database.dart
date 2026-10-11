@@ -60,6 +60,7 @@ part 'sqlite_database.g.dart';
     DismissedAnnouncements,
     OrderSwaps,
     SendTransactions,
+    SendTransactionRecipients,
     SendTransactionInputs,
     SendTransactionPolicyChoices,
     BullVaultRecords,

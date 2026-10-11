@@ -1,12 +1,10 @@
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialog/signer_passphrase_dialog.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
@@ -15,7 +13,8 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:bb_mobile/features/psbt_flow/public/psbt_flow_facade.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show Gap, BullBorderedTile, BullButton, BullText;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +30,7 @@ class ConfirmSendButton extends StatelessWidget {
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BBButton.big(
+    return BullButton.big(
       label: hasFinalizedTx
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
@@ -60,19 +59,20 @@ class BitcoinSigningSection extends StatelessWidget {
     final hasConnectedDeviceSigner = visibleSigners.any(
       (signer) =>
           !state.isBitcoinSignerSigned(signer) &&
-          (state.selectedWallet?.supportsWalletPolicySigner(signer) ?? false),
+          (state.selectedBitcoinWallet?.supportsWalletPolicySigner(signer) ??
+              false),
     );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBText(
+        BullText(
           context.loc.sendSigningTitle,
           style: context.font.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
         ),
         const Gap(4),
-        BBText(
+        BullText(
           signingComplete
               ? context.loc.sendSigningReady
               : context.loc.sendSignersNeeded(plan.signersNeeded),
@@ -122,11 +122,11 @@ class _BitcoinSignerTile extends StatelessWidget {
         : signer.signerDevice?.displayName ??
               context.loc.walletDetailsExternalSignerLabel;
     final fingerprint = signer.displayFingerprint;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final usesConnectedDevice =
         wallet?.supportsWalletPolicySigner(signer) ?? false;
 
-    return BorderedTappableTile(
+    return BullBorderedTile(
       onTap: canAct ? () => _sign(context) : null,
       child: Row(
         children: [
@@ -141,13 +141,13 @@ class _BitcoinSignerTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   signerName,
                   style: context.font.bodyMedium,
                   color: context.appColors.secondary,
                 ),
                 if (fingerprint.isNotEmpty)
-                  BBText(
+                  BullText(
                     fingerprint,
                     style: context.font.bodySmall,
                     color: context.appColors.textMuted,
@@ -156,7 +156,7 @@ class _BitcoinSignerTile extends StatelessWidget {
             ),
           ),
           const Gap(12),
-          BBText(
+          BullText(
             signed
                 ? context.loc.sendSignerSigned
                 : signer.signer == SignerEntity.local
@@ -196,7 +196,7 @@ class _BitcoinSignerTile extends StatelessWidget {
     }
 
     final state = context.read<SendCubit>().state;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final psbt = state.unsignedPsbt;
     if (wallet != null &&
         psbt != null &&
@@ -269,12 +269,12 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
     final wallet = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
     );
     final usesDeviceSpecificFlow =
         signer != null && wallet?.supportsDevicePsbtFlowFor(signer!) == true;
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.psbtFlowSharePsbt,
       onPressed: () async {
         final result = await context.pushNamed<String>(
@@ -317,10 +317,10 @@ class SignLedgerButton extends StatelessWidget {
         : null;
     final deviceType = signer?.signerDevice;
     final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -368,10 +368,10 @@ class SignBitBoxButton extends StatelessWidget {
         : null;
     final deviceType = signer?.signerDevice;
     final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet?.scriptType,
     );
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         if (unsignedPsbt == null) return;

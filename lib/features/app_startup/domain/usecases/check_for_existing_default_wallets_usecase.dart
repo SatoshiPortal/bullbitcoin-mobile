@@ -83,9 +83,14 @@ class CheckForExistingDefaultWalletsUsecase {
         trace: StackTrace.current,
       );
       try {
-        final seed = await _seedRepository.get(
-          defaultWallets.first.localSeedFingerprints.single,
-        );
+        final secret = switch (await _secrets.fetch(
+          Fingerprint(defaultWallets.first.localSeedFingerprints.single),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw StateError(
+            'default secret unavailable: ${failure.runtimeType}',
+          ),
+        };
         final network = !hasBitcoin
             ? (environment.isMainnet
                   ? Network.bitcoinMainnet
@@ -123,14 +128,21 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     log.fine('FINE: found default wallet');
-    await Future.wait(
-      defaultWallets.map((wallet) async {
-        try {
-          await _seedRepository.get(wallet.localSeedFingerprints.single);
+    // Three outcomes, three remedies — which is the whole reason the package
+    // refuses to collapse them. A locked keystore is transient and the app
+    // waits for unlock; a genuine absence means the seed is gone while its
+    // wallet metadata is not; anything else is a read that failed, and
+    // treating that as an absence would be offering to replace a seed that
+    // is still there.
+    for (final wallet in defaultWallets) {
+      switch (await _secrets.fetch(
+        Fingerprint(wallet.localSeedFingerprints.single),
+      )) {
+        case Ok():
           log.fine('FINE: Seed Found');
         case Err(failure: KeystoreLockedFailure()):
           log.warning(
-            'Keystore locked while checking ${wallet.masterFingerprint}; '
+            'Keystore locked while checking ${wallet.localSeedFingerprints.single}; '
             'waiting for unlock',
           );
           return const Err(AppStartupKeychainLockedFailure());
@@ -141,7 +153,9 @@ class CheckForExistingDefaultWalletsUsecase {
             trace: StackTrace.current,
           );
           return Err(
-            AppStartupMissingDefaultSecretFailure(wallet.masterFingerprint),
+            AppStartupMissingDefaultSecretFailure(
+              wallet.localSeedFingerprints.single,
+            ),
           );
         case Err(:final failure):
           log.severe(

@@ -1,9 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:primitives/primitives.dart' show Ok, BitcoinNetwork;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -58,6 +58,7 @@ const _multisigInternalDescriptor =
 const _multisigScriptIdentity = 'multisig-script-identity';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late WalletRepository repository;
@@ -75,6 +76,7 @@ void main() {
   });
 
   setUp(() {
+    FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     final lwkDatasource = _MockLwkWalletDatasource();
@@ -373,20 +375,31 @@ void main() {
   });
 
   test('applies one signer annotation to each xpub with its fingerprint', () async {
-    final seedBytes = Uint8List.fromList(
-      List<int>.generate(32, (index) => index + 1),
-    );
-    final firstXpub = (await Bip32Derivation.getAccountXpub(
-      seedBytes: seedBytes,
-      scriptType: ScriptType.bip84,
-      network: Network.bitcoinMainnet,
-    )).toBase58();
-    final secondXpub = (await Bip32Derivation.getAccountXpub(
-      seedBytes: seedBytes,
-      scriptType: ScriptType.bip84,
-      network: Network.bitcoinMainnet,
-      accountIndex: 1,
-    )).toBase58();
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret =
+        (await secrets.import(
+                  words:
+                      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                          .split(' '),
+                )
+                as Ok<Secret, SecretFailure>)
+            .value;
+    final firstXpub =
+        (await secret.derive.account(
+                  derivationPath: "m/84'/0'/0'",
+                  network: BitcoinNetwork.mainnet,
+                )
+                as Ok<PublicAccountKey, SecretFailure>)
+            .value
+            .xpub;
+    final secondXpub =
+        (await secret.derive.account(
+                  derivationPath: "m/84'/0'/1'",
+                  network: BitcoinNetwork.mainnet,
+                )
+                as Ok<PublicAccountKey, SecretFailure>)
+            .value
+            .xpub;
     final descriptor =
         'wsh(or_d(pk([$_fingerprint/84h/0h/0h]$firstXpub/<0;1>/*),pk([$_fingerprint/84h/0h/1h]$secondXpub/<0;1>/*)))';
     final externalDescriptor =
@@ -525,12 +538,18 @@ void main() {
         keys: [],
       ),
     );
-    final seedBytes = Uint8List.fromList(
-      List<int>.generate(32, (index) => index + 1),
-    );
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret =
+        (await secrets.import(
+                  words:
+                      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                          .split(' '),
+                )
+                as Ok<Secret, SecretFailure>)
+            .value;
 
     final wallet = await repository.createWallet(
-      seed: Seed.bytes(bytes: seedBytes, masterFingerprint: _fingerprint),
+      secret: secret,
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
       isDefault: true,
@@ -619,12 +638,18 @@ void main() {
         keys: [],
       ),
     );
-    final seedBytes = Uint8List.fromList(
-      List<int>.generate(32, (index) => index + 1),
-    );
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret =
+        (await secrets.import(
+                  words:
+                      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                          .split(' '),
+                )
+                as Ok<Secret, SecretFailure>)
+            .value;
 
     final wallet = await repository.createWallet(
-      seed: Seed.bytes(bytes: seedBytes, masterFingerprint: _fingerprint),
+      secret: secret,
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
     );

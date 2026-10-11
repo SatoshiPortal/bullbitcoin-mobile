@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 sealed class PsbtSigningFailure extends Failure {

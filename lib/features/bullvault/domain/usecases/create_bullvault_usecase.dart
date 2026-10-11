@@ -1,8 +1,9 @@
+import 'package:secrets/secrets.dart' show Secret;
 import 'dart:async';
 
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
@@ -28,7 +29,7 @@ class CreateBullVaultUsecase {
   final BullVaultRepository _repository;
   final BitcoinDescriptorPort _descriptorPort;
   final BullVaultKeyService _keyService;
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetBullVaultSecretUsecase _getSecretUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final Bip48AccountRepository _bip48AccountRepository;
@@ -38,7 +39,7 @@ class CreateBullVaultUsecase {
   CreateBullVaultUsecase(
     this._repository,
     this._descriptorPort,
-    this._getDefaultSeedUsecase,
+    this._getSecretUsecase,
     this._getSettingsUsecase,
     this._deleteWalletUsecase,
     this._bip48AccountRepository,
@@ -116,17 +117,23 @@ class CreateBullVaultUsecase {
                 (request.mobilePassphrase?.isEmpty ?? true))) {
           return const Err(BullVaultInvalidSignerFailure());
         }
-        final storedSeed = await _getDefaultSeedUsecase.execute(
+        final Secret secret;
+        switch (await _getSecretUsecase.execute(
           environment: settings.environment,
-        );
-        final canonicalSeed = _keyService.canonicalSeed(storedSeed);
-        if (canonicalSeed == null) {
+        )) {
+          case Ok(:final value):
+            secret = value;
+          case Err():
+            return const Err(BullVaultCreationFailure());
+        }
+        // Default Bull wallets are backed by a words-only secret.
+        if (secret.info.hasPassphrase) {
           return const Err(BullVaultCreationFailure());
         }
-        seedFingerprint = canonicalSeed.masterFingerprint;
-        mobileSeedFingerprint = canonicalSeed.masterFingerprint;
+        seedFingerprint = secret.id.hex;
+        mobileSeedFingerprint = secret.id.hex;
         switch (await _bip48AccountRepository.claimNext(
-          seedFingerprint: canonicalSeed.masterFingerprint,
+          seedFingerprint: secret.id.hex,
           coinType: network.coinType,
         )) {
           case Ok(:final value):
@@ -135,19 +142,13 @@ class CreateBullVaultUsecase {
           case Err():
             return const Err(BullVaultCreationFailure());
         }
-        final mobileSeed = _keyService.seedWithPassphrase(
-          canonicalSeed,
-          request.mobilePassphrase,
-        );
-        if (mobileSeed == null) {
-          return const Err(BullVaultCreationFailure());
-        }
-        final everydayResult = _keyService.localKey(
-          mobileSeed,
+        final everydayResult = await _keyService.localKey(
+          secret,
           mobileAccount,
           network,
           role: BullVaultSignerRole.everyday,
           requiresPassphrase: request.mobilePassphrase?.isNotEmpty == true,
+          passphrase: request.mobilePassphrase ?? '',
         );
         switch (everydayResult) {
           case Ok(:final value):
@@ -156,8 +157,8 @@ class CreateBullVaultUsecase {
             return Err(failure);
         }
         if (request.passphraseFreeRecovery) {
-          final recoveryResult = _keyService.localKey(
-            canonicalSeed,
+          final recoveryResult = await _keyService.localKey(
+            secret,
             mobileAccount,
             network,
             role: BullVaultSignerRole.delayedMobileRecovery,
@@ -390,8 +391,15 @@ class CreateBullVaultUsecase {
 
   Future<bool> _rollback(String walletId) async {
     try {
-      await _deleteWalletUsecase.execute(walletId: walletId);
-      return true;
+      switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
+        case Ok():
+          return true;
+        case Err(:final failure):
+          log.warning(
+            'Failed to roll back BullVault wallet: ${failure.runtimeType}',
+          );
+          return false;
+      }
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Failed to roll back incomplete BullVault creation',

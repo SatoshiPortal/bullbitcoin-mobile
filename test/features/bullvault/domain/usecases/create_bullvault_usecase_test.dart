@@ -1,13 +1,12 @@
-import 'dart:typed_data';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
+import '../../bullvault_secrets_fixture.dart';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
@@ -31,7 +30,6 @@ import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repos
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_onboarding_usecase.dart';
-import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -41,8 +39,8 @@ import '../../../../core_test/wallet/bdk_wallet_test_fixture.dart';
 
 const _fourthMnemonic = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
 
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
+class _MockGetBullVaultSecretUsecase extends Mock
+    implements GetBullVaultSecretUsecase {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
@@ -255,7 +253,13 @@ final class _TestBullVaultRepository extends Fake
   }
 }
 
+late BullVaultSecretsFixture secretFixture;
+
 void main() {
+  setUpAll(() => registerFallbackValue(Environment.testnet));
+  setUp(() {
+    secretFixture = BullVaultSecretsFixture();
+  });
   late _MockGetSettingsUsecase getSettings;
 
   setUp(() {
@@ -565,7 +569,7 @@ void main() {
     () async {
       final repository = _TestBullVaultRepository();
       final accounts = _TestBip48AccountRepository();
-      final getDefaultSeed = _MockGetDefaultSeedUsecase();
+      final getDefaultSeed = _MockGetBullVaultSecretUsecase();
       final everyday = deriveSignerKeys(testMnemonics.first);
       final cold = deriveSignerKeys(testMnemonics[1]);
 
@@ -610,19 +614,14 @@ void main() {
     'keeps passphrase-free recovery outside the immediate threshold',
     () async {
       final repository = _TestBullVaultRepository();
-      final getDefaultSeed = _MockGetDefaultSeedUsecase();
+      final getDefaultSeed = _MockGetBullVaultSecretUsecase();
       final mnemonic = bip39.Mnemonic.fromWords(
         words: testMnemonics.first.split(' '),
       );
-      final seedBytes = Uint8List.fromList(mnemonic.seed);
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.mnemonic(
-          mnemonicWords: mnemonic.words,
-          bytes: seedBytes,
-          masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
-        ),
+        (_) async => Ok(await secretFixture.mnemonic(mnemonic.words)),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
 
@@ -694,15 +693,10 @@ void main() {
     );
 
     final cold = deriveSignerKeys(testMnemonics[1], isTestnet: false);
-    final getDefaultSeed = _MockGetDefaultSeedUsecase();
+    final getDefaultSeed = _MockGetBullVaultSecretUsecase();
     when(
       () => getDefaultSeed.execute(environment: Environment.mainnet),
-    ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
-      ),
-    );
+    ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
     final result =
         await _usecase(
           repository,
@@ -745,16 +739,11 @@ void main() {
     'commits the mobile account after BullVault creation is saved',
     () async {
       final repository = _TestBullVaultRepository();
-      final getDefaultSeed = _MockGetDefaultSeedUsecase();
+      final getDefaultSeed = _MockGetBullVaultSecretUsecase();
       final accounts = _TestBip48AccountRepository(events: repository.events);
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer(
-        (_) async => Seed.bytes(
-          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-          masterFingerprint: 'deadbeef',
-        ),
-      );
+      ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -791,7 +780,7 @@ void main() {
       final deleteWallet = _MockDeleteWalletUsecase();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -833,7 +822,9 @@ void main() {
       final deleteWallet = _MockDeleteWalletUsecase();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('wallet deletion failed'));
+      ).thenAnswer(
+        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
+      );
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -942,22 +933,17 @@ void main() {
 CreateBullVaultUsecase _usecase(
   BullVaultRepository repository,
   GetSettingsUsecase getSettings, {
-  GetDefaultSeedUsecase? getDefaultSeed,
+  GetBullVaultSecretUsecase? getDefaultSeed,
   DeleteWalletUsecase? deleteWalletUsecase,
   Bip48AccountRepository? accountRepository,
   PrepareBullVaultTimeReferenceUsecase? prepareTimeReferenceUsecase,
   BitcoinDescriptorPort? descriptorPort,
 }) {
-  final seedUsecase = getDefaultSeed ?? _MockGetDefaultSeedUsecase();
+  final seedUsecase = getDefaultSeed ?? _MockGetBullVaultSecretUsecase();
   if (getDefaultSeed == null) {
     when(
       () => seedUsecase.execute(environment: any(named: 'environment')),
-    ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
-      ),
-    );
+    ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
   }
   final prepareTimeReference =
       prepareTimeReferenceUsecase ??

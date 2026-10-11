@@ -1,5 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
@@ -21,10 +21,12 @@ class PendingBitcoinTransactionRepositoryImpl
   }) async {
     if (transaction.isDraft) {
       try {
-        final request = await PaymentRequest.parse(transaction.recipient);
-        if (request is! BitcoinPaymentRequest &&
-            !(request is Bip21PaymentRequest && request.network.isBitcoin)) {
-          return const Err(SendInvalidPaymentRequestFailure());
+        for (final recipient in transaction.recipients) {
+          final request = await PaymentRequest.parse(recipient.recipient);
+          if (request is! BitcoinPaymentRequest &&
+              !(request is Bip21PaymentRequest && request.network.isBitcoin)) {
+            return const Err(SendInvalidPaymentRequestFailure());
+          }
         }
       } on Exception {
         return const Err(SendInvalidPaymentRequestFailure());

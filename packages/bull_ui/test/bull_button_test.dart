@@ -2,21 +2,21 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'test_app.dart';
+
 void main() {
   testWidgets('shows progress in the button and ignores taps while loading', (
     tester,
   ) async {
     var taps = 0;
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: BullButton.big(
-            label: 'Working',
-            onPressed: () => taps++,
-            bgColor: Colors.red,
-            textColor: Colors.white,
-            loading: true,
-          ),
+      wrapWithTheme(
+        BullButton.big(
+          label: 'Working',
+          onPressed: () => taps++,
+          bgColor: Colors.red,
+          textColor: Colors.white,
+          loading: true,
         ),
       ),
     );

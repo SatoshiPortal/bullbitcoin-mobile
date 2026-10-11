@@ -1,12 +1,14 @@
+import 'package:secrets/secrets.dart';
+import '../../bullvault/bullvault_secrets_fixture.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
@@ -20,12 +22,10 @@ import 'package:mocktail/mocktail.dart';
 class _MockLoadWallets extends Mock implements LoadWalletsForNetworkUsecase {}
 
 class _MockGetMnemonic extends Mock
-    implements GetMnemonicFromFingerprintUsecase {}
-
-class _MockVerifyBackup extends Mock implements VerifyPhysicalBackupUsecase {}
+    implements GetSecretFromFingerprintUsecase {}
 
 class _MockCompleteBackup extends Mock
-    implements CompletePhysicalBackupVerificationUsecase {}
+    implements CompleteBackupVerificationUsecase {}
 
 void main() {
   testWidgets('displays and verifies the local seed of a descriptor wallet', (
@@ -42,7 +42,6 @@ void main() {
         null,
       ),
     );
-    const fingerprint = 'beef1234';
     const words = [
       'legal',
       'winner',
@@ -57,6 +56,10 @@ void main() {
       'thank',
       'yellow',
     ];
+    final fixture = BullVaultSecretsFixture();
+    final secret = await tester.runAsync(() => fixture.mnemonic(words));
+    if (secret == null) fail('Secret creation did not complete');
+    final fingerprint = secret.id.hex;
     final wallet = Wallet(
       origin: 'vault',
       label: 'Vault',
@@ -85,23 +88,18 @@ void main() {
     );
     final load = _MockLoadWallets();
     final mnemonic = _MockGetMnemonic();
-    final verifyBackup = _MockVerifyBackup();
     final complete = _MockCompleteBackup();
-    when(load.execute).thenAnswer((_) async => [wallet]);
+    when(load.execute).thenAnswer((_) async => Ok([wallet]));
     when(
       () => mnemonic.execute(fingerprint),
-    ).thenAnswer((_) async => (words, null));
-    when(
-      () => verifyBackup.execute(fingerprint: fingerprint, mnemonic: words),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => Ok(secret));
     when(
       () => complete.execute(fingerprint: fingerprint),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     final bloc = TestWalletBackupBloc(
       loadWalletsForNetworkUsecase: load,
-      getMnemonicFromFingerprintUsecase: mnemonic,
-      verifyPhysicalBackupUsecase: verifyBackup,
-      completePhysicalBackupVerificationUsecase: complete,
+      getSecretFromFingerprintUsecase: mnemonic,
+      completeBackupVerificationUsecase: complete,
     );
     addTearDown(bloc.close);
     Device.screen = const Size(800, 600);
@@ -114,27 +112,38 @@ void main() {
         home: screen,
       ),
     );
+    Future<void> settleSecret() async {
+      for (var i = 0; i < 25; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump();
+        if (i >= 2 &&
+            find.byType(CircularProgressIndicator).evaluate().isEmpty) {
+          break;
+        }
+      }
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      await tester.pumpAndSettle();
+    }
+
     await tester.pumpWidget(app(const ShowMnemonicScreen()));
-    bloc.add(const LoadWallets(fingerprint: fingerprint));
-    await tester.pumpAndSettle();
-    expect(find.text('yellow'), findsOneWidget);
+    bloc.add(LoadWallets(fingerprint: fingerprint));
+    await tester.pump();
+    await settleSecret();
+    expect(find.byType(MnemonicView), findsOneWidget);
+    expect(find.text('yellow'), findsNothing);
 
     var verified = false;
     await tester.pumpWidget(
       app(VerifyMnemonicScreen(onVerified: () => verified = true)),
     );
+    await settleSecret();
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    challenge.onSolved();
     await tester.pumpAndSettle();
-    for (final word in words) {
-      final tile = find
-          .widgetWithText(InkWell, word)
-          .evaluate()
-          .firstWhere((element) => (element.widget as InkWell).onTap != null);
-      final finder = find.byWidget(tile.widget);
-      await tester.ensureVisible(finder);
-      await tester.pumpAndSettle();
-      await tester.tap(finder);
-      await tester.pumpAndSettle();
-    }
     expect(verified, isTrue);
     verify(() => complete.execute(fingerprint: fingerprint)).called(1);
     await tester.pumpWidget(const SizedBox.shrink());

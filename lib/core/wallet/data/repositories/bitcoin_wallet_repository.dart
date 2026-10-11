@@ -10,29 +10,25 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_policy_maturity_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_psbt_review_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:primitives/primitives.dart'
-    show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
+    show Err, Ok, Result, Sats, BitcoinTransactionRecipient, Fingerprint;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
@@ -41,8 +37,10 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 
 class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
@@ -58,8 +56,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
     this.electrumServers,
-  }) : _seed = seedDatasource,
-       _bdkWallet = bdkWalletDatasource,
+  }) : _bdkWallet = bdkWalletDatasource,
        _frozenUtxos = frozenWalletUtxoDatasource;
 
   Future<({WalletMetadataModel metadata, PublicBdkWalletModel wallet})>
@@ -106,13 +103,13 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         return const Err(WalletTransactionBuildFailure('Not a Bitcoin wallet'));
       }
 
-    final wallet =
-        WalletModel.publicBdk(
-              descriptor: metadata.publicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+      final wallet =
+          WalletModel.publicBdk(
+                descriptor: metadata.publicDescriptor,
+                isTestnet: metadata.isTestnet,
+                id: metadata.id,
+              )
+              as PublicBdkWalletModel;
 
       // Read current frozen coins so neither automatic nor manual selection
       // relies on an earlier UTXO snapshot. The use case supplies Payjoin exclusions.
@@ -158,8 +155,14 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         requiredDescriptorKeys: policyPath == null
             ? null
             : (
-                external: _requiredDescriptorKeys(metadata, policyPath.requiredExternalKeys),
-                internal: _requiredDescriptorKeys(metadata, policyPath.requiredInternalKeys),
+                external: _requiredDescriptorKeys(
+                  metadata,
+                  policyPath.requiredExternalKeys,
+                ),
+                internal: _requiredDescriptorKeys(
+                  metadata,
+                  policyPath.requiredInternalKeys,
+                ),
               ),
         // Default to RBF-enabled, matching both the datasource default and
         // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
@@ -183,7 +186,9 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             : const WalletNoSpendableInputsFailure(),
       );
     } on UnsupportedBitcoinPolicyPathException {
-      return const Err(BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath));
+      return const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      );
     } on Exception catch (error, trace) {
       log.warning(
         'Bitcoin transaction construction failed',
@@ -251,8 +256,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       replacingTxid: replacingTxid,
     );
 
-    var descriptor = _withoutDescriptorChecksum(metadata.publicDescriptor);
-    var injectedKey = false;
+    final descriptor = _withoutDescriptorChecksum(metadata.publicDescriptor);
     final localSigners = metadata.signers
         .where(
           (signer) =>
@@ -279,6 +283,9 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final selectedLocalDescriptorKeyIds = review.inputs
         .expand((input) => input.localDescriptorKeyIds)
         .toSet();
+    final prepared = await _bdkWallet.preparePsbtForSigning(psbt);
+    var signedPsbt = prepared.psbt;
+    var signedKey = false;
     var skippedPassphraseKey = false;
     for (final signer in localSigners) {
       for (final key in signer.descriptorKeys) {
@@ -287,103 +294,93 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         if (derivationPath == null) {
           throw StateError('Local descriptor key has no derivation path');
         }
-        final SeedModel seed;
-        if (key.requiresPassphrase) {
-          if (passphrase == null) {
-            skippedPassphraseKey = true;
-            continue;
-          }
-          final seedFingerprint = signer.localSeedFingerprint;
-          if (seedFingerprint == null) {
-            throw const BitcoinSignerPassphraseMismatchException();
-          }
-          final storedSeed = await _seed.get(seedFingerprint);
-          if (storedSeed is! MnemonicSeedModel) {
-            throw const BitcoinSignerPassphraseMismatchException();
-          }
-          seed = SeedModel.mnemonic(
-            mnemonicWords: storedSeed.mnemonicWords,
-            passphrase: passphrase,
-          );
-        } else {
-          seed = await _seed.get(key.masterFingerprint);
+        if (key.requiresPassphrase && passphrase == null) {
+          skippedPassphraseKey = true;
+          continue;
         }
-        final rootKey = _descriptorSecretKey(seed, network: metadata.network);
-        try {
-          final path = bdk.DerivationPath(path: derivationPath);
-          try {
-            final accountKey = rootKey.derive(path: path);
-            try {
-              final publicKey = accountKey.asPublic();
-              try {
-                final publicKeyString = publicKey.toString();
-                final privateKeyString = accountKey.toString();
-                final accountXpub = _descriptorAccountXpub(publicKeyString);
-                if (Bip32Derivation.getBip32Xpub(accountXpub).toBase58() !=
-                    Bip32Derivation.getBip32Xpub(key.xpub).toBase58()) {
-                  if (key.requiresPassphrase) {
-                    throw const BitcoinSignerPassphraseMismatchException();
-                  }
-                  throw StateError('Local seed does not match descriptor key');
-                }
-                final publicDescriptorKey = RegExp(
-                  '(\\[[^\\]]+\\])?${RegExp.escape(accountXpub)}'
-                  '${RegExp.escape(key.descriptorPath)}'
-                  '${key.descriptorPath.isEmpty ? '(?=[/,)])' : '(?=[,)])'}',
-                );
-                final match = publicDescriptorKey.firstMatch(descriptor);
-                if (match == null) {
-                  throw StateError(
-                    'Local descriptor key is not present in descriptors',
-                  );
-                }
-                // An originless account uses its own fingerprint in the PSBT.
-                final privateKeyExpression = match.group(1) == null
-                    ? privateKeyString.substring(
-                        privateKeyString.indexOf(']') + 1,
-                      )
-                    : privateKeyString;
-                descriptor = descriptor.replaceRange(
-                  match.start,
-                  match.end,
-                  '$privateKeyExpression${key.descriptorPath}',
-                );
-                injectedKey = true;
-              } finally {
-                publicKey.dispose();
-              }
-            } finally {
-              accountKey.dispose();
+        final fingerprint = key.requiresPassphrase
+            ? signer.localSeedFingerprint
+            : key.masterFingerprint;
+        if (fingerprint == null) {
+          throw const BitcoinSignerPassphraseMismatchException();
+        }
+        final secret = _unwrapSecret(
+          await _secrets.fetch(Fingerprint(fingerprint)),
+        );
+        final override = key.requiresPassphrase ? passphrase : null;
+        final accountResult = await secret.derive.account(
+          derivationPath: derivationPath,
+          network: metadata.network.bitcoin,
+          passphrase: override,
+        );
+        final PublicAccountKey account;
+        switch (accountResult) {
+          case Ok(:final value):
+            account = value;
+          case Err(:final failure):
+            if (key.requiresPassphrase) {
+              throw const BitcoinSignerPassphraseMismatchException();
             }
-          } finally {
-            path.dispose();
-          }
-        } finally {
-          rootKey.dispose();
+            throw Exception('secrets: ${failure.runtimeType}');
         }
+        final accountXpub = account.xpub;
+        if (Bip32Derivation.getBip32Xpub(accountXpub).toBase58() !=
+            Bip32Derivation.getBip32Xpub(key.xpub).toBase58()) {
+          if (key.requiresPassphrase) {
+            throw const BitcoinSignerPassphraseMismatchException();
+          }
+          throw StateError('Local secret does not match descriptor key');
+        }
+        final expression = RegExp(
+          '(\\[[^\\]]+\\])?${RegExp.escape(accountXpub)}'
+          '${key.descriptorPath.isEmpty ? r'(?:/[^,(){}]+)?' : RegExp.escape(key.descriptorPath)}'
+          '(?=[,)])',
+        ).firstMatch(descriptor)?.group(0);
+        if (expression == null) {
+          throw StateError('Local descriptor key is not present in descriptor');
+        }
+        signedPsbt = _unwrapSecret(
+          await secret.sign.descriptorPsbt(
+            signedPsbt,
+            descriptor: descriptor,
+            network: metadata.network.bitcoin,
+            keys: [
+              DescriptorSigningKey(
+                publicExpression: expression,
+                derivationPath: derivationPath,
+                xpub: accountXpub,
+              ),
+            ],
+            passphrase: override,
+            signWithTapInternalKey: prepared.signWithTapInternalKey,
+          ),
+        );
+        signedPsbt = _bdkWallet
+            .completePsbtSigning(
+              originalPsbt: prepared.psbt,
+              signedPsbt: signedPsbt,
+              tryFinalize: false,
+            )
+            .psbt;
+        signedKey = true;
       }
     }
-    if (!injectedKey && skippedPassphraseKey) {
+    if (!signedKey && skippedPassphraseKey) {
       throw const BitcoinSignerPassphraseRequiredException();
     }
-    if (!injectedKey) throw const BitcoinPsbtMissingLocalOriginException();
+    if (!signedKey) throw const BitcoinPsbtMissingLocalOriginException();
 
-    return _bdkWallet.signPsbtWithDescriptor(
-      psbt,
-      descriptor: descriptor,
-      isTestnet: metadata.isTestnet,
+    return _bdkWallet.completePsbtSigning(
+      originalPsbt: prepared.psbt,
+      signedPsbt: signedPsbt,
       tryFinalize: tryFinalize,
     );
   }
 
-  String _descriptorAccountXpub(String descriptorKey) {
-    final originEnd = descriptorKey.indexOf(']');
-    final key = originEnd == -1
-        ? descriptorKey
-        : descriptorKey.substring(originEnd + 1);
-    final suffixStart = key.indexOf('/');
-    return suffixStart == -1 ? key : key.substring(0, suffixStart);
-  }
+  T _unwrapSecret<T>(Result<T, SecretFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw Exception('secrets: ${failure.runtimeType}'),
+  };
 
   @override
   Future<Result<BitcoinPsbtReview, BitcoinSigningFailure>> reviewPsbt(
@@ -698,57 +695,6 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     );
   }
 
-  Future<PrivateBdkWalletModel> getPrivateWallet({
-    required String walletId,
-  }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final scriptType = metadata.inferredScriptType;
-    if (metadata.signers.length != 1 || scriptType == null) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-    final signer = metadata.signers.single;
-    if (signer.descriptorKeys.length != 1) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-    final descriptorKey = signer.descriptorKeys.single;
-    final account = scriptType.standardAccount(
-      descriptorKey.derivationPath,
-      metadata.network,
-    );
-    if (signer.signer != Signer.local ||
-        account == null ||
-        descriptorKey.descriptorPath != standardSingleSignatureDescriptorPath) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-
-    final seed = await _seed.get(descriptorKey.masterFingerprint);
-    if (seed is! MnemonicSeedModel) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-    final mnemonic = seed.mnemonicWords.join(' ');
-
-    final wallet =
-        WalletModel.privateBdk(
-              id: metadata.id,
-              mnemonic: mnemonic,
-              passphrase: seed.passphrase,
-              scriptType: scriptType,
-              account: account,
-              isTestnet: metadata.isTestnet,
-            )
-            as PrivateBdkWalletModel;
-    return wallet;
-  }
-
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String externalDescriptor,
     required String internalDescriptor,
@@ -805,21 +751,27 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
           'Input signatures of the stored transaction could not be verified',
         );
     }
-    final metadata = await _metadataFor(walletId);
-    // Building an RBF replacement needs the wallet's UTXO set, not its
-    // key: the public descriptors are enough. Signing happens after,
-    // inside `secrets`.
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final context = await _publicWalletContext(walletId);
+    final metadata = context.metadata;
+    final type = metadata.inferredScriptType;
+    if (type == null || metadata.signers.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final signer = metadata.signers.single;
+    if (signer.signer != Signer.local || signer.descriptorKeys.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
+    }
+    final key = signer.descriptorKeys.single;
+    if (!type.matchesStandardAccountPath(
+          key.derivationPath,
+          metadata.network,
+        ) ||
+        key.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Standard local single-signature wallet required');
+    }
 
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
+      wallet: context.wallet,
       txid: txid,
       feeRate: newFeeRate,
     );
@@ -832,34 +784,6 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       throw StateError('Replacement transaction is not fully signed');
     }
     return signed.psbt;
-  }
-
-  bdk.DescriptorSecretKey _descriptorSecretKey(
-    SeedModel seed, {
-    required Network network,
-  }) {
-    if (seed is MnemonicSeedModel) {
-      final mnemonic = bdk.Mnemonic.fromString(
-        mnemonic: seed.mnemonicWords.join(' '),
-      );
-      try {
-        return bdk.DescriptorSecretKey(
-          networkKind: network.isTestnet
-              ? bdk.NetworkKind.test
-              : bdk.NetworkKind.main,
-          mnemonic: mnemonic,
-          password: seed.passphrase,
-        );
-      } finally {
-        mnemonic.dispose();
-      }
-    }
-
-    final xprv = Bip32Derivation.getXprvFromSeed(
-      Uint8List.fromList(seed.bytes),
-      network,
-    );
-    return bdk.DescriptorSecretKey.fromString(privateKey: xprv);
   }
 
   String _withoutDescriptorChecksum(String descriptor) =>

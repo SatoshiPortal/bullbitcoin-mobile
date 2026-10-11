@@ -1,7 +1,7 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
+import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
@@ -19,7 +20,7 @@ import 'package:meta/meta.dart';
 final class RestoredPendingBitcoinTransaction {
   final PendingBitcoinTransaction transaction;
   final Wallet wallet;
-  final PaymentRequest? paymentRequest;
+  final List<PaymentRequest?> paymentRequests;
   final List<WalletUtxo> utxos;
   final List<WalletUtxo> selectedUtxos;
   final BitcoinSigningPlan? signingPlan;
@@ -31,7 +32,7 @@ final class RestoredPendingBitcoinTransaction {
   RestoredPendingBitcoinTransaction({
     required this.transaction,
     required this.wallet,
-    required this.paymentRequest,
+    required Iterable<PaymentRequest?> paymentRequests,
     required Iterable<WalletUtxo> utxos,
     required Iterable<WalletUtxo> selectedUtxos,
     this.signingPlan,
@@ -39,8 +40,11 @@ final class RestoredPendingBitcoinTransaction {
     this.absoluteFeesSat,
     this.fiatCurrencyCode,
     this.exchangeRate,
-  }) : utxos = List.unmodifiable(utxos),
+  }) : paymentRequests = List.unmodifiable(paymentRequests),
+       utxos = List.unmodifiable(utxos),
        selectedUtxos = List.unmodifiable(selectedUtxos);
+
+  PaymentRequest? get paymentRequest => paymentRequests.first;
 }
 
 class RestorePendingBitcoinTransactionUsecase {
@@ -54,7 +58,7 @@ class RestorePendingBitcoinTransactionUsecase {
   final GetBitcoinSigningPlanUsecase _getBitcoinSigningPlanUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
 
   const RestorePendingBitcoinTransactionUsecase(
     this._getPendingBitcoinTransactionUsecase,
@@ -64,7 +68,7 @@ class RestorePendingBitcoinTransactionUsecase {
     this._validatePendingBitcoinTransactionUsecase,
     this._getBitcoinSigningPlanUsecase,
     this._calculateBitcoinAbsoluteFeesUsecase,
-    this._convertSatsToCurrencyAmountUsecase,
+    this._getSendExchangeRateUsecase,
   );
 
   @useResult
@@ -94,21 +98,40 @@ class RestorePendingBitcoinTransactionUsecase {
                 stored.selectedOutpoints.contains('${utxo.txId}:${utxo.vout}'),
           )
           .toList(growable: false);
-      final paymentRequest = await _detectRecipient(stored.recipient);
+      final paymentRequests = [
+        for (final recipient in stored.recipients)
+          await _detectRecipient(recipient.recipient),
+      ];
       final (fiatCurrencyCode, exchangeRate) = await _restoreFiatRate(
         stored.amountCurrencyCode,
       );
       if (stored.isDraft) {
+        const recipientPolicy = BitcoinRecipientListPolicy();
+        final primary = paymentRequests.first;
+        final validPrimary =
+            (primary is BitcoinPaymentRequest ||
+                (primary is Bip21PaymentRequest &&
+                    primary.network.isBitcoin)) &&
+            recipientPolicy.networkIsTestnet(primary) == wallet.isTestnet &&
+            (!stored.isSweep || recipientPolicy.supports(primary));
         return Ok(
           RestoredPendingBitcoinTransaction(
             transaction: stored,
             wallet: wallet,
-            paymentRequest:
-                paymentRequest is BitcoinPaymentRequest ||
-                    (paymentRequest is Bip21PaymentRequest &&
-                        paymentRequest.network.isBitcoin)
-                ? paymentRequest
-                : null,
+            paymentRequests: [
+              for (final (index, request) in paymentRequests.indexed)
+                validPrimary &&
+                        (index == 0 ||
+                            (request != null &&
+                                recipientPolicy.compatibleAdditionalAddress(
+                                      request: request,
+                                      primaryNetworkIsTestnet: wallet.isTestnet,
+                                      isSweep: stored.isSweep,
+                                    ) !=
+                                    null))
+                    ? request
+                    : null,
+            ],
             utxos: utxos,
             selectedUtxos: selectedUtxos,
             fiatCurrencyCode: fiatCurrencyCode,
@@ -116,7 +139,7 @@ class RestorePendingBitcoinTransactionUsecase {
           ),
         );
       }
-      if (paymentRequest == null) {
+      if (paymentRequests.any((request) => request == null)) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
 
@@ -154,7 +177,7 @@ class RestorePendingBitcoinTransactionUsecase {
         RestoredPendingBitcoinTransaction(
           transaction: validated,
           wallet: wallet,
-          paymentRequest: paymentRequest,
+          paymentRequests: paymentRequests,
           utxos: utxos,
           selectedUtxos: selectedUtxos,
           signingPlan: signingPlanDetails.plan,
@@ -186,9 +209,15 @@ class RestorePendingBitcoinTransactionUsecase {
         currencyCode == BitcoinUnit.sats.code) {
       return (null, null);
     }
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+    final exchangeRate = await _getSendExchangeRateUsecase.execute(
       currencyCode: currencyCode,
     );
-    return (currencyCode, exchangeRate);
+    return (
+      currencyCode,
+      switch (exchangeRate) {
+        Ok(:final value) => value,
+        Err() => null,
+      },
+    );
   }
 }

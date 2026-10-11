@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 
-/// The default wallet selected before an asynchronous backup operation.
+/// The seed and network selected before an asynchronous backup operation.
 final class VaultContext {
   final Fingerprint fingerprint;
   final BitcoinNetwork network;

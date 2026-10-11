@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 
 class CheckReceiveBullVaultUsecase {

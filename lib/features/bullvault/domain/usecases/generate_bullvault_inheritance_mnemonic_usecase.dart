@@ -1,22 +1,15 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:secrets/secrets.dart'
+    show EphemeralMnemonic, MnemonicLength, Secrets;
 
 class GenerateBullVaultInheritanceMnemonicUsecase {
-  const GenerateBullVaultInheritanceMnemonicUsecase();
+  final Secrets _secrets;
 
-  Result<List<String>, BullVaultFailure> execute() {
-    try {
-      return Ok(
-        List.unmodifiable(
-          bip39.Mnemonic.generate(
-            bip39.Language.english,
-            length: bip39.MnemonicLength.words24,
-          ).words,
-        ),
-      );
-    } on Exception {
-      return const Err(BullVaultCreationFailure());
-    }
-  }
+  const GenerateBullVaultInheritanceMnemonicUsecase(this._secrets);
+
+  Future<Result<EphemeralMnemonic, BullVaultFailure>> execute() async =>
+      (await _secrets.generateEphemeral(
+        wordCount: MnemonicLength.words24,
+      )).mapErr((_) => const BullVaultCreationFailure());
 }

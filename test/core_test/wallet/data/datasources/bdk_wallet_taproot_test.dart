@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -53,7 +54,7 @@ void main() {
     await tempDirectory.delete(recursive: true);
   });
 
-  test('completes a Taproot key-path round trip', () {
+  test('completes a Taproot key-path round trip', () async {
     final publicDescriptor = _taprootKeyPathDescriptor(
       externalKey: signers.first.externalPublic,
       internalKey: signers.first.internalPublic,
@@ -64,7 +65,7 @@ void main() {
     );
     final unsigned = buildUnsignedPsbt(descriptor: publicDescriptor);
 
-    final signed = datasource.signPsbtWithDescriptor(
+    final signed = await datasource.signPsbtWithDescriptor(
       unsigned,
       descriptor: privateDescriptor,
       isTestnet: true,
@@ -94,7 +95,7 @@ void main() {
       ),
       throwsA(isA<InvalidBitcoinPsbtException>()),
     );
-    final signedWithAll = datasource.signPsbtWithDescriptor(
+    final signedWithAll = await datasource.signPsbtWithDescriptor(
       _withInputSighash(unsigned, bitcoin_base.BitcoinOpCodeConst.sighashAll),
       descriptor: privateDescriptor,
       isTestnet: true,
@@ -170,8 +171,12 @@ void main() {
     final recipient = await _fundStoredWallet(wallet);
     final unsigned = await datasource.buildPsbt(
       wallet: wallet,
-      address: recipient,
-      amountSat: 50000,
+      recipients: [
+        BitcoinTransactionRecipientModel.fixed(
+          address: recipient,
+          fixedAmountSat: 50000,
+        ),
+      ],
       networkFee: const NetworkFee.absolute(1000),
       policyPath: path,
       requiredDescriptorKeys: (
@@ -197,7 +202,7 @@ void main() {
     } finally {
       unsignedPsbt.dispose();
     }
-    final signed = datasource.signPsbtWithDescriptor(
+    final signed = await datasource.signPsbtWithDescriptor(
       unsigned,
       descriptor: _taprootKeyAndScriptDescriptor(
         externalInternalKey: signers[0].externalPrivate,
@@ -241,7 +246,7 @@ void main() {
         isTestnet: true,
       ).keys,
     );
-    final signed = datasource.signPsbtWithDescriptor(
+    final signed = await datasource.signPsbtWithDescriptor(
       buildUnsignedPsbt(descriptor: descriptor),
       descriptor: _taprootKeyPathDescriptor(
         externalKey: signers.first.externalPrivate,
@@ -412,8 +417,12 @@ void main() {
       final fixedNumsPsbt = bdk.Psbt(
         psbtBase64: await datasource.buildPsbt(
           wallet: fixedNumsWallet,
-          address: fixedNumsRecipient,
-          amountSat: 50000,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: fixedNumsRecipient,
+              fixedAmountSat: 50000,
+            ),
+          ],
           networkFee: const NetworkFee.absolute(1000),
         ),
       );
@@ -442,14 +451,12 @@ void main() {
           ),
         ]);
         final signedPsbt = bdk.Psbt(
-          psbtBase64: datasource
-              .signPsbtWithDescriptor(
-                unnormalizedPsbt.toBase64(),
-                descriptor: _privateTaprootScriptDescriptor(signers, 0),
-                isTestnet: true,
-                tryFinalize: false,
-              )
-              .psbt,
+          psbtBase64: (await datasource.signPsbtWithDescriptor(
+            unnormalizedPsbt.toBase64(),
+            descriptor: _privateTaprootScriptDescriptor(signers, 0),
+            isTestnet: true,
+            tryFinalize: false,
+          )).psbt,
         );
         try {
           expect(
@@ -480,8 +487,12 @@ void main() {
       final numsXpubPsbt = bdk.Psbt(
         psbtBase64: await datasource.buildPsbt(
           wallet: numsXpubWallet,
-          address: numsXpubRecipient,
-          amountSat: 50000,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: numsXpubRecipient,
+              fixedAmountSat: 50000,
+            ),
+          ],
           networkFee: const NetworkFee.absolute(1000),
         ),
       );
@@ -612,8 +623,12 @@ void main() {
       await expectLater(
         datasource.buildPsbt(
           wallet: wallet,
-          address: recipient,
-          amountSat: 50000,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: recipient,
+              fixedAmountSat: 50000,
+            ),
+          ],
           networkFee: const NetworkFee.absolute(1000),
           policyPath: path,
           requiredDescriptorKeys: (
@@ -669,8 +684,12 @@ void main() {
       final psbt = bdk.Psbt(
         psbtBase64: await datasource.buildPsbt(
           wallet: wallet,
-          address: recipient,
-          amountSat: 50000,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: recipient,
+              fixedAmountSat: 50000,
+            ),
+          ],
           networkFee: const NetworkFee.absolute(1000),
           policyPath: path,
           requiredDescriptorKeys: (
@@ -725,8 +744,12 @@ void main() {
       final policyPath = policy.buildPath(selection);
       final unsigned = await datasource.buildPsbt(
         wallet: wallet,
-        address: recipientAddress,
-        amountSat: 50000,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipientAddress,
+            fixedAmountSat: 50000,
+          ),
+        ],
         networkFee: const NetworkFee.absolute(1000),
         policyPath: policyPath,
         requiredDescriptorKeys: (
@@ -776,13 +799,11 @@ void main() {
       expect(policy.hasTimelock, isTrue);
       expect(review.inputs.single.hasLocalSignerOrigin, isFalse);
       expect(
-        datasource
-            .signPsbtWithDescriptor(
-              withPreimage,
-              descriptor: _privateTaprootConditionalDescriptor(signers),
-              isTestnet: true,
-            )
-            .isFinalized,
+        (await datasource.signPsbtWithDescriptor(
+          withPreimage,
+          descriptor: _privateTaprootConditionalDescriptor(signers),
+          isTestnet: true,
+        )).isFinalized,
         isTrue,
       );
     });
@@ -823,7 +844,7 @@ void main() {
       var current = unsigned;
       final expectedSignedKeyIds = <String>{};
       for (final signerIndex in order) {
-        final signed = datasource.signPsbtWithDescriptor(
+        final signed = await datasource.signPsbtWithDescriptor(
           current,
           descriptor: _privateTaprootScriptDescriptor(signers, signerIndex),
           isTestnet: true,
@@ -858,66 +879,72 @@ void main() {
     }
   });
 
-  test('rejects a Taproot signature not authorized by the current PSBT', () {
-    final descriptor = _taprootScriptDescriptor(
-      externalKeys: signers.map((signer) => signer.externalPublic).toList(),
-      internalKeys: signers.map((signer) => signer.internalPublic).toList(),
-    );
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'taproot-returned-origin',
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
-    final descriptorKeys = _descriptorKeyModels(
-      BdkFacade.parsePublicTwoPathDescriptor(
+  test(
+    'rejects a Taproot signature not authorized by the current PSBT',
+    () async {
+      final descriptor = _taprootScriptDescriptor(
+        externalKeys: signers.map((signer) => signer.externalPublic).toList(),
+        internalKeys: signers.map((signer) => signer.internalPublic).toList(),
+      );
+      final wallet =
+          WalletModel.publicBdk(
+                id: 'taproot-returned-origin',
+                descriptor: descriptor,
+                isTestnet: true,
+              )
+              as PublicBdkWalletModel;
+      final descriptorKeys = _descriptorKeyModels(
+        BdkFacade.parsePublicTwoPathDescriptor(
+          descriptor: descriptor,
+          isTestnet: true,
+        ).keys,
+      );
+      final policy = BitcoinWalletPolicyMapper.toEntity(
+        datasource.analyzePolicy(
+          wallet: wallet,
+          descriptorKeys: descriptorKeys,
+        ),
+      );
+      final unsigned = buildUnsignedPsbt(
         descriptor: descriptor,
+        policyPath: policy.buildPath(_selectThresholdPath(policy)),
+      );
+      final current = bitcoin_base.Psbt.fromBase64(unsigned);
+      current.input.replaceInput(
+        0,
+        current.input.entries.single.where((entry) {
+          if (entry
+              case final bitcoin_base.PsbtInputTaprootKeyBip32DerivationPath
+                  origin) {
+            return hex.encode(origin.fingerprint) != signers[2].fingerprint;
+          }
+          return true;
+        }).toList(),
+      );
+      final returned = await datasource.signPsbtWithDescriptor(
+        unsigned,
+        descriptor: _privateTaprootScriptDescriptor(signers, 2),
         isTestnet: true,
-      ).keys,
-    );
-    final policy = BitcoinWalletPolicyMapper.toEntity(
-      datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
-    );
-    final unsigned = buildUnsignedPsbt(
-      descriptor: descriptor,
-      policyPath: policy.buildPath(_selectThresholdPath(policy)),
-    );
-    final current = bitcoin_base.Psbt.fromBase64(unsigned);
-    current.input.replaceInput(
-      0,
-      current.input.entries.single.where((entry) {
-        if (entry
-            case final bitcoin_base.PsbtInputTaprootKeyBip32DerivationPath
-                origin) {
-          return hex.encode(origin.fingerprint) != signers[2].fingerprint;
-        }
-        return true;
-      }).toList(),
-    );
-    final returned = datasource.signPsbtWithDescriptor(
-      unsigned,
-      descriptor: _privateTaprootScriptDescriptor(signers, 2),
-      isTestnet: true,
-      tryFinalize: false,
-    );
+        tryFinalize: false,
+      );
 
-    expect(
-      () => datasource.validateExternalPartialPsbt(
-        currentPsbtBase64: current.toBase64(),
-        signedPsbtBase64: returned.psbt,
-      ),
-      throwsA(isA<InvalidBitcoinPsbtException>()),
-    );
-  });
+      expect(
+        () => datasource.validateExternalPartialPsbt(
+          currentPsbtBase64: current.toBase64(),
+          signedPsbtBase64: returned.psbt,
+        ),
+        throwsA(isA<InvalidBitcoinPsbtException>()),
+      );
+    },
+  );
 
-  test('rejects forged and unsupported Taproot signatures', () {
+  test('rejects forged and unsupported Taproot signatures', () async {
     final descriptor = _taprootScriptDescriptor(
       externalKeys: signers.map((signer) => signer.externalPublic).toList(),
       internalKeys: signers.map((signer) => signer.internalPublic).toList(),
     );
     final unsigned = buildUnsignedPsbt(descriptor: descriptor);
-    final signed = datasource.signPsbtWithDescriptor(
+    final signed = await datasource.signPsbtWithDescriptor(
       unsigned,
       descriptor: _privateTaprootScriptDescriptor(signers, 0),
       isTestnet: true,
@@ -953,7 +980,7 @@ void main() {
       internalKeys: signers.map((signer) => signer.internalPublic).toList(),
     );
     final unsigned = buildUnsignedPsbt(descriptor: descriptor);
-    final signed = datasource.signPsbtWithDescriptor(
+    final signed = await datasource.signPsbtWithDescriptor(
       unsigned,
       descriptor: _privateTaprootScriptDescriptor(signers, 0),
       isTestnet: true,
@@ -1024,7 +1051,7 @@ void main() {
       policyPath: policy.buildPath(selection),
     );
     final signedPsbt = bdk.Psbt(psbtBase64: unfilteredUnsigned);
-    final signingWallet = BdkFacade.createEphemeralDescriptorWallet(
+    final signingWallet = createFixtureDescriptorWallet(
       descriptor: _taprootKeyAndScriptDescriptor(
         externalInternalKey: signers[0].externalPrivate,
         externalLeafKey: signers[1].externalPublic,

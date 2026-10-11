@@ -1,22 +1,20 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import '../../bullvault_secrets_fixture.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -128,34 +126,8 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockSwapRepository extends Mock implements BoltzSwapRepository {}
 
-class _MemorySeedDatasource extends Fake implements SeedDatasource {
-  final Map<String, SeedModel> seeds = {};
-  bool failWrites = false;
-
-  @override
-  Future<bool> exists(String fingerprint) async =>
-      seeds.containsKey(fingerprint);
-
-  @override
-  Future<SeedModel> get(String fingerprint) async => seeds[fingerprint]!;
-
-  @override
-  Future<void> store({
-    required String fingerprint,
-    required SeedModel seed,
-  }) async {
-    if (failWrites) throw Exception('Storage unavailable');
-    seeds[fingerprint] = seed;
-  }
-
-  @override
-  Future<void> delete(String fingerprint) async => seeds.remove(fingerprint);
-}
-
-class _MockGetDefaultSeedUsecase extends Mock
-    implements GetDefaultSeedUsecase {}
-
-class _MockGetAllSeedsUsecase extends Mock implements GetAllSeedsUsecase {}
+class _MockGetBullVaultSecretUsecase extends Mock
+    implements GetBullVaultSecretUsecase {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
@@ -213,16 +185,13 @@ void main() {
   late _TestRepository repository;
   late _ParsingDescriptorPort descriptorPort;
   late _MockGetSettingsUsecase getSettings;
-  late _MockGetDefaultSeedUsecase getDefaultSeed;
-  late _MockGetAllSeedsUsecase getAllSeeds;
+  late _MockGetBullVaultSecretUsecase getDefaultSeed;
   late _MockGetWalletUsecase getWallet;
   late _MockReserveBip48AccountUsecase reserveAccount;
   late _MockDeleteWalletUsecase deleteWallet;
   late _MockWalletSignerOwnershipPort walletSignerOwnership;
   late RestoreBullVaultUsecase usecase;
-  late _MemorySeedDatasource seedDatasource;
-  late SeedRepository seedRepository;
-  late EnsureCanonicalSeedUsecase ensureCanonicalSeed;
+  late BullVaultSecretsFixture secretFixture;
   late List<BullVaultSignerKey> signers;
   late BullVaultPolicy policy;
 
@@ -232,16 +201,12 @@ void main() {
     codec = BullVaultRecoveryPackageCodec(descriptorService);
     repository = _TestRepository(codec);
     getSettings = _MockGetSettingsUsecase();
-    getDefaultSeed = _MockGetDefaultSeedUsecase();
-    getAllSeeds = _MockGetAllSeedsUsecase();
-    when(() => getAllSeeds.execute()).thenAnswer((_) async => const Ok([]));
+    getDefaultSeed = _MockGetBullVaultSecretUsecase();
     getWallet = _MockGetWalletUsecase();
     reserveAccount = _MockReserveBip48AccountUsecase();
     deleteWallet = _MockDeleteWalletUsecase();
     walletSignerOwnership = _MockWalletSignerOwnershipPort();
-    seedDatasource = _MemorySeedDatasource();
-    seedRepository = SeedRepository(source: seedDatasource);
-    ensureCanonicalSeed = EnsureCanonicalSeedUsecase(seedRepository);
+    secretFixture = BullVaultSecretsFixture();
     usecase = RestoreBullVaultUsecase(
       repository,
       descriptorPort,
@@ -252,8 +217,7 @@ void main() {
       reserveAccount,
       deleteWallet,
       walletSignerOwnership,
-      getAllSeeds,
-      ensureCanonicalSeed,
+      secretFixture.secrets,
     );
     signers = [
       _signer(BullVaultSignerRole.everyday, deriveSignerKeys(testMnemonics[0])),
@@ -306,9 +270,8 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.testnet),
     ).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords: testMnemonics.first.split(' '),
-      ).toEntity(),
+      (_) async =>
+          Ok(await secretFixture.mnemonic(testMnemonics.first.split(' '))),
     );
     when(
       () => reserveAccount.execute(
@@ -319,7 +282,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(0));
     when(
       () => deleteWallet.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
   });
 
   test(
@@ -392,8 +355,7 @@ void main() {
       reserveAccount,
       deleteWallet,
       walletSignerOwnership,
-      getAllSeeds,
-      ensureCanonicalSeed,
+      secretFixture.secrets,
     );
     final package = codec.encode(BullVaultRecoveryPackage(policy: policy));
 
@@ -654,9 +616,8 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.testnet),
     ).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords: testMnemonics[1].split(' '),
-      ).toEntity(),
+      (_) async =>
+          Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
     );
     final result = await usecase.execute(
       kind: BullVaultRestoreInputKind.descriptor,
@@ -690,25 +651,16 @@ void main() {
     test(
       'preserves an imported mnemonic for vault recovery (recovery: $recovery, unlocked: ${passphrase != null})',
       () async {
-        final original =
-            SeedModel.mnemonic(
-                  mnemonicWords: testMnemonics.first.split(' '),
-                  passphrase: 'vault passphrase',
-                ).toEntity()
-                as MnemonicSeed;
-        seedDatasource.seeds[original.masterFingerprint] = SeedModel.fromEntity(
-          original,
+        final original = await secretFixture.mnemonic(
+          testMnemonics.first.split(' '),
+          passphrase: 'vault passphrase',
         );
         when(
           () => getDefaultSeed.execute(environment: Environment.testnet),
         ).thenAnswer(
-          (_) async => SeedModel.mnemonic(
-            mnemonicWords: testMnemonics[1].split(' '),
-          ).toEntity(),
+          (_) async =>
+              Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
         );
-        when(
-          () => getAllSeeds.execute(),
-        ).thenAnswer((_) async => Ok([original]));
         final protectedPolicy = _passphrasePolicy(
           descriptorPort: descriptorPort,
           passphrase: 'vault passphrase',
@@ -729,23 +681,20 @@ void main() {
               ? BullVaultMobileAccess.recoveryOnly
               : BullVaultMobileAccess.available,
         );
-        final canonical = SeedModel.mnemonic(
-          mnemonicWords: original.mnemonicWords,
+        final canonical = await secretFixture.mnemonic(
+          testMnemonics.first.split(' '),
         );
-        expect(
-          restored.record.mobileSeedFingerprint,
-          canonical.masterFingerprint,
-        );
+        expect(restored.record.mobileSeedFingerprint, canonical.id.hex);
         expect(
           restored.wallet.signers
               .where((signer) => signer.signer == SignerEntity.local)
               .single
               .localSeedFingerprint,
-          canonical.masterFingerprint,
+          canonical.id.hex,
         );
         verify(
           () => reserveAccount.execute(
-            seedFingerprint: canonical.masterFingerprint,
+            seedFingerprint: canonical.id.hex,
             coinType: 1,
             account: restored.record.mobileAccount!,
           ),
@@ -757,7 +706,7 @@ void main() {
           publicDescriptor: 'wpkh(xpub/<0;1>/*)',
           signers: [
             WalletSigner.single(
-              masterFingerprint: original.masterFingerprint,
+              masterFingerprint: original.id.hex,
               xpubFingerprint: '',
               xpub: 'xpub',
               signer: SignerEntity.local,
@@ -771,43 +720,40 @@ void main() {
         final swaps = _MockSwapRepository();
         when(
           () => wallets.getWallet(ordinaryWallet.id),
-        ).thenAnswer((_) async => ordinaryWallet);
+        ).thenAnswer((_) async => Ok(ordinaryWallet));
         when(
           () => wallets.deleteWallet(walletId: ordinaryWallet.id),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) async => const Ok(null));
         when(
           () => wallets.getWallets(),
-        ).thenAnswer((_) async => [restored.wallet]);
+        ).thenAnswer((_) async => Ok([restored.wallet]));
         when(
           () => swaps.getOngoingSwaps(walletId: ordinaryWallet.id),
         ).thenAnswer((_) async => []);
-        await DeleteWalletUsecase(
+        final deleted = await DeleteWalletUsecase(
           walletRepository: wallets,
           swapRepository: swaps,
-          seedRepository: seedRepository,
+          secrets: secretFixture.secrets,
         ).execute(walletId: ordinaryWallet.id);
+        expect(deleted, isA<Ok>());
 
-        final retained = await seedRepository.get(
-          restored.record.mobileSeedFingerprint!,
-        );
-        expect((retained as MnemonicSeed).passphrase, isNull);
+        final retained =
+            (await secretFixture.secrets.fetch(canonical.id)
+                    as Ok<Secret, SecretFailure>)
+                .value;
+        expect(retained.info.hasPassphrase, isFalse);
         final key = recovery
             ? protectedPolicy.delayedMobileRecoveryKey!
             : protectedPolicy.everydayKey;
-        final signingSeed = recovery
-            ? retained
-            : SeedModel.mnemonic(
-                mnemonicWords: retained.mnemonicWords,
-                passphrase: passphrase,
-              ).toEntity();
-        expect(
-          Bip32Derivation.seedMatchesXpub(
-            seedBytes: signingSeed.bytes,
-            derivationPath: key.accountKey.derivationPath!,
-            xpub: key.accountKey.xpub,
-          ),
-          isTrue,
-        );
+        final account =
+            (await retained.derive.account(
+                      derivationPath: key.accountKey.derivationPath!,
+                      network: BitcoinNetwork.testnet,
+                      passphrase: recovery ? '' : passphrase,
+                    )
+                    as Ok<PublicAccountKey, SecretFailure>)
+                .value;
+        expect(account.xpub, key.accountKey.xpub);
       },
     );
   }
@@ -815,15 +761,14 @@ void main() {
   test(
     'does not publish local ownership when the seed cannot be stored',
     () async {
-      final imported = SeedModel.mnemonic(
-        mnemonicWords: testMnemonics.first.split(' '),
+      final imported = await secretFixture.mnemonic(
+        testMnemonics.first.split(' '),
         passphrase: 'import passphrase',
       );
-      seedDatasource.seeds[imported.masterFingerprint] = imported;
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer((_) async => imported.toEntity());
-      seedDatasource.failWrites = true;
+      ).thenAnswer((_) async => Ok(imported));
+      secretFixture.storage.writesFail = true;
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
         source: policy.descriptor,
@@ -1374,7 +1319,9 @@ void main() {
       repository.readFailure = const BullVaultCreationFailure();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('wallet deletion failed'));
+      ).thenAnswer(
+        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
+      );
 
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -1502,11 +1449,13 @@ BullVaultPolicy _passphrasePolicy({
     required bool requiresPassphrase,
   }) {
     final seedBytes = Uint8List.fromList(mnemonic.seed);
-    final xpub = Bip32Derivation.deriveXpub(
-      seedBytes: seedBytes,
-      derivationPath: path,
-      network: Network.bitcoinTestnet,
-    );
+    final xpub = bip32.Bip32Keys.fromSeed(
+      seedBytes,
+      network: bip32.NetworkType(
+        wif: 0x80,
+        bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
+      ),
+    ).derivePath(path).neutered.toBase58();
     return BullVaultSignerKey(
       role: role,
       accountKey: WalletDescriptorKey(

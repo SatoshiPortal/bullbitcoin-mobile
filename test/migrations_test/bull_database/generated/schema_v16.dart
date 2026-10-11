@@ -8089,565 +8089,6 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   }
 }
 
-class Prices extends Table with TableInfo<Prices, PricesData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Prices(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
-  );
-  late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
-    'from_currency',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
-    'to_currency',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> interval = GeneratedColumn<String>(
-    'interval',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<double> marketPrice = GeneratedColumn<double>(
-    'market_price',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<double> price = GeneratedColumn<double>(
-    'price',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> priceCurrency = GeneratedColumn<String>(
-    'price_currency',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<int> precision = GeneratedColumn<int>(
-    'precision',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<double> indexPrice = GeneratedColumn<double>(
-    'index_price',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<double> userPrice = GeneratedColumn<double>(
-    'user_price',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    fromCurrency,
-    toCurrency,
-    interval,
-    marketPrice,
-    price,
-    priceCurrency,
-    precision,
-    indexPrice,
-    userPrice,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'prices';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {fromCurrency, toCurrency, interval, createdAt},
-  ];
-  @override
-  PricesData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PricesData(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      fromCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}from_currency'],
-      )!,
-      toCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}to_currency'],
-      )!,
-      interval: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}interval'],
-      )!,
-      marketPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}market_price'],
-      ),
-      price: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}price'],
-      ),
-      priceCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}price_currency'],
-      ),
-      precision: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}precision'],
-      ),
-      indexPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}index_price'],
-      ),
-      userPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}user_price'],
-      ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  Prices createAlias(String alias) {
-    return Prices(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const [
-    'UNIQUE(from_currency, to_currency, interval, created_at)',
-  ];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class PricesData extends DataClass implements Insertable<PricesData> {
-  final int id;
-  final String fromCurrency;
-  final String toCurrency;
-  final String interval;
-  final double? marketPrice;
-  final double? price;
-  final String? priceCurrency;
-  final int? precision;
-  final double? indexPrice;
-  final double? userPrice;
-  final String createdAt;
-  const PricesData({
-    required this.id,
-    required this.fromCurrency,
-    required this.toCurrency,
-    required this.interval,
-    this.marketPrice,
-    this.price,
-    this.priceCurrency,
-    this.precision,
-    this.indexPrice,
-    this.userPrice,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['from_currency'] = Variable<String>(fromCurrency);
-    map['to_currency'] = Variable<String>(toCurrency);
-    map['interval'] = Variable<String>(interval);
-    if (!nullToAbsent || marketPrice != null) {
-      map['market_price'] = Variable<double>(marketPrice);
-    }
-    if (!nullToAbsent || price != null) {
-      map['price'] = Variable<double>(price);
-    }
-    if (!nullToAbsent || priceCurrency != null) {
-      map['price_currency'] = Variable<String>(priceCurrency);
-    }
-    if (!nullToAbsent || precision != null) {
-      map['precision'] = Variable<int>(precision);
-    }
-    if (!nullToAbsent || indexPrice != null) {
-      map['index_price'] = Variable<double>(indexPrice);
-    }
-    if (!nullToAbsent || userPrice != null) {
-      map['user_price'] = Variable<double>(userPrice);
-    }
-    map['created_at'] = Variable<String>(createdAt);
-    return map;
-  }
-
-  PricesCompanion toCompanion(bool nullToAbsent) {
-    return PricesCompanion(
-      id: Value(id),
-      fromCurrency: Value(fromCurrency),
-      toCurrency: Value(toCurrency),
-      interval: Value(interval),
-      marketPrice: marketPrice == null && nullToAbsent
-          ? const Value.absent()
-          : Value(marketPrice),
-      price: price == null && nullToAbsent
-          ? const Value.absent()
-          : Value(price),
-      priceCurrency: priceCurrency == null && nullToAbsent
-          ? const Value.absent()
-          : Value(priceCurrency),
-      precision: precision == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precision),
-      indexPrice: indexPrice == null && nullToAbsent
-          ? const Value.absent()
-          : Value(indexPrice),
-      userPrice: userPrice == null && nullToAbsent
-          ? const Value.absent()
-          : Value(userPrice),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory PricesData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PricesData(
-      id: serializer.fromJson<int>(json['id']),
-      fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
-      toCurrency: serializer.fromJson<String>(json['toCurrency']),
-      interval: serializer.fromJson<String>(json['interval']),
-      marketPrice: serializer.fromJson<double?>(json['marketPrice']),
-      price: serializer.fromJson<double?>(json['price']),
-      priceCurrency: serializer.fromJson<String?>(json['priceCurrency']),
-      precision: serializer.fromJson<int?>(json['precision']),
-      indexPrice: serializer.fromJson<double?>(json['indexPrice']),
-      userPrice: serializer.fromJson<double?>(json['userPrice']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'fromCurrency': serializer.toJson<String>(fromCurrency),
-      'toCurrency': serializer.toJson<String>(toCurrency),
-      'interval': serializer.toJson<String>(interval),
-      'marketPrice': serializer.toJson<double?>(marketPrice),
-      'price': serializer.toJson<double?>(price),
-      'priceCurrency': serializer.toJson<String?>(priceCurrency),
-      'precision': serializer.toJson<int?>(precision),
-      'indexPrice': serializer.toJson<double?>(indexPrice),
-      'userPrice': serializer.toJson<double?>(userPrice),
-      'createdAt': serializer.toJson<String>(createdAt),
-    };
-  }
-
-  PricesData copyWith({
-    int? id,
-    String? fromCurrency,
-    String? toCurrency,
-    String? interval,
-    Value<double?> marketPrice = const Value.absent(),
-    Value<double?> price = const Value.absent(),
-    Value<String?> priceCurrency = const Value.absent(),
-    Value<int?> precision = const Value.absent(),
-    Value<double?> indexPrice = const Value.absent(),
-    Value<double?> userPrice = const Value.absent(),
-    String? createdAt,
-  }) => PricesData(
-    id: id ?? this.id,
-    fromCurrency: fromCurrency ?? this.fromCurrency,
-    toCurrency: toCurrency ?? this.toCurrency,
-    interval: interval ?? this.interval,
-    marketPrice: marketPrice.present ? marketPrice.value : this.marketPrice,
-    price: price.present ? price.value : this.price,
-    priceCurrency: priceCurrency.present
-        ? priceCurrency.value
-        : this.priceCurrency,
-    precision: precision.present ? precision.value : this.precision,
-    indexPrice: indexPrice.present ? indexPrice.value : this.indexPrice,
-    userPrice: userPrice.present ? userPrice.value : this.userPrice,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  PricesData copyWithCompanion(PricesCompanion data) {
-    return PricesData(
-      id: data.id.present ? data.id.value : this.id,
-      fromCurrency: data.fromCurrency.present
-          ? data.fromCurrency.value
-          : this.fromCurrency,
-      toCurrency: data.toCurrency.present
-          ? data.toCurrency.value
-          : this.toCurrency,
-      interval: data.interval.present ? data.interval.value : this.interval,
-      marketPrice: data.marketPrice.present
-          ? data.marketPrice.value
-          : this.marketPrice,
-      price: data.price.present ? data.price.value : this.price,
-      priceCurrency: data.priceCurrency.present
-          ? data.priceCurrency.value
-          : this.priceCurrency,
-      precision: data.precision.present ? data.precision.value : this.precision,
-      indexPrice: data.indexPrice.present
-          ? data.indexPrice.value
-          : this.indexPrice,
-      userPrice: data.userPrice.present ? data.userPrice.value : this.userPrice,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PricesData(')
-          ..write('id: $id, ')
-          ..write('fromCurrency: $fromCurrency, ')
-          ..write('toCurrency: $toCurrency, ')
-          ..write('interval: $interval, ')
-          ..write('marketPrice: $marketPrice, ')
-          ..write('price: $price, ')
-          ..write('priceCurrency: $priceCurrency, ')
-          ..write('precision: $precision, ')
-          ..write('indexPrice: $indexPrice, ')
-          ..write('userPrice: $userPrice, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    fromCurrency,
-    toCurrency,
-    interval,
-    marketPrice,
-    price,
-    priceCurrency,
-    precision,
-    indexPrice,
-    userPrice,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PricesData &&
-          other.id == this.id &&
-          other.fromCurrency == this.fromCurrency &&
-          other.toCurrency == this.toCurrency &&
-          other.interval == this.interval &&
-          other.marketPrice == this.marketPrice &&
-          other.price == this.price &&
-          other.priceCurrency == this.priceCurrency &&
-          other.precision == this.precision &&
-          other.indexPrice == this.indexPrice &&
-          other.userPrice == this.userPrice &&
-          other.createdAt == this.createdAt);
-}
-
-class PricesCompanion extends UpdateCompanion<PricesData> {
-  final Value<int> id;
-  final Value<String> fromCurrency;
-  final Value<String> toCurrency;
-  final Value<String> interval;
-  final Value<double?> marketPrice;
-  final Value<double?> price;
-  final Value<String?> priceCurrency;
-  final Value<int?> precision;
-  final Value<double?> indexPrice;
-  final Value<double?> userPrice;
-  final Value<String> createdAt;
-  const PricesCompanion({
-    this.id = const Value.absent(),
-    this.fromCurrency = const Value.absent(),
-    this.toCurrency = const Value.absent(),
-    this.interval = const Value.absent(),
-    this.marketPrice = const Value.absent(),
-    this.price = const Value.absent(),
-    this.priceCurrency = const Value.absent(),
-    this.precision = const Value.absent(),
-    this.indexPrice = const Value.absent(),
-    this.userPrice = const Value.absent(),
-    this.createdAt = const Value.absent(),
-  });
-  PricesCompanion.insert({
-    this.id = const Value.absent(),
-    required String fromCurrency,
-    required String toCurrency,
-    required String interval,
-    this.marketPrice = const Value.absent(),
-    this.price = const Value.absent(),
-    this.priceCurrency = const Value.absent(),
-    this.precision = const Value.absent(),
-    this.indexPrice = const Value.absent(),
-    this.userPrice = const Value.absent(),
-    required String createdAt,
-  }) : fromCurrency = Value(fromCurrency),
-       toCurrency = Value(toCurrency),
-       interval = Value(interval),
-       createdAt = Value(createdAt);
-  static Insertable<PricesData> custom({
-    Expression<int>? id,
-    Expression<String>? fromCurrency,
-    Expression<String>? toCurrency,
-    Expression<String>? interval,
-    Expression<double>? marketPrice,
-    Expression<double>? price,
-    Expression<String>? priceCurrency,
-    Expression<int>? precision,
-    Expression<double>? indexPrice,
-    Expression<double>? userPrice,
-    Expression<String>? createdAt,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (fromCurrency != null) 'from_currency': fromCurrency,
-      if (toCurrency != null) 'to_currency': toCurrency,
-      if (interval != null) 'interval': interval,
-      if (marketPrice != null) 'market_price': marketPrice,
-      if (price != null) 'price': price,
-      if (priceCurrency != null) 'price_currency': priceCurrency,
-      if (precision != null) 'precision': precision,
-      if (indexPrice != null) 'index_price': indexPrice,
-      if (userPrice != null) 'user_price': userPrice,
-      if (createdAt != null) 'created_at': createdAt,
-    });
-  }
-
-  PricesCompanion copyWith({
-    Value<int>? id,
-    Value<String>? fromCurrency,
-    Value<String>? toCurrency,
-    Value<String>? interval,
-    Value<double?>? marketPrice,
-    Value<double?>? price,
-    Value<String?>? priceCurrency,
-    Value<int?>? precision,
-    Value<double?>? indexPrice,
-    Value<double?>? userPrice,
-    Value<String>? createdAt,
-  }) {
-    return PricesCompanion(
-      id: id ?? this.id,
-      fromCurrency: fromCurrency ?? this.fromCurrency,
-      toCurrency: toCurrency ?? this.toCurrency,
-      interval: interval ?? this.interval,
-      marketPrice: marketPrice ?? this.marketPrice,
-      price: price ?? this.price,
-      priceCurrency: priceCurrency ?? this.priceCurrency,
-      precision: precision ?? this.precision,
-      indexPrice: indexPrice ?? this.indexPrice,
-      userPrice: userPrice ?? this.userPrice,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (fromCurrency.present) {
-      map['from_currency'] = Variable<String>(fromCurrency.value);
-    }
-    if (toCurrency.present) {
-      map['to_currency'] = Variable<String>(toCurrency.value);
-    }
-    if (interval.present) {
-      map['interval'] = Variable<String>(interval.value);
-    }
-    if (marketPrice.present) {
-      map['market_price'] = Variable<double>(marketPrice.value);
-    }
-    if (price.present) {
-      map['price'] = Variable<double>(price.value);
-    }
-    if (priceCurrency.present) {
-      map['price_currency'] = Variable<String>(priceCurrency.value);
-    }
-    if (precision.present) {
-      map['precision'] = Variable<int>(precision.value);
-    }
-    if (indexPrice.present) {
-      map['index_price'] = Variable<double>(indexPrice.value);
-    }
-    if (userPrice.present) {
-      map['user_price'] = Variable<double>(userPrice.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PricesCompanion(')
-          ..write('id: $id, ')
-          ..write('fromCurrency: $fromCurrency, ')
-          ..write('toCurrency: $toCurrency, ')
-          ..write('interval: $interval, ')
-          ..write('marketPrice: $marketPrice, ')
-          ..write('price: $price, ')
-          ..write('priceCurrency: $priceCurrency, ')
-          ..write('precision: $precision, ')
-          ..write('indexPrice: $indexPrice, ')
-          ..write('userPrice: $userPrice, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class FrozenUtxos extends Table with TableInfo<FrozenUtxos, FrozenUtxosData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -11086,22 +10527,6 @@ class SendTransactions extends Table
     requiredDuringInsert: false,
     $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<String> recipient = GeneratedColumn<String>(
-    'recipient',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> amount = GeneratedColumn<String>(
-    'amount',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
   late final GeneratedColumn<String> amountCurrencyCode =
       GeneratedColumn<String>(
         'amount_currency_code',
@@ -11111,13 +10536,14 @@ class SendTransactions extends Table
         requiredDuringInsert: true,
         $customConstraints: 'NOT NULL',
       );
-  late final GeneratedColumn<int> sendMax = GeneratedColumn<int>(
-    'send_max',
+  late final GeneratedColumn<int> isSweep = GeneratedColumn<int>(
+    'is_sweep',
     aliasedName,
     false,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (send_max IN (0, 1))',
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_sweep IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> feeSelection = GeneratedColumn<String>(
     'fee_selection',
@@ -11208,10 +10634,8 @@ class SendTransactions extends Table
     walletId,
     stage,
     label,
-    recipient,
-    amount,
     amountCurrencyCode,
-    sendMax,
+    isSweep,
     feeSelection,
     customFeeKind,
     customFeeValue,
@@ -11250,21 +10674,13 @@ class SendTransactions extends Table
         DriftSqlType.string,
         data['${effectivePrefix}label'],
       ),
-      recipient: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}recipient'],
-      )!,
-      amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}amount'],
-      )!,
       amountCurrencyCode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}amount_currency_code'],
       )!,
-      sendMax: attachedDatabase.typeMapping.read(
+      isSweep: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}send_max'],
+        data['${effectivePrefix}is_sweep'],
       )!,
       feeSelection: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -11333,10 +10749,8 @@ class SendTransactionsData extends DataClass
   final String walletId;
   final String stage;
   final String? label;
-  final String recipient;
-  final String amount;
   final String amountCurrencyCode;
-  final int sendMax;
+  final int isSweep;
   final String feeSelection;
   final String? customFeeKind;
   final int? customFeeValue;
@@ -11352,10 +10766,8 @@ class SendTransactionsData extends DataClass
     required this.walletId,
     required this.stage,
     this.label,
-    required this.recipient,
-    required this.amount,
     required this.amountCurrencyCode,
-    required this.sendMax,
+    required this.isSweep,
     required this.feeSelection,
     this.customFeeKind,
     this.customFeeValue,
@@ -11376,10 +10788,8 @@ class SendTransactionsData extends DataClass
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
     }
-    map['recipient'] = Variable<String>(recipient);
-    map['amount'] = Variable<String>(amount);
     map['amount_currency_code'] = Variable<String>(amountCurrencyCode);
-    map['send_max'] = Variable<int>(sendMax);
+    map['is_sweep'] = Variable<int>(isSweep);
     map['fee_selection'] = Variable<String>(feeSelection);
     if (!nullToAbsent || customFeeKind != null) {
       map['custom_fee_kind'] = Variable<String>(customFeeKind);
@@ -11409,10 +10819,8 @@ class SendTransactionsData extends DataClass
       label: label == null && nullToAbsent
           ? const Value.absent()
           : Value(label),
-      recipient: Value(recipient),
-      amount: Value(amount),
       amountCurrencyCode: Value(amountCurrencyCode),
-      sendMax: Value(sendMax),
+      isSweep: Value(isSweep),
       feeSelection: Value(feeSelection),
       customFeeKind: customFeeKind == null && nullToAbsent
           ? const Value.absent()
@@ -11442,12 +10850,10 @@ class SendTransactionsData extends DataClass
       walletId: serializer.fromJson<String>(json['walletId']),
       stage: serializer.fromJson<String>(json['stage']),
       label: serializer.fromJson<String?>(json['label']),
-      recipient: serializer.fromJson<String>(json['recipient']),
-      amount: serializer.fromJson<String>(json['amount']),
       amountCurrencyCode: serializer.fromJson<String>(
         json['amountCurrencyCode'],
       ),
-      sendMax: serializer.fromJson<int>(json['sendMax']),
+      isSweep: serializer.fromJson<int>(json['isSweep']),
       feeSelection: serializer.fromJson<String>(json['feeSelection']),
       customFeeKind: serializer.fromJson<String?>(json['customFeeKind']),
       customFeeValue: serializer.fromJson<int?>(json['customFeeValue']),
@@ -11468,10 +10874,8 @@ class SendTransactionsData extends DataClass
       'walletId': serializer.toJson<String>(walletId),
       'stage': serializer.toJson<String>(stage),
       'label': serializer.toJson<String?>(label),
-      'recipient': serializer.toJson<String>(recipient),
-      'amount': serializer.toJson<String>(amount),
       'amountCurrencyCode': serializer.toJson<String>(amountCurrencyCode),
-      'sendMax': serializer.toJson<int>(sendMax),
+      'isSweep': serializer.toJson<int>(isSweep),
       'feeSelection': serializer.toJson<String>(feeSelection),
       'customFeeKind': serializer.toJson<String?>(customFeeKind),
       'customFeeValue': serializer.toJson<int?>(customFeeValue),
@@ -11490,10 +10894,8 @@ class SendTransactionsData extends DataClass
     String? walletId,
     String? stage,
     Value<String?> label = const Value.absent(),
-    String? recipient,
-    String? amount,
     String? amountCurrencyCode,
-    int? sendMax,
+    int? isSweep,
     String? feeSelection,
     Value<String?> customFeeKind = const Value.absent(),
     Value<int?> customFeeValue = const Value.absent(),
@@ -11509,10 +10911,8 @@ class SendTransactionsData extends DataClass
     walletId: walletId ?? this.walletId,
     stage: stage ?? this.stage,
     label: label.present ? label.value : this.label,
-    recipient: recipient ?? this.recipient,
-    amount: amount ?? this.amount,
     amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
-    sendMax: sendMax ?? this.sendMax,
+    isSweep: isSweep ?? this.isSweep,
     feeSelection: feeSelection ?? this.feeSelection,
     customFeeKind: customFeeKind.present
         ? customFeeKind.value
@@ -11536,12 +10936,10 @@ class SendTransactionsData extends DataClass
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
       stage: data.stage.present ? data.stage.value : this.stage,
       label: data.label.present ? data.label.value : this.label,
-      recipient: data.recipient.present ? data.recipient.value : this.recipient,
-      amount: data.amount.present ? data.amount.value : this.amount,
       amountCurrencyCode: data.amountCurrencyCode.present
           ? data.amountCurrencyCode.value
           : this.amountCurrencyCode,
-      sendMax: data.sendMax.present ? data.sendMax.value : this.sendMax,
+      isSweep: data.isSweep.present ? data.isSweep.value : this.isSweep,
       feeSelection: data.feeSelection.present
           ? data.feeSelection.value
           : this.feeSelection,
@@ -11574,10 +10972,8 @@ class SendTransactionsData extends DataClass
           ..write('walletId: $walletId, ')
           ..write('stage: $stage, ')
           ..write('label: $label, ')
-          ..write('recipient: $recipient, ')
-          ..write('amount: $amount, ')
           ..write('amountCurrencyCode: $amountCurrencyCode, ')
-          ..write('sendMax: $sendMax, ')
+          ..write('isSweep: $isSweep, ')
           ..write('feeSelection: $feeSelection, ')
           ..write('customFeeKind: $customFeeKind, ')
           ..write('customFeeValue: $customFeeValue, ')
@@ -11598,10 +10994,8 @@ class SendTransactionsData extends DataClass
     walletId,
     stage,
     label,
-    recipient,
-    amount,
     amountCurrencyCode,
-    sendMax,
+    isSweep,
     feeSelection,
     customFeeKind,
     customFeeValue,
@@ -11621,10 +11015,8 @@ class SendTransactionsData extends DataClass
           other.walletId == this.walletId &&
           other.stage == this.stage &&
           other.label == this.label &&
-          other.recipient == this.recipient &&
-          other.amount == this.amount &&
           other.amountCurrencyCode == this.amountCurrencyCode &&
-          other.sendMax == this.sendMax &&
+          other.isSweep == this.isSweep &&
           other.feeSelection == this.feeSelection &&
           other.customFeeKind == this.customFeeKind &&
           other.customFeeValue == this.customFeeValue &&
@@ -11642,10 +11034,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
   final Value<String> walletId;
   final Value<String> stage;
   final Value<String?> label;
-  final Value<String> recipient;
-  final Value<String> amount;
   final Value<String> amountCurrencyCode;
-  final Value<int> sendMax;
+  final Value<int> isSweep;
   final Value<String> feeSelection;
   final Value<String?> customFeeKind;
   final Value<int?> customFeeValue;
@@ -11662,10 +11052,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
     this.walletId = const Value.absent(),
     this.stage = const Value.absent(),
     this.label = const Value.absent(),
-    this.recipient = const Value.absent(),
-    this.amount = const Value.absent(),
     this.amountCurrencyCode = const Value.absent(),
-    this.sendMax = const Value.absent(),
+    this.isSweep = const Value.absent(),
     this.feeSelection = const Value.absent(),
     this.customFeeKind = const Value.absent(),
     this.customFeeValue = const Value.absent(),
@@ -11683,10 +11071,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
     required String walletId,
     required String stage,
     this.label = const Value.absent(),
-    required String recipient,
-    required String amount,
     required String amountCurrencyCode,
-    required int sendMax,
+    this.isSweep = const Value.absent(),
     required String feeSelection,
     this.customFeeKind = const Value.absent(),
     this.customFeeValue = const Value.absent(),
@@ -11701,10 +11087,7 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
   }) : id = Value(id),
        walletId = Value(walletId),
        stage = Value(stage),
-       recipient = Value(recipient),
-       amount = Value(amount),
        amountCurrencyCode = Value(amountCurrencyCode),
-       sendMax = Value(sendMax),
        feeSelection = Value(feeSelection),
        replaceByFee = Value(replaceByFee),
        createdAt = Value(createdAt),
@@ -11714,10 +11097,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
     Expression<String>? walletId,
     Expression<String>? stage,
     Expression<String>? label,
-    Expression<String>? recipient,
-    Expression<String>? amount,
     Expression<String>? amountCurrencyCode,
-    Expression<int>? sendMax,
+    Expression<int>? isSweep,
     Expression<String>? feeSelection,
     Expression<String>? customFeeKind,
     Expression<int>? customFeeValue,
@@ -11735,11 +11116,9 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
       if (walletId != null) 'wallet_id': walletId,
       if (stage != null) 'stage': stage,
       if (label != null) 'label': label,
-      if (recipient != null) 'recipient': recipient,
-      if (amount != null) 'amount': amount,
       if (amountCurrencyCode != null)
         'amount_currency_code': amountCurrencyCode,
-      if (sendMax != null) 'send_max': sendMax,
+      if (isSweep != null) 'is_sweep': isSweep,
       if (feeSelection != null) 'fee_selection': feeSelection,
       if (customFeeKind != null) 'custom_fee_kind': customFeeKind,
       if (customFeeValue != null) 'custom_fee_value': customFeeValue,
@@ -11759,10 +11138,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
     Value<String>? walletId,
     Value<String>? stage,
     Value<String?>? label,
-    Value<String>? recipient,
-    Value<String>? amount,
     Value<String>? amountCurrencyCode,
-    Value<int>? sendMax,
+    Value<int>? isSweep,
     Value<String>? feeSelection,
     Value<String?>? customFeeKind,
     Value<int?>? customFeeValue,
@@ -11780,10 +11157,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
       walletId: walletId ?? this.walletId,
       stage: stage ?? this.stage,
       label: label ?? this.label,
-      recipient: recipient ?? this.recipient,
-      amount: amount ?? this.amount,
       amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
-      sendMax: sendMax ?? this.sendMax,
+      isSweep: isSweep ?? this.isSweep,
       feeSelection: feeSelection ?? this.feeSelection,
       customFeeKind: customFeeKind ?? this.customFeeKind,
       customFeeValue: customFeeValue ?? this.customFeeValue,
@@ -11813,17 +11188,11 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
     if (label.present) {
       map['label'] = Variable<String>(label.value);
     }
-    if (recipient.present) {
-      map['recipient'] = Variable<String>(recipient.value);
-    }
-    if (amount.present) {
-      map['amount'] = Variable<String>(amount.value);
-    }
     if (amountCurrencyCode.present) {
       map['amount_currency_code'] = Variable<String>(amountCurrencyCode.value);
     }
-    if (sendMax.present) {
-      map['send_max'] = Variable<int>(sendMax.value);
+    if (isSweep.present) {
+      map['is_sweep'] = Variable<int>(isSweep.value);
     }
     if (feeSelection.present) {
       map['fee_selection'] = Variable<String>(feeSelection.value);
@@ -11868,10 +11237,8 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
           ..write('walletId: $walletId, ')
           ..write('stage: $stage, ')
           ..write('label: $label, ')
-          ..write('recipient: $recipient, ')
-          ..write('amount: $amount, ')
           ..write('amountCurrencyCode: $amountCurrencyCode, ')
-          ..write('sendMax: $sendMax, ')
+          ..write('isSweep: $isSweep, ')
           ..write('feeSelection: $feeSelection, ')
           ..write('customFeeKind: $customFeeKind, ')
           ..write('customFeeValue: $customFeeValue, ')
@@ -11882,6 +11249,333 @@ class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('revision: $revision, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionRecipients extends Table
+    with TableInfo<SendTransactionRecipients, SendTransactionRecipientsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionRecipients(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> recipient = GeneratedColumn<String>(
+    'recipient',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> amount = GeneratedColumn<String>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> receivesRemainder = GeneratedColumn<int>(
+    'receives_remainder',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (receives_remainder IN (0, 1))',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    transactionId,
+    position,
+    recipient,
+    amount,
+    receivesRemainder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_recipients';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, position};
+  @override
+  SendTransactionRecipientsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionRecipientsData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      recipient: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount'],
+      )!,
+      receivesRemainder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}receives_remainder'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionRecipients createAlias(String alias) {
+    return SendTransactionRecipients(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, position)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionRecipientsData extends DataClass
+    implements Insertable<SendTransactionRecipientsData> {
+  final String transactionId;
+  final int position;
+  final String recipient;
+  final String amount;
+  final int receivesRemainder;
+  const SendTransactionRecipientsData({
+    required this.transactionId,
+    required this.position,
+    required this.recipient,
+    required this.amount,
+    required this.receivesRemainder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['position'] = Variable<int>(position);
+    map['recipient'] = Variable<String>(recipient);
+    map['amount'] = Variable<String>(amount);
+    map['receives_remainder'] = Variable<int>(receivesRemainder);
+    return map;
+  }
+
+  SendTransactionRecipientsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionRecipientsCompanion(
+      transactionId: Value(transactionId),
+      position: Value(position),
+      recipient: Value(recipient),
+      amount: Value(amount),
+      receivesRemainder: Value(receivesRemainder),
+    );
+  }
+
+  factory SendTransactionRecipientsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionRecipientsData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      position: serializer.fromJson<int>(json['position']),
+      recipient: serializer.fromJson<String>(json['recipient']),
+      amount: serializer.fromJson<String>(json['amount']),
+      receivesRemainder: serializer.fromJson<int>(json['receivesRemainder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'position': serializer.toJson<int>(position),
+      'recipient': serializer.toJson<String>(recipient),
+      'amount': serializer.toJson<String>(amount),
+      'receivesRemainder': serializer.toJson<int>(receivesRemainder),
+    };
+  }
+
+  SendTransactionRecipientsData copyWith({
+    String? transactionId,
+    int? position,
+    String? recipient,
+    String? amount,
+    int? receivesRemainder,
+  }) => SendTransactionRecipientsData(
+    transactionId: transactionId ?? this.transactionId,
+    position: position ?? this.position,
+    recipient: recipient ?? this.recipient,
+    amount: amount ?? this.amount,
+    receivesRemainder: receivesRemainder ?? this.receivesRemainder,
+  );
+  SendTransactionRecipientsData copyWithCompanion(
+    SendTransactionRecipientsCompanion data,
+  ) {
+    return SendTransactionRecipientsData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      position: data.position.present ? data.position.value : this.position,
+      recipient: data.recipient.present ? data.recipient.value : this.recipient,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      receivesRemainder: data.receivesRemainder.present
+          ? data.receivesRemainder.value
+          : this.receivesRemainder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionRecipientsData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('position: $position, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('receivesRemainder: $receivesRemainder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    transactionId,
+    position,
+    recipient,
+    amount,
+    receivesRemainder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionRecipientsData &&
+          other.transactionId == this.transactionId &&
+          other.position == this.position &&
+          other.recipient == this.recipient &&
+          other.amount == this.amount &&
+          other.receivesRemainder == this.receivesRemainder);
+}
+
+class SendTransactionRecipientsCompanion
+    extends UpdateCompanion<SendTransactionRecipientsData> {
+  final Value<String> transactionId;
+  final Value<int> position;
+  final Value<String> recipient;
+  final Value<String> amount;
+  final Value<int> receivesRemainder;
+  final Value<int> rowid;
+  const SendTransactionRecipientsCompanion({
+    this.transactionId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.recipient = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.receivesRemainder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionRecipientsCompanion.insert({
+    required String transactionId,
+    required int position,
+    required String recipient,
+    required String amount,
+    required int receivesRemainder,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       position = Value(position),
+       recipient = Value(recipient),
+       amount = Value(amount),
+       receivesRemainder = Value(receivesRemainder);
+  static Insertable<SendTransactionRecipientsData> custom({
+    Expression<String>? transactionId,
+    Expression<int>? position,
+    Expression<String>? recipient,
+    Expression<String>? amount,
+    Expression<int>? receivesRemainder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (position != null) 'position': position,
+      if (recipient != null) 'recipient': recipient,
+      if (amount != null) 'amount': amount,
+      if (receivesRemainder != null) 'receives_remainder': receivesRemainder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionRecipientsCompanion copyWith({
+    Value<String>? transactionId,
+    Value<int>? position,
+    Value<String>? recipient,
+    Value<String>? amount,
+    Value<int>? receivesRemainder,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionRecipientsCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      position: position ?? this.position,
+      recipient: recipient ?? this.recipient,
+      amount: amount ?? this.amount,
+      receivesRemainder: receivesRemainder ?? this.receivesRemainder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (recipient.present) {
+      map['recipient'] = Variable<String>(recipient.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<String>(amount.value);
+    }
+    if (receivesRemainder.present) {
+      map['receives_remainder'] = Variable<int>(receivesRemainder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionRecipientsCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('position: $position, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('receivesRemainder: $receivesRemainder, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -13492,12 +13186,13 @@ class DatabaseAtV16 extends GeneratedDatabase {
   late final AutoSwap autoSwap = AutoSwap(this);
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
-  late final Prices prices = Prices(this);
   late final FrozenUtxos frozenUtxos = FrozenUtxos(this);
   late final DismissedAnnouncements dismissedAnnouncements =
       DismissedAnnouncements(this);
   late final OrderSwaps orderSwaps = OrderSwaps(this);
   late final SendTransactions sendTransactions = SendTransactions(this);
+  late final SendTransactionRecipients sendTransactionRecipients =
+      SendTransactionRecipients(this);
   late final SendTransactionInputs sendTransactionInputs =
       SendTransactionInputs(this);
   late final SendTransactionPolicyChoices sendTransactionPolicyChoices =
@@ -13562,11 +13257,11 @@ class DatabaseAtV16 extends GeneratedDatabase {
     autoSwap,
     bip85Derivations,
     recoverbull,
-    prices,
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
     sendTransactions,
+    sendTransactionRecipients,
     sendTransactionInputs,
     sendTransactionPolicyChoices,
     bullVaultRecords,
@@ -13610,6 +13305,15 @@ class DatabaseAtV16 extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('send_transactions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('send_transaction_recipients', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(

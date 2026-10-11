@@ -4,10 +4,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullBorderedTile;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -88,7 +87,7 @@ class _BitcoinPolicyOptionTileState extends State<BitcoinPolicyOptionTile> {
       button: hasChoice,
       enabled: status.available && hasChoice,
       checked: hasChoice ? selected : null,
-      child: BorderedTappableTile(
+      child: BullBorderedTile(
         onTap: !status.available || !hasChoice
             ? null
             : () {

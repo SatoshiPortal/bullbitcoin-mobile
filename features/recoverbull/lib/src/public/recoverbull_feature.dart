@@ -125,7 +125,7 @@ final class RecoverBullFeature {
       'recoverbullFlows',
       extra: RecoverBullFlowRequest(
         RecoverBullFlow.testVault,
-        created.vault,
+        null,
         backupContext: backupContext,
         returnCompletion: true,
       ),

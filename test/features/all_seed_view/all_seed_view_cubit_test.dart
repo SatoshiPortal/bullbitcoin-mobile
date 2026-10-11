@@ -1,14 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -87,7 +81,9 @@ void main() {
     when(
       () => getAllSecretsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSecret]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
+    when(
+      () => getWalletsUsecase.execute(includeHidden: true),
+    ).thenAnswer((_) async => Ok([]));
     when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
 
     cubit = AllSeedViewCubit(
@@ -117,26 +113,18 @@ void main() {
             xpub: 'xpub',
             signer: SignerEntity.local,
             signerDevice: null,
-          ).copyWith(localSeedFingerprint: aSeed.masterFingerprint),
+          ).copyWith(localSeedFingerprint: aSecret.id.hex),
         ],
         scriptType: null,
         publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
         balanceSat: BigInt.zero,
       );
-      when(() => getWalletsUsecase.execute()).thenAnswer((_) async => [wallet]);
-      await cubit.close();
-      cubit = AllSeedViewCubit(
-        getAllSeedsUsecase: getAllSeedsUsecase,
-        getWalletsUsecase: getWalletsUsecase,
-        deleteSeedUsecase: _MockDeleteSeedUsecase(),
-        processAndSeparateSeedsUsecase: ProcessAndSeparateSeedsUsecase(),
-        getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
-        deleteSwapMasterKeyUsecase: _MockDeleteSwapMasterKeyUsecase(),
-      );
-
+      when(
+        () => getWalletsUsecase.execute(includeHidden: true),
+      ).thenAnswer((_) async => Ok([wallet]));
       await cubit.unlock(issueGrant());
 
-      expect(cubit.state.existingWallets, [aSeed]);
+      expect(cubit.state.existingWallets, [aSecret]);
       expect(cubit.state.oldWallets, isEmpty);
     },
   );

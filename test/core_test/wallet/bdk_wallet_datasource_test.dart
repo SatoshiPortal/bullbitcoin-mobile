@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -411,7 +412,7 @@ void main() {
             (txId: utxoLargeTxId, vout: 2),
           ],
         ),
-        throwsA(isA<InsufficientFundsException>()),
+        throwsA(isA<SelectedBitcoinCoinsInsufficientException>()),
       );
     },
   );

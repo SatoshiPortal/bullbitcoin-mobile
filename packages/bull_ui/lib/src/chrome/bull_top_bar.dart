@@ -12,7 +12,9 @@ class BullTopBar extends StatelessWidget {
     super.key,
     required this.title,
     this.onBack,
+    this.backEnabled = true,
     this.onAction,
+    this.action,
     this.actionIcon,
     this.actionBadge = false,
     this.color,
@@ -24,6 +26,11 @@ class BullTopBar extends StatelessWidget {
 
   /// Back-button callback. When null, no back button is shown.
   final VoidCallback? onBack;
+
+  final bool backEnabled;
+
+  /// Custom trailing content, used instead of the action icon.
+  final Widget? action;
 
   /// Trailing-action callback. When null, no trailing action is shown.
   final VoidCallback? onAction;
@@ -54,12 +61,12 @@ class BullTopBar extends StatelessWidget {
           if (onBack != null)
             IconButton(
               icon: const BullIcon(BullIcons.arrowBack),
-              onPressed: onBack,
+              onPressed: backEnabled ? onBack : null,
               iconSize: 24,
               color: colors.text,
               visualDensity: VisualDensity.compact,
             )
-          else if (onAction != null)
+          else if (onAction != null || action != null)
             const SizedBox(width: 40),
           Expanded(
             child: Container(
@@ -75,7 +82,9 @@ class BullTopBar extends StatelessWidget {
                   ),
             ),
           ),
-          if (onAction != null)
+          if (action != null)
+            action!
+          else if (onAction != null)
             Stack(
               clipBehavior: Clip.none,
               children: [

@@ -1,21 +1,18 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_key.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
+import 'package:secrets/secrets.dart' show Secret, SecretExtension;
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 
 final class BullVaultKeyService {
   static const _fixedNumsInternalKey =
@@ -24,30 +21,37 @@ final class BullVaultKeyService {
 
   const BullVaultKeyService(this._descriptorPort);
 
-  Result<BullVaultSignerKey, BullVaultFailure> localKey(
-    Seed seed,
+  Future<Result<BullVaultSignerKey, BullVaultFailure>> localKey(
+    Secret secret,
     int account,
     Network network, {
     required BullVaultSignerRole role,
     bool requiresPassphrase = false,
-  }) {
+    String passphrase = '',
+  }) async {
     try {
       final derivationPath = Bip48Derivation.path(
         coinType: network.coinType,
         account: account,
       );
-      final xpub = Bip32Derivation.deriveXpub(
-        seedBytes: seed.bytes,
+      final derived = await secret.derive.account(
         derivationPath: derivationPath,
-        network: network,
+        network: network.bitcoin,
+        passphrase: passphrase,
       );
+      final accountKey = switch (derived) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
+      if (accountKey == null) return const Err(BullVaultCreationFailure());
+      final xpub = accountKey.xpub;
       return Ok(
         BullVaultSignerKey(
           role: role,
           accountKey: WalletDescriptorKey(
             id: '${role.name}-account',
             signerId: 'everyday',
-            masterFingerprint: seed.masterFingerprint.toLowerCase(),
+            masterFingerprint: accountKey.fingerprint.hex,
             xpubFingerprint: Bip32Derivation.getBip32Xpub(xpub).fingerprintHex,
             xpub: xpub,
             derivationPath: derivationPath,
@@ -154,38 +158,4 @@ final class BullVaultKeyService {
 
   String? _normalizePath(String? path) =>
       path?.replaceAll('h', "'").replaceAll('H', "'");
-
-  Seed? canonicalSeed(Seed seed) {
-    if (seed is! MnemonicSeed) return seed;
-    try {
-      return _mnemonicSeed(seed.mnemonicWords);
-    } on Exception {
-      return null;
-    }
-  }
-
-  Seed? seedWithPassphrase(Seed canonicalSeed, String? passphrase) {
-    if (passphrase == null || passphrase.isEmpty) return canonicalSeed;
-    if (canonicalSeed is! MnemonicSeed) return null;
-    try {
-      return _mnemonicSeed(canonicalSeed.mnemonicWords, passphrase);
-    } on Exception {
-      return null;
-    }
-  }
-
-  Seed _mnemonicSeed(List<String> words, [String passphrase = '']) {
-    final mnemonic = bip39.Mnemonic.fromWords(
-      words: words,
-      passphrase: passphrase,
-    );
-    final bytes = Uint8List.fromList(mnemonic.seed);
-    final fingerprint = bip32.Bip32Keys.fromSeed(bytes).fingerprintHex;
-    return Seed.mnemonic(
-      mnemonicWords: mnemonic.words,
-      passphrase: passphrase.isEmpty ? null : passphrase,
-      bytes: bytes,
-      masterFingerprint: fingerprint,
-    );
-  }
 }

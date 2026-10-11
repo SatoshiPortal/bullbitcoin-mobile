@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -247,7 +246,7 @@ void main() {
     },
   );
 
-  test('unsupported policy paths are rethrown unchanged', () async {
+  test('unsupported policy failures are preserved', () async {
     when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
     when(
       () => payjoin.reservedOutpoints(),
@@ -255,24 +254,25 @@ void main() {
     when(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
-    ).thenThrow(const UnsupportedBitcoinPolicyPathException());
+    ).thenAnswer(
+      (_) async => const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      ),
+    );
 
     await expectLater(
       usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
       ),
-      throwsA(isA<UnsupportedBitcoinPolicyPathException>()),
+      failsWith(isA<BitcoinSigningFailure>()),
     );
   });
 

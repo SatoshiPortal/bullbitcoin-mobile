@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
+import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -5,11 +7,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/labels/domain/note_violation_to_label_failure.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart' show LabelChip;
 import 'package:flutter/material.dart';
