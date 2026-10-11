@@ -64,6 +64,7 @@ class MnemonicWidget extends StatefulWidget {
   final bool allowAutoFillWords;
 
   final String? externalError;
+  final Widget? header;
 
   const MnemonicWidget({
     super.key,
@@ -77,6 +78,7 @@ class MnemonicWidget extends StatefulWidget {
     this.allowMultipleMnemonicLength = true,
     this.allowAutoFillWords = true,
     this.externalError,
+    this.header,
   });
 
   @override
@@ -454,6 +456,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Column(
                 children: [
+                  ?widget.header,
                   if (widget.englishOnly)
                     BullText(
                       context.loc.mnemonicDefaultEnglishOnly,
@@ -566,6 +569,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
 
                   const Gap(16),
                   BullButton.big(
+                    maxLines: null,
                     label: widget.submitLabel ?? context.loc.submitButton,
                     onPressed: onSubmit,
                     bgColor: context.appColors.onSurface,
@@ -634,7 +638,7 @@ class MnemonicWord extends StatelessWidget {
         border: Border.all(color: context.appColors.border),
         color: context.appColors.surface,
       ),
-      height: 41,
+      height: max(41, MediaQuery.textScalerOf(context).scale(24) + 16),
       child: Row(
         children: [
           ListenableBuilder(
@@ -650,8 +654,8 @@ class MnemonicWord extends StatelessWidget {
                   ? pool.any((entry) => Bip39WordList.normalize(entry) == word)
                   : language.isValid(word);
               return Container(
-                height: 34,
-                width: 34,
+                constraints: const BoxConstraints(minHeight: 34, minWidth: 34),
+                padding: const EdgeInsets.all(4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: word.isEmpty
@@ -1359,13 +1363,18 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     // and clear icons go with them: this screen is unusable with a screen
     // reader by design, the recovery phrase is too sensitive to narrate.
     return ExcludeSemantics(
-      child: Row(
-        crossAxisAlignment: .start,
-        spacing: 16,
-        children: [
-          Expanded(child: column(0, splitIndex)),
-          Expanded(child: column(splitIndex, count)),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) =>
+            constraints.maxWidth < MediaQuery.textScalerOf(context).scale(280)
+            ? column(0, count)
+            : Row(
+                crossAxisAlignment: .start,
+                spacing: 16,
+                children: [
+                  Expanded(child: column(0, splitIndex)),
+                  Expanded(child: column(splitIndex, count)),
+                ],
+              ),
       ),
     );
   }
@@ -1387,6 +1396,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
       child: DropdownButton<bip39.MnemonicLength>(
         value: value,
         isExpanded: true,
+        itemHeight: null,
         underline: const SizedBox.shrink(),
         style: _PickerBox.textStyle(context),
         dropdownColor: context.appColors.surface,

@@ -368,6 +368,40 @@ void main() {
     expect(wallet.signers.single.signerDevice, SignerDeviceEntity.jade);
   });
 
+  test('attaches a local signer while its balance is unavailable', () async {
+    final signer = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.remote,
+    );
+    final metadata = WalletMetadataModel(
+      id: 'wallet-id',
+      signers: [signer.toModel()],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+      networkCode: 'bitcoinMainnet',
+    );
+    when(() => metadataDatasource.fetch('wallet-id'))
+        .thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.store(any())).thenAnswer((_) async {});
+    when(() => values.getBalance(wallet: any(named: 'wallet')))
+        .thenThrow(Exception('balance unavailable'));
+    final wallet = await repository.markSignerLocal(
+      walletId: 'wallet-id',
+      signerId: signer.id,
+      seedFingerprint: _fingerprint,
+      passphraseProtectedKeyIds: {},
+    );
+    final stored =
+        verify(() => metadataDatasource.store(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(wallet.signers.single.signer, SignerEntity.local);
+    expect(wallet.signers.single.localSeedFingerprint, _fingerprint);
+    expect(stored.signers.single.localSeedFingerprint, _fingerprint);
+    expect(wallet.balanceSat, isNull);
+  });
+
   test('does not reclassify the Bull on-device signer', () async {
     final signer = _signer(
       masterFingerprint: _fingerprint,

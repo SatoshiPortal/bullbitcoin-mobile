@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_recovery_notice.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_home_alert.dart';
@@ -13,9 +15,17 @@ final class BullVaultHomeContribution extends StatelessWidget {
   const BullVaultHomeContribution({super.key, required this.wallets});
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => GetIt.I<BullVaultHomeAlertCubit>(),
-    child: BullVaultHomeAlert(wallets: wallets),
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (_) => GetIt.I<BullVaultHomeAlertCubit>()),
+      BlocProvider.value(value: GetIt.I<BullVaultRecoveryNoticeCubit>()),
+    ],
+    child: Column(
+      children: [
+        const BullVaultRecoveryNotice(),
+        BullVaultHomeAlert(wallets: wallets),
+      ],
+    ),
   );
 }
 

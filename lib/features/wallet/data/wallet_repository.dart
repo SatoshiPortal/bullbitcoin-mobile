@@ -815,7 +815,7 @@ class WalletRepository
     await _walletMetadataDatasource.store(updatedMetadata);
     return _walletFromMetadata(
       updatedMetadata,
-      await _getBalance(updatedMetadata),
+      await _readBalance(updatedMetadata, sync: false),
     );
   }
 

@@ -23,7 +23,6 @@ final class BullVaultRenewalState {
   final BullVaultRenewResult? renewal;
   final Map<String, String> migrationTransactionIds;
   final Set<String> completedSignerIds;
-  final bool recoveryPackageExported;
   final bool recoveryPackageConfirmed;
   final String? recoveryPackageContent;
   final bool isLoading;
@@ -43,7 +42,6 @@ final class BullVaultRenewalState {
     this.renewal,
     this.migrationTransactionIds = const {},
     this.completedSignerIds = const {},
-    this.recoveryPackageExported = false,
     this.recoveryPackageConfirmed = false,
     this.recoveryPackageContent,
     this.isLoading = false,
@@ -99,7 +97,6 @@ final class BullVaultRenewalState {
     BullVaultRenewResult? renewal,
     Map<String, String>? migrationTransactionIds,
     Set<String>? completedSignerIds,
-    bool? recoveryPackageExported,
     bool? recoveryPackageConfirmed,
     String? recoveryPackageContent,
     bool? isLoading,
@@ -125,8 +122,6 @@ final class BullVaultRenewalState {
     migrationTransactionIds:
         migrationTransactionIds ?? this.migrationTransactionIds,
     completedSignerIds: completedSignerIds ?? this.completedSignerIds,
-    recoveryPackageExported:
-        recoveryPackageExported ?? this.recoveryPackageExported,
     recoveryPackageConfirmed:
         recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
     recoveryPackageContent: clearRecoveryPackageContent

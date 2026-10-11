@@ -5,6 +5,7 @@ import 'package:secrets/secrets.dart';
 
 import '../bullvault_secrets_fixture.dart';
 
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
@@ -68,6 +69,9 @@ class _MockEncodeBullVaultRecoveryPackageUsecase extends Mock
 class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
     implements UpdateBullVaultRegistrationNameUsecase {}
 
+class _NoRecoveryFile extends Fake
+    implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
   testWidgets('requires matching passphrases before completing mobile setup', (
     tester,
@@ -99,6 +103,7 @@ void main() {
       _MockActivateInitialBullVaultUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
       _MockUpdateBullVaultRegistrationNameUsecase(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -142,6 +147,7 @@ void main() {
       _MockActivateInitialBullVaultUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
       _MockUpdateBullVaultRegistrationNameUsecase(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     final router = _completionRouter(cubit);
@@ -172,6 +178,7 @@ void main() {
       _MockActivateInitialBullVaultUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
       _MockUpdateBullVaultRegistrationNameUsecase(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -285,6 +292,7 @@ void main() {
         _MockActivateInitialBullVaultUsecase(),
         _MockEncodeBullVaultRecoveryPackageUsecase(),
         _MockUpdateBullVaultRegistrationNameUsecase(),
+        pickRecoveryFile: _NoRecoveryFile(),
       );
       addTearDown(cubit.close);
       await cubit.load();
@@ -383,6 +391,7 @@ void main() {
       activate,
       encode,
       _MockUpdateBullVaultRegistrationNameUsecase(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -442,6 +451,7 @@ void main() {
       activate,
       encode,
       _MockUpdateBullVaultRegistrationNameUsecase(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -464,7 +474,10 @@ BullVaultCreateResult _readyResult() {
   final result = testBullVaultCreateResult();
   return BullVaultCreateResult(
     wallet: result.wallet,
-    record: result.record.copyWith(recoveryPackageConfirmed: true),
+    record: result.record.copyWith(
+      recoveryPackageConfirmed: true,
+      descriptorTestedAt: DateTime.utc(2026, 9, 18),
+    ),
   );
 }
 
