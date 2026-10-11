@@ -10,10 +10,10 @@ final class ExchangeSettingsStatisticsUnavailableFailure
   const ExchangeSettingsStatisticsUnavailableFailure([super.logMessage]);
 }
 
-/// The account details backing the upload screen could not be retrieved.
-final class ExchangeSettingsAccountUnavailableFailure
+/// The secure file upload status could not be retrieved.
+final class ExchangeSettingsUploadStatusUnavailableFailure
     extends ExchangeSettingsFailure {
-  const ExchangeSettingsAccountUnavailableFailure([super.logMessage]);
+  const ExchangeSettingsUploadStatusUnavailableFailure([super.logMessage]);
 }
 
 /// A document has already been submitted, so no further upload is accepted.

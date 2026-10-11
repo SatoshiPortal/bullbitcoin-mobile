@@ -10,11 +10,10 @@ import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usec
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class ExchangeSettingsLocator {
@@ -22,7 +21,7 @@ class ExchangeSettingsLocator {
     _registerRepositories(locator);
     _registerUsecases(locator);
     _registerFeatureUsecases(locator);
-    _registerCubits(locator);
+    _registerFacade(locator);
   }
 
   static void _registerRepositories(GetIt locator) {
@@ -111,8 +110,8 @@ class ExchangeSettingsLocator {
       ),
     );
 
-    locator.registerFactory<GetExchangeSettingsAccountUsecase>(
-      () => GetExchangeSettingsAccountUsecase(
+    locator.registerFactory<GetSecureFileUploadStatusUsecase>(
+      () => GetSecureFileUploadStatusUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
       ),
     );
@@ -125,17 +124,12 @@ class ExchangeSettingsLocator {
     );
   }
 
-  static void _registerCubits(GetIt locator) {
-    locator.registerFactory<FileUploadCubit>(
-      () => FileUploadCubit(
-        getAccountUsecase: locator<GetExchangeSettingsAccountUsecase>(),
-        uploadDocumentUsecase: locator<UploadExchangeDocumentUsecase>(),
-      ),
-    );
-
-    locator.registerFactory<StatisticsCubit>(
-      () => StatisticsCubit(
+  static void _registerFacade(GetIt locator) {
+    locator.registerLazySingleton<ExchangeSettingsFacade>(
+      () => ExchangeSettingsFacade(
+        getUploadStatusUsecase: locator<GetSecureFileUploadStatusUsecase>(),
         getStatisticsUsecase: locator<GetExchangeStatisticsUsecase>(),
+        uploadDocumentUsecase: locator<UploadExchangeDocumentUsecase>(),
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/secure_file_upload.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/ui/screens/secure_file_upload_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,30 +17,24 @@ import 'package:primitives/primitives.dart';
 const _rawReason =
     'ExchangeApiException[ERR_KYC_403]: recipient bc1qexamplerecipient rejected';
 
-const _userSummary = UserSummary(
-  userNumber: 1,
+const _secureFileUpload = SecureFileUpload(
   userId: 'u-42',
-  groups: ['KYC_IDENTITY_VERIFIED'],
-  profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
-  email: 'sat@example.com',
-  balances: [],
-  dca: UserDca(isActive: false),
-  autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
+  status: KycDocumentStatus.notUploaded,
 );
 
-class _MockGetAccount extends Mock
-    implements GetExchangeSettingsAccountUsecase {}
+class _MockGetUploadStatus extends Mock
+    implements GetSecureFileUploadStatusUsecase {}
 
 class _MockUploadDocument extends Mock
     implements UploadExchangeDocumentUsecase {}
 
-Future<FileUploadCubit> _pump(
+Future<SecureFileUploadCubit> _pump(
   WidgetTester tester, {
-  required Result<UserSummary, ExchangeSettingsFailure> account,
+  required Result<SecureFileUpload, ExchangeSettingsFailure> uploadStatus,
   Result<UploadExchangeDocumentOutcome, ExchangeSettingsFailure>? upload,
 }) async {
-  final getAccount = _MockGetAccount();
-  when(getAccount.execute).thenAnswer((_) async => account);
+  final getUploadStatus = _MockGetUploadStatus();
+  when(getUploadStatus.execute).thenAnswer((_) async => uploadStatus);
 
   final uploadUsecase = _MockUploadDocument();
   if (upload != null) {
@@ -48,8 +43,8 @@ Future<FileUploadCubit> _pump(
     ).thenAnswer((_) async => upload);
   }
 
-  final cubit = FileUploadCubit(
-    getAccountUsecase: getAccount,
+  final cubit = SecureFileUploadCubit(
+    getUploadStatusUsecase: getUploadStatus,
     uploadDocumentUsecase: uploadUsecase,
   );
   addTearDown(cubit.close);
@@ -59,14 +54,14 @@ Future<FileUploadCubit> _pump(
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const ExchangeFileUploadScreen(),
+        builder: (context, state) => const SecureFileUploadScreen(),
       ),
     ],
   );
   addTearDown(router.dispose);
 
   await tester.pumpWidget(
-    BlocProvider<FileUploadCubit>.value(
+    BlocProvider<SecureFileUploadCubit>.value(
       value: cubit,
       child: MaterialApp.router(
         theme: AppTheme.themeData(AppThemeType.light),
@@ -87,10 +82,14 @@ String _painted(WidgetTester tester) => tester
     .join(' | ');
 
 void main() {
-  testWidgets('an account load failure is shown translated', (tester) async {
+  testWidgets('an upload status load failure is shown translated', (
+    tester,
+  ) async {
     await _pump(
       tester,
-      account: const Err(ExchangeSettingsAccountUnavailableFailure(_rawReason)),
+      uploadStatus: const Err(
+        ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
+      ),
     );
 
     expect(
@@ -102,7 +101,9 @@ void main() {
   testWidgets('the raw reason never reaches the screen', (tester) async {
     await _pump(
       tester,
-      account: const Err(ExchangeSettingsAccountUnavailableFailure(_rawReason)),
+      uploadStatus: const Err(
+        ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
+      ),
     );
 
     final painted = _painted(tester);
@@ -117,8 +118,8 @@ void main() {
   ) async {
     final cubit = await _pump(
       tester,
-      account: const Err(
-        ExchangeSettingsAccountUnavailableFailure('no account yet'),
+      uploadStatus: const Err(
+        ExchangeSettingsUploadStatusUnavailableFailure('no upload status yet'),
       ),
       upload: const Err(
         // The exchange's own sentence, as the use-case would carry it.
@@ -135,7 +136,7 @@ void main() {
   });
 
   testWidgets('no failure means no error banner', (tester) async {
-    await _pump(tester, account: const Ok(_userSummary));
+    await _pump(tester, uploadStatus: const Ok(_secureFileUpload));
 
     final painted = _painted(tester);
     expect(

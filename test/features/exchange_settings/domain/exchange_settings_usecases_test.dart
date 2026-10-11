@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/secure_file_upload.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,17 +82,53 @@ void main() {
     });
   });
 
-  group('GetExchangeSettingsAccountUsecase', () {
+  group('GetSecureFileUploadStatusUsecase', () {
+    test('maps the user summary to the upload status', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenAnswer(
+        (_) async => const UserSummary(
+          userNumber: 1,
+          userId: 'u-42',
+          groups: [],
+          profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+          email: 'sat@example.com',
+          balances: [],
+          dca: UserDca(isActive: false),
+          autoBuy: UserAutoBuy(
+            isActive: false,
+            addresses: UserAutoBuyAddresses(),
+          ),
+          kycDocumentStatus: UserKycDocumentStatus(
+            secureFileUpload: KycDocumentStatus.underReview,
+            documents: UserKycDocuments(
+              id: KycDocumentStatus.accepted,
+              proofOfResidence: KycDocumentStatus.accepted,
+              selfie: KycDocumentStatus.accepted,
+            ),
+          ),
+        ),
+      );
+
+      final result = await GetSecureFileUploadStatusUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final upload =
+          (result as Ok<SecureFileUpload, ExchangeSettingsFailure>).value;
+      expect(upload.userId, 'u-42');
+      expect(upload.status, KycDocumentStatus.underReview);
+    });
+
     test('a throwing core use-case becomes a sanitized failure', () async {
       final core = _MockGetUserSummary();
       when(core.execute).thenThrow(Exception(_rawReason));
 
-      final result = await GetExchangeSettingsAccountUsecase(
+      final result = await GetSecureFileUploadStatusUsecase(
         getExchangeUserSummaryUsecase: core,
       ).execute();
 
       final failure = (result as Err).failure as ExchangeSettingsFailure;
-      expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
+      expect(failure, isA<ExchangeSettingsUploadStatusUnavailableFailure>());
       _expectSanitized(failure);
     });
   });

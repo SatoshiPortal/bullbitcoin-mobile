@@ -14,8 +14,6 @@ enum SettingsRoute {
   exchangeAccountInfo('exchange-account-info'),
   exchangeSecurity('exchange-security'),
   exchangeAppSettings('exchange-app-settings'),
-  exchangeFileUpload('exchange-file-upload'),
-  exchangeStatistics('exchange-statistics'),
   exchangeTransactions('exchange-transactions'),
   exchangeLegacyTransactions('exchange-legacy-transactions'),
   exchangeReferrals('exchange-referrals'),

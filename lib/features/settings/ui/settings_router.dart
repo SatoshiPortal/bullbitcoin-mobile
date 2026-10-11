@@ -8,8 +8,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
@@ -23,12 +22,10 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_scr
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
@@ -95,22 +92,7 @@ class SettingsRouter {
         path: SettingsRoute.exchangeAppSettings.path,
         builder: (context, state) => const ExchangeAppSettingsScreen(),
       ),
-      GoRoute(
-        name: SettingsRoute.exchangeFileUpload.name,
-        path: SettingsRoute.exchangeFileUpload.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<FileUploadCubit>(),
-          child: const ExchangeFileUploadScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeStatistics.name,
-        path: SettingsRoute.exchangeStatistics.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<StatisticsCubit>(),
-          child: const ExchangeStatisticsScreen(),
-        ),
-      ),
+      ...ExchangeSettingsRouter.routes,
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,
         path: SettingsRoute.exchangeTransactions.path,

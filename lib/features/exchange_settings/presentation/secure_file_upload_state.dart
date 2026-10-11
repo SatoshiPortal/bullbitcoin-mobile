@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'file_upload_state.freezed.dart';
+part 'secure_file_upload_state.freezed.dart';
 
 /// Status for the secure file upload UI (matches BB-Exchange DocStatus)
 enum SecureUploadStatus {
@@ -20,8 +20,8 @@ enum SecureUploadStatus {
 }
 
 @freezed
-abstract class FileUploadState with _$FileUploadState {
-  const factory FileUploadState({
+abstract class SecureFileUploadState with _$SecureFileUploadState {
+  const factory SecureFileUploadState({
     @Default(false) bool isUploading,
     @Default(false) bool isLoadingUser,
     ExchangeSettingsFailure? failure,
@@ -33,11 +33,11 @@ abstract class FileUploadState with _$FileUploadState {
     /// User ID for generating standardized filenames
     String? userId,
 
-    /// Secure file upload status from the API (from UserSummary)
+    /// Secure file upload status from the API
     KycDocumentStatus? secureFileUploadStatus,
-  }) = _FileUploadState;
+  }) = _SecureFileUploadState;
 
-  const FileUploadState._();
+  const SecureFileUploadState._();
 
   /// Whether user can upload files
   /// Only allowed when data is loaded and status permits uploading
@@ -47,7 +47,7 @@ abstract class FileUploadState with _$FileUploadState {
           secureUploadStatus == SecureUploadStatus.rejected);
 
   /// Get the UI status for the secure upload feature
-  /// Uses only the secureFileUploadStatus from UserSummary API response
+  /// Uses only the secureFileUploadStatus from the API response
   SecureUploadStatus get secureUploadStatus {
     // Handle each status explicitly based on API response
     switch (secureFileUploadStatus) {

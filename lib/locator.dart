@@ -25,7 +25,7 @@ import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/exchange_settings_locator.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
