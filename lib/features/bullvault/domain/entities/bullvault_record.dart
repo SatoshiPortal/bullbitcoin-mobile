@@ -4,6 +4,8 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 
 enum BullVaultLifecycleStatus { pending, active, migrating, cancelled }
 
+enum BullVaultBackupTestKind { descriptor, server }
+
 final class BullVaultRecord {
   final String walletId;
   final String lineageId;
@@ -21,6 +23,8 @@ final class BullVaultRecord {
   final bool recoveryPackageConfirmed;
   final bool mobileBackupDeferred;
   final DateTime createdAt;
+  final DateTime? descriptorTestedAt;
+  final DateTime? serverTestedAt;
 
   BullVaultRecord({
     required this.walletId,
@@ -39,6 +43,8 @@ final class BullVaultRecord {
     this.recoveryPackageConfirmed = false,
     this.mobileBackupDeferred = false,
     required this.createdAt,
+    this.descriptorTestedAt,
+    this.serverTestedAt,
   }) : mobileSeedFingerprint = mobileAccount == null
            ? null
            : mobileSeedFingerprint ??
@@ -87,6 +93,9 @@ final class BullVaultRecord {
     }
   }
 
+  bool get recoveryPackageVerified =>
+      recoveryPackageConfirmed && descriptorTestedAt != null;
+
   BullVaultRecord copyWith({
     String? successorWalletId,
     BullVaultLifecycleStatus? status,
@@ -95,6 +104,8 @@ final class BullVaultRecord {
     Set<String>? completedHardwareSignerIds,
     bool? recoveryPackageConfirmed,
     bool? mobileBackupDeferred,
+    DateTime? descriptorTestedAt,
+    DateTime? serverTestedAt,
   }) => BullVaultRecord(
     walletId: walletId,
     lineageId: lineageId,
@@ -114,5 +125,7 @@ final class BullVaultRecord {
         recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
     mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
     createdAt: createdAt,
+    descriptorTestedAt: descriptorTestedAt ?? this.descriptorTestedAt,
+    serverTestedAt: serverTestedAt ?? this.serverTestedAt,
   );
 }

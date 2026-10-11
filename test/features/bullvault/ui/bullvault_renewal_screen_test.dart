@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
 import 'dart:async';
 
@@ -59,6 +60,9 @@ class _MockWatchBullVaultMigrationUsecase extends Mock
 class _MockEncodeBullVaultRecoveryPackageUsecase extends Mock
     implements EncodeBullVaultRecoveryPackageUsecase {}
 
+class _NoRecoveryFile extends Fake
+    implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(
@@ -96,6 +100,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -143,7 +148,10 @@ void main() {
             ),
           ],
         ),
-        record: created.record.copyWith(recoveryPackageConfirmed: true),
+        record: created.record.copyWith(
+          recoveryPackageConfirmed: true,
+          descriptorTestedAt: DateTime.utc(2026, 9, 18),
+        ),
       ),
     );
     final load = _MockLoadBullVaultRenewalUsecase();
@@ -164,6 +172,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -240,6 +249,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: prepareTime,
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -317,7 +327,10 @@ void main() {
     );
     final replacement = BullVaultCreateResult(
       wallet: created.wallet,
-      record: created.record.copyWith(recoveryPackageConfirmed: true),
+      record: created.record.copyWith(
+        recoveryPackageConfirmed: true,
+        descriptorTestedAt: DateTime.utc(2026, 9, 18),
+      ),
     );
     final renewal = BullVaultRenewResult(
       previous: details.record,
@@ -352,6 +365,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
     addTearDown(cubit.close);
     await cubit.load();
