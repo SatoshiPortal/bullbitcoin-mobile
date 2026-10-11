@@ -34,6 +34,7 @@ class BullButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.compact = false,
+    this.maxLines = 1,
   }) : size = BullButtonSize.large;
 
   const BullButton.small({
@@ -52,6 +53,7 @@ class BullButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.compact = false,
+    this.maxLines = 1,
   }) : size = BullButtonSize.small;
 
   /// Optional leading/trailing icon glyph.
@@ -100,9 +102,13 @@ class BullButton extends StatelessWidget {
   /// action that sits in a row or a wrap with others.
   final bool compact;
 
+  /// Maximum label lines; null lets the button grow with its label.
+  final int? maxLines;
+
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(BullRadius.xxs);
+    final defaultHeight = compact ? 36.0 : 52.0;
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)
@@ -111,8 +117,11 @@ class BullButton extends StatelessWidget {
     final labelText = Flexible(
       child: BullText(
         label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        maxLines: maxLines,
+        textAlign: TextAlign.center,
+        overflow: maxLines == null
+            ? TextOverflow.visible
+            : TextOverflow.ellipsis,
         style: textStyle ?? Theme.of(context).textTheme.headlineLarge,
         color: textColor,
       ),
@@ -127,14 +136,20 @@ class BullButton extends StatelessWidget {
           onTap: disabled || loading ? null : onPressed,
           borderRadius: radius,
           child: Container(
-            height: height ?? (compact ? 36 : 52),
+            height: height ?? (maxLines == 1 ? defaultHeight : null),
+            constraints: height == null && maxLines != 1
+                ? BoxConstraints(minHeight: defaultHeight)
+                : null,
             width:
                 width ?? (size == BullButtonSize.large || compact ? null : 160),
             padding: compact
                 ? const EdgeInsets.symmetric(horizontal: 16)
                 : height != null
                 ? null
-                : const EdgeInsets.symmetric(vertical: 12),
+                : EdgeInsets.symmetric(
+                    horizontal: maxLines == 1 ? 0 : 16,
+                    vertical: 12,
+                  ),
             decoration: BoxDecoration(
               color: bgColor,
               border: outlined

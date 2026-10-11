@@ -17464,5 +17464,29 @@
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
   "@bullVaultRestoreCompleteTitle": {},
   "bullVaultRestoreCompleteTitle": "BullVault restored",
-  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "recoverbullKeySeedUnavailable": "The matching wallet seed is unavailable on this device. Use the backup file and its PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file to find its key using a wallet on this device. No backup PIN or server connection is needed. Viewing the key does not test your PIN or server recovery.",
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. The file may belong to another wallet or be damaged. Try another copy or use the server.",
+  "recoverbullKeyPathUnavailable": "This backup cannot be opened locally because its key information is missing or unsupported. Try another saved copy or use the server."
 }
