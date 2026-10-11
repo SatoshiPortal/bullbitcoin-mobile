@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'dart:io';
 
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -38,14 +38,18 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   void initState() {
     super.initState();
 
-    unawaited(_initialize());
+    unawaited(_load());
   }
 
-  Future<void> _initialize() async {
+  Future<void> _retry() async {
     setState(() {
       _isLoadingConfiguration = true;
       _configurationFailure = null;
     });
+    await _load();
+  }
+
+  Future<void> _load() async {
     final result = await locator<GetExchangeWebSettingsUsecase>().execute();
     if (!mounted) return;
     final SettingsEntity settingsState;
@@ -211,7 +215,13 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
     }
     if (_configurationFailure case final failure?) {
       return SafeArea(
-        child: ExchangeFailureBanner(failure: failure, onRetry: _initialize),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CloseButton(onPressed: context.pop),
+            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+          ],
+        ),
       );
     }
     return SafeArea(child: WebViewWidget(controller: _controller));

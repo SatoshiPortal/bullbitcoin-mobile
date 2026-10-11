@@ -46,14 +46,18 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   void initState() {
     super.initState();
 
-    unawaited(_initialize());
+    unawaited(_load());
   }
 
-  Future<void> _initialize() async {
+  Future<void> _retry() async {
     setState(() {
       _isLoadingConfiguration = true;
       _configurationFailure = null;
     });
+    await _load();
+  }
+
+  Future<void> _load() async {
     final result = await locator<GetExchangeWebSettingsUsecase>().execute();
     if (!mounted) return;
     final SettingsEntity settingsState;
@@ -280,7 +284,13 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     }
     if (_configurationFailure case final failure?) {
       return SafeArea(
-        child: ExchangeFailureBanner(failure: failure, onRetry: _initialize),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CloseButton(onPressed: widget.onExit),
+            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+          ],
+        ),
       );
     }
     return SafeArea(
