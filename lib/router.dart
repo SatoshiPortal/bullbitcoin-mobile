@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'dart:io';
 
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -299,6 +300,7 @@ class AppRouter {
       RecoverBullRouter.localKeyRoute,
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
+      KeychainManifestRouter.route,
       StatusCheckRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
