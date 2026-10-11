@@ -70,9 +70,19 @@ class TestWalletBackupBloc
         final fingerprint = event.fingerprint?.toLowerCase();
         final Wallet? selected = fingerprint == null
             ? value.firstWhere((w) => w.isDefault, orElse: () => value.first)
-            : value.where((w) => w.localSeedFingerprints.any((f) => f.toLowerCase() == fingerprint)).firstOrNull;
+            : value
+                  .where(
+                    (w) => w.localSeedFingerprints.any(
+                      (f) => f.toLowerCase() == fingerprint,
+                    ),
+                  )
+                  .firstOrNull;
         if (selected == null) {
-          emit(state.copyWith(failure: const TestWalletBackupNoWalletSelectedFailure()));
+          emit(
+            state.copyWith(
+              failure: const TestWalletBackupNoWalletSelectedFailure(),
+            ),
+          );
           return;
         }
         emit(
@@ -136,9 +146,10 @@ class TestWalletBackupBloc
       return;
     }
 
-    if (await _completeBackupVerificationUsecase.execute(fingerprint: wallet.localSeedFingerprints.single) case Err(
-      :final failure,
-    )) {
+    if (await _completeBackupVerificationUsecase.execute(
+          fingerprint: wallet.localSeedFingerprints.single,
+        )
+        case Err(:final failure)) {
       // The words were right but recording it failed. Reported rather than
       // swallowed: the flow would otherwise claim success while the wallet
       // still shows its backup as untested.

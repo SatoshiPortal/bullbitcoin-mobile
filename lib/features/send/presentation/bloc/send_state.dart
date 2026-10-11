@@ -212,7 +212,7 @@ abstract class SendState with _$SendState {
   bool get hasValidPaymentRequest => paymentRequest != null;
 
   bool get supportsBitcoinDraft =>
-      selectedWallet?.isBitcoin == true &&
+      selectedBitcoinWallet?.isBitcoin == true &&
       (paymentRequest is BitcoinPaymentRequest ||
           (paymentRequest is Bip21PaymentRequest &&
               (paymentRequest! as Bip21PaymentRequest).network.isBitcoin)) &&
@@ -243,7 +243,7 @@ abstract class SendState with _$SendState {
   /// policy that local keys cannot fully satisfy.
   bool get isPayjoinAvailable =>
       payjoinGloballyEnabled &&
-      selectedWallet?.isStandardLocalSingleSignatureWallet == true &&
+      selectedBitcoinWallet?.isStandardLocalSingleSignatureWallet == true &&
       (bitcoinSigningPlan?.canFinalizeLocally ?? true) &&
       bitcoinSigningPlan?.policy.hasHashlock != true &&
       isToSelf != true &&
@@ -265,7 +265,7 @@ abstract class SendState with _$SendState {
       false;
 
   bool get requiresBitcoinSigningCoordination =>
-      selectedWallet?.isBitcoin == true &&
+      selectedBitcoinWallet?.isBitcoin == true &&
       bitcoinSigningPlan != null &&
       (bitcoinSigningPlan!.signersNeeded > 1 ||
           eligibleBitcoinSigners.length > 1 ||
@@ -282,7 +282,7 @@ abstract class SendState with _$SendState {
     }
     final signer = eligibleBitcoinSigners.single;
     final supportsDirectFlow =
-        selectedWallet?.signers.length == 1 &&
+        selectedBitcoinWallet?.signers.length == 1 &&
         selectedWallet?.scriptType != null &&
         (signer.signerDevice?.isLedger == true ||
             signer.signerDevice?.isBitBox == true);
@@ -698,7 +698,7 @@ abstract class SendState with _$SendState {
           (requiresBitcoinPolicySelection || requiresBitcoinPolicyPreimage));
 
   bool get blocksSwapForSelectedWallet {
-    final wallet = selectedWallet;
+    final wallet = selectedBitcoinWallet;
     if (wallet == null) return false;
     final isSwap =
         sendType == SendType.lightning ||

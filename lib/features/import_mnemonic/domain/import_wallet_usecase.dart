@@ -80,12 +80,15 @@ class ImportWalletUsecase {
       if (e is WalletAlreadyExistsException) {
         if (seedCreatedByThisImport != null) {
           try {
-            final wallets = await _wallet.getWallets();
-            final seedIsInUse = wallets.any(
-              (wallet) => wallet.localSeedFingerprints.contains(
-                seedCreatedByThisImport,
+            final result = await _wallet.getWallets();
+            final seedIsInUse = switch (result) {
+              Err() => true,
+              Ok(:final value) => value.any(
+                (wallet) => wallet.localSeedFingerprints.contains(
+                  seedCreatedByThisImport,
+                ),
               ),
-            );
+            };
             if (!seedIsInUse) {
               await _deleteOrphanedSeed(seedCreatedByThisImport);
             }

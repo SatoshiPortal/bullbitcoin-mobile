@@ -803,7 +803,7 @@ void main() {
 
   SendState bitcoinBuildState(Wallet wallet, {bool sendMax = false}) =>
       SendState(
-        selectedWallet: wallet,
+        selectedWallet: SendWalletBitcoin(wallet),
         sendType: SendType.bitcoin,
         paymentRequest: const PaymentRequest.bitcoin(
           address: 'bc1qrecipient',
@@ -1098,7 +1098,7 @@ void main() {
       ).thenAnswer((_) async => const Ok(null));
       when(
         () => getWalletUsecase.execute(ready.selectedWallet!.id, sync: true),
-      ).thenAnswer((_) async => ready.selectedWallet);
+      ).thenAnswer((_) async => ready.selectedBitcoinWallet);
       final sending = cubit.broadcastTransaction();
       await pumpEventQueue();
       await Future<void>.delayed(const Duration(milliseconds: 550));
@@ -1412,7 +1412,7 @@ void main() {
 
         await cubit.updateSelectedWallet(liquid);
 
-        expect(cubit.state.selectedWallet, liquid);
+        expect(cubit.state.selectedBitcoinWallet, liquid);
         expect(cubit.state.isDraftSaved, isFalse);
         expect(cubit.state.pendingTransactionId, isNull);
         expect(cubit.state.keptPreviousDraft, isTrue);
@@ -1549,7 +1549,7 @@ void main() {
       final descriptorWallet = _descriptorWallet();
       when(
         () => getWalletsUsecase.execute(),
-      ).thenAnswer((_) async => [descriptorWallet]);
+      ).thenAnswer((_) async => Ok([descriptorWallet]));
       when(
         () => getAvailableCurrenciesUsecase.execute(),
       ).thenAnswer((_) async => []);
@@ -1620,7 +1620,7 @@ void main() {
       expect(await cubit.saveDraft(), isTrue);
 
       expect(saved.walletId, wallet.id);
-      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.selectedBitcoinWallet, wallet);
     });
 
     test(
@@ -1765,7 +1765,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           wallets: [wallet, otherWallet],
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           isWalletManuallySelected: true,
           paymentRequest: request,
         ),
@@ -1773,7 +1773,7 @@ void main() {
 
       await cubit.continueOnAddressConfirmed();
 
-      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.selectedBitcoinWallet, wallet);
       expect(cubit.state.isWalletManuallySelected, isTrue);
       expect(cubit.state.step, SendStep.amount);
     });
@@ -1803,7 +1803,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           step: SendStep.signing,
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           copiedRawPaymentRequest: address,
           amount: '50000',
           inputAmountCurrencyCode: BitcoinUnit.sats.code,
@@ -1848,7 +1848,7 @@ void main() {
         cubit.setStateForTest(
           SendState(
             sendType: SendType.bitcoin,
-            selectedWallet: _bitcoinLocalWallet(),
+            selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
             copiedRawPaymentRequest: 'bc1qrecipient',
             amount: '50000',
             paymentRequest: const PaymentRequest.bitcoin(
@@ -1908,7 +1908,7 @@ void main() {
         SendState(
           step: SendStep.signing,
           sendType: SendType.bitcoin,
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
           copiedRawPaymentRequest: 'bc1qrecipient',
           amount: '50000',
           confirmedAmountSat: 50000,
@@ -1983,7 +1983,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           wallets: [wallet],
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           pendingTransactionId: authoritative.id,
           pendingTransactionCreatedAt: authoritative.createdAt,
           isDraftSaved: true,
@@ -2121,7 +2121,7 @@ void main() {
       addTearDown(cubit.close);
       cubit.setStateForTest(
         SendState(
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           pendingTransactionId: stored.id,
           isDraftSaved: true,
           hasUnsavedDraftChanges: true,
@@ -2168,7 +2168,7 @@ void main() {
         SendState(
           step: SendStep.signing,
           sendType: SendType.bitcoin,
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           copiedRawPaymentRequest: 'bc1qrecipient',
           amount: '50000',
           confirmedAmountSat: 50000,
@@ -2205,7 +2205,7 @@ void main() {
         SendState(
           step: SendStep.confirm,
           sendType: SendType.bitcoin,
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1qrecipient',
             isTestnet: false,
@@ -2803,14 +2803,14 @@ void main() {
           cubit.setStateForTest(
             SendState(
               wallets: [coordinatedWallet, localWallet],
-              selectedWallet: wallet,
+              selectedWallet: SendWalletBitcoin(wallet),
               isWalletManuallySelected: !pinned,
             ),
           );
 
           await cubit.onScannedPaymentRequest(uri, request);
 
-          expect(cubit.state.selectedWallet, wallet);
+          expect(cubit.state.selectedBitcoinWallet, wallet);
           expect(cubit.state.paymentRequest, expectedRequest);
           expect(cubit.state.step, SendStep.amount);
           expect(cubit.state.failure, isNull);
@@ -2841,7 +2841,7 @@ void main() {
 
       expect(cubit.isRestrictedSend, isTrue);
       expect(cubit.state.copiedRawPaymentRequest, 'bc1qmigration');
-      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.selectedBitcoinWallet, wallet);
     });
 
     test('stores sanitized input while parsing it', () async {
@@ -3664,7 +3664,7 @@ void main() {
     cubit.setStateForTest(
       SendState(
         sendType: SendType.bitcoin,
-        selectedWallet: wallet,
+        selectedWallet: SendWalletBitcoin(wallet),
         paymentRequest: const PaymentRequest.bitcoin(
           address: 'bc1qrecipient',
           isTestnet: false,
@@ -3780,7 +3780,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           sendType: SendType.bitcoin,
-          selectedWallet: wallet,
+          selectedWallet: SendWalletBitcoin(wallet),
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1qrecipient',
             isTestnet: false,
@@ -3946,7 +3946,7 @@ void main() {
 
     SendState state() => SendState(
       sendType: SendType.bitcoin,
-      selectedWallet: wallet,
+      selectedWallet: SendWalletBitcoin(wallet),
       paymentRequest: const PaymentRequest.bitcoin(
         address: 'bc1qrecipient',
         isTestnet: false,
@@ -4066,7 +4066,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           unsignedPsbt: 'prepared-psbt',
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
         ),
       );
 
@@ -4106,7 +4106,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           unsignedPsbt: 'prepared-psbt',
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
         ),
       );
 
@@ -4147,7 +4147,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           unsignedPsbt: 'prepared-psbt',
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
         ),
       );
 
@@ -4187,7 +4187,7 @@ void main() {
       cubit.setStateForTest(
         SendState(
           unsignedPsbt: 'prepared-psbt',
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
         ),
       );
 
@@ -4228,7 +4228,7 @@ void main() {
         SendState(
           step: SendStep.signing,
           sendType: SendType.bitcoin,
-          selectedWallet: _bitcoinLocalWallet(),
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
           copiedRawPaymentRequest: 'bc1qrecipient',
           amount: '50000',
           confirmedAmountSat: 50000,

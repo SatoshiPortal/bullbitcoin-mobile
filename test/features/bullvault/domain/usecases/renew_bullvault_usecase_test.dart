@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -333,7 +334,7 @@ void main() {
       fixture.repository.saveFailure = const BullVaultRenewalFailure();
       when(
         () => fixture.deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
 
       final result = await fixture.usecase.execute(
         BullVaultRenewRequest(
@@ -359,7 +360,10 @@ void main() {
     fixture.repository.saveFailure = const BullVaultRenewalFailure();
     when(
       () => fixture.deleteWallet.execute(walletId: any(named: 'walletId')),
-    ).thenThrow(Exception('wallet storage unavailable'));
+    ).thenAnswer(
+      (_) async =>
+          const Err(WalletStorageFailure('wallet storage unavailable')),
+    );
 
     final result = await fixture.usecase.execute(
       BullVaultRenewRequest(

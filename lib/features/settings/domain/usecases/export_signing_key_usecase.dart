@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -36,9 +37,15 @@ class ExportSigningKeyUsecase {
     final requestId = _accountSession.beginRequest();
     try {
       final settings = await _getSettingsUsecase.execute();
-      final seed = await _getDefaultSeedUsecase.execute(
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(SettingsSigningKeyExportFailure());
+      }
       final isTestnet = settings.environment.isTestnet;
       final coinType = isTestnet ? 1 : 0;
       final selectionResult = await _accountSession.select(

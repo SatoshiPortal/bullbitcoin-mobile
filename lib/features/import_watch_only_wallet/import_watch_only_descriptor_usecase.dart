@@ -41,7 +41,13 @@ class ImportWatchOnlyDescriptorUsecase {
         signers: watchOnlyDescriptor.signers,
       );
       if (reserved case Err()) {
-        await _deleteWalletUsecase.execute(walletId: wallet.id);
+        if (await _deleteWalletUsecase.execute(walletId: wallet.id) case Err(
+          :final failure,
+        )) {
+          log.warning(
+            'Failed to roll back imported wallet: ${failure.runtimeType}',
+          );
+        }
         return const Err(ImportFailedFailure());
       }
       return Ok(wallet);

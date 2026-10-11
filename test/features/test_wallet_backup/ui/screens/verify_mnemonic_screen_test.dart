@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -89,18 +90,21 @@ const _wordsB = [
 ];
 
 Wallet _wallet(String fingerprint) => Wallet(
+  publicDescriptor: 'desc',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: fingerprint,
+      xpubFingerprint: fingerprint,
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   origin: 'origin-$fingerprint',
   label: 'Wallet $fingerprint',
   network: Network.bitcoinMainnet,
   isDefault: false,
-  masterFingerprint: fingerprint,
-  xpubFingerprint: fingerprint,
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
 );
 

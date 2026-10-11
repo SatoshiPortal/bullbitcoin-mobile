@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -60,7 +61,8 @@ class BitcoinSigningSection extends StatelessWidget {
     final hasConnectedDeviceSigner = visibleSigners.any(
       (signer) =>
           !state.isBitcoinSignerSigned(signer) &&
-          (state.selectedWallet?.supportsWalletPolicySigner(signer) ?? false),
+          (state.selectedBitcoinWallet?.supportsWalletPolicySigner(signer) ??
+              false),
     );
 
     return Column(
@@ -122,7 +124,7 @@ class _BitcoinSignerTile extends StatelessWidget {
         : signer.signerDevice?.displayName ??
               context.loc.walletDetailsExternalSignerLabel;
     final fingerprint = signer.displayFingerprint;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final usesConnectedDevice =
         wallet?.supportsWalletPolicySigner(signer) ?? false;
 
@@ -196,7 +198,7 @@ class _BitcoinSignerTile extends StatelessWidget {
     }
 
     final state = context.read<SendCubit>().state;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final psbt = state.unsignedPsbt;
     if (wallet != null &&
         psbt != null &&
@@ -269,7 +271,7 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
     final wallet = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
     );
     final usesDeviceSpecificFlow =
         signer != null && wallet?.supportsDevicePsbtFlowFor(signer!) == true;
@@ -317,7 +319,7 @@ class SignLedgerButton extends StatelessWidget {
         : null;
     final deviceType = signer?.signerDevice;
     final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet?.scriptType,
     );
 
     return BBButton.big(
@@ -368,7 +370,7 @@ class SignBitBoxButton extends StatelessWidget {
         : null;
     final deviceType = signer?.signerDevice;
     final scriptType = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet?.scriptType,
     );
 
     return BBButton.big(

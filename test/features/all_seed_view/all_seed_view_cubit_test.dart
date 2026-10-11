@@ -106,7 +106,9 @@ void main() {
         publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
         balanceSat: BigInt.zero,
       );
-      when(() => getWalletsUsecase.execute()).thenAnswer((_) async => [wallet]);
+      when(
+        () => getWalletsUsecase.execute(),
+      ).thenAnswer((_) async => Ok([wallet]));
       await cubit.close();
       cubit = AllSeedViewCubit(
         getAllSeedsUsecase: getAllSeedsUsecase,

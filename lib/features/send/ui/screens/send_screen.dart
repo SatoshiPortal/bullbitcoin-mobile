@@ -24,12 +24,7 @@ import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
@@ -523,15 +518,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   ),
                                                 );
                                               }).toList(),
-                                              onChanged: context.read<SendCubit>().isRestrictedSend ? null : (value) {
-                                                if (value != null) {
+                                              onChanged:
                                                   context
                                                       .read<SendCubit>()
-                                                      .updateSelectedWallet(
-                                                        value,
-                                                      );
-                                                }
-                                              },
+                                                      .isRestrictedSend
+                                                  ? null
+                                                  : (value) {
+                                                      if (value != null) {
+                                                        context
+                                                            .read<SendCubit>()
+                                                            .updateSelectedWallet(
+                                                              value,
+                                                            );
+                                                      }
+                                                    },
                                             ),
                                     ),
                                   ),
@@ -1025,10 +1025,10 @@ class _BottomButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBitcoinWallet = context.select(
-      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
+      (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid == false,
     );
     final wallet = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
     );
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.hasFinalizedBitcoinTransaction,

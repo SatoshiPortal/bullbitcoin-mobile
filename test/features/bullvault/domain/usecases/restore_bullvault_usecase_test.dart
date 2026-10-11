@@ -306,9 +306,11 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.testnet),
     ).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords: testMnemonics.first.split(' '),
-      ).toEntity(),
+      (_) async => Ok(
+        SeedModel.mnemonic(
+          mnemonicWords: testMnemonics.first.split(' '),
+        ).toEntity(),
+      ),
     );
     when(
       () => reserveAccount.execute(
@@ -319,7 +321,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(0));
     when(
       () => deleteWallet.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
   });
 
   test(
@@ -654,9 +656,11 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.testnet),
     ).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords: testMnemonics[1].split(' '),
-      ).toEntity(),
+      (_) async => Ok(
+        SeedModel.mnemonic(
+          mnemonicWords: testMnemonics[1].split(' '),
+        ).toEntity(),
+      ),
     );
     final result = await usecase.execute(
       kind: BullVaultRestoreInputKind.descriptor,
@@ -702,9 +706,11 @@ void main() {
         when(
           () => getDefaultSeed.execute(environment: Environment.testnet),
         ).thenAnswer(
-          (_) async => SeedModel.mnemonic(
-            mnemonicWords: testMnemonics[1].split(' '),
-          ).toEntity(),
+          (_) async => Ok(
+            SeedModel.mnemonic(
+              mnemonicWords: testMnemonics[1].split(' '),
+            ).toEntity(),
+          ),
         );
         when(
           () => getAllSeeds.execute(),
@@ -771,21 +777,22 @@ void main() {
         final swaps = _MockSwapRepository();
         when(
           () => wallets.getWallet(ordinaryWallet.id),
-        ).thenAnswer((_) async => ordinaryWallet);
+        ).thenAnswer((_) async => Ok(ordinaryWallet));
         when(
           () => wallets.deleteWallet(walletId: ordinaryWallet.id),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) async => const Ok(null));
         when(
           () => wallets.getWallets(),
-        ).thenAnswer((_) async => [restored.wallet]);
+        ).thenAnswer((_) async => Ok([restored.wallet]));
         when(
           () => swaps.getOngoingSwaps(walletId: ordinaryWallet.id),
         ).thenAnswer((_) async => []);
-        await DeleteWalletUsecase(
+        final deleted = await DeleteWalletUsecase(
           walletRepository: wallets,
           swapRepository: swaps,
           seedRepository: seedRepository,
         ).execute(walletId: ordinaryWallet.id);
+        expect(deleted, isA<Ok>());
 
         final retained = await seedRepository.get(
           restored.record.mobileSeedFingerprint!,
@@ -822,7 +829,7 @@ void main() {
       seedDatasource.seeds[imported.masterFingerprint] = imported;
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer((_) async => imported.toEntity());
+      ).thenAnswer((_) async => Ok(imported.toEntity()));
       seedDatasource.failWrites = true;
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -1374,7 +1381,9 @@ void main() {
       repository.readFailure = const BullVaultCreationFailure();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('wallet deletion failed'));
+      ).thenAnswer(
+        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
+      );
 
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,

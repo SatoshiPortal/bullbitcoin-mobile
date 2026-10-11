@@ -106,7 +106,10 @@ void main() {
             () => walletRepository.getWallets(),
           ).thenAnswer((_) async => Ok([sibling]));
 
-          await usecase.execute(walletId: walletId);
+          expect(
+            await usecase.execute(walletId: walletId),
+            isA<Ok<void, WalletFailure>>(),
+          );
 
           verifyNever(() => seedRepository.delete(any()));
         },
@@ -123,7 +126,10 @@ void main() {
         () => walletRepository.getWallets(),
       ).thenAnswer((_) async => Ok([sibling]));
 
-      await usecase.execute(walletId: walletId);
+      expect(
+        await usecase.execute(walletId: walletId),
+        isA<Ok<void, WalletFailure>>(),
+      );
 
       verify(() => seedRepository.delete(fingerprint)).called(1);
     });

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -44,7 +46,7 @@ void main() {
         environment: Environment.mainnet,
         onlyDefaults: true,
       ),
-    ).thenAnswer((_) async => [liquidWallet]);
+    ).thenAnswer((_) async => Ok([liquidWallet]));
     when(() => seeds.get('aabbccdd')).thenAnswer((_) async => seed);
     when(
       () => wallets.createWallet(
@@ -60,6 +62,9 @@ void main() {
       seedRepository: seeds,
     );
 
-    await expectLater(usecase.execute(), throwsStateError);
+    expect(
+      (await usecase.execute() as Err).failure,
+      isA<AppStartupWalletCheckFailure>(),
+    );
   });
 }

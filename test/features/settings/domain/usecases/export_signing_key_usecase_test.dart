@@ -56,7 +56,7 @@ void main() {
     releaseUsecase = ReleaseSigningKeyAccountUsecase(accountSession);
     when(
       () => getDefaultSeed.execute(environment: any(named: 'environment')),
-    ).thenAnswer((_) async => seed);
+    ).thenAnswer((_) async => Ok(seed));
     when(
       () => accountRepository.claimNext(
         seedFingerprint: any(named: 'seedFingerprint'),

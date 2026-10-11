@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -128,10 +129,10 @@ void main() {
           onlyBitcoin: true,
         ),
       ).thenAnswer(
-        (_) async => [multisig, miniscript, missingFingerprint, eligible],
+        (_) async => Ok([multisig, miniscript, missingFingerprint, eligible]),
       );
 
-      expect(await usecase.execute(), [miniscript, eligible]);
+      expect((await usecase.execute() as Ok).value, [miniscript, eligible]);
     },
   );
 }

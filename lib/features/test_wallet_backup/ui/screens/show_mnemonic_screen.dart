@@ -250,7 +250,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                     children: [
                       if (failure != null)
                         BBText(
-                          context.loc.oopsSomethingWentWrong,
+                          failure.toTranslated(context),
                           textAlign: .center,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.appColors.error,

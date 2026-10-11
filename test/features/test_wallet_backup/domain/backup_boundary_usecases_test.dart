@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -41,15 +42,19 @@ const _settings = SettingsEntity(
 );
 
 Wallet _wallet({bool tested = false}) => Wallet(
+  publicDescriptor: '',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   origin: 'w1',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
   confirmedBalanceSat: BigInt.zero,
   isPhysicalBackupTested: tested,

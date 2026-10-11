@@ -47,9 +47,13 @@ class GetWalletsUsecase {
 
     switch (result) {
       case Ok(:final value):
-        final visible = includeHidden ? value : value.where((wallet) => !wallet.isHidden).toList();
+        final visible = includeHidden
+            ? value
+            : value.where((wallet) => !wallet.isHidden).toList();
         return visible.isEmpty
-            ? const Err(NoWalletsFoundFailure('no wallets for the active environment'))
+            ? const Err(
+                NoWalletsFoundFailure('no wallets for the active environment'),
+              )
             : Ok(visible);
       case Err(:final failure):
         return Err(failure);

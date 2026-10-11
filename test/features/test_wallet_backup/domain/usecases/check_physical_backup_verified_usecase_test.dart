@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -14,13 +15,13 @@ void main() {
     when(
       () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer(
-      (_) async => [
+      (_) async => Ok([
         _wallet(
           fingerprint: 'deadbeef',
           isPhysicalBackupTested: true,
         ).copyWith(isHidden: true),
         _wallet(fingerprint: 'deadbeef', isPhysicalBackupTested: false),
-      ],
+      ]),
     );
     final usecase = CheckPhysicalBackupVerifiedUsecase(getWallets);
 

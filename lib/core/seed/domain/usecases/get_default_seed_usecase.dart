@@ -45,7 +45,9 @@ class GetDefaultSeedUsecase {
     // areas, so converting it is its own change. Until then this use case is
     // the boundary for it.
     try {
-      return Ok(await _seedRepository.get(wallets.first.localMasterFingerprints.single));
+      return Ok(
+        await _seedRepository.get(wallets.first.localSeedFingerprints.single),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the default seed',

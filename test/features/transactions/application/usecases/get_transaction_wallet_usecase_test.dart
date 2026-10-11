@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -23,15 +24,19 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
 Wallet _wallet() => Wallet(
+  publicDescriptor: '',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   origin: 'w1',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
 );
 

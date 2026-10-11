@@ -297,8 +297,15 @@ class RenewBullVaultUsecase {
 
   Future<bool> _rollback(String walletId) async {
     try {
-      await _deleteWalletUsecase.execute(walletId: walletId);
-      return true;
+      switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
+        case Ok():
+          return true;
+        case Err(:final failure):
+          log.warning(
+            'Failed to roll back BullVault wallet: ${failure.runtimeType}',
+          );
+          return false;
+      }
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Failed to roll back incomplete BullVault renewal',

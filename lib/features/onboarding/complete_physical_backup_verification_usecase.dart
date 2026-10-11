@@ -50,19 +50,26 @@ class CompletePhysicalBackupVerificationUsecase {
     }
   }
 
-Future<List<Wallet>> _allWallets() async => _unwrap(await _walletRepository.getWallets());
+  Future<List<Wallet>> _allWallets() async =>
+      _unwrap(await _walletRepository.getWallets());
 
-  List<Wallet> _unwrap(Result<List<Wallet>, WalletFailure> result) => switch (result) {
-    Ok(:final value) => value,
-    Err(:final failure) => throw CompletePhysicalBackupVerificationException('wallet read: ${failure.runtimeType}'),
-  };
+  List<Wallet> _unwrap(Result<List<Wallet>, WalletFailure> result) =>
+      switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) =>
+          throw CompletePhysicalBackupVerificationException(
+            'wallet read: ${failure.runtimeType}',
+          ),
+      };
 
   Future<List<Wallet>> _defaultWallets() async {
     final settings = await _settingsRepository.fetch();
-    return _unwrap(await _walletRepository.getWallets(
-      onlyDefaults: true,
-      environment: settings.environment,
-    ));
+    return _unwrap(
+      await _walletRepository.getWallets(
+        onlyDefaults: true,
+        environment: settings.environment,
+      ),
+    );
   }
 }
 

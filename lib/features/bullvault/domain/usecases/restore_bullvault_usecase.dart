@@ -92,29 +92,36 @@ class RestoreBullVaultUsecase {
       final wallet = importedWallet;
       if (wallet == null || !importedNewWallet) return;
       try {
-        await _deleteWalletUsecase.execute(walletId: wallet.id);
+        switch (await _deleteWalletUsecase.execute(walletId: wallet.id)) {
+          case Ok():
+            return;
+          case Err(:final failure):
+            log.warning(
+              'Failed to roll back BullVault restoration: ${failure.runtimeType}',
+            );
+        }
       } on Exception catch (error, stackTrace) {
         log.severe(
           message: 'Failed to roll back BullVault restoration',
           error: error.runtimeType,
           trace: stackTrace,
         );
-        final fingerprint = importedSeedFingerprint;
-        final coinType = importedCoinType;
-        final account = importedMobileAccount;
-        if (fingerprint == null || coinType == null || account == null) return;
-        final reserved = await _reserveBip48AccountUsecase.execute(
-          seedFingerprint: fingerprint,
-          coinType: coinType,
-          account: account,
+      }
+      final fingerprint = importedSeedFingerprint;
+      final coinType = importedCoinType;
+      final account = importedMobileAccount;
+      if (fingerprint == null || coinType == null || account == null) return;
+      final reserved = await _reserveBip48AccountUsecase.execute(
+        seedFingerprint: fingerprint,
+        coinType: coinType,
+        account: account,
+      );
+      if (reserved case Err(:final failure)) {
+        log.severe(
+          message: 'Failed to preserve a restored BullVault BIP48 account',
+          error: failure.runtimeType,
+          trace: StackTrace.current,
         );
-        if (reserved case Err(:final failure)) {
-          log.severe(
-            message: 'Failed to preserve a restored BullVault BIP48 account',
-            error: failure.runtimeType,
-            trace: StackTrace.current,
-          );
-        }
       }
     }
 
@@ -142,9 +149,15 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final seed = await _getDefaultSeedUsecase.execute(
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(BullVaultInvalidRecoveryFailure());
+      }
       Seed? verifiedSeed;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,

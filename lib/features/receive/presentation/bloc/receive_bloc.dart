@@ -213,9 +213,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ? event.wallet
         : null;
     if (state.wallet != null && !state.wallet!.isBitcoin) {
-      emit(state.copyWith(wallet: null, bitcoinAddress: null, isBullVault: false));
+      emit(
+        state.copyWith(wallet: null, bitcoinAddress: null, isBullVault: false),
+      );
     } else {
-      emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null, isBullVault: false));
+      emit(
+        state.copyWith(
+          wallet: eventWallet,
+          bitcoinAddress: null,
+          isBullVault: false,
+        ),
+      );
     }
 
     // Emit a state with the Bitcoin type so the UI can update allready before

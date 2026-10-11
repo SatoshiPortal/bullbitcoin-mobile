@@ -86,7 +86,7 @@ class SendSigningScreen extends StatelessWidget {
                           BBText(
                             describeSelectedBitcoinPolicyPath(
                               context,
-                              state.selectedWallet,
+                              state.selectedBitcoinWallet,
                               state,
                             ),
                             style: context.font.bodySmall,

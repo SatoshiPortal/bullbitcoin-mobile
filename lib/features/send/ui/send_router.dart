@@ -33,7 +33,12 @@ final class SendRouteArgs {
     this.isSpMode = false,
   });
 
-  const SendRouteArgs.sp() : wallet = null, pendingTransactionId = null, fixedRecipient = null, sendMax = false, isSpMode = true;
+  const SendRouteArgs.sp()
+    : wallet = null,
+      pendingTransactionId = null,
+      fixedRecipient = null,
+      sendMax = false,
+      isSpMode = true;
 }
 
 class SendRouter {
@@ -53,7 +58,9 @@ class SendRouter {
         key: state.pageKey,
         wallet: wallet,
         pendingTransactionId: args?.pendingTransactionId,
-        spWalletLabel: args?.isSpMode == true ? context.loc.walletSpTitle : null,
+        spWalletLabel: args?.isSpMode == true
+            ? context.loc.walletSpTitle
+            : null,
         fixedRecipient: args?.fixedRecipient,
         sendMax: args?.sendMax ?? false,
       );
@@ -98,7 +105,10 @@ class _SendRouteViewState extends State<_SendRouteView> {
   @override
   void initState() {
     super.initState();
-    _cubit = locator<SendCubit>(param1: widget.wallet, param2: widget.spWalletLabel);
+    _cubit = locator<SendCubit>(
+      param1: widget.wallet,
+      param2: widget.spWalletLabel,
+    );
     _initialization = _initialize();
   }
 

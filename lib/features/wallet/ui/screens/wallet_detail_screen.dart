@@ -97,7 +97,11 @@ class WalletDetailScreen extends StatelessWidget {
                     SliverToBoxAdapter(
                       child: WalletDetailBalanceCard(
                         isLiquid: wallet.isLiquid,
-                        signer: wallet.hasLocalSigner ? SignerEntity.local : wallet.hasRemoteSigner ? SignerEntity.remote : SignerEntity.none,
+                        signer: wallet.hasLocalSigner
+                            ? SignerEntity.local
+                            : wallet.hasRemoteSigner
+                            ? SignerEntity.remote
+                            : SignerEntity.none,
                         balanceText: CurrencyText(
                           wallet.balanceSat.toInt(),
                           style: Theme.of(context).textTheme.displaySmall

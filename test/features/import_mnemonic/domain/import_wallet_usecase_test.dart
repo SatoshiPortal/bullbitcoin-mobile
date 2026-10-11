@@ -185,7 +185,7 @@ void main() {
       ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [existingWallet]);
+      ).thenAnswer((_) async => Ok([existingWallet]));
       when(
         () => existingWallet.localSeedFingerprints,
       ).thenReturn(const ['aabbccdd']);
@@ -226,7 +226,7 @@ void main() {
       ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [existingWallet]);
+      ).thenAnswer((_) async => Ok([existingWallet]));
       when(() => existingWallet.localSeedFingerprints).thenReturn(const []);
 
       final result = await usecase.execute(mnemonicWords: words);

@@ -98,7 +98,7 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
                       ),
                       const Gap(24),
                       Text(
-                        context.loc.labelInputLabel,
+                        context.loc.importWatchOnlyLabel,
                         style: context.font.bodyMedium,
                       ),
                       const Gap(8),

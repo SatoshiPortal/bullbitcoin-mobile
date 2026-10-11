@@ -64,7 +64,6 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
@@ -314,7 +313,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<bool> _saveDraft(int revision) async {
-    final wallet = state.selectedWallet ?? _wallet;
+    final wallet = state.selectedBitcoinWallet ?? _wallet;
     final hasRecipientInput = state.copiedRawPaymentRequest.trim().isNotEmpty;
     if (wallet == null ||
         !wallet.isBitcoin ||
@@ -573,7 +572,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<bool> continueToBitcoinSigning() async {
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final plan = state.bitcoinSigningPlan;
     if (psbt == null ||
         wallet == null ||
@@ -669,7 +668,7 @@ class SendCubit extends Cubit<SendState>
       return false;
     }
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (psbt == null || wallet == null) return false;
     final transaction = _pendingTransaction(
       wallet: wallet,
@@ -939,8 +938,12 @@ class SendCubit extends Cubit<SendState>
           );
           return;
       }
-      final sendWallets = wallets.where((wallet) => wallet.supportsSend).toList();
-      if (_wallet case final wallet? when wallet.supportsSend && !sendWallets.any((candidate) => candidate.id == wallet.id)) {
+      final sendWallets = wallets
+          .where((wallet) => wallet.supportsSend)
+          .toList();
+      if (_wallet case final wallet?
+          when wallet.supportsSend &&
+              !sendWallets.any((candidate) => candidate.id == wallet.id)) {
         sendWallets.add(wallet);
       }
       emit(state.copyWith(wallets: sendWallets));
@@ -1118,7 +1121,7 @@ class SendCubit extends Cubit<SendState>
       }
       final preSelected =
           _wallet ??
-          (state.isWalletManuallySelected ? state.selectedWallet : null);
+          (state.isWalletManuallySelected ? state.selectedBitcoinWallet : null);
       await unifiedBip21Prioritization(
         inputGeneration: inputGeneration,
         wallet: preSelected,
@@ -1210,7 +1213,7 @@ class SendCubit extends Cubit<SendState>
       if (inputGeneration != _paymentRequestInputGeneration) return;
       if (isSpMode && !_confirmSpAmount()) return;
 
-    if (state.blocksSwapForSelectedWallet) {
+      if (state.blocksSwapForSelectedWallet) {
         emit(
           state.copyWith(
             loadingBestWallet: false,
@@ -1809,7 +1812,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> loadUtxos({int? transactionGeneration}) async {
     if (isSpMode) return;
     if (state.selectedWallet == null) return;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (wallet == null) return;
 
     try {
@@ -1916,7 +1919,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> _refreshBitcoinSigningPlan() async {
     final snapshot = state;
-    final wallet = snapshot.selectedWallet;
+    final wallet = snapshot.selectedBitcoinWallet;
     if (wallet == null ||
         !wallet.isBitcoin ||
         snapshot.broadcastingTransaction ||
@@ -2394,7 +2397,7 @@ class SendCubit extends Cubit<SendState>
 
     if (signedPsbt == null) return null;
     final candidatePsbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (candidatePsbt == null || wallet == null) {
       emit(previousState);
       return selection;
@@ -2681,7 +2684,7 @@ class SendCubit extends Cubit<SendState>
             .toSet();
         final policyResolutionResult = await _resolveBitcoinPolicyUsecase
             .execute(
-              wallet: state.selectedWallet!,
+              wallet: state.selectedBitcoinWallet!,
               selection:
                   state.bitcoinPolicySelection ??
                   const BitcoinPolicySelection.empty(),
@@ -2795,7 +2798,7 @@ class SendCubit extends Cubit<SendState>
             return;
         }
         final signingPlanResult = await _getBitcoinSigningPlanUsecase.execute(
-          wallet: state.selectedWallet!,
+          wallet: state.selectedBitcoinWallet!,
           psbt: preparedPsbt,
           selection: selection,
           satisfiedPreimageKeys: _bitcoinPolicyPreimages.keys.toSet(),
@@ -3076,7 +3079,7 @@ class SendCubit extends Cubit<SendState>
     if (state.isPendingSubmission) {
       return state.pendingTransactionStage == stage;
     }
-    final wallet = state.selectedWallet!;
+    final wallet = state.selectedBitcoinWallet!;
     var transaction = _pendingTransaction(
       wallet: wallet,
       stage: stage,
@@ -3304,7 +3307,7 @@ class SendCubit extends Cubit<SendState>
       if (isClosed) return;
       // Bind submission and cleanup to the same signing session.
       final submission = state;
-      final wallet = submission.selectedWallet!;
+      final wallet = submission.selectedBitcoinWallet!;
       final label = submission.label;
       final chainSwap = submission.chainSwap;
       if (!await _validateSelectedBitcoinInputsForBroadcast(submission)) {
@@ -3480,7 +3483,7 @@ class SendCubit extends Cubit<SendState>
   Future<bool> _validateSelectedBitcoinInputsForBroadcast(
     SendState submission,
   ) async {
-    final wallet = submission.selectedWallet!;
+    final wallet = submission.selectedBitcoinWallet!;
     if (submission.isPendingSubmission) return true;
     if (wallet.isBitcoin && submission.isSigningSession) {
       final psbt = submission.unsignedPsbt;
@@ -4074,7 +4077,7 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final generation = ++_bitcoinSignerResultGeneration;
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final pendingTransactionId = state.pendingTransactionId;
     if (psbt == null || wallet == null || !wallet.isBitcoin) return false;
     final persistedState = state;
@@ -4160,7 +4163,7 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final generation = ++_bitcoinSignerResultGeneration;
     final currentPsbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final pendingTransactionId = state.pendingTransactionId;
     if (currentPsbt == null || wallet == null || !wallet.isBitcoin) {
       log.warning('Ignored a signer result without a Bitcoin transaction');
@@ -4378,7 +4381,7 @@ class SendCubit extends Cubit<SendState>
     }
     emit(
       state.copyWith(
-        selectedWallet: wallet == null ? null : SendWalletBitcoin(wallet),
+        selectedWallet: SendWalletBitcoin(wallet),
         bitcoinSigningPlan: null,
         bitcoinPolicyMaturity: const BitcoinPolicyMaturity.empty(),
         bitcoinPolicySelection: walletChanged

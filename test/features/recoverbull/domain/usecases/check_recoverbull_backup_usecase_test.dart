@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -14,12 +15,12 @@ void main() {
     when(
       () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer(
-      (_) async => [
+      (_) async => Ok([
         _wallet(fingerprint: 'deadbeef').copyWith(isHidden: true),
         _wallet(
           fingerprint: 'deadbeef',
         ).copyWith(isEncryptedVaultTested: false),
-      ],
+      ]),
     );
     final usecase = CheckRecoverBullBackupUsecase(getWallets);
 
@@ -48,7 +49,7 @@ void main() {
       final getWallets = _MockGetWalletsUsecase();
       when(
         () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
-      ).thenAnswer((_) async => [mixedWallet]);
+      ).thenAnswer((_) async => Ok([mixedWallet]));
       final usecase = CheckRecoverBullBackupUsecase(getWallets);
 
       expect(await usecase.execute('deadbeef'), isFalse);

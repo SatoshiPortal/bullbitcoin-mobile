@@ -618,10 +618,14 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.mnemonic(
-          mnemonicWords: mnemonic.words,
-          bytes: seedBytes,
-          masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
+        (_) async => Ok(
+          Seed.mnemonic(
+            mnemonicWords: mnemonic.words,
+            bytes: seedBytes,
+            masterFingerprint: bip32.Bip32Keys.fromSeed(
+              seedBytes,
+            ).fingerprintHex,
+          ),
         ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
@@ -698,9 +702,11 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.mainnet),
     ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
       ),
     );
     final result =
@@ -750,9 +756,11 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.bytes(
-          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-          masterFingerprint: 'deadbeef',
+        (_) async => Ok(
+          Seed.bytes(
+            bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+            masterFingerprint: 'deadbeef',
+          ),
         ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
@@ -791,7 +799,7 @@ void main() {
       final deleteWallet = _MockDeleteWalletUsecase();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -833,7 +841,9 @@ void main() {
       final deleteWallet = _MockDeleteWalletUsecase();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('wallet deletion failed'));
+      ).thenAnswer(
+        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
+      );
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -953,9 +963,11 @@ CreateBullVaultUsecase _usecase(
     when(
       () => seedUsecase.execute(environment: any(named: 'environment')),
     ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
       ),
     );
   }

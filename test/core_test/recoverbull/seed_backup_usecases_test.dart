@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:convert';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -34,21 +35,24 @@ class _WalletRepository extends Fake implements WalletRepository {
   _WalletRepository(this.wallets);
 
   @override
-  Future<List<Wallet>> getWallets({
+  Future<Result<List<Wallet>, WalletFailure>> getWallets({
     Environment? environment,
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
     bool sync = false,
-  }) async => wallets
-      .where(
-        (wallet) =>
-            (onlyDefaults != true || wallet.isDefault) &&
-            (onlyBitcoin != true || wallet.isBitcoin) &&
-            (onlyLiquid != true || wallet.isLiquid) &&
-            (environment == null || wallet.isTestnet == environment.isTestnet),
-      )
-      .toList();
+  }) async => Ok(
+    wallets
+        .where(
+          (wallet) =>
+              (onlyDefaults != true || wallet.isDefault) &&
+              (onlyBitcoin != true || wallet.isBitcoin) &&
+              (onlyLiquid != true || wallet.isLiquid) &&
+              (environment == null ||
+                  wallet.isTestnet == environment.isTestnet),
+        )
+        .toList(),
+  );
 
   @override
   Future<void> updateEncryptedBackupTime({

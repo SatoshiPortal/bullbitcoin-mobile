@@ -276,9 +276,13 @@ class SyncCoordinator {
   Future<WalletFailure?> _runTask(SyncKind kind) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        return _syncAll(_getWallets.execute(onlyBitcoin: true, includeHidden: true));
+        return _syncAll(
+          _getWallets.execute(onlyBitcoin: true, includeHidden: true),
+        );
       case SyncKind.liquid:
-        return _syncAll(_getWallets.execute(onlyLiquid: true, includeHidden: true));
+        return _syncAll(
+          _getWallets.execute(onlyLiquid: true, includeHidden: true),
+        );
       case SyncKind.swaps:
         final outcomeCallback = _syncSwapsOutcome;
         if (outcomeCallback != null) {

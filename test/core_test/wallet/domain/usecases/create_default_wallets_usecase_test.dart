@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -53,7 +54,7 @@ void main() {
           onlyDefaults: true,
           environment: Environment.mainnet,
         ),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => Ok([]));
       when(
         () => seeds.createFromMnemonic(
           mnemonicWords: any(named: 'mnemonicWords'),
@@ -120,7 +121,7 @@ void main() {
           onlyDefaults: true,
           environment: Environment.mainnet,
         ),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => Ok([]));
       when(
         () => seeds.createFromMnemonic(
           mnemonicWords: any(named: 'mnemonicWords'),
@@ -148,7 +149,7 @@ void main() {
       ).thenThrow(Exception('Bitcoin wallet creation failed'));
       when(
         () => wallets.deleteWallet(walletId: 'liquid-wallet'),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
 
       await expectLater(
         usecase.execute(mnemonicWords: seed.mnemonicWords),

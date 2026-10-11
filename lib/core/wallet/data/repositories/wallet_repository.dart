@@ -36,7 +36,6 @@ import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';

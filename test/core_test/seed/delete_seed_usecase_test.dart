@@ -85,7 +85,7 @@ void main() {
     test('ignores a fingerprint used only by a remote signer', () async {
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [wallet(remote: true)]);
+      ).thenAnswer((_) async => Ok([wallet(remote: true)]));
       when(
         () => seedRepository.delete(fingerprint),
       ).thenAnswer((_) async => const Ok(null));

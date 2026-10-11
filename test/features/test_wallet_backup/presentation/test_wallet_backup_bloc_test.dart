@@ -134,7 +134,7 @@ void main() {
       );
       when(
         () => loadWalletsUsecase.execute(),
-      ).thenAnswer((_) async => [defaultWallet, requestedWallet]);
+      ).thenAnswer((_) async => Ok([defaultWallet, requestedWallet]));
       final bloc = buildBloc();
 
       final expectation = expectLater(

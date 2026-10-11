@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -34,7 +35,7 @@ void main() {
       var wallets = [requested, liquid, other, shared];
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => wallets);
+      ).thenAnswer((_) async => Ok(wallets));
       when(
         () => walletRepository.updateBackupInfo(
           walletId: any(named: 'walletId'),
@@ -75,7 +76,7 @@ void main() {
       final getWallets = _MockGetWalletsUsecase();
       when(
         () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
-      ).thenAnswer((_) async => wallets);
+      ).thenAnswer((_) async => Ok(wallets));
       final check = CheckPhysicalBackupVerifiedUsecase(getWallets);
       expect(await check.execute('deadbeef'), isTrue);
       expect(await check.execute('cafebabe'), isFalse);

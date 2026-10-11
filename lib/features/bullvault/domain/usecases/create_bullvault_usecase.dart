@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
@@ -116,9 +117,15 @@ class CreateBullVaultUsecase {
                 (request.mobilePassphrase?.isEmpty ?? true))) {
           return const Err(BullVaultInvalidSignerFailure());
         }
-        final storedSeed = await _getDefaultSeedUsecase.execute(
+        final Seed storedSeed;
+        switch (await _getDefaultSeedUsecase.execute(
           environment: settings.environment,
-        );
+        )) {
+          case Ok(:final value):
+            storedSeed = value;
+          case Err():
+            return const Err(BullVaultCreationFailure());
+        }
         final canonicalSeed = _keyService.canonicalSeed(storedSeed);
         if (canonicalSeed == null) {
           return const Err(BullVaultCreationFailure());
@@ -390,8 +397,15 @@ class CreateBullVaultUsecase {
 
   Future<bool> _rollback(String walletId) async {
     try {
-      await _deleteWalletUsecase.execute(walletId: walletId);
-      return true;
+      switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
+        case Ok():
+          return true;
+        case Err(:final failure):
+          log.warning(
+            'Failed to roll back BullVault wallet: ${failure.runtimeType}',
+          );
+          return false;
+      }
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Failed to roll back incomplete BullVault creation',

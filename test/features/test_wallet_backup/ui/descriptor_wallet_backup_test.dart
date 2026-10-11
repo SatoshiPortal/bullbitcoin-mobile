@@ -1,9 +1,10 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
@@ -25,7 +26,7 @@ class _MockGetMnemonic extends Mock
 class _MockVerifyBackup extends Mock implements VerifyPhysicalBackupUsecase {}
 
 class _MockCompleteBackup extends Mock
-    implements CompletePhysicalBackupVerificationUsecase {}
+    implements CompleteBackupVerificationUsecase {}
 
 void main() {
   testWidgets('displays and verifies the local seed of a descriptor wallet', (
@@ -87,21 +88,21 @@ void main() {
     final mnemonic = _MockGetMnemonic();
     final verifyBackup = _MockVerifyBackup();
     final complete = _MockCompleteBackup();
-    when(load.execute).thenAnswer((_) async => [wallet]);
+    when(load.execute).thenAnswer((_) async => Ok([wallet]));
     when(
       () => mnemonic.execute(fingerprint),
-    ).thenAnswer((_) async => (words, null));
+    ).thenAnswer((_) async => Ok((words, null)));
     when(
       () => verifyBackup.execute(fingerprint: fingerprint, mnemonic: words),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => Ok(true));
     when(
       () => complete.execute(fingerprint: fingerprint),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     final bloc = TestWalletBackupBloc(
       loadWalletsForNetworkUsecase: load,
       getMnemonicFromFingerprintUsecase: mnemonic,
       verifyPhysicalBackupUsecase: verifyBackup,
-      completePhysicalBackupVerificationUsecase: complete,
+      completeBackupVerificationUsecase: complete,
     );
     addTearDown(bloc.close);
     Device.screen = const Size(800, 600);

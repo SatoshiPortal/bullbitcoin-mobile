@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -27,14 +28,17 @@ void main() {
       );
       when(
         () => wallets.getWallets(environment: Environment.mainnet),
-      ).thenAnswer((_) async => [visible, hidden]);
+      ).thenAnswer((_) async => Ok([visible, hidden]));
       final usecase = GetWalletsUsecase(
         walletRepository: wallets,
         settingsRepository: settings,
       );
 
-      expect(await usecase.execute(), [visible]);
-      expect(await usecase.execute(includeHidden: true), [visible, hidden]);
+      expect((await usecase.execute() as Ok).value, [visible]);
+      expect((await usecase.execute(includeHidden: true) as Ok).value, [
+        visible,
+        hidden,
+      ]);
     },
   );
 }
