@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 // These edges include legacy violations, not architectural permission.
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
+// Data Backup edges are reviewed separately in FEATURES.md.
 // Remove retired edges; review any addition instead of regenerating this list.
 // In particular, sp/swap -> wallet predates foreground sync: repository
 // compatibility exports and swap's wallet navigation remain out of scope.
@@ -21,7 +22,7 @@ const _allowedTargets = <String, String>{
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'labels send swap wallet',
-  'backup_settings': 'recoverbull settings test_wallet_backup wallet',
+  'backup_settings': 'bullvault electrum_settings import_mnemonic keychain_manifest labels nostr_identity recoverbull settings test_wallet_backup wallet wallet_backup wizard',
   'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet wallet',
   'bitcoin_price': 'settings',
@@ -43,10 +44,12 @@ const _allowedTargets = <String, String>{
   'import_qr_device': 'import_watch_only_wallet',
   'import_wallet': 'bitbox import_coldcard import_qr_device import_watch_only_wallet ledger settings',
   'import_watch_only_wallet': 'wallet',
+  'keychain_manifest': 'nostr_identity wallet',
   'labels': 'wallet',
   'ledger': 'import_watch_only_wallet wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
   'mempool_settings': 'settings',
+  'nostr_identity': 'wallet',
   'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
   'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup wallet',
@@ -67,8 +70,9 @@ const _allowedTargets = <String, String>{
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
   'wallet': 'announcements backup_settings bitcoin_price consolidation electrum_settings labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
+  'wallet_backup': 'autoswap bullvault electrum_settings keychain_manifest labels nostr_identity settings wallet',
   'withdraw': 'exchange recipients transactions',
-  'wizard': 'exchange settings',
+  'wizard': 'exchange settings wallet_backup',
 };
 
 String? _owner(String path) {

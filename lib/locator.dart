@@ -1,6 +1,10 @@
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/status_check/status_core_locator.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
+import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.dart';
+import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -191,7 +195,10 @@ class AppLocator {
     WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
     StatusLocator.setup(locator);
-    StatusCheckLocator.setup(locator);
+    StatusCheckLocator.setup(
+      locator,
+      backupServerOrigin: Uri.parse(walletBackupDefaultServerUrl),
+    );
 
     FundExchangeLocator.setup(locator);
     AddressViewLocator.setup(locator);
@@ -203,5 +210,8 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
     BullVaultLocator.setup(locator);
+    NostrIdentityLocator.setup(locator);
+    KeychainManifestLocator.setup(locator);
+    WalletBackupLocator.setup(locator);
   }
 }

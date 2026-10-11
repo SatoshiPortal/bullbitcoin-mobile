@@ -91,9 +91,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       mnemonicWords: event.mnemonic.words,
       passphrase: event.mnemonic.passphrase,
     )) {
-      case Ok():
+      case Ok(:final value):
         emit(
-          state.copyWith(onboardingStepStatus: OnboardingStepStatus.success),
+          state.copyWith(
+            onboardingStepStatus: OnboardingStepStatus.success,
+            initialWalletLabels: value,
+          ),
         );
       case Err(:final failure):
         emit(

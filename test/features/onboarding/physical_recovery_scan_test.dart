@@ -32,7 +32,8 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (_) async => true);
     final recover = _Recover();
-    final recovery = Completer<Result<void, OnboardingFailure>>();
+    final recovery =
+        Completer<Result<Map<String, String?>, OnboardingFailure>>();
     final scan = _Scan();
     when(
       () => scan.execute(
@@ -181,7 +182,8 @@ void main() {
         .setMockMethodCallHandler(channel, (_) async => true);
     final recover = _Recover();
     final scan = _Scan();
-    final recovery = Completer<Result<void, OnboardingFailure>>();
+    final recovery =
+        Completer<Result<Map<String, String?>, OnboardingFailure>>();
     when(
       () => recover.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
@@ -305,7 +307,8 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (_) async => true);
     final recover = _Recover();
-    final recovery = Completer<Result<void, OnboardingFailure>>();
+    final recovery =
+        Completer<Result<Map<String, String?>, OnboardingFailure>>();
     when(
       () => recover.execute(
         mnemonicWords: any(named: 'mnemonicWords'),

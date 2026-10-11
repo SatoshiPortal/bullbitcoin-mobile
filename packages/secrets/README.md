@@ -42,6 +42,7 @@ Secret
 |-- info -> SecretInfo
 |-- id -> Fingerprint
 |-- derive
+|   |-- nostrPublicKey(identity:) -> String
 |   |-- descriptors
 |   |   |-- bitcoin(network:, scriptType:, [accountIndex: 0]) -> Descriptors
 |   |   `-- liquid(network:) -> String
@@ -56,6 +57,7 @@ Secret
 |   |-- descriptorPsbt(psbt, descriptor:, network:, keys:, [passphrase:], [signWithTapInternalKey: false]) -> String
 |   `-- pset(pset, network:) -> String
 |-- backup
+|   |-- data() -> BackupCredential
 |   |-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
 |   `-- recoverbullKey(vault:) -> VaultKey
 |-- verify
@@ -65,6 +67,7 @@ Secret
 |-- silentPayments
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
+    |-- dataRecoveryWords([key:], failureBuilder:, [style:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [showPassphrase: false], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     `-- mnemonicChallenge([key:], tileBuilder:, layoutBuilder:, onSolved:, onMistake:, failureBuilder:, [onProgress:], [style:], [placeholder: const SizedBox.shrink()]) -> MnemonicChallenge
 ```

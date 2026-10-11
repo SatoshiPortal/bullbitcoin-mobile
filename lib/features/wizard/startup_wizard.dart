@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:primitives/primitives.dart' show Err;
+
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
@@ -32,5 +34,8 @@ Future<bool?> readStartupReportingConsent() async {
   return pending?.reportingConsent;
 }
 
-Future<void> completeStartupWizard(GetIt locator) =>
-    locator<ApplyPendingWizardChoicesUsecase>().execute();
+Future<void> completeStartupWizard(GetIt locator) async {
+  if (await locator<ApplyPendingWizardChoicesUsecase>().execute() case Err()) {
+    throw Exception('Could not apply setup choices');
+  }
+}

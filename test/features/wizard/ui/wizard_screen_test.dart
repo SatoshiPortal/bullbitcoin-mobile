@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
@@ -13,6 +14,7 @@ import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show Ok, Result;
 
 class _FakeWizardRepository implements WizardRepository {
   WizardChoices? pending;
@@ -21,16 +23,20 @@ class _FakeWizardRepository implements WizardRepository {
   Future<bool> isComplete() async => false;
 
   @override
-  Future<void> markComplete() async {}
+  Future<Result<void, WizardFailure>> markComplete() async => const Ok(null);
 
   @override
-  Future<void> savePending(WizardChoices choices) async => pending = choices;
+  Future<Result<void, WizardFailure>> savePending(WizardChoices choices) async {
+    pending = choices;
+    return const Ok(null);
+  }
 
   @override
   Future<WizardChoices?> readPending() async => pending;
 
   @override
-  Future<void> clearPending() async => pending = null;
+  Future<void> clearPending({bool keepDataBackupChoice = false}) async =>
+      pending = null;
 }
 
 Future<void> _pump(WidgetTester tester, Widget home) async {
@@ -71,9 +77,13 @@ void main() {
         final pages =
             tester.widget<PageView>(find.byType(PageView)).childrenDelegate
                 as SliverChildListDelegate;
-        expect(pages.children, hasLength(4));
+        expect(pages.children, hasLength(5));
 
         await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const ValueKey('wizard-data-backup-decline')),
+        );
         await tester.pumpAndSettle();
         final switches = find.descendant(
           of: find.byType(CustomizeStep),
@@ -99,6 +109,7 @@ void main() {
         final saved = repository.pending;
         expect(saved, isNotNull);
         expect(saved?.reportingConsent, isFalse);
+        expect(saved?.dataBackupEnabled, isFalse);
         expect(saved?.touched.contains(WizardField.exchangeAccess), allowed);
         if (allowed) expect(saved?.exchangeAccess, isFalse);
         // Lets the mission-required snackbar time out.

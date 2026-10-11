@@ -247,6 +247,9 @@ String? materialSymbol(Element element) {
             'sign',
             'toWIF',
           }.contains(member),
+    _ when uri.startsWith('package:nostr/') =>
+      owner == 'Keys' ||
+          (owner == 'Schnorr' && {'sign', 'derivePublicKey'}.contains(member)),
     _ when uri.startsWith('package:bip85_entropy/') =>
       owner == 'Bip85Entropy' && (member?.startsWith('derive') ?? false),
     _ when uri.startsWith('package:bdk_dart/') =>

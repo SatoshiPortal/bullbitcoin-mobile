@@ -9,6 +9,11 @@ class ElectrumServerStorageDatasource {
 
   const ElectrumServerStorageDatasource({required this._sqlite});
 
+  /// Invalidates cached facts after a committed settings change.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.electrumServers))
+      .map((_) {});
+
   Future<void> store(ElectrumServerModel server) async {
     await _sqlite
         .into(_sqlite.electrumServers)

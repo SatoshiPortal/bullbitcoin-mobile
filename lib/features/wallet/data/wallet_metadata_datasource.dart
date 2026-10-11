@@ -43,6 +43,17 @@ class WalletMetadataDatasource {
     }
   }
 
+  /// Invalidates inventory, including signer-only annotation changes.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(
+        TableUpdateQuery.onAllTables([
+          _sqlite.walletMetadatas,
+          _sqlite.walletSigners,
+          _sqlite.walletDescriptorKeys,
+        ]),
+      )
+      .map((_) {});
+
   Future<void> store(WalletMetadataModel metadata) async {
     await _sqlite.transaction(() async {
       await _sqlite

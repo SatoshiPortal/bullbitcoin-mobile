@@ -242,7 +242,10 @@ class WalletLocator {
       ),
     );
     locator.registerFactory<DefaultWalletsFacade>(
-      () => DefaultWalletsFacade(locator<CreateDefaultWalletsUsecase>()),
+      () => DefaultWalletsFacade(
+        locator<CreateDefaultWalletsUsecase>(),
+        getWallets: locator<GetWalletsUsecase>(),
+      ),
     );
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(

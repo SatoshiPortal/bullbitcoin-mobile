@@ -2,6 +2,10 @@ import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 abstract class LabelsRepositoryPort {
+  Stream<void> get changes;
+
+  Future<List<LabelEntity>> fetchAllForBackup();
+
   Future<LabelEntity> store(NewLabel newLabel);
 
   Future<List<LabelEntity>> fetchByLabel(String label);

@@ -16,21 +16,45 @@ class RecoverOnboardingWalletUsecase {
   });
 
   @useResult
-  Future<Result<void, OnboardingFailure>> execute({
+  Future<Result<Map<String, String?>, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
     String passphrase = '',
   }) async {
-    if (await _defaultWallets.restore(
-          words: mnemonicWords,
-          passphrase: passphrase,
-        )
-        case Err()) {
+    final initialLabels = <String, String?>{};
+    try {
+      final Set<String> existing;
+      switch (await _defaultWallets.existingWallets()) {
+        case Ok(:final value):
+          existing = value.map((wallet) => wallet.id).toSet();
+        case Err():
+          return const Err(OnboardingWalletSetupFailure());
+      }
+      final restored = await _defaultWallets.restore(
+        words: mnemonicWords,
+        passphrase: passphrase,
+      );
+      final wallets = switch (restored) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
+      if (wallets == null) return const Err(OnboardingWalletSetupFailure());
+      for (final wallet in wallets) {
+        if (!existing.contains(wallet.id)) {
+          initialLabels[wallet.id] = wallet.label;
+        }
+      }
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Onboarding: wallet recovery failed',
+        error: e,
+        trace: st,
+      );
       return const Err(OnboardingWalletSetupFailure());
     }
 
     try {
       await _completePhysicalBackupVerificationUsecase.execute();
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Onboarding: backup verification failed',
         error: e,
@@ -39,6 +63,6 @@ class RecoverOnboardingWalletUsecase {
       return const Err(OnboardingBackupVerificationFailure());
     }
 
-    return const Ok(null);
+    return Ok(Map.unmodifiable(initialLabels));
   }
 }

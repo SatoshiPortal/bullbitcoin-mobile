@@ -19,6 +19,8 @@ import 'package:bb_mobile/features/labels/application/usecases/import_labels_use
 import 'package:bb_mobile/features/labels/data/io_labels_file_datasource.dart';
 import 'package:bb_mobile/features/labels/domain/labels_file_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/get_backup_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/watch_label_changes_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
@@ -56,6 +58,8 @@ class LabelsLocator {
   }
 
   static void registerUseCases(GetIt locator) {
+    locator.registerFactory(() => GetBackupLabelsUsecase(locator()));
+    locator.registerFactory(() => WatchLabelChangesUsecase(locator()));
     locator.registerFactory<TrashLabelUsecase>(
       () => TrashLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
     );
@@ -108,6 +112,8 @@ class LabelsLocator {
         fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
         storeLabelsUsecase: locator<StoreLabelUsecase>(),
         trashLabelUsecase: locator<TrashLabelUsecase>(),
+        getBackupLabels: locator<GetBackupLabelsUsecase>(),
+        watchChanges: locator<WatchLabelChangesUsecase>(),
       ),
     );
   }

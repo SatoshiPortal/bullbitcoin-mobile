@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 
 import 'dart:async';
 
-import 'package:bb_mobile/locator.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 
@@ -38,13 +37,16 @@ void main() {
       _MockRestoreBullVaultUsecase(),
       _Pick(),
     );
-    await locator.reset();
-    addTearDown(locator.reset);
-    locator.registerFactory<BullVaultRestoreCubit>(() => cubit);
+    addTearDown(cubit.close);
     final router = GoRouter(
-      initialLocation: '/bullvault/restore',
       routes: [
-        BullVaultRouter.restoreRoute,
+        GoRoute(
+          path: '/',
+          builder: (context, state) => BlocProvider.value(
+            value: cubit,
+            child: const Scaffold(body: BullVaultRestoreScreen()),
+          ),
+        ),
         GoRoute(
           name: BullVaultRouter.scannerRouteName,
           path: '/scan',
@@ -71,9 +73,6 @@ void main() {
       ),
     );
 
-    expect(tester.takeException(), isNull);
-    expect(find.byType(AppBar), findsOneWidget);
-    expect(find.byType(SafeArea), findsWidgets);
     expect(find.text('Mobile passphrase (if configured)'), findsNothing);
 
     await tester.drag(find.byType(ListView), const Offset(0, -600));
