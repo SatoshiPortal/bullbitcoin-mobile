@@ -75,6 +75,11 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.recoverbull),
                     const SizedBox(height: 12),
+                    _ServiceStatusItem(
+                      service: serviceStatus.backupServer,
+                      label: context.loc.statusCheckDataBackupServer,
+                    ),
+                    const SizedBox(height: 12),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: .center,
@@ -120,8 +125,9 @@ String _formatDateTime(DateTime dateTime) {
 
 class _ServiceStatusItem extends StatelessWidget {
   final ServiceStatusInfo service;
+  final String? label;
 
-  const _ServiceStatusItem({required this.service});
+  const _ServiceStatusItem({required this.service, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +143,7 @@ class _ServiceStatusItem extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         BBText(
-          service.name,
+          label ?? service.name,
           style: context.font.bodyMedium,
           color: context.appColors.onSurface,
         ),

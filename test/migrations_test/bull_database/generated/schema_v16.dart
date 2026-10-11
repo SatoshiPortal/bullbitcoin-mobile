@@ -13564,6 +13564,1024 @@ class BullVaultGenerationReservationsCompanion
   }
 }
 
+class WalletBackupStates extends Table
+    with TableInfo<WalletBackupStates, WalletBackupStatesData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  WalletBackupStates(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> identity = GeneratedColumn<String>(
+    'identity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> generation = GeneratedColumn<int>(
+    'generation',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> ciphertextHash = GeneratedColumn<String>(
+    'ciphertext_hash',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> confirmedContentHash =
+      GeneratedColumn<String>(
+        'confirmed_content_hash',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> lastSuccessAt = GeneratedColumn<String>(
+    'last_success_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    identity,
+    generation,
+    etag,
+    ciphertextHash,
+    confirmedContentHash,
+    lastSuccessAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wallet_backup_states';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {identity};
+  @override
+  WalletBackupStatesData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WalletBackupStatesData(
+      identity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}identity'],
+      )!,
+      generation: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}generation'],
+      ),
+      etag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}etag'],
+      ),
+      ciphertextHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ciphertext_hash'],
+      ),
+      confirmedContentHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}confirmed_content_hash'],
+      ),
+      lastSuccessAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_success_at'],
+      ),
+    );
+  }
+
+  @override
+  WalletBackupStates createAlias(String alias) {
+    return WalletBackupStates(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(identity)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class WalletBackupStatesData extends DataClass
+    implements Insertable<WalletBackupStatesData> {
+  final String identity;
+  final int? generation;
+  final String? etag;
+  final String? ciphertextHash;
+  final String? confirmedContentHash;
+  final String? lastSuccessAt;
+  const WalletBackupStatesData({
+    required this.identity,
+    this.generation,
+    this.etag,
+    this.ciphertextHash,
+    this.confirmedContentHash,
+    this.lastSuccessAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['identity'] = Variable<String>(identity);
+    if (!nullToAbsent || generation != null) {
+      map['generation'] = Variable<int>(generation);
+    }
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
+    if (!nullToAbsent || ciphertextHash != null) {
+      map['ciphertext_hash'] = Variable<String>(ciphertextHash);
+    }
+    if (!nullToAbsent || confirmedContentHash != null) {
+      map['confirmed_content_hash'] = Variable<String>(confirmedContentHash);
+    }
+    if (!nullToAbsent || lastSuccessAt != null) {
+      map['last_success_at'] = Variable<String>(lastSuccessAt);
+    }
+    return map;
+  }
+
+  WalletBackupStatesCompanion toCompanion(bool nullToAbsent) {
+    return WalletBackupStatesCompanion(
+      identity: Value(identity),
+      generation: generation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(generation),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      ciphertextHash: ciphertextHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ciphertextHash),
+      confirmedContentHash: confirmedContentHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(confirmedContentHash),
+      lastSuccessAt: lastSuccessAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSuccessAt),
+    );
+  }
+
+  factory WalletBackupStatesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WalletBackupStatesData(
+      identity: serializer.fromJson<String>(json['identity']),
+      generation: serializer.fromJson<int?>(json['generation']),
+      etag: serializer.fromJson<String?>(json['etag']),
+      ciphertextHash: serializer.fromJson<String?>(json['ciphertextHash']),
+      confirmedContentHash: serializer.fromJson<String?>(
+        json['confirmedContentHash'],
+      ),
+      lastSuccessAt: serializer.fromJson<String?>(json['lastSuccessAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'identity': serializer.toJson<String>(identity),
+      'generation': serializer.toJson<int?>(generation),
+      'etag': serializer.toJson<String?>(etag),
+      'ciphertextHash': serializer.toJson<String?>(ciphertextHash),
+      'confirmedContentHash': serializer.toJson<String?>(confirmedContentHash),
+      'lastSuccessAt': serializer.toJson<String?>(lastSuccessAt),
+    };
+  }
+
+  WalletBackupStatesData copyWith({
+    String? identity,
+    Value<int?> generation = const Value.absent(),
+    Value<String?> etag = const Value.absent(),
+    Value<String?> ciphertextHash = const Value.absent(),
+    Value<String?> confirmedContentHash = const Value.absent(),
+    Value<String?> lastSuccessAt = const Value.absent(),
+  }) => WalletBackupStatesData(
+    identity: identity ?? this.identity,
+    generation: generation.present ? generation.value : this.generation,
+    etag: etag.present ? etag.value : this.etag,
+    ciphertextHash: ciphertextHash.present
+        ? ciphertextHash.value
+        : this.ciphertextHash,
+    confirmedContentHash: confirmedContentHash.present
+        ? confirmedContentHash.value
+        : this.confirmedContentHash,
+    lastSuccessAt: lastSuccessAt.present
+        ? lastSuccessAt.value
+        : this.lastSuccessAt,
+  );
+  WalletBackupStatesData copyWithCompanion(WalletBackupStatesCompanion data) {
+    return WalletBackupStatesData(
+      identity: data.identity.present ? data.identity.value : this.identity,
+      generation: data.generation.present
+          ? data.generation.value
+          : this.generation,
+      etag: data.etag.present ? data.etag.value : this.etag,
+      ciphertextHash: data.ciphertextHash.present
+          ? data.ciphertextHash.value
+          : this.ciphertextHash,
+      confirmedContentHash: data.confirmedContentHash.present
+          ? data.confirmedContentHash.value
+          : this.confirmedContentHash,
+      lastSuccessAt: data.lastSuccessAt.present
+          ? data.lastSuccessAt.value
+          : this.lastSuccessAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletBackupStatesData(')
+          ..write('identity: $identity, ')
+          ..write('generation: $generation, ')
+          ..write('etag: $etag, ')
+          ..write('ciphertextHash: $ciphertextHash, ')
+          ..write('confirmedContentHash: $confirmedContentHash, ')
+          ..write('lastSuccessAt: $lastSuccessAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    identity,
+    generation,
+    etag,
+    ciphertextHash,
+    confirmedContentHash,
+    lastSuccessAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WalletBackupStatesData &&
+          other.identity == this.identity &&
+          other.generation == this.generation &&
+          other.etag == this.etag &&
+          other.ciphertextHash == this.ciphertextHash &&
+          other.confirmedContentHash == this.confirmedContentHash &&
+          other.lastSuccessAt == this.lastSuccessAt);
+}
+
+class WalletBackupStatesCompanion
+    extends UpdateCompanion<WalletBackupStatesData> {
+  final Value<String> identity;
+  final Value<int?> generation;
+  final Value<String?> etag;
+  final Value<String?> ciphertextHash;
+  final Value<String?> confirmedContentHash;
+  final Value<String?> lastSuccessAt;
+  final Value<int> rowid;
+  const WalletBackupStatesCompanion({
+    this.identity = const Value.absent(),
+    this.generation = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.ciphertextHash = const Value.absent(),
+    this.confirmedContentHash = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WalletBackupStatesCompanion.insert({
+    required String identity,
+    this.generation = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.ciphertextHash = const Value.absent(),
+    this.confirmedContentHash = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : identity = Value(identity);
+  static Insertable<WalletBackupStatesData> custom({
+    Expression<String>? identity,
+    Expression<int>? generation,
+    Expression<String>? etag,
+    Expression<String>? ciphertextHash,
+    Expression<String>? confirmedContentHash,
+    Expression<String>? lastSuccessAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (identity != null) 'identity': identity,
+      if (generation != null) 'generation': generation,
+      if (etag != null) 'etag': etag,
+      if (ciphertextHash != null) 'ciphertext_hash': ciphertextHash,
+      if (confirmedContentHash != null)
+        'confirmed_content_hash': confirmedContentHash,
+      if (lastSuccessAt != null) 'last_success_at': lastSuccessAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WalletBackupStatesCompanion copyWith({
+    Value<String>? identity,
+    Value<int?>? generation,
+    Value<String?>? etag,
+    Value<String?>? ciphertextHash,
+    Value<String?>? confirmedContentHash,
+    Value<String?>? lastSuccessAt,
+    Value<int>? rowid,
+  }) {
+    return WalletBackupStatesCompanion(
+      identity: identity ?? this.identity,
+      generation: generation ?? this.generation,
+      etag: etag ?? this.etag,
+      ciphertextHash: ciphertextHash ?? this.ciphertextHash,
+      confirmedContentHash: confirmedContentHash ?? this.confirmedContentHash,
+      lastSuccessAt: lastSuccessAt ?? this.lastSuccessAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (identity.present) {
+      map['identity'] = Variable<String>(identity.value);
+    }
+    if (generation.present) {
+      map['generation'] = Variable<int>(generation.value);
+    }
+    if (etag.present) {
+      map['etag'] = Variable<String>(etag.value);
+    }
+    if (ciphertextHash.present) {
+      map['ciphertext_hash'] = Variable<String>(ciphertextHash.value);
+    }
+    if (confirmedContentHash.present) {
+      map['confirmed_content_hash'] = Variable<String>(
+        confirmedContentHash.value,
+      );
+    }
+    if (lastSuccessAt.present) {
+      map['last_success_at'] = Variable<String>(lastSuccessAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletBackupStatesCompanion(')
+          ..write('identity: $identity, ')
+          ..write('generation: $generation, ')
+          ..write('etag: $etag, ')
+          ..write('ciphertextHash: $ciphertextHash, ')
+          ..write('confirmedContentHash: $confirmedContentHash, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class WalletBackupControls extends Table
+    with TableInfo<WalletBackupControls, WalletBackupControlsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  WalletBackupControls(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> enabled = GeneratedColumn<int>(
+    'enabled',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (enabled IN (0, 1))',
+  );
+  late final GeneratedColumn<int> recoveryScope = GeneratedColumn<int>(
+    'recovery_scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, enabled, recoveryScope];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wallet_backup_controls';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WalletBackupControlsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WalletBackupControlsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}enabled'],
+      ),
+      recoveryScope: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recovery_scope'],
+      )!,
+    );
+  }
+
+  @override
+  WalletBackupControls createAlias(String alias) {
+    return WalletBackupControls(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class WalletBackupControlsData extends DataClass
+    implements Insertable<WalletBackupControlsData> {
+  final int id;
+  final int? enabled;
+  final int recoveryScope;
+  const WalletBackupControlsData({
+    required this.id,
+    this.enabled,
+    required this.recoveryScope,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || enabled != null) {
+      map['enabled'] = Variable<int>(enabled);
+    }
+    map['recovery_scope'] = Variable<int>(recoveryScope);
+    return map;
+  }
+
+  WalletBackupControlsCompanion toCompanion(bool nullToAbsent) {
+    return WalletBackupControlsCompanion(
+      id: Value(id),
+      enabled: enabled == null && nullToAbsent
+          ? const Value.absent()
+          : Value(enabled),
+      recoveryScope: Value(recoveryScope),
+    );
+  }
+
+  factory WalletBackupControlsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WalletBackupControlsData(
+      id: serializer.fromJson<int>(json['id']),
+      enabled: serializer.fromJson<int?>(json['enabled']),
+      recoveryScope: serializer.fromJson<int>(json['recoveryScope']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'enabled': serializer.toJson<int?>(enabled),
+      'recoveryScope': serializer.toJson<int>(recoveryScope),
+    };
+  }
+
+  WalletBackupControlsData copyWith({
+    int? id,
+    Value<int?> enabled = const Value.absent(),
+    int? recoveryScope,
+  }) => WalletBackupControlsData(
+    id: id ?? this.id,
+    enabled: enabled.present ? enabled.value : this.enabled,
+    recoveryScope: recoveryScope ?? this.recoveryScope,
+  );
+  WalletBackupControlsData copyWithCompanion(
+    WalletBackupControlsCompanion data,
+  ) {
+    return WalletBackupControlsData(
+      id: data.id.present ? data.id.value : this.id,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      recoveryScope: data.recoveryScope.present
+          ? data.recoveryScope.value
+          : this.recoveryScope,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletBackupControlsData(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled, ')
+          ..write('recoveryScope: $recoveryScope')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, enabled, recoveryScope);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WalletBackupControlsData &&
+          other.id == this.id &&
+          other.enabled == this.enabled &&
+          other.recoveryScope == this.recoveryScope);
+}
+
+class WalletBackupControlsCompanion
+    extends UpdateCompanion<WalletBackupControlsData> {
+  final Value<int> id;
+  final Value<int?> enabled;
+  final Value<int> recoveryScope;
+  const WalletBackupControlsCompanion({
+    this.id = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.recoveryScope = const Value.absent(),
+  });
+  WalletBackupControlsCompanion.insert({
+    this.id = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.recoveryScope = const Value.absent(),
+  });
+  static Insertable<WalletBackupControlsData> custom({
+    Expression<int>? id,
+    Expression<int>? enabled,
+    Expression<int>? recoveryScope,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (enabled != null) 'enabled': enabled,
+      if (recoveryScope != null) 'recovery_scope': recoveryScope,
+    });
+  }
+
+  WalletBackupControlsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? enabled,
+    Value<int>? recoveryScope,
+  }) {
+    return WalletBackupControlsCompanion(
+      id: id ?? this.id,
+      enabled: enabled ?? this.enabled,
+      recoveryScope: recoveryScope ?? this.recoveryScope,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<int>(enabled.value);
+    }
+    if (recoveryScope.present) {
+      map['recovery_scope'] = Variable<int>(recoveryScope.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletBackupControlsCompanion(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled, ')
+          ..write('recoveryScope: $recoveryScope')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class KeychainNostrKeys extends Table
+    with TableInfo<KeychainNostrKeys, KeychainNostrKeysData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  KeychainNostrKeys(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> publicKey = GeneratedColumn<String>(
+    'public_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> parentFingerprint =
+      GeneratedColumn<String>(
+        'parent_fingerprint',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> identity = GeneratedColumn<int>(
+    'identity',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> purpose = GeneratedColumn<String>(
+    'purpose',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    publicKey,
+    parentFingerprint,
+    identity,
+    purpose,
+    description,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'keychain_nostr_keys';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {publicKey};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {parentFingerprint, identity},
+  ];
+  @override
+  KeychainNostrKeysData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return KeychainNostrKeysData(
+      publicKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}public_key'],
+      )!,
+      parentFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parent_fingerprint'],
+      )!,
+      identity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}identity'],
+      )!,
+      purpose: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}purpose'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  KeychainNostrKeys createAlias(String alias) {
+    return KeychainNostrKeys(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(public_key)',
+    'UNIQUE(parent_fingerprint, identity)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class KeychainNostrKeysData extends DataClass
+    implements Insertable<KeychainNostrKeysData> {
+  final String publicKey;
+  final String parentFingerprint;
+  final int identity;
+  final String purpose;
+  final String description;
+  final String createdAt;
+  final String updatedAt;
+  const KeychainNostrKeysData({
+    required this.publicKey,
+    required this.parentFingerprint,
+    required this.identity,
+    required this.purpose,
+    required this.description,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['public_key'] = Variable<String>(publicKey);
+    map['parent_fingerprint'] = Variable<String>(parentFingerprint);
+    map['identity'] = Variable<int>(identity);
+    map['purpose'] = Variable<String>(purpose);
+    map['description'] = Variable<String>(description);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  KeychainNostrKeysCompanion toCompanion(bool nullToAbsent) {
+    return KeychainNostrKeysCompanion(
+      publicKey: Value(publicKey),
+      parentFingerprint: Value(parentFingerprint),
+      identity: Value(identity),
+      purpose: Value(purpose),
+      description: Value(description),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory KeychainNostrKeysData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return KeychainNostrKeysData(
+      publicKey: serializer.fromJson<String>(json['publicKey']),
+      parentFingerprint: serializer.fromJson<String>(json['parentFingerprint']),
+      identity: serializer.fromJson<int>(json['identity']),
+      purpose: serializer.fromJson<String>(json['purpose']),
+      description: serializer.fromJson<String>(json['description']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'publicKey': serializer.toJson<String>(publicKey),
+      'parentFingerprint': serializer.toJson<String>(parentFingerprint),
+      'identity': serializer.toJson<int>(identity),
+      'purpose': serializer.toJson<String>(purpose),
+      'description': serializer.toJson<String>(description),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  KeychainNostrKeysData copyWith({
+    String? publicKey,
+    String? parentFingerprint,
+    int? identity,
+    String? purpose,
+    String? description,
+    String? createdAt,
+    String? updatedAt,
+  }) => KeychainNostrKeysData(
+    publicKey: publicKey ?? this.publicKey,
+    parentFingerprint: parentFingerprint ?? this.parentFingerprint,
+    identity: identity ?? this.identity,
+    purpose: purpose ?? this.purpose,
+    description: description ?? this.description,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  KeychainNostrKeysData copyWithCompanion(KeychainNostrKeysCompanion data) {
+    return KeychainNostrKeysData(
+      publicKey: data.publicKey.present ? data.publicKey.value : this.publicKey,
+      parentFingerprint: data.parentFingerprint.present
+          ? data.parentFingerprint.value
+          : this.parentFingerprint,
+      identity: data.identity.present ? data.identity.value : this.identity,
+      purpose: data.purpose.present ? data.purpose.value : this.purpose,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KeychainNostrKeysData(')
+          ..write('publicKey: $publicKey, ')
+          ..write('parentFingerprint: $parentFingerprint, ')
+          ..write('identity: $identity, ')
+          ..write('purpose: $purpose, ')
+          ..write('description: $description, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    publicKey,
+    parentFingerprint,
+    identity,
+    purpose,
+    description,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is KeychainNostrKeysData &&
+          other.publicKey == this.publicKey &&
+          other.parentFingerprint == this.parentFingerprint &&
+          other.identity == this.identity &&
+          other.purpose == this.purpose &&
+          other.description == this.description &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class KeychainNostrKeysCompanion
+    extends UpdateCompanion<KeychainNostrKeysData> {
+  final Value<String> publicKey;
+  final Value<String> parentFingerprint;
+  final Value<int> identity;
+  final Value<String> purpose;
+  final Value<String> description;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const KeychainNostrKeysCompanion({
+    this.publicKey = const Value.absent(),
+    this.parentFingerprint = const Value.absent(),
+    this.identity = const Value.absent(),
+    this.purpose = const Value.absent(),
+    this.description = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  KeychainNostrKeysCompanion.insert({
+    required String publicKey,
+    required String parentFingerprint,
+    required int identity,
+    required String purpose,
+    required String description,
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : publicKey = Value(publicKey),
+       parentFingerprint = Value(parentFingerprint),
+       identity = Value(identity),
+       purpose = Value(purpose),
+       description = Value(description),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<KeychainNostrKeysData> custom({
+    Expression<String>? publicKey,
+    Expression<String>? parentFingerprint,
+    Expression<int>? identity,
+    Expression<String>? purpose,
+    Expression<String>? description,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (publicKey != null) 'public_key': publicKey,
+      if (parentFingerprint != null) 'parent_fingerprint': parentFingerprint,
+      if (identity != null) 'identity': identity,
+      if (purpose != null) 'purpose': purpose,
+      if (description != null) 'description': description,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  KeychainNostrKeysCompanion copyWith({
+    Value<String>? publicKey,
+    Value<String>? parentFingerprint,
+    Value<int>? identity,
+    Value<String>? purpose,
+    Value<String>? description,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return KeychainNostrKeysCompanion(
+      publicKey: publicKey ?? this.publicKey,
+      parentFingerprint: parentFingerprint ?? this.parentFingerprint,
+      identity: identity ?? this.identity,
+      purpose: purpose ?? this.purpose,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (publicKey.present) {
+      map['public_key'] = Variable<String>(publicKey.value);
+    }
+    if (parentFingerprint.present) {
+      map['parent_fingerprint'] = Variable<String>(parentFingerprint.value);
+    }
+    if (identity.present) {
+      map['identity'] = Variable<int>(identity.value);
+    }
+    if (purpose.present) {
+      map['purpose'] = Variable<String>(purpose.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KeychainNostrKeysCompanion(')
+          ..write('publicKey: $publicKey, ')
+          ..write('parentFingerprint: $parentFingerprint, ')
+          ..write('identity: $identity, ')
+          ..write('purpose: $purpose, ')
+          ..write('description: $description, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV16 extends GeneratedDatabase {
   DatabaseAtV16(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -13597,6 +14615,11 @@ class DatabaseAtV16 extends GeneratedDatabase {
   late final BullVaultRecords bullVaultRecords = BullVaultRecords(this);
   late final BullVaultGenerationReservations bullVaultGenerationReservations =
       BullVaultGenerationReservations(this);
+  late final WalletBackupStates walletBackupStates = WalletBackupStates(this);
+  late final WalletBackupControls walletBackupControls = WalletBackupControls(
+    this,
+  );
+  late final KeychainNostrKeys keychainNostrKeys = KeychainNostrKeys(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -13663,6 +14686,9 @@ class DatabaseAtV16 extends GeneratedDatabase {
     sendTransactionPolicyChoices,
     bullVaultRecords,
     bullVaultGenerationReservations,
+    walletBackupStates,
+    walletBackupControls,
+    keychainNostrKeys,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,

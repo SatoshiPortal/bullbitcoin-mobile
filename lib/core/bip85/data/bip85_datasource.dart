@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bip85/data/bip85_derivation_model.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
@@ -11,6 +12,11 @@ class Bip85Datasource {
   final SqliteDatabase _sqlite;
 
   Bip85Datasource({required this._sqlite});
+
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.bip85Derivations))
+      .map((_) {});
 
   Future<({String derivation, String hex})> deriveHex({
     required String xprvBase58,
@@ -59,6 +65,9 @@ class Bip85Datasource {
       const application = Bip85ApplicationColumn.bip39;
       final derivationPath =
           "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
+      if (Bip85Reservations.isReservedPath(derivationPath)) {
+        throw const FormatException('This BIP85 path is reserved for backups');
+      }
 
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
@@ -152,6 +161,35 @@ class Bip85Datasource {
       rethrow;
     }
   }
+
+  /// Adds public recovery metadata only. Existing records remain owned by
+  /// their original seed and keep local aliases and revocation decisions.
+  Future<bool> restorePublicRecord(Bip85DerivationModel record) =>
+      _sqlite.transaction(() async {
+        final path = record.path;
+        final parts = path.split('/');
+        if (path.length > 200 ||
+            parts.length < 2 ||
+            parts.any(
+              (part) =>
+                  !RegExp(r"^(0|[1-9][0-9]*)'$").hasMatch(part) ||
+                  (int.tryParse(part.replaceAll("'", '')) ??
+                          (Bip85Reservations.maxIndex + 1)) >
+                      Bip85Reservations.maxIndex,
+            ) ||
+            parts.first != "${record.application.number}'" ||
+            !RegExp(r'^[0-9a-f]{8}$').hasMatch(record.xprvFingerprint) ||
+            Bip85Reservations.isReservedPath(path)) {
+          throw const FormatException('Invalid public BIP85 record');
+        }
+        final existing = await fetch(path);
+        if (existing != null) {
+          return existing.xprvFingerprint == record.xprvFingerprint &&
+              existing.application == record.application;
+        }
+        await _store(record);
+        return true;
+      });
 
   // We should not use _store without properly formatting the derivation path.
   Future<void> _store(Bip85DerivationModel bip85) async {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_settings_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
@@ -23,7 +23,6 @@ abstract final class BullVaultRouter {
   static List<GoRoute> routes({required String registerExternalRouteName}) => [
     menuRoute(registerExternalRouteName),
     route,
-    restoreRoute,
     scannerRoute,
     settingsRoute,
     policyRoute,
@@ -75,15 +74,6 @@ abstract final class BullVaultRouter {
         final BullVaultScannerPurpose purpose => purpose,
         _ => BullVaultScannerPurpose.publicAccountKey,
       },
-    ),
-  );
-
-  static final restoreRoute = GoRoute(
-    name: BullVaultFacade.restoreRouteName,
-    path: '/bullvault/restore',
-    builder: (context, _) => Scaffold(
-      appBar: AppBar(title: Text(context.loc.bullVaultRestoreTitle)),
-      body: SafeArea(child: restoreView(context)),
     ),
   );
 

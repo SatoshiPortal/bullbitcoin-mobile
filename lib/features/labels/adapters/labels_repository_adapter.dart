@@ -11,6 +11,19 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   DriftLabelsRepositoryAdapter({required this._database});
 
   @override
+  Stream<void> get changes => _database
+      .tableUpdates(TableUpdateQuery.onTable(_database.labels))
+      .map((_) {});
+
+  /// Backup must refuse an incomplete inventory; ordinary UI reads remain
+  /// tolerant so one corrupt annotation does not hide all other labels.
+  @override
+  Future<List<LabelEntity>> fetchAllForBackup() async {
+    final rows = await _database.managers.labels.get();
+    return rows.map(LabelMapper.toLabelEntity).toList();
+  }
+
+  @override
   Future<LabelEntity> store(NewLabel newLabel) async {
     // Validate BEFORE writing: constructing a LabelEntity is what enforces
     // its invariants (see LabelEntity._validateReference), and it must
