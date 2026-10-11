@@ -12,9 +12,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.da
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
-import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -25,7 +23,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
-  const ExchangeHomeScreen({super.key});
+  final List<Widget> homeCards;
+  final VoidCallback onHomeRefresh;
+  final VoidCallback onOpenSettings;
+
+  const ExchangeHomeScreen({
+    required this.homeCards,
+    required this.onHomeRefresh,
+    required this.onOpenSettings,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +69,7 @@ class ExchangeHomeScreen extends StatelessWidget {
       children: [
         BullPullableBody(
           onRefresh: () async {
-            locator<LimitOrdersFacade>().refreshDashboard();
+            onHomeRefresh();
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
@@ -111,8 +118,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           context.read<ExchangeCubit>().fetchUserSummary(),
                     ),
                     const Gap(12),
-                    locator<LimitOrdersFacade>().buildDashboardCard(),
-                    const Gap(12),
+                    for (final card in homeCards) ...[card, const Gap(12)],
                     if (!notLoggedIn) const AnnouncementBanner(),
                   ],
                 ),
@@ -252,8 +258,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         ),
                         const Gap(16),
                         InkWell(
-                          onTap: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
+                          onTap: onOpenSettings,
                           child: Image.asset(
                             Assets.icons.settingsLine.path,
                             width: 32,

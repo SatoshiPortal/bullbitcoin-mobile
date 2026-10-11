@@ -7,9 +7,7 @@ import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
@@ -72,9 +70,8 @@ class SettingsRouter {
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
 
-        builder: (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
-          listenWhen: (previous, current) =>
-              !previous.notLoggedIn && current.notLoggedIn,
+        builder: (context, state) => ExchangeSessionListener(
+          listenWhen: (previous, current) => previous && !current,
           listener: (context, state) {
             // Redirect to landing page if the user logged out
             context.goNamed(ExchangeRoute.exchangeLanding.name);
