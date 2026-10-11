@@ -57,6 +57,74 @@ final class _SeedVerification implements SeedVerificationPort {
 void main() {
   const fingerprint = 'deadbeef';
 
+  test('lists sparse persisted marks without including open claims', () async {
+    final storage = _MemoryStorage();
+    storage.values['bip48_reserved_accounts_deadbeef_0'] = '[1,50,2147483647]';
+    storage.values['bip48_reserved_accounts_deadbeef_1'] = '[8]';
+    storage.values['bip48_reserved_accounts_cafebabe_0'] = '[9]';
+    final repository = _repository(storage);
+    expect(
+      await repository.claimNext(seedFingerprint: fingerprint, coinType: 0),
+      isA<Ok>(),
+    );
+
+    final result = await repository.reservedAccounts(
+      seedFingerprint: 'DEADBEEF',
+      coinType: 0,
+    );
+    expect((result as Ok).value, {1, 50, 2147483647});
+    expect(
+      (await repository.reservedAccounts(
+                seedFingerprint: fingerprint,
+                coinType: 1,
+              )
+              as Ok)
+          .value,
+      {8},
+    );
+    expect(
+      (await repository.reservedAccounts(
+                seedFingerprint: 'cafebabe',
+                coinType: 0,
+              )
+              as Ok)
+          .value,
+      {9},
+    );
+  });
+
+  test(
+    'reservation listing rejects invalid scope and corrupt records',
+    () async {
+      final storage = _MemoryStorage();
+      final repository = _repository(storage);
+      expect(
+        await repository.reservedAccounts(
+          seedFingerprint: 'invalid',
+          coinType: 0,
+        ),
+        isA<Err>(),
+      );
+      expect(
+        await repository.reservedAccounts(
+          seedFingerprint: fingerprint,
+          coinType: 2,
+        ),
+        isA<Err>(),
+      );
+      for (final record in ['not-json', '[-1]', '[2147483648]']) {
+        storage.values['bip48_reserved_accounts_deadbeef_0'] = record;
+        expect(
+          await repository.reservedAccounts(
+            seedFingerprint: fingerprint,
+            coinType: 0,
+          ),
+          isA<Err>(),
+        );
+      }
+    },
+  );
+
   test('reads the next account without reserving it', () async {
     final repository = _repository(_MemoryStorage());
 
