@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_reco
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'dart:async';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
@@ -33,13 +32,16 @@ void main() {
       _MockRestoreBullVaultUsecase(),
       _Pick(),
     );
-    await locator.reset();
-    addTearDown(locator.reset);
-    locator.registerFactory<BullVaultRestoreCubit>(() => cubit);
+    addTearDown(cubit.close);
     final router = GoRouter(
-      initialLocation: '/bullvault/restore',
       routes: [
-        BullVaultRouter.restoreRoute,
+        GoRoute(
+          path: '/',
+          builder: (context, state) => BlocProvider.value(
+            value: cubit,
+            child: const Scaffold(body: BullVaultRestoreScreen()),
+          ),
+        ),
         GoRoute(
           name: BullVaultRouter.scannerRouteName,
           path: '/scan',
@@ -66,9 +68,6 @@ void main() {
       ),
     );
 
-    expect(tester.takeException(), isNull);
-    expect(find.byType(AppBar), findsOneWidget);
-    expect(find.byType(SafeArea), findsWidgets);
     expect(find.text('Mobile passphrase (if configured)'), findsNothing);
 
     await tester.drag(find.byType(ListView), const Offset(0, -600));

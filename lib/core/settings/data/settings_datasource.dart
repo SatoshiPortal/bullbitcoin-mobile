@@ -9,6 +9,11 @@ class SettingsDatasource {
 
   SettingsDatasource({required this._sqlite});
 
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.settings))
+      .map((_) {});
+
   Future<void> store(SettingsModel model) async {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
   }

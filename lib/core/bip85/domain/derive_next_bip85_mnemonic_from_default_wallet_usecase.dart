@@ -63,6 +63,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       const application = Bip85Application.bip39;
       final indexResult = await _bip85Repository.fetchNextIndexForApplication(
         application,
+        mnemonicLength: length,
       );
       switch (indexResult) {
         case Err(:final failure):

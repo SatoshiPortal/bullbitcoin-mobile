@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 
 /// Advances the persisted wizard version marker. Invoked by
@@ -9,5 +11,5 @@ class MarkWizardCompleteUsecase {
 
   final WizardRepository _repository;
 
-  Future<void> execute() => _repository.markComplete();
+  Future<Result<void, WizardFailure>> execute() => _repository.markComplete();
 }

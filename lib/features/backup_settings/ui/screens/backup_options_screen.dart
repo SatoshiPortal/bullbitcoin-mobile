@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/how_to_decide.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,14 @@ import 'package:go_router/go_router.dart';
 
 class BackupOptionsScreen extends StatefulWidget {
   final BackupSettingsFlow flow;
-  const BackupOptionsScreen({super.key, required this.flow});
+  final bool hasPhysicalBackup;
+  final bool hasEncryptedBackup;
+  const BackupOptionsScreen({
+    super.key,
+    required this.flow,
+    this.hasPhysicalBackup = true,
+    this.hasEncryptedBackup = true,
+  });
 
   @override
   State<BackupOptionsScreen> createState() => _BackupOptionsScreenState();
@@ -50,50 +56,58 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 maxLines: 5,
               ),
               const Gap(16),
-              BackupOptionCard(
-                icon: Image.asset(
-                  Assets.misc.encryptedVault.path,
-                  width: 32,
-                  height: 40,
-                  fit: .contain,
-                ),
-                title: context.loc.backupWalletEncryptedVaultTitle,
-                description: context.loc.backupWalletEncryptedVaultDescription,
-                tag: context.loc.backupWalletEncryptedVaultTag,
-                onTap: () => context.pushNamed(
-                  RecoverBullRoute.recoverbullFlows.name,
-                  extra: RecoverBullFlowsExtra(
-                    flow: switch (widget.flow) {
-                      BackupSettingsFlow.backup => RecoverBullFlow.secureVault,
-                      BackupSettingsFlow.test => RecoverBullFlow.testVault,
-                    },
-                    vault: null,
+              if (widget.flow == BackupSettingsFlow.backup ||
+                  widget.hasEncryptedBackup)
+                BackupOptionCard(
+                  icon: Image.asset(
+                    Assets.misc.encryptedVault.path,
+                    width: 32,
+                    height: 40,
+                    fit: .contain,
                   ),
+                  title: context.loc.backupWalletEncryptedVaultTitle,
+                  description:
+                      context.loc.backupWalletEncryptedVaultDescription,
+                  tag: context.loc.backupWalletEncryptedVaultTag,
+                  additionalTags: [
+                    context.loc.backupWalletEncryptedVaultUsesTorTag,
+                  ],
+                  onTap: () => switch (widget.flow) {
+                    BackupSettingsFlow.backup => RecoverBullFacade.openBackup(
+                      context,
+                    ),
+                    BackupSettingsFlow.test => RecoverBullFacade.openTest(
+                      context,
+                    ),
+                  },
                 ),
-              ),
               const Gap(16),
 
-              BackupOptionCard(
-                icon: Image.asset(
-                  Assets.misc.physicalBackup.path,
-                  width: 32,
-                  height: 40,
-                  fit: .contain,
+              if (widget.flow == BackupSettingsFlow.backup ||
+                  widget.hasPhysicalBackup)
+                BackupOptionCard(
+                  icon: Image.asset(
+                    Assets.misc.physicalBackup.path,
+                    width: 32,
+                    height: 40,
+                    fit: .contain,
+                  ),
+                  title: context.loc.backupWalletPhysicalBackupTitle,
+                  description:
+                      context.loc.backupWalletPhysicalBackupDescription,
+                  tag: context.loc.backupWalletPhysicalBackupTag,
+                  onTap: () {
+                    context.pushNamed(
+                      TestWalletBackupFacade.routeName,
+                      extra: switch (widget.flow) {
+                        BackupSettingsFlow.backup =>
+                          TestPhysicalBackupFlow.backup,
+                        BackupSettingsFlow.test =>
+                          TestPhysicalBackupFlow.verify,
+                      },
+                    );
+                  },
                 ),
-                title: context.loc.backupWalletPhysicalBackupTitle,
-                description: context.loc.backupWalletPhysicalBackupDescription,
-                tag: context.loc.backupWalletPhysicalBackupTag,
-                onTap: () {
-                  context.pushNamed(
-                    TestWalletBackupFacade.routeName,
-                    extra: switch (widget.flow) {
-                      BackupSettingsFlow.backup =>
-                        TestPhysicalBackupFlow.backup,
-                      BackupSettingsFlow.test => TestPhysicalBackupFlow.verify,
-                    },
-                  );
-                },
-              ),
               const Gap(16),
               GestureDetector(
                 onTap: () {

@@ -1,5 +1,9 @@
+import 'package:bb_mobile/seed_recovery_completion.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
+import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'dart:io';
-import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -10,6 +14,7 @@ import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
@@ -47,7 +52,6 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -196,6 +200,7 @@ class AppRouter {
             featureWarningsBuilder: (context, wallets) => Column(
               children: [
                 BackupReminderHomeContribution(wallets: wallets),
+                const DataBackupSetupBanner(),
                 BullVaultHomeContribution(wallets: wallets),
               ],
             ),
@@ -203,7 +208,9 @@ class AppRouter {
           ...ExchangeRouter.routes,
         ],
       ),
-      OnboardingRouter.route,
+      OnboardingRouter.route(
+        onPhysicalRestore: offerDataBackupAfterPhysicalRestore,
+      ),
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute(
         featureSliverBuilder: (context, wallet) => wallet.isBitcoin
@@ -255,6 +262,22 @@ class AppRouter {
       ...BullVaultRouter.routes(
         registerExternalRouteName: ImportWatchOnlyWalletRoutes.import.name,
       ),
+      ...BackupSettingsRouter.recoveryRoutes(
+        onVaultsRecovered: (result) {
+          if (result.complete) {
+            unawaited(
+              _recordRecoveredVaults(result.wallets.walletReferences.values),
+            );
+          }
+        },
+        onDataRecovered: (snapshot, result) {
+          if (!result.complete) return;
+          final ids = snapshot.vaults
+              .map((vault) => result.wallets.walletReferences[vault.reference])
+              .whereType<String>();
+          unawaited(_recordRecoveredVaults(ids));
+        },
+      ),
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
@@ -280,4 +303,20 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static Future<void> _recordRecoveredVaults(Iterable<String> ids) async {
+    for (final id in ids) {
+      try {
+        final wallet = await locator<GetWalletUsecase>().execute(id);
+        final context = rootNavigatorKey.currentContext;
+        if (wallet == null || context == null || !context.mounted) continue;
+        locator<BullVaultRecoveryNoticeCubit>().record(
+          walletId: wallet.id,
+          label: wallet.displayLabel(context),
+        );
+      } on GetWalletException {
+        // Do not announce a vault whose target record cannot be read.
+      }
+    }
+  }
 }

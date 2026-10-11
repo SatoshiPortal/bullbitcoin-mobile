@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 
@@ -6,6 +8,6 @@ class SavePendingWizardChoicesUsecase {
 
   final WizardRepository _repository;
 
-  Future<void> execute(WizardChoices choices) =>
+  Future<Result<void, WizardFailure>> execute(WizardChoices choices) =>
       _repository.savePending(choices);
 }

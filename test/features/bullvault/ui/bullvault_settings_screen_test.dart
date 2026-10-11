@@ -76,6 +76,7 @@ void main() {
       final actions = {
         BullVaultFacade.policyRouteName: loc.bullVaultViewPolicy,
         BullVaultFacade.keysRouteName: loc.bullVaultViewKeys,
+        BullVaultFacade.backupRouteName: loc.bullVaultBackupRecovery,
         BullVaultFacade.renewRouteName: loc.bullVaultRenew,
         BullVaultFacade.cosignerRouteName: loc.bullVaultImportCosigner,
         SettingsRoute.walletRegistration.name: loc.bullVaultRegisterVault,

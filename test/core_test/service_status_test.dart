@@ -14,6 +14,7 @@ void main() {
       payjoin: online,
       pricer: online,
       mempool: online,
+      backupServer: online,
     );
 
     expect(status.allServicesOnline, isTrue);

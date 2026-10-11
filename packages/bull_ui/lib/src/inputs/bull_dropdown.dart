@@ -36,8 +36,8 @@ class BullDropdown<T> extends StatelessWidget {
   /// Optional label (currently unused by the layout; kept for API parity).
   final String? label;
 
-  /// Per-item height.
-  final double height;
+  /// Per-item height; null lets multiline labels determine the height.
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,7 @@ class BullDropdown<T> extends StatelessWidget {
             dropdownColor: colors.onSecondary,
             menuMaxHeight: 240,
             itemHeight: height,
+            isDense: height != null,
             alignment: Alignment.center,
             isExpanded: true,
             decoration: InputDecoration(

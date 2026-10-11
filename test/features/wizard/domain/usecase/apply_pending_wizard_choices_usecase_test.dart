@@ -1,12 +1,15 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _Backups extends Mock implements WalletBackupFacade {}
 
 class _MockWizardRepository extends Mock implements WizardRepository {}
 
@@ -29,10 +32,13 @@ void main() {
     usecase = ApplyPendingWizardChoicesUsecase(
       wizardRepository: wizard,
       settingsRepository: settings,
+      walletBackup: _Backups(),
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
-    when(() => wizard.savePending(any())).thenAnswer((_) async {});
-    when(() => wizard.markComplete()).thenAnswer((_) async {});
+    when(
+      () => wizard.savePending(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(() => wizard.markComplete()).thenAnswer((_) async => const Ok(null));
     when(
       () => settings.setLanguage(any()),
     ).thenAnswer((_) async => const Ok(null));

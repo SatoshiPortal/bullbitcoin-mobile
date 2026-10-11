@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -20,7 +22,7 @@ void main() {
 
     test('isComplete is true after markComplete', () async {
       final repo = _build();
-      await repo.markComplete();
+      expect(await repo.markComplete(), isA<Ok<void, WizardFailure>>());
       expect(await repo.isComplete(), isTrue);
     });
 
