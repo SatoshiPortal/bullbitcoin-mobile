@@ -10,6 +10,16 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [6.14.0] - 2026-10-04
 
+### Updates In Build 224
+
+- Fixed order details staying stuck on a loading screen after successful Buy, Sell, and Pay orders. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Activating a Recurring Buy no longer turns off an active Auto Buy; stopping a recurring buy, saving exchange preferences, and changing the app currency now preserve the other account preferences. The app currency is also mirrored to the exchange account when signed in and the currency is offered there. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Live exchange updates now recover on their own after silent connection drops: the connection is monitored, reconnected when the app returns to the foreground, and the account state is refreshed. Limit orders also refresh with pull-to-refresh on the Exchange home screen. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Limit orders: the create screen loads faster, prompts to fund the account when no balance is available, and the number pad can be dismissed on iOS. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Exchange settings and default wallets now show an error when saving fails instead of a success message. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Exchange account notifications and app state are no longer written to the on-device log, which can be exported for support. ([#2954](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2954))
+- Fixed a long press on an input field's trailing icon opening the text magnifier. ([#2956](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2956))
+
 ### Updates In Build 223
 
 - Fixed fiat-price loading after starting offline, retrying after connectivity returns and when refreshing wallet screens. Wallet sync errors and server warnings are now separately accessible in a swipeable carousel. ([#2933](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2933))

@@ -141,10 +141,9 @@ class SpFacade {
   /// Observe SP wallet changes (balance updates, setup created/revoked).
   Stream<SpUpdate> watchUpdates() => _watchSpUpdatesUsecase.execute();
 
-  /// Run the SP side of a sync tick: restart the taproot electrum listener so
-  /// coins received while backgrounded are detected, then resume the chain scan
-  /// when the wallet is close enough to the tip. `Ok(null)` when there is
-  /// nothing to do; `Err` when the listener restart or the scan failed.
+  /// Run the SP side of an automatic sync tick: resume the chain scan when the
+  /// wallet is close enough to the tip. `Ok(null)` when there is nothing to do;
+  /// `Err` when the wallet read or the scan failed.
   Future<Result<void, SpFailure>> syncWallet() =>
       _syncSpWalletUsecase.execute();
 

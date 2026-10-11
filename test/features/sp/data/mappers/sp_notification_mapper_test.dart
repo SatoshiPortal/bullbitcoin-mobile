@@ -103,50 +103,50 @@ void main() {
       expect((mapped as SpBroadcastFailed).message, 'rejected by node');
     });
 
-    test('electrumDisconnected maps to backend offline', () {
-      expect(
-        SpNotificationMapper.toDomain(
-          const bwk.SpNotification.electrumDisconnected(),
-        ),
-        isA<SpBackendOffline>(),
-      );
-    });
-
-    test('electrumConnected maps to backend online', () {
-      final mapped = SpNotificationMapper.toDomain(
-        const bwk.SpNotification.electrumConnected(),
-      );
-      expect(mapped, isA<SpBackendOnline>());
-      expect(mapped.affectsBalance, false);
-      expect(mapped.scanRunningAfter, isNull);
-    });
-
-    test('reorg preserves the fork height and invalidates balances', () {
-      final mapped = SpNotificationMapper.toDomain(
-        const bwk.SpNotification.reorg(forkHeight: 123),
-      );
-      expect((mapped as SpReorg).forkHeight, 123);
-      expect(mapped.affectsBalance, true);
-      expect(mapped.scanRunningAfter, isNull);
-      expect(mapped.isHeaderProgress, false);
-    });
-
-    test('checkpoint mismatch does not imply valid headers', () {
-      final mapped = SpNotificationMapper.toDomain(
-        const bwk.SpNotification.headerCheckpointMismatch(),
-      );
-      expect(mapped, isA<SpHeaderCheckpointMismatch>());
-      expect(mapped.affectsBalance, false);
-      expect(mapped.headerTip, isNull);
-      expect(mapped.isHeaderProgress, true);
-    });
-
     test('paymentHistoryUpdated maps to its singleton', () {
       expect(
         SpNotificationMapper.toDomain(
           const bwk.SpNotification.paymentHistoryUpdated(),
         ),
         isA<SpPaymentHistoryUpdated>(),
+      );
+    });
+  });
+
+  group('SpNotificationMapper chain events', () {
+    test('electrumDisconnected maps to its singleton', () {
+      expect(
+        SpNotificationMapper.toDomain(
+          const bwk.SpNotification.electrumDisconnected(),
+        ),
+        isA<SpElectrumDisconnected>(),
+      );
+    });
+
+    test('reorg carries the fork height', () {
+      final mapped = SpNotificationMapper.toDomain(
+        const bwk.SpNotification.reorg(forkHeight: 840000),
+      );
+
+      expect(mapped, isA<SpReorg>());
+      expect((mapped as SpReorg).forkHeight, 840000);
+    });
+
+    test('headerCheckpointMismatch maps to its singleton', () {
+      expect(
+        SpNotificationMapper.toDomain(
+          const bwk.SpNotification.headerCheckpointMismatch(),
+        ),
+        isA<SpHeaderCheckpointMismatch>(),
+      );
+    });
+
+    test('electrumConnected maps to its singleton', () {
+      expect(
+        SpNotificationMapper.toDomain(
+          const bwk.SpNotification.electrumConnected(),
+        ),
+        isA<SpElectrumConnected>(),
       );
     });
   });

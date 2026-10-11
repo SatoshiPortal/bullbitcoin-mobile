@@ -95,7 +95,6 @@ class FakeSpAccountRepository
     this.sentinel = false,
     this.accountDir = true,
     this.networkValue = BitcoinNetwork.regtest,
-    this.backendOnlineValue = true,
   }) : _wallet =
            wallet ??
            SpWallet(
@@ -112,7 +111,6 @@ class FakeSpAccountRepository
   bool sentinel;
   bool accountDir;
   BitcoinNetwork? networkValue;
-  bool backendOnlineValue;
 
   /// How many times the Rust scan was reached. Stays 0 unless the user
   /// explicitly triggers a scan.
@@ -241,6 +239,15 @@ class FakeSpAccountRepository
   Future<Result<List<SpCoin>, SpFailure>> coins() async =>
       const Ok<List<SpCoin>, SpFailure>(<SpCoin>[]);
 
+  /// How many times the missing tx times were restamped.
+  int restampCount = 0;
+
+  @override
+  Result<void, SpFailure> restampMissingTimestamps() {
+    restampCount++;
+    return const Ok(null);
+  }
+
   @override
   Future<Result<void, SpFailure>> scanOnce({int? startHeight}) async {
     scanOnceCount++;
@@ -261,22 +268,12 @@ class FakeSpAccountRepository
     return const Ok<void, SpFailure>(null);
   }
 
-  /// How many times the listener was restarted, and a switch to model a
-  /// restart that fails (a dead socket, DNS down).
+  /// How many times the listener was restarted.
   int restartElectrumCount = 0;
-  bool restartElectrumShouldFail = false;
-
-  /// Set to hold [restartElectrum] open, so a test can suspend a sync tick
-  /// mid-flight and fire a second one against it.
-  Completer<void>? restartElectrumGate;
 
   @override
   Future<Result<void, SpFailure>> restartElectrum() async {
     restartElectrumCount++;
-    await restartElectrumGate?.future;
-    if (restartElectrumShouldFail) {
-      return const Err(SpUnexpected('restart failed'));
-    }
     return const Ok(null);
   }
 
@@ -311,9 +308,6 @@ class FakeSpAccountRepository
 
   @override
   Result<BitcoinNetwork?, SpFailure> network() => Ok(networkValue);
-
-  @override
-  bool backendOnline() => backendOnlineValue;
 
   /// Tip reported to the scan policy; null models "header store has not said".
   int? chainTipValue;

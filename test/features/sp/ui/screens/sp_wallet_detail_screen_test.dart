@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -9,6 +11,7 @@ import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -315,6 +318,86 @@ void main() {
 
     expect(find.text('Verification failed'), findsOneWidget);
     expect(find.byType(TxListItem), findsOneWidget);
+  });
+
+  testWidgets('a confirmed payment with no time sits under Verifying', (
+    tester,
+  ) async {
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(
+          history: [
+            SpPayment(
+              txid: 'cc' * 32,
+              direction: SpPaymentDirection.receive,
+              status: SpPaymentStatus.verified,
+              amountSat: Sats.fromInt(1000),
+              height: 800000,
+            ),
+          ],
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    await tester.pump();
+
+    expect(find.text('Verifying'), findsOneWidget);
+    expect(find.text('Confirmed'), findsOneWidget);
+    expect(find.text('Pending'), findsNothing);
+  });
+
+  testWidgets('warns when the Blindbit server is behind the chain', (
+    tester,
+  ) async {
+    final notifications = StreamController<SpNotification>.broadcast();
+    addTearDown(notifications.close);
+    when(
+      () => harness.watchUsecase.execute(),
+    ).thenAnswer((_) => notifications.stream);
+    when(() => loadUsecase.execute()).thenAnswer(
+      (_) async => Ok<SpWalletData, SpFailure>(
+        _walletData(lastScannedHeight: 968876, chainTip: 970180),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+
+    notifications.add(const SpScanStarted(957218, 968876));
+    notifications.add(const SpScanCompleted());
+    await tester.pump();
+
+    expect(
+      find.text(
+        'The scan server is 1304 blocks behind the chain, so recent payments '
+        'may be missing until it catches up.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tells the user to switch server on a checkpoint mismatch', (
+    tester,
+  ) async {
+    final notifications = StreamController<SpNotification>.broadcast();
+    addTearDown(notifications.close);
+    when(
+      () => harness.watchUsecase.execute(),
+    ).thenAnswer((_) => notifications.stream);
+    await cubit.load();
+    await pumpPage(tester);
+
+    notifications.add(const SpHeaderCheckpointMismatch());
+    await tester.pump();
+
+    expect(find.text('Electrum server sends a wrong chain'), findsOneWidget);
+    expect(
+      find.text(
+        'This server does not follow the real Bitcoin chain. Switch to '
+        'another Electrum server in the settings.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows scan strip when scanning', (tester) async {

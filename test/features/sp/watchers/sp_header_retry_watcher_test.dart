@@ -95,8 +95,8 @@ void main() {
       async.elapse(backoff);
       expect(resync.calls, 1);
 
-      // Started publishes Started, which resets the watcher while the restart
-      // is still in flight; the stale callback must not re-arm.
+      // The restart publishes Started, which pauses the watcher while the
+      // restart is still in flight; the stale callback must not re-arm.
       watcher.reset();
       gate.complete(const Ok(null));
       async.flushMicrotasks();
@@ -122,6 +122,45 @@ void main() {
       expect(watcher.attempts, 1);
 
       watcher.reset();
+    });
+  });
+
+  test('a pause during the in-flight restart keeps the attempts', () {
+    fakeAsync((async) {
+      final gate = Completer<Result<void, SpFailure>>();
+      resync.gate = gate;
+      start();
+      async.elapse(backoff);
+      expect(resync.calls, 1);
+
+      watcher.pause();
+      gate.complete(const Ok(null));
+      async.flushMicrotasks();
+
+      async.elapse(backoff * 10);
+      expect(resync.calls, 1);
+      expect(watcher.attempts, 1);
+
+      watcher.reset();
+    });
+  });
+
+  test('pausing between failures still runs out of attempts', () {
+    fakeAsync((async) {
+      // Each restart starts a sync that fails before any progress.
+      for (var attempt = 1; attempt <= maxRetries; attempt++) {
+        start();
+        async.elapse(backoff);
+        watcher.pause();
+      }
+      expect(resync.calls, maxRetries);
+      expect(gaveUp, 0);
+
+      start();
+      async.elapse(backoff);
+
+      expect(resync.calls, maxRetries);
+      expect(gaveUp, 1);
     });
   });
 }

@@ -20,9 +20,8 @@ abstract interface class SpScanControlPort {
   /// callers can skip blocking reads while the scan holds the inner lock.
   bool get isScanningCached;
 
-  /// Restart the taproot electrum listener in place (reconnect + re-subscribe +
-  /// re-sync). Used on app foreground to recover after Android killed the
-  /// backgrounded socket. No-op when there is no live session.
+  /// Restart the electrum listener in place (reconnect + re-subscribe +
+  /// re-sync). No-op when there is no live session.
   @useResult
   Future<Result<void, SpFailure>> restartElectrum();
 }

@@ -39,7 +39,6 @@ void main() {
     history: <SpPayment>[],
     coins: const [],
     network: BitcoinNetwork.regtest,
-    backendOnline: true,
   );
 
   setUp(() {
@@ -83,6 +82,59 @@ void main() {
       expect(cubit.state.scanStartTime, isNotNull);
     },
   );
+
+  group('Blindbit lag', () {
+    Future<void> loadWithChainTip(int? chainTip) async {
+      when(() => loadUsecase.execute()).thenAnswer(
+        (_) async =>
+            Ok<SpWalletData, SpFailure>(spWalletData(chainTip: chainTip)),
+      );
+      await cubit.load();
+    }
+
+    test('a scan ending well below the header tip flags the server', () async {
+      await loadWithChainTip(970180);
+
+      notifController.add(const SpScanStarted(957218, 968876));
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.state.blindbitLag?.blindbitTip, 968876);
+      expect(cubit.state.blindbitLag?.chainTip, 970180);
+      expect(cubit.state.isBlindbitBehind, isTrue);
+    });
+
+    test('a later scan that reaches the tip clears it', () async {
+      await loadWithChainTip(970180);
+      notifController.add(const SpScanStarted(957218, 968876));
+      await Future.delayed(Duration.zero);
+      notifController.add(const SpScanCompleted());
+      await Future.delayed(Duration.zero);
+
+      notifController.add(const SpScanStarted(968877, 970180));
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.state.isBlindbitBehind, isFalse);
+    });
+
+    test('a few blocks behind is not flagged', () async {
+      await loadWithChainTip(970180);
+
+      notifController.add(const SpScanStarted(957218, 970177));
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.state.isBlindbitBehind, isFalse);
+    });
+
+    test('nothing is judged without a header tip', () async {
+      await loadWithChainTip(null);
+
+      notifController.add(const SpScanStarted(957218, 968876));
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.state.blindbitLag, isNull);
+      expect(cubit.state.isBlindbitBehind, isFalse);
+    });
+  });
 
   test(
     'ScanReceiveProgress updates scanCurrent/scanTo, phase=receive',

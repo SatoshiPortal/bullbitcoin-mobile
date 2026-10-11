@@ -46,21 +46,29 @@ class SpHeaderRetryWatcher {
           'SpHeaderRetryWatcher: listener restart failed: ${failure.logMessage}',
         );
       }
-      // A restart that works publishes Started, which resets the watcher; this
-      // callback is then stale and must not re-arm.
+      // A restart that works publishes Started, which pauses the watcher;
+      // this callback is then stale and must not re-arm.
       if (generation != _generation) return;
       // A restart that fails emits nothing, so keep the timer running.
       start(onGaveUp: onGaveUp);
     });
   }
 
-  /// Stop retrying and forget the attempts so far. Called on any header
-  /// progress (the connection came back) and on dispose.
-  void reset() {
+  /// A sync started again: drop the pending restart but keep the attempts. A
+  /// start alone does not prove the connection works, and a sync that keeps
+  /// failing before any progress (a refused range of old headers) would
+  /// otherwise restart the listener forever.
+  void pause() {
     _timer?.cancel();
     _timer = null;
-    _attempts = 0;
     _generation++;
+  }
+
+  /// Stop retrying and forget the attempts so far. Called once a sync makes
+  /// progress or completes (the connection works) and on dispose.
+  void reset() {
+    pause();
+    _attempts = 0;
   }
 
   @visibleForTesting

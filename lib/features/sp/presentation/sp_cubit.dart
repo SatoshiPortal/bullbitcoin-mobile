@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/stop_sp_scan_usecase.dart';
@@ -12,6 +14,7 @@ import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/set_sp_auto_scan_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
+import 'package:bb_mobile/features/sp/domain/sp_blindbit_lag.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
@@ -23,6 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// layer behind the `SpAccountRepository` port.
 class SpCubit extends Cubit<SpState> {
   final LoadSpWalletDataUsecase _loadSpWalletDataUsecase;
+  final RestampSpPaymentTimesUsecase _restampSpPaymentTimesUsecase;
   final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final StopSpScanUsecase _stopSpScanUsecase;
@@ -47,6 +51,7 @@ class SpCubit extends Cubit<SpState> {
 
   SpCubit({
     required this._loadSpWalletDataUsecase,
+    required this._restampSpPaymentTimesUsecase,
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
     required this._stopSpScanUsecase,
@@ -75,7 +80,6 @@ class SpCubit extends Cubit<SpState> {
             lastScannedHeight: value.wallet.lastScannedHeight,
             isScanning: value.wallet.isScanning,
             network: value.network,
-            backendOnline: value.backendOnline,
             chainTip: value.chainTip,
             minBirthdayHeight: value.minBirthdayHeight,
             isAutoScanEnabled: _getSpAutoScanUsecase.execute(),
@@ -93,6 +97,33 @@ class SpCubit extends Cubit<SpState> {
           _subscribeToNotifications();
         }
     }
+  }
+
+  /// After the backend config changed: forget what the old servers reported,
+  /// then load the new session.
+  Future<void> reloadAfterBackendChange() async {
+    if (isClosed) return;
+    _resetHeaderRetry();
+    emit(
+      state.copyWith(
+        headerValidationStatus: SpHeaderValidationStatus.idle,
+        headerValidationPhase: null,
+        headerValidationFrom: null,
+        headerValidationTo: null,
+        headerValidationCurrent: null,
+        blindbitLag: null,
+      ),
+    );
+    await load();
+  }
+
+  /// Pull-to-refresh: local reads only. Payments the header store can now date
+  /// get their time first, so the reload shows it.
+  Future<void> pullToRefresh() async {
+    if (_restampSpPaymentTimesUsecase.execute() case Err(:final failure)) {
+      log.warning('SpCubit.pullToRefresh: restamp: ${failure.logMessage}');
+    }
+    await load();
   }
 
   /// Reveal a fresh taproot receive address (explicit user action). Each call
@@ -151,25 +182,19 @@ class SpCubit extends Cubit<SpState> {
         if (!state.isScanning) unawaited(_refreshWalletData());
       case SpBroadcastFailed(:final message):
         log.warning('SpCubit.broadcast: broadcast failed: $message');
-      case SpBackendOffline():
-        emit(state.copyWith(backendOnline: false));
-      case SpBackendOnline():
-        emit(state.copyWith(backendOnline: true));
-        unawaited(_refreshWalletData());
+      case SpPaymentHistoryUpdated():
       case SpReorg():
         unawaited(_refreshWalletData());
+      case SpElectrumDisconnected():
+      case SpElectrumConnected():
+        break;
       case SpHeaderCheckpointMismatch():
-        _resetHeaderRetry();
-        emit(
-          state.copyWith(
-            headerValidationStatus: SpHeaderValidationStatus.failed,
-          ),
-        );
-      case SpPaymentHistoryUpdated():
-        unawaited(_refreshWalletData());
+        _onHeaderCheckpointMismatch();
       case SpHeaderProgressStarted(:final phase, :final start, :final end):
+        _headerRetryWatcher.pause();
         _onHeaderProgress(phase, from: start, current: start, to: end);
       case SpHeaderProgress(:final phase, :final current, :final end):
+        _resetHeaderRetry();
         _onHeaderProgress(
           phase,
           from: state.headerValidationFrom ?? current,
@@ -183,8 +208,10 @@ class SpCubit extends Cubit<SpState> {
     }
   }
 
+  /// [to] is the Blindbit tip the scan runs up to.
   void _onScanStarted(int from, int to) {
     _etaEstimator.reset();
+    final chainTip = state.chainTip;
     emit(
       state.copyWith(
         isScanning: true,
@@ -195,6 +222,9 @@ class SpCubit extends Cubit<SpState> {
         scanFrom: from,
         scanTo: to,
         scanCurrent: from,
+        blindbitLag: chainTip == null
+            ? null
+            : SpBlindbitLag(blindbitTip: to, chainTip: chainTip),
       ),
     );
   }
@@ -261,13 +291,18 @@ class SpCubit extends Cubit<SpState> {
     unawaited(_refreshWalletData());
   }
 
+  bool get _isInvalidChain =>
+      state.headerValidationStatus == SpHeaderValidationStatus.invalidChain;
+
   void _onHeaderProgress(
     SpHeaderValidationPhase phase, {
     required int from,
     required int current,
     required int to,
   }) {
-    _resetHeaderRetry();
+    // bwk keeps syncing against the same server, which refuses the chain again:
+    // the user must still see why, not a fresh sync.
+    if (_isInvalidChain) return;
     emit(
       state.copyWith(
         headerValidationStatus: SpHeaderValidationStatus.validating,
@@ -275,7 +310,9 @@ class SpCubit extends Cubit<SpState> {
         headerValidationFrom: from,
         headerValidationTo: to,
         headerValidationCurrent: current,
-        chainTip: to,
+        // Extending the chain down to older coins reports a range below the
+        // tip (same phase as the first sync), so the tip only ever moves up.
+        chainTip: max(to, state.chainTip ?? to),
       ),
     );
   }
@@ -295,6 +332,7 @@ class SpCubit extends Cubit<SpState> {
   /// initial-sync failure is usually just a dropped connection, so it shows as
   /// reconnecting while the listener restart is retried.
   void _onHeaderValidationFailed(SpHeaderValidationPhase phase) {
+    if (_isInvalidChain) return;
     if (phase == SpHeaderValidationPhase.replay) {
       _resetHeaderRetry();
       emit(
@@ -312,6 +350,18 @@ class SpCubit extends Cubit<SpState> {
       ),
     );
     _scheduleHeaderRetry(phase);
+  }
+
+  /// No retry: the same server serves the same chain. bwk repeats the
+  /// notification while the store stays invalid, so a repeat changes nothing.
+  void _onHeaderCheckpointMismatch() {
+    if (_isInvalidChain) return;
+    _resetHeaderRetry();
+    emit(
+      state.copyWith(
+        headerValidationStatus: SpHeaderValidationStatus.invalidChain,
+      ),
+    );
   }
 
   void _scheduleHeaderRetry(SpHeaderValidationPhase phase) {
@@ -350,7 +400,6 @@ class SpCubit extends Cubit<SpState> {
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
             chainTip: value.chainTip,
-            backendOnline: value.backendOnline,
           ),
         );
       // The wallet feature learns about this balance change independently, by
