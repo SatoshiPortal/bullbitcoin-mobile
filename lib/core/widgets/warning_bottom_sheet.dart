@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSpacing, Gap;
 import 'package:go_router/go_router.dart';
 
 class WarningBottomSheet extends StatelessWidget {
@@ -46,34 +45,37 @@ class WarningBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              BBText(
-                title,
-                style: context.font.headlineMedium,
-                color: context.appColors.onSurface,
-              ),
-              const Gap(16),
-              BBText(
-                message,
-                style: context.font.bodyMedium,
-                color: context.appColors.onSurface,
-                textAlign: TextAlign.center,
-              ),
-              const Gap(16),
-              BBButton.big(
-                label: confirmLabel,
-                onPressed: () {
-                  onConfirm();
-                  context.pop();
-                },
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(BullSpacing.md),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  title,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.onSurface,
+                ),
+                const Gap(BullSpacing.md),
+                BBText(
+                  message,
+                  style: context.font.bodyMedium,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(BullSpacing.md),
+                BullButton.big(
+                  maxLines: null,
+                  label: confirmLabel,
+                  onPressed: () {
+                    onConfirm();
+                    context.pop();
+                  },
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
