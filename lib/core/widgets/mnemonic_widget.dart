@@ -4,13 +4,12 @@ import 'package:bb_mobile/core/failures/mnemonic_entry_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/bip39.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -36,25 +35,27 @@ class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
   final bip39.MnemonicLength initialLength;
   final Function(Mnemonic) onSubmit;
-  final String submitLabel;
+  final String? submitLabel;
   final bool allowPassphrase;
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
   final bool allowAutoFillWords;
 
   final String? externalError;
+  final Widget? header;
 
   const MnemonicWidget({
     super.key,
     this.language = bip39.Language.english,
     required this.initialLength,
     required this.onSubmit,
-    this.submitLabel = 'Submit',
+    this.submitLabel,
     this.allowPassphrase = true,
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
     this.allowAutoFillWords = true,
     this.externalError,
+    this.header,
   }) : assert(
          language == bip39.Language.english,
          'The in-app keyboard is Latin a–z only; non-English wordlists cannot '
@@ -190,6 +191,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Column(
                 children: [
+                  if (widget.header != null) widget.header!,
                   if (widget.allowMultipleMnemonicLength) ...[
                     MnemonicLengthDropdown(
                       value: length,
@@ -208,8 +210,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
                     LabeledTextInput(
-                      label: 'Passphrase',
-                      hint: 'Optional Passphrase',
+                      label: context.loc.passphraseLabel,
+                      hint: context.loc.optionalPassphraseHint,
                       value: passphrase,
                       onChanged: updatePassphrase,
                       maxLines: 1,
@@ -229,8 +231,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   if (widget.allowLabel) ...[
                     const Gap(16),
                     LabeledTextInput(
-                      label: 'Label',
-                      hint: 'Required',
+                      label: context.loc.importWatchOnlyLabel,
+                      hint: context.loc.requiredHint,
                       value: label,
                       onChanged: updateLabel,
                       maxLines: 1,
@@ -247,8 +249,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   ],
 
                   const Gap(16),
-                  BBButton.big(
-                    label: widget.submitLabel,
+                  BullButton.big(
+                    maxLines: null,
+                    label: widget.submitLabel ?? context.loc.submitButton,
                     onPressed: onSubmit,
                     bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
@@ -316,7 +319,7 @@ class MnemonicWord extends StatelessWidget {
         border: Border.all(color: context.appColors.border),
         color: context.appColors.surface,
       ),
-      height: 41,
+      height: max(41, MediaQuery.textScalerOf(context).scale(24) + 16),
       child: Row(
         children: [
           ListenableBuilder(
@@ -332,8 +335,8 @@ class MnemonicWord extends StatelessWidget {
                   ? pool.contains(word)
                   : language.isValid(word);
               return Container(
-                height: 34,
-                width: 34,
+                constraints: const BoxConstraints(minHeight: 34, minWidth: 34),
+                padding: const EdgeInsets.all(4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: word.isEmpty
@@ -968,13 +971,18 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     // and clear icons go with them: this screen is unusable with a screen
     // reader by design, the recovery phrase is too sensitive to narrate.
     return ExcludeSemantics(
-      child: Row(
-        crossAxisAlignment: .start,
-        spacing: 16,
-        children: [
-          Expanded(child: column(0, splitIndex)),
-          Expanded(child: column(splitIndex, count)),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) =>
+            constraints.maxWidth < MediaQuery.textScalerOf(context).scale(280)
+            ? column(0, count)
+            : Row(
+                crossAxisAlignment: .start,
+                spacing: 16,
+                children: [
+                  Expanded(child: column(0, splitIndex)),
+                  Expanded(child: column(splitIndex, count)),
+                ],
+              ),
       ),
     );
   }
@@ -994,6 +1002,8 @@ class MnemonicLengthDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButton<bip39.MnemonicLength>(
       value: value,
+      isExpanded: true,
+      itemHeight: null,
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
         fontWeight: .w600,
@@ -1006,7 +1016,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
             (length) => DropdownMenuItem(
               value: length,
               child: BBText(
-                '${length.words} words',
+                '${length.words}${context.loc.wordsDropdownSuffix}',
                 style: context.font.bodyMedium?.copyWith(
                   fontWeight: .w600,
                   color: context.appColors.text,

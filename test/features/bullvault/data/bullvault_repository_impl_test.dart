@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -13,6 +14,7 @@ import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../bullvault_test_fixture.dart';
@@ -43,6 +45,31 @@ void main() {
     }
   });
   tearDown(() => storage.close());
+
+  test('activating a practice vault clears its stored hidden flag', () async {
+    final repository = _repository(storage);
+    final record =
+        testBullVaultCreateResult(
+          walletId: 'wallet-id',
+          network: Network.bitcoinTestnet,
+          scheduleUnit: BullVaultScheduleUnit.hours,
+        ).record.copyWith(
+          recoveryPackageConfirmed: true,
+          hardwareSetupDeferred: true,
+        );
+    final metadata = WalletMetadataDatasource(sqlite: storage);
+    expect((await metadata.fetch(record.walletId))!.isHidden, isTrue);
+    expect(await repository.save(record), isA<Ok<void, BullVaultFailure>>());
+    expect(
+      await repository.activateInitial(record),
+      isA<Ok<void, BullVaultFailure>>(),
+    );
+    final reloaded = await _repository(storage).getByWalletId(record.walletId);
+    final active = (reloaded as Ok<BullVaultRecord?, BullVaultFailure>).value!;
+    expect(active.status, BullVaultLifecycleStatus.active);
+    expect(active.recoveryPackage.policy.renewalSchedule.isPractice, isTrue);
+    expect((await metadata.fetch(record.walletId))!.isHidden, isFalse);
+  });
 
   test(
     'persists lineage and generation metadata with the wallet record',
@@ -106,8 +133,17 @@ void main() {
   );
 
   test('publishes restored metadata and wallet visibility atomically', () async {
+    final previous = testBullVaultCreateResult(
+      walletId: 'wallet-0',
+      usesBullMobile: false,
+      status: BullVaultLifecycleStatus.migrating,
+    ).record;
+    await _repository(storage).save(previous);
     final record = testBullVaultCreateResult(
       walletId: 'wallet-id',
+      previousVaultId: previous.walletId,
+      lineageId: previous.lineageId,
+      generation: 1,
       status: BullVaultLifecycleStatus.active,
     ).record;
     await storage.customStatement(
@@ -144,6 +180,12 @@ void main() {
       BullVaultLifecycleStatus.active,
     );
     expect(await isHidden(), isFalse);
+    final linked =
+        (await reloaded.getByWalletId(previous.walletId)
+                as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!;
+    expect(linked.successorWalletId, record.walletId);
+    expect(linked.mobileAccount, isNull);
   });
 
   for (final status in [
@@ -636,6 +678,7 @@ void main() {
     final repository = _repository(storage);
     final previous = testBullVaultCreateResult(
       walletId: 'wallet-0',
+      usesBullMobile: false,
       lineageId: 'lineage-id',
       status: BullVaultLifecycleStatus.active,
     ).record;
@@ -740,6 +783,7 @@ void main() {
       BullVaultLifecycleStatus.migrating,
     );
     expect(storedPrevious.value!.successorWalletId, restored.walletId);
+    expect(storedPrevious.value!.mobileAccount, isNull);
     expect(
       (storedSuccessor as Ok<BullVaultRecord?, BullVaultFailure>)
           .value!

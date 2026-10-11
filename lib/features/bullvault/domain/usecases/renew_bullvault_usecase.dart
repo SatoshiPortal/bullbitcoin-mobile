@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
@@ -209,12 +213,20 @@ class RenewBullVaultUsecase {
         previousVaultId: current.walletId,
         policy: policy,
       );
+      final everydayOwner = _walletSigner(currentWallet, everyday);
+      final mobileAccount = everyday.signer == SignerEntity.local
+          ? Bip48Derivation.account(
+              everyday.accountKey.derivationPath,
+              coinType: policy.network.coinType,
+            )
+          : null;
       final replacement = BullVaultRecord(
         walletId: importedWallet.id,
         lineageId: current.lineageId,
         vaultGeneration: generation,
-        mobileAccount: current.mobileAccount,
-        mobileSeedFingerprint: current.mobileSeedFingerprint,
+        mobileAccount: mobileAccount,
+        mobileSeedFingerprint:
+            everydayOwner.localSeedFingerprint ?? current.mobileSeedFingerprint,
         birthHeight: timeReference.chainHeight,
         recoveryPackage: recovery,
         previousVaultId: current.walletId,
@@ -267,11 +279,7 @@ class RenewBullVaultUsecase {
     Wallet wallet,
     BullVaultSignerKey policySigner,
   ) {
-    final signer = wallet.signers.singleWhere(
-      (value) => value.descriptorKeys.any(
-        (key) => _sameXpub(key.xpub, policySigner.accountKey.xpub),
-      ),
-    );
+    final signer = _walletSigner(wallet, policySigner);
     final accountKey = signer.descriptorKeys.firstWhere(
       (key) => _sameXpub(key.xpub, policySigner.accountKey.xpub),
     );
@@ -290,6 +298,13 @@ class RenewBullVaultUsecase {
       signerDevice: signer.signerDevice,
     );
   }
+
+  WalletSigner _walletSigner(Wallet wallet, BullVaultSignerKey policySigner) =>
+      wallet.signers.singleWhere(
+        (signer) => signer.descriptorKeys.any(
+          (key) => _sameXpub(key.xpub, policySigner.accountKey.xpub),
+        ),
+      );
 
   bool _sameXpub(String first, String second) =>
       Bip32Derivation.getBip32Xpub(first).toBase58() ==

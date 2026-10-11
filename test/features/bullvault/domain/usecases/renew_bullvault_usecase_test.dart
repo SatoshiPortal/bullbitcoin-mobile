@@ -249,6 +249,32 @@ void main() {
     });
   }
 
+  test('renewal uses the seed attached to the everyday signer', () async {
+    final fixture = _renewFixture(
+      hardwareEveryday: true,
+      importedEveryday: true,
+    );
+    expect(fixture.currentRecord.mobileAccount, isNull);
+    final result = await fixture.usecase.execute(
+      BullVaultRenewRequest(
+        walletId: fixture.currentWallet.id,
+        label: 'Renewed BullVault',
+        schedule: BullVaultSchedule.standardWithInheritance,
+        timeReference: _timeReference(DateTime.utc(2028, 1, 15, 12)),
+      ),
+    );
+
+    final replacement = (result as Ok<BullVaultRenewResult, BullVaultFailure>)
+        .value
+        .replacement;
+    expect(replacement.record.mobileAccount, 0);
+    expect(replacement.record.mobileSeedFingerprint, '12345678');
+    expect(replacement.policy.everydayKey.signer, SignerEntity.local);
+    expect(replacement.wallet.signers.first.localSeedFingerprint, '12345678');
+    expect(fixture.repository.saved, same(replacement.record));
+    expect(fixture.currentRecord.mobileAccount, isNull);
+  });
+
   test(
     'serializes concurrent renewal and resumes its prepared successor',
     () async {
@@ -401,6 +427,7 @@ _RenewFixture _renewFixture({
   BullVaultProtection protection = BullVaultProtection.standard,
   bool includesInheritance = true,
   bool hardwareEveryday = false,
+  bool importedEveryday = false,
   bool delayedMobileRecovery = false,
   BullVaultSchedule? schedule,
 }) {
@@ -474,7 +501,17 @@ _RenewFixture _renewFixture({
     origin: 'current-wallet',
     label: 'BullVault',
     network: Network.bitcoinTestnet,
-    signers: [for (final signer in signers) signer.walletSigner],
+    signers: [
+      for (final signer in signers)
+        if (importedEveryday && signer.key.role == BullVaultSignerRole.everyday)
+          signer.walletSigner.copyWith(
+            signer: SignerEntity.local,
+            clearSignerDevice: true,
+            localSeedFingerprint: '12345678',
+          )
+        else
+          signer.walletSigner,
+    ],
     scriptType: null,
     publicDescriptor: currentDescriptor,
     balanceSat: BigInt.zero,

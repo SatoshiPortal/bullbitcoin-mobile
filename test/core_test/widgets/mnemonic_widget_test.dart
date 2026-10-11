@@ -31,6 +31,7 @@ Future<void> pumpWidget(
   bool allowPassphrase = false,
   bool allowLabel = false,
   String? externalError,
+  double textScale = 1,
   required void Function(Mnemonic) onSubmit,
 }) async {
   await tester.pumpWidget(
@@ -40,6 +41,12 @@ Future<void> pumpWidget(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       home: Scaffold(
         // MnemonicWidget owns its own scroll and docks the keyboard, so it is
         // given bounded height (the test surface) rather than an outer scroll.
@@ -165,7 +172,7 @@ Future<void> submit(WidgetTester tester) async {
   await tester.pump();
 }
 
-/// The color of the square index badge of field [index] - the widget that
+/// The color of the index badge of field [index] - the widget that
 /// answers "is this word acceptable".
 Color badgeColor(WidgetTester tester, int index) {
   final displayIndex = index + 1;
@@ -177,8 +184,8 @@ Color badgeColor(WidgetTester tester, int index) {
           matching: find.byWidgetPredicate(
             (widget) =>
                 widget is Container &&
-                widget.constraints?.maxWidth == 34 &&
-                widget.constraints?.maxHeight == 34,
+                widget.constraints?.minWidth == 34 &&
+                widget.constraints?.minHeight == 34,
           ),
         )
         .first,
@@ -187,6 +194,42 @@ Color badgeColor(WidgetTester tester, int index) {
 }
 
 void main() {
+  testWidgets(
+    'large text keeps word numbers readable in one scrollable column',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await pumpWidget(
+        tester,
+        textScale: 3.2,
+        allowMultipleMnemonicLength: false,
+        onSubmit: (_) {},
+      );
+      await tester.pumpAndSettle();
+      final first = find.byType(MnemonicWord).first;
+      final second = find.byType(MnemonicWord).at(1);
+      expect(
+        tester.getTopLeft(second).dy,
+        greaterThan(tester.getBottomLeft(first).dy),
+      );
+      expect(tester.getSize(first).height, greaterThan(41));
+      for (final index in [0, 3, 7]) {
+        final number = find.text((index + 1).toString().padLeft(2, '0'));
+        final word = find.byType(MnemonicWord).at(index);
+        await tester.ensureVisible(number);
+        await tester.pumpAndSettle();
+        expect(
+          tester.getRect(word).contains(tester.getBottomRight(number)),
+          isTrue,
+        );
+      }
+      await tester.ensureVisible(find.text('12'));
+      await tester.pumpAndSettle();
+      expect(find.text('12').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   group('MnemonicWidget', () {
     testWidgets('renders 12 fields for a 12 word sentence', (tester) async {
       await pumpWidget(tester, onSubmit: (_) {});

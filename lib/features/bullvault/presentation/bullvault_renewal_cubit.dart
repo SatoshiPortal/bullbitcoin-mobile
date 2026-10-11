@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -21,6 +22,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_stat
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
+  final PickBullVaultRecoveryFileUsecase _pickRecoveryFile;
   final LoadBullVaultRenewalUsecase _loadUsecase;
   final PrepareBullVaultTimeReferenceUsecase _prepareTimeReferenceUsecase;
   final RenewBullVaultUsecase _renewUsecase;
@@ -49,6 +51,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     this._updateRegistrationNameUsecase,
     this._watchMigrationUsecase,
     this._encodeBullVaultRecoveryPackageUsecase, {
+    required this._pickRecoveryFile,
     required String walletId,
     required this._prepareTimeReferenceUsecase,
     required WatchBullVaultDetailsUsecase watchDetailsUsecase,
@@ -89,7 +92,6 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
               schedule: value.details.policy.renewalSchedule,
               clearTimeReference: true,
               completedSignerIds: const {},
-              recoveryPackageExported: false,
               recoveryPackageConfirmed: false,
               clearRecoveryPackageContent: true,
               needsInitialSetup: value.needsInitialSetup,
@@ -105,8 +107,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
               schedule: value.details.policy.renewalSchedule,
               renewal: renewal,
               completedSignerIds: record.completedHardwareSignerIds,
-              recoveryPackageExported: record.recoveryPackageConfirmed,
-              recoveryPackageConfirmed: record.recoveryPackageConfirmed,
+              recoveryPackageConfirmed: record.recoveryPackageVerified,
               recoveryPackageContent: _encodeBullVaultRecoveryPackageUsecase
                   .execute(renewal.replacement.recoveryPackage),
               needsInitialSetup: value.needsInitialSetup,
@@ -205,8 +206,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
             step: BullVaultRenewalStep.recoveryPackage,
             renewal: value,
             completedSignerIds: record.completedHardwareSignerIds,
-            recoveryPackageExported: record.recoveryPackageConfirmed,
-            recoveryPackageConfirmed: record.recoveryPackageConfirmed,
+            recoveryPackageConfirmed: record.recoveryPackageVerified,
             recoveryPackageContent: _encodeBullVaultRecoveryPackageUsecase
                 .execute(value.replacement.recoveryPackage),
             isRenewing: false,
@@ -325,24 +325,33 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
   }
 
-  void markRecoveryPackageExported() {
-    emit(state.copyWith(recoveryPackageExported: true));
+  Future<void> importRecoveryPackage() async {
+    final picked = await _pickRecoveryFile.execute();
+    if (isClosed) return;
+    switch (picked) {
+      case Ok(value: final source?):
+        await confirmRecoveryPackage(source);
+      case Ok():
+        break;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+    }
   }
 
-  Future<void> confirmRecoveryPackage() async {
+  Future<void> confirmRecoveryPackage(String source) async {
     final renewal = state.renewal;
-    if (!state.recoveryPackageExported || renewal == null) return;
-    final confirmed = !state.recoveryPackageConfirmed;
+    if (renewal == null) return;
     final result = await _updateSetupUsecase.execute(
       walletId: renewal.replacement.wallet.id,
-      recoveryPackageConfirmed: confirmed,
+      recoveryPackageConfirmed: true,
+      descriptorReadBack: source,
     );
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
         emit(
           state.copyWith(
-            recoveryPackageConfirmed: value.recoveryPackageConfirmed,
+            recoveryPackageConfirmed: value.recoveryPackageVerified,
             clearFailure: true,
           ),
         );
@@ -389,7 +398,6 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
             step: BullVaultRenewalStep.review,
             clearRenewal: true,
             completedSignerIds: const {},
-            recoveryPackageExported: false,
             recoveryPackageConfirmed: false,
             clearRecoveryPackageContent: true,
             isCancelling: false,
@@ -444,7 +452,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
 
   static BullVaultRenewalStep _resumedStep(BullVaultRenewResult renewal) {
     final record = renewal.replacement.record;
-    if (!record.recoveryPackageConfirmed) {
+    if (!record.recoveryPackageVerified) {
       return BullVaultRenewalStep.recoveryPackage;
     }
     final requiredSignerIds = {
