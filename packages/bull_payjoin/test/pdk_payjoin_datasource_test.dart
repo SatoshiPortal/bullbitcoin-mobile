@@ -173,11 +173,168 @@ void main() {
 
       expect(
         await datasource.fetchOhttpKeyAndRelay(
-          payjoinDirectory: PayjoinConstants.directoryUrl,
+          payjoinDirectory: PayjoinConstants.publicDirectoryUrl,
         ),
         (null, null),
       );
       expect(attempted, PayjoinConstants.ohttpRelayUrlsBase.toSet());
+      await datasource.dispose();
+    });
+
+    test(
+      'NEVER pairs the Bull Bitcoin relay with the Bull Bitcoin directory',
+      () async {
+        final attempted = <String>{};
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: Dio(),
+          ohttpKeysFetcher:
+              ({required ohttpRelayUrl, required directoryUrl}) async {
+                attempted.add(ohttpRelayUrl);
+                throw StateError('relay unavailable');
+              },
+        );
+
+        expect(
+          await datasource.fetchOhttpKeyAndRelay(
+            payjoinDirectory: PayjoinConstants.bullBitcoinDirectoryUrl,
+          ),
+          (null, null),
+        );
+        expect(
+          attempted,
+          PayjoinConstants.ohttpRelayUrlsBase.toSet()
+            ..remove(PayjoinConstants.bullBitcoinOhttpRelayUrl),
+        );
+        expect(
+          attempted,
+          isNot(contains(PayjoinConstants.bullBitcoinOhttpRelayUrl)),
+        );
+        await datasource.dispose();
+      },
+    );
+  });
+
+  group('ohttpRelayUrlsFor', () {
+    test('excludes the Bull Bitcoin relay for the Bull Bitcoin directory', () {
+      final relays = PayjoinConstants.ohttpRelayUrlsFor(
+        PayjoinConstants.bullBitcoinDirectoryUrl,
+      );
+      expect(
+        relays,
+        isNot(contains(PayjoinConstants.bullBitcoinOhttpRelayUrl)),
+      );
+      expect(
+        relays.toSet(),
+        PayjoinConstants.ohttpRelayUrlsBase.toSet()
+          ..remove(PayjoinConstants.bullBitcoinOhttpRelayUrl),
+      );
+    });
+
+    test('allows every relay for the public directory', () {
+      expect(
+        PayjoinConstants.ohttpRelayUrlsFor(
+          PayjoinConstants.publicDirectoryUrl,
+        ).toSet(),
+        PayjoinConstants.ohttpRelayUrlsBase.toSet(),
+      );
+    });
+
+    test('fails closed when the directory is unknown or unparseable', () {
+      for (final directory in [null, '', 'not a url']) {
+        expect(
+          PayjoinConstants.ohttpRelayUrlsFor(directory),
+          isNot(contains(PayjoinConstants.bullBitcoinOhttpRelayUrl)),
+          reason: 'directory: $directory',
+        );
+      }
+    });
+
+    test('applies the rule from a BIP21 pj endpoint, case-insensitively', () {
+      final bullBitcoinBip21 =
+          'bitcoin:BC1QEXAMPLE?amount=0.001'
+          '&pj=HTTPS://PAYJOIN.BULLBITCOIN.COM/ABC123%23OH1QYPM5'
+          '&pjos=0';
+      expect(
+        PayjoinConstants.ohttpRelayUrlsForBip21(bullBitcoinBip21),
+        isNot(contains(PayjoinConstants.bullBitcoinOhttpRelayUrl)),
+      );
+
+      final publicBip21 =
+          'bitcoin:bc1qexample?amount=0.001&pj=https://payjo.in/abc123';
+      expect(
+        PayjoinConstants.ohttpRelayUrlsForBip21(publicBip21).toSet(),
+        PayjoinConstants.ohttpRelayUrlsBase.toSet(),
+      );
+
+      // No pj endpoint at all: fail closed.
+      expect(
+        PayjoinConstants.ohttpRelayUrlsForBip21('bitcoin:bc1qexample'),
+        isNot(contains(PayjoinConstants.bullBitcoinOhttpRelayUrl)),
+      );
+    });
+  });
+
+  group('fetchOhttpKeyRelayAndDirectory', () {
+    test('prefers the Bull Bitcoin directory when reachable', () async {
+      final keys = _fakeOhttpKeys();
+      final datasource = PdkPayjoinDatasource(
+        log: PayjoinLogger.silent,
+        dio: Dio(),
+        ohttpKeysFetcher:
+            ({required ohttpRelayUrl, required directoryUrl}) async => keys,
+      );
+
+      final (resultKeys, relay, directory) = await datasource
+          .fetchOhttpKeyRelayAndDirectory();
+
+      expect(resultKeys, same(keys));
+      expect(directory, PayjoinConstants.bullBitcoinDirectoryUrl);
+      expect(relay, isNot(PayjoinConstants.bullBitcoinOhttpRelayUrl));
+      await datasource.dispose();
+    });
+
+    test(
+      'falls back to the public directory when Bull Bitcoin is down',
+      () async {
+        final keys = _fakeOhttpKeys();
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: Dio(),
+          ohttpKeysFetcher:
+              ({required ohttpRelayUrl, required directoryUrl}) async {
+                if (directoryUrl == PayjoinConstants.bullBitcoinDirectoryUrl) {
+                  throw StateError('directory unavailable');
+                }
+                return keys;
+              },
+        );
+
+        final (resultKeys, relay, directory) = await datasource
+            .fetchOhttpKeyRelayAndDirectory();
+
+        expect(resultKeys, same(keys));
+        expect(directory, PayjoinConstants.publicDirectoryUrl);
+        expect(relay, isNotNull);
+        await datasource.dispose();
+      },
+    );
+
+    test('returns nulls when every directory is down', () async {
+      final datasource = PdkPayjoinDatasource(
+        log: PayjoinLogger.silent,
+        dio: Dio(),
+        ohttpKeysFetcher:
+            ({required ohttpRelayUrl, required directoryUrl}) async {
+              throw StateError('unavailable');
+            },
+      );
+
+      expect(await datasource.fetchOhttpKeyRelayAndDirectory(), (
+        null,
+        null,
+        null,
+      ));
       await datasource.dispose();
     });
   });
