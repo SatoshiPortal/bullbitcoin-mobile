@@ -11,6 +11,8 @@ class SettingsEntryItem extends StatelessWidget {
   final bool isSuperUser;
   final Widget? trailing;
   final EdgeInsetsGeometry? contentPadding;
+  final int? titleMaxLines;
+  final int? subtitleMaxLines;
 
   const SettingsEntryItem({
     super.key,
@@ -23,6 +25,8 @@ class SettingsEntryItem extends StatelessWidget {
     this.isSuperUser = false,
     this.trailing,
     this.contentPadding,
+    this.titleMaxLines = 1,
+    this.subtitleMaxLines = 2,
   });
 
   @override
@@ -40,8 +44,10 @@ class SettingsEntryItem extends StatelessWidget {
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        maxLines: titleMaxLines,
+        overflow: titleMaxLines == null
+            ? TextOverflow.visible
+            : TextOverflow.ellipsis,
         style: theme.textTheme.bodyLarge?.copyWith(
           color: textColor ?? context.appColors.onSurface,
         ),
@@ -50,8 +56,10 @@ class SettingsEntryItem extends StatelessWidget {
           ? null
           : Text(
               subtitle!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              maxLines: subtitleMaxLines,
+              overflow: subtitleMaxLines == null
+                  ? TextOverflow.visible
+                  : TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: context.appColors.textMuted,
               ),
