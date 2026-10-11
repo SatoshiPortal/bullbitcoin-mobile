@@ -10,7 +10,7 @@ import 'package:path/path.dart' as p;
 // These edges include legacy violations, not architectural permission.
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
-// Data Backup edges are reviewed separately in FEATURES.md.
+// Data Backup and Nostr edges are reviewed separately in FEATURES.md.
 // Remove retired edges; review any addition instead of regenerating this list.
 // In particular, sp/swap -> wallet predates foreground sync: repository
 // compatibility exports and swap's wallet navigation remain out of scope.
@@ -44,7 +44,7 @@ const _allowedTargets = <String, String>{
   'import_qr_device': 'import_watch_only_wallet',
   'import_wallet': 'bitbox import_coldcard import_qr_device import_watch_only_wallet ledger settings',
   'import_watch_only_wallet': 'wallet',
-  'keychain_manifest': 'nostr_identity wallet',
+  'keychain_manifest': 'nostr_identity settings wallet',
   'labels': 'wallet',
   'ledger': 'import_watch_only_wallet wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',

@@ -395,6 +395,7 @@ graph TB
     BACKUP_SETTINGS --> BACKUPS
     SETTINGS --> LABELS
     SETTINGS -->|descriptor registration route| IMPORT_WATCH_ONLY
+    KEYCHAIN --> SETTINGS
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
@@ -617,3 +618,9 @@ internal boundaries; the baseline records this relocation debt, not permission
 for new consumers. A scoped follow-up should expose portable catalog and
 preference operations from their owning features and move the backup adapters
 to those public contracts. No datasource is published to conceal the debt.
+
+## Nostr settings contribution
+
+Nostr key management adds one separate source edge, keychain inventory →
+Settings, through the existing settings contribution registry. The module
+registers its own entry through the public Settings facade.
