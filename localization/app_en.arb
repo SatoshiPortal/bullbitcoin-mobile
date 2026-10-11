@@ -709,10 +709,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -8800,17 +8796,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Import watch-only",
   "@importWalletImportWatchOnly": {
@@ -13989,10 +13977,6 @@
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
   },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
   "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
   "@settingsSearchBroadcastTransactionKeywords": {
     "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
@@ -17613,5 +17597,183 @@
   "@bullVaultDescriptorVerified": {
     "description": "BullVault settings and recovery"
   },
-  "bullVaultBackupRecovery": "Backup & recovery"
+  "bullVaultBackupRecovery": "Backup & recovery",
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "@settingsToolsTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "walletsListTitle": "Wallet details",
+  "settingsSearchImportSeedKeywords": "add wallet|recover wallet|import mnemonic|seed|recovery words",
+  "settingsAppAndDeviceTitle": "App and device",
+  "@settingsAppAndDeviceTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  },
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "settingsToolsTitle": "Tools",
+  "settingsHelpAndInfoTitle": "Help and info",
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  },
+  "importWalletSeedTitle": "Import seed",
+  "@settingsSearchImportSeedKeywords": {
+    "description": "Search aliases for importing a wallet seed"
+  },
+  "importWalletHardwareTitle": "Hardware wallet",
+  "@importWalletHardwareTitle": {
+    "description": "Settings entry and import page for hardware and watch-only wallets"
+  },
+  "settingsDataExportTitle": "Data export",
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "@settingsSearchToolsKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
+  },
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "@settingsHelpAndInfoTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "@importWalletSeedTitle": {
+    "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "backupReminderAddPhysicalTitle": "ADD A PHYSICAL BACKUP",
+  "@backupReminderDismissForever": {
+    "description": "Wallet Recovery setting that suppresses every backup reminder on this device"
+  },
+  "@backupReminderTestPhysical": {
+    "description": "Action to test a physical wallet backup"
+  },
+  "@backupReminderLater365Days": {
+    "description": "Action to snooze the physical-backup test reminder for 365 days"
+  },
+  "@backupReminderLargeBalanceBody": {
+    "description": "Risk explanation for relying only on an encrypted vault at a large balance"
+  },
+  "backupReminderTestVaultBody": "Your last successful encrypted vault test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
+  "@backupReminderAddPhysical": {
+    "description": "Action to create and test a physical wallet backup"
+  },
+  "@backupReminderLater180Days": {
+    "description": "Action to snooze the add-physical-backup reminder for 180 days"
+  },
+  "@backupReminderDismissForeverConfirmBody": {
+    "description": "Confirmation explanation for permanently suppressing backup reminders"
+  },
+  "@backupReminderAddPhysicalBody": {
+    "description": "Explanation for the periodic physical backup recommendation"
+  },
+  "@backupReminderTestVault": {
+    "description": "Action to test the encrypted vault"
+  },
+  "@backupReminderLargeBalanceTitle": {
+    "description": "Title for the one-time large-balance physical backup warning"
+  },
+  "backupReminderLargeBalanceBody": "Your encrypted vault is tested, but recovery still depends on the backup server being available. Add and test a physical backup for independent recovery.",
+  "backupReminderLater180Days": "REMIND ME IN 180 DAYS",
+  "backupReminderDismissForeverConfirm": "Dismiss forever",
+  "backupReminderTestVault": "TEST ENCRYPTED VAULT",
+  "@backupReminderDismissRisk": {
+    "description": "Permanent dismissal for the one-time large-balance warning"
+  },
+  "@backupReminderDismissForeverConfirmTitle": {
+    "description": "Confirmation title before permanently suppressing backup reminders"
+  },
+  "backupReminderTestVaultTitle": "TEST YOUR ENCRYPTED VAULT",
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS",
+  "@backupReminderTestPhysicalTitle": {
+    "description": "Title for the annual physical backup test reminder"
+  },
+  "@backupReminderTestVaultTitle": {
+    "description": "Title for the annual encrypted vault test reminder"
+  },
+  "backupReminderTestPhysicalBody": "Your last successful physical backup test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "backupReminderDismissRisk": "DISMISS WARNING — I UNDERSTAND THE RISKS",
+  "backupReminderLargeBalanceTitle": "YOUR ENCRYPTED VAULT IS YOUR ONLY BACKUP",
+  "@backupReminderAddPhysicalTitle": {
+    "description": "Title for the periodic physical backup recommendation"
+  },
+  "backupReminderDismissForeverConfirmTitle": "Dismiss all backup reminders?",
+  "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
+  "backupReminderDismissForeverConfirmBody": "The app will not show backup warnings or test reminders on this device until you turn them back on in Wallet Recovery.",
+  "@backupReminderTestPhysicalBody": {
+    "description": "Explanation for the annual physical backup test reminder"
+  },
+  "backupReminderAddPhysical": "ADD A PHYSICAL BACKUP",
+  "@backupReminderDismissForeverConfirm": {
+    "description": "Confirmation action that permanently suppresses backup reminders"
+  },
+  "@backupReminderTestVaultBody": {
+    "description": "Explanation for the annual encrypted vault test reminder"
+  },
+  "backupReminderDismissForever": "Dismiss backup reminders forever",
+  "@backupReminderLater366Days": {
+    "description": "Action to snooze the encrypted-vault test reminder for 366 days"
+  },
+  "backupReminderTestPhysical": "TEST PHYSICAL BACKUP",
+  "backupReminderAddPhysicalBody": "Your tested encrypted vault still depends on the backup server. Add and test a physical backup so you can recover without it.",
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "@signingKeyUsedSign": {},
+  "signingKeyUsedTitle": "Keys already used",
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyUsedNoDescription": {},
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "@signingKeyUsedTitle": {},
+  "signingKeyUsedNoDescription": "No description",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "recoverbullKeySeedUnavailable": "The matching wallet seed is unavailable on this device. Use the backup file and its PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file to find its key using a wallet on this device. No backup PIN or server connection is needed. Viewing the key does not test your PIN or server recovery.",
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. The file may belong to another wallet or be damaged. Try another copy or use the server.",
+  "recoverbullKeyPathUnavailable": "This backup cannot be opened locally because its key information is missing or unsupported. Try another saved copy or use the server."
 }

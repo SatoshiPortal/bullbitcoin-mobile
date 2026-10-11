@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,8 @@ class SigningKeyExportState {
   final bool isReserved;
   final bool isLoading;
   final int? markedAccount;
+  final bool descriptionSaved;
+  final List<UsedSigningKeyAccount> usedAccounts;
   final SettingsFailure? failure;
 
   const SigningKeyExportState({
@@ -18,6 +21,8 @@ class SigningKeyExportState {
     this.isReserved = false,
     this.isLoading = false,
     this.markedAccount,
+    this.descriptionSaved = true,
+    this.usedAccounts = const [],
     this.failure,
   });
 
@@ -27,6 +32,8 @@ class SigningKeyExportState {
     bool? isReserved,
     bool? isLoading,
     int? markedAccount,
+    bool? descriptionSaved,
+    List<UsedSigningKeyAccount>? usedAccounts,
     bool clearMarkedAccount = false,
     SettingsFailure? failure,
     bool clearFailure = false,
@@ -38,6 +45,8 @@ class SigningKeyExportState {
     markedAccount: clearMarkedAccount
         ? null
         : markedAccount ?? this.markedAccount,
+    descriptionSaved: descriptionSaved ?? this.descriptionSaved,
+    usedAccounts: usedAccounts ?? this.usedAccounts,
     failure: clearFailure ? null : failure ?? this.failure,
   );
 }
@@ -48,6 +57,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
   int _requestId = 0;
   int? _requestedAccount;
   bool _markUsed = false;
+  String? _description;
 
   SigningKeyExportCubit({
     required this._exportSigningKeyUsecase,
@@ -59,6 +69,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
   }
 
   Future<void> selectAccount(int account) async {
+    if (_markUsed && state.isLoading) return;
     if ((!state.isLoading && state.account == account) ||
         (state.isLoading && _requestedAccount == account)) {
       return;
@@ -68,10 +79,13 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
     await _export(account: account);
   }
 
-  Future<void> markAccountUsed() async {
-    if (state.isReserved || state.descriptorKey.isEmpty) return;
+  Future<void> markAccountUsed(String description) async {
+    if (state.isLoading || state.isReserved || state.descriptorKey.isEmpty) {
+      return;
+    }
     _requestedAccount = state.account;
     _markUsed = true;
+    _description = description;
     await _export(account: state.account, markUsed: true);
   }
 
@@ -101,24 +115,37 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
     final result = await _exportSigningKeyUsecase.execute(
       account: account,
       markUsed: markUsed,
+      description: markUsed ? _description : null,
     );
     if (isClosed || requestId != _requestId) return;
 
-    result.fold((export) {
-      if (markUsed) {
-        _requestedAccount = null;
-        _markUsed = false;
-      }
-      emit(
+    result.fold(
+      (export) {
+        if (markUsed) {
+          _requestedAccount = null;
+          _markUsed = false;
+          _description = null;
+        }
+        emit(
+          state.copyWith(
+            account: export.account,
+            descriptorKey: export.descriptorKey,
+            isReserved: export.isReserved,
+            isLoading: false,
+            markedAccount: export.markedAccount,
+            descriptionSaved: export.descriptionSaved,
+            usedAccounts: export.usedAccounts,
+            clearFailure: true,
+          ),
+        );
+      },
+      (failure) => emit(
         state.copyWith(
-          account: export.account,
-          descriptorKey: export.descriptorKey,
-          isReserved: export.isReserved,
           isLoading: false,
-          markedAccount: export.markedAccount,
-          clearFailure: true,
+          usedAccounts: const [],
+          failure: failure,
         ),
-      );
-    }, (failure) => emit(state.copyWith(isLoading: false, failure: failure)));
+      ),
+    );
   }
 }

@@ -123,6 +123,8 @@ graph TB
     SEND --> PSBT_FLOW
     SETTINGS --> PSBT_SIGNING
     SETTINGS --> HW_WALLETS
+    IMPORT_MNEMONIC[Import Mnemonic] --> SETTINGS
+    SETTINGS --> EXCHANGE_SUPPORT_CHAT[Exchange Support Chat]
     RECEIVE --> HW_WALLETS
     RECEIVE --> BULL_PAYJOIN
     RECEIVE --> BULLVAULT
@@ -187,6 +189,10 @@ graph TB
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    SETTINGS --> LABELS
+    SETTINGS -->|descriptor registration route| IMPORT_WATCH_ONLY
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa

@@ -22,10 +22,12 @@ class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = settingsItemsOf(context);
+    final items = settingsItemsOf(
+      context,
+    ).inSection(SettingsItemSection.wallet);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsWalletSettingsTitle)),
+      appBar: AppBar(title: Text(context.loc.settingsWalletAndBitcoinTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -33,8 +35,9 @@ class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
             child: Column(
               children: [
                 for (final id in walletSettingsItemOrder)
-                  items.byId(id).buildTile(context),
-                for (final item in items.inSection(SettingsItemSection.wallet))
+                  for (final item in items)
+                    if (item.id == id) item.buildTile(context),
+                for (final item in items)
                   if (!walletSettingsItemOrder.contains(item.id))
                     item.buildTile(context),
               ],
