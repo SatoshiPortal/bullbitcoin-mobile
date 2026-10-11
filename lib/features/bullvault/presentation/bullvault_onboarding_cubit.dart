@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
@@ -527,6 +529,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     if (result == null || seedFingerprint == null) return;
     final statusResult = await _checkBullVaultMobileBackupsUsecase.execute(
       seedFingerprint,
+      network: result.policy.network,
     );
     if (isClosed) return;
     switch (statusResult) {

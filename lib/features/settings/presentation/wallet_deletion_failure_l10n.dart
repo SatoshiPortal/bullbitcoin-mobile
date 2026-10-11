@@ -35,6 +35,8 @@ extension WalletDeletionFailureL10n on WalletFailure {
     WalletConsolidationRequiredFailure() ||
     WalletTransactionBuildFailure() ||
     WalletAddressNetworkMismatchFailure() ||
+    Bip48AccountAllocationFailure() ||
+    BitcoinSigningFailure() ||
     WalletUnexpectedFailure() => context.loc.walletDeletionErrorGeneric,
   };
 }

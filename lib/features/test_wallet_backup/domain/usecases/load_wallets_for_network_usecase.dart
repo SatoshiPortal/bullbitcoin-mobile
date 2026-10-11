@@ -39,9 +39,12 @@ class LoadWalletsForNetworkUsecase {
             TestWalletBackupWalletsUnavailableFailure(failure.logMessage),
           );
       }
-      final eligible = wallets.where((wallet) =>
-          wallet.singleLocalSeedFingerprint != null).toList();
-      if (eligible.isEmpty) return const Err(TestWalletBackupNoWalletsFailure());
+      final eligible = wallets
+          .where((wallet) => wallet.singleLocalSeedFingerprint != null)
+          .toList();
+      if (eligible.isEmpty) {
+        return const Err(TestWalletBackupNoWalletsFailure());
+      }
       return Ok(eligible);
     } on Object catch (e, st) {
       log.severe(

@@ -17,6 +17,12 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -174,13 +180,19 @@ class LiquidWalletRepository implements LiquidSendPort {
     }
 
     if (metadata.signers.length != 1 ||
+        metadata.signers.single.signer != Signer.local ||
         metadata.signers.single.descriptorKeys.length != 1) {
       throw StateError('Standard local single-signature wallet required');
     }
     final descriptorKey = metadata.signers.single.descriptorKeys.single;
-    final seed =
-        await _seed.get(descriptorKey.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+    final secret = switch (await _secrets.fetch(
+      Fingerprint(descriptorKey.masterFingerprint),
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw StateError(
+        'secrets: ${failure.runtimeType}',
+      ),
+    };
 
     return switch (await secret.sign.pset(
       pset,

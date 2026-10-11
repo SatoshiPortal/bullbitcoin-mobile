@@ -1,10 +1,11 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockBroadcast extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
 
+class _MockVerifier extends Mock implements VerifyBroadcastSignedTxUsecase {}
+
 void main() {
   testWidgets('typing stays editable until the signer result is submitted', (
     tester,
@@ -20,6 +23,7 @@ void main() {
     final broadcast = _MockBroadcast();
     final cubit = BroadcastSignedTxCubit(
       broadcastBitcoinTransactionUsecase: broadcast,
+      verifySignedTxUsecase: _MockVerifier(),
       request: const BroadcastSignedTxRequest(collectSignerResult: true),
     );
     addTearDown(cubit.close);

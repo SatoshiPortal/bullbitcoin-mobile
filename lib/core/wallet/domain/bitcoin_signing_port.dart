@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';

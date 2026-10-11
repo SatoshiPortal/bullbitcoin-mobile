@@ -26,6 +26,15 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -84,14 +93,11 @@ void main() {
       (_) async => const WalletMetadataModel(
         networkCode: 'liquidTestnet',
         id: walletId,
-        masterFingerprint: '73c5da0a',
-        xpubFingerprint: 'deadbeef',
+        network: Network.liquidMainnet,
+        signers: [],
         isEncryptedVaultTested: false,
         isPhysicalBackupTested: false,
-        xpub: '',
-        externalPublicDescriptor: 'descriptor',
-        internalPublicDescriptor: '',
-        signer: Signer.local,
+        publicDescriptor: 'descriptor',
         isDefault: false,
       ),
     );

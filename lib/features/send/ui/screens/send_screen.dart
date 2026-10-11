@@ -12,28 +12,15 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
@@ -58,6 +45,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -75,7 +63,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerMenu,
         BullSegmented,
         BullShapesX,
-        BullSnackBar,
         BullText,
         BullTopBar,
         Gap;
@@ -106,7 +93,7 @@ class SendLoadingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           color: context.appColors.background,
           onBack: () => context.pop(),
@@ -417,7 +404,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   void initState() {
     super.initState();
     final amount = context.read<SendCubit>().state.amount;
-    _isMax = context.read<SendCubit>().state.sendMax;
     _amountController = TextEditingController.fromValue(
       TextEditingValue(
         text: amount,
@@ -601,19 +587,24 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   ),
                                                 );
                                               }).toList(),
-                                              onChanged: context.read<SendCubit>().isRestrictedSend ? null : (walletId) {
-                                                if (walletId != null) {
+                                              onChanged:
                                                   context
                                                       .read<SendCubit>()
-                                                      .updateSelectedWallet(
-                                                        wallets.firstWhere(
-                                                          (wallet) =>
-                                                              wallet.id ==
-                                                              walletId,
-                                                        ),
-                                                      );
-                                                }
-                                              },
+                                                      .isRestrictedSend
+                                                  ? null
+                                                  : (walletId) {
+                                                      if (walletId != null) {
+                                                        context
+                                                            .read<SendCubit>()
+                                                            .updateSelectedWallet(
+                                                              wallets.firstWhere(
+                                                                (wallet) =>
+                                                                    wallet.id ==
+                                                                    walletId,
+                                                              ),
+                                                            );
+                                                      }
+                                                    },
                                             ),
                                     ),
                                   ),
@@ -1113,7 +1104,7 @@ class SendDraftAppBarAction extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Center(
-          child: BBText(
+          child: BullText(
             context.loc.sendDraftSaved,
             style: context.font.bodyMedium,
             color: context.appColors.textMuted,
@@ -1123,7 +1114,7 @@ class SendDraftAppBarAction extends StatelessWidget {
     }
     return TextButton(
       onPressed: () => _saveDraftAndLeave(context),
-      child: BBText(
+      child: BullText(
         context.loc.save,
         style: context.font.bodyMedium,
         color: context.appColors.secondary,
@@ -1149,7 +1140,7 @@ Future<void> _saveDraftAndLeave(BuildContext context) async {
 Future<void> _handleEditableSendBack(BuildContext context) async {
   final cubit = context.read<SendCubit>();
   final state = cubit.state;
-  if (state.buildingTransaction || state.signingTransaction) return;
+  if (state.signingTransaction) return;
   if (state.isDraftSaved) {
     if (state.step != SendStep.address) {
       cubit.backClicked();
@@ -1240,14 +1231,14 @@ class _BottomButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBitcoinWallet = context.select(
-      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
+      (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid == false,
     );
     final isOnchainSend = context.select(
       (SendCubit cubit) => !cubit.state.isLightning && !cubit.state.isChainSwap,
     );
     final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
     final wallet = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet,
+      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
     );
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.hasFinalizedBitcoinTransaction,
@@ -1298,7 +1289,7 @@ class _BottomButtons extends StatelessWidget {
             const Gap(12),
           ],
           if (wallet != null && needsCoordination && !hasFinalizedTx)
-            BBButton.big(
+            BullButton.big(
               label: context.loc.sendContinueToSigning,
               onPressed: () =>
                   context.read<SendCubit>().continueToBitcoinSigning(),

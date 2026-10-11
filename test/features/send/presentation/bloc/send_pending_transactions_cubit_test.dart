@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -19,10 +19,8 @@ void main() {
     id: 'transaction',
     walletId: 'wallet',
     stage: PendingBitcoinTransactionStage.draft,
-    recipient: '',
-    amount: '',
+    recipients: [(recipient: '', amount: '', receivesRemainder: false)],
     amountCurrencyCode: '',
-    sendMax: false,
     feeSelection: FeeSelection.fastest,
     replaceByFee: true,
     createdAt: DateTime.utc(2026),

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

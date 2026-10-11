@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullBackupOptionCard, BullButton, BullInfoCard, Gap;
 import 'package:material_ui/material_ui.dart';
+    show BullBackupOptionCard, BullButton, BullInfoCard, BullShapesX, Gap;
+import 'package:material_ui/material_ui.dart';
 
 final class BullVaultRecoveryPackageStep extends StatelessWidget {
   final bool exported;
@@ -57,7 +59,7 @@ final class BullVaultRecoveryPackageStep extends StatelessWidget {
           color: context.appColors.surfaceContainer,
           shape: RoundedRectangleBorder(
             side: BorderSide(color: context.appColors.border),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
           child: CheckboxListTile(
             value: confirmed,

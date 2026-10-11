@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.d
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';

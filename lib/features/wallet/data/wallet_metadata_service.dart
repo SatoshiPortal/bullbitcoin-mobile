@@ -10,6 +10,10 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
+import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -250,12 +254,10 @@ class WalletMetadataService {
     );
   }
 
-  /// Turns a secrets failure into the exception this service has always
-  /// thrown, so callers keep their existing error handling.
   static T _unwrap<T>(Result<T, SecretFailure> result) => switch (result) {
     Ok(:final value) => value,
     Err(:final failure) => throw MnemonicSeedNeededException(
-      failure.toString(),
+      'Secret derivation failed: ${failure.runtimeType}',
     ),
   };
 

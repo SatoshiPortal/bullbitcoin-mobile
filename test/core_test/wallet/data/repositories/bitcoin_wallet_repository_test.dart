@@ -1,6 +1,12 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:io';
 
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import '../../../../migrations_test/bull_database/generated/schema.dart';
@@ -14,8 +20,9 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -30,6 +37,9 @@ import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -48,8 +58,6 @@ import '../../wallet_signer_test_fixture.dart';
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
-class _MockSeedDatasource extends Mock implements SeedDatasource {}
-
 class _MockFrozenWalletUtxoDatasource extends Mock
     implements FrozenWalletUtxoDatasource {}
 
@@ -64,6 +72,30 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockSeedVerificationPort extends Mock implements SeedVerificationPort {}
 
 class _SigningTestBdkWalletDatasource extends BdkWalletDatasource {
+  TransactionSignatureStatus signatureStatus = TransactionSignatureStatus.valid;
+  String? replacementPsbt;
+
+  @override
+  Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
+    required String txid,
+    required WalletModel wallet,
+  }) async => signatureStatus;
+
+  @override
+  Future<String> createUnsignedReplaceByFeePsbt({
+    required WalletModel wallet,
+    required String txid,
+    required RelativeFee feeRate,
+  }) async {
+    final replacement = replacementPsbt;
+    if (replacement != null) return replacement;
+    return super.createUnsignedReplaceByFeePsbt(
+      wallet: wallet,
+      txid: txid,
+      feeRate: feeRate,
+    );
+  }
+
   @override
   Future<void> validateWalletPsbtInputs(
     String psbtBase64, {
@@ -87,7 +119,8 @@ typedef _SignerFixture = ({
   String externalPublic,
   String fingerprint,
   String internalPublic,
-  SeedModel seed,
+  String words,
+  String? passphrase,
   String xpub,
 });
 
@@ -95,7 +128,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late WalletMetadataDatasource metadataDatasource;
-  late SeedDatasource seedDatasource;
+  late Secrets secrets;
   late BdkWalletDatasource bdkDatasource;
   late FrozenWalletUtxoDatasource frozenWalletUtxoDatasource;
   late BitcoinWalletRepository repository;
@@ -109,7 +142,8 @@ void main() {
     originalPathProvider = PathProviderPlatform.instance;
     PathProviderPlatform.instance = _TestPathProvider(tempDirectory.path);
     metadataDatasource = _MockWalletMetadataDatasource();
-    seedDatasource = _MockSeedDatasource();
+    FakeSecureStoragePlatform().install();
+    secrets = Secrets(scratchDirectory: () async => tempDirectory.path);
     bdkDatasource = _SigningTestBdkWalletDatasource();
     frozenWalletUtxoDatasource = _MockFrozenWalletUtxoDatasource();
     when(
@@ -117,7 +151,7 @@ void main() {
     ).thenAnswer((_) async => const []);
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -128,17 +162,26 @@ void main() {
     tempDirectory.deleteSync(recursive: true);
   });
 
-  void stubWallet(
+  Future<void> stubWallet(
     WalletMetadataModel metadata,
     List<_SignerFixture> localSigners,
-  ) {
+  ) async {
     when(
       () => metadataDatasource.fetch(metadata.id),
     ).thenAnswer((_) async => metadata);
     for (final signer in localSigners) {
-      when(
-        () => seedDatasource.get(signer.fingerprint),
-      ).thenAnswer((_) async => signer.seed);
+      final imported = await secrets.import(
+        words: signer.words.split(' '),
+        passphrase: signer.passphrase,
+      );
+      switch (imported) {
+        case Ok(:final value):
+          expect(value.id.hex, signer.fingerprint);
+        case Err(failure: SecretAlreadyExistsFailure(:final id)):
+          expect(id.hex, signer.fingerprint);
+        case Err(:final failure):
+          fail('Secret import failed: ${failure.runtimeType}');
+      }
     }
   }
 
@@ -151,8 +194,11 @@ void main() {
             testMnemonics.first,
             scriptType: scriptType,
           );
-          var metadata = await WalletMetadataService.deriveFromSeed(
-            seed: signer.seed.toEntity(),
+          var metadata = await WalletMetadataService.deriveFromSecret(
+            secret:
+                (await secrets.import(words: signer.words.split(' '))
+                        as Ok<Secret, SecretFailure>)
+                    .value,
             network: Network.bitcoinTestnet,
             scriptType: scriptType,
             isDefault: true,
@@ -162,7 +208,7 @@ void main() {
             metadata.signers.single.descriptorKeys.single.xpub,
             startsWith(scriptType == ScriptType.bip49 ? 'upub' : 'vpub'),
           );
-          stubWallet(metadata, [signer]);
+          await stubWallet(metadata, [signer]);
           final unsignedPsbt = buildUnsignedPsbt(
             descriptor: metadata.publicDescriptor,
           );
@@ -175,23 +221,7 @@ void main() {
     }
   }
 
-  test('private wallet reconstruction rejects nonstandard keychains', () async {
-    final signer = _singleSignatureFixture(testMnemonics.first);
-    final metadata = _metadata(
-      descriptor: signer.externalPublic.replaceAll('/0/*', '/2/*'),
-      signers: [signer],
-      localSignerCount: 1,
-      descriptorPath: '/2/*',
-    );
-    stubWallet(metadata, const []);
-
-    expect(
-      () => repository.getPrivateWallet(walletId: metadata.id),
-      throwsStateError,
-    );
-  });
-
-  test('private wallet reconstruction preserves the account index', () async {
+  test('signs a local wallet at its stored account index', () async {
     const account = 1;
     final signer = _singleSignatureFixture(
       testMnemonics.first,
@@ -206,14 +236,58 @@ void main() {
       localSignerCount: 1,
       derivationPath: "m/84'/1'/$account'",
     );
-    stubWallet(metadata, [signer]);
+    await stubWallet(metadata, [signer]);
 
-    final privateWallet = await repository.getPrivateWallet(
-      walletId: metadata.id,
+    final unsigned = buildUnsignedPsbt(descriptor: metadata.publicDescriptor);
+    final signed = _unwrapSigning(
+      await repository.signPsbt(unsigned, walletId: metadata.id),
     );
-
-    expect(privateWallet.account, account);
+    expect(signed.isFinalized, isTrue);
   });
+
+  test(
+    'fee bump requires verified inputs and signs the stored account',
+    () async {
+      final signer = _singleSignatureFixture(testMnemonics.first, account: 1);
+      final metadata = _metadata(
+        descriptor: twoPathDescriptor(
+          signer.externalPublic,
+          signer.internalPublic,
+        ),
+        signers: [signer],
+        localSignerCount: 1,
+        derivationPath: "m/84'/1'/1'",
+      );
+      await stubWallet(metadata, [signer]);
+      final datasource = bdkDatasource as _SigningTestBdkWalletDatasource;
+      datasource.replacementPsbt = buildUnsignedPsbt(
+        descriptor: metadata.publicDescriptor,
+      );
+      Future<String> bump() => repository.bumpFee(
+        walletId: metadata.id,
+        txid: 'original',
+        newFeeRate: const RelativeFee(2500),
+      );
+
+      datasource.signatureStatus = TransactionSignatureStatus.invalid;
+      await expectLater(
+        bump(),
+        throwsA(isA<ManipulatedTransactionException>()),
+      );
+      datasource.signatureStatus = TransactionSignatureStatus.unverifiable;
+      await expectLater(
+        bump(),
+        throwsA(isA<UnverifiableTransactionException>()),
+      );
+      datasource.signatureStatus = TransactionSignatureStatus.valid;
+      final signed = bdk.Psbt(psbtBase64: await bump());
+      try {
+        expect(signed.input().single.finalScriptWitness, isNotEmpty);
+      } finally {
+        signed.dispose();
+      }
+    },
+  );
 
   test('preserves an existing PSBT when adding a local signature', () async {
     final signer = _singleSignatureFixture(testMnemonics.first);
@@ -225,7 +299,7 @@ void main() {
       signers: [signer],
       localSignerCount: 1,
     );
-    stubWallet(metadata, [signer]);
+    await stubWallet(metadata, [signer]);
     final unsignedPsbt = buildUnsignedPsbt(
       descriptor: twoPathDescriptor(
         signer.externalPublic,
@@ -289,7 +363,7 @@ void main() {
       ),
       isDefault: false,
     );
-    stubWallet(metadata, [local]);
+    await stubWallet(metadata, [local]);
     final policy = _unwrapSigning(
       await repository.getPolicy(walletId: metadata.id),
     );
@@ -324,7 +398,7 @@ void main() {
   test('one local multisig key returns a partial PSBT', () async {
     final signers = testMnemonics.map(_multisigFixture).toList();
     final metadata = _multisigMetadata(signers, localSignerCount: 1);
-    stubWallet(metadata, signers.take(1).toList());
+    await stubWallet(metadata, signers.take(1).toList());
     final unsignedPsbt = buildUnsignedPsbt(
       descriptor: metadata.publicDescriptor,
     );
@@ -340,7 +414,7 @@ void main() {
   test('enough local multisig keys finalize the PSBT', () async {
     final signers = testMnemonics.map(_multisigFixture).toList();
     final metadata = _multisigMetadata(signers, localSignerCount: 2);
-    stubWallet(metadata, signers.take(2).toList());
+    await stubWallet(metadata, signers.take(2).toList());
     final unsignedPsbt = buildUnsignedPsbt(
       descriptor: metadata.publicDescriptor,
     );
@@ -413,7 +487,7 @@ void main() {
       imported.signers.single.descriptorKeys.map((key) => key.derivationPath),
       everyElement("m/48'/1'/0'/2'"),
     );
-    stubWallet(metadata, [signer]);
+    await stubWallet(metadata, [signer]);
     final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
 
     final signed = _unwrapSigning(
@@ -473,7 +547,7 @@ void main() {
       publicDescriptor: descriptor,
       isDefault: false,
     );
-    stubWallet(metadata, [local]);
+    await stubWallet(metadata, [local]);
     final policy = _unwrapSigning(
       await repository.getPolicy(walletId: metadata.id),
     );
@@ -514,7 +588,7 @@ void main() {
   test('signs with only the selected local multisig key', () async {
     final signers = testMnemonics.map(_multisigFixture).toList();
     final metadata = _multisigMetadata(signers, localSignerCount: 2);
-    stubWallet(metadata, signers.take(2).toList());
+    await stubWallet(metadata, signers.take(2).toList());
     final unsignedPsbt = buildUnsignedPsbt(
       descriptor: metadata.publicDescriptor,
     );
@@ -573,24 +647,17 @@ void main() {
     when(
       () => metadataDatasource.fetch(metadata.id),
     ).thenAnswer((_) async => metadata);
-    final storedSeeds = {protected.fingerprint: protected.seed};
-    when(() => seedDatasource.exists(any())).thenAnswer(
-      (call) async => storedSeeds.containsKey(call.positionalArguments.single),
+    final protectedSecret =
+        (await secrets.import(
+                  words: protected.words.split(' '),
+                  passphrase: passphrase,
+                )
+                as Ok<Secret, SecretFailure>)
+            .value;
+    expect(
+      await secrets.retainCanonical(protectedSecret.id),
+      isA<Ok<Secret, SecretFailure>>(),
     );
-    when(
-      () => seedDatasource.get(any()),
-    ).thenAnswer((call) async => storedSeeds[call.positionalArguments.single]!);
-    when(
-      () => seedDatasource.store(
-        fingerprint: canonical.fingerprint,
-        seed: canonical.seed,
-      ),
-    ).thenAnswer((_) async {
-      storedSeeds[canonical.fingerprint] = canonical.seed;
-    });
-    await SeedRepository(
-      source: seedDatasource,
-    ).ensureCanonicalSeed(protected.seed.toEntity());
     final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
 
     final missing = await repository.signPsbt(
@@ -649,7 +716,7 @@ void main() {
     ).thenThrow(const InvalidBitcoinPsbtException());
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -673,7 +740,7 @@ void main() {
       signers: [signer],
       localSignerCount: 0,
     );
-    stubWallet(metadata, const []);
+    await stubWallet(metadata, const []);
 
     final result = await repository.reviewPsbt(
       'not-a-psbt',
@@ -722,7 +789,7 @@ void main() {
     ).thenThrow(Exception('wallet database unavailable'));
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -771,7 +838,7 @@ void main() {
     ).thenThrow(bdk.IoTransactionException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -832,7 +899,7 @@ void main() {
     ).thenThrow(const BitcoinPsbtFrozenUtxoException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -885,7 +952,7 @@ void main() {
     ).thenThrow(const BitcoinPsbtFrozenUtxoException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -970,7 +1037,6 @@ _SignerFixture _singleSignatureFixture(
   int account = 0,
   ScriptType scriptType = ScriptType.bip84,
 }) {
-  final seed = SeedModel.mnemonic(mnemonicWords: words.split(' '));
   final descriptors = scriptType == ScriptType.bip49
       ? nestedSegwitSingleSignatureDescriptors(words)
       : account == 0
@@ -980,7 +1046,8 @@ _SignerFixture _singleSignatureFixture(
     externalPublic: descriptors.external,
     fingerprint: descriptors.fingerprint,
     internalPublic: descriptors.internal,
-    seed: seed,
+    words: words,
+    passphrase: null,
     xpub: Bip32Derivation.getBip32Xpub(
       descriptors.xpub.split(']').last,
     ).convert(scriptType.getXpubType(Network.bitcoinTestnet)),
@@ -988,22 +1055,18 @@ _SignerFixture _singleSignatureFixture(
 }
 
 _SignerFixture _multisigFixture(String words) {
-  final seed = SeedModel.mnemonic(mnemonicWords: words.split(' '));
   final keys = deriveSignerKeys(words);
   return (
     externalPublic: keys.externalPublic,
     fingerprint: keys.fingerprint,
     internalPublic: keys.internalPublic,
-    seed: seed,
+    words: words,
+    passphrase: null,
     xpub: keys.xpub.split(']').last,
   );
 }
 
 _SignerFixture _bip48Fixture(String words, {String? passphrase}) {
-  final seed = SeedModel.mnemonic(
-    mnemonicWords: words.split(' '),
-    passphrase: passphrase,
-  );
   final root = bdk.DescriptorSecretKey(
     networkKind: bdk.NetworkKind.test,
     mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
@@ -1015,13 +1078,13 @@ _SignerFixture _bip48Fixture(String words, {String? passphrase}) {
     externalPublic: '$public/0/*',
     fingerprint: public.masterFingerprint(),
     internalPublic: '$public/1/*',
-    seed: seed,
+    words: words,
+    passphrase: passphrase,
     xpub: public.toString().split(']').last,
   );
 }
 
 _SignerFixture _miniscriptBip84Fixture(String words) {
-  final seed = SeedModel.mnemonic(mnemonicWords: words.split(' '));
   final root = bdk.DescriptorSecretKey(
     networkKind: bdk.NetworkKind.test,
     mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
@@ -1033,7 +1096,8 @@ _SignerFixture _miniscriptBip84Fixture(String words) {
     externalPublic: '$public/0/*',
     fingerprint: public.masterFingerprint(),
     internalPublic: '$public/1/*',
-    seed: seed,
+    words: words,
+    passphrase: null,
     xpub: public.toString().split(']').last,
   );
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bip48_account_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';

@@ -17277,5 +17277,14 @@
   "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
   "@bullVaultRestoreWatchOnly": {},
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
-  "@bullVaultRestoreMobileAvailable": {}
+  "@bullVaultRestoreMobileAvailable": {},
+  "bullVaultMinutes": "{count, plural, one{1 minute} other{{count} minutes}}",
+  "@bullVaultMinutes": {
+    "description": "Time remaining until BullVault recovery in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

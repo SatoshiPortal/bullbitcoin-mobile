@@ -6,6 +6,10 @@ import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -37,6 +41,9 @@ class _MockWalletMetadataDatasource extends Mock
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -230,8 +237,9 @@ void main() {
             liquid: (_) async => throw StateError('Liquid is not used here'),
             verifySignedTxUsecase: VerifySignedTxUsecase(),
           ),
+            watchPending: _MockPendingWatcher(),
         ),
-        unsignedPsbt: psbt,
+        request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
       );
       addTearDown(cubit.close);
 

@@ -68,15 +68,13 @@ void main() {
       descriptors.internal,
     );
     final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
-    final wallet =
-        WalletModel.privateBdk(
-              id: 'account-$account',
-              scriptType: ScriptType.bip84,
-              mnemonic: testMnemonics.first,
-              account: account,
-              isTestnet: true,
-            )
-            as PrivateBdkWalletModel;
+    final wallet = fixtureSigningWallet(
+      id: 'account-$account',
+      scriptType: ScriptType.bip84,
+      mnemonic: testMnemonics.first,
+      account: account,
+      isTestnet: true,
+    );
 
     final signed = await datasource.signPsbt(unsignedPsbt, wallet: wallet);
 
@@ -102,24 +100,20 @@ void main() {
           scenario.descriptors.internal,
         ),
       );
-      final owner =
-          WalletModel.privateBdk(
-                id: 'payjoin-${scenario.scriptType.name}-owner',
-                scriptType: scenario.scriptType,
-                mnemonic: testMnemonics.first,
-                account: 0,
-                isTestnet: true,
-              )
-              as PrivateBdkWalletModel;
-      final foreign =
-          WalletModel.privateBdk(
-                id: 'payjoin-foreign',
-                scriptType: ScriptType.bip84,
-                mnemonic: testMnemonics.last,
-                account: 0,
-                isTestnet: true,
-              )
-              as PrivateBdkWalletModel;
+      final owner = fixtureSigningWallet(
+        id: 'payjoin-${scenario.scriptType.name}-owner',
+        scriptType: scenario.scriptType,
+        mnemonic: testMnemonics.first,
+        account: 0,
+        isTestnet: true,
+      );
+      final foreign = fixtureSigningWallet(
+        id: 'payjoin-foreign',
+        scriptType: ScriptType.bip84,
+        mnemonic: testMnemonics.last,
+        account: 0,
+        isTestnet: true,
+      );
       final finalized = await datasource.signPsbt(unsignedPsbt, wallet: owner);
       final witnessOnly = bitcoin_base.Psbt.fromBase64(
         finalized.psbt,
@@ -162,7 +156,7 @@ void main() {
     final descriptor = twoPathDescriptor(external, internal);
     final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
     final finalizedPsbt = bdk.Psbt(psbtBase64: unsignedPsbt);
-    final owner = BdkFacade.createEphemeralDescriptorWallet(
+    final owner = createFixtureDescriptorWallet(
       descriptor: descriptor,
       isTestnet: true,
     );
@@ -178,15 +172,13 @@ void main() {
       ),
     );
     expect(finalized, isTrue);
-    final foreign =
-        WalletModel.privateBdk(
-              id: 'payjoin-foreign-taproot',
-              scriptType: ScriptType.bip84,
-              mnemonic: testMnemonics.last,
-              account: 0,
-              isTestnet: true,
-            )
-            as PrivateBdkWalletModel;
+    final foreign = fixtureSigningWallet(
+      id: 'payjoin-foreign-taproot',
+      scriptType: ScriptType.bip84,
+      mnemonic: testMnemonics.last,
+      account: 0,
+      isTestnet: true,
+    );
     final witnessOnly = bitcoin_base.Psbt.fromBase64(finalizedPsbt.serialize())
       ..input.removeInputKeys(0, [bitcoin_base.PsbtInputTypes.nonWitnessUTXO]);
 
@@ -216,15 +208,13 @@ void main() {
     expect(witness.single.first, 0x50);
     transaction.dispose();
     parsed.dispose();
-    final foreign =
-        WalletModel.privateBdk(
-              id: 'payjoin-foreign-taproot-annex',
-              scriptType: ScriptType.bip84,
-              mnemonic: testMnemonics.last,
-              account: 0,
-              isTestnet: true,
-            )
-            as PrivateBdkWalletModel;
+    final foreign = fixtureSigningWallet(
+      id: 'payjoin-foreign-taproot-annex',
+      scriptType: ScriptType.bip84,
+      mnemonic: testMnemonics.last,
+      account: 0,
+      isTestnet: true,
+    );
 
     final accepted = await datasource.signPsbt(
       finalizedPsbt,
@@ -250,7 +240,7 @@ void main() {
     final finalizedPsbt = bdk.Psbt(
       psbtBase64: buildUnsignedPsbt(descriptor: descriptor),
     );
-    final owner = BdkFacade.createEphemeralDescriptorWallet(
+    final owner = createFixtureDescriptorWallet(
       descriptor: descriptor,
       isTestnet: true,
     );
@@ -266,15 +256,13 @@ void main() {
       ),
     );
     expect(finalized, isTrue);
-    final foreign =
-        WalletModel.privateBdk(
-              id: 'payjoin-foreign-taproot-script-path',
-              scriptType: ScriptType.bip84,
-              mnemonic: testMnemonics.last,
-              account: 0,
-              isTestnet: true,
-            )
-            as PrivateBdkWalletModel;
+    final foreign = fixtureSigningWallet(
+      id: 'payjoin-foreign-taproot-script-path',
+      scriptType: ScriptType.bip84,
+      mnemonic: testMnemonics.last,
+      account: 0,
+      isTestnet: true,
+    );
     final witnessOnly = bitcoin_base.Psbt.fromBase64(finalizedPsbt.serialize())
       ..input.removeInputKeys(0, [bitcoin_base.PsbtInputTypes.nonWitnessUTXO]);
 
@@ -347,46 +335,49 @@ void main() {
       },
     );
 
-    test('estimates completed size and uses exact size after finalization', () {
-      final unsignedPsbt = buildUnsignedPsbt(
-        descriptor: twoPathDescriptor(
-          externalPublicDescriptor,
-          internalPublicDescriptor,
-        ),
-      );
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'size',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
-      final first = signPsbt(
-        datasource,
-        unsignedPsbt,
-        signers: signers,
-        signerIndex: 0,
-      );
-      expect(datasource.decodeTxSize(first.psbt, wallet: wallet), estimated);
-      final second = signPsbt(
-        datasource,
-        unsignedPsbt,
-        signers: signers,
-        signerIndex: 1,
-      );
-      final finalized = datasource.finalizePsbt(
-        datasource.combinePsbts(first: first.psbt, second: second.psbt),
-      );
-      final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
+    test(
+      'estimates completed size and uses exact size after finalization',
+      () async {
+        final unsignedPsbt = buildUnsignedPsbt(
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+        );
+        final wallet =
+            WalletModel.publicBdk(
+                  id: 'size',
+                  descriptor: twoPathDescriptor(
+                    externalPublicDescriptor,
+                    internalPublicDescriptor,
+                  ),
+                  isTestnet: true,
+                )
+                as PublicBdkWalletModel;
+        final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
+        final first = await signPsbt(
+          datasource,
+          unsignedPsbt,
+          signers: signers,
+          signerIndex: 0,
+        );
+        expect(datasource.decodeTxSize(first.psbt, wallet: wallet), estimated);
+        final second = await signPsbt(
+          datasource,
+          unsignedPsbt,
+          signers: signers,
+          signerIndex: 1,
+        );
+        final finalized = datasource.finalizePsbt(
+          datasource.combinePsbts(first: first.psbt, second: second.psbt),
+        );
+        final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
 
-      expect(finalized.isFinalized, isTrue);
-      expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
-      expect(estimated, greaterThanOrEqualTo(exact));
-    });
+        expect(finalized.isFinalized, isTrue);
+        expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
+        expect(estimated, greaterThanOrEqualTo(exact));
+      },
+    );
 
     test(
       'reviews a finalized PSBT after signing metadata is cleared',
@@ -428,13 +419,13 @@ void main() {
         }
         await BdkFacade.saveWallet(trackedWallet, wallet.hexId);
         trackedWallet.dispose();
-        final first = signPsbt(
+        final first = await signPsbt(
           datasource,
           unsignedPsbt,
           signers: signers,
           signerIndex: 0,
         );
-        final second = signPsbt(
+        final second = await signPsbt(
           datasource,
           unsignedPsbt,
           signers: signers,
@@ -469,7 +460,7 @@ void main() {
       },
     );
 
-    test('estimates a regular single-signature Bitcoin send', () {
+    test('estimates a regular single-signature Bitcoin send', () async {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
       final wallet =
           WalletModel.publicBdk(
@@ -493,7 +484,7 @@ void main() {
         mnemonic: bdk.Mnemonic.fromString(mnemonic: testMnemonics.first),
         password: null,
       );
-      final signed = datasource.signPsbtWithDescriptor(
+      final signed = await datasource.signPsbtWithDescriptor(
         unsignedPsbt,
         descriptor: twoPathDescriptor(
           bdk.Descriptor.newBip84(
@@ -516,48 +507,51 @@ void main() {
       expect(estimated, greaterThanOrEqualTo(exact));
     });
 
-    test('estimates completed size for multiple native SegWit inputs', () {
-      final unsignedPsbt = buildUnsignedPsbt(
-        descriptor: twoPathDescriptor(
-          externalPublicDescriptor,
-          internalPublicDescriptor,
-        ),
-        amountSat: 150000,
-        inputCount: 2,
-      );
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'multi-input-size',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      expect(bdk.Psbt(psbtBase64: unsignedPsbt).input(), hasLength(2));
-      final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
-      final first = signPsbt(
-        datasource,
-        unsignedPsbt,
-        signers: signers,
-        signerIndex: 0,
-      );
-      final second = signPsbt(
-        datasource,
-        unsignedPsbt,
-        signers: signers,
-        signerIndex: 1,
-      );
-      final finalized = datasource.finalizePsbt(
-        datasource.combinePsbts(first: first.psbt, second: second.psbt),
-      );
-      final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
+    test(
+      'estimates completed size for multiple native SegWit inputs',
+      () async {
+        final unsignedPsbt = buildUnsignedPsbt(
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          amountSat: 150000,
+          inputCount: 2,
+        );
+        final wallet =
+            WalletModel.publicBdk(
+                  id: 'multi-input-size',
+                  descriptor: twoPathDescriptor(
+                    externalPublicDescriptor,
+                    internalPublicDescriptor,
+                  ),
+                  isTestnet: true,
+                )
+                as PublicBdkWalletModel;
+        expect(bdk.Psbt(psbtBase64: unsignedPsbt).input(), hasLength(2));
+        final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
+        final first = await signPsbt(
+          datasource,
+          unsignedPsbt,
+          signers: signers,
+          signerIndex: 0,
+        );
+        final second = await signPsbt(
+          datasource,
+          unsignedPsbt,
+          signers: signers,
+          signerIndex: 1,
+        );
+        final finalized = datasource.finalizePsbt(
+          datasource.combinePsbts(first: first.psbt, second: second.psbt),
+        );
+        final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
 
-      expect(finalized.isFinalized, isTrue);
-      expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
-      expect(estimated, greaterThanOrEqualTo(exact));
-    });
+        expect(finalized.isFinalized, isTrue);
+        expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
+        expect(estimated, greaterThanOrEqualTo(exact));
+      },
+    );
 
     test('rejects a PSBT belonging to a different descriptor wallet', () async {
       final unsignedPsbt = buildUnsignedPsbt(
@@ -665,7 +659,7 @@ void main() {
           internalPublicDescriptor,
         ),
       );
-      final signed = signPsbt(
+      final signed = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -704,7 +698,7 @@ void main() {
           internalPublicDescriptor,
         ),
       );
-      final signed = signPsbt(
+      final signed = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -738,20 +732,20 @@ void main() {
       );
     });
 
-    test('finalizes only after combining enough partial signatures', () {
+    test('finalizes only after combining enough partial signatures', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final firstSignature = signPsbt(
+      final firstSignature = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
         signerIndex: 0,
       );
-      final secondSignature = signPsbt(
+      final secondSignature = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -773,7 +767,7 @@ void main() {
       expect(datasource.finalizePsbt(combined).isFinalized, isTrue);
     });
 
-    test('does not partially finalize a multi-input PSBT', () {
+    test('does not partially finalize a multi-input PSBT', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
@@ -782,13 +776,13 @@ void main() {
         amountSat: 150000,
         inputCount: 2,
       );
-      final first = signPsbt(
+      final first = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
         signerIndex: 0,
       );
-      final second = signPsbt(
+      final second = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -821,7 +815,7 @@ void main() {
 
       expect(partial.isFinalized, isFalse);
       expect(finalizedInputCount, 0);
-      final completed = signPsbt(
+      final completed = await signPsbt(
         datasource,
         partial.psbt,
         signers: signers,
@@ -834,7 +828,7 @@ void main() {
       (name: 'nested SegWit', wrap: (String multisig) => 'sh(wsh($multisig))'),
       (name: 'legacy', wrap: (String multisig) => 'sh($multisig)'),
     ]) {
-      test('round-trips ${scriptType.name} multisig signing', () {
+      test('round-trips ${scriptType.name} multisig signing', () async {
         String descriptor({required bool internal, int? privateSignerIndex}) {
           final keys = [
             for (final (index, signer) in signers.indexed)
@@ -869,7 +863,7 @@ void main() {
           datasource.analyzePolicy(wallet: wallet),
         );
         final unsignedPsbt = buildUnsignedPsbt(descriptor: publicDescriptor);
-        final firstSignature = datasource.signPsbtWithDescriptor(
+        final firstSignature = await datasource.signPsbtWithDescriptor(
           unsignedPsbt,
           descriptor: twoPathDescriptor(
             descriptor(internal: false, privateSignerIndex: 0),
@@ -877,7 +871,7 @@ void main() {
           ),
           isTestnet: true,
         );
-        final secondSignature = datasource.signPsbtWithDescriptor(
+        final secondSignature = await datasource.signPsbtWithDescriptor(
           unsignedPsbt,
           descriptor: twoPathDescriptor(
             descriptor(internal: false, privateSignerIndex: 1),
@@ -897,7 +891,7 @@ void main() {
       });
     }
 
-    test('signs a selected branch through nested policy thresholds', () {
+    test('signs a selected branch through nested policy thresholds', () async {
       final externalPublic = _nestedPolicyDescriptor([
         signers[0].externalPublic,
         signers[1].externalPublic,
@@ -933,7 +927,7 @@ void main() {
         descriptor: twoPathDescriptor(externalPublic, internalPublic),
         policyPath: policy.buildPath(selection),
       );
-      final signed = datasource.signPsbtWithDescriptor(
+      final signed = await datasource.signPsbtWithDescriptor(
         unsignedPsbt,
         descriptor: twoPathDescriptor(
           _nestedPolicyDescriptor([
@@ -953,14 +947,14 @@ void main() {
       expect(signed.isFinalized, isTrue);
     });
 
-    test('accepts a cryptographically valid added partial signature', () {
+    test('accepts a cryptographically valid added partial signature', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final signed = signPsbt(
+      final signed = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -976,14 +970,14 @@ void main() {
       );
     });
 
-    test('rejects a forged partial signature', () {
+    test('rejects a forged partial signature', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final signed = signPsbt(
+      final signed = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -1012,53 +1006,56 @@ void main() {
         false,
       ),
     ]) {
-      test('rejects actual $label when the metadata does not disclose it', () {
-        final unsignedPsbt = buildUnsignedPsbt(
-          descriptor: twoPathDescriptor(
-            externalPublicDescriptor,
-            internalPublicDescriptor,
-          ),
-        );
-        final signed = signPsbt(
-          datasource,
-          unsignedPsbt,
-          signers: signers,
-          signerIndex: 0,
-        );
-        final unsafe = _replaceSignature(
-          signed.psbt,
-          (signature) => signature[signature.length - 1] = sighash,
-          addSighashAllField: addContradictoryAllField,
-        );
+      test(
+        'rejects actual $label when the metadata does not disclose it',
+        () async {
+          final unsignedPsbt = buildUnsignedPsbt(
+            descriptor: twoPathDescriptor(
+              externalPublicDescriptor,
+              internalPublicDescriptor,
+            ),
+          );
+          final signed = await signPsbt(
+            datasource,
+            unsignedPsbt,
+            signers: signers,
+            signerIndex: 0,
+          );
+          final unsafe = _replaceSignature(
+            signed.psbt,
+            (signature) => signature[signature.length - 1] = sighash,
+            addSighashAllField: addContradictoryAllField,
+          );
 
-        expect(
-          () => datasource.validateExternalPartialPsbt(
-            currentPsbtBase64: unsignedPsbt,
-            signedPsbtBase64: unsafe,
-          ),
-          throwsA(isA<BitcoinPsbtUnsupportedSighashException>()),
-        );
-        expect(
-          () => datasource.finalizePsbt(unsafe),
-          throwsA(isA<BitcoinPsbtUnsupportedSighashException>()),
-        );
-      });
+          expect(
+            () => datasource.validateExternalPartialPsbt(
+              currentPsbtBase64: unsignedPsbt,
+              signedPsbtBase64: unsafe,
+            ),
+            throwsA(isA<BitcoinPsbtUnsupportedSighashException>()),
+          );
+          expect(
+            () => datasource.finalizePsbt(unsafe),
+            throwsA(isA<BitcoinPsbtUnsupportedSighashException>()),
+          );
+        },
+      );
     }
 
-    test('rejects an externally finalized PSBT input', () {
+    test('rejects an externally finalized PSBT input', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final first = signPsbt(
+      final first = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
         signerIndex: 0,
       );
-      final second = signPsbt(
+      final second = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -1078,20 +1075,20 @@ void main() {
       );
     });
 
-    test('rejects an unsupported sighash in a finalized PSBT input', () {
+    test('rejects an unsupported sighash in a finalized PSBT input', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final first = signPsbt(
+      final first = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
         signerIndex: 0,
       );
-      final second = signPsbt(
+      final second = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -1111,7 +1108,7 @@ void main() {
       );
     });
 
-    test('rejects a finalized PSBT input without a signature', () {
+    test('rejects a finalized PSBT input without a signature', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
@@ -1137,7 +1134,7 @@ void main() {
       );
     });
 
-    test('rejects PSBTs containing different unsigned transactions', () {
+    test('rejects PSBTs containing different unsigned transactions', () async {
       final first = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
@@ -1159,20 +1156,20 @@ void main() {
       );
     });
 
-    test('accepts a final transaction only for the prepared PSBT', () {
+    test('accepts a final transaction only for the prepared PSBT', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
           internalPublicDescriptor,
         ),
       );
-      final firstSignature = signPsbt(
+      final firstSignature = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
         signerIndex: 0,
       );
-      final secondSignature = signPsbt(
+      final secondSignature = await signPsbt(
         datasource,
         unsignedPsbt,
         signers: signers,
@@ -1275,20 +1272,20 @@ void main() {
         bitcoin_base.BitcoinOpCodeConst.sighashAllAnyOneCanPay,
       ),
     ]) {
-      test('rejects a final raw transaction containing $label', () {
+      test('rejects a final raw transaction containing $label', () async {
         final unsignedPsbt = buildUnsignedPsbt(
           descriptor: twoPathDescriptor(
             externalPublicDescriptor,
             internalPublicDescriptor,
           ),
         );
-        final first = signPsbt(
+        final first = await signPsbt(
           datasource,
           unsignedPsbt,
           signers: signers,
           signerIndex: 0,
         );
-        final second = signPsbt(
+        final second = await signPsbt(
           datasource,
           unsignedPsbt,
           signers: signers,
@@ -1316,7 +1313,7 @@ void main() {
       });
     }
 
-    test('rejects an unsigned raw transaction', () {
+    test('rejects an unsigned raw transaction', () async {
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           externalPublicDescriptor,
@@ -1420,7 +1417,7 @@ void main() {
       expect(preimageReview.inputs.single.satisfiedPreimageKeys, {
         'sha256:$hash',
       });
-      final signed = datasource.signPsbtWithDescriptor(
+      final signed = await datasource.signPsbtWithDescriptor(
         withPreimage,
         descriptor: twoPathDescriptor(externalPrivate, internalPrivate),
         isTestnet: true,

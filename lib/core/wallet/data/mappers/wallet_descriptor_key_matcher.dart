@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_policy_maturity_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 

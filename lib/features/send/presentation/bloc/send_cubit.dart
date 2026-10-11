@@ -68,7 +68,6 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_pending_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -84,7 +83,6 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
@@ -398,7 +396,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<bool> _saveDraft(int revision) async {
-    final wallet = state.selectedWallet ?? _wallet;
+    final wallet = state.selectedBitcoinWallet ?? _wallet;
     final hasRecipientInput = state.copiedRawPaymentRequest.trim().isNotEmpty;
     if (wallet == null ||
         !wallet.isBitcoin ||
@@ -458,27 +456,49 @@ class SendCubit extends Cubit<SendState>
       walletId: wallet.id,
       stage: stage,
       label: state.label.trim().isEmpty ? null : state.label.trim(),
-      recipient: isDraft
-          ? state.copiedRawPaymentRequest
-          : state.paymentRequestAddress,
-      amount: isDraft
-          ? (state.amount.isNotEmpty
-                ? state.amount
-                : state.paymentRequest?.amountSat?.toString() ?? '')
-          : (state.confirmedAmountSat ?? state.inputAmountSat).toString(),
+      recipients: state.usesRecipientList
+          ? [
+              for (final (index, recipient) in state.recipientDrafts.indexed)
+                (
+                  recipient: isDraft && index == 0
+                      ? state.copiedRawPaymentRequest
+                      : recipient.address,
+                  amount: isDraft
+                      ? recipient.amount
+                      : (index < state.recipientAmountsSat.length
+                                ? state.recipientAmountsSat[index]
+                                : state.recipientAmountSat(recipient))
+                            .toString(),
+                  receivesRemainder: recipient.receivesRemainder,
+                ),
+            ]
+          : [
+              (
+                recipient: isDraft
+                    ? state.copiedRawPaymentRequest
+                    : state.paymentRequestAddress,
+                amount: isDraft
+                    ? (state.amount.isNotEmpty
+                          ? state.amount
+                          : state.paymentRequest?.amountSat?.toString() ?? '')
+                    : (state.confirmedAmountSat ?? state.inputAmountSat)
+                          .toString(),
+                receivesRemainder: state.sendMax,
+              ),
+            ],
       amountCurrencyCode: isDraft
           ? (state.amount.isNotEmpty || state.paymentRequest?.amountSat == null
                 ? state.inputAmountCurrencyCode
                 : BitcoinUnit.sats.code)
           : BitcoinUnit.sats.code,
-      sendMax: state.sendMax,
+      isSweep: state.isSweep,
       feeSelection: state.selectedFeeOption,
       customFee: state.customFee,
       replaceByFee: state.replaceByFee,
       payjoinOptedOut: state.payjoinOptedOut,
       selectedOutpoints: {
-        for (final utxo in state.selectedUtxos) '${utxo.txId}:${utxo.vout}',
-        if (isDraft) ...state.unavailableSelectedOutpoints,
+        for (final outpoint in state.requiredInputOutpoints)
+          '${outpoint.txId}:${outpoint.vout}',
       },
       policySelection:
           state.bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
@@ -577,6 +597,16 @@ class SendCubit extends Cubit<SendState>
             loadWalletUtxos: false,
           );
           if (isClosed) return false;
+          final selectedOutpoints = {
+            for (final outpoint in stored.selectedOutpoints)
+              (
+                txId: outpoint.substring(0, outpoint.lastIndexOf(':')),
+                vout: int.parse(
+                  outpoint.substring(outpoint.lastIndexOf(':') + 1),
+                ),
+              ),
+          };
+          _nextRecipientId = stored.recipients.length;
           final restored = state.copyWith(
             pendingTransactionId: stored.id,
             pendingTransactionCreatedAt: stored.createdAt,
@@ -586,9 +616,28 @@ class SendCubit extends Cubit<SendState>
             unavailableSelectedOutpoints: unavailableOutpoints,
             persistingPendingTransaction: false,
             sendType: SendType.bitcoin,
-            copiedRawPaymentRequest: stored.recipient,
+            copiedRawPaymentRequest: stored.recipients.first.recipient,
             paymentRequest: value.paymentRequest,
-            amount: stored.amount,
+            amount: stored.recipients.first.amount,
+            recipientDrafts: [
+              for (final (index, recipient) in stored.recipients.indexed)
+                (
+                  id: index,
+                  address:
+                      _bitcoinAddressOf(value.paymentRequests[index]) ??
+                      recipient.recipient,
+                  amount: recipient.amount,
+                  receivesRemainder: recipient.receivesRemainder,
+                  isValid:
+                      _bitcoinAddressOf(value.paymentRequests[index]) != null,
+                ),
+            ],
+            recipientAmountsSat: stored.isDraft
+                ? const []
+                : [
+                    for (final recipient in stored.recipients)
+                      int.parse(recipient.amount),
+                  ],
             inputAmountCurrencyCode: stored.amountCurrencyCode,
             fiatCurrencyCode: value.fiatCurrencyCode ?? state.fiatCurrencyCode,
             exchangeRate: value.exchangeRate ?? state.exchangeRate,
@@ -597,7 +646,13 @@ class SendCubit extends Cubit<SendState>
                     stored.amountCurrencyCode == BitcoinUnit.sats.code
                 ? BitcoinUnit.fromCode(stored.amountCurrencyCode)
                 : state.bitcoinUnit,
-            sendMax: stored.sendMax,
+            sendMax: stored.recipients.any(
+              (recipient) => recipient.receivesRemainder,
+            ),
+            sweepOutpoints: stored.isSweep ? selectedOutpoints : const {},
+            selectedInputOutpoints: stored.isSweep
+                ? const {}
+                : selectedOutpoints,
             selectedFeeOption: stored.feeSelection,
             customFee: stored.customFee,
             replaceByFee: stored.replaceByFee,
@@ -633,7 +688,10 @@ class SendCubit extends Cubit<SendState>
                     isSigningSession: true,
                     isSigningConflict: stored.isConflict,
                     isSigningPolicyReady: stored.isPolicyReady,
-                    confirmedAmountSat: int.parse(stored.amount),
+                    confirmedAmountSat: stored.recipients.fold<int>(
+                      0,
+                      (sum, recipient) => sum + int.parse(recipient.amount),
+                    ),
                     unsignedPsbt: stored.psbt,
                     signedBitcoinPsbt:
                         stored.isReadyToBroadcast &&
@@ -657,7 +715,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<bool> continueToBitcoinSigning() async {
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final plan = state.bitcoinSigningPlan;
     if (psbt == null ||
         wallet == null ||
@@ -753,7 +811,7 @@ class SendCubit extends Cubit<SendState>
       return false;
     }
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (psbt == null || wallet == null) return false;
     final transaction = _pendingTransaction(
       wallet: wallet,
@@ -978,7 +1036,6 @@ class SendCubit extends Cubit<SendState>
 
   void backClicked() {
     if (state.isPendingSubmission ||
-        state.buildingTransaction ||
         state.signingTransaction ||
         state.broadcastingTransaction) {
       return;
@@ -1103,9 +1160,11 @@ class SendCubit extends Cubit<SendState>
       return;
     }
 
-    await _setSelectedWallet(wallet, manual: true);
+    await _setSelectedWallet(wallet, manual: true, loadWalletUtxos: false);
+    await loadUtxos();
+    if (isClosed) return;
     final unit = state.bitcoinUnit ?? BitcoinUnit.sats;
-    final totalSat = state.spendableBalanceSat;
+    final totalSat = state.maxAvailableBalanceSat;
     final amount = unit == BitcoinUnit.btc
         ? ConvertAmount.satsToBtc(totalSat).toStringAsFixed(8)
         : totalSat.toString();
@@ -1135,7 +1194,9 @@ class SendCubit extends Cubit<SendState>
       wallet,
       manual: true,
       preserveSelectedInputs: true,
+      loadWalletUtxos: false,
     );
+    await loadUtxos();
     if (!isClosed) emit(state.copyWith(loadingBestWallet: false));
   }
 
@@ -1396,8 +1457,9 @@ class SendCubit extends Cubit<SendState>
     if (pendingInput != null && pendingInput.generation == inputGeneration) {
       await pendingInput.future;
     }
-    if (isClosed || inputGeneration != _paymentRequestInputGeneration)
+    if (isClosed || inputGeneration != _paymentRequestInputGeneration) {
       return null;
+    }
     final rawPaymentRequest = state.copiedRawPaymentRequest;
     final cachedPaymentRequest = state.paymentRequest;
     if (rawPaymentRequest.isEmpty && cachedPaymentRequest == null) {
@@ -1454,6 +1516,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<bool> addRecipient() async {
+    if (_restrictedSend || state.isSigningSession) return false;
     final inputGeneration = _paymentRequestInputGeneration;
     if (state.selectedInputsUnavailable ||
         (state.usesSelectedInputsOnly &&
@@ -1538,10 +1601,12 @@ class SendCubit extends Cubit<SendState>
     _invalidateSignedTransaction();
     clearBitcoinFeePreviews();
     _scheduleRecipientPreview();
+    markDraftChanged();
     return true;
   }
 
   void removeRecipient(int id) {
+    if (_restrictedSend || state.isSigningSession) return;
     if (state.recipientDrafts.length <= 1) return;
     final removed = state.recipientDrafts.firstWhere(
       (recipient) => recipient.id == id,
@@ -1570,9 +1635,11 @@ class SendCubit extends Cubit<SendState>
     _invalidateSignedTransaction();
     clearBitcoinFeePreviews();
     _scheduleRecipientPreview();
+    markDraftChanged();
   }
 
   Future<void> recipientAddressChanged(int id, String text) async {
+    if (_restrictedSend || state.isSigningSession) return;
     final generation = (_recipientInputGenerations[id] ?? 0) + 1;
     _recipientInputGenerations[id] = generation;
     final sanitized = text.trim().replaceAll(RegExp(r'^["\"]+|["\"]+$'), '');
@@ -1627,6 +1694,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> recipientAmountChanged(int id, String amount) async {
+    if (_restrictedSend || state.isSigningSession) return;
     final recipient = state.recipientDrafts.firstWhere((r) => r.id == id);
     if (recipient.receivesRemainder) return;
     final validatedAmount = _validateAmount(amount, recipient.amount);
@@ -1644,6 +1712,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void setRemainderRecipient(int id, bool receivesRemainder) {
+    if (_restrictedSend || state.isSigningSession) return;
     if (!receivesRemainder && state.isSweep) return;
     final recipients = [
       for (final recipient in state.recipientDrafts)
@@ -1665,6 +1734,7 @@ class SendCubit extends Cubit<SendState>
     _invalidateSignedTransaction();
     clearBitcoinFeePreviews();
     _scheduleRecipientPreview();
+    markDraftChanged();
   }
 
   void _scheduleRecipientPreview() {
@@ -1696,6 +1766,7 @@ class SendCubit extends Cubit<SendState>
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
       selectedOnly: state.usesSelectedInputsOnly,
+      policyPath: _selectedBitcoinPolicyPath(),
     );
     if (isClosed ||
         epoch != _bitcoinPreviewEpoch ||
@@ -1746,6 +1817,7 @@ class SendCubit extends Cubit<SendState>
     if (clearPreparedTransaction) {
       _invalidateSignedTransaction();
       clearBitcoinFeePreviews();
+      markDraftChanged();
     }
   }
 
@@ -1795,6 +1867,7 @@ class SendCubit extends Cubit<SendState>
     );
     _invalidateSignedTransaction();
     clearBitcoinFeePreviews();
+    markDraftChanged();
   }
 
   Future<void> continueOnAddressConfirmed() async {
@@ -1823,7 +1896,7 @@ class SendCubit extends Cubit<SendState>
       }
       final preSelected =
           _wallet ??
-          (state.isWalletManuallySelected ? state.selectedWallet : null);
+          (state.isWalletManuallySelected ? state.selectedBitcoinWallet : null);
       var paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
       if (paymentRequest == null) return;
       if (!state.usesSelectedInputsOnly && !state.hasMultipleRecipients) {
@@ -2528,7 +2601,7 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
         return;
       }
-      final wallet = state.selectedWallet;
+      final wallet = state.selectedBitcoinWallet;
       if (wallet == null) {
         emit(
           state.copyWith(
@@ -2750,7 +2823,7 @@ class SendCubit extends Cubit<SendState>
     bool invalidatePreparedTransaction = true,
   }) async {
     if (isSpMode) return;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (wallet == null) return;
     final loadGeneration = ++_utxoLoadGeneration;
     bool isStale() =>
@@ -2823,7 +2896,7 @@ class SendCubit extends Cubit<SendState>
           unavailableSelectedOutpoints: {
             for (final outpoint in requiredOutpoints)
               if (!selectedUtxos.any((fresh) => fresh.outpoint == outpoint))
-                '${outpoint.txid}:${outpoint.vout}',
+                '${outpoint.txId}:${outpoint.vout}',
           },
           consolidationRequired: consolidationRequired,
           failure: switch (selectionResolution) {
@@ -2871,7 +2944,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> _refreshBitcoinSigningPlan() async {
     final snapshot = state;
-    final wallet = snapshot.selectedWallet;
+    final wallet = snapshot.selectedBitcoinWallet;
     if (wallet == null ||
         !wallet.isBitcoin ||
         snapshot.broadcastingTransaction ||
@@ -3378,7 +3451,7 @@ class SendCubit extends Cubit<SendState>
 
     if (signedPsbt == null) return null;
     final candidatePsbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     if (candidatePsbt == null || wallet == null) {
       emit(previousState);
       return selection;
@@ -3539,10 +3612,10 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(failure: const SendSelectedCoinsUnavailableFailure()),
       );
-      return;
+      return false;
     }
     final generation = _transactionGeneration;
-    bool isStale() => generation != _transactionGeneration;
+    bool isStale() => isClosed || generation != _transactionGeneration;
     try {
       bool hasSelectedFee() {
         if (state.selectedFeeOption == FeeSelection.custom) {
@@ -3559,7 +3632,7 @@ class SendCubit extends Cubit<SendState>
         if (!hasSelectedFee()) return false;
       }
       if (isStale()) return false;
-      final wallet = state.selectedWallet;
+      final wallet = state.selectedBitcoinWallet;
       if (wallet == null) {
         emit(
           state.copyWith(
@@ -3922,9 +3995,9 @@ class SendCubit extends Cubit<SendState>
             signingPlan = value.plan;
             signingMaturity = value.maturity;
             if (state.isMaxSend && !state.hasMultipleRecipients) {
-              maxRecipientAmountSat = value.review
-                  ?.amountSentTo(address)
-                  ?.toInt();
+              maxRecipientAmountSat = recipientAmountsSat.length == 1
+                  ? recipientAmountsSat.single
+                  : null;
               if (maxRecipientAmountSat == null || maxRecipientAmountSat <= 0) {
                 emit(
                   state.copyWith(
@@ -4034,6 +4107,7 @@ class SendCubit extends Cubit<SendState>
             maxRecipientAmountSat != null) {
           // Keep the displayed MAX amount aligned with the built PSBT inputs.
           final maxAmountSat = maxRecipientAmountSat;
+          final rate = state.exchangeRate;
           final maxAmount =
               state.inputAmountCurrencyCode == BitcoinUnit.btc.code
               ? ConvertAmount.satsToBtc(maxAmountSat)
@@ -4164,8 +4238,9 @@ class SendCubit extends Cubit<SendState>
     );
     if (isClosed ||
         generation != _transactionGeneration ||
-        (isCurrent != null && !isCurrent()))
+        (isCurrent != null && !isCurrent())) {
       return false;
+    }
     switch (result) {
       case Ok(:final value):
         emit(state.copyWith(lightningOrder: value));
@@ -4190,7 +4265,7 @@ class SendCubit extends Cubit<SendState>
     if (state.isPendingSubmission) {
       return state.pendingTransactionStage == stage;
     }
-    final wallet = state.selectedWallet!;
+    final wallet = state.selectedBitcoinWallet!;
     var transaction = _pendingTransaction(
       wallet: wallet,
       stage: stage,
@@ -4206,7 +4281,13 @@ class SendCubit extends Cubit<SendState>
           ? state.selectedFee!.value as double
           : 1.0;
       transaction = transaction.copyWith(
-        recipient: (state.paymentRequest! as Bip21PaymentRequest).uri,
+        recipients: [
+          (
+            recipient: (state.paymentRequest! as Bip21PaymentRequest).uri,
+            amount: transaction.recipients.single.amount,
+            receivesRemainder: false,
+          ),
+        ],
         feeSelection: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(rate),
         clearFinalTransaction: true,
@@ -4435,15 +4516,23 @@ class SendCubit extends Cubit<SendState>
       }
       final generation = _transactionGeneration;
       bool isStale() => isClosed || generation != _transactionGeneration;
-      emit(state.copyWith(broadcastingTransaction: true));
+      final locksSigningSession = state.isSigningSession;
+      if (locksSigningSession) {
+        emit(state.copyWith(broadcastingTransaction: true));
+      }
       if (!await _finishPendingWrites()) {
         if (!isClosed) emit(state.copyWith(broadcastingTransaction: false));
         return;
       }
-      if (isStale()) return;
+      if (isStale()) {
+        if (!isClosed && locksSigningSession) {
+          emit(state.copyWith(broadcastingTransaction: false));
+        }
+        return;
+      }
       // Bind submission and cleanup to the same signing session.
       final submission = state;
-      final wallet = submission.selectedWallet;
+      final wallet = submission.selectedBitcoinWallet;
       if (wallet == null) {
         emit(
           state.copyWith(
@@ -4460,7 +4549,12 @@ class SendCubit extends Cubit<SendState>
         if (!isClosed) emit(state.copyWith(broadcastingTransaction: false));
         return;
       }
-      if (isStale()) return;
+      if (isStale() ||
+          state.txId != null ||
+          (!locksSigningSession && state.broadcastingTransaction)) {
+        return;
+      }
+      emit(state.copyWith(broadcastingTransaction: true));
       final lightningOrder = submission.lightningOrder;
       final persistedPayin = lightningOrder?.signedPayinTransaction;
       final persistedPayinIsPsbt = lightningOrder?.payinIsPsbt;
@@ -4647,7 +4741,7 @@ class SendCubit extends Cubit<SendState>
   ) async {
     final generation = _transactionGeneration;
     bool isStale() => isClosed || generation != _transactionGeneration;
-    final wallet = submission.selectedWallet;
+    final wallet = submission.selectedBitcoinWallet;
     if (wallet == null) return false;
     if (submission.isPendingSubmission) return true;
     if (wallet.isBitcoin && submission.isSigningSession) {
@@ -5373,7 +5467,7 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final generation = ++_bitcoinSignerResultGeneration;
     final psbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final pendingTransactionId = state.pendingTransactionId;
     if (psbt == null || wallet == null || !wallet.isBitcoin) return false;
     final persistedState = state;
@@ -5459,7 +5553,7 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final generation = ++_bitcoinSignerResultGeneration;
     final currentPsbt = state.unsignedPsbt;
-    final wallet = state.selectedWallet;
+    final wallet = state.selectedBitcoinWallet;
     final pendingTransactionId = state.pendingTransactionId;
     if (currentPsbt == null || wallet == null || !wallet.isBitcoin) {
       log.warning('Ignored a signer result without a Bitcoin transaction');
@@ -5692,7 +5786,7 @@ class SendCubit extends Cubit<SendState>
     }
     emit(
       state.copyWith(
-        selectedWallet: wallet == null ? null : SendWalletBitcoin(wallet),
+        selectedWallet: SendWalletBitcoin(wallet),
         bitcoinSigningPlan: null,
         bitcoinPolicyMaturity: const BitcoinPolicyMaturity.empty(),
         bitcoinPolicySelection: walletChanged

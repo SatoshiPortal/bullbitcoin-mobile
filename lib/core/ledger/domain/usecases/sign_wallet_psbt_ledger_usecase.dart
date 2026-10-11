@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class SignWalletPsbtLedgerUsecase {
   final LedgerDeviceRepository _repository;

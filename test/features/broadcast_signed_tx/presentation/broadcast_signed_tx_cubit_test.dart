@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
@@ -57,6 +58,8 @@ final class _Connections implements WalletConnectionPort {
 }
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}
 
 void main() {
   const psbt =
@@ -80,7 +83,7 @@ void main() {
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
     );
     addTearDown(cubit.close);
 
@@ -111,7 +114,7 @@ void main() {
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
     );
     addTearDown(cubit.close);
 
@@ -144,7 +147,7 @@ void main() {
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
     );
     addTearDown(cubit.close);
 
@@ -292,6 +295,7 @@ void main() {
           bitcoin: _unusedBitcoinBroadcast,
           liquid: _unusedLiquidBroadcast,
           verifySignedTxUsecase: VerifySignedTxUsecase(),
+          watchPending: _MockPendingWatcher(),
         ),
       ),
       request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
@@ -328,6 +332,7 @@ void main() {
           bitcoin: _unusedBitcoinBroadcast,
           liquid: _unusedLiquidBroadcast,
           verifySignedTxUsecase: VerifySignedTxUsecase(),
+          watchPending: _MockPendingWatcher(),
         ),
       ),
       request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
@@ -464,7 +469,7 @@ void main() {
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: verifier,
-        unsignedPsbt: exportedPsbt,
+        request: const BroadcastSignedTxRequest(unsignedPsbt: exportedPsbt),
       );
       addTearDown(cubit.close);
 
@@ -490,9 +495,10 @@ void main() {
             bitcoin: _unusedBitcoinBroadcast,
             liquid: _unusedLiquidBroadcast,
             verifySignedTxUsecase: VerifySignedTxUsecase(),
+          watchPending: _MockPendingWatcher(),
           ),
         ),
-        unsignedPsbt: exportedPsbt,
+        request: const BroadcastSignedTxRequest(unsignedPsbt: exportedPsbt),
       );
       addTearDown(cubit.close);
 
@@ -513,9 +519,12 @@ void main() {
             bitcoin: _unusedBitcoinBroadcast,
             liquid: _unusedLiquidBroadcast,
             verifySignedTxUsecase: VerifySignedTxUsecase(),
+          watchPending: _MockPendingWatcher(),
           ),
         ),
-        unsignedPsbt: otherExportedPsbt,
+        request: const BroadcastSignedTxRequest(
+          unsignedPsbt: otherExportedPsbt,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -556,7 +565,6 @@ void main() {
       ).called(1);
     });
   });
-
 }
 
 Future<String> _unusedBitcoinBroadcast(

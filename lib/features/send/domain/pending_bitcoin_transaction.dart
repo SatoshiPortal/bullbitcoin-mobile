@@ -1,6 +1,12 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy_path.dart';
 
+typedef PendingBitcoinRecipient = ({
+  String recipient,
+  String amount,
+  bool receivesRemainder,
+});
+
 enum PendingBitcoinTransactionStage {
   draft,
   needsSignatures,
@@ -14,10 +20,9 @@ final class PendingBitcoinTransaction {
   final String walletId;
   final PendingBitcoinTransactionStage stage;
   final String? label;
-  final String recipient;
-  final String amount;
+  final List<PendingBitcoinRecipient> recipients;
   final String amountCurrencyCode;
-  final bool sendMax;
+  final bool isSweep;
   final FeeSelection feeSelection;
   final NetworkFee? customFee;
   final bool replaceByFee;
@@ -39,10 +44,9 @@ final class PendingBitcoinTransaction {
     required this.walletId,
     required this.stage,
     this.label,
-    required this.recipient,
-    required this.amount,
+    required Iterable<PendingBitcoinRecipient> recipients,
     required this.amountCurrencyCode,
-    required this.sendMax,
+    this.isSweep = false,
     required this.feeSelection,
     this.customFee,
     required this.replaceByFee,
@@ -58,19 +62,39 @@ final class PendingBitcoinTransaction {
     this.isPolicyReady = true,
     this.isValidationUnavailable = false,
     this.signersNeeded = 0,
-  }) : selectedOutpoints = Set.unmodifiable(selectedOutpoints) {
+  }) : recipients = List.unmodifiable(recipients),
+       selectedOutpoints = Set.unmodifiable(selectedOutpoints) {
     if (id.isEmpty) throw ArgumentError.value(id, 'id');
     if (walletId.isEmpty) throw ArgumentError.value(walletId, 'walletId');
+    if (this.recipients.isEmpty ||
+        this.recipients
+                .where((recipient) => recipient.receivesRemainder)
+                .length >
+            1) {
+      throw ArgumentError(
+        'A transaction must contain recipients and at most one remainder',
+      );
+    }
+    if (isSweep &&
+        (selectedOutpoints.isEmpty ||
+            !this.recipients.any((recipient) => recipient.receivesRemainder))) {
+      throw ArgumentError(
+        'A sweep must contain selected inputs and a remainder recipient',
+      );
+    }
     if (stage != PendingBitcoinTransactionStage.draft) {
       if (psbt?.trim().isEmpty ?? true) {
         throw ArgumentError('A signing transaction must contain a PSBT');
       }
-      if (recipient.trim().isEmpty) {
-        throw ArgumentError('A signing transaction must contain a recipient');
-      }
-      final amountSat = BigInt.tryParse(amount);
-      if (amountSat == null || amountSat <= BigInt.zero) {
-        throw ArgumentError('A signing transaction must contain an amount');
+      for (final recipient in this.recipients) {
+        final amountSat = BigInt.tryParse(recipient.amount);
+        if (recipient.recipient.trim().isEmpty ||
+            amountSat == null ||
+            amountSat <= BigInt.zero) {
+          throw ArgumentError(
+            'Every signing recipient must contain an address and amount',
+          );
+        }
       }
       if (amountCurrencyCode.isEmpty) {
         throw ArgumentError(
@@ -108,10 +132,9 @@ final class PendingBitcoinTransaction {
     PendingBitcoinTransactionStage? stage,
     String? label,
     bool clearLabel = false,
-    String? recipient,
-    String? amount,
+    Iterable<PendingBitcoinRecipient>? recipients,
     String? amountCurrencyCode,
-    bool? sendMax,
+    bool? isSweep,
     FeeSelection? feeSelection,
     NetworkFee? customFee,
     bool clearCustomFee = false,
@@ -134,10 +157,9 @@ final class PendingBitcoinTransaction {
     walletId: walletId,
     stage: stage ?? this.stage,
     label: clearLabel ? null : label ?? this.label,
-    recipient: recipient ?? this.recipient,
-    amount: amount ?? this.amount,
+    recipients: recipients ?? this.recipients,
     amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
-    sendMax: sendMax ?? this.sendMax,
+    isSweep: isSweep ?? this.isSweep,
     feeSelection: feeSelection ?? this.feeSelection,
     customFee: clearCustomFee ? null : customFee ?? this.customFee,
     replaceByFee: replaceByFee ?? this.replaceByFee,

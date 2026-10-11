@@ -13,9 +13,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
-
-// Unit tests for the repository boundary of
-// `BitcoinWalletRepository.buildPsbt`, over a mocked datasource:
+// Unit tests for the repository-boundary guarantees of
+// `BitcoinWalletRepository.buildPsbt`:
 //
 //  1. Freezes and Payjoin reservations are enforced by sync's writer, which
 //     reads them itself and checks the effective inputs of every build (see
@@ -29,12 +28,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -136,7 +129,7 @@ void main() {
     );
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: _MockSeedDatasource(),
+      secrets: Secrets(scratchDirectory: () async => ''),
       bdkWalletDatasource: bdkDatasource,
       walletValuesDatasource: values,
     );
@@ -406,36 +399,5 @@ void main() {
             ).captured.single
             as List<BitcoinTransactionRecipientModel>;
     expect(models.map((recipient) => recipient.amountSat), [25000, null]);
-  });
-
-  test('private wallet reconstruction preserves a higher account', () async {
-    when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
-      (_) async => metadata.copyWith(
-        signers: [
-          walletSignerModel(
-            id: 'signer-0',
-            descriptorKeyId: 'key-0',
-            masterFingerprint: '73c5da0a',
-            xpubFingerprint: 'deadbeef',
-            xpub: 'tpub-test',
-            derivationPath: "m/84'/1'/1'",
-            descriptorPath: '/<0;1>/*',
-            signer: Signer.local,
-            signerDevice: null,
-          ),
-        ],
-      ),
-    );
-    when(() => seedDatasource.get('73c5da0a')).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords:
-            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-                .split(' '),
-      ),
-    );
-
-    final wallet = await repository.getPrivateWallet(walletId: _walletId);
-
-    expect(wallet.account, 1);
   });
 }

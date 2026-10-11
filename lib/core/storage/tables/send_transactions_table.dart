@@ -12,10 +12,8 @@ class SendTransactions extends Table {
   TextColumn get walletId => text()();
   TextColumn get stage => text()();
   TextColumn get label => text().nullable()();
-  TextColumn get recipient => text()();
-  TextColumn get amount => text()();
   TextColumn get amountCurrencyCode => text()();
-  BoolColumn get sendMax => boolean()();
+  BoolColumn get isSweep => boolean().withDefault(const Constant(false))();
   TextColumn get feeSelection => text()();
   TextColumn get customFeeKind => text().nullable()();
   IntColumn get customFeeValue => integer().nullable()();
@@ -38,6 +36,23 @@ class SendTransactions extends Table {
     "CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative'))",
     'CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL))',
     "CHECK(stage = 'draft' OR psbt IS NOT NULL)",
+  ];
+}
+
+@DataClassName('SendTransactionRecipientRow')
+class SendTransactionRecipients extends Table {
+  TextColumn get transactionId => text()();
+  IntColumn get position => integer()();
+  TextColumn get recipient => text()();
+  TextColumn get amount => text()();
+  BoolColumn get receivesRemainder => boolean()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {transactionId, position};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE',
   ];
 }
 

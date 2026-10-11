@@ -324,7 +324,7 @@ abstract class SendState with _$SendState {
           (paymentRequest == null &&
               copiedRawPaymentRequest.trim().isNotEmpty));
   bool get supportsBitcoinDraft =>
-      selectedWallet?.isBitcoin == true &&
+      selectedBitcoinWallet?.isBitcoin == true &&
       (paymentRequest is BitcoinPaymentRequest ||
           (paymentRequest is Bip21PaymentRequest &&
               (paymentRequest! as Bip21PaymentRequest).network.isBitcoin)) &&
@@ -355,7 +355,7 @@ abstract class SendState with _$SendState {
   /// wallets instead), so without this check the toggle could promise a
   /// payjoin that structurally can never happen for that wallet class.
   bool get isPayjoinAvailable {
-    final wallet = selectedWallet;
+    final wallet = selectedBitcoinWallet;
     final request = paymentRequest;
     return !isSweep &&
         !hasMultipleRecipients &&
@@ -389,7 +389,7 @@ abstract class SendState with _$SendState {
       false;
 
   bool get requiresBitcoinSigningCoordination =>
-      selectedWallet?.isBitcoin == true &&
+      selectedBitcoinWallet?.isBitcoin == true &&
       bitcoinSigningPlan != null &&
       (bitcoinSigningPlan!.signersNeeded > 1 ||
           eligibleBitcoinSigners.length > 1 ||
@@ -406,7 +406,7 @@ abstract class SendState with _$SendState {
     }
     final signer = eligibleBitcoinSigners.single;
     final supportsDirectFlow =
-        selectedWallet?.signers.length == 1 &&
+        selectedBitcoinWallet?.signers.length == 1 &&
         selectedWallet?.scriptType != null &&
         (signer.signerDevice?.isLedger == true ||
             signer.signerDevice?.isBitBox == true);
@@ -595,7 +595,8 @@ abstract class SendState with _$SendState {
     int amountSat = 0;
     final rate = exchangeRate;
     if (value.isNotEmpty) {
-      if (isInputAmountFiat && rate != null) {
+      if (isInputAmountFiat) {
+        if (rate == null || rate <= 0) return 0;
         final amountFiat = double.tryParse(value) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (!_isBitcoinUnit(inputAmountCurrencyCode)) {
@@ -859,7 +860,7 @@ abstract class SendState with _$SendState {
           (requiresBitcoinPolicySelection || requiresBitcoinPolicyPreimage));
 
   bool get blocksSwapForSelectedWallet {
-    final wallet = selectedWallet;
+    final wallet = selectedBitcoinWallet;
     if (wallet == null) return false;
     final isSwap =
         sendType == SendType.lightning ||

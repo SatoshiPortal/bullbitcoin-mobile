@@ -35,10 +35,8 @@ class PendingBitcoinTransactionDatasource {
         walletId: persistedModel.walletId,
         stage: persistedModel.stage,
         label: Value(persistedModel.label),
-        recipient: persistedModel.recipient,
-        amount: persistedModel.amount,
         amountCurrencyCode: persistedModel.amountCurrencyCode,
-        sendMax: persistedModel.sendMax,
+        isSweep: Value(persistedModel.isSweep),
         feeSelection: persistedModel.feeSelection,
         customFeeKind: Value(persistedModel.customFeeKind),
         customFeeValue: Value(persistedModel.customFeeValue),
@@ -63,6 +61,22 @@ class PendingBitcoinTransactionDatasource {
         if (updated != 1) {
           throw const PendingBitcoinTransactionChangedException();
         }
+      }
+      await (_database.delete(
+        _database.sendTransactionRecipients,
+      )..where((row) => row.transactionId.equals(persistedModel.id))).go();
+      for (final (index, recipient) in persistedModel.recipients.indexed) {
+        await _database
+            .into(_database.sendTransactionRecipients)
+            .insert(
+              SendTransactionRecipientsCompanion.insert(
+                transactionId: persistedModel.id,
+                position: index,
+                recipient: recipient.recipient,
+                amount: recipient.amount,
+                receivesRemainder: recipient.receivesRemainder,
+              ),
+            );
       }
       await (_database.delete(
         _database.sendTransactionInputs,
@@ -150,6 +164,11 @@ class PendingBitcoinTransactionDatasource {
   Future<PendingBitcoinTransactionModel> _withChildren(
     SendTransactionRow row,
   ) async {
+    final recipients =
+        await (_database.select(_database.sendTransactionRecipients)
+              ..where((recipient) => recipient.transactionId.equals(row.id))
+              ..orderBy([(recipient) => OrderingTerm.asc(recipient.position)]))
+            .get();
     final inputs = await (_database.select(
       _database.sendTransactionInputs,
     )..where((input) => input.transactionId.equals(row.id))).get();
@@ -168,10 +187,16 @@ class PendingBitcoinTransactionDatasource {
       walletId: row.walletId,
       stage: row.stage,
       label: row.label,
-      recipient: row.recipient,
-      amount: row.amount,
+      recipients: [
+        for (final recipient in recipients)
+          (
+            recipient: recipient.recipient,
+            amount: recipient.amount,
+            receivesRemainder: recipient.receivesRemainder,
+          ),
+      ],
       amountCurrencyCode: row.amountCurrencyCode,
-      sendMax: row.sendMax,
+      isSweep: row.isSweep,
       feeSelection: row.feeSelection,
       customFeeKind: row.customFeeKind,
       customFeeValue: row.customFeeValue,

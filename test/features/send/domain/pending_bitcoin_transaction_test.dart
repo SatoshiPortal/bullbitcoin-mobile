@@ -62,10 +62,10 @@ PendingBitcoinTransaction _transaction({
   id: 'pending-id',
   walletId: 'wallet-id',
   stage: stage,
-  recipient: recipient,
-  amount: amount,
+  recipients: [
+    (recipient: recipient, amount: amount, receivesRemainder: false),
+  ],
   amountCurrencyCode: amountCurrencyCode,
-  sendMax: false,
   feeSelection: feeSelection,
   customFee: customFee,
   replaceByFee: true,

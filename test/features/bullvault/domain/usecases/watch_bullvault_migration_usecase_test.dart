@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -55,10 +55,8 @@ PendingBitcoinTransaction _transaction({
   id: id,
   walletId: 'wallet-0',
   stage: PendingBitcoinTransactionStage.draft,
-  recipient: recipient,
-  amount: '',
+  recipients: [(recipient: recipient, amount: '', receivesRemainder: true)],
   amountCurrencyCode: 'sats',
-  sendMax: true,
   feeSelection: FeeSelection.fastest,
   replaceByFee: true,
   createdAt: DateTime.utc(2028),

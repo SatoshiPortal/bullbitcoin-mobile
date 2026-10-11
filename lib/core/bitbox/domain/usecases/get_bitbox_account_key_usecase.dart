@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_reposito
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:meta/meta.dart';
 
 final class GetBitBoxAccountKeyUsecase {

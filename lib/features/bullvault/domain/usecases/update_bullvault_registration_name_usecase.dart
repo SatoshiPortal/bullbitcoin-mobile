@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_policy_registration_name.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';

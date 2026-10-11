@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
@@ -136,7 +137,7 @@ class _BitcoinPolicyPathBottomSheetState
                       selector: selector,
                       optionIndex: optionIndex,
                       option: option,
-                      wallet: state.selectedWallet,
+                      wallet: state.selectedBitcoinWallet,
                       selection: selection,
                       onSelectedIndicesChanged: (selectedIndices) {
                         setState(() {

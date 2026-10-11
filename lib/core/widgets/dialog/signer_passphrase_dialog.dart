@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
 Future<String?> showSignerPassphraseDialog(
@@ -67,16 +69,11 @@ final class _SignerPassphraseDialogState extends State<_SignerPassphraseDialog>
       children: [
         Text(widget.description),
         const Gap(16),
-        BullInputText(
-          value: _passphrase,
+        BullSecretTextInput(
+          label: widget.hint,
+          showLabel: context.loc.passphraseShow,
+          hideLabel: context.loc.passphraseHide,
           onChanged: (value) => setState(() => _passphrase = value),
-          hint: widget.hint,
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
         ),
       ],
     ),

@@ -1,7 +1,4 @@
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

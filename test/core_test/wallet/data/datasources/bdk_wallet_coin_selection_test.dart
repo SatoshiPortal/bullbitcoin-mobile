@@ -1,9 +1,8 @@
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -17,16 +16,17 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import '../../bdk_wallet_test_fixture.dart';
@@ -43,14 +43,6 @@ final class _TestPathProvider extends PathProviderPlatform {
 
 String _alternativeDescriptor(List<String> keys) =>
     'wsh(or_d(pk(${keys[0]}),pk(${keys[1]})))';
-
-final class _MockWalletMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
-
-final class _MockSeedDatasource extends Mock implements SeedDatasource {}
-
-final class _MockFrozenWalletUtxoDatasource extends Mock
-    implements FrozenWalletUtxoDatasource {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -121,8 +113,12 @@ void main() {
       final datasource = BdkWalletDatasource();
       await expectLater(
         datasource.buildPsbt(
-          address: recipientAddress,
-          amountSat: 150000,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: recipientAddress,
+              fixedAmountSat: 150000,
+            ),
+          ],
           networkFee: const NetworkFee.absolute(1000),
           selected: [
             WalletUtxoModel.bitcoin(
@@ -176,8 +172,12 @@ void main() {
     final datasource = BdkWalletDatasource();
     final psbtBase64 = await datasource.buildPsbt(
       wallet: walletModel,
-      address: recipient.address.toString(),
-      amountSat: 50000,
+      recipients: [
+        BitcoinTransactionRecipientModel.fixed(
+          address: recipient.address.toString(),
+          fixedAmountSat: 50000,
+        ),
+      ],
       networkFee: const NetworkFee.absolute(1000),
     );
     final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
@@ -232,8 +232,12 @@ void main() {
     final datasource = BdkWalletDatasource();
     final psbtBase64 = await datasource.buildPsbt(
       wallet: walletModel,
-      address: recipient.address.toString(),
-      amountSat: 50000,
+      recipients: [
+        BitcoinTransactionRecipientModel.fixed(
+          address: recipient.address.toString(),
+          fixedAmountSat: 50000,
+        ),
+      ],
       networkFee: const NetworkFee.absolute(1000),
     );
     final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
@@ -351,8 +355,12 @@ void main() {
 
     final psbtBase64 = await datasource.buildPsbt(
       wallet: walletModel,
-      address: recipient.address.toString(),
-      amountSat: 50000,
+      recipients: [
+        BitcoinTransactionRecipientModel.fixed(
+          address: recipient.address.toString(),
+          fixedAmountSat: 50000,
+        ),
+      ],
       networkFee: const NetworkFee.absolute(1000),
       policyPath: policyPath,
       requiredDescriptorKeys: (
@@ -410,8 +418,12 @@ void main() {
       final datasource = BdkWalletDatasource();
       final originalPsbt = await datasource.buildPsbt(
         wallet: walletModel,
-        address: recipient.address.toString(),
-        amountSat: 50000,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient.address.toString(),
+            fixedAmountSat: 50000,
+          ),
+        ],
         networkFee: const NetworkFee.absolute(1000),
       );
       final parsedOriginal = bdk.Psbt(psbtBase64: originalPsbt);
@@ -436,56 +448,22 @@ void main() {
         allowSpentWalletInputs: true,
       );
 
-      final metadata = WalletMetadataModel(
-        id: walletModel.id,
-        network: Network.bitcoinTestnet,
-        signers: [
-          walletSignerModel(
-            id: 'local-signer',
-            descriptorKeyId: 'local-key',
-            masterFingerprint: descriptors.fingerprint,
-            xpubFingerprint: descriptors.fingerprint,
-            xpub: descriptors.xpub.split(']').last,
-            derivationPath: "m/84'/1'/0'",
-            descriptorPath: standardSingleSignatureDescriptorPath,
-            signer: Signer.local,
-            signerDevice: null,
-          ),
-        ],
-        isEncryptedVaultTested: false,
-        isPhysicalBackupTested: false,
-        publicDescriptor: walletModel.descriptor,
-        isDefault: false,
-      );
-      final metadataDatasource = _MockWalletMetadataDatasource();
-      final seedDatasource = _MockSeedDatasource();
-      final frozenDatasource = _MockFrozenWalletUtxoDatasource();
-      when(
-        () => metadataDatasource.fetch(metadata.id),
-      ).thenAnswer((_) async => metadata);
-      when(() => seedDatasource.get(descriptors.fingerprint)).thenAnswer(
-        (_) async =>
-            SeedModel.mnemonic(mnemonicWords: testMnemonics.first.split(' ')),
-      );
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async => []);
-      final repository = BitcoinWalletRepository(
-        walletMetadataDatasource: metadataDatasource,
-        seedDatasource: seedDatasource,
-        bdkWalletDatasource: datasource,
-        frozenWalletUtxoDatasource: frozenDatasource,
-      );
-
-      final replacementPsbt = await repository.bumpFee(
-        walletId: metadata.id,
+      final replacementPsbt = await datasource.createUnsignedReplaceByFeePsbt(
+        wallet: walletModel,
         txid: originalTxid,
-        newFeeRate: const RelativeFee(2500),
+        feeRate: const RelativeFee(2500),
+      );
+      await datasource.validateWalletPsbtInputs(
+        replacementPsbt,
+        wallet: walletModel,
+        replacingTxid: originalTxid,
       );
 
       final replacement = bdk.Psbt(psbtBase64: replacementPsbt);
       expect(
         replacement.input().every(
           (input) =>
-              input.finalScriptSig != null || input.finalScriptWitness != null,
+              input.finalScriptSig == null && input.finalScriptWitness == null,
         ),
         isTrue,
       );

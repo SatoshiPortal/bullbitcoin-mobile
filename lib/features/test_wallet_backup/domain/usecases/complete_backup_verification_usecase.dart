@@ -11,7 +11,9 @@ class CompleteBackupVerificationUsecase {
   const CompleteBackupVerificationUsecase(this._completeVerificationUsecase);
 
   @useResult
-  Future<Result<void, TestWalletBackupFailure>> execute({String? fingerprint}) async {
+  Future<Result<void, TestWalletBackupFailure>> execute({
+    String? fingerprint,
+  }) async {
     try {
       await _completeVerificationUsecase.execute(fingerprint: fingerprint);
       return const Ok(null);

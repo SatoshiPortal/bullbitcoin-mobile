@@ -7,10 +7,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullBottomSheet, BullButton, BullText, Gap;
-import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({super.key, required this.title, this.showWalletPicker = true});
+  const AppBarWidget({
+    super.key,
+    required this.title,
+    this.showWalletPicker = true,
+  });
 
   final String title;
   final bool showWalletPicker;
@@ -26,7 +29,7 @@ class AppBarWidget extends StatelessWidget {
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () => context.pop(),
+        onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(title),
       actions: [

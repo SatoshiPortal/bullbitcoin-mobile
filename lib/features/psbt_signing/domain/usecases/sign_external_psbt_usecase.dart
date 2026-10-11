@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_failure.dart';

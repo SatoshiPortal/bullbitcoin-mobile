@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
@@ -28,7 +28,10 @@ class CreateBullVaultOnboardingUsecase {
             result: value,
             mobileBackupStatus: seedFingerprint == null
                 ? null
-                : await _checkMobileBackupsUsecase.execute(seedFingerprint),
+                : await _checkMobileBackupsUsecase.execute(
+                    seedFingerprint,
+                    network: value.policy.network,
+                  ),
           ),
         );
     }

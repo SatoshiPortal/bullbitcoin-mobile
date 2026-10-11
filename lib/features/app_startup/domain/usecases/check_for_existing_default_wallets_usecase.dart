@@ -160,7 +160,7 @@ class CheckForExistingDefaultWalletsUsecase {
           }
           return Err(
             AppStartupMissingDefaultSecretFailure(
-              wallet.localMasterFingerprints.single,
+              wallet.localSeedFingerprints.single,
               walletId: bitcoinDefaults.single.id,
             ),
           );

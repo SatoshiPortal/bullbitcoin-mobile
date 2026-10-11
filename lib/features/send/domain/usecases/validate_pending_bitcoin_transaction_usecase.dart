@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
@@ -41,7 +41,8 @@ class ValidatePendingBitcoinTransactionUsecase {
       if (wallet == null || !wallet.isBitcoin) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
-      final psbt = transaction.psbt!;
+      final psbt = transaction.psbt;
+      if (psbt == null) return const Err(SendStoredTransactionInvalidFailure());
       final BitcoinSigningPlanDetails planDetails;
       switch (await _getBitcoinSigningPlanUsecase.execute(
         wallet: wallet,
@@ -65,33 +66,36 @@ class ValidatePendingBitcoinTransactionUsecase {
         return const Err(SendStoredTransactionInvalidFailure());
       }
       final plan = planDetails.plan;
-      var recipient = transaction.recipient;
-      if (transaction.stage == PendingBitcoinTransactionStage.payjoinPending) {
-        final request = await PaymentRequest.parse(recipient);
-        if (request is! Bip21PaymentRequest ||
-            request.pj.isEmpty ||
-            request.network != wallet.network) {
-          return const Err(SendStoredTransactionInvalidFailure());
-        }
-        recipient = request.address;
-      }
-      final amountSat = BigInt.parse(transaction.amount);
-      final matchingOutputs = review.outputs
-          .where(
-            (output) =>
-                _sameBitcoinAddress(output.address, recipient) &&
-                output.amountSat == amountSat,
-          )
-          .toList(growable: false);
-      if (matchingOutputs.length != 1) {
+      final isPayjoin =
+          transaction.stage == PendingBitcoinTransactionStage.payjoinPending;
+      if (transaction.amountCurrencyCode != 'sats' ||
+          (isPayjoin && transaction.recipients.length != 1)) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
-      final recipientOutput = matchingOutputs.single;
-      final unexpectedExternalOutput = recipientOutput.isWalletOwned
-          ? review.recipients.isNotEmpty
-          : review.recipients.length != 1 ||
-                review.recipients.single.index != recipientOutput.index;
-      if (unexpectedExternalOutput) {
+      final unmatchedOutputs = review.outputs.toList();
+      for (final expected in transaction.recipients) {
+        var recipient = expected.recipient;
+        if (isPayjoin) {
+          final request = await PaymentRequest.parse(recipient);
+          if (request is! Bip21PaymentRequest ||
+              request.pj.isEmpty ||
+              request.network != wallet.network) {
+            return const Err(SendStoredTransactionInvalidFailure());
+          }
+          recipient = request.address;
+        }
+        final amountSat = BigInt.parse(expected.amount);
+        final index = unmatchedOutputs.indexWhere(
+          (output) =>
+              _sameBitcoinAddress(output.address, recipient) &&
+              output.amountSat == amountSat,
+        );
+        if (index < 0) {
+          return const Err(SendStoredTransactionInvalidFailure());
+        }
+        unmatchedOutputs.removeAt(index);
+      }
+      if (unmatchedOutputs.any((output) => !output.isWalletOwned)) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
       final hasRequiredPreimages = plan.policy.hasRequiredPreimages(

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
@@ -32,10 +32,14 @@ void main() {
           id: stage.name,
           walletId: 'wallet',
           stage: stage,
-          recipient: 'tb1qrecipient',
-          amount: '1000',
+          recipients: [
+            (
+              recipient: 'tb1qrecipient',
+              amount: '1000',
+              receivesRemainder: false,
+            ),
+          ],
           amountCurrencyCode: 'sats',
-          sendMax: false,
           feeSelection: FeeSelection.fastest,
           replaceByFee: true,
           psbt: 'cHNidP8=',

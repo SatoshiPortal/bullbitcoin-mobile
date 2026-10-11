@@ -99,7 +99,10 @@ class PrepareBitcoinSendUsecase {
         case Err(:final failure):
           return Err(failure);
       }
-      final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt, walletId: walletId);
+      final size = await _bitcoinWalletRepository.getTxSize(
+        psbt: psbt,
+        walletId: walletId,
+      );
       final isToSelf = await _bitcoinWalletRepository.areAddressesOfWallet([
         for (final recipient in recipients) recipient.address,
       ], walletId: walletId);
@@ -133,7 +136,9 @@ class PrepareBitcoinSendUsecase {
     } on InsufficientFundsException {
       return const Err(WalletInsufficientFundsFailure());
     } on UnsupportedBitcoinPolicyPathException {
-      return const Err(BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath));
+      return const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      );
     } on Exception catch (error, trace) {
       log.warning(
         'Bitcoin transaction preparation failed',

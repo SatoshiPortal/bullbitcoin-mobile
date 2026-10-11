@@ -53,7 +53,7 @@ final class SendWalletBitcoin extends SendWalletView {
   @override
   String? get derivationPath => wallet.derivationPath;
   @override
-  bool get signsLocally => wallet.signsLocally;
+  bool get signsLocally => wallet.isStandardLocalSingleSignatureWallet;
   @override
   bool get signsRemotely => wallet.signsRemotely;
   @override

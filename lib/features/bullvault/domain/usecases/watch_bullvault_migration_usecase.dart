@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 
@@ -18,7 +18,10 @@ class WatchBullVaultMigrationUsecase {
         final migrations =
             value.transactions
                 .where(
-                  (transaction) => transaction.recipient == migrationAddress,
+                  (transaction) =>
+                      transaction.recipients.length == 1 &&
+                      transaction.recipients.single.recipient ==
+                          migrationAddress,
                 )
                 .toList()
               ..sort(

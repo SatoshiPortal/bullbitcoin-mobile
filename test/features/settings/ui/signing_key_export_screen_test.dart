@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
