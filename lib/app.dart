@@ -1,6 +1,8 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:async';
 
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -186,11 +188,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       if (child == null) return const SizedBox.shrink();
                       final app = BullSupportScope(
                         onContactSupport: SupportFacade.contactSupport,
-                        child: AppStartupWidget(
-                          app: locator<RecoverBullFeature>().withAlerts(
-                            child,
-                            onOpen: () =>
-                                AppRouter.router.pushNamed('recoverbullFlows'),
+                        child: BackupReminderScope(
+                          child: AppStartupWidget(
+                            app: locator<RecoverBullFeature>().withAlerts(
+                              child,
+                              onOpen: () => AppRouter.router.pushNamed(
+                                'recoverbullFlows',
+                              ),
+                            ),
                           ),
                         ),
                       );

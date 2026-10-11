@@ -40,7 +40,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(localization.walletSettingsImportWalletTitle));
+    await tester.tap(find.text('Hardware wallet'));
     await tester.pumpAndSettle();
 
     expect(find.text('Import wallet destination'), findsOneWidget);

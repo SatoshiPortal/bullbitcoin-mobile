@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_setting.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
@@ -53,7 +54,7 @@ class _Screen extends StatelessWidget {
               forceMaterialTransparency: true,
               automaticallyImplyLeading: false,
               flexibleSpace: BullTopBar(
-                title: context.loc.settingsBackupTitle,
+                title: context.loc.walletRecoverySettingsTitle,
                 onBack: () => context.pop(),
               ),
             ),
@@ -64,6 +65,7 @@ class _Screen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
+                      const BackupReminderSetting(),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
@@ -87,8 +89,6 @@ class _Screen extends StatelessWidget {
                           ),
                       if (state.lastEncryptedBackup != null)
                         const _ViewVaultKeyButton(),
-                      for (final id in backupSettingsDataItemOrder)
-                        items.byId(id).buildTile(context),
                     ],
                   ),
                 ),

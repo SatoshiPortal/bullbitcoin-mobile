@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
@@ -12,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AllSettingsScreen extends StatefulWidget {
   const AllSettingsScreen({super.key});
@@ -49,97 +47,116 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                const Gap(16),
-                SettingsSearchBar(
-                  key: const Key('settings-search-bar'),
-                  onTap: () => context.pushNamed(SettingsRoute.search.name),
-                ),
-                const Gap(8),
-                for (final item in items.inSection(SettingsItemSection.root))
-                  item.buildTile(
-                    context,
-                    iconColor: item.id == SettingsItemId.servicesStatus
-                        ? serviceStatusLoading
-                              ? context.appColors.textMuted
-                              : serviceStatus.allServicesOnline
-                              ? context.appColors.success
-                              : context.appColors.error
-                        : null,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        height: 150,
-        padding: EdgeInsets.zero,
-        color: context.appColors.transparent,
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              if (appVersion != null)
-                ListTile(
-                  tileColor: context.appColors.surfaceContainerHighest,
-                  title: Center(
-                    child: Text(
-                      '${context.loc.settingsAppVersionLabel}$appVersion',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        const Gap(16),
+                        SettingsSearchBar(
+                          key: const Key('settings-search-bar'),
+                          onTap: () =>
+                              context.pushNamed(SettingsRoute.search.name),
+                        ),
+                        const Gap(8),
+                        for (final item in items.inSection(
+                          SettingsItemSection.root,
+                        ))
+                          item.buildTile(
+                            context,
+                            iconColor: item.id == SettingsItemId.servicesStatus
+                                ? serviceStatusLoading
+                                      ? context.appColors.textMuted
+                                      : serviceStatus.allServicesOnline
+                                      ? context.appColors.success
+                                      : context.appColors.error
+                                : null,
+                          ),
+                      ],
                     ),
                   ),
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: appVersion));
-                  },
-                ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.githubSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
+                  Material(
+                    color: context.appColors.transparent,
+                    child: SafeArea(
+                      top: false,
+                      minimum: const EdgeInsets.only(bottom: 16),
                       child: Column(
                         mainAxisSize: .min,
+                        crossAxisAlignment: .stretch,
                         children: [
-                          SvgPicture.asset(
-                            'assets/icons/github.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              context.appColors.onSurface,
-                              BlendMode.srcIn,
+                          if (appVersion != null)
+                            ListTile(
+                              tileColor:
+                                  context.appColors.surfaceContainerHighest,
+                              title: Center(
+                                child: Text(
+                                  '${context.loc.settingsAppVersionLabel}$appVersion',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: context.appColors.onSurface,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: appVersion),
+                                );
+                              },
                             ),
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: Wrap(
+                              alignment: .spaceEvenly,
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: [
+                                InkWell(
+                                  onTap: () => items
+                                      .byId(SettingsItemId.github)
+                                      .open(context),
+                                  child: Column(
+                                    mainAxisSize: .min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/github.svg',
+                                        width: 24,
+                                        height: 24,
+                                        colorFilter: ColorFilter.mode(
+                                          context.appColors.onSurface,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      const Gap(8),
+                                      Text(
+                                        context.loc.settingsGithubLabel,
+                                        textAlign: .center,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  context.appColors.onSurface,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                BullSupportButton.tile(
+                                  label: context.loc.settingsGetHelpLabel,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    BullSupportButton.tile(
-                      label: context.loc.settingsGetHelpLabel,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

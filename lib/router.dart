@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -80,23 +81,7 @@ class AppRouter {
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
-    redirect: (BuildContext context, GoRouterState state) {
-      final path = state.uri.path;
-      // Only read the gate providers for SP routes; the decision itself lives
-      // in the SP feature's pure `spRedirect` (unit-testable, no widget tree).
-      if (!isSpPath(path)) return null;
-      final settingsState = context.read<SettingsCubit>().state;
-      return spRedirect(
-        path,
-        isSuperuser: settingsState.isSuperuser ?? false,
-        isDevModeEnabled: settingsState.isDevModeEnabled ?? false,
-        // The SP feature's own synchronous flag, not the wallet feature's copy:
-        // that copy only lands a few turns after setup finishes, which bounced
-        // any navigation to an SP route right after create back to setup.
-        isSpWalletSetup: locator<SpFacade>().isSetUpNow,
-        gateClosedRedirectPath: WalletRoute.walletHome.path,
-      );
-    },
+    redirect: redirect,
     routes: [
       GoRoute(path: '/', redirect: (_, _) => WalletRoute.walletHome.path),
       ShellRoute(
@@ -179,8 +164,15 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
-            featureWarningsBuilder: (context, wallets) =>
+            featureWarningsBuilder: (context, wallets) => Column(
+              children: [
+                BackupReminderHomeContribution(
+                  wallets: wallets,
+                  homePath: WalletRoute.walletHome.path,
+                ),
                 BullVaultHomeContribution(wallets: wallets),
+              ],
+            ),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
@@ -206,6 +198,8 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        onRegisterDescriptor: (context) =>
+            context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
         walletDetailsActionsBuilder: (context, wallet) => [
           BullVaultWalletSettingsContribution(wallet: wallet),
         ],
@@ -245,7 +239,9 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      ...BullVaultRouter.routes,
+      ...BullVaultRouter.routes(
+        registerExternalRouteName: ImportWatchOnlyWalletRoutes.import.name,
+      ),
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
@@ -275,4 +271,31 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static String? redirect(BuildContext context, GoRouterState state) {
+    final isBullVault =
+        state.uri.path == '/bullvault' ||
+        state.uri.path.startsWith('/bullvault/') ||
+        state.uri.path ==
+            '${SettingsRoute.settings.path}/${SettingsRoute.signingKeyExport.path}';
+    if (isBullVault &&
+        context.read<SettingsCubit>().state.isSuperuser != true) {
+      return SettingsRoute.settings.path;
+    }
+    final path = state.uri.path;
+    // Only read the gate providers for SP routes; the decision itself lives
+    // in the SP feature's pure `spRedirect` (unit-testable, no widget tree).
+    if (!isSpPath(path)) return null;
+    final settingsState = context.read<SettingsCubit>().state;
+    return spRedirect(
+      path,
+      isSuperuser: settingsState.isSuperuser ?? false,
+      isDevModeEnabled: settingsState.isDevModeEnabled ?? false,
+      // The SP feature's own synchronous flag, not the wallet feature's copy:
+      // that copy only lands a few turns after setup finishes, which bounced
+      // any navigation to an SP route right after create back to setup.
+      isSpWalletSetup: locator<SpFacade>().isSetUpNow,
+      gateClosedRedirectPath: WalletRoute.walletHome.path,
+    );
+  }
 }

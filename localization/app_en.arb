@@ -691,10 +691,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -8282,17 +8278,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Import watch-only",
   "@importWalletImportWatchOnly": {
@@ -13211,10 +13199,6 @@
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
   },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
   "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
   "@settingsSearchBroadcastTransactionKeywords": {
     "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
@@ -17214,5 +17198,308 @@
   "@bitboxErrorWalletNameInUse": {
     "description": "BitBox policy registration failed because another policy has the same name."
   },
-  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name."
+  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name.",
+  "bullVaultKeyExternal": "External key",
+  "bullVaultCosignerMismatch": "These words and passphrase do not match a cosigner in this vault. Nothing was imported.",
+  "bullVaultKeyMobile": "Mobile key",
+  "@bullVaultRegisterVault": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultRecoverEntry": "Recover BullVault",
+  "@bullVaultDescriptorMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultIdentifier": {
+    "description": "Labels the short prefix of a vault wallet identifier on a vault card. Not a master key fingerprint.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultCosignerContinue": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultViewPolicy": "View policy",
+  "@bullVaultImportFile": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultKeyMobile": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "@bullVaultRestoreMobilePassphraseFailure": {
+    "description": "The optional mobile-access attempt failed after the vault was successfully restored"
+  },
+  "bullVaultIdentifier": "Vault ID: {id}",
+  "bullVaultBackupRecovery": "Backup & recovery",
+  "@bullVaultKeyInheritance": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "@bullVaultRecoverEntry": {
+    "description": "Settings entry for restoring a BullVault"
+  },
+  "@bullVaultCosignerWarning": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultCreatedDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultExperimentalWarningMessage": "BullVault is experimental. Do not use it for real funds.",
+  "bullVaultRestoreMobilePassphraseAction": "Use mobile passphrase",
+  "@bullVaultCreatePracticeEntry": {
+    "description": "Secondary BullVault menu entry that starts creation with the practice timeline preselected."
+  },
+  "bullVaultImportCosigner": "Import cosigner key",
+  "@bullVaultCosignerMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
+  "@bullVaultBackupRecovery": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultUseBullAsSigner": "Use BULL as signer",
+  "@bullVaultExperimentalWarningTitle": {
+    "description": "Title of the warning shown each time BullVault is opened from Settings."
+  },
+  "bullVaultCosignerContinue": "Continue to key import",
+  "@bullVaultRestoreMobilePassphraseAction": {
+    "description": "After recovering a vault, verify the existing passphrase for its mobile key"
+  },
+  "bullVaultVerifyDescriptor": "Verify your saved copy",
+  "bullVaultDescriptorVerified": "Saved copy verified",
+  "@bullVaultKeyOnDevice": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyOnDevice": "On this device",
+  "@bullVaultVerifyDescriptor": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultUseBullAsSigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultViewKeys": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultViewPolicy": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultImportFile": "Import file",
+  "@bullVaultImportCosigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultDescriptorVerified": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultViewKeys": "View keys",
+  "@bullVaultDescriptorActionHelp": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "@bullVaultExperimentalWarningMessage": {
+    "description": "Warning requiring explicit acknowledgement before entering the experimental BullVault feature."
+  },
+  "@bullVaultCosignerStored": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultKeyPassphraseRequired": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarningClarification": "The vault’s required signatures and timelocks still apply. Importing a key does not move funds; you must separately review and approve a transaction.",
+  "bullVaultCosignerWarning": "Doing this will make funds available for spending by this wallet. Only do this if you want to permanently remove funds from the vault. This is acceptable if you are the beneficiary of an inheritance key, or if the other cosign devices are not available.",
+  "bullVaultExpiryDate": "First recovery: {date}",
+  "bullVaultRegisterVault": "Register vault on another device",
+  "bullVaultExperimentalWarningTitle": "Experimental feature",
+  "bullVaultKeyPassphraseRequired": "Passphrase required — not currently verified",
+  "bullVaultRegisterExternalEntry": "Register an external multisig",
+  "@walletPolicyEarlierOptions": {
+    "description": "Reminder beneath alternative spending options, without claiming current chain or key availability."
+  },
+  "@bullVaultCosignerWarningClarification": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCreatedDate": "Created: {date}",
+  "@bullVaultCosignerWarningTitle": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCreatePracticeEntry": "Create practice BullVault",
+  "@bullVaultMenuTitle": {
+    "description": "BullVault menu title and Settings entry"
+  },
+  "@bullVaultExpiryDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultCosignerStored": "The matching seed will be saved securely on this device. Its passphrase is never saved; enter it again when signing.",
+  "bullVaultKeyInheritance": "Inheritance key",
+  "bullVaultMenuTitle": "BullVault (multisig)",
+  "walletPolicyEarlierOptions": "Earlier options remain available. Dates do not move funds automatically.",
+  "bullVaultCosignerWarningTitle": "Are you sure?",
+  "bullVaultDescriptorMismatch": "This descriptor does not match this vault. Check that you selected the correct vault and generation.",
+  "@bullVaultKeyExternal": {
+    "description": "BullVault settings and recovery"
+  },
+  "@bullVaultRegisterExternalEntry": {},
+  "bullVaultRestoreMobilePassphraseFailure": "Could not restore mobile access. You can still continue with this vault.",
+  "settingsSearchImportSeedKeywords": "add wallet|recover wallet|import mnemonic|seed|recovery words",
+  "@importWalletHardwareTitle": {
+    "description": "Settings entry and import page for hardware and watch-only wallets"
+  },
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  },
+  "@settingsSearchToolsKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsDataExportTitle": "Data export",
+  "settingsToolsTitle": "Tools",
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "importWalletHardwareTitle": "Hardware wallet",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
+  },
+  "@settingsAppAndDeviceTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@importWalletSeedTitle": {
+    "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "importWalletSeedTitle": "Import seed",
+  "settingsAppAndDeviceTitle": "App and device",
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "@settingsSearchImportSeedKeywords": {
+    "description": "Search aliases for importing a wallet seed"
+  },
+  "@settingsToolsTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "walletsListTitle": "Wallet details",
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  },
+  "@backupReminderLater365Days": {
+    "description": "Action to snooze the physical-backup test reminder for 365 days"
+  },
+  "backupReminderAddPhysical": "ADD A PHYSICAL BACKUP",
+  "@backupReminderDismissForever": {
+    "description": "Wallet Recovery setting that suppresses every backup reminder on this device"
+  },
+  "backupReminderTestVault": "TEST ENCRYPTED VAULT",
+  "backupReminderLater180Days": "REMIND ME IN 180 DAYS",
+  "backupReminderDismissForeverConfirm": "Dismiss forever",
+  "backupReminderAddPhysicalBody": "Your tested encrypted vault still depends on the backup server. Add and test a physical backup so you can recover without it.",
+  "@backupReminderAddPhysical": {
+    "description": "Action to create and test a physical wallet backup"
+  },
+  "backupReminderDismissForeverConfirmBody": "The app will not show these backup reminders on this device until you turn them back on in Wallet Recovery.",
+  "@backupReminderTestVaultBody": {
+    "description": "Explanation for the annual encrypted vault test reminder"
+  },
+  "backupReminderAddPhysicalTitle": "ADD A PHYSICAL BACKUP",
+  "backupReminderTestVaultTitle": "TEST YOUR ENCRYPTED VAULT",
+  "@backupReminderDismissForeverConfirmBody": {
+    "description": "Confirmation explanation for permanently suppressing backup reminders"
+  },
+  "backupReminderTestVaultBody": "Your last successful encrypted vault test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestPhysicalTitle": {
+    "description": "Title for the annual physical backup test reminder"
+  },
+  "@backupReminderLater180Days": {
+    "description": "Action to snooze the add-physical-backup reminder for 180 days"
+  },
+  "@backupReminderDismissRisk": {
+    "description": "Permanent dismissal for the one-time large-balance warning"
+  },
+  "@backupReminderTestPhysicalBody": {
+    "description": "Explanation for the annual physical backup test reminder"
+  },
+  "@backupReminderAddPhysicalTitle": {
+    "description": "Title for the periodic physical backup recommendation"
+  },
+  "backupReminderTestPhysical": "TEST PHYSICAL BACKUP",
+  "backupReminderDismissRisk": "DISMISS WARNING — I UNDERSTAND THE RISKS",
+  "@backupReminderAddPhysicalBody": {
+    "description": "Explanation for the periodic physical backup recommendation"
+  },
+  "@backupReminderDismissForeverConfirmTitle": {
+    "description": "Confirmation title before permanently suppressing backup reminders"
+  },
+  "@backupReminderLargeBalanceTitle": {
+    "description": "Title for the one-time large-balance physical backup warning"
+  },
+  "@backupReminderTestPhysical": {
+    "description": "Action to test a physical wallet backup"
+  },
+  "backupReminderDismissForeverConfirmTitle": "Dismiss all backup reminders?",
+  "@backupReminderLater366Days": {
+    "description": "Action to snooze the encrypted-vault test reminder for 366 days"
+  },
+  "backupReminderLargeBalanceTitle": "YOUR ENCRYPTED VAULT IS YOUR ONLY BACKUP",
+  "@backupReminderLargeBalanceBody": {
+    "description": "Risk explanation for relying only on an encrypted vault at a large balance"
+  },
+  "backupReminderLargeBalanceBody": "Your encrypted vault is tested, but recovery still depends on the backup server being available. Add and test a physical backup for independent recovery.",
+  "backupReminderTestPhysicalBody": "Your last successful physical backup test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderDismissForeverConfirm": {
+    "description": "Confirmation action that permanently suppresses backup reminders"
+  },
+  "@backupReminderTestVault": {
+    "description": "Action to test the encrypted vault"
+  },
+  "@backupReminderTestVaultTitle": {
+    "description": "Title for the annual encrypted vault test reminder"
+  },
+  "backupReminderDismissForever": "Dismiss backup reminders forever",
+  "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
+  "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS",
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "@signingKeyUsedNoDescription": {},
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "signingKeyUsedTitle": "Keys already used",
+  "@signingKeyUsedSign": {},
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsedNoDescription": "No description",
+  "@signingKeyUsedTitle": {}
 }

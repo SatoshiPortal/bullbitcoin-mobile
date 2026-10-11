@@ -73,6 +73,7 @@ graph TB
     PSBT_FLOW[PSBT Flow]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     IMPORT_WALLET[Import Wallet]
+    IMPORT_WATCH_ONLY[Import Watch-only Wallet]
     BULLVAULT[BullVault]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
@@ -124,7 +125,7 @@ graph TB
     APP_STARTUP --> RECOVERBULL
     WALLETS --> RECOVERBULL
     STATUS --> RECOVERBULL
-    BACKUPS --> RECOVERBULL
+    BACKUPS -->|Certification status and recovery flows| RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BACKUPS --> SECRETS
@@ -170,6 +171,8 @@ graph TB
     SEND --> PSBT_FLOW
     SETTINGS --> PSBT_SIGNING
     SETTINGS --> HW_WALLETS
+    IMPORT_MNEMONIC[Import Mnemonic] --> SETTINGS
+    SETTINGS --> SUPPORT
     RECEIVE --> HW_WALLETS
     RECEIVE --> BULL_PAYJOIN
     RECEIVE --> BULLVAULT
@@ -204,6 +207,8 @@ graph TB
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    BULLVAULT -->|Import route injected by app router| IMPORT_WATCH_ONLY
+    BULLVAULT -->|Selected-wallet route only| PSBT_SIGNING
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
@@ -242,6 +247,10 @@ graph TB
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    SETTINGS --> LABELS
+    SETTINGS -->|descriptor registration route| IMPORT_WATCH_ONLY
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
