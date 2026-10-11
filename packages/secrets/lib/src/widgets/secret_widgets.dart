@@ -6,6 +6,7 @@ import 'package:secrets/src/public/ephemeral_mnemonic.dart';
 import 'package:secrets/src/widgets/mnemonic_source.dart';
 import 'package:secrets/src/widgets/mnemonic_challenge.dart';
 import 'package:secrets/src/widgets/mnemonic_view.dart';
+import 'package:secrets/src/widgets/nostr_key_view.dart';
 
 /// The sealed widgets of one secret, reached as `secret.widgets`.
 ///
@@ -21,6 +22,39 @@ extension type const SecretWidgets._(MnemonicSource _source) {
   @internal
   SecretWidgets.ephemeral(EphemeralMnemonic mnemonic)
     : this._(EphemeralMnemonicSource(mnemonic));
+
+  /// Shows an nsec after the host's warning and screen-capture protection.
+  /// User identities derive from this secret; 100/101 are backup identities.
+  /// The host receives rendered text, a QR and a copy action, never the nsec.
+  NostrKeyView nostrKey({
+    Key? key,
+    required int identity,
+    required String publicKey,
+    required Color qrForeground,
+    required Color qrBackground,
+    required Widget Function(
+      BuildContext,
+      Widget text,
+      Widget qr,
+      Future<void> Function() copy,
+    )
+    builder,
+    required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
+    failureBuilder,
+    TextStyle? style,
+    Widget placeholder = const SizedBox.shrink(),
+  }) => NostrKeyView(
+    key: key,
+    secret: requireStoredSecret(_source),
+    identity: identity,
+    publicKey: publicKey,
+    qrForeground: qrForeground,
+    qrBackground: qrBackground,
+    builder: builder,
+    failureBuilder: failureBuilder,
+    style: style,
+    placeholder: placeholder,
+  );
 
   /// Shows deterministic Data Recovery Words without exposing their text.
   MnemonicView dataRecoveryWords({

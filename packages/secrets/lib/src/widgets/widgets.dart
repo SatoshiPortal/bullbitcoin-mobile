@@ -1,6 +1,6 @@
-/// The sealed widgets: the only way a secret's words reach a screen.
+/// The sealed widgets for displaying secret material.
 ///
-/// Each reads the mnemonic inside its own state and hands the host widgets
+/// Each reads material inside its own state and hands the host widgets
 /// with no text accessor. `PaintedWord` is the seal itself, not part of the
 /// surface, and stays out of this list. A host reaches these through
 /// `secret.widgets` — the constructors are `@internal`.
@@ -11,3 +11,5 @@ export 'mnemonic_view.dart' show MnemonicView;
 export 'secret_widgets.dart' show SecretWidgets;
 
 export 'ephemeral_mnemonic_extension.dart' show EphemeralMnemonicExtension;
+
+export 'nostr_key_view.dart' show NostrKeyView;

@@ -31,7 +31,7 @@ final class UnreadableSecret extends SecretEntry {
 ///
 /// Obtained from `Secrets` — `generate`, `import` or `fetch` — and holds no key material of its own: [info] describes the secret, and every operation asks the repository to run a closure on material that exists only for that call.
 ///
-/// **This class is the audit surface.** Implementations stay together here behind `@internal`; callers use only the grouped API, such as `secret.sign.psbt(…)`. Its extensions forward calls without handling material or errors. Operations that return material remain explicit: [revealMnemonic] and [dataRecoveryMnemonic] serve only sealed widgets; [bip85Hex], [bip85Mnemonic] and [swapKey] are documented derived-material outputs.
+/// **This class is the audit surface.** Implementations stay together here behind `@internal`; callers use only the grouped API, such as `secret.sign.psbt(…)`. Its extensions forward calls without handling material or errors. Operations that return material remain explicit: [revealMnemonic], [dataRecoveryMnemonic] and [nostrNsec] serve only sealed widgets; [bip85Hex], [bip85Mnemonic] and [swapKey] are documented derived-material outputs.
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
@@ -209,6 +209,35 @@ final class Secret extends SecretEntry {
     info,
     (material) => Deriver.nostr.derive(material, identity).public,
   );
+
+  /// Reads an nsec only for the sealed key view, checking its public record.
+  /// Identities 100 and 101 use the Data Recovery Words root.
+  @internal
+  Future<Result<String, SecretFailure>> nostrNsec({
+    required int identity,
+    required String publicKey,
+  }) => _repository.use(info, (material) {
+    final String derivedPublicKey;
+    final String nsec;
+    if (identity == 100 || identity == 101) {
+      final credential = BackupCredential.fromSeed(material);
+      derivedPublicKey = identity == 100
+          ? credential.artifactPublicKey
+          : credential.serverPublicKey;
+      nsec = identity == 100
+          ? credential.revealArtifactNsec()
+          : credential.revealServerNsec();
+    } else {
+      final key = Deriver.nostr.derive(material, identity);
+      derivedPublicKey = key.public;
+      nsec = key.nsec;
+    }
+    if (derivedPublicKey != publicKey) {
+      throw const FormatException('Nostr key does not match its public record');
+    }
+    log.info('SECRET_REVEAL: Nostr identity $identity for ${info.id}');
+    return nsec;
+  });
 
   /// Reads Data Recovery Words only for the package's sealed view.
   @internal

@@ -15,7 +15,26 @@ class CopyInput extends StatelessWidget {
     this.canShowValueModal = false,
     this.modalTitle,
     this.modalContent,
-  });
+  }) : _content = null,
+       _copy = null;
+
+  /// Uses a sealed value renderer and lets its owner perform the copy.
+  const CopyInput.content({
+    super.key,
+    required Widget child,
+    required Future<void> Function() onCopy,
+  }) : _content = child,
+       _copy = onCopy,
+       text = '',
+       clipboardText = null,
+       maxLines = null,
+       overflow = null,
+       canShowValueModal = false,
+       modalTitle = null,
+       modalContent = null;
+
+  final Widget? _content;
+  final Future<void> Function()? _copy;
 
   final String text;
   // In case it should be different from the shown text
@@ -29,8 +48,9 @@ class CopyInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isValueLoading = text.isEmpty;
+    final isValueLoading = _content == null && text.isEmpty;
     final canCopy =
+        _copy != null ||
         (clipboardText == null && text.isNotEmpty) ||
         (clipboardText != null && clipboardText!.isNotEmpty);
 
@@ -52,16 +72,18 @@ class CopyInput extends StatelessWidget {
                   : null,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: isValueLoading
-                    ? const BullShimmerLine()
-                    : Text(
-                        text,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
-                        maxLines: maxLines,
-                        overflow: overflow,
-                      ),
+                child:
+                    _content ??
+                    (isValueLoading
+                        ? const BullShimmerLine()
+                        : Text(
+                            text,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.secondary,
+                            ),
+                            maxLines: maxLines,
+                            overflow: overflow,
+                          )),
               ),
             ),
           ),
@@ -83,8 +105,17 @@ class CopyInput extends StatelessWidget {
               visualDensity: VisualDensity.compact,
               iconSize: 20,
               icon: Icon(Icons.copy_sharp, color: context.appColors.secondary),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: clipboardText ?? text));
+              tooltip: context.loc.copyDialogButton,
+              onPressed: () async {
+                final copy = _copy;
+                if (copy != null) {
+                  await copy();
+                } else {
+                  await Clipboard.setData(
+                    ClipboardData(text: clipboardText ?? text),
+                  );
+                }
+                if (!context.mounted) return;
                 BullSnackBar.show(
                   context,
                   message: context.loc.copiedToClipboard,

@@ -303,6 +303,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'Recoverbull', 'SecretPreview',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
+      'NostrKeyView',
       // what generate takes: a closed set, never an int
       'MnemonicLength',
       // the BIP39 wordlist a mnemonic is written in, so consumers need not import bip39
@@ -397,6 +398,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'nostrPublicKey': 'derived',
       'dataBackupCredential': 'capability',
       'dataRecoveryMnemonic': 'material',
+      'nostrNsec': 'material',
       'signDescriptorPsbt': 'derived',
       'bitcoinDescriptors': 'derived',
       'liquidDescriptor': 'derived',
@@ -503,6 +505,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
         'swapKey',
         'revealMnemonic',
         'dataRecoveryMnemonic',
+        'nostrNsec',
         'recoverbullKey',
       ]),
       reason: 'the operations that hand back key material; README must match',
