@@ -30,7 +30,10 @@ class OnboardingRouter {
   static final GlobalKey<NavigatorState> shellNavigatorKey =
       GlobalKey<NavigatorState>();
 
-  static final route = ShellRoute(
+  static ShellRoute route({
+    required Future<void> Function(BuildContext, Map<String, String?>)
+    onPhysicalRestore,
+  }) => ShellRoute(
     navigatorKey: rootNavigatorKey,
     builder: (context, state, child) => BlocProvider<OnboardingBloc>(
       create: (_) => locator<OnboardingBloc>(),
@@ -44,14 +47,14 @@ class OnboardingRouter {
             BlocListener<OnboardingBloc, OnboardingState>(
               listenWhen: (previous, current) =>
                   !previous.isSuccess && current.isSuccess,
-              listener: (context, state) {
-                // Restart the wallet bloc to ensure it reflects the new wallets state
-                // with the recently created or recovered wallets before
-                // navigating.
-                context.read<WalletBloc>().add(const WalletStarted());
-                if (state.step == OnboardingStep.create) {
-                  context.goNamed(WalletRoute.walletHome.name);
+              listener: (context, state) async {
+                if (state.isRecovery) {
+                  // Keep the publication readiness gate closed until the optional recovery finishes.
+                  await onPhysicalRestore(context, state.initialWalletLabels);
                 }
+                if (!context.mounted) return;
+                context.read<WalletBloc>().add(const WalletStarted());
+                context.goNamed(WalletRoute.walletHome.name);
               },
             ),
             BlocListener<OnboardingBloc, OnboardingState>(

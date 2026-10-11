@@ -14,6 +14,7 @@ class BullBackupOptionCard extends StatelessWidget {
     required this.description,
     this.descriptionMaxLines = 3,
     this.tag,
+    this.additionalTags = const [],
     required this.onTap,
   });
 
@@ -31,6 +32,9 @@ class BullBackupOptionCard extends StatelessWidget {
 
   /// Optional tag rendered as a [BullOptionsTag].
   final String? tag;
+
+  /// Additional labels rendered beside the primary tag.
+  final List<String> additionalTags;
 
   /// Tap callback. A null callback displays a non-interactive card without an arrow.
   final VoidCallback? onTap;
@@ -75,7 +79,17 @@ class BullBackupOptionCard extends StatelessWidget {
                           maxLines: descriptionMaxLines,
                         ),
                         const Gap(10),
-                        if (tag != null) BullOptionsTag(text: tag!),
+                        if (tag != null || additionalTags.isNotEmpty)
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              if (tag case final text?)
+                                BullOptionsTag(text: text),
+                              for (final text in additionalTags)
+                                BullOptionsTag(text: text),
+                            ],
+                          ),
                       ],
                     ),
                   ),

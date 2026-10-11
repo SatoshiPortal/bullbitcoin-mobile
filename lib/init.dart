@@ -62,7 +62,10 @@ class Bull {
 
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    if (await locator<ApplyPendingWizardChoicesUsecase>().execute()
+        case Err()) {
+      throw Exception('Could not apply setup choices');
+    }
     await AppLocator.setupRecoverBull(
       locator,
       databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),

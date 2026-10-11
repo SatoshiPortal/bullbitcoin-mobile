@@ -5,11 +5,12 @@ import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class StatusCheckLocator {
-  static void setup(GetIt locator) {
+  static void setup(GetIt locator, {required Uri backupServerOrigin}) {
     locator.registerFactory<CheckServiceStatusUsecase>(
       () => CheckServiceStatusUsecase(
         checkAllServiceStatusUsecase: locator<CheckAllServiceStatusUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
+        backupServerOrigin: backupServerOrigin,
       ),
     );
     locator.registerFactory<ServiceStatusCubit>(

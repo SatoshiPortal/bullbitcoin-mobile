@@ -174,6 +174,31 @@ final descriptor = bridge.DescriptorSecretKey.fromString;
     },
   );
 
+  test(
+    'Nostr private operations stay sealed while public verification remains available',
+    () async {
+      final violations = await inspect('nostr_private', """
+import 'package:nostr/nostr.dart' as nostr;
+final factory = nostr.Keys.new;
+String reveal(nostr.Keys key) => key.nsec;
+final sign = nostr.Schnorr.sign;
+final publicFromPrivate = nostr.Schnorr.derivePublicKey;
+""");
+      expect(violations, contains(endsWith('#Keys.new')));
+      expect(violations, contains(endsWith('#Keys.nsec')));
+      expect(violations, contains(endsWith('#Schnorr.sign')));
+      expect(violations, contains(endsWith('#Schnorr.derivePublicKey')));
+      expect(
+        await inspect('nostr_public', """
+import 'package:nostr/nostr.dart' as nostr;
+final verify = nostr.Schnorr.verify;
+String encode(String key) => nostr.Bech32Entity.encode(prefix: nostr.Nip19Prefix.npub, data: key);
+"""),
+        isEmpty,
+      );
+    },
+  );
+
   test('raw private-key constructors and tear-offs are checked', () async {
     final violations = await inspect('raw_private', '''
 import 'dart:typed_data';

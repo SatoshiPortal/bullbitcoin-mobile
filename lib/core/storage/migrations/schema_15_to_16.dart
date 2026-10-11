@@ -174,6 +174,9 @@ class Schema15To16 {
       );
       await m.createTable(schema16.bullVaultRecords);
       await m.createTable(schema16.bullVaultGenerationReservations);
+      await m.createTable(schema16.walletBackupStates);
+      await m.createTable(schema16.walletBackupControls);
+      await m.createTable(schema16.keychainNostrKeys);
 
       final foreignKeyViolations = await m.database
           .customSelect('PRAGMA foreign_key_check')

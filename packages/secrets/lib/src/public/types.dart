@@ -37,3 +37,5 @@ export 'package:secrets/src/domain/domain.dart'
         UnsupportedNetworkFailure,
         UseSecretFailure,
         VaultKey;
+
+export 'package:secrets/src/crypto/crypto.dart' show BackupCredential;

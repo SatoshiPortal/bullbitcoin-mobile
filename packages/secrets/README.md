@@ -38,6 +38,7 @@ Secret
 |-- info -> SecretInfo
 |-- id -> Fingerprint
 |-- derive
+|   |-- nostrPublicKey(identity:) -> String
 |   |-- descriptors
 |   |   |-- bitcoin(network:, scriptType:, [accountIndex: 0]) -> Descriptors
 |   |   `-- liquid(network:) -> String
@@ -52,6 +53,7 @@ Secret
 |   |-- descriptorPsbt(psbt, descriptor:, network:, keys:, [passphrase:], [signWithTapInternalKey: false]) -> String
 |   `-- pset(pset, network:) -> String
 |-- backup
+|   |-- data() -> BackupCredential
 |   |-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
 |   `-- recoverbullKey(vault:) -> VaultKey
 |-- verify
@@ -60,6 +62,7 @@ Secret
 |-- silentPayments
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
+    |-- dataRecoveryWords([key:], failureBuilder:, [style:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     `-- mnemonicChallenge([key:], tileBuilder:, layoutBuilder:, onSolved:, onMistake:, failureBuilder:, [onProgress:], [style:], [placeholder: const SizedBox.shrink()]) -> MnemonicChallenge
 ```
@@ -144,6 +147,15 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `retainCanonical` | stored words-only `Secret` handle | retains a backing secret without exposing its words |
 
 The stored words, passphrase, seed and master xprv have no public getter. The grouped interface is the only public spelling. Flat implementation methods and widget constructors are internal; applications cannot call them without an analyzer diagnostic. The three derivation operations returning key material are BIP85 hex, BIP85 mnemonic and the swap master key. `silentPayments.account` returns no material to the app, but its returned account retains keys after the call: bwk-dart opens it from a mnemonic only. The Liquid and Boltz adapters also use English words transiently in the pinned SDK. Backup keys and database keys are listed separately above.
+
+`backup.data()` returns an operation-scoped encryption and signing capability for
+public metadata. Private keys remain inside that capability; only ciphertext,
+plaintext metadata, public keys and signatures leave it. Recovery can construct
+the same capability from user-entered Data Recovery Words without a stored seed.
+`widgets.dataRecoveryWords` paints the index-100 child inside the sealed mnemonic
+view; the host receives widgets only and must enable capture protection before
+mounting it. `derive.nostrPublicKey` returns only a user identity's public key and
+rejects application-reserved indices.
 
 ## Derivation, signing and verification
 
