@@ -115,9 +115,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               preferences.language,
               ExchangeLanguage.values.map((lang) => lang.code).toList(),
               ExchangeLanguage.values.map((lang) => lang.displayName).toList(),
-              (value) {
-                context.read<ExchangePreferencesCubit>().updateLanguage(value);
-              },
+              context.read<ExchangePreferencesCubit>().updateLanguage,
             ),
             const SizedBox(height: 24),
             _buildDropdownField(
@@ -126,9 +124,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               preferences.currency,
               FiatCurrency.values.map((currency) => currency.code).toList(),
               FiatCurrency.values.map((currency) => currency.code).toList(),
-              (value) {
-                context.read<ExchangePreferencesCubit>().updateCurrency(value);
-              },
+              context.read<ExchangePreferencesCubit>().updateCurrency,
             ),
             const SizedBox(height: 32),
             _EmailNotificationsToggle(preferences: preferences),
@@ -177,7 +173,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
     String? selectedValue,
     List<String> values,
     List<String> displayTexts,
-    Function(String?) onChanged,
+    ValueChanged<String> onChanged,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +219,9 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
                       ),
                     )
                     .toList(),
-                onChanged: onChanged,
+                onChanged: (value) {
+                  if (value != null) onChanged(value);
+                },
               ),
             ),
           ),

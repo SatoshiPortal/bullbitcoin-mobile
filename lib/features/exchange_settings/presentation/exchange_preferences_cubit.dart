@@ -28,13 +28,13 @@ class ExchangePreferencesCubit extends Cubit<ExchangePreferencesState> {
     });
   }
 
-  void updateLanguage(String? language) {
+  void updateLanguage(String language) {
     final preferences = state.preferences;
     if (preferences == null) return;
     emit(state.copyWith(preferences: preferences.copyWith(language: language)));
   }
 
-  void updateCurrency(String? currency) {
+  void updateCurrency(String currency) {
     final preferences = state.preferences;
     if (preferences == null) return;
     emit(state.copyWith(preferences: preferences.copyWith(currency: currency)));
