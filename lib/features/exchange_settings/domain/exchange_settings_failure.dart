@@ -22,6 +22,17 @@ final class ExchangeSettingsPreferencesSaveFailure
   const ExchangeSettingsPreferencesSaveFailure([super.logMessage]);
 }
 
+/// The exchange could not be reached.
+final class ExchangeSettingsNetworkFailure extends ExchangeSettingsFailure {
+  const ExchangeSettingsNetworkFailure([super.logMessage]);
+}
+
+/// The exchange session is missing or expired.
+final class ExchangeSettingsNotAuthenticatedFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsNotAuthenticatedFailure([super.logMessage]);
+}
+
 /// The secure file upload status could not be retrieved.
 final class ExchangeSettingsUploadStatusUnavailableFailure
     extends ExchangeSettingsFailure {

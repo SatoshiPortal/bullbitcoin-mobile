@@ -18,7 +18,14 @@ class UpdateExchangePreferencesUsecase {
       emailNotificationsEnabled: preferences.emailNotificationsEnabled,
     );
     return result.mapErr(
-      (failure) => ExchangeSettingsPreferencesSaveFailure(failure.logMessage),
+      (failure) => switch (failure) {
+        ExchangeNetworkFailure() => ExchangeSettingsNetworkFailure(
+          failure.logMessage,
+        ),
+        ExchangeNotAuthenticatedFailure() =>
+          ExchangeSettingsNotAuthenticatedFailure(failure.logMessage),
+        _ => ExchangeSettingsPreferencesSaveFailure(failure.logMessage),
+      },
     );
   }
 }

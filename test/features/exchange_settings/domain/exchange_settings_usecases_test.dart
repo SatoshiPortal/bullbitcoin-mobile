@@ -240,9 +240,34 @@ void main() {
       ).called(1);
     });
 
-    test('an exchange failure becomes a save failure', () async {
+    test('a network failure stays a network failure', () async {
       final facade = _MockExchangeFacade();
       stubSave(facade, const Err(ExchangeNetworkFailure('offline')));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect((result as Err).failure, isA<ExchangeSettingsNetworkFailure>());
+    });
+
+    test('a missing session stays a not-authenticated failure', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Err(ExchangeNotAuthenticatedFailure('expired')));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect(
+        (result as Err).failure,
+        isA<ExchangeSettingsNotAuthenticatedFailure>(),
+      );
+    });
+
+    test('any other exchange failure becomes a save failure', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Err(ExchangePreferencesSaveFailure('rejected')));
 
       final result = await UpdateExchangePreferencesUsecase(
         exchangeFacade: facade,
