@@ -26,6 +26,8 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
+        saveExchangePreferencesUsecase:
+            locator<SaveExchangePreferencesUsecase>(),
       ),
     );
   }

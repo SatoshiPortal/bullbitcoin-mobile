@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_account.dart';
 import 'package:meta/meta.dart';
 
@@ -22,8 +23,12 @@ export 'exchange_account.dart' show ExchangeAccount;
 
 class ExchangeFacade {
   final GetExchangeAccountUsecase _getExchangeAccountUsecase;
+  final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
 
-  const ExchangeFacade({required this._getExchangeAccountUsecase});
+  const ExchangeFacade({
+    required this._getExchangeAccountUsecase,
+    required this._saveExchangePreferencesUsecase,
+  });
 
   @useResult
   Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async {
@@ -46,4 +51,15 @@ class ExchangeFacade {
       ),
     );
   }
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> savePreferences({
+    String? language,
+    String? currency,
+    bool? emailNotificationsEnabled,
+  }) => _saveExchangePreferencesUsecase.execute(
+    language: language,
+    currency: currency,
+    emailNotificationsEnabled: emailNotificationsEnabled,
+  );
 }

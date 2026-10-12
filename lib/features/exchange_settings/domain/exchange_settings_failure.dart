@@ -10,6 +10,18 @@ final class ExchangeSettingsStatisticsUnavailableFailure
   const ExchangeSettingsStatisticsUnavailableFailure([super.logMessage]);
 }
 
+/// The exchange account details could not be retrieved.
+final class ExchangeSettingsAccountUnavailableFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsAccountUnavailableFailure([super.logMessage]);
+}
+
+/// The exchange preferences could not be saved.
+final class ExchangeSettingsPreferencesSaveFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsPreferencesSaveFailure([super.logMessage]);
+}
+
 /// The secure file upload status could not be retrieved.
 final class ExchangeSettingsUploadStatusUnavailableFailure
     extends ExchangeSettingsFailure {

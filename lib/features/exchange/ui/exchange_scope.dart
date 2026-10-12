@@ -13,10 +13,8 @@ class ExchangeScope extends StatelessWidget {
   static bool isLoggedIn(BuildContext context) =>
       context.read<ExchangeCubit>().state.hasUser;
 
-  static Future<void> refreshSession(
-    BuildContext context, {
-    bool force = false,
-  }) => context.read<ExchangeCubit>().fetchUserSummary(force: force);
+  static Future<void> refreshSession(BuildContext context) =>
+      context.read<ExchangeCubit>().fetchUserSummary();
 
   static Future<void> reconnectNotifications(BuildContext context) =>
       context.read<ExchangeCubit>().reconnectWebSocket();

@@ -109,7 +109,6 @@ void main() {
 
       expect(cubit.state.stopDcaFailure, isNull);
       expect(cubit.state.getUserSummaryFailure, isNull);
-      expect(cubit.state.savePreferencesFailure, isNull);
       expect(cubit.state.saveApiKeyFailure, isNull);
       expect(cubit.state.logoutFailure, isNull);
     });
@@ -226,7 +225,7 @@ void main() {
 
   group('fetchUserSummary', () {
     test('does not wait on the decorative announcements', () async {
-      // Never completes. Login, stopDca and savePreferences all await
+      // Never completes. Login and stopDca both await
       // fetchUserSummary, so waiting on this would hang them.
       final never = Completer<Result<List<Announcement>, ExchangeFailure>>();
       when(announcements.execute).thenAnswer((_) => never.future);

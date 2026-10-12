@@ -6,6 +6,10 @@ extension ExchangeSettingsFailureL10n on ExchangeSettingsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     ExchangeSettingsStatisticsUnavailableFailure() =>
       context.loc.exchangeSettingsErrorLoadingStatistics,
+    ExchangeSettingsAccountUnavailableFailure() =>
+      context.loc.exchangeSettingsErrorLoadingAccount,
+    ExchangeSettingsPreferencesSaveFailure() =>
+      context.loc.exchangeErrorSavingPreferences,
     ExchangeSettingsUploadStatusUnavailableFailure() =>
       context.loc.exchangeSettingsErrorLoadingAccount,
     ExchangeSettingsDocumentAlreadySubmittedFailure() =>

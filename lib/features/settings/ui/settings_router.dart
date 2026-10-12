@@ -18,8 +18,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
@@ -77,21 +75,11 @@ class SettingsRouter {
         ),
       ),
       GoRoute(
-        name: SettingsRoute.exchangeAccountInfo.name,
-        path: SettingsRoute.exchangeAccountInfo.path,
-        builder: (context, state) => const ExchangeAccountInfoScreen(),
-      ),
-      GoRoute(
         name: SettingsRoute.exchangeSecurity.name,
         path: SettingsRoute.exchangeSecurity.path,
         builder: (context, state) => const ExchangeSecurityScreen(),
       ),
       DefaultWalletsRouter.route,
-      GoRoute(
-        name: SettingsRoute.exchangeAppSettings.name,
-        path: SettingsRoute.exchangeAppSettings.path,
-        builder: (context, state) => const ExchangeAppSettingsScreen(),
-      ),
       ...ExchangeSettingsRouter.routes,
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,

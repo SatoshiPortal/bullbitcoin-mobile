@@ -15,6 +15,8 @@ const _rawReason =
 /// compile error, but these assertions are what prove it stays sanitized.
 const _everyFailure = <ExchangeSettingsFailure>[
   ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
+  ExchangeSettingsAccountUnavailableFailure(_rawReason),
+  ExchangeSettingsPreferencesSaveFailure(_rawReason),
   ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
   ExchangeSettingsDocumentAlreadySubmittedFailure(_rawReason),
   ExchangeSettingsDocumentEmptyFailure(_rawReason),

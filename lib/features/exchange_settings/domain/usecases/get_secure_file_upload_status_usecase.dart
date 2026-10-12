@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/secure_file_upload.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';

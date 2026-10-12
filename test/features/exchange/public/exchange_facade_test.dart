@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,13 +8,21 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetExchangeAccountUsecase extends Mock
     implements GetExchangeAccountUsecase {}
 
+class _MockSaveExchangePreferencesUsecase extends Mock
+    implements SaveExchangePreferencesUsecase {}
+
 void main() {
   late _MockGetExchangeAccountUsecase getAccount;
+  late _MockSaveExchangePreferencesUsecase savePreferences;
   late ExchangeFacade facade;
 
   setUp(() {
     getAccount = _MockGetExchangeAccountUsecase();
-    facade = ExchangeFacade(getExchangeAccountUsecase: getAccount);
+    savePreferences = _MockSaveExchangePreferencesUsecase();
+    facade = ExchangeFacade(
+      getExchangeAccountUsecase: getAccount,
+      saveExchangePreferencesUsecase: savePreferences,
+    );
   });
 
   test('publishes account details without returning the core entity', () async {
@@ -79,5 +88,30 @@ void main() {
           fail('Expected the account failure to be preserved');
       }
     }
+  });
+
+  test('saves only the preferences the caller passes', () async {
+    when(
+      () => savePreferences.execute(
+        language: 'FR',
+        currency: 'EUR',
+        emailNotificationsEnabled: true,
+      ),
+    ).thenAnswer((_) async => const Ok(null));
+
+    final result = await facade.savePreferences(
+      language: 'FR',
+      currency: 'EUR',
+      emailNotificationsEnabled: true,
+    );
+
+    expect(result, isA<Ok<void, ExchangeFailure>>());
+    verify(
+      () => savePreferences.execute(
+        language: 'FR',
+        currency: 'EUR',
+        emailNotificationsEnabled: true,
+      ),
+    ).called(1);
   });
 }

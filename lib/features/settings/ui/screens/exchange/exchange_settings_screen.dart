@@ -52,7 +52,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeAccountInfo.name,
+                          ExchangeSettingsRoute.accountInfo.name,
                         );
                       }
                     },
@@ -113,7 +113,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeAppSettings.name,
+                          ExchangeSettingsRoute.preferences.name,
                         );
                       }
                     },

@@ -1,57 +1,78 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/account_info_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/account_info_state.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ExchangeAccountInfoScreen extends StatelessWidget {
-  const ExchangeAccountInfoScreen({super.key});
+class AccountInfoScreen extends StatefulWidget {
+  const AccountInfoScreen({super.key});
+
+  @override
+  State<AccountInfoScreen> createState() => _AccountInfoScreenState();
+}
+
+class _AccountInfoScreenState extends State<AccountInfoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AccountInfoCubit>().loadAccountInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final state = context.select((ExchangeCubit cubit) => cubit.state);
-    final userSummary = state.userSummary;
+    final state = context.watch<AccountInfoCubit>().state;
 
     return Scaffold(
       backgroundColor: context.appColors.background,
       appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
       body: Column(
         children: [
-          if (state.isFetchingUserSummary)
+          if (state.isLoading)
             LinearProgressIndicator(
               backgroundColor: context.appColors.surface,
               color: context.appColors.primary,
             ),
-          Expanded(
-            child: _buildContent(
-              context,
-              state.isFetchingUserSummary,
-              userSummary,
-            ),
-          ),
+          Expanded(child: _buildContent(context, state)),
         ],
       ),
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    bool isLoading,
-    UserSummary? userSummary,
-  ) {
-    if (isLoading && userSummary == null) {
+  Widget _buildContent(BuildContext context, AccountInfoState state) {
+    final accountInfo = state.accountInfo;
+
+    if (state.isLoading && accountInfo == null) {
       return const SizedBox.shrink();
     }
 
-    if (userSummary == null) {
+    if (accountInfo == null) {
       return Center(
-        child: BBText(
-          context.loc.exchangeAccountInfoLoadErrorMessage,
-          style: context.font.bodyMedium,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BBText(
+              state.failure?.toTranslated(context) ??
+                  context.loc.exchangeAccountInfoLoadErrorMessage,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+            const SizedBox(height: 16),
+            BBButton.big(
+              label: context.loc.retry,
+              onPressed: () =>
+                  context.read<AccountInfoCubit>().loadAccountInfo(),
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
+            ),
+          ],
         ),
       );
     }
@@ -66,7 +87,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoUserNumberLabel,
-              userSummary.userNumber.toString(),
+              accountInfo.userNumber.toString(),
               isCopyable: true,
               copiedMessage:
                   context.loc.exchangeAccountInfoUserNumberCopiedMessage,
@@ -75,25 +96,25 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoVerificationLevelLabel,
-              _getVerificationLevel(context, userSummary),
+              _verificationLevelLabel(context, accountInfo.verificationLevel),
             ),
             const SizedBox(height: 32),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoEmailLabel,
-              userSummary.email,
+              accountInfo.email,
             ),
             const SizedBox(height: 32),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoFirstNameLabel,
-              userSummary.profile.firstName,
+              accountInfo.firstName,
             ),
             const SizedBox(height: 32),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoLastNameLabel,
-              userSummary.profile.lastName,
+              accountInfo.lastName,
             ),
           ],
         ),
@@ -101,17 +122,19 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     );
   }
 
-  String _getVerificationLevel(BuildContext context, UserSummary userSummary) {
-    if (userSummary.isFullyVerifiedKycLevel) {
-      return context.loc.exchangeAccountInfoVerificationIdentityVerified;
-    } else if (userSummary.isLightKycLevel) {
-      return context.loc.exchangeAccountInfoVerificationLightVerification;
-    } else if (userSummary.isLimitedKycLevel) {
-      return context.loc.exchangeAccountInfoVerificationLimitedVerification;
-    } else {
-      return context.loc.exchangeAccountInfoVerificationNotVerified;
-    }
-  }
+  String _verificationLevelLabel(
+    BuildContext context,
+    VerificationLevel level,
+  ) => switch (level) {
+    VerificationLevel.identityVerified =>
+      context.loc.exchangeAccountInfoVerificationIdentityVerified,
+    VerificationLevel.light =>
+      context.loc.exchangeAccountInfoVerificationLightVerification,
+    VerificationLevel.limited =>
+      context.loc.exchangeAccountInfoVerificationLimitedVerification,
+    VerificationLevel.notVerified =>
+      context.loc.exchangeAccountInfoVerificationNotVerified,
+  };
 
   Widget _buildInfoField(
     BuildContext context,
