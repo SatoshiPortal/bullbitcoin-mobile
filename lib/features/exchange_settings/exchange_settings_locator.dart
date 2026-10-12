@@ -10,8 +10,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usec
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:get_it/get_it.dart';
