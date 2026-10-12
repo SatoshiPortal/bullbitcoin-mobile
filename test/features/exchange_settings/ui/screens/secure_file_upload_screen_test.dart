@@ -93,7 +93,7 @@ void main() {
     );
 
     expect(
-      find.text('Your account details could not be loaded. Please try again.'),
+      find.text('Your upload status could not be loaded. Please try again.'),
       findsOneWidget,
     );
   });

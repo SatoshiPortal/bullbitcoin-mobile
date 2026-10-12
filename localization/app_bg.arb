@@ -9926,5 +9926,8 @@
   "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност",
   "limitOrdersInsufficientBalance": "Недостатъчен баланс",
   "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
-  "limitOrdersFundAccount": "Захрани сметката си"
+  "limitOrdersFundAccount": "Захрани сметката си",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 сделка} other{{count} сделки}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 сделка ({currency})} other{{count} сделки ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Статусът на качването ви не можа да бъде зареден. Моля, опитайте отново."
 }

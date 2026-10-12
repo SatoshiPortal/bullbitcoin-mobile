@@ -5042,5 +5042,8 @@
   "limitOrdersFundAccount": "Konto aufladen",
   "spBlindbitBehindWarning": "{count, plural, =1{Der Scan-Server liegt einen Block hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.} other{Der Scan-Server liegt {count} Blöcke hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.}}",
   "spHeaderValidationInvalidChain": "Electrum-Server liefert eine falsche Blockchain",
-  "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server."
+  "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server.",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 Trade} other{{count} Trades}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 Trade ({currency})} other{{count} Trades ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Ihr Upload-Status konnte nicht geladen werden. Bitte versuchen Sie es erneut."
 }

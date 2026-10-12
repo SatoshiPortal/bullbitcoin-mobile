@@ -11822,5 +11822,8 @@
   "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
   "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
   "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
-  "limitOrdersFundAccount": "صندوق حسابك"
+  "limitOrdersFundAccount": "صندوق حسابك",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{صفقة واحدة} other{{count} صفقات}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{صفقة واحدة ({currency})} other{{count} صفقات ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "تعذر تحميل حالة الرفع الخاصة بك. يرجى المحاولة مرة أخرى."
 }

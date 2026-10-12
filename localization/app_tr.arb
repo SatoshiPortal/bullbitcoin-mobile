@@ -11819,5 +11819,8 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion yönlendirme|gömülü Tor|gizlilik ağı",
   "limitOrdersInsufficientBalance": "Yeterli bakiye",
   "limitOrdersInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
-  "limitOrdersFundAccount": "Hesabınızı finanse edin"
+  "limitOrdersFundAccount": "Hesabınızı finanse edin",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 işlem} other{{count} işlem}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 işlem ({currency})} other{{count} işlem ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Yükleme durumunuz yüklenemedi. Lütfen tekrar deneyin."
 }

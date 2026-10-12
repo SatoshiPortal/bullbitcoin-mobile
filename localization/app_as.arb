@@ -9190,5 +9190,8 @@
   "settingsSearchTorKeywords": "Tor প্ৰক্সী|Orbot|Onion routing|অন্তৰ্নিহিত Tor|গোপনীয়তা নেটৱৰ্ক",
   "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
   "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
-  "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক"
+  "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 টা লেনদেন} other{{count} টা লেনদেন}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "আপোনাৰ আপলোডৰ স্থিতি ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

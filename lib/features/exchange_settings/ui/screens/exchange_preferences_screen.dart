@@ -1,17 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/exchange_preferences.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_preferences_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_preferences_state.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -39,29 +34,28 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
       listenWhen: (previous, current) =>
           previous.isSaving && !current.isSaving && current.saveFailure == null,
       listener: (context, state) {
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          context.loc.exchangeAppSettingsSaveSuccessMessage,
+          message: context.loc.exchangeAppSettingsSaveSuccessMessage,
         );
         ExchangeScope.refreshSession(context);
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
+      child: BullScaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             title: context.loc.settingsAppSettingsTitle,
             onBack: () => context.pop(),
           ),
         ),
         body: Column(
           children: [
-            if (state.isLoading)
-              LinearProgressIndicator(
-                backgroundColor: context.appColors.surface,
-                color: context.appColors.primary,
-              ),
+            BullFadingLinearProgress(
+              trigger: state.isLoading,
+              backgroundColor: context.bull.surface,
+              foregroundColor: context.bull.primary,
+            ),
             Expanded(child: _buildContent(context, state)),
           ],
         ),
@@ -81,20 +75,20 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BBText(
+            BullText(
               state.loadFailure?.toTranslated(context) ??
                   context.loc.exchangeAccountInfoLoadErrorMessage,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.error,
               ),
             ),
-            const SizedBox(height: 16),
-            BBButton.big(
+            const Gap(BullSpacing.md),
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<ExchangePreferencesCubit>().loadPreferences(),
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
+              bgColor: context.bull.onSurface,
+              textColor: context.bull.surface,
             ),
           ],
         ),
@@ -105,7 +99,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(BullSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -117,7 +111,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               ExchangeLanguage.values.map((lang) => lang.displayName).toList(),
               context.read<ExchangePreferencesCubit>().updateLanguage,
             ),
-            const SizedBox(height: 24),
+            const Gap(BullSpacing.lg),
             _buildDropdownField(
               context,
               context.loc.exchangeAppSettingsDefaultCurrencyLabel,
@@ -126,39 +120,39 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               FiatCurrency.values.map((currency) => currency.code).toList(),
               context.read<ExchangePreferencesCubit>().updateCurrency,
             ),
-            const SizedBox(height: 32),
+            const Gap(BullSpacing.xl),
             _EmailNotificationsToggle(preferences: preferences),
             const Spacer(),
             if (hasUnsetValues) ...[
-              BBText(
+              BullText(
                 context.loc.exchangeAppSettingsValidationWarning,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.error,
+                style: context.bullText.bodySmall?.copyWith(
+                  color: context.bull.error,
                 ),
               ),
-              const SizedBox(height: 16),
+              const Gap(BullSpacing.md),
             ],
             if (state.saveFailure != null) ...[
-              InfoCard(
+              BullInfoCard(
                 description: state.saveFailure!.toTranslated(context),
-                tagColor: context.appColors.error,
-                bgColor: context.appColors.errorContainer,
+                tagColor: context.bull.error,
+                bgColor: context.bull.errorContainer,
                 onTap: () =>
                     context.read<ExchangePreferencesCubit>().savePreferences(),
               ),
-              const SizedBox(height: 16),
+              const Gap(BullSpacing.md),
             ],
             SizedBox(
               width: double.infinity,
-              child: BBButton.big(
+              child: BullButton.big(
                 label: context.loc.exchangeAppSettingsSaveButton,
                 onPressed: () =>
                     context.read<ExchangePreferencesCubit>().savePreferences(),
                 disabled: state.isSaving || hasUnsetValues,
                 bgColor: hasUnsetValues
-                    ? context.appColors.outline
-                    : context.appColors.onSurface,
-                textColor: context.appColors.surface,
+                    ? context.bull.outline
+                    : context.bull.onSurface,
+                textColor: context.bull.surface,
               ),
             ),
           ],
@@ -178,53 +172,34 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
+        BullText(
           label,
-          style: context.font.labelMedium?.copyWith(
-            color: context.appColors.onSurface,
+          style: context.bullText.labelMedium?.copyWith(
+            color: context.bull.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 56,
-          child: Material(
-            elevation: 2,
-            shadowColor: context.appColors.overlay.withValues(alpha: 0.1),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
-            child: Center(
-              child: DropdownButtonFormField<String>(
-                initialValue: selectedValue,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+        const Gap(BullSpacing.xs),
+        BullDropdown<String>(
+          value: selectedValue,
+          items: values
+              .asMap()
+              .entries
+              .map(
+                (entry) => DropdownMenuItem<String>(
+                  value: values[entry.key],
+                  child: BullText(
+                    displayTexts[entry.key],
+                    style: context.bullText.headlineSmall?.copyWith(
+                      color: context.bull.onSurface,
+                    ),
+                  ),
                 ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
-                ),
-                items: values
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => DropdownMenuItem<String>(
-                        value: values[entry.key],
-                        child: BBText(
-                          displayTexts[entry.key],
-                          style: context.font.headlineSmall?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) onChanged(value);
-                },
-              ),
-            ),
-          ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) onChanged(value);
+          },
         ),
       ],
     );
@@ -239,13 +214,13 @@ class _EmailNotificationsToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(BullSpacing.md),
       decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
+        color: context.bull.surface,
+        borderRadius: BorderRadius.circular(BullRadius.sm),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.overlay.withValues(alpha: 0.05),
+            color: context.bull.overlay.withValues(alpha: 0.05),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -258,32 +233,30 @@ class _EmailNotificationsToggle extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   context.loc.exchangeAppSettingsEmailNotificationsLabel,
-                  style: context.font.labelMedium?.copyWith(
-                    color: context.appColors.onSurface,
+                  style: context.bullText.labelMedium?.copyWith(
+                    color: context.bull.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
-                BBText(
+                const Gap(BullSpacing.xxs),
+                BullText(
                   context.loc.exchangeAppSettingsEmailNotificationsDescription,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.textMuted,
+                  style: context.bullText.bodySmall?.copyWith(
+                    color: context.bull.textMuted,
                   ),
                 ),
               ],
             ),
           ),
-          Switch(
+          BullSwitch(
             value: preferences.emailNotificationsEnabled,
             onChanged: (value) {
               context.read<ExchangePreferencesCubit>().updateEmailNotifications(
                 value,
               );
             },
-            activeTrackColor: context.appColors.primary,
-            activeThumbColor: context.appColors.surface,
           ),
         ],
       ),

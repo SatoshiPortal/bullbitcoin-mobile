@@ -4819,5 +4819,8 @@
   "settingsSearchTorKeywords": "Tor-välityspalvelin|Orbot|onion-reititys|sisäinen Tor|yksityisyysverkko",
   "limitOrdersInsufficientBalance": "Riittämätön saldo",
   "limitOrdersInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
-  "limitOrdersFundAccount": "Talletus"
+  "limitOrdersFundAccount": "Talletus",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 kauppa} other{{count} kauppaa}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 kauppa ({currency})} other{{count} kauppaa ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Latauksesi tilaa ei voitu hakea. Yritä uudelleen."
 }

@@ -12201,5 +12201,8 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network",
   "limitOrdersInsufficientBalance": "Insufficient balance",
   "limitOrdersInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
-  "limitOrdersFundAccount": "Apna account fund karo"
+  "limitOrdersFundAccount": "Apna account fund karo",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Aapke upload ki sthiti load nahin ho saki. Kripya dobara koshish karein."
 }

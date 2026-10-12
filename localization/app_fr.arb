@@ -4909,5 +4909,8 @@
   "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
   "limitOrdersInsufficientBalance": "Solde insuffisant",
   "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "limitOrdersFundAccount": "Financer votre compte"
+  "limitOrdersFundAccount": "Financer votre compte",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 opération} other{{count} opérations}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 opération ({currency})} other{{count} opérations ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Le statut de votre téléversement n'a pas pu être chargé. Veuillez réessayer."
 }

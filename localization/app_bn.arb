@@ -12023,5 +12023,8 @@
   "settingsSearchTorKeywords": "Tor প্রক্সি|Orbot|Onion routing|অন্তর্নির্মিত Tor|গোপনীয়তা নেটওয়ার্ক",
   "limitOrdersInsufficientBalance": "পর্যাপ্ত ব্যালেন্স নেই",
   "limitOrdersInsufficientBalanceMessage": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
-  "limitOrdersFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন"
+  "limitOrdersFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1টি লেনদেন} other{{count}টি লেনদেন}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1টি লেনদেন ({currency})} other{{count}টি লেনদেন ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "আপনার আপলোডের অবস্থা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

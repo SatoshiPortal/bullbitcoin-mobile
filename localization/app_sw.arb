@@ -3636,5 +3636,8 @@
   "settingsSearchTorKeywords": "proksi ya Tor|Orbot|uelekezaji wa onion|Tor iliyojengewa ndani|mtandao wa faragha",
   "limitOrdersInsufficientBalance": "Salio halitoshi",
   "limitOrdersInsufficientBalanceMessage": "Huna salio la kutosha kuunda agizo hili.",
-  "limitOrdersFundAccount": "Weka fedha kwenye akaunti yako"
+  "limitOrdersFundAccount": "Weka fedha kwenye akaunti yako",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{biashara 1} other{biashara {count}}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{biashara 1 ({currency})} other{biashara {count} ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Hali ya upakiaji wako haikuweza kupakiwa. Tafadhali jaribu tena."
 }

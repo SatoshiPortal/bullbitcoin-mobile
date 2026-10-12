@@ -11819,5 +11819,8 @@
   "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크",
   "limitOrdersInsufficientBalance": "충분한 균형",
   "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
-  "limitOrdersFundAccount": "계정 생성"
+  "limitOrdersFundAccount": "계정 생성",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{거래 1건} other{거래 {count}건}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{거래 1건 ({currency})} other{거래 {count}건 ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "업로드 상태를 불러올 수 없습니다. 다시 시도해 주세요."
 }
