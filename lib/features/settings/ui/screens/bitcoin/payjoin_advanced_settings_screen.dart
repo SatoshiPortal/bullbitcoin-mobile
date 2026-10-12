@@ -220,10 +220,8 @@ class _PayjoinAdvancedSettingsScreenState
                       color: context.appColors.onSurfaceVariant,
                     ),
                   ),
-                  BBText(
-                    PayjoinConstants.directoryUrl,
-                    style: context.font.bodyMedium,
-                  ),
+                  for (final directory in PayjoinConstants.directoryUrls)
+                    BBText(directory, style: context.font.bodyMedium),
                   const Gap(12),
                   BBText(
                     context.loc.settingsPayjoinRelaysLabel,
