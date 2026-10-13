@@ -1,3 +1,6 @@
+import 'package:bull_ui/testing.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
@@ -29,9 +32,14 @@ void main() {
   ) async {
     final repository = _Repository();
     when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    when(
       () => repository.fetchUrl(),
-    ).thenAnswer((_) async => Uri.parse('https://recoverbull.com'));
-    when(() => repository.allowPermission(true)).thenAnswer((_) async {});
+    ).thenAnswer((_) async => Ok(Uri.parse('https://recoverbull.com')));
+    when(
+      () => repository.allowPermission(true),
+    ).thenAnswer((_) async => const Ok(null));
     final bloc = _Bloc();
     when(
       () => bloc.state,
@@ -70,6 +78,7 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -89,15 +98,19 @@ void main() {
 
   testWidgets('caches the permission Future across rebuilds', (tester) async {
     final repository = _Repository();
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
     var fetchCount = 0;
     when(() => repository.fetchPermission()).thenAnswer((_) async {
       fetchCount++;
-      return false;
+      return const Ok(false);
     });
 
     var rebuilds = 0;
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: StatefulBuilder(
@@ -124,7 +137,12 @@ void main() {
 
   testWidgets('back pops an internal page before the GoRoute', (tester) async {
     final repository = _Repository();
-    when(() => repository.fetchPermission()).thenAnswer((_) async => false);
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    when(
+      () => repository.fetchPermission(),
+    ).thenAnswer((_) async => const Ok(false));
 
     await tester.pumpWidget(
       _TestHost(
@@ -156,10 +174,15 @@ void main() {
     // Permission denied keeps the flow on `RequestPermissionPage`, which needs
     // no Tor or key server — only the navigation shape is under test.
     final repository = _Repository();
-    when(() => repository.fetchPermission()).thenAnswer((_) async => false);
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    when(
+      () => repository.fetchPermission(),
+    ).thenAnswer((_) async => const Ok(false));
     when(
       () => repository.fetchUrl(),
-    ).thenAnswer((_) async => Uri.parse('https://recoverbull.com'));
+    ).thenAnswer((_) async => Ok(Uri.parse('https://recoverbull.com')));
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -177,6 +200,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -216,6 +240,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(RecoverBullFlowNavigator), findsNothing);
     expect(find.text('Backup settings'), findsOneWidget);
+  });
+  testWidgets('failed permission reads stop the flow until a retry succeeds', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    var reads = 0;
+    when(repository.fetchPermission).thenAnswer(
+      (_) async => ++reads == 1
+          ? const Err(RecoverBullUnexpectedFailure('private settings detail'))
+          : const Ok(false),
+    );
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: _navigator(repository, flow: RecoverBullFlow.secureVault),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(RequestPermissionPage), findsNothing);
+    expect(find.text('private settings detail'), findsNothing);
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.byType(RequestPermissionPage), findsOneWidget);
+    expect(reads, 2);
   });
 }
 
@@ -259,6 +315,7 @@ class _TestHost extends StatelessWidget {
   Widget build(BuildContext context) {
     final navigator = _navigator(repository);
     return MaterialApp(
+      theme: ThemeData(extensions: const [testBullTheme]),
       localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
       supportedLocales: RecoverBullLocalizations.supportedLocales,
       home: Builder(builder: (context) => builder(context, navigator)),

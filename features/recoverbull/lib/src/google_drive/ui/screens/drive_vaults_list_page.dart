@@ -3,14 +3,9 @@ import '../../presentation/bloc.dart';
 import '../../presentation/event.dart';
 import '../../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/state.dart';
-import 'package:flutter/material.dart';
 import '../../../l10n/context_localizations.dart';
-import '../../../ui/widgets/with_bull_theme.dart';
-import '../../../ui/widgets/bull_aliases.dart';
-import '../../../ui/widgets/blurred_bottom_sheet.dart';
-import '../../../ui/widgets/top_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -27,21 +22,20 @@ class DriveVaultsListPage extends StatelessWidget {
     final failure = state.failure;
     final driveMetadata = state.driveMetadata;
 
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           onBack: () => context.pop(),
           title: context.loc.recoverbullGoogleDriveScreenTitle,
         ),
       ),
       body: Column(
         children: [
-          FadingLinearProgress(
+          BullFadingLinearProgress(
             trigger: state.isLoading,
-            backgroundColor: context.appColors.surface,
-            foregroundColor: context.appColors.primary,
+            foregroundColor: context.bull.primary,
             height: 2.0,
           ),
           Expanded(
@@ -52,13 +46,13 @@ class DriveVaultsListPage extends StatelessWidget {
                       children: [
                         Text(failure.toTranslated(context)),
                         const Gap(12),
-                        BBButton.small(
+                        BullButton.small(
                           label: context.loc.recoverbullRetry,
                           onPressed: () => context
                               .read<RecoverBullGoogleDriveBloc>()
                               .add(const OnFetchDriveVaults()),
-                          bgColor: context.appColors.onSurface,
-                          textColor: context.appColors.surface,
+                          bgColor: context.bull.onSurface,
+                          textColor: context.bull.surface,
                         ),
                       ],
                     ),
@@ -104,14 +98,14 @@ class _DriveFileMetadataItem extends StatelessWidget {
 
   void _showActionsBottomSheet(BuildContext context) {
     final bloc = context.read<RecoverBullGoogleDriveBloc>();
-    BlurredBottomSheet.show(
+    BullBottomSheet.show(
       context: context,
       child: Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.4,
         ),
         decoration: BoxDecoration(
-          color: context.appColors.onSecondary,
+          color: context.bull.onSecondary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         ),
         child: Padding(
@@ -122,7 +116,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: .spaceEvenly,
                 children: [
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveExportButton,
                     onPressed: () {
                       context.pop();
@@ -130,17 +124,17 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnExportDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
+                    bgColor: context.bull.secondary,
+                    textColor: context.bull.onSecondary,
                   ),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();
                       _showDeleteConfirmationBottomSheet(context);
                     },
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
+                    bgColor: context.bull.primary,
+                    textColor: context.bull.onPrimary,
                   ),
                 ],
               ),
@@ -153,14 +147,14 @@ class _DriveFileMetadataItem extends StatelessWidget {
 
   void _showDeleteConfirmationBottomSheet(BuildContext context) {
     final bloc = context.read<RecoverBullGoogleDriveBloc>();
-    BlurredBottomSheet.show(
+    BullBottomSheet.show(
       context: context,
       child: Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         decoration: BoxDecoration(
-          color: context.appColors.onSecondary,
+          color: context.bull.onSecondary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         ),
         child: Padding(
@@ -168,27 +162,27 @@ class _DriveFileMetadataItem extends StatelessWidget {
           child: Column(
             mainAxisSize: .min,
             children: [
-              BBText(
+              BullText(
                 context.loc.recoverbullGoogleDriveDeleteVaultTitle,
-                style: context.font.headlineMedium,
+                style: context.bullText.headlineMedium,
               ),
               const Gap(16),
-              BBText(
+              BullText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
-                style: context.font.bodyMedium,
+                style: context.bullText.bodyMedium,
                 textAlign: .center,
               ),
               const Gap(24),
               Row(
                 mainAxisAlignment: .spaceEvenly,
                 children: [
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveCancelButton,
                     onPressed: () => context.pop(),
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
+                    bgColor: context.bull.secondary,
+                    textColor: context.bull.onSecondary,
                   ),
-                  BBButton.small(
+                  BullButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();
@@ -196,8 +190,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnDeleteDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
+                    bgColor: context.bull.primary,
+                    textColor: context.bull.onPrimary,
                   ),
                 ],
               ),
@@ -216,16 +210,24 @@ class _DriveFileMetadataItem extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    return ListTile(
-      title: Text(
+    return BullBorderedTile(
+      onTap: state.isLoading
+          ? null
+          : () => bloc.add(
+              OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata),
+            ),
+      onLongPress: state.isLoading
+          ? null
+          : () => _showActionsBottomSheet(context),
+      child: BullText(
         '${DateFormat('MMM dd, yyyy • HH:mm').format(driveFileMetadata.createdTime.toLocal())} • ${driveFileMetadata.name}',
+        style: context.bullText.bodyMedium,
+        color: state.isLoading
+            ? context.bull.textMuted
+            : context.bull.onSurface,
         maxLines: 2,
         overflow: .ellipsis,
       ),
-      onTap: () =>
-          bloc.add(OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata)),
-      onLongPress: () => _showActionsBottomSheet(context),
-      enabled: !state.isLoading,
     );
   }
 }

@@ -1,14 +1,12 @@
+import '../../presentation/recoverbull_failure_l10n.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
 import '../../presentation/recoverbull_settings_cubit.dart';
 import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
 import '../../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../../public/recoverbull.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,18 +34,27 @@ class _SettingsPageState extends State<SettingsPage> {
   final _urlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
+  bool _isChangingMonitoring = false;
+  bool _isRetryingMonitoring = false;
   late final RecoverBullSettingsCubit _cubit;
 
   @override
   void initState() {
     super.initState();
+    final monitoring = widget.monitoring == null
+        ? null
+        : createRecoverBullMonitoringSettingsUsecases(
+            widget.monitoring!,
+            log: widget.log,
+          );
     _cubit =
         widget.cubit ??
         RecoverBullSettingsCubit(
           log: widget.log,
           fetchUrl: widget.fetchUrlUsecase!,
           storeUrl: widget.storeUrlUsecase!,
-          monitoring: widget.monitoring,
+          monitoringStatus: monitoring?.load,
+          changeMonitoring: monitoring?.change,
         );
     _cubit.load();
   }
@@ -66,34 +73,61 @@ class _SettingsPageState extends State<SettingsPage> {
     if (saved && mounted) {
       setState(() => _isEditing = false);
     } else if (mounted) {
-      BullSnackBar.show(context, message: context.loc.oopsSomethingWentWrong);
+      BullSnackBar.show(
+        context,
+        message:
+            _cubit.state.failure?.toTranslated(context) ??
+            context.loc.oopsSomethingWentWrong,
+      );
     }
   }
 
   void _cancelEdit() => setState(() => _isEditing = false);
 
   Future<void> _setMonitoringEnabled(bool enabled) async {
-    if (!enabled) {
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.loc.recoverbullMonitoringDisableTitle),
-          content: Text(context.loc.recoverbullMonitoringDisableWarning),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(context.loc.recoverbullMonitoringDisableCancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(context.loc.recoverbullMonitoringDisableConfirm),
-            ),
-          ],
-        ),
-      );
-      if (confirmed != true || !mounted) return;
+    if (_isChangingMonitoring) return;
+    setState(() => _isChangingMonitoring = true);
+    try {
+      if (!enabled) {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(context.loc.recoverbullMonitoringDisableTitle),
+            content: Text(context.loc.recoverbullMonitoringDisableWarning),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(context.loc.recoverbullMonitoringDisableCancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(context.loc.recoverbullMonitoringDisableConfirm),
+              ),
+            ],
+          ),
+        );
+        if (confirmed != true || !mounted) return;
+      }
+      await _cubit.setMonitoringEnabled(enabled);
+      final failure = _cubit.state.failure;
+      if (mounted && failure != null) {
+        BullSnackBar.show(context, message: failure.toTranslated(context));
+      }
+    } finally {
+      if (mounted) setState(() => _isChangingMonitoring = false);
     }
-    await _cubit.setMonitoringEnabled(enabled);
+  }
+
+  Future<void> _retryMonitoring() async {
+    if (_isRetryingMonitoring) return;
+    setState(() => _isRetryingMonitoring = true);
+    try {
+      // Reloading the persisted settings never writes into the text controller,
+      // so an unfinished server URL edit remains intact while monitoring retries.
+      await _cubit.load();
+    } finally {
+      if (mounted) setState(() => _isRetryingMonitoring = false);
+    }
   }
 
   Future<void> _openRecoverBullWebsite() async {
@@ -127,22 +161,40 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
         ),
-        title: BBText(
+        title: BullText(
           context.loc.recoverbullSettingsTitle,
-          style: context.font.headlineMedium,
-          color: context.appColors.onSurface,
+          style: context.bullText.headlineMedium,
+          color: context.bull.onSurface,
         ),
       ),
       body: BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>(
         bloc: _cubit,
         builder: (context, settings) => settings.loading
             ? const Center(child: CircularProgressIndicator())
+            : settings.failure != null && settings.url.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BullText(
+                      settings.failure!.toTranslated(context),
+                      style: context.bullText.bodyMedium,
+                    ),
+                    BullButton.big(
+                      label: context.loc.recoverbullRetry,
+                      bgColor: context.bull.primary,
+                      textColor: context.bull.onPrimary,
+                      onPressed: _cubit.load,
+                    ),
+                  ],
+                ),
+              )
             : Padding(
                 padding: const EdgeInsets.all(16),
                 child: Form(
@@ -154,10 +206,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       Row(
                         mainAxisAlignment: .spaceBetween,
                         children: [
-                          BBText(
+                          BullText(
                             context.loc.recoverbullSettingsKeyServerUrl,
-                            style: context.font.titleMedium,
-                            color: context.appColors.onSurface,
+                            style: context.bullText.titleMedium,
+                            color: context.bull.onSurface,
                           ),
                           if (!_isEditing)
                             TextButton.icon(
@@ -177,7 +229,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           validator: _validateUrl,
                           maxLines: null,
                           autofocus: true,
-                          style: context.font.bodyMedium,
+                          style: context.bullText.bodyMedium,
                           decoration: InputDecoration(
                             hintText: context.loc.recoverbullSettingsUrlHint,
                             border: OutlineInputBorder(
@@ -190,60 +242,91 @@ class _SettingsPageState extends State<SettingsPage> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: context.appColors.cardBackground,
+                            color: context.bull.cardBackground,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: context.appColors.border),
+                            border: Border.all(color: context.bull.border),
                           ),
-                          child: BBText(
+                          child: BullText(
                             settings.url,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.onSurface,
+                            style: context.bullText.bodyMedium,
+                            color: context.bull.onSurface,
                           ),
+                        ),
+                      ],
+                      if (_cubit.monitoringStatus != null &&
+                          settings.monitoring == null) ...[
+                        const Gap(24),
+                        BullText(
+                          context.loc.recoverbullMonitoringTitle,
+                          style: context.bullText.titleMedium,
+                        ),
+                        const Gap(8),
+                        BullText(
+                          settings.failure?.toTranslated(context) ??
+                              context.loc.oopsSomethingWentWrong,
+                          style: context.bullText.bodyMedium,
+                        ),
+                        const Gap(8),
+                        BullButton.big(
+                          label: context.loc.recoverbullRetry,
+                          bgColor: context.bull.primary,
+                          textColor: context.bull.onPrimary,
+                          disabled: _isRetryingMonitoring,
+                          onPressed: _retryMonitoring,
                         ),
                       ],
                       if (settings.monitoring case final monitoring?) ...[
                         const Gap(24),
-                        BBText(
+                        BullText(
                           context.loc.recoverbullMonitoringTitle,
-                          style: context.font.titleMedium,
-                          color: context.appColors.onSurface,
+                          style: context.bullText.titleMedium,
+                          color: context.bull.onSurface,
                         ),
                         Row(
                           children: [
                             Expanded(
-                              child: BBText(
+                              child: BullText(
                                 context.loc.recoverbullMonitoringEnabled,
-                                style: context.font.bodyMedium,
-                                color: context.appColors.onSurface,
+                                style: context.bullText.bodyMedium,
+                                color: context.bull.onSurface,
                               ),
                             ),
                             BullSwitch(
                               value: monitoring.enabled,
-                              onChanged: _setMonitoringEnabled,
+                              onChanged: _isChangingMonitoring
+                                  ? null
+                                  : _setMonitoringEnabled,
                             ),
                           ],
                         ),
                         Text(
-                          monitoring.isUncovered
+                          monitoring.serverUnsupported
+                              ? context
+                                    .loc
+                                    .recoverbullMonitoringServerUnsupported
+                              : monitoring.isUncovered
                               ? context.loc.recoverbullMonitoringUncovered
                               : context.loc.recoverbullMonitoringCount(
                                   monitoring.monitoredCount,
                                 ),
-                          style: context.font.bodyMedium,
+                          style: context.bullText.bodyMedium,
                         ),
-                        if (monitoring.lastSuccessfulCheck case final date?)
+                        if (monitoring case RecoverBullMonitoringStatus(
+                          serverUnsupported: false,
+                          lastSuccessfulCheck: final date?,
+                        ))
                           Text(
                             context.loc.recoverbullMonitoringLastCheck(
                               MaterialLocalizations.of(
                                 context,
                               ).formatMediumDate(date.toLocal()),
                             ),
-                            style: context.font.bodySmall,
+                            style: context.bullText.bodySmall,
                           ),
                         const Gap(8),
                         Text(
                           context.loc.recoverbullMonitoringExplanation,
-                          style: context.font.bodySmall,
+                          style: context.bullText.bodySmall,
                         ),
                       ],
                       const Spacer(),
@@ -251,20 +334,20 @@ class _SettingsPageState extends State<SettingsPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: BBButton.big(
+                              child: BullButton.big(
                                 label: context.loc.recoverbullSettingsCancel,
                                 onPressed: _cancelEdit,
-                                bgColor: context.appColors.cardBackground,
-                                textColor: context.appColors.onSurface,
+                                bgColor: context.bull.cardBackground,
+                                textColor: context.bull.onSurface,
                               ),
                             ),
                             const Gap(8),
                             Expanded(
-                              child: BBButton.big(
+                              child: BullButton.big(
                                 label: context.loc.recoverbullSettingsSave,
                                 onPressed: _saveUrl,
-                                bgColor: context.appColors.onSurface,
-                                textColor: context.appColors.surface,
+                                bgColor: context.bull.onSurface,
+                                textColor: context.bull.surface,
                                 disabled: settings.saving,
                               ),
                             ),
@@ -280,13 +363,13 @@ class _SettingsPageState extends State<SettingsPage> {
                             Icon(
                               Icons.info_outline,
                               size: 20,
-                              color: context.appColors.primary,
+                              color: context.bull.primary,
                             ),
                             const Gap(8),
-                            BBText(
+                            BullText(
                               context.loc.recoverbullLearnMore,
-                              style: context.font.bodyMedium,
-                              color: context.appColors.primary,
+                              style: context.bullText.bodyMedium,
+                              color: context.bull.primary,
                             ),
                           ],
                         ),

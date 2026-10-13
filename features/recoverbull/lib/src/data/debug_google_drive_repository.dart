@@ -1,3 +1,4 @@
+import 'mappers/encrypted_vault_mapper.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -24,7 +25,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
       final vault = _fixture(i);
       final id = 'debug-file-$i';
       _files[id] = _DebugDriveFile(
-        content: vault.toFile(),
+        content: EncryptedVaultMapper.fromEntity(vault).toFile(),
         createdAt: vault.createdAt.toUtc(),
       );
     }
@@ -123,27 +124,26 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
     final file = _files.values.reduce(
       (a, b) => a.createdAt.isAfter(b.createdAt) ? a : b,
     );
-    return Ok(EncryptedVault(file: file.content));
+    return Ok(EncryptedVaultMapper.parse(file.content));
   }
 
   @override
-  Future<Result<Null, RecoverBullFailure>> store(String content) =>
-      _serialized(() => _storeUnlocked(content));
+  Future<Result<Null, RecoverBullFailure>> store(EncryptedVault vault) =>
+      _serialized(() => _storeUnlocked(vault));
 
   Future<Result<Null, RecoverBullFailure>> _storeUnlocked(
-    String content,
+    EncryptedVault vault,
   ) async {
     if (!_connected) {
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
     try {
-      final vault = EncryptedVault(file: content);
       _files['debug-file-${_nextId++}'] = _DebugDriveFile(
-        content: vault.toFile(),
+        content: EncryptedVaultMapper.fromEntity(vault).toFile(),
         createdAt: vault.createdAt.toUtc(),
       );
       return const Ok(null);
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -181,7 +181,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
       'ciphertext': base64Encode(bytes),
       'path': "m/83696968'/0'/0'",
     });
-    return EncryptedVault(file: raw);
+    return EncryptedVaultMapper.parse(raw);
   }
 }
 
@@ -193,11 +193,14 @@ final class _DebugSession implements GoogleDriveDiscoverySession {
   const _DebugSession(this.repository, this.account);
 
   @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+
+  @override
   Future<List<DriveFileMetadata>> fetchAllMetadata() async {
     final result = await repository._fetchAllMetadataUnlocked();
     return switch (result) {
       Ok(:final value) => value,
-      Err() => throw StateError('Drive metadata unavailable'),
+      Err() => throw Exception('Drive metadata unavailable'),
     };
   }
 
@@ -206,7 +209,7 @@ final class _DebugSession implements GoogleDriveDiscoverySession {
     final result = await repository._fetchRawFileUnlocked(fileId);
     return switch (result) {
       Ok(:final value) => value,
-      Err() => throw StateError('Drive content unavailable'),
+      Err() => throw Exception('Drive content unavailable'),
     };
   }
 }

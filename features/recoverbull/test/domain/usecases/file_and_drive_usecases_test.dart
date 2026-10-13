@@ -1,4 +1,5 @@
-import 'package:bull_recoverbull/src/data/file_system_repository.dart';
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import 'package:bull_recoverbull/src/domain/repositories/file_system_repository.dart';
 import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -36,7 +37,7 @@ void main() {
 
   group('PickVaultUsecase', () {
     test('returns the picked vault', () async {
-      final vault = EncryptedVault(file: vaultFile);
+      final vault = EncryptedVaultMapper.parse(vaultFile);
       when(() => files.pickVault()).thenAnswer((_) async => Ok(vault));
 
       final result = await PickVaultUsecase(
@@ -63,27 +64,29 @@ void main() {
   });
 
   group('SaveFileToSystemUsecase', () {
-    test('delegates content and filename and returns Ok', () async {
+    test('delegates the vault and returns Ok', () async {
+      final vault = EncryptedVaultMapper.parse(vaultFile);
       when(
-        () => files.saveFile('content', 'name.json'),
+        () => files.saveVault(vault),
       ).thenAnswer((_) async => const Ok(null));
 
       final result = await SaveFileToSystemUsecase(
         fileSystemRepository: files,
-      ).execute(content: 'content', filename: 'name.json');
+      ).execute(vault: vault);
 
       expect(result, isA<Ok<Null, RecoverBullFailure>>());
-      verify(() => files.saveFile('content', 'name.json')).called(1);
+      verify(() => files.saveVault(vault)).called(1);
     });
 
     test('propagates the repository failure', () async {
+      final vault = EncryptedVaultMapper.parse(vaultFile);
       when(
-        () => files.saveFile(any(), any()),
+        () => files.saveVault(vault),
       ).thenAnswer((_) async => const Err(failure));
 
       final result = await SaveFileToSystemUsecase(
         fileSystemRepository: files,
-      ).execute(content: 'c', filename: 'f');
+      ).execute(vault: vault);
 
       expect((result as Err<Null, RecoverBullFailure>).failure, failure);
     });
@@ -210,7 +213,7 @@ void main() {
 
   group('FetchVaultFromDriveUsecase', () {
     test('fetches the vault by the metadata id', () async {
-      final vault = EncryptedVault(file: vaultFile);
+      final vault = EncryptedVaultMapper.parse(vaultFile);
       when(
         () => drive.fetchVault('file-id'),
       ).thenAnswer((_) async => Ok(vault));

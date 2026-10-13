@@ -251,10 +251,6 @@
   },
   "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
   "recoverbullSettingsUrlInvalid": "URL বৈধ নহয়",
-  "recoverbullErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি, লগ চাওক",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull-ৰ সংযোগ পৰীক্ষা কৰা হৈছে",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -483,5 +479,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor-ৰ জৰিয়তে Key Server-ত সংযোগ কৰা হৈছে। ইয়াত এক মিনিট পৰ্যন্ত লাগিব পাৰে।",
-  "recoverbullMonitoringDisableCancel": "বাতিল কৰক"
+  "recoverbullMonitoringDisableCancel": "বাতিল কৰক",
+  "recoverbullMonitoringServerUnsupported": "এই ছাৰ্ভাৰে প্ৰচেষ্টাৰ নিৰীক্ষণ সমৰ্থন নকৰে। আপুনি এতিয়াও ভল্টৰ বেকআপ ল’ব আৰু পুনৰুদ্ধাৰ কৰিব পাৰে।"
 }

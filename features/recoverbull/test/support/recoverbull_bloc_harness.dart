@@ -1,3 +1,11 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import 'package:bull_recoverbull/src/domain/usecases/select_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/save_vault_to_provider_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/create_and_store_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/complete_vault_recovery_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/decrypt_and_accept_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/manage_recoverbull_connection_usecase.dart';
+import 'monitoring_repository.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -73,8 +81,8 @@ class MockVerifyVault extends Mock implements VerifyDecryptedVaultUsecase {}
 EncryptedVault fixtureVault({
   int keyByte = 9,
   List<int> secret = const [1, 2, 3],
-}) => EncryptedVault(
-  file: sdk.RecoverBull.createBackup(
+}) => EncryptedVaultMapper.parse(
+  sdk.RecoverBull.createBackup(
     secret: secret,
     backupKey: List<int>.filled(32, keyByte),
   ).toJson(),
@@ -167,33 +175,53 @@ RecoverBullBloc buildBloc({
   log: log ?? const TestLogSink(),
   flow: flow,
   preSelectedVault: preSelectedVault,
-  pickVaultUsecase: pickVault,
-  saveFileToSystemUsecase: saveFile,
-  createEncryptedVaultUsecase: createVault,
-  storeVaultKeyIntoServerUsecase: storeKey,
-  registerMonitoredBackupUsecase: RegisterMonitoredBackupUsecase(
-    attemptMonitoringStore,
+  selectVaultUsecase: SelectVaultUsecase(
+    pick: pickVault,
+    connectDrive: connectDrive,
+    latestDrive: fetchLatestDrive,
   ),
-  trashVaultKeyUsecase: trashVaultKeyUsecase,
-  checkKeyServerConnectionUsecase: checkConnection,
-  connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+  secureVaultUsecase: CreateAndStoreVaultUsecase(
+    log: log ?? const TestLogSink(),
+    create: createVault,
     check: checkConnection,
-    ensureTor: ensureRecoverBullTorSession,
-    log: const TestLogSink(),
-    wait: (_) async {},
-    maxAttempts: maxAttempts,
+    storeKey: storeKey,
+    save: SaveVaultToProviderUsecase(
+      log: log ?? const TestLogSink(),
+      saveFile: saveFile,
+      connectDrive: connectDrive,
+      saveDrive: saveDrive,
+      registerBackup: RegisterMonitoredBackupUsecase(
+        monitoringRepository(attemptMonitoringStore),
+      ),
+      lifecycle: lifecycle,
+    ),
+    trash: trashVaultKeyUsecase,
   ),
-  fetchVaultKeyFromServerUsecase: fetchKey,
-  decryptVaultUsecase: decrypt,
-  restoreVaultUsecase: restore,
-  connectToGoogleDriveUsecase: connectDrive,
-  saveToGoogleDriveUsecase: saveDrive,
-  ensureRecoverBullTorSessionUsecase: ensureRecoverBullTorSession,
-  onWalletUpdated: onWalletUpdated,
-  fetchLatestGoogleDriveVaultUsecase: fetchLatestDrive,
-  watchTorConnectionUsecase: watchTor,
-  lifecycle: lifecycle,
-  verifyDecryptedVaultUsecase: verifyDecryptedVaultUsecase ?? verifyVault,
-  now: now,
-  scheduleTimer: scheduleTimer,
+  acceptVaultUsecase: DecryptAndAcceptVaultUsecase(
+    log: log ?? const TestLogSink(),
+    fetch: fetchKey,
+    decrypt: decrypt,
+    verify: verifyDecryptedVaultUsecase ?? verifyVault,
+    lifecycle: lifecycle,
+    recover: CompleteVaultRecoveryUsecase(
+      log: log ?? const TestLogSink(),
+      restore: restore,
+      lifecycle: lifecycle,
+      onWalletUpdated: onWalletUpdated,
+    ),
+  ),
+  connectionUsecase: ManageRecoverBullConnectionUsecase(
+    log: log ?? const TestLogSink(),
+    connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureRecoverBullTorSession,
+      log: log ?? const TestLogSink(),
+      wait: (_) async {},
+      maxAttempts: maxAttempts,
+    ),
+    ensureRecoverBullTorSessionUsecase: ensureRecoverBullTorSession,
+    watchTorConnectionUsecase: watchTor,
+    now: now,
+    scheduleTimer: scheduleTimer,
+  ),
 );

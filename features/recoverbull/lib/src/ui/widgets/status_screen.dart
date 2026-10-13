@@ -1,9 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import 'bull_aliases.dart';
 import 'progress_screen.dart';
-import 'with_bull_theme.dart';
 
 /// Root's loading/success/error state machine, using BullButton for actions.
 class StatusScreen extends StatelessWidget {
@@ -31,19 +28,18 @@ class StatusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showAction = !isLoading && onTap != null;
-    return Scaffold(
-      backgroundColor: context.appColors.surface,
+    return BullScaffold(
       body: _StackedPage(
         bottomChild: showAction
-            ? BBButton.big(
+            ? BullButton.big(
                 label:
                     buttonText ??
                     (hasError
                         ? context.loc.statusScreenTryAgain
                         : context.loc.statusScreenContinue),
                 onPressed: onTap!,
-                textColor: context.appColors.onSecondary,
-                bgColor: context.appColors.secondary,
+                textColor: context.bull.onSecondary,
+                bgColor: context.bull.secondary,
               )
             : const SizedBox.shrink(),
         child: SafeArea(
@@ -56,7 +52,7 @@ class StatusScreen extends StatelessWidget {
                     Icon(
                       Icons.error_outline_rounded,
                       size: 80,
-                      color: context.appColors.error,
+                      color: context.bull.error,
                     ),
                   ProgressScreen(
                     title: hasError
@@ -107,8 +103,8 @@ class _StackedPage extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                context.appColors.onSecondary.withValues(alpha: 0),
-                context.appColors.onSecondary,
+                context.bull.onSecondary.withValues(alpha: 0),
+                context.bull.onSecondary,
               ],
               stops: const [0.0, 0.3],
             ),

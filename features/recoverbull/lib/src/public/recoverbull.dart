@@ -1,9 +1,21 @@
+import '../domain/entities/attempt_monitoring_state.dart';
+import '../domain/entities/monitored_backup.dart';
+import '../domain/entities/recoverbull_monitoring_status.dart';
+export '../domain/entities/recoverbull_monitoring_status.dart';
+import '../domain/recoverbull_monitoring_settings_port.dart';
+import '../domain/recoverbull_failure.dart';
+import '../domain/usecases/load_recoverbull_monitoring_status_usecase.dart';
+import '../domain/usecases/change_recoverbull_monitoring_enabled_usecase.dart';
+export '../domain/usecases/load_recoverbull_monitoring_status_usecase.dart';
+export '../domain/usecases/change_recoverbull_monitoring_enabled_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import '../domain/entities/attempt_monitoring_snapshot.dart';
+import '../domain/repositories/recoverbull_attempt_monitoring_repository.dart';
 import '../domain/usecases/check_backup_attempt_monitoring_usecase.dart';
 import '../domain/entities/attempt_alert.dart' as domain_alert;
 import '../domain/recoverbull_attempt_alert_port.dart';
@@ -36,21 +48,6 @@ final class RecoverBullConfig {
 }
 
 enum RecoverBullHealth { online, offline, timeout, temporarilyUnavailable }
-
-@immutable
-final class RecoverBullMonitoringStatus {
-  final bool enabled;
-  final int monitoredCount;
-  final DateTime? lastSuccessfulCheck;
-
-  const RecoverBullMonitoringStatus({
-    required this.enabled,
-    required this.monitoredCount,
-    required this.lastSuccessfulCheck,
-  });
-
-  bool get isUncovered => monitoredCount == 0;
-}
 
 enum RecoverBullAttemptAlertKind {
   suspiciousActivity,
@@ -134,7 +131,7 @@ final class RecoverBullAttemptMonitoring
     implements
         RecoverBullAttemptMonitoringController,
         RecoverBullAttemptAlertPort {
-  final RecoverBullAttemptMonitoringStore _store;
+  final RecoverBullAttemptMonitoringRepository _store;
   final LogSink? _log;
   final Future<RecoverBullAttemptsSnapshot?> Function({
     required String? etag,
@@ -165,7 +162,7 @@ final class RecoverBullAttemptMonitoring
   /// Opens the controller with the acknowledgements recorded by previous
   /// sessions, so a dismissed alert is not raised again for the same window.
   static Future<RecoverBullAttemptMonitoring> open(
-    RecoverBullAttemptMonitoringStore store, {
+    RecoverBullAttemptMonitoringRepository store, {
     bool enabled = false,
     Future<RecoverBullAttemptsSnapshot?> Function({
       required String? etag,
@@ -178,21 +175,45 @@ final class RecoverBullAttemptMonitoring
     enabled: enabled,
     poll: poll,
     log: log,
-    acknowledged: await store.acknowledgedAlertIdentities(),
+    acknowledged: (await store.acknowledgedAlertIdentities()).fold(
+      (value) => value,
+      (_) => const <String>{},
+    ),
   );
 
   @override
   bool get enabled => _enabled;
 
-  @override
-  Future<RecoverBullMonitoringStatus> status() async {
-    final state = await _store.state();
-    return RecoverBullMonitoringStatus(
-      enabled: state.attemptMonitoringEnabled,
-      monitoredCount: (await _store.monitoredBackups()).length,
-      lastSuccessfulCheck: state.lastSuccessfulCheckAt,
+  Future<Result<RecoverBullMonitoringStatus, RecoverBullFailure>>
+  statusResult() async {
+    final stateResult = await _store.state();
+    if (stateResult case Err(:final failure)) return Err(failure);
+    final rowsResult = await _store.monitoredBackups();
+    if (rowsResult case Err(:final failure)) return Err(failure);
+    final state =
+        (stateResult as Ok<AttemptMonitoringState, RecoverBullFailure>).value;
+    final rows =
+        (rowsResult as Ok<List<MonitoredBackup>, RecoverBullFailure>).value;
+    return Ok(
+      RecoverBullMonitoringStatus(
+        enabled: state.attemptMonitoringEnabled,
+        serverUnsupported: state.attemptsUnsupportedAt(DateTime.now().toUtc()),
+        monitoredCount: rows.length,
+        lastSuccessfulCheck: state.lastSuccessfulCheckAt,
+      ),
     );
   }
+
+  @override
+  Future<RecoverBullMonitoringStatus> status() async =>
+      (await statusResult()).fold(
+        (value) => value,
+        (_) => RecoverBullMonitoringStatus(
+          enabled: _enabled,
+          monitoredCount: 0,
+          lastSuccessfulCheck: null,
+        ),
+      );
 
   @override
   Stream<List<RecoverBullAttemptAlert>> get alerts async* {
@@ -200,10 +221,18 @@ final class RecoverBullAttemptMonitoring
     yield* _alertUpdates.stream;
   }
 
+  Future<Result<RecoverBullMonitoringStatus, RecoverBullFailure>>
+  setEnabledResult(bool enabled) async {
+    final result = await _store.setEnabled(enabled);
+    if (result case Err(:final failure)) return Err(failure);
+    _enabled = enabled;
+    return statusResult();
+  }
+
   @override
   Future<void> setEnabled(bool enabled) async {
-    await _store.setEnabled(enabled);
-    _enabled = enabled;
+    final result = await setEnabledResult(enabled);
+    if (result case Err()) _log?.warning('recoverbull.attempts.enable.failed');
   }
 
   @override
@@ -236,16 +265,24 @@ final class RecoverBullAttemptMonitoring
   }) async {
     if (!_enabled || _poll == null) return const [];
     try {
-      final alerts =
-          (await CheckBackupAttemptMonitoringUsecase(
-                store: _store,
-                remote: _CallbackAttemptMonitoringRemote(_poll),
-              ).execute(forceRefresh: forceRefresh))
+      final result = await CheckBackupAttemptMonitoringUsecase(
+        store: _store,
+        remote: _CallbackAttemptMonitoringRemote(_poll),
+      ).execute(forceRefresh: forceRefresh);
+      final alerts = switch (result) {
+        Ok(:final value) =>
+          value
               .map(_publicAlert)
               .where(
                 (alert) => !_acknowledgedIdentities.contains(alert.identity),
               )
-              .toList(growable: false);
+              .toList(growable: false),
+        Err() => [
+          _publicAlert(
+            const domain_alert.AttemptMonitoringUnavailableAlert(since: null),
+          ),
+        ],
+      };
       _log?.fine(
         'recoverbull.attempts.monitoring.succeeded '
         'alert_count=${alerts.length} force_refresh=$forceRefresh',
@@ -261,7 +298,7 @@ final class RecoverBullAttemptMonitoring
         _alertUpdates.add(List.unmodifiable(_visibleAlerts));
       }
       return alerts;
-    } catch (error) {
+    } on Exception catch (error) {
       _log?.warning(
         'recoverbull.attempts.monitoring.failed '
         'error_type=${error.runtimeType}',
@@ -349,11 +386,14 @@ final class RecoverBullAttemptMonitoring
     // unavailability alert has none and must be able to alert again later.
     if (alert.windowStartedAt != null) {
       try {
-        await _store.acknowledgeAlert(
+        final result = await _store.acknowledgeAlert(
           alert.identity,
           at: DateTime.now().toUtc(),
         );
-      } catch (error) {
+        if (result case Err()) {
+          _log?.warning('recoverbull.attempts.acknowledge.failed');
+        }
+      } on Exception catch (error) {
         _log?.warning(
           'recoverbull.attempts.acknowledge.failed '
           'error_type=${error.runtimeType}',
@@ -394,4 +434,66 @@ final class RecoverBullRecoveryResult {
   final bool restored;
 
   const RecoverBullRecoveryResult({required this.restored});
+}
+
+/// Settings consumers call domain usecases while the controller stays public.
+({
+  LoadRecoverBullMonitoringStatusUsecase load,
+  ChangeRecoverBullMonitoringEnabledUsecase change,
+})
+createRecoverBullMonitoringSettingsUsecases(
+  RecoverBullAttemptMonitoringController controller, {
+  required LogSink log,
+}) {
+  final port = _ControllerMonitoringSettingsPort(controller, log);
+  return (
+    load: LoadRecoverBullMonitoringStatusUsecase(port),
+    change: ChangeRecoverBullMonitoringEnabledUsecase(port),
+  );
+}
+
+final class _ControllerMonitoringSettingsPort
+    implements RecoverBullMonitoringSettingsPort {
+  final RecoverBullAttemptMonitoringController controller;
+  final LogSink log;
+
+  const _ControllerMonitoringSettingsPort(this.controller, this.log);
+
+  @override
+  Future<Result<RecoverBullMonitoringStatus, RecoverBullFailure>>
+  status() async {
+    if (controller case RecoverBullAttemptMonitoring monitor) {
+      return monitor.statusResult();
+    }
+    try {
+      return Ok(await controller.status());
+    } on Exception catch (error) {
+      log.warning(
+        'recoverbull.monitoring.settings.load_failed error_type=${error.runtimeType}',
+      );
+      return const Err(
+        RecoverBullUnexpectedFailure('Monitoring settings unavailable'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<RecoverBullMonitoringStatus, RecoverBullFailure>> setEnabled(
+    bool enabled,
+  ) async {
+    if (controller case RecoverBullAttemptMonitoring monitor) {
+      return monitor.setEnabledResult(enabled);
+    }
+    try {
+      await controller.setEnabled(enabled);
+      return status();
+    } on Exception catch (error) {
+      log.warning(
+        'recoverbull.monitoring.settings.save_failed error_type=${error.runtimeType}',
+      );
+      return const Err(
+        RecoverBullUnexpectedFailure('Monitoring settings unavailable'),
+      );
+    }
+  }
 }

@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
   "recoverbullSettingsUrlInvalid": "URL मान्य नहीं है",
-  "recoverbullErrorUnexpected": "Unexpected त्रुटि, लॉग देखें",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor पर कुंजी सर्वर से जुड़ना। यह एक मिनट तक ले सकता है।।",
-  "recoverbullMonitoringDisableCancel": "रद्द करें"
+  "recoverbullMonitoringDisableCancel": "रद्द करें",
+  "recoverbullMonitoringServerUnsupported": "यह सर्वर प्रयासों की निगरानी का समर्थन नहीं करता। आप अब भी वॉल्ट का बैकअप ले सकते हैं और उन्हें पुनर्स्थापित कर सकते हैं।"
 }

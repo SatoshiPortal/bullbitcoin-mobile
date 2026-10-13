@@ -1,8 +1,8 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_recoverbull/src/data/recoverbull_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -43,7 +43,7 @@ void main() {
     for (final entry in cases.entries) {
       test('restores the mnemonic of the ${entry.key} vault', () {
         final result = repository.restoreVault(
-          vault: EncryptedVault(file: entry.value.$1),
+          vault: EncryptedVaultMapper.parse(entry.value.$1),
           vaultKey: entry.value.$2,
         );
 
@@ -57,18 +57,18 @@ void main() {
 
     test('exposes the derivation path of each fixture', () {
       expect(
-        EncryptedVault(file: oldFixture).derivationPath,
+        EncryptedVaultMapper.parse(oldFixture).derivationPath,
         "m/1608'/0'/586053381",
       );
       expect(
-        EncryptedVault(file: newFixture).derivationPath,
+        EncryptedVaultMapper.parse(newFixture).derivationPath,
         "1608'/0'/632486385'",
       );
     });
 
     test('rejects a vault restored with the other fixture key', () {
       final result = repository.restoreVault(
-        vault: EncryptedVault(file: oldFixture),
+        vault: EncryptedVaultMapper.parse(oldFixture),
         vaultKey: newKey,
       );
 

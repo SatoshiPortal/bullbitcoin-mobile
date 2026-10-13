@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_recoverbull/src/data/datasources/google_drive_datasource.dart';
 import 'package:bull_recoverbull/src/data/models/drive_file_metadata_model.dart';
@@ -46,7 +47,7 @@ void main() {
         nextPageToken: 'same',
       ),
     );
-    await expectLater(repeated.fetchAllMetadata(), throwsStateError);
+    await expectLater(repeated.fetchAllMetadata(), throwsFormatException);
   });
 
   test(
@@ -80,7 +81,10 @@ void main() {
         Err() => throw StateError('fake content failed'),
       };
       expect(await fake.fetchLatestVault(), isA<Ok>());
-      expect(await fake.store(firstContent), isA<Ok>());
+      expect(
+        await fake.store(EncryptedVaultMapper.parse(firstContent)),
+        isA<Ok>(),
+      );
       final afterStore = await fake.fetchAllMetadata();
       expect(switch (afterStore) {
         Ok(:final value) => value.length,
@@ -97,7 +101,10 @@ void main() {
       await fake.disconnect();
       expect(await fake.fetchAllMetadata(), isA<Err>());
       expect(await fake.fetchLatestVault(), isA<Err>());
-      expect(await fake.store(firstContent), isA<Err>());
+      expect(
+        await fake.store(EncryptedVaultMapper.parse(firstContent)),
+        isA<Err>(),
+      );
       expect(await fake.trash(files.last.id), isA<Err>());
       expect(await fake.connectSilently(), 'recoverbull.debug@example.invalid');
       expect(await fake.fetchAllMetadata(), isA<Ok>());

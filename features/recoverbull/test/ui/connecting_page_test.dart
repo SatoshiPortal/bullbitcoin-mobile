@@ -1,3 +1,4 @@
+import 'package:bull_ui/testing.dart';
 import 'dart:async';
 
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
@@ -73,7 +74,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -408,7 +409,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -457,7 +458,7 @@ void main() {
     final bloc = _MutableBloc(initial);
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -498,7 +499,7 @@ void main() {
     final bloc = _MutableBloc(initial);
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -525,7 +526,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -714,7 +715,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -761,7 +762,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -811,7 +812,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -928,7 +929,7 @@ void main() {
       BlocProvider<RecoverBullBloc>.value(
         value: bloc,
         child: MaterialApp(
-          theme: ThemeData(),
+          theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,

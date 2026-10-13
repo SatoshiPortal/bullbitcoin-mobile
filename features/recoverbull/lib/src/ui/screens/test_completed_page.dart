@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/recoverbull_navigation_port.dart';
+import 'package:bull_ui/bull_ui.dart';
 import '../../l10n/context_localizations.dart';
 import '../widgets/backup_success_screen.dart';
-import 'package:go_router/go_router.dart';
 
 class TestCompletedPage extends StatelessWidget {
   const TestCompletedPage({super.key});
@@ -12,7 +13,7 @@ class TestCompletedPage extends StatelessWidget {
       title: context.loc.recoverbullTestCompletedTitle,
       message: context.loc.recoverbullTestSuccessDescription,
       buttonLabel: context.loc.recoverbullGotIt,
-      onTap: () => context.go('/wallet'),
+      onTap: () => context.read<RecoverBullNavigationPort>().openWalletHome(),
     );
   }
 }

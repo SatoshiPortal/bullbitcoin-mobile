@@ -1,41 +1,66 @@
-// Public constructor names differ from private backing fields to preserve immutable views.
-// ignore_for_file: prefer_initializing_formals
-
-import 'dart:collection';
-
-import 'package:dart_mappable/dart_mappable.dart';
-
-part 'decrypted_vault.mapper.dart';
-
-@MappableClass(
-  generateMethods:
-      GenerateMethods.decode | GenerateMethods.equals | GenerateMethods.copy,
-)
-final class DecryptedVault with DecryptedVaultMappable {
-  final List<String> _mnemonic;
+/// Decrypted vault values. Serialization stays at the data boundary.
+final class DecryptedVault {
+  static const _unchanged = Object();
+  final List<String> mnemonic;
   final String masterFingerprint;
   final bool isEncryptedVaultTested;
   final bool isPhysicalBackupTested;
   final DateTime? latestEncryptedBackup;
   final DateTime? latestPhysicalBackup;
 
-  const DecryptedVault({
+  DecryptedVault({
     List<String> mnemonic = const [],
-    // TODO(azad): masterFingerprint should be computed from mnemonic
     this.masterFingerprint = '',
     this.isEncryptedVaultTested = false,
     this.isPhysicalBackupTested = false,
     this.latestEncryptedBackup,
     this.latestPhysicalBackup,
-  }) : _mnemonic = mnemonic;
+  }) : mnemonic = List.unmodifiable(mnemonic);
 
-  factory DecryptedVault.fromJson(Map<String, dynamic> json) =>
-      DecryptedVaultMapper.fromMap(json);
+  DecryptedVault copyWith({
+    List<String>? mnemonic,
+    String? masterFingerprint,
+    bool? isEncryptedVaultTested,
+    bool? isPhysicalBackupTested,
+    Object? latestEncryptedBackup = _unchanged,
+    Object? latestPhysicalBackup = _unchanged,
+  }) => DecryptedVault(
+    mnemonic: mnemonic ?? this.mnemonic,
+    masterFingerprint: masterFingerprint ?? this.masterFingerprint,
+    isEncryptedVaultTested:
+        isEncryptedVaultTested ?? this.isEncryptedVaultTested,
+    isPhysicalBackupTested:
+        isPhysicalBackupTested ?? this.isPhysicalBackupTested,
+    latestEncryptedBackup: identical(latestEncryptedBackup, _unchanged)
+        ? this.latestEncryptedBackup
+        : latestEncryptedBackup as DateTime?,
+    latestPhysicalBackup: identical(latestPhysicalBackup, _unchanged)
+        ? this.latestPhysicalBackup
+        : latestPhysicalBackup as DateTime?,
+  );
 
-  List<String> get mnemonic => UnmodifiableListView(_mnemonic);
+  @override
+  bool operator ==(Object other) =>
+      other is DecryptedVault &&
+      mnemonic.length == other.mnemonic.length &&
+      Iterable<int>.generate(
+        mnemonic.length,
+      ).every((i) => mnemonic[i] == other.mnemonic[i]) &&
+      masterFingerprint == other.masterFingerprint &&
+      isEncryptedVaultTested == other.isEncryptedVaultTested &&
+      isPhysicalBackupTested == other.isPhysicalBackupTested &&
+      latestEncryptedBackup == other.latestEncryptedBackup &&
+      latestPhysicalBackup == other.latestPhysicalBackup;
 
-  Map<String, dynamic> toJson() =>
-      DecryptedVaultMapper.ensureInitialized().encodeMap<DecryptedVault>(this);
+  @override
+  int get hashCode => Object.hash(
+    Object.hashAll(mnemonic),
+    masterFingerprint,
+    isEncryptedVaultTested,
+    isPhysicalBackupTested,
+    latestEncryptedBackup,
+    latestPhysicalBackup,
+  );
 
   @override
   String toString() => 'DecryptedVault(<redacted>)';

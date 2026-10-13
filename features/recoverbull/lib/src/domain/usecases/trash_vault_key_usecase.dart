@@ -56,8 +56,8 @@ final class TrashVaultKeyUsecase {
             final alert = await recordAttempt?.recordTargetedLockout(
               backupIdHex: vault.id,
             );
-            if (alert != null) alertPort?.publish(alert);
-          } catch (error, _) {
+            if (alert case Ok(value: final value?)) alertPort?.publish(value);
+          } on Exception catch (error, _) {
             log.warning(
               'recoverbull.attempts.monitoring.update.failed '
               'error_type=${error.runtimeType}',
@@ -70,8 +70,11 @@ final class TrashVaultKeyUsecase {
         // The server already deleted the key: forgetting the backup locally is
         // advisory and must not turn that outcome into an exception.
         try {
-          await recordAttempt?.store.removeBackup(vault.id);
-        } catch (error, _) {
+          final removed = await recordAttempt?.store.removeBackup(vault.id);
+          if (removed case Err()) {
+            log.warning('recoverbull.attempts.monitoring.remove.failed');
+          }
+        } on Exception catch (error, _) {
           log.warning(
             'recoverbull.attempts.monitoring.remove.failed '
             'error_type=${error.runtimeType}',
@@ -83,7 +86,7 @@ final class TrashVaultKeyUsecase {
       if (ownsRoute) {
         try {
           await route.close();
-        } catch (error, _) {
+        } on Exception catch (error, _) {
           log.warning(
             'recoverbull.tor.session.close.failed error_type=${error.runtimeType}',
           );

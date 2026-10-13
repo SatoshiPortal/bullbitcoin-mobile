@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "Conecta-se diretamente à rede Tor, sem pluggable transport.",
   "recoverbullSettingsUrlInvalid": "O URL não é válido",
-  "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor. Isto pode demorar até um minuto.",
-  "recoverbullMonitoringDisableCancel": "Cancelar"
+  "recoverbullMonitoringDisableCancel": "Cancelar",
+  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres."
 }

@@ -120,7 +120,6 @@
   "recoverbullPIN": "NIP",
   "torSettingsModeDirectDescription": "Se connecte directement au réseau Tor, sans transport enfichable.",
   "recoverbullSettingsUrlInvalid": "L'URL n'est pas valide",
-  "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
   "recoverbullCheckingConnection": "Vérification de la connexion pour RecoverBull",
   "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
   "recoverbullGoBackEdit": "<< Retour pour modifier",
@@ -275,5 +274,6 @@
   "recoverbullErrorOnionUnavailable": "Le serveur de clés est inaccessible. Veuillez réessayer plus tard.",
   "recoverbullErrorServiceRefused": "Le serveur de clés a refusé la connexion. Veuillez réessayer plus tard.",
   "recoverbullErrorConnectionBudget": "Le serveur de clés a mis trop de temps à répondre. Veuillez réessayer.",
-  "recoverbullErrorConnectionUnknown": "Le serveur de clés n’a pas pu être joint. Veuillez réessayer."
+  "recoverbullErrorConnectionUnknown": "Le serveur de clés n’a pas pu être joint. Veuillez réessayer.",
+  "recoverbullMonitoringServerUnsupported": "Ce serveur ne prend pas en charge le suivi des tentatives. Vous pouvez toujours sauvegarder et restaurer des coffres."
 }

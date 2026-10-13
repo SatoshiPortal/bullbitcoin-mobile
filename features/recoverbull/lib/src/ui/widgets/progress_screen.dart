@@ -1,7 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:gif/gif.dart';
-import 'bull_aliases.dart';
-import 'with_bull_theme.dart';
 
 /// The root progress layout, retained locally because it combines the package
 /// progress primitive with RecoverBull's loading animation and copy.
@@ -34,9 +32,9 @@ class ProgressScreen extends StatelessWidget {
           ],
           if (title != null) ...[
             const SizedBox(height: BullSpacing.md),
-            BBText(
+            BullText(
               title!,
-              style: context.font.headlineLarge?.copyWith(
+              style: context.bullText.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -44,9 +42,9 @@ class ProgressScreen extends StatelessWidget {
           ],
           if (description != null) ...[
             const SizedBox(height: BullSpacing.md),
-            BBText(
+            BullText(
               description!,
-              style: context.font.bodySmall,
+              style: context.bullText.bodySmall,
               maxLines: 3,
               textAlign: TextAlign.center,
             ),

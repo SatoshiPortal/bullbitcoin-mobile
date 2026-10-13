@@ -1,3 +1,7 @@
+import 'mappers/encrypted_vault_mapper.dart';
+import 'mappers/decrypted_vault_mapper.dart';
+import 'models/decrypted_vault_model.dart';
+import '../domain/recoverbull_server_url.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -12,7 +16,6 @@ import '../domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:convert/convert.dart' as convert;
-import '../utils/recoverbull_bip85.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import '../domain/repositories/recoverbull_repository.dart';
 import '../domain/entities/key_server_attempts.dart';
@@ -22,14 +25,11 @@ import '../domain/recoverbull_tor_route.dart';
 import 'package:bull_tor/tor.dart';
 
 ({String file, String vaultKey}) _createVaultInWorker(
-  String rootXprv,
+  String backupKey,
   String plaintext,
   String derivationPath,
 ) {
-  final vaultKey = RecoverbullBip85Utils.deriveBackupKey(
-    rootXprv,
-    derivationPath,
-  );
+  final vaultKey = backupKey;
   final encryptedBackup = RecoverBullDatasource.create(
     utf8.encode(plaintext),
     convert.hex.decode(vaultKey),
@@ -63,25 +63,26 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     this._recoverbullSettingsDatasource,
   );
 
-  /// Derives the BIP85 key from [rootXprv], encrypts [plaintext], and stamps the
-  /// [derivationPath] into the resulting vault. Assembly stays at this data
-  /// boundary; the worker receives no repository or external resource.
+  /// Encrypts [plaintext] with its point-of-use derived [backupKey] and stamps the [derivationPath] into the resulting vault. Assembly stays at this data boundary; the worker receives no repository or external resource.
   @override
   Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   createVault({
-    required String rootXprv,
-    required String plaintext,
+    required String backupKey,
+    required DecryptedVault plaintext,
     required String derivationPath,
   }) async {
     try {
+      final encodedPayload = json.encode(
+        DecryptedVaultMapper.fromEntity(plaintext).toMap(),
+      );
       final created = await Isolate.run(
-        () => _createVaultInWorker(rootXprv, plaintext, derivationPath),
+        () => _createVaultInWorker(backupKey, encodedPayload, derivationPath),
       );
       return Ok((
-        vault: EncryptedVault(file: created.file),
+        vault: EncryptedVaultMapper.parse(created.file),
         vaultKey: created.vaultKey,
       ));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.error(
         'recoverbull.vault.create.unexpected error_type=${e.runtimeType}',
         trace: st,
@@ -99,13 +100,18 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   }) {
     try {
       final decryptedBytes = RecoverBullDatasource.restore(
-        vault.toFile(),
+        EncryptedVaultMapper.fromEntity(vault).toFile(),
         convert.hex.decode(_normalizeHex(vaultKey)),
       );
       final plaintext = utf8.decode(decryptedBytes);
-      final decoded = json.decode(plaintext) as Map<String, dynamic>;
-      return Ok(DecryptedVault.fromJson(decoded));
-    } catch (e, st) {
+      final decoded = json.decode(plaintext);
+      if (decoded is! Map<String, dynamic>) {
+        return const Err(RecoverBullUnexpectedFailure('Invalid vault payload'));
+      }
+      return Ok(
+        DecryptedVaultMapper.toEntity(DecryptedVaultModel.fromMap(decoded)),
+      );
+    } on Exception catch (e, st) {
       log.error(
         'recoverbull.vault.restore.unexpected error_type=${e.runtimeType}',
         trace: st,
@@ -142,7 +148,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     } on TimeoutException {
       log.warning('recoverbull.key.store.timeout');
       return const Err(KeyServerUnavailableFailure());
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       final cause = attempt.take();
       if (cause != null) {
         log.warning(
@@ -189,7 +195,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     } on TimeoutException {
       log.warning('recoverbull.key.fetch.timeout');
       return const Err(KeyServerUnavailableFailure());
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       final cause = attempt.take();
       if (cause != null) {
         log.warning(
@@ -237,7 +243,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         'attempts_remaining=${attemptStatus?.remainingAttempts ?? 'unknown'}',
       );
       return Ok(_mapFetchResult(result));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       final cause = attempt.take();
       if (e is recoverbull.KeyServerException) {
         _logKeyServer('fetch', e, st, cause: cause);
@@ -282,7 +288,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       log.fine('recoverbull.key.trash.succeeded');
       return Ok(_mapFetchResult(result));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       final cause = attempt.take();
       if (e is recoverbull.KeyServerException) {
         _logKeyServer('trash', e, st, cause: cause);
@@ -364,7 +370,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
             ? _mapSocksConnectionFailure(cause!)
             : const KeyServerUnavailableFailure(),
       );
-    } catch (error, trace) {
+    } on Exception catch (error, trace) {
       final cause = attempt.take();
       if (cause != null) {
         log.warning(
@@ -451,25 +457,51 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     );
   }
 
-  @override
-  Future<Uri> fetchUrl() async {
-    return await _recoverbullSettingsDatasource.fetch();
+  /// Storage and permission failures are values at the data boundary.
+  Future<Result<T, RecoverBullFailure>> _settings<T>(
+    String operation,
+    Future<T> Function() action,
+  ) async {
+    try {
+      return Ok(await action());
+    } on Exception catch (error) {
+      log.warning(
+        'recoverbull.settings.$operation.failed error_type=${error.runtimeType}',
+      );
+      return const Err(
+        RecoverBullUnexpectedFailure('Settings operation failed'),
+      );
+    }
   }
 
   @override
-  Future<void> storeUrl(Uri url) async {
-    await _recoverbullSettingsDatasource.store(url);
+  Future<Result<Uri, RecoverBullFailure>> fetchUrl() =>
+      _settings('fetch_url', _recoverbullSettingsDatasource.fetch);
+
+  @override
+  Future<Result<Null, RecoverBullFailure>> storeUrl(Uri url) async {
+    // Invalid input is a recoverable value, not a caught programmer Error.
+    if (!isValidRecoverBullServerUrl(url)) {
+      return const Err(RecoverBullUnexpectedFailure('Invalid key server URL'));
+    }
+    return _settings('store_url', () async {
+      await _recoverbullSettingsDatasource.store(url);
+      return null;
+    });
   }
 
   @override
-  Future<void> allowPermission(bool isGranted) async {
-    await _recoverbullSettingsDatasource.allowPermission(isGranted);
-  }
+  Future<Result<Null, RecoverBullFailure>> allowPermission(bool isGranted) =>
+      _settings('allow_permission', () async {
+        await _recoverbullSettingsDatasource.allowPermission(isGranted);
+        return null;
+      });
 
   @override
-  Future<bool> fetchPermission() async {
-    return await _recoverbullSettingsDatasource.fetchPermission();
-  }
+  Future<Result<bool, RecoverBullFailure>> fetchPermission() => _settings(
+    'fetch_permission',
+    _recoverbullSettingsDatasource.fetchPermission,
+  );
 
   @override
   Future<RecoverBullStatus> fetchBackupStatus(
@@ -485,19 +517,27 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         lastEncryptedBackupAt: row.lastEncryptedBackupAt,
         lastVerifiedEncryptedBackupAt: row.lastVerifiedEncryptedBackupAt,
       );
-    } catch (e) {
+    } on Exception catch (e) {
       log.warning('recoverbull.status.unavailable error_type=${e.runtimeType}');
       return const RecoverBullStatus.unavailable();
     }
   }
 
   @override
-  Future<void> markBackupStored(RecoverBullNetwork network) =>
-      _recoverbullSettingsDatasource.markBackupStored(network);
+  Future<Result<Null, RecoverBullFailure>> markBackupStored(
+    RecoverBullNetwork network,
+  ) => _settings('mark_stored', () async {
+    await _recoverbullSettingsDatasource.markBackupStored(network);
+    return null;
+  });
 
   @override
-  Future<void> markBackupVerified(RecoverBullNetwork network) =>
-      _recoverbullSettingsDatasource.markBackupVerified(network);
+  Future<Result<Null, RecoverBullFailure>> markBackupVerified(
+    RecoverBullNetwork network,
+  ) => _settings('mark_verified', () async {
+    await _recoverbullSettingsDatasource.markBackupVerified(network);
+    return null;
+  });
 
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
   RecoverBullFailure _mapKeyServer(

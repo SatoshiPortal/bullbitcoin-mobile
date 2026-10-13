@@ -9,6 +9,6 @@ class SaveVaultToGoogleDriveUsecase {
   SaveVaultToGoogleDriveUsecase({required this._driveRepository});
 
   Future<Result<Null, RecoverBullFailure>> execute(EncryptedVault vault) {
-    return _driveRepository.store(vault.toFile());
+    return _driveRepository.store(vault);
   }
 }

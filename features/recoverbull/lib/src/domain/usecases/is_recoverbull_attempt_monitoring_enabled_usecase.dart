@@ -1,8 +1,10 @@
-import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
+import '../repositories/recoverbull_attempt_monitoring_repository.dart';
 
 final class IsRecoverbullAttemptMonitoringEnabledUsecase {
-  final RecoverBullAttemptMonitoringStore store;
+  final RecoverBullAttemptMonitoringRepository store;
   const IsRecoverbullAttemptMonitoringEnabledUsecase(this.store);
-  Future<bool> execute() async =>
-      (await store.state()).attemptMonitoringEnabled;
+  Future<Result<bool, RecoverBullFailure>> execute() async =>
+      (await store.state()).map((state) => state.attemptMonitoringEnabled);
 }

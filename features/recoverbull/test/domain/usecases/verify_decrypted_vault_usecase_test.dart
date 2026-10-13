@@ -80,7 +80,7 @@ void main() {
         ),
       );
       final mismatch = await usecase.execute(
-        decryptedVault: const DecryptedVault(
+        decryptedVault: DecryptedVault(
           masterFingerprint: '73c5da0a',
           mnemonic: [
             'legal',
@@ -104,7 +104,7 @@ void main() {
         network: null,
       ));
       final invalid = await usecase.execute(
-        decryptedVault: const DecryptedVault(masterFingerprint: '73c5da0a'),
+        decryptedVault: DecryptedVault(masterFingerprint: '73c5da0a'),
       );
       expect(invalid, isA<Err>());
     },

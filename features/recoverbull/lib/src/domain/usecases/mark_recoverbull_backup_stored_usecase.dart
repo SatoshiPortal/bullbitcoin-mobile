@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
 import '../entities/recoverbull_network.dart';
 import '../repositories/recoverbull_repository.dart';
 
@@ -6,6 +8,7 @@ final class MarkRecoverBullBackupStoredUsecase {
 
   const MarkRecoverBullBackupStoredUsecase(this._repository);
 
-  Future<void> execute(RecoverBullNetwork network) =>
-      _repository.markBackupStored(network);
+  Future<Result<Null, RecoverBullFailure>> execute(
+    RecoverBullNetwork network,
+  ) => _repository.markBackupStored(network);
 }

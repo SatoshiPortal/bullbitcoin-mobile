@@ -1,7 +1,5 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'dart:math' as math;
-
-import 'package:flutter/material.dart';
-import 'with_bull_theme.dart';
 
 enum TorBullState { idle, direct, filtered, snowflake, ready, failed }
 
@@ -106,7 +104,7 @@ class _TorBullMascotState extends State<TorBullMascot>
                     width: 70,
                     height: 9,
                     decoration: BoxDecoration(
-                      color: context.appColors.scrim.withValues(alpha: 0.28),
+                      color: context.bull.scrim.withValues(alpha: 0.28),
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),

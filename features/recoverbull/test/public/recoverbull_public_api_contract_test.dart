@@ -1,5 +1,6 @@
-import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
+import '../support/log_sink.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter/widgets.dart';
@@ -49,6 +50,39 @@ void main() {
   test('barrel exposes the supported semantic API', () {
     _compilePublicApi();
   });
+  test(
+    'unavailable facade settings return published failures as values',
+    () async {
+      final feature = RecoverBullFeature.unavailable(
+        log: const TestLogSink(),
+        navigation: RecoverBullNavigationCallbacks(
+          onOpenTorSettings: () {},
+          onOpenWalletHome: () {},
+        ),
+      );
+      addTearDown(feature.lifecycle.dispose);
+      expect(
+        await feature.serverSettings(),
+        isA<Err<RecoverBullServerSettings, RecoverBullFailure>>(),
+      );
+      expect(
+        await feature.setServer(Uri.parse('http://server.onion')),
+        isA<Err<Null, RecoverBullFailure>>(),
+      );
+      expect(
+        await feature.setPermission(true),
+        isA<Err<Null, RecoverBullFailure>>(),
+      );
+      expect(
+        await feature.markBackupStored(RecoverBullNetwork.mainnet),
+        isA<Err<Null, RecoverBullFailure>>(),
+      );
+      expect(
+        await feature.markBackupVerified(RecoverBullNetwork.mainnet),
+        isA<Err<Null, RecoverBullFailure>>(),
+      );
+    },
+  );
 }
 
 void _compilePublicApi() {
@@ -83,8 +117,14 @@ void _compilePublicApi() {
   ];
   final routes = RecoverBullRoute.values;
   final driveRoutes = RecoverBullGoogleDriveRoute.values;
-  final EncryptedVault Function({required String file}) vaultConstructor =
-      EncryptedVault.new;
+  final EncryptedVault Function({
+    required String id,
+    required String salt,
+    required List<int> ciphertext,
+    required DateTime createdAt,
+    String? derivationPath,
+  })
+  vaultConstructor = EncryptedVault.new;
   final extra = RecoverBullFlowsExtra(flow: RecoverBullFlow.recoverVault);
   final localizations = RecoverBullLocalizations.supportedLocales;
   final delegate = RecoverBullLocalizations.delegate;
@@ -113,6 +153,7 @@ void _compilePublicApi() {
 
   Future<RecoverBullFeature> Function({
     required RecoverBullConfig config,
+    required RecoverBullNavigationPort navigation,
     required RecoverBullWalletRepository wallets,
     required RecoverBullSeedPort seeds,
     required RecoverBullDefaultWalletsPort defaultWallets,
@@ -137,14 +178,16 @@ void _compilePublicApi() {
     Future<void> Function() warmKeyServerRoute = feature.warmKeyServerRoute;
     Future<RecoverBullStatus> Function(RecoverBullNetwork) readStatus =
         feature.status;
-    Future<RecoverBullServerSettings> Function() readSettings =
-        feature.serverSettings;
-    Future<void> Function(Uri) setServer = feature.setServer;
-    Future<void> Function(bool) setPermission = feature.setPermission;
-    Future<void> Function(RecoverBullNetwork) markStored =
-        feature.markBackupStored;
-    Future<void> Function(RecoverBullNetwork) markVerified =
-        feature.markBackupVerified;
+    Future<Result<RecoverBullServerSettings, RecoverBullFailure>> Function()
+    readSettings = feature.serverSettings;
+    Future<Result<Null, RecoverBullFailure>> Function(Uri) setServer =
+        feature.setServer;
+    Future<Result<Null, RecoverBullFailure>> Function(bool) setPermission =
+        feature.setPermission;
+    Future<Result<Null, RecoverBullFailure>> Function(RecoverBullNetwork)
+    markStored = feature.markBackupStored;
+    Future<Result<Null, RecoverBullFailure>> Function(RecoverBullNetwork)
+    markVerified = feature.markBackupVerified;
     List<RouteBase> routes = feature.routes;
     RecoverBullAttemptMonitoringController monitoring =
         feature.attemptMonitoring;

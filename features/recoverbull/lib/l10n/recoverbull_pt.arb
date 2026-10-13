@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Liga-se diretamente à rede Tor, sem pluggable transport.",
   "recoverbullSettingsUrlInvalid": "O URL não é válido",
-  "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
   "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
   "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
   "recoverbullGoBackEdit": "< Voltar e editar",
@@ -240,5 +239,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor. Isto pode demorar até um minuto.",
-  "recoverbullMonitoringDisableCancel": "Cancelar"
+  "recoverbullMonitoringDisableCancel": "Cancelar",
+  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres."
 }

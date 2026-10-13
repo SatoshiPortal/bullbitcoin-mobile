@@ -1,8 +1,8 @@
+import '../mappers/encrypted_vault_mapper.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:bull_logger/bull_logger.dart';
 import '../models/drive_file_metadata_model.dart';
-import '../../domain/entities/encrypted_vault.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -27,19 +27,21 @@ class GoogleDriveAppDatasource {
   }) : _google = googleSignIn ?? _sharedGoogle;
 
   void _checkConnection() {
-    if (_driveApi == null) throw 'unauthenticated';
+    if (_driveApi == null) throw Exception('Drive authentication unavailable');
   }
 
   Future<void> connect() async {
     try {
       final account = await _google.signIn();
-      if (account == null) throw 'Sign-in failed';
+      if (account == null) throw Exception('Drive sign-in unavailable');
 
       final client = await _google.authenticatedClient();
-      if (client == null) throw 'Failed to get authenticated client';
+      if (client == null) {
+        throw Exception('Drive authenticated client unavailable');
+      }
 
       _driveApi = drive.DriveApi(client);
-    } catch (e) {
+    } on Exception catch (e) {
       log.error(
         'recoverbull.drive.sign_in.unexpected error_type=${e.runtimeType}',
         trace: StackTrace.current,
@@ -60,7 +62,7 @@ class GoogleDriveAppDatasource {
       if (client == null) return null;
       _driveApi = drive.DriveApi(client);
       return account.email;
-    } catch (error) {
+    } on Exception catch (error) {
       log.warning(
         'recoverbull.drive.silent_sign_in.unavailable '
         'error_type=${error.runtimeType}',
@@ -84,17 +86,21 @@ class GoogleDriveAppDatasource {
     final seenTokens = <String>{};
     String? token;
     while (true) {
-      final page = pageLister == null
-          ? await _listPageFromApi(token)
-          : await pageLister!(token);
+      final page = await fetchMetadataPage(token);
       result.addAll(page.files);
       final next = page.nextPageToken;
       if (next == null || next.isEmpty) return result;
       if (!seenTokens.add(next)) {
-        throw StateError('Drive pagination repeated a page token');
+        throw const FormatException('Drive pagination repeated a page token');
       }
       token = next;
     }
+  }
+
+  Future<GoogleDriveMetadataPage> fetchMetadataPage(String? pageToken) {
+    if (pageLister != null) return pageLister!(pageToken);
+    _checkConnection();
+    return _listPageFromApi(pageToken);
   }
 
   Future<GoogleDriveMetadataPage> _listPageFromApi(String? pageToken) async {
@@ -137,9 +143,9 @@ class GoogleDriveAppDatasource {
 
   Future<void> store(String content) async {
     _checkConnection();
-    final vault = EncryptedVault(file: content);
+    final vault = EncryptedVaultMapper.parse(content);
     final filename = vault.filename;
-    final jsonVault = vault.toFile();
+    final jsonVault = EncryptedVaultMapper.fromEntity(vault).toFile();
 
     final file = drive.File()
       ..name = filename

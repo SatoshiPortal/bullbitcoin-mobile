@@ -1,7 +1,8 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import '../../support/monitoring_repository.dart';
 import 'dart:io';
 import 'package:convert/convert.dart' show hex;
 
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
@@ -50,13 +51,15 @@ void main() {
       addTearDown(database.close);
       await database.ensureState();
       final store = RecoverBullAttemptMonitoringStore(database);
-      final recordAttempt = RecordLocalAttemptUsecase(store);
+      final recordAttempt = RecordLocalAttemptUsecase(
+        monitoringRepository(store),
+      );
       final alerts = _AlertPort();
       final backup = sdk.RecoverBull.createBackup(
         secret: [1],
         backupKey: List<int>.filled(32, 1),
       );
-      final vault = EncryptedVault(file: backup.toJson());
+      final vault = EncryptedVaultMapper.parse(backup.toJson());
       final window = DateTime.utc(2026, 10, 1);
       final status = KeyServerAttemptStatus(
         totalAttempts: 3,
@@ -96,7 +99,7 @@ void main() {
     final route = _route(
       onClose: () async {
         closed = true;
-        throw StateError('teardown');
+        throw Exception('teardown');
       },
     );
     final repository = _Repository();
@@ -105,7 +108,7 @@ void main() {
       secret: [1],
       backupKey: List<int>.filled(32, 1),
     );
-    final vault = EncryptedVault(file: backup.toJson());
+    final vault = EncryptedVaultMapper.parse(backup.toJson());
     when(() => ensure.execute()).thenAnswer((_) async => Ok(route));
     when(
       () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),
@@ -133,7 +136,7 @@ void main() {
       secret: [1],
       backupKey: List<int>.filled(32, 1),
     );
-    final vault = EncryptedVault(file: backup.toJson());
+    final vault = EncryptedVaultMapper.parse(backup.toJson());
     when(() => ensure.execute()).thenAnswer((_) async => Ok(route));
     when(
       () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),
@@ -160,14 +163,14 @@ void main() {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       await database.ensureState();
       final recordAttempt = RecordLocalAttemptUsecase(
-        RecoverBullAttemptMonitoringStore(database),
+        monitoringRepository(RecoverBullAttemptMonitoringStore(database)),
       );
       final alertPort = _AlertPort();
       final backup = sdk.RecoverBull.createBackup(
         secret: [1],
         backupKey: List<int>.filled(32, 1),
       );
-      final vault = EncryptedVault(file: backup.toJson());
+      final vault = EncryptedVaultMapper.parse(backup.toJson());
       const failure = KeyServerRateLimitedFailure();
       when(() => ensure.execute()).thenAnswer((_) async => Ok(route));
       when(
@@ -182,7 +185,10 @@ void main() {
       ).execute(vault: vault, password: 'password');
 
       expect(result, isA<Err<VaultKeyFetchResult, RecoverBullFailure>>());
-      expect((await recordAttempt.store.monitoredBackups()), hasLength(1));
+      expect(
+        (await recordAttempt.store.monitoredBackups().requireOk()),
+        hasLength(1),
+      );
       expect(alertPort.published, hasLength(1));
       expect(closed, isTrue);
       await database.close();
@@ -197,17 +203,17 @@ void main() {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       await database.ensureState();
       final recordAttempt = RecordLocalAttemptUsecase(
-        RecoverBullAttemptMonitoringStore(database),
+        monitoringRepository(RecoverBullAttemptMonitoringStore(database)),
       );
-      // A closed database makes the local cleanup throw once the server has
-      // already deleted the key.
-      await database.close();
+      // A missing table models a recoverable storage failure after server deletion.
+      addTearDown(database.close);
+      await database.customStatement('DROP TABLE recoverbull_monitored_backup');
       final log = TestLogSink.recording();
       final backup = sdk.RecoverBull.createBackup(
         secret: [1],
         backupKey: List<int>.filled(32, 1),
       );
-      final vault = EncryptedVault(file: backup.toJson());
+      final vault = EncryptedVaultMapper.parse(backup.toJson());
       when(() => ensure.execute()).thenAnswer((_) async => Ok(_route()));
       when(
         () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),

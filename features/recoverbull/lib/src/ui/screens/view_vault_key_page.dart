@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import '../../l10n/context_localizations.dart';
 import '../widgets/copy_input.dart';
@@ -30,7 +30,7 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
   @override
   Widget build(BuildContext context) {
     final vaultKey = widget.vaultKey;
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
       body: SafeArea(
         child: Column(

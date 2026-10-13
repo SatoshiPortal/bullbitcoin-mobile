@@ -1,16 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:go_router/go_router.dart';
 
-import '../ui/screens/attempt_alert_detail_page.dart';
+import '../router/recoverbull_router.dart';
 import 'recoverbull.dart';
 
 void openRecoverBullAttemptAlertDetails(
   BuildContext context,
   List<RecoverBullAttemptAlert> sourceAlerts,
-) {
-  Navigator.of(context).push(
-    MaterialPageRoute<void>(
-      builder: (_) =>
-          RecoverBullAttemptAlertDetailPage(sourceAlerts: sourceAlerts),
-    ),
-  );
-}
+) => context.pushNamed(
+  RecoverBullRoute.recoverbullAttemptAlerts.name,
+  extra: List<RecoverBullAttemptAlert>.unmodifiable(sourceAlerts),
+);

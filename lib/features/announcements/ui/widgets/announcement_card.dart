@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcement_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/widgets.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// A single announcement banner: a tappable [BullInfoCard] body (fires the

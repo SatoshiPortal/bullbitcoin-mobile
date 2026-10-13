@@ -56,14 +56,18 @@ class RecoverbullSettingsDatasource {
     });
     try {
       await _database.customStatement('PRAGMA wal_checkpoint(TRUNCATE)');
-    } catch (_) {}
+    } on Exception catch (_) {}
   }
 
   Future<Uri> fetch() async {
     final row = await _database.select(_database.recoverbullState).getSingle();
-    return validateRecoverBullServerUrl(
-      Uri.parse(row.serverUrlOverride ?? _defaultServer.toString()),
+    final url = Uri.tryParse(
+      row.serverUrlOverride ?? _defaultServer.toString(),
     );
+    if (url == null || !isValidRecoverBullServerUrl(url)) {
+      throw const FormatException('Invalid stored key server URL');
+    }
+    return url;
   }
 
   Future<void> allowPermission(bool isGranted) async {

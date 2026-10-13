@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 import '../../domain/entities/vault_provider.dart';
-import 'bull_aliases.dart';
 import 'provider_cart.dart';
-import 'with_bull_theme.dart';
 
 class RecoverbullVaultProviderSelector extends StatelessWidget {
   final void Function(VaultProvider provider) onProviderSelected;
@@ -21,7 +19,7 @@ class RecoverbullVaultProviderSelector extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       if (description != null) ...[
-        BBText(description!, style: context.font.bodySmall),
+        BullText(description!, style: context.bullText.bodySmall),
         const SizedBox(height: 20),
       ],
       for (final provider in VaultProvider.values.where(

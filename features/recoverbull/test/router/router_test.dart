@@ -1,3 +1,5 @@
+import 'package:bull_ui/testing.dart' show testBullTheme;
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +49,12 @@ void main() {
     );
     addTearDown(router.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
+        routerConfig: router,
+      ),
+    );
     await tester.tap(find.text('View Vault Key'));
     await tester.pumpAndSettle();
 
@@ -64,7 +71,7 @@ void main() {
   testWidgets('See more vaults preserves the flow and vault in route extra', (
     tester,
   ) async {
-    final vault = EncryptedVault(file: _vaultFixture);
+    final vault = EncryptedVaultMapper.parse(_vaultFixture);
     final bloc = _RecoverBullBloc();
     when(
       () => bloc.state,
@@ -100,6 +107,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,

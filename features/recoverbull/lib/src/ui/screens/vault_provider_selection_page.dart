@@ -4,15 +4,11 @@ import './vault_created_page.dart';
 import './vault_selected_page.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
 import '../widgets/progress_screen.dart';
-import '../widgets/blurred_bottom_sheet.dart';
 import '../widgets/recoverbull_vault_provider_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
@@ -20,7 +16,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -90,10 +86,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: [
-              FadingLinearProgress(
+              BullFadingLinearProgress(
                 trigger: state.isLoading,
-                backgroundColor: context.appColors.surface,
-                foregroundColor: context.appColors.primary,
+                foregroundColor: context.bull.primary,
                 height: 2.0,
               ),
 
@@ -126,15 +121,15 @@ class VaultProviderSelectionPage extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          BlurredBottomSheet.show(
+                          BullBottomSheet.show(
                             context: context,
                             child: const HowToDecideVaultLocation(),
                           );
                         },
-                        child: BBText(
+                        child: BullText(
                           context.loc.backupWalletHowToDecide,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.primary,
+                          style: context.bullText.headlineLarge?.copyWith(
+                            color: context.bull.primary,
                           ),
                         ),
                       ),
@@ -159,7 +154,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
-          color: context.appColors.surface,
+          color: context.bull.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
@@ -172,18 +167,15 @@ class HowToDecideVaultLocation extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   const Spacer(),
-                  BBText(
+                  BullText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
-                    style: context.font.headlineMedium,
+                    style: context.bullText.headlineMedium,
                     textAlign: .center,
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: Icon(
-                      Icons.close,
-                      color: context.appColors.onSurface,
-                    ),
+                    child: Icon(Icons.close, color: context.bull.onSurface),
                   ),
                 ],
               ),
@@ -196,18 +188,18 @@ class HowToDecideVaultLocation extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultCloudSecurity,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullText.labelMedium?.copyWith(
                           height: 1.5,
                           fontSize: 14,
                         ),
                         maxLines: 16,
                       ),
                       const Gap(32),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultCustomLocation,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullText.labelMedium?.copyWith(
                           height: 1.5,
                           fontSize: 14,
                         ),
@@ -216,13 +208,13 @@ class HowToDecideVaultLocation extends StatelessWidget {
                       const Gap(12),
                       RichText(
                         text: TextSpan(
-                          style: context.font.bodyMedium,
+                          style: context.bullText.bodyMedium,
                           children: [
                             TextSpan(
                               text: context
                                   .loc
                                   .backupWalletHowToDecideVaultCustomRecommendation,
-                              style: context.font.labelMedium?.copyWith(
+                              style: context.bullText.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
@@ -230,7 +222,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                               text: context
                                   .loc
                                   .backupWalletHowToDecideVaultCustomRecommendationText,
-                              style: context.font.labelMedium,
+                              style: context.bullText.labelMedium,
                             ),
                           ],
                         ),
@@ -238,13 +230,13 @@ class HowToDecideVaultLocation extends StatelessWidget {
                       const Gap(12),
                       RichText(
                         text: TextSpan(
-                          style: context.font.bodyMedium,
+                          style: context.bullText.bodyMedium,
                           children: [
                             TextSpan(
                               text: context
                                   .loc
                                   .backupWalletHowToDecideVaultCloudRecommendation,
-                              style: context.font.labelMedium?.copyWith(
+                              style: context.bullText.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
@@ -252,15 +244,15 @@ class HowToDecideVaultLocation extends StatelessWidget {
                               text: context
                                   .loc
                                   .backupWalletHowToDecideVaultCloudRecommendationText,
-                              style: context.font.labelMedium,
+                              style: context.bullText.labelMedium,
                             ),
                           ],
                         ),
                       ),
                       const Gap(12),
-                      BBText(
+                      BullText(
                         context.loc.backupWalletHowToDecideVaultMoreInfo,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullText.labelMedium?.copyWith(
                           height: 1.5,
                           fontSize: 14,
                         ),

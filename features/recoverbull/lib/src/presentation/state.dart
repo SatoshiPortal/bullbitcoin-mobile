@@ -1,7 +1,5 @@
 part of 'bloc.dart';
 
-enum KeyServerStatus { unknown, connecting, online, offline }
-
 @MappableClass(generateMethods: GenerateMethods.equals | GenerateMethods.copy)
 final class RecoverBullState with RecoverBullStateMappable {
   final RecoverBullFlow flow;

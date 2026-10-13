@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 import '../../l10n/context_localizations.dart';
 import '../widgets/status_screen.dart';

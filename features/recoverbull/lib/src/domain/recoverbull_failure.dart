@@ -3,12 +3,9 @@ import 'package:primitives/primitives.dart';
 /// Closed set of every failure the RecoverBull (vault backup/restore) flow
 /// surfaces to the user.
 ///
-/// Foreign errors (key-server, Tor, Google Drive, decryption SDK) are caught at
-/// the feature boundary — the bloc, the first layer the feature owns above the
-/// still-throwing core usecases — and mapped into one of these variants; the
-/// raw reason stays in the logs. `sealed` keeps it closed (exhaustive switches;
-/// no foreign variants). Pure Dart — the user-facing message lives in the
-/// presentation extension `recoverbull_failure_l10n.dart`, never here.
+/// Repositories map foreign exceptions at the data boundary; use cases compose
+/// results and choose workflow failures. Presentation only translates them.
+/// This sealed family is Flutter-free and never exposes raw reasons to users.
 sealed class RecoverBullFailure extends Failure {
   const RecoverBullFailure([super.logMessage]);
 

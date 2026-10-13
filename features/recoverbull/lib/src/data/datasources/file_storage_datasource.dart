@@ -12,7 +12,10 @@ class FileStorageDatasource {
       allowedExtensions: extensions,
       type: extensions != null ? FileType.custom : FileType.any,
     );
-    if (result != null) return File(result.files.single.path!);
+    if (result != null && result.files.length == 1) {
+      final path = result.files.single.path;
+      if (path != null && path.isNotEmpty) return File(path);
+    }
 
     throw FileStorageException('File not selected');
   }

@@ -1,5 +1,4 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' show InkWell;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';

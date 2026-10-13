@@ -1,3 +1,4 @@
+import '../support/monitoring_repository.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
@@ -29,7 +30,7 @@ void main() {
     }) async => snapshot;
 
     final first = await RecoverBullAttemptMonitoring.open(
-      store,
+      monitoringRepository(store),
       enabled: true,
       poll: poll,
     );
@@ -39,7 +40,7 @@ void main() {
 
     // The app restarts: a new controller over the same database.
     final restarted = await RecoverBullAttemptMonitoring.open(
-      store,
+      monitoringRepository(store),
       enabled: true,
       poll: poll,
     );

@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
   "recoverbullSettingsUrlInvalid": "URL geçerli değil",
-  "recoverbullErrorUnexpected": "Beklenmeyen hata, logları görmek",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull için bağlantı kontrol etmek",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor üzerinde Key Server'a bağlanın. Bu bir dakikaya kadar sürebilir.",
-  "recoverbullMonitoringDisableCancel": "İptal"
+  "recoverbullMonitoringDisableCancel": "İptal",
+  "recoverbullMonitoringServerUnsupported": "Bu sunucu deneme izlemeyi desteklemiyor. Kasaları yedeklemeye ve kurtarmaya devam edebilirsiniz."
 }

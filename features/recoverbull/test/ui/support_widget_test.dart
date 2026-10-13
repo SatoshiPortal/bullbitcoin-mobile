@@ -4,7 +4,6 @@ import 'package:bull_recoverbull/src/ui/widgets/status_screen.dart';
 import 'package:bull_recoverbull/src/ui/widgets/backup_success_screen.dart';
 import 'package:bull_recoverbull/src/ui/widgets/copy_input.dart';
 import 'package:bull_recoverbull/src/ui/widgets/recoverbull_vault_provider_selector.dart';
-import 'package:bull_recoverbull/src/ui/widgets/dial_pad.dart';
 import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
@@ -85,7 +84,8 @@ void main() {
 
   testWidgets('CopyInput only shows reveal when enabled', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value')),
       ),
@@ -93,7 +93,8 @@ void main() {
     expect(find.byIcon(Icons.visibility_outlined), findsNothing);
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value', canShowValueModal: true)),
       ),
@@ -103,7 +104,8 @@ void main() {
 
   testWidgets('CopyInput uses localized modal actions', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value', canShowValueModal: true)),
       ),
@@ -118,7 +120,8 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(canShowValueModal: true)),
       ),
@@ -133,9 +136,10 @@ void main() {
     var backspaces = 0;
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(
-          body: DialPad(
+          body: BullDialPad(
             onlyDigits: true,
             onNumberPressed: digits.add,
             onBackspacePressed: () => backspaces++,
@@ -157,6 +161,7 @@ void main() {
     final selected = <VaultProvider>[];
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(
           body: RecoverbullVaultProviderSelector(
@@ -177,7 +182,10 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(home: ProgressScreen(isLoading: true)),
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
+        home: ProgressScreen(isLoading: true),
+      ),
     );
     final gif = tester.widget<Gif>(find.byType(Gif));
     expect(gif.width, 200);
@@ -191,6 +199,7 @@ void main() {
       var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(extensions: const [testBullTheme]),
           home: BackupSuccessScreen(
             title: 'Done',
             message: 'Message',
@@ -210,7 +219,8 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: VaultCreatedPage(),
@@ -230,6 +240,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: const StatusScreen(isLoading: false, onTap: _noop),
       ),
@@ -250,6 +261,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(
           body: ProviderCard(provider: VaultProvider.googleDrive, onTap: _noop),

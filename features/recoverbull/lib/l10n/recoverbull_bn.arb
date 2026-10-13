@@ -251,10 +251,6 @@
   },
   "torSettingsModeDirectDescription": "প্লাগেবল ট্রান্সপোর্ট ছাড়াই সরাসরি Tor নেটওয়ার্কে যুক্ত হয়।",
   "recoverbullSettingsUrlInvalid": "URL বৈধ নয়",
-  "recoverbullErrorUnexpected": "অপ্রত্যাশিত ত্রুটি, লগ দেখুন",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull-এর জন্য সংযোগ যাচাই করা হচ্ছে",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -483,5 +479,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor-এর মাধ্যমে Key Server-এ সংযোগ হচ্ছে। এতে এক মিনিট পর্যন্ত লাগতে পারে।",
-  "recoverbullMonitoringDisableCancel": "বাতিল করুন"
+  "recoverbullMonitoringDisableCancel": "বাতিল করুন",
+  "recoverbullMonitoringServerUnsupported": "এই সার্ভার প্রচেষ্টার পর্যবেক্ষণ সমর্থন করে না। আপনি এখনও ভল্টের ব্যাকআপ নিতে এবং পুনরুদ্ধার করতে পারবেন।"
 }

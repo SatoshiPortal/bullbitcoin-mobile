@@ -1,3 +1,4 @@
+import '../../domain/recoverbull_navigation_port.dart';
 import 'dart:async';
 
 import '../../presentation/bloc.dart';
@@ -8,12 +9,10 @@ import './test_completed_page.dart';
 import './view_vault_key_page.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
 import '../widgets/progress_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
-import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
   final String input;
@@ -67,7 +66,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         title: Text(context.loc.recoverbullFetchVaultKey),
         actions: const [
@@ -85,10 +84,10 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         listener: (context, state) {
           if (state.failure != null) {
             if (state.failure is ExternalTorProxyUnavailableFailure) {
-              final router = GoRouter.of(context);
+              final navigation = context.read<RecoverBullNavigationPort>();
               context.read<RecoverBullBloc>().add(const OnClearError());
               Navigator.of(context).pop();
-              router.pushNamed('torSettings');
+              navigation.openTorSettings();
               return;
             }
             BullSnackBar.show(
@@ -101,7 +100,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           if (state.flow == RecoverBullFlow.recoverVault &&
               state.isFlowFinished) {
             _hasNavigatedAway = true;
-            context.go('/wallet');
+            context.read<RecoverBullNavigationPort>().openWalletHome();
             return;
           }
           if (state.flow == RecoverBullFlow.testVault && state.isFlowFinished) {

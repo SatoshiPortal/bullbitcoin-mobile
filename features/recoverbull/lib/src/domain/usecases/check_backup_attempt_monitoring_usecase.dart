@@ -1,4 +1,9 @@
-import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import '../entities/attempt_monitoring_state.dart';
+import '../entities/monitored_backup.dart';
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
+import '../entities/attempt_monitoring_snapshot.dart';
+import '../repositories/recoverbull_attempt_monitoring_repository.dart';
 import '../entities/attempt_alert.dart';
 
 final class CheckBackupAttemptMonitoringUsecase {
@@ -9,7 +14,7 @@ final class CheckBackupAttemptMonitoringUsecase {
   static const minFailuresWithoutSuccess = 3;
   static const unsupportedServerRetryAfter = Duration(days: 1);
 
-  final RecoverBullAttemptMonitoringStore store;
+  final RecoverBullAttemptMonitoringRepository store;
   final RecoverBullAttemptMonitoringRemotePort remote;
   final DateTime Function() now;
 
@@ -21,67 +26,123 @@ final class CheckBackupAttemptMonitoringUsecase {
 
   static DateTime _utcNow() => DateTime.now().toUtc();
 
-  Future<List<AttemptAlert>> execute({bool forceRefresh = false}) async {
-    final rows = await store.monitoredBackups();
+  Future<Result<List<AttemptAlert>, RecoverBullFailure>> execute({
+    bool forceRefresh = false,
+  }) async {
+    final storageResult1 = await store.monitoredBackups();
+    if (storageResult1 case Err(:final failure)) return Err(failure);
+    final rows =
+        (storageResult1 as Ok<List<MonitoredBackup>, RecoverBullFailure>).value;
     if (rows.isEmpty) {
-      return const [];
+      return const Ok([]);
     }
-    final state = await store.state();
+    final storageResult2 = await store.state();
+    if (storageResult2 case Err(:final failure)) return Err(failure);
+    final state =
+        (storageResult2 as Ok<AttemptMonitoringState, RecoverBullFailure>)
+            .value;
+    if (!state.attemptMonitoringEnabled) return const Ok([]);
     final current = now();
-    if (state.attemptsUnsupportedAt(current)) return const [];
+    if (state.attemptsUnsupportedAt(current)) return const Ok([]);
     if (!forceRefresh &&
         state.lastSuccessfulCheckAt != null &&
         current.difference(state.lastSuccessfulCheckAt!) < snapshotFreshness) {
-      return const [];
+      return const Ok([]);
     }
-    final token = await store.captureToken();
+    final storageResult3 = await store.captureToken();
+    if (storageResult3 case Err(:final failure)) return Err(failure);
+    final token =
+        (storageResult3
+                as Ok<
+                  RecoverBullAttemptMonitoringSnapshotToken,
+                  RecoverBullFailure
+                >)
+            .value;
     RecoverBullAttemptsSnapshot? snapshot;
     try {
       snapshot = await remote.poll(
         etag: forceRefresh ? null : state.etag,
         backupDigests: rows.map((row) => _hex(row.digest)).toList(),
       );
-    } catch (_) {
-      final unavailable = await store.recordPollFailure(now: current);
-      return unavailable
-          ? [const AttemptMonitoringUnavailableAlert(since: null)]
-          : const [];
+    } on Exception catch (_) {
+      final storageResult4 = await store.recordPollFailure(now: current);
+      if (storageResult4 case Err(:final failure)) return Err(failure);
+      final unavailable =
+          (storageResult4 as Ok<bool, RecoverBullFailure>).value;
+      return Ok(
+        unavailable
+            ? [const AttemptMonitoringUnavailableAlert(since: null)]
+            : const [],
+      );
     }
     if (snapshot == null) {
-      final unavailable = await store.recordPollFailure(now: current);
-      return unavailable
-          ? [const AttemptMonitoringUnavailableAlert(since: null)]
-          : const [];
+      final storageResult5 = await store.recordPollFailure(now: current);
+      if (storageResult5 case Err(:final failure)) return Err(failure);
+      final unavailable =
+          (storageResult5 as Ok<bool, RecoverBullFailure>).value;
+      return Ok(
+        unavailable
+            ? [const AttemptMonitoringUnavailableAlert(since: null)]
+            : const [],
+      );
     }
     if (snapshot.serverUnsupported) {
-      await store.recordAttemptsUnsupported(
+      final storageResult6 = await store.recordAttemptsUnsupported(
         until: current.add(unsupportedServerRetryAfter),
+        token: token,
       );
-      return const [];
+      if (storageResult6 case Err(:final failure)) return Err(failure);
+
+      return const Ok([]);
     }
     if (snapshot.notModified) {
-      await store.applySnapshot(snapshot, token);
-      return const [];
+      final storageResult7 = await store.applySnapshot(snapshot, token);
+      if (storageResult7 case Err(:final failure)) return Err(failure);
+
+      return const Ok([]);
     }
     if (snapshot.serviceBusy) {
-      final unavailable = await store.recordPollFailure(now: current);
-      return [
+      final storageResult8 = await store.recordPollFailure(now: current);
+      if (storageResult8 case Err(:final failure)) return Err(failure);
+      final unavailable =
+          (storageResult8 as Ok<bool, RecoverBullFailure>).value;
+      return Ok([
         const ServicePressureAlert(ServicePressureKind.serviceBusy),
         if (_isIdentifierSaturated(snapshot))
           const ServicePressureAlert(ServicePressureKind.identifierSaturation),
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
-      ];
+      ]);
     }
     final alerts = <AttemptAlert>[];
-    final collection = await store.state();
+    final storageResult9 = await store.state();
+    if (storageResult9 case Err(:final failure)) return Err(failure);
+    final collection =
+        (storageResult9 as Ok<AttemptMonitoringState, RecoverBullFailure>)
+            .value;
     if (collection.isOtherCollection(snapshot.collectionStartedAt)) {
-      final rebaselined = await store.rebaseline(snapshot, token);
-      if (!rebaselined.accepted) return const [];
-      return const [];
+      final storageResult10 = await store.rebaseline(snapshot, token);
+      if (storageResult10 case Err(:final failure)) return Err(failure);
+      final rebaselined =
+          (storageResult10
+                  as Ok<
+                    RecoverBullAttemptMonitoringApplyResult,
+                    RecoverBullFailure
+                  >)
+              .value;
+      if (!rebaselined.accepted) return const Ok([]);
+      return const Ok([]);
     }
-    final applied = await store.applySnapshot(snapshot, token);
-    if (!applied.accepted) return const [];
-    if (snapshot.notModified) return const [];
+    final storageResult11 = await store.applySnapshot(snapshot, token);
+    if (storageResult11 case Err(:final failure)) return Err(failure);
+    final applied =
+        (storageResult11
+                as Ok<
+                  RecoverBullAttemptMonitoringApplyResult,
+                  RecoverBullFailure
+                >)
+            .value;
+    if (!applied.accepted) return const Ok([]);
+    if (snapshot.notModified) return const Ok([]);
     if (_isIdentifierSaturated(snapshot)) {
       alerts.add(
         const ServicePressureAlert(ServicePressureKind.identifierSaturation),
@@ -92,7 +153,11 @@ final class CheckBackupAttemptMonitoringUsecase {
         _hex(entry.key): entry.value,
     };
     // Local attempts and rebaselines may have changed while the poll waited.
-    final currentRows = await store.monitoredBackups();
+    final storageResult12 = await store.monitoredBackups();
+    if (storageResult12 case Err(:final failure)) return Err(failure);
+    final currentRows =
+        (storageResult12 as Ok<List<MonitoredBackup>, RecoverBullFailure>)
+            .value;
     for (final row in currentRows) {
       if (row.awaitsBaseline) continue;
       final hash = _hex(row.digest);
@@ -110,7 +175,7 @@ final class CheckBackupAttemptMonitoringUsecase {
         ),
       );
     }
-    return alerts;
+    return Ok(alerts);
   }
 
   static String _hex(List<int> bytes) =>

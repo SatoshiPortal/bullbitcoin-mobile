@@ -1,5 +1,5 @@
 import '../domain/entities/encrypted_vault.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
 import 'flow_type.dart';
@@ -10,7 +10,8 @@ enum RecoverBullRoute {
   recoverbullRecoverVault('/recoverbull/recover'),
   recoverbullTestVault('/recoverbull/test'),
   recoverbullViewVaultKey('/recoverbull/key'),
-  recoverbullSettings('/recoverbull/settings');
+  recoverbullSettings('/recoverbull/settings'),
+  recoverbullAttemptAlerts('/recoverbull/attempt-alerts');
 
   final String path;
   const RecoverBullRoute(this.path);

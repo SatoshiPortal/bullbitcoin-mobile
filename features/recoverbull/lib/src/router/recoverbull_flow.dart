@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:primitives/primitives.dart';
+import '../domain/recoverbull_failure.dart';
+import '../presentation/recoverbull_failure_l10n.dart';
+import '../l10n/context_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/usecases/fetch_permission_usecase.dart';
@@ -28,7 +32,7 @@ class RecoverBullFlowNavigator extends StatefulWidget {
 
 class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  late final Future<bool> _permissionFuture;
+  late Future<Result<bool, RecoverBullFailure>> _permissionFuture;
   bool _initializationRequested = false;
   bool _nestedNavigatorCanPop = false;
 
@@ -47,24 +51,49 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<Result<bool, RecoverBullFailure>>(
       future: _permissionFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
+          return const BullScaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
+        final result = snapshot.data;
+        if (result case Err(:final failure)) {
+          return BullScaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BullText(
+                    failure.toTranslated(context),
+                    style: context.bullText.bodyMedium,
+                  ),
+                  BullButton.big(
+                    label: context.loc.recoverbullRetry,
+                    bgColor: context.bull.primary,
+                    textColor: context.bull.onPrimary,
+                    onPressed: () => setState(() {
+                      _permissionFuture = widget.fetchPermissionUsecase
+                          .execute();
+                    }),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        final hasPermission =
+            result is Ok<bool, RecoverBullFailure> && result.value;
         final page = switch (widget.flow) {
           RecoverBullFlow.settings => widget.settingsPageBuilder(context),
-          _ when snapshot.data != true => widget.requestPermissionPageBuilder(
-            context,
-          ),
+          _ when !hasPermission => widget.requestPermissionPageBuilder(context),
           _ => const ConnectingPage(),
         };
 
-        if (snapshot.data == true &&
+        if (hasPermission &&
             widget.flow != RecoverBullFlow.settings &&
             !_initializationRequested) {
           _initializationRequested = true;

@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "بدون حامل اتصال‌پذیر، مستقیماً به شبکه Tor متصل می‌شود.",
   "recoverbullSettingsUrlInvalid": "آدرس معتبر نیست",
-  "recoverbullErrorUnexpected": "خطای غیر منتظره، logs را ببینید",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "بررسی ارتباط برای بازیابیBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "اتصال به Key Server over Tor این می تواند تا یک دقیقه طول بکشد.",
-  "recoverbullMonitoringDisableCancel": "لغو"
+  "recoverbullMonitoringDisableCancel": "لغو",
+  "recoverbullMonitoringServerUnsupported": "این سرور از پایش تلاش‌ها پشتیبانی نمی‌کند. همچنان می‌توانید از خزانه‌ها نسخهٔ پشتیبان تهیه کنید و آن‌ها را بازیابی کنید."
 }

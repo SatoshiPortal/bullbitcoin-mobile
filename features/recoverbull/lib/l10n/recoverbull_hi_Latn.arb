@@ -255,10 +255,6 @@
   },
   "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
   "recoverbullSettingsUrlInvalid": "URL valid nahi hai",
-  "recoverbullErrorUnexpected": "Anayaas error, logs dekhein",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull ka connection check ho raha hai",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -488,5 +484,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value dialog."
   },
-  "recoverbullConnectingTor": "Tor ke zariye Key Server se connect ho raha hai. Ismein ek minute lag sakta hai."
+  "recoverbullConnectingTor": "Tor ke zariye Key Server se connect ho raha hai. Ismein ek minute lag sakta hai.",
+  "recoverbullMonitoringServerUnsupported": "Yeh server prayason ki nigrani ka samarthan nahin karta. Aap ab bhi vault ka backup le sakte hain aur unhein punarsthapit kar sakte hain."
 }

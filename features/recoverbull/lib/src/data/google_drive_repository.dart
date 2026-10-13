@@ -1,3 +1,4 @@
+import 'mappers/encrypted_vault_mapper.dart';
 import 'dart:convert';
 
 import './datasources/google_drive_datasource.dart';
@@ -26,7 +27,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
       try {
         await _dataSource.connect();
         return const Ok(null);
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.connect.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -59,7 +60,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return _serialized(() async {
       try {
         return Ok(await _fetchAllMetadata());
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.fetch_metadata.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -77,8 +78,8 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   ) async {
     return _serialized(() async {
       try {
-        return Ok(EncryptedVault(file: await _fetchContent(fileId)));
-      } catch (e, st) {
+        return Ok(EncryptedVaultMapper.parse(await _fetchContent(fileId)));
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.fetch_vault.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -97,7 +98,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return _serialized(() async {
       try {
         return Ok(await _fetchContent(fileId));
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.fetch_raw.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -123,8 +124,8 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         final latest = backups.reduce(
           (a, b) => a.createdTime.compareTo(b.createdTime) > 0 ? a : b,
         );
-        return Ok(EncryptedVault(file: await _fetchContent(latest.id)));
-      } catch (e, st) {
+        return Ok(EncryptedVaultMapper.parse(await _fetchContent(latest.id)));
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.fetch_latest.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -137,12 +138,13 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   }
 
   @override
-  Future<Result<Null, RecoverBullFailure>> store(String content) async {
+  Future<Result<Null, RecoverBullFailure>> store(EncryptedVault vault) async {
+    final content = EncryptedVaultMapper.fromEntity(vault).toFile();
     return _serialized(() async {
       try {
         await _dataSource.store(content);
         return const Ok(null);
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.store.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -160,7 +162,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
       try {
         await _dataSource.trash(fileId);
         return const Ok(null);
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         log.error(
           'recoverbull.drive.trash.unexpected error_type=${e.runtimeType}',
           trace: st,
@@ -198,6 +200,9 @@ final class _Session implements GoogleDriveDiscoverySession {
   final String account;
 
   const _Session(this._repository, this.account);
+
+  @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
 
   @override
   Future<List<DriveFileMetadata>> fetchAllMetadata() =>

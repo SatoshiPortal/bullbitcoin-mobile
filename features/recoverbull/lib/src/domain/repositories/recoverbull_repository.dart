@@ -12,8 +12,8 @@ abstract interface class RecoverBullRepository {
   @useResult
   Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   createVault({
-    required String rootXprv,
-    required String plaintext,
+    required String backupKey,
+    required DecryptedVault plaintext,
     required String derivationPath,
   });
 
@@ -63,18 +63,28 @@ abstract interface class RecoverBullRepository {
     RecoverBullTorRoute route,
   );
 
-  Future<Uri> fetchUrl();
+  @useResult
+  Future<Result<Uri, RecoverBullFailure>> fetchUrl();
 
-  Future<void> storeUrl(Uri url);
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> storeUrl(Uri url);
 
-  Future<void> allowPermission(bool isGranted);
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> allowPermission(bool isGranted);
 
-  Future<bool> fetchPermission();
+  @useResult
+  Future<Result<bool, RecoverBullFailure>> fetchPermission();
 
   /// Never throws: an unreadable store is reported as an unknown status.
   Future<RecoverBullStatus> fetchBackupStatus(RecoverBullNetwork network);
 
-  Future<void> markBackupStored(RecoverBullNetwork network);
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> markBackupStored(
+    RecoverBullNetwork network,
+  );
 
-  Future<void> markBackupVerified(RecoverBullNetwork network);
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> markBackupVerified(
+    RecoverBullNetwork network,
+  );
 }

@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
   "recoverbullSettingsUrlInvalid": "URL ไม่ถูกต้อง",
-  "recoverbullErrorUnexpected": "ข้อผิดพลาดที่ผิดพลาด, ดูบันทึก",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "ตรวจสอบการเชื่อมต่อสําหรับการกู้คืนBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "เชื่อมต่อกับเซิร์ฟเวอร์ คุณสามารถเพิ่มนาที.",
-  "recoverbullMonitoringDisableCancel": "ยกเลิก"
+  "recoverbullMonitoringDisableCancel": "ยกเลิก",
+  "recoverbullMonitoringServerUnsupported": "เซิร์ฟเวอร์นี้ไม่รองรับการติดตามความพยายาม คุณยังสามารถสำรองและกู้คืนห้องนิรภัยได้"
 }

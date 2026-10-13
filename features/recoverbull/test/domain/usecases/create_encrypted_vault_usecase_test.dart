@@ -1,3 +1,6 @@
+import 'package:bip32_keys/bip32_keys.dart';
+import 'package:bull_recoverbull/src/utils/recoverbull_bip85.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'dart:typed_data';
 import '../../support/log_sink.dart';
 
@@ -51,6 +54,10 @@ void main() {
   late _MockWalletRepository walletRepository;
   late _MockSettingsPort settings;
 
+  setUpAll(() {
+    registerFallbackValue(DecryptedVault());
+  });
+
   setUp(() {
     recoverBullRepository = _MockRecoverBullRepository();
     seedPort = _MockSeedPort();
@@ -76,7 +83,7 @@ void main() {
     final vault = _MockEncryptedVault();
     when(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),
@@ -94,13 +101,23 @@ void main() {
 
     expect(result, isA<Ok>());
     expect((result as Ok).value.network, RecoverBullNetwork.testnet);
-    verify(
+    final captured = verify(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: captureAny(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
-        derivationPath: any(named: 'derivationPath'),
+        derivationPath: captureAny(named: 'derivationPath'),
       ),
-    ).called(1);
+    ).captured;
+    final derivedKey = captured[0] as String;
+    final path = captured[1] as String;
+    expect(
+      derivedKey,
+      RecoverbullBip85Utils.deriveBackupKey(
+        Bip32Keys.fromSeed(seed).toBase58(),
+        path,
+      ),
+    );
+    expect(derivedKey.length, 64);
   });
 
   test('mainnet seed also creates an encrypted vault', () async {
@@ -117,7 +134,7 @@ void main() {
     final vault = _MockEncryptedVault();
     when(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),
@@ -136,7 +153,7 @@ void main() {
     expect((result as Ok).value.network, RecoverBullNetwork.mainnet);
     verify(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),
@@ -147,7 +164,7 @@ void main() {
     const failure = RecoverBullUnexpectedFailure('expected failure');
     when(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),
@@ -212,7 +229,7 @@ void main() {
         expect(result, isA<Err>());
         verifyNever(
           () => recoverBullRepository.createVault(
-            rootXprv: any(named: 'rootXprv'),
+            backupKey: any(named: 'backupKey'),
             plaintext: any(named: 'plaintext'),
             derivationPath: any(named: 'derivationPath'),
           ),
@@ -241,7 +258,7 @@ void main() {
     verifyNever(() => seedPort.getSeed(any()));
     verifyNever(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),
@@ -301,7 +318,7 @@ void main() {
     );
     when(
       () => recoverBullRepository.createVault(
-        rootXprv: any(named: 'rootXprv'),
+        backupKey: any(named: 'backupKey'),
         plaintext: any(named: 'plaintext'),
         derivationPath: any(named: 'derivationPath'),
       ),

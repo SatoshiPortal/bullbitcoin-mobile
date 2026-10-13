@@ -72,7 +72,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Kết nối trực tiếp tới mạng Tor, không dùng pluggable transport.",
   "recoverbullSettingsUrlInvalid": "URL không hợp lệ",
-  "recoverbullErrorUnexpected": "Lỗi không mong đợi, xem nhật ký",
   "recoverbullCheckingConnection": "Đang kiểm tra kết nối cho RecoverBull",
   "recoverbullErrorInvalidCredentials": "Sai mật khẩu cho tệp sao lưu này",
   "recoverbullGoBackEdit": "<< Quay lại và chỉnh sửa",
@@ -150,5 +149,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Đang kết nối đến Máy chủ khóa qua Tor. Quá trình này có thể mất đến một phút.",
-  "recoverbullMonitoringDisableCancel": "Hủy"
+  "recoverbullMonitoringDisableCancel": "Hủy",
+  "recoverbullMonitoringServerUnsupported": "Máy chủ này không hỗ trợ giám sát các lần thử. Bạn vẫn có thể sao lưu và khôi phục kho lưu trữ."
 }

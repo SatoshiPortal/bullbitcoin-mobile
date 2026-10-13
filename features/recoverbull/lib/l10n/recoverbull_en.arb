@@ -340,10 +340,6 @@
   "@recoverbullSettingsUrlInvalid": {
     "description": "Validation error when the Recoverbull URL is malformed"
   },
-  "recoverbullErrorUnexpected": "Unexpected error, see logs",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "Checking connection for RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -639,5 +635,9 @@
   "recoverbullErrorOnionUnavailable": "The key server could not be reached. Please try again later.",
   "recoverbullErrorServiceRefused": "The key server refused the connection. Please try again later.",
   "recoverbullErrorConnectionBudget": "The key server took too long to respond. Please try again.",
-  "recoverbullErrorConnectionUnknown": "The key server could not be reached. Please try again."
+  "recoverbullErrorConnectionUnknown": "The key server could not be reached. Please try again.",
+  "recoverbullMonitoringServerUnsupported": "This server does not support attempt monitoring. You can still back up and recover vaults.",
+  "@recoverbullMonitoringServerUnsupported": {
+    "description": "Advisory when the server lacks the attempt monitoring API; vault backup and recovery remain supported"
+  }
 }

@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
   "recoverbullSettingsUrlInvalid": "URL ei ole kelvollinen",
-  "recoverbullErrorUnexpected": "Odottamaton virhe, katso lokit",
   "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
   "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
   "recoverbullGoBackEdit": "<< Palaa takaisin ja muokkaa",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu. Tämä voi kestää jopa minuutin.",
-  "recoverbullMonitoringDisableCancel": "Peruuta"
+  "recoverbullMonitoringDisableCancel": "Peruuta",
+  "recoverbullMonitoringServerUnsupported": "Tämä palvelin ei tue yritysten seurantaa. Voit edelleen varmuuskopioida ja palauttaa holveja."
 }

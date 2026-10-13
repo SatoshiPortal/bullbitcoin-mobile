@@ -54,21 +54,9 @@ class OnTorInitialization extends RecoverBullEvent {
   const OnTorInitialization({this.restart = false});
 }
 
-/// Carries a pushed Tor readiness change into the bloc.
-///
-/// Internal: emitted by the bloc's own subscription, never by the UI. A bloc
-/// may only `emit` from inside a handler, so an external stream has to be
-/// funnelled through an event rather than calling `emit` from the listener.
-class _OnTorConnectionChanged extends RecoverBullEvent {
-  final tor.TorConnectionState state;
-
-  const _OnTorConnectionChanged(this.state);
-}
-
-class _OnTorReadinessGraceExpired extends RecoverBullEvent {
-  final int token;
-
-  const _OnTorReadinessGraceExpired(this.token);
+class _OnConnectionUpdated extends RecoverBullEvent {
+  final RecoverBullConnection state;
+  const _OnConnectionUpdated(this.state);
 }
 
 class OnVaultKeyHidden extends RecoverBullEvent {

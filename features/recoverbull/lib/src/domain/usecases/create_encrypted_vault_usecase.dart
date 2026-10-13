@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import '../repositories/recoverbull_repository.dart';
@@ -95,12 +94,15 @@ class CreateEncryptedVaultUsecase {
         latestEncryptedBackup: null,
         latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
       );
-      final plaintext = json.encode(toBackup.toJson());
       final derivationPath = RecoverbullBip85Utils.generateBackupKeyPath();
 
+      final backupKey = RecoverbullBip85Utils.deriveBackupKey(
+        defaultXprv,
+        derivationPath,
+      );
       final result = await _recoverBullRepository.createVault(
-        rootXprv: defaultXprv,
-        plaintext: plaintext,
+        backupKey: backupKey,
+        plaintext: toBackup,
         derivationPath: derivationPath,
       );
       return result.map(

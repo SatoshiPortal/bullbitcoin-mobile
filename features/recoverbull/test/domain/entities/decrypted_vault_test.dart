@@ -1,3 +1,5 @@
+import 'package:bull_recoverbull/src/data/mappers/decrypted_vault_mapper.dart';
+import 'package:bull_recoverbull/src/data/models/decrypted_vault_model.dart';
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,7 +16,7 @@ void main() {
       latestPhysicalBackup: physicalBackup,
     );
 
-    final encoded = vault.toJson();
+    final encoded = DecryptedVaultMapper.fromEntity(vault).toMap();
 
     expect(encoded, {
       'mnemonic': ['abandon', 'ability'],
@@ -24,13 +26,23 @@ void main() {
       'latestEncryptedBackup': encryptedBackup.toIso8601String(),
       'latestPhysicalBackup': physicalBackup.toIso8601String(),
     });
-    expect(DecryptedVault.fromJson(encoded), vault);
+    expect(
+      DecryptedVaultMapper.toEntity(DecryptedVaultModel.fromMap(encoded)),
+      vault,
+    );
   });
 
   test('keeps mnemonic values immutable', () {
-    const vault = DecryptedVault(mnemonic: ['abandon']);
+    final vault = DecryptedVault(mnemonic: ['abandon']);
 
     expect(() => vault.mnemonic.add('ability'), throwsUnsupportedError);
+  });
+
+  test('mnemonic input cannot mutate an existing domain vault', () {
+    final words = ['abandon'];
+    final vault = DecryptedVault(mnemonic: words);
+    words.add('ability');
+    expect(vault.mnemonic, ['abandon']);
   });
 
   test('copyWith can clear nullable backup timestamps', () {
@@ -41,7 +53,7 @@ void main() {
 
     expect(
       vault.copyWith(latestEncryptedBackup: null, latestPhysicalBackup: null),
-      const DecryptedVault(),
+      DecryptedVault(),
     );
   });
 }

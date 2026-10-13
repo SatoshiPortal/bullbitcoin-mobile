@@ -1,11 +1,15 @@
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
 import 'package:convert/convert.dart' as convert;
-import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import '../repositories/recoverbull_attempt_monitoring_repository.dart';
 
 final class RegisterMonitoredBackupUsecase {
-  final RecoverBullAttemptMonitoringStore store;
+  final RecoverBullAttemptMonitoringRepository store;
   const RegisterMonitoredBackupUsecase(this.store);
 
-  Future<void> execute({required String backupIdHex}) => store.registerBackup(
+  Future<Result<Null, RecoverBullFailure>> execute({
+    required String backupIdHex,
+  }) => store.registerBackup(
     convert.hex.decode(backupIdHex.replaceAll(RegExp(r'\s'), '')),
   );
 }

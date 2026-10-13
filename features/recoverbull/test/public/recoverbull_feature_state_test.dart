@@ -1,3 +1,4 @@
+import 'package:bull_ui/testing.dart' show testBullTheme;
 import 'dart:io';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -12,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../support/log_sink.dart';
+import '../support/monitoring_repository.dart';
 
 class _Settings extends Mock implements RecoverBullSettingsPort {}
 
@@ -52,6 +54,10 @@ Future<RecoverBullFeature> _createFeature(
   when(watcher.execute).thenAnswer((_) => const Stream.empty());
   when(() => embedded.watcher).thenReturn(watcher);
   return RecoverBullFeature.create(
+    navigation: RecoverBullNavigationCallbacks(
+      onOpenTorSettings: () {},
+      onOpenWalletHome: () {},
+    ),
     config: RecoverBullConfig(databasePath: path),
     wallets: _Wallets(),
     seeds: _Seeds(),
@@ -93,8 +99,8 @@ void main() {
   test('a testnet vault does not count as a mainnet backup', () async {
     final feature = opened = await _createFeature(path);
 
-    await feature.markBackupStored(RecoverBullNetwork.testnet);
-    await feature.markBackupVerified(RecoverBullNetwork.testnet);
+    await feature.markBackupStored(RecoverBullNetwork.testnet).requireOk();
+    await feature.markBackupVerified(RecoverBullNetwork.testnet).requireOk();
 
     final mainnet = await feature.status(RecoverBullNetwork.mainnet);
     expect(mainnet.isKnown, isTrue);
@@ -108,7 +114,7 @@ void main() {
   test('a mainnet vault does not count as a testnet backup', () async {
     final feature = opened = await _createFeature(path);
 
-    await feature.markBackupStored(RecoverBullNetwork.mainnet);
+    await feature.markBackupStored(RecoverBullNetwork.mainnet).requireOk();
 
     expect(
       (await feature.status(RecoverBullNetwork.mainnet)).hasEncryptedBackup,
@@ -134,13 +140,13 @@ void main() {
       expect((await feature.status(network)).isKnown, isFalse);
     }
 
-    await feature.markBackupStored(RecoverBullNetwork.testnet);
+    await feature.markBackupStored(RecoverBullNetwork.testnet).requireOk();
     final testnet = await feature.status(RecoverBullNetwork.testnet);
     expect(testnet.isKnown, isTrue);
     expect(testnet.hasEncryptedBackup, isTrue);
     expect((await feature.status(RecoverBullNetwork.mainnet)).isKnown, isFalse);
 
-    await feature.markBackupVerified(RecoverBullNetwork.mainnet);
+    await feature.markBackupVerified(RecoverBullNetwork.mainnet).requireOk();
     final mainnet = await feature.status(RecoverBullNetwork.mainnet);
     expect(mainnet.isKnown, isTrue);
     expect(mainnet.hasVerifiedEncryptedBackup, isTrue);
@@ -162,7 +168,7 @@ void main() {
           ),
         );
 
-    await feature.setServer(Uri.parse('http://newexample.onion'));
+    await feature.setServer(Uri.parse('http://newexample.onion')).requireOk();
 
     final row = await database
         .select(database.recoverbullMonitoredBackup)
@@ -171,7 +177,7 @@ void main() {
     expect(row.currentWindow, 0);
     expect(row.lastWarningWindow, 0);
     expect(row.rowRevision, 0);
-    final settings = await feature.serverSettings();
+    final settings = await feature.serverSettings().requireOk();
     expect(settings.server, Uri.parse('http://newexample.onion'));
     expect(settings.permissionGranted, isFalse);
   });
@@ -190,7 +196,7 @@ void main() {
       await feature.discoverDriveBackups();
       expect(drive.sessions, 0);
 
-      await feature.markBackupStored(RecoverBullNetwork.testnet);
+      await feature.markBackupStored(RecoverBullNetwork.testnet).requireOk();
       await feature.discoverDriveBackups();
       expect(drive.sessions, 1);
     },
@@ -223,7 +229,7 @@ void main() {
         embeddedTor: embedded,
         settings: settings,
       );
-      await feature.markBackupStored(RecoverBullNetwork.mainnet);
+      await feature.markBackupStored(RecoverBullNetwork.mainnet).requireOk();
 
       await feature.warmKeyServerRoute();
 
@@ -236,7 +242,7 @@ void main() {
         embeddedTor: embedded,
         settings: settings,
       );
-      await feature.markBackupStored(RecoverBullNetwork.testnet);
+      await feature.markBackupStored(RecoverBullNetwork.testnet).requireOk();
 
       await feature.warmKeyServerRoute();
 
@@ -257,7 +263,13 @@ void main() {
     });
 
     test('does nothing when the feature is unavailable', () async {
-      final feature = RecoverBullFeature.unavailable(log: const TestLogSink());
+      final feature = RecoverBullFeature.unavailable(
+        navigation: RecoverBullNavigationCallbacks(
+          onOpenTorSettings: () {},
+          onOpenWalletHome: () {},
+        ),
+        log: const TestLogSink(),
+      );
 
       await expectLater(feature.warmKeyServerRoute(), completes);
     });
@@ -278,7 +290,13 @@ void main() {
   );
 
   test('the unavailable feature builds no flow bloc', () {
-    final feature = RecoverBullFeature.unavailable(log: const TestLogSink());
+    final feature = RecoverBullFeature.unavailable(
+      navigation: RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () {},
+        onOpenWalletHome: () {},
+      ),
+      log: const TestLogSink(),
+    );
 
     expect(
       feature.newBlocForTesting(flow: RecoverBullFlow.secureVault),
@@ -289,7 +307,13 @@ void main() {
   testWidgets('every route of the unavailable feature shows an error page', (
     tester,
   ) async {
-    final feature = RecoverBullFeature.unavailable(log: const TestLogSink());
+    final feature = RecoverBullFeature.unavailable(
+      navigation: RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () {},
+        onOpenWalletHome: () {},
+      ),
+      log: const TestLogSink(),
+    );
     final router = GoRouter(
       initialLocation: RecoverBullRoute.recoverbullSettings.path,
       routes: feature.routes,
@@ -298,6 +322,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,

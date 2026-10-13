@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Si connette direttamente alla rete Tor, senza pluggable transport.",
   "recoverbullSettingsUrlInvalid": "L'URL non è valido",
-  "recoverbullErrorUnexpected": "Errore inaspettato, vedi log",
   "recoverbullCheckingConnection": "Controllo della connessione per RecoverBull",
   "recoverbullErrorInvalidCredentials": "Password sbagliata per questo file di backup",
   "recoverbullGoBackEdit": "Torna indietro e modifica",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Collegamento a Key Server tramite Tor. Ci vorra' un minuto.",
-  "recoverbullMonitoringDisableCancel": "Annulla"
+  "recoverbullMonitoringDisableCancel": "Annulla",
+  "recoverbullMonitoringServerUnsupported": "Questo server non supporta il monitoraggio dei tentativi. Puoi continuare a eseguire il backup e il ripristino dei vault."
 }

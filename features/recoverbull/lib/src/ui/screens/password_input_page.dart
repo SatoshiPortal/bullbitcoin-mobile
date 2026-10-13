@@ -4,14 +4,9 @@ import './vault_provider_selection_page.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../utils/password_validator.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
-import '../widgets/top_bar.dart';
-import '../widgets/dial_pad.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
@@ -59,7 +54,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   Widget build(BuildContext context) {
     final borderDecoration = OutlineInputBorder(
       borderRadius: BorderRadius.circular(2),
-      borderSide: BorderSide(color: context.appColors.border),
+      borderSide: BorderSide(color: context.bull.border),
     );
 
     return BlocBuilder<RecoverBullBloc, RecoverBullState>(
@@ -105,10 +100,13 @@ class _PasswordInputPageState extends State<PasswordInputPage>
           RecoverBullFlow.settings => throw UnimplementedError(),
         };
 
-        return Scaffold(
+        return BullScaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(onBack: () => context.pop(), title: title),
+            flexibleSpace: BullTopBar(
+              onBack: () => context.pop(),
+              title: title,
+            ),
             actions: const [
               Padding(
                 padding: EdgeInsets.only(right: 20),
@@ -126,24 +124,24 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                   SizedBox(
                     height: 50,
                     child: Center(
-                      child: BBText(
+                      child: BullText(
                         description,
                         textAlign: .center,
-                        style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.textMuted,
+                        style: context.bullText.labelMedium?.copyWith(
+                          color: context.bull.textMuted,
                         ),
                         maxLines: 3,
                       ),
                     ),
                   ),
                   const Gap(12),
-                  BBText(
+                  BullText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
                         : inputTypeString,
                     textAlign: .start,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.textMuted,
+                    style: context.bullText.labelSmall?.copyWith(
+                      color: context.bull.textMuted,
                     ),
                   ),
                   const Gap(2),
@@ -154,8 +152,8 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                     textAlign: .left,
                     textAlignVertical: TextAlignVertical.center,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    style: context.font.headlineSmall?.copyWith(
-                      color: context.appColors.onSurface,
+                    style: context.bullText.headlineSmall?.copyWith(
+                      color: context.bull.onSurface,
                     ),
                     validator: (value) {
                       if (needPasswordConfirmation &&
@@ -200,11 +198,11 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                   ),
                   const Gap(16),
                   if (needPasswordConfirmation && validatedPassword.isNotEmpty)
-                    BBButton.small(
+                    BullButton.small(
                       label: context.loc.recoverbullGoBackEdit,
-                      bgColor: context.appColors.transparent,
-                      textColor: context.appColors.info,
-                      textStyle: context.font.labelSmall,
+                      bgColor: context.bull.transparent,
+                      textColor: context.bull.info,
+                      textStyle: context.bullText.labelSmall,
                       onPressed: () {
                         setState(() {
                           validatedPassword = '';
@@ -216,13 +214,13 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                     Row(
                       children: [
                         Expanded(
-                          child: BBButton.big(
+                          child: BullButton.big(
                             label: inputType == InputType.pin
                                 ? context.loc.recoverbullSwitchToPassword
                                 : context.loc.recoverbullSwitchToPIN,
-                            bgColor: context.appColors.transparent,
-                            textColor: context.appColors.info,
-                            textStyle: context.font.labelSmall,
+                            bgColor: context.bull.transparent,
+                            textColor: context.bull.info,
+                            textStyle: context.bullText.labelSmall,
                             onPressed: () {
                               inputType = inputType == InputType.pin
                                   ? InputType.password
@@ -236,12 +234,12 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                         ),
                         if (inputType != InputType.vaultKey && hasVaultKeyInput)
                           Expanded(
-                            child: BBButton.small(
+                            child: BullButton.small(
                               label:
                                   context.loc.recoverbullEnterVaultKeyInstead,
-                              bgColor: context.appColors.transparent,
-                              textColor: context.appColors.info,
-                              textStyle: context.font.labelSmall,
+                              bgColor: context.bull.transparent,
+                              textColor: context.bull.info,
+                              textStyle: context.bullText.labelSmall,
                               onPressed: () {
                                 inputType = InputType.vaultKey;
                                 inputController.clear();
@@ -257,7 +255,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                   if (inputType == InputType.pin)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: DialPad(
+                      child: BullDialPad(
                         disableFeedback: true,
                         onlyDigits: true,
                         onNumberPressed: (e) => inputController.text += e,
@@ -272,15 +270,15 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                   if (inputType == InputType.pin) const Gap(12),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 60),
-                    child: BBButton.big(
+                    child: BullButton.big(
                       label:
                           needPasswordConfirmation &&
                               validatedPassword.isNotEmpty
                           ? context.loc.recoverbullConfirm
                           : context.loc.recoverbullContinue,
-                      textStyle: context.font.headlineLarge,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
+                      textStyle: context.bullText.headlineLarge,
+                      bgColor: context.bull.onSurface,
+                      textColor: context.bull.surface,
                       disabled: state.isLoading,
                       onPressed: () {
                         if (context

@@ -1,4 +1,5 @@
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import '../../support/monitoring_repository.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
@@ -46,7 +47,7 @@ void main() {
       secret: [1, 2, 3],
       backupKey: List<int>.filled(32, 9),
     );
-    final vault = EncryptedVault(file: backup.toJson());
+    final vault = EncryptedVaultMapper.parse(backup.toJson());
     final repository = _Repository();
     final session = _Session();
     final route = RecoverBullTorRoute(
@@ -81,7 +82,7 @@ void main() {
           Ok(VaultKeyFetchResult(vaultKey: 'aabb', attemptStatus: status)),
     );
 
-    final record = RecordLocalAttemptUsecase(store);
+    final record = RecordLocalAttemptUsecase(monitoringRepository(store));
     await FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: session,

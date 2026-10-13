@@ -114,7 +114,6 @@
   "recoverbullPIN": "ПІН",
   "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
   "recoverbullSettingsUrlInvalid": "URL недійсний",
-  "recoverbullErrorUnexpected": "Несподівана помилка, див. журнали",
   "recoverbullCheckingConnection": "Перевірка підключення до RecoverBull",
   "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
   "recoverbullGoBackEdit": "<< Повернутися і редагувати",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Підключення до Key Server над Tor. Це може прийняти до хвилини.",
-  "recoverbullMonitoringDisableCancel": "Скасувати"
+  "recoverbullMonitoringDisableCancel": "Скасувати",
+  "recoverbullMonitoringServerUnsupported": "Цей сервер не підтримує відстеження спроб. Ви й надалі можете створювати резервні копії та відновлювати сховища."
 }
