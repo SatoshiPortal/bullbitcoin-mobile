@@ -39,7 +39,7 @@ export 'src/router/recoverbull_router.dart'
     show RecoverBullRoute, RecoverBullFlowsExtra, openRecoverBullFlow;
 export 'src/google_drive/recoverbull_google_drive_router.dart'
     show RecoverBullGoogleDriveRoute;
-export 'src/composition/recoverbull_composition.dart' show RecoverBullFeature;
+export 'src/public/recoverbull_feature.dart' show RecoverBullFeature;
 
 export 'src/domain/recoverbull_failure.dart'
     show RecoverBullFailure, RecoverBullUnexpectedFailure;

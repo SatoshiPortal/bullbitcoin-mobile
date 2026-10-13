@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
 import 'package:drift/native.dart';

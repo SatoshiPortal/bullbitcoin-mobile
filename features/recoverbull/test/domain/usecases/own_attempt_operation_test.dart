@@ -2,7 +2,7 @@ import 'package:bull_recoverbull/src/domain/recoverbull_attempt_alert_port.dart'
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';

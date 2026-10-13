@@ -1,7 +1,7 @@
 import '../domain/entities/attempt_alert.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'recoverbull_attempt_monitoring_store.dart';
 import '../domain/entities/attempt_monitoring_state.dart';
 import '../domain/entities/drive_backup_cache_entry.dart';
 import '../domain/entities/key_server_attempts.dart';

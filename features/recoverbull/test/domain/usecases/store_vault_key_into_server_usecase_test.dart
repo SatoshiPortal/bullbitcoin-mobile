@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/store_vault_key_into_server_usecase.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
