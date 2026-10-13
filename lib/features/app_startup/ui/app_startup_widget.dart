@@ -1,8 +1,4 @@
-import 'package:screen_privacy/screen_privacy.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'dart:async';
+import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -107,7 +103,7 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
   Widget build(BuildContext context) {
     final failure = widget.failure;
     if (_restoring && failure is AppStartupMissingDefaultSecretFailure) {
-      return _RestoreDefaultSecret(
+      return RestoreDefaultSecretScreen(
         onCancel: () => setState(() => _restoring = false),
       );
     }
@@ -183,84 +179,6 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
               const SizedBox(height: 24),
               ShareLogsWidget(facade: GetIt.I<LogsFacade>()),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Entry of the recovery phrase of a default wallet whose secret is missing.
-///
-/// The words go straight to the bloc, which checks them against the missing
-/// wallet before storing them; a refusal is shown under the entry.
-class _RestoreDefaultSecret extends StatefulWidget {
-  const _RestoreDefaultSecret({required this.onCancel});
-
-  final VoidCallback onCancel;
-
-  @override
-  State<_RestoreDefaultSecret> createState() => _RestoreDefaultSecretState();
-}
-
-class _RestoreDefaultSecretState extends State<_RestoreDefaultSecret>
-    with PrivacyScreen {
-  String? _error;
-  bool _busy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Best-effort, like every screen where words are typed: refusing entry
-    // over a platform hiccup would block the only way back.
-    unawaited(enableScreenPrivacy());
-  }
-
-  @override
-  void dispose() {
-    unawaited(disableScreenPrivacy());
-    super.dispose();
-  }
-
-  Future<void> _submit(List<String> words) async {
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    final result = await context.read<AppStartupBloc>().restoreDefaultSecret(
-      words,
-    );
-    if (!mounted) return;
-    setState(() {
-      _busy = false;
-      if (result case Err(:final failure)) {
-        _error = failure.toTranslated(context);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(onPressed: widget.onCancel),
-        title: Text(context.loc.appStartupRestoreSecretButton),
-      ),
-      body: SafeArea(
-        child: IgnorePointer(
-          ignoring: _busy,
-          child: Opacity(
-            opacity: _busy ? 0.5 : 1.0,
-            child: MnemonicWidget(
-              initialLength: bip39.MnemonicLength.words12,
-              allowMultipleMnemonicLength: true,
-              allowLabel: false,
-              // Default wallets never have a passphrase.
-              allowPassphrase: false,
-              externalError: _error,
-              submitLabel: context.loc.onboardingRecover,
-              onSubmit: (mnemonic) => unawaited(_submit(mnemonic.words)),
-            ),
           ),
         ),
       ),
