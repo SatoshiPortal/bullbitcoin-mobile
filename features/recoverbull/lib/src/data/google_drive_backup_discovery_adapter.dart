@@ -1,3 +1,7 @@
+import 'package:primitives/primitives.dart';
+import '../domain/entities/encrypted_vault.dart';
+import '../domain/recoverbull_failure.dart';
+import 'mappers/encrypted_vault_mapper.dart';
 import '../domain/recoverbull_drive_discovery_port.dart';
 import '../domain/repositories/google_drive_repository.dart';
 
@@ -27,6 +31,10 @@ final class _AdapterSession implements RecoverBullDriveDiscoverySession {
   String get account => _session.account;
 
   @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) =>
+      _session.withCurrentAccount(action);
+
+  @override
   Future<List<RecoverBullDriveFile>> files() async => [
     for (final file in await _session.fetchAllMetadata())
       RecoverBullDriveFile(
@@ -37,5 +45,21 @@ final class _AdapterSession implements RecoverBullDriveDiscoverySession {
   ];
 
   @override
-  Future<String> content(String fileId) => _session.fetchRawFile(fileId);
+  Future<Result<EncryptedVault, RecoverBullFailure>> content(
+    String fileId,
+  ) async {
+    final String content;
+    try {
+      content = await _session.fetchRawFile(fileId);
+    } on Exception {
+      return const Err(
+        RecoverBullGoogleDriveFetchFailure('Drive fetch failed'),
+      );
+    }
+    try {
+      return Ok(EncryptedVaultMapper.parse(content));
+    } on Exception {
+      return const Err(InvalidVaultFileFailure());
+    }
+  }
 }

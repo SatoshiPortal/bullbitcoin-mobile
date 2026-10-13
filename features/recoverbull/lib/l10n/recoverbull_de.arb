@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Stellt ohne zusätzliches Transportprotokoll eine direkte Verbindung zum Tor-Netzwerk her.",
   "recoverbullSettingsUrlInvalid": "URL ist ungültig",
-  "recoverbullErrorUnexpected": "Unerwarteter Fehler, siehe Protokolle.",
   "recoverbullCheckingConnection": "Verbindung zu RecoverBull wird geprüft",
   "recoverbullErrorInvalidCredentials": "Falsches Passwort für diese Sicherungsdatei.",
   "recoverbullGoBackEdit": "<< Zurück und bearbeiten",
@@ -235,5 +234,6 @@
   },
   "recoverbullConnectingTor": "Verbindung zum Schlüsselserver über Tor wird hergestellt. Dies kann bis zu einer Minute dauern.",
   "recoverbullMonitoringDisableCancel": "Abbrechen",
-  "recoverbullReconnecting": "Verbindung wird wiederhergestellt"
+  "recoverbullReconnecting": "Verbindung wird wiederhergestellt",
+  "recoverbullMonitoringServerUnsupported": "Dieser Server unterstützt keine Überwachung der Versuche. Tresore können weiterhin gesichert und wiederhergestellt werden."
 }

@@ -2,12 +2,9 @@ import 'dart:async';
 import 'dart:ui' show ImageFilter;
 
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../l10n/context_localizations.dart';
-import 'bull_aliases.dart';
-import 'with_bull_theme.dart';
 
 /// Copy/reveal adapter retained because no Bull UI component owns secret copy
 /// semantics. It never logs the value, and keeps both the displayed and the
@@ -82,7 +79,7 @@ class _CopyInputState extends State<CopyInput> {
   Widget build(BuildContext context) {
     final copyValue = widget.clipboardText ?? value;
     final canCopy = copyValue.isNotEmpty;
-    final colors = context.appColors;
+    final colors = context.bull;
     return Container(
       decoration: BoxDecoration(
         color: colors.onSecondary,
@@ -116,9 +113,9 @@ class _CopyInputState extends State<CopyInput> {
                         ),
                       )
                     : ExcludeSemantics(
-                        child: BBText(
+                        child: BullText(
                           value,
-                          style: context.font.bodyLarge,
+                          style: context.bullText.bodyLarge,
                           color: colors.secondary,
                           maxLines: maxLines,
                           overflow: overflow,
@@ -151,16 +148,15 @@ class _CopyInputState extends State<CopyInput> {
   void _showModal(BuildContext context, String copyValue) {
     showDialog<void>(
       context: context,
-      barrierColor: context.appColors.surface.withAlpha(100),
+      barrierColor: context.bull.surface.withAlpha(100),
       builder: (dialogContext) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
         child: AlertDialog(
-          backgroundColor: context.appColors.surface,
           title: modalTitle == null
               ? null
               : Text(
                   modalTitle!,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  style: context.bullText.headlineMedium?.copyWith(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
@@ -170,9 +166,7 @@ class _CopyInputState extends State<CopyInput> {
             child: ExcludeSemantics(
               child: SelectableText(
                 (modalContent ?? value).toString(),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(fontSize: 18),
+                style: context.bullText.bodyLarge?.copyWith(fontSize: 18),
               ),
             ),
           ),
@@ -180,16 +174,16 @@ class _CopyInputState extends State<CopyInput> {
             if (copyValue.isNotEmpty)
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: context.appColors.secondary,
-                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                  foregroundColor: context.bull.secondary,
+                  textStyle: context.bullText.bodyLarge,
                 ),
                 onPressed: () => _copy(context, copyValue),
                 child: Text(context.loc.copyDialogButton),
               ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: context.appColors.primary,
-                textStyle: Theme.of(context).textTheme.bodyLarge,
+                foregroundColor: context.bull.primary,
+                textStyle: context.bullText.bodyLarge,
               ),
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(context.loc.closeDialogButton),

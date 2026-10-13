@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Se conecta directamente a la red Tor, sin transporte conectable.",
   "recoverbullSettingsUrlInvalid": "La URL no es válida",
-  "recoverbullErrorUnexpected": "Error inesperado, ver registros",
   "recoverbullCheckingConnection": "Verificando conexión para RecoverBull",
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
   "recoverbullGoBackEdit": "<< Volver y editar",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Conectando al servidor de claves a través de Tor. Esto puede tomar hasta un minuto.",
-  "recoverbullMonitoringDisableCancel": "Cancelar"
+  "recoverbullMonitoringDisableCancel": "Cancelar",
+  "recoverbullMonitoringServerUnsupported": "Este servidor no admite el seguimiento de intentos. Puedes seguir creando copias de seguridad y recuperando bóvedas."
 }

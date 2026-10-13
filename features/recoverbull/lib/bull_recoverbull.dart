@@ -43,3 +43,6 @@ export 'src/composition/recoverbull_composition.dart' show RecoverBullFeature;
 
 export 'src/domain/recoverbull_failure.dart'
     show RecoverBullFailure, RecoverBullUnexpectedFailure;
+
+export 'src/domain/recoverbull_navigation_port.dart'
+    show RecoverBullNavigationPort, RecoverBullNavigationCallbacks;

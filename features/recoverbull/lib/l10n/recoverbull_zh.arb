@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "不使用可插拔传输，直接连接 Tor 网络。",
   "recoverbullSettingsUrlInvalid": "URL 无效",
-  "recoverbullErrorUnexpected": "未预见的错误,见记录",
   "recoverbullCheckingConnection": "RecoverBull检查连接",
   "recoverbullErrorInvalidCredentials": "这一备份卷宗的密码",
   "recoverbullGoBackEdit": "<背 景",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "连接Tor。 时间可长达一分钟.",
-  "recoverbullMonitoringDisableCancel": "取消"
+  "recoverbullMonitoringDisableCancel": "取消",
+  "recoverbullMonitoringServerUnsupported": "此服务器不支持尝试监控。您仍可备份和恢复保险库。"
 }

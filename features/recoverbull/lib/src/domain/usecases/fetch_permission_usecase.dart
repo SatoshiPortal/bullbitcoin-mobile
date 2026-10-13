@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
 import '../repositories/recoverbull_repository.dart';
 
 class FetchPermissionUsecase {
@@ -5,7 +7,6 @@ class FetchPermissionUsecase {
 
   FetchPermissionUsecase({required this._recoverBullRepository});
 
-  Future<bool> execute() async {
-    return await _recoverBullRepository.fetchPermission();
-  }
+  Future<Result<bool, RecoverBullFailure>> execute() =>
+      _recoverBullRepository.fetchPermission();
 }

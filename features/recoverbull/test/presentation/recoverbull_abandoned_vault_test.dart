@@ -33,7 +33,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(fixtureVault());
-    registerFallbackValue(const DecryptedVault());
+    registerFallbackValue(DecryptedVault());
     registerFallbackValue(testRoute());
   });
   setUp(() async {
@@ -71,10 +71,7 @@ void main() {
 
   void savesFile(Future<Result<Null, core.RecoverBullFailure>> Function() r) {
     when(
-      () => saveFile.execute(
-        content: any(named: 'content'),
-        filename: any(named: 'filename'),
-      ),
+      () => saveFile.execute(vault: any(named: 'vault')),
     ).thenAnswer((_) => r());
   }
 
@@ -222,12 +219,7 @@ void main() {
       await pumpEventQueue();
 
       verifyTrashed(vault);
-      verifyNever(
-        () => saveFile.execute(
-          content: any(named: 'content'),
-          filename: any(named: 'filename'),
-        ),
-      );
+      verifyNever(() => saveFile.execute(vault: any(named: 'vault')));
     },
   );
 
@@ -248,7 +240,7 @@ void main() {
     ).thenAnswer((_) => stored.future);
     when(
       () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),
-    ).thenThrow(StateError('server down'));
+    ).thenThrow(Exception('server down'));
     final bloc = buildBloc(
       flow: RecoverBullFlow.secureVault,
       log: log,

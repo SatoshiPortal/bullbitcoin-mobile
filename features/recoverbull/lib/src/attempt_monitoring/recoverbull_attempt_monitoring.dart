@@ -1,3 +1,6 @@
+import '../domain/entities/attempt_monitoring_snapshot.dart';
+export '../domain/entities/attempt_monitoring_snapshot.dart';
+export '../domain/repositories/recoverbull_attempt_monitoring_repository.dart';
 import 'dart:async';
 import 'dart:convert' show utf8;
 
@@ -12,63 +15,6 @@ import '../domain/entities/attempt_monitoring_state.dart';
 import '../domain/entities/drive_backup_cache_entry.dart';
 import '../domain/entities/key_server_attempts.dart';
 import '../domain/entities/monitored_backup.dart';
-
-/// Only this port is visible to the controller. The production adapter in the
-/// data layer supplies the pinned recoverbull client's `/attempts` result.
-abstract interface class RecoverBullAttemptMonitoringRemotePort {
-  Future<RecoverBullAttemptsSnapshot?> poll({
-    required String? etag,
-    required List<String> backupDigests,
-  });
-}
-
-final class RecoverBullAttemptsSnapshot {
-  final String? etag;
-  final DateTime collectionStartedAt;
-  final Map<List<int>, int> totalAttempts;
-  final Map<List<int>, DateTime> windowStartedAt;
-  final bool serviceBusy;
-  final bool notModified;
-
-  /// The key server does not serve `/attempts` (it answers 404): monitoring
-  /// has nothing to observe, which is not an outage.
-  final bool serverUnsupported;
-  final int? totalEntries;
-  final int? maxAttemptIdentifiers;
-
-  const RecoverBullAttemptsSnapshot({
-    required this.collectionStartedAt,
-    required this.totalAttempts,
-    this.windowStartedAt = const {},
-    this.etag,
-    this.serviceBusy = false,
-    this.notModified = false,
-    this.serverUnsupported = false,
-    this.totalEntries,
-    this.maxAttemptIdentifiers,
-  });
-}
-
-final class RecoverBullAttemptMonitoringSnapshotToken {
-  final int generation;
-  final int stateRevision;
-  final Map<Uint8List, int> rowRevisions;
-  final String? etag;
-
-  const RecoverBullAttemptMonitoringSnapshotToken({
-    required this.generation,
-    required this.stateRevision,
-    required this.rowRevisions,
-    required this.etag,
-  });
-}
-
-final class RecoverBullAttemptMonitoringApplyResult {
-  final bool accepted;
-  final int conflicts;
-
-  const RecoverBullAttemptMonitoringApplyResult(this.accepted, this.conflicts);
-}
 
 final class RecoverBullAttemptMonitoringStore {
   static Future<void> _writeTail = Future<void>.value();
@@ -85,12 +31,21 @@ final class RecoverBullAttemptMonitoringStore {
   Future<AttemptMonitoringState> state() async =>
       _state(await database.select(database.recoverbullState).getSingle());
 
-  Future<void> replaceBackup(AttemptMonitoringBackupState value) async {
+  Future<void> replaceBackup(
+    AttemptMonitoringBackupState value, {
+    RecoverBullAttemptMonitoringSnapshotToken? token,
+  }) async {
     final digest = Uint8List.fromList(_decodeHash(value.backupIdHash));
     await _serializeWrite(() async {
       for (var attempt = 0; attempt < 3; attempt++) {
         final changed = await database.transaction(() async {
+          if (!(await state()).attemptMonitoringEnabled) return true;
+          if (token != null && !await _isTokenCurrent(token)) return true;
           final row = await _row(digest);
+          if (token != null &&
+              !_rowTokenMatches(token, digest, row?.rowRevision)) {
+            return true;
+          }
           if (row == null) {
             await database
                 .into(database.recoverbullMonitoredBackup)
@@ -126,7 +81,7 @@ final class RecoverBullAttemptMonitoringStore {
         });
         if (changed) return;
       }
-      throw StateError(
+      throw Exception(
         'could not replace monitored backup without a stale revision',
       );
     });
@@ -149,6 +104,7 @@ final class RecoverBullAttemptMonitoringStore {
     MonitoredBackupOrigin origin = MonitoredBackupOrigin.created,
     int observedTotal = 0,
     int window = 0,
+    RecoverBullAttemptMonitoringSnapshotToken? token,
     String? driveAccount,
     String? driveFileId,
     DateTime? driveFileCreatedAt,
@@ -159,6 +115,8 @@ final class RecoverBullAttemptMonitoringStore {
     final digest = _digest(identifier);
     final adopted = origin != MonitoredBackupOrigin.created;
     await database.transaction(() async {
+      if (!(await state()).attemptMonitoringEnabled) return;
+      if (token != null && !await _isTokenCurrent(token)) return;
       await database
           .into(database.recoverbullMonitoredBackup)
           .insert(
@@ -365,7 +323,7 @@ final class RecoverBullAttemptMonitoringStore {
         });
         if (changed) return;
       }
-      throw StateError(
+      throw Exception(
         'could not record attempt status without a stale revision',
       );
     });
@@ -401,7 +359,7 @@ final class RecoverBullAttemptMonitoringStore {
                 );
           });
           return;
-        } catch (error) {
+        } on Exception catch (error) {
           failure = error;
           if (!error.toString().contains('database is locked') ||
               attempt == 2) {
@@ -536,6 +494,7 @@ final class RecoverBullAttemptMonitoringStore {
                   : Value(snapshot.collectionStartedAt),
               lastSuccessfulCheckAt: Value(DateTime.now().toUtc()),
               consecutiveFailures: const Value(0),
+              attemptsUnsupportedUntil: const Value(null),
               revision: Value(state.revision + 1),
             ),
           );
@@ -598,6 +557,7 @@ final class RecoverBullAttemptMonitoringStore {
               collectionStartedAt: Value(snapshot.collectionStartedAt),
               lastSuccessfulCheckAt: Value(DateTime.now().toUtc()),
               consecutiveFailures: const Value(0),
+              attemptsUnsupportedUntil: const Value(null),
               revision: Value(state.revision + 1),
             ),
           );
@@ -637,12 +597,47 @@ final class RecoverBullAttemptMonitoringStore {
 
   /// Remembers that the key server lacks `/attempts` until [until], so
   /// neither the launch check nor a key fetch probes it again before then.
-  Future<void> recordAttemptsUnsupported({required DateTime until}) async {
-    await database
-        .update(database.recoverbullState)
-        .write(
-          RecoverbullStateCompanion(attemptsUnsupportedUntil: Value(until)),
-        );
+  Future<void> recordAttemptsUnsupported({
+    required DateTime until,
+    RecoverBullAttemptMonitoringSnapshotToken? token,
+  }) async {
+    await database.transaction(() async {
+      final current = await state();
+      if (!current.attemptMonitoringEnabled) return;
+      if (token != null &&
+          (current.generation != token.generation ||
+              current.revision != token.stateRevision)) {
+        return;
+      }
+      await database
+          .update(database.recoverbullState)
+          .write(
+            RecoverbullStateCompanion(
+              attemptsUnsupportedUntil: Value(until),
+              revision: Value(current.revision + 1),
+            ),
+          );
+    });
+  }
+
+  bool _rowTokenMatches(
+    RecoverBullAttemptMonitoringSnapshotToken token,
+    List<int> digest,
+    int? revision,
+  ) {
+    final captured = token.rowRevisions.entries
+        .where((entry) => _same(entry.key, digest))
+        .map((entry) => entry.value)
+        .firstOrNull;
+    return captured == revision;
+  }
+
+  Future<bool> _isTokenCurrent(
+    RecoverBullAttemptMonitoringSnapshotToken token,
+  ) async {
+    final current = await state();
+    return current.generation == token.generation &&
+        current.revision == token.stateRevision;
   }
 
   Future<Set<String>> acknowledgedAlertIdentities() async => {
@@ -753,7 +748,7 @@ final class RecoverBullAttemptMonitoringStore {
     'created' => MonitoredBackupOrigin.created,
     'adopted' => MonitoredBackupOrigin.adopted,
     'drive' => MonitoredBackupOrigin.drive,
-    _ => throw StateError('unknown monitored backup origin'),
+    _ => throw const FormatException('Unknown monitored backup origin'),
   };
 
   static String _originColumn(MonitoredBackupOrigin value) => switch (value) {
@@ -770,7 +765,7 @@ final class RecoverBullAttemptMonitoringStore {
   Future<void> _truncateWalBestEffort() async {
     try {
       await database.customStatement('PRAGMA wal_checkpoint(TRUNCATE)');
-    } catch (_) {}
+    } on Exception catch (_) {}
   }
 
   static int? _observed(
@@ -813,21 +808,4 @@ final class RecoverBullAttemptMonitoringStore {
   static bool _same(List<int> a, List<int> b) =>
       a.length == b.length &&
       Iterable<int>.generate(a.length).every((i) => a[i] == b[i]);
-}
-
-final class DriveBackupObservation {
-  final String fileId;
-  final List<int> digest;
-  final DateTime createdAt;
-  final DateTime? modifiedAt;
-
-  const DriveBackupObservation({
-    required this.fileId,
-    required this.digest,
-    required this.createdAt,
-    required this.modifiedAt,
-  });
-
-  String get digestKey =>
-      digest.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

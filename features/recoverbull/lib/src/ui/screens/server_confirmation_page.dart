@@ -1,16 +1,15 @@
+import 'package:primitives/primitives.dart';
+import '../../domain/recoverbull_failure.dart';
+import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../domain/usecases/allow_permission_usecase.dart';
 import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
 import '../../public/recoverbull.dart' show recoverBullDefaultServerUrl;
 import 'package:bull_logger/bull_logger.dart';
 import '../../presentation/bloc.dart';
 import '../../router/recoverbull_router.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
-import '../widgets/info_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,6 +31,8 @@ class RequestPermissionPage extends StatefulWidget {
 class _RequestPermissionPageState extends State<RequestPermissionPage> {
   bool _isLoading = true;
   String? _serverUrl;
+  RecoverBullFailure? _failure;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -40,25 +41,21 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
   }
 
   Future<void> _loadServerUrl() async {
-    try {
-      final url = await widget.fetchUrlUsecase.execute();
-      if (mounted) {
-        setState(() {
-          _serverUrl = url.toString();
-          _isLoading = false;
-        });
+    setState(() {
+      _isLoading = true;
+      _failure = null;
+    });
+    final result = await widget.fetchUrlUsecase.execute();
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+      switch (result) {
+        case Ok(:final value):
+          _serverUrl = value.toString();
+        case Err(:final failure):
+          _failure = failure;
       }
-    } catch (e) {
-      widget.log.warning(
-        'recoverbull.settings.load.unexpected error_type=${e.runtimeType}',
-      );
-      if (mounted) {
-        setState(() {
-          _serverUrl = recoverBullDefaultServerUrl;
-          _isLoading = false;
-        });
-      }
-    }
+    });
   }
 
   bool get _isUsingDefaultServer => _serverUrl == recoverBullDefaultServerUrl;
@@ -72,20 +69,38 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
         ),
-        title: BBText(
+        title: BullText(
           context.loc.recoverbullServerConfirmTitle,
-          style: context.font.headlineMedium,
-          color: context.appColors.onSurface,
+          style: context.bullText.headlineMedium,
+          color: context.bull.onSurface,
         ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
+          : _failure != null && _serverUrl == null
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BullText(
+                    _failure!.toTranslated(context),
+                    style: context.bullText.bodyMedium,
+                  ),
+                  BullButton.big(
+                    label: context.loc.recoverbullRetry,
+                    bgColor: context.bull.primary,
+                    textColor: context.bull.onPrimary,
+                    onPressed: _loadServerUrl,
+                  ),
+                ],
+              ),
+            )
           : Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -98,41 +113,38 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         : Icons.warning_amber,
                     size: 64,
                     color: _isUsingDefaultServer
-                        ? context.appColors.primary
-                        : context.appColors.tertiary,
+                        ? context.bull.primary
+                        : context.bull.tertiary,
                   ),
                   const Gap(32),
-                  BBText(
+                  BullText(
                     _isUsingDefaultServer
                         ? context.loc.recoverbullServerUsingDefault
                         : context.loc.recoverbullServerUsingCustom,
-                    style: context.font.headlineMedium,
+                    style: context.bullText.headlineMedium,
                     textAlign: .center,
                   ),
                   const Gap(16),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: context.appColors.cardBackground,
+                      color: context.bull.cardBackground,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: context.appColors.border,
-                        width: 1,
-                      ),
+                      border: Border.all(color: context.bull.border, width: 1),
                     ),
                     child: Column(
                       crossAxisAlignment: .start,
                       children: [
-                        BBText(
+                        BullText(
                           context.loc.recoverbullServerUrlLabel,
-                          style: context.font.labelSmall?.copyWith(
-                            color: context.appColors.textMuted,
+                          style: context.bullText.labelSmall?.copyWith(
+                            color: context.bull.textMuted,
                           ),
                         ),
                         const Gap(8),
-                        BBText(
+                        BullText(
                           _serverUrl ?? recoverBullDefaultServerUrl,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullText.bodyMedium?.copyWith(
                             fontFamily: 'monospace',
                           ),
                         ),
@@ -141,26 +153,38 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                   ),
                   const Gap(24),
                   if (!_isUsingDefaultServer) ...[
-                    InfoCard(
+                    BullInfoCard(
                       description: context.loc.recoverbullServerCustomWarning,
-                      tagColor: context.appColors.error,
-                      bgColor: context.appColors.errorContainer,
+                      tagColor: context.bull.error,
+                      bgColor: context.bull.errorContainer,
                     ),
                     const Gap(24),
                   ],
-                  BBText(
+                  BullText(
                     context.loc.recoverbullServerTorNotice,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.textMuted,
+                    style: context.bullText.bodyMedium?.copyWith(
+                      color: context.bull.textMuted,
                     ),
                     textAlign: .center,
                   ),
                   const Spacer(),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.recoverbullContinue,
+                    disabled: _isSaving,
                     onPressed: () async {
-                      await widget.allowPermissionUsecase.execute(true);
+                      if (_isSaving) return;
+                      setState(() => _isSaving = true);
+                      final result = await widget.allowPermissionUsecase
+                          .execute(true);
                       if (!context.mounted) return;
+                      setState(() => _isSaving = false);
+                      if (result case Err(:final failure)) {
+                        BullSnackBar.show(
+                          context,
+                          message: failure.toTranslated(context),
+                        );
+                        return;
+                      }
                       final state = context.read<RecoverBullBloc>().state;
                       context.pushReplacementNamed(
                         RecoverBullRoute.recoverbullFlows.name,
@@ -170,8 +194,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         ),
                       );
                     },
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
+                    bgColor: context.bull.onSurface,
+                    textColor: context.bull.surface,
                   ),
                   const Gap(16),
                   GestureDetector(
@@ -182,13 +206,13 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         Icon(
                           Icons.info_outline,
                           size: 20,
-                          color: context.appColors.primary,
+                          color: context.bull.primary,
                         ),
                         const Gap(8),
-                        BBText(
+                        BullText(
                           context.loc.recoverbullLearnMore,
-                          style: context.font.bodyMedium,
-                          color: context.appColors.primary,
+                          style: context.bullText.bodyMedium,
+                          color: context.bull.primary,
                         ),
                       ],
                     ),

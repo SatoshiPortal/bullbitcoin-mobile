@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart';
 
 import '../../../generated/l10n/recoverbull_localizations.dart';
 import '../../public/recoverbull.dart';
@@ -26,7 +26,7 @@ class RecoverBullAttemptAlertDetailPage extends StatelessWidget {
         .map((alert) => alert.backupReference)
         .firstWhere((reference) => reference != null, orElse: () => null);
     final security = lockout != null || suspicious != null;
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(title: Text(l10n.recoverbullAttemptAlertDetailsTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
   "recoverbullSettingsUrlInvalid": "الرابط غير صالح",
-  "recoverbullErrorUnexpected": "خطأ غير متوقع، انظر السجلات",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "وصلة التحقق لـ (ريفري بول)",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "(تواصل مع (كي سيرفر على (تور هذا يمكن أن يستغرق حتى دقيقة.",
-  "recoverbullMonitoringDisableCancel": "إلغاء"
+  "recoverbullMonitoringDisableCancel": "إلغاء",
+  "recoverbullMonitoringServerUnsupported": "هذا الخادم لا يدعم مراقبة المحاولات. لا يزال بإمكانك نسخ الخزائن احتياطيًا واستعادتها."
 }

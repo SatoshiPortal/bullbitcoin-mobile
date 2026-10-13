@@ -114,7 +114,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Подключается к сети Tor напрямую, без подключаемого транспорта.",
   "recoverbullSettingsUrlInvalid": "URL недействителен",
-  "recoverbullErrorUnexpected": "Неожиданная ошибка, см. журналы",
   "recoverbullCheckingConnection": "Проверка подключения для RecoverBull",
   "recoverbullErrorInvalidCredentials": "Неверный пароль для этого архивного файла",
   "recoverbullGoBackEdit": "<< Назад и редакцию",
@@ -234,5 +233,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Подключение к Key Server через Tor. Это может занять до минуты.",
-  "recoverbullMonitoringDisableCancel": "Отмена"
+  "recoverbullMonitoringDisableCancel": "Отмена",
+  "recoverbullMonitoringServerUnsupported": "Этот сервер не поддерживает отслеживание попыток. Вы по-прежнему можете создавать резервные копии и восстанавливать хранилища."
 }

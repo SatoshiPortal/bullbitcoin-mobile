@@ -1,4 +1,4 @@
-import '../../data/file_system_repository.dart';
+import '../repositories/file_system_repository.dart';
 import '../entities/encrypted_vault.dart';
 import '../recoverbull_failure.dart';
 import 'package:primitives/primitives.dart';

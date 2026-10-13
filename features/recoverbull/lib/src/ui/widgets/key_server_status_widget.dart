@@ -1,8 +1,6 @@
 import '../../presentation/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAssets;
+import 'package:bull_ui/bull_ui.dart';
 import '../../l10n/context_localizations.dart';
-import 'with_bull_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gif/gif.dart';
 
@@ -33,9 +31,9 @@ class KeyServerStatusWidget extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: context.loc.recoverbullKeyServer,
-                    style: context.font.labelLarge?.copyWith(
+                    style: context.bullText.labelLarge?.copyWith(
                       fontSize: 12,
-                      color: context.appColors.onSurface,
+                      color: context.bull.onSurface,
                     ),
                   ),
 
@@ -44,11 +42,10 @@ class KeyServerStatusWidget extends StatelessWidget {
                       Icons.circle,
                       size: 12,
                       color: switch (status) {
-                        KeyServerStatus.online => context.appColors.success,
-                        KeyServerStatus.offline => context.appColors.error,
-                        KeyServerStatus.connecting =>
-                          context.appColors.textMuted,
-                        KeyServerStatus.unknown => context.appColors.textMuted,
+                        KeyServerStatus.online => context.bull.success,
+                        KeyServerStatus.offline => context.bull.error,
+                        KeyServerStatus.connecting => context.bull.textMuted,
+                        KeyServerStatus.unknown => context.bull.textMuted,
                       },
                     ),
                   ),

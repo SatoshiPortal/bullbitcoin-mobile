@@ -72,7 +72,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Huunganisha moja kwa moja kwenye mtandao wa Tor, bila usafirishaji unaochomekwa.",
   "recoverbullSettingsUrlInvalid": "URL si sahihi",
-  "recoverbullErrorUnexpected": "Hitilafu isiyotarajiwa, angalia kumbukumbu",
   "recoverbullCheckingConnection": "Inaangalia muunganisho wa RecoverBull",
   "recoverbullErrorInvalidCredentials": "Nenosiri si sahihi kwa faili hii ya nakala rudufu",
   "recoverbullGoBackEdit": "<< Rudi nyuma na uhariri",
@@ -150,5 +149,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Inaunganisha na Seva ya Funguo kupitia Tor. Hii inaweza kuchukua hadi dakika moja.",
-  "recoverbullMonitoringDisableCancel": "Ghairi"
+  "recoverbullMonitoringDisableCancel": "Ghairi",
+  "recoverbullMonitoringServerUnsupported": "Seva hii haitumii ufuatiliaji wa majaribio. Bado unaweza kuhifadhi nakala na kurejesha hazina."
 }

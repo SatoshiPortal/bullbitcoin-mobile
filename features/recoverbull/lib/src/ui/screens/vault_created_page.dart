@@ -1,6 +1,6 @@
+import 'package:bull_ui/bull_ui.dart';
 import '../../router/recoverbull_router.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
 import '../widgets/backup_success_screen.dart';
 import 'package:go_router/go_router.dart';

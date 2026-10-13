@@ -4,11 +4,8 @@ import '../../router/recoverbull_router.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../google_drive/recoverbull_google_drive_router.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -26,7 +23,7 @@ class VaultSelectedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BullScaffold(
       appBar: AppBar(
         title: Text(context.loc.recoverbullVaultSelected),
         actions: const [
@@ -40,42 +37,42 @@ class VaultSelectedPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            BBText(
+            BullText(
               context.loc.recoverbullVaultImportedSuccess,
               textAlign: .left,
-              style: context.font.bodySmall,
+              style: context.bullText.bodySmall,
             ),
             const Gap(16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: context.appColors.onSurface),
+                border: Border.all(color: context.bull.onSurface),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBText(vault.id, style: context.font.headlineMedium),
+                  BullText(vault.id, style: context.bullText.headlineMedium),
                   const Gap(16),
-                  BBText(
+                  BullText(
                     DateFormat(
                       "yyyy-MMM-dd, HH:mm:ss",
                     ).format(vault.createdAt.toLocal()),
-                    style: context.font.headlineMedium,
+                    style: context.bullText.headlineMedium,
                   ),
                 ],
               ),
             ),
             const Spacer(),
             if (provider == VaultProvider.googleDrive) ...[
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.recoverbullSeeMoreVaults,
                 onPressed: () => context.pushNamed(
                   RecoverBullGoogleDriveRoute.recoverbullListDriveVaults.name,
                   extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
                 ),
-                bgColor: context.appColors.transparent,
-                textColor: context.appColors.onSurface,
+                bgColor: context.bull.transparent,
+                textColor: context.bull.onSurface,
                 outlined: true,
               ),
               const Gap(16),
@@ -84,14 +81,14 @@ class VaultSelectedPage extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
-              child: BBButton.big(
+              child: BullButton.big(
                 label: context.loc.recoverbullDecryptVault,
                 onPressed: () => context.pushNamed(
                   RecoverBullRoute.recoverbullFlows.name,
                   extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
                 ),
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
+                bgColor: context.bull.onSurface,
+                textColor: context.bull.surface,
               ),
             ),
           ],

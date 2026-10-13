@@ -15,7 +15,7 @@ import 'package:mocktail/mocktail.dart';
 void main() {
   setUpAll(() {
     registerFallbackValue(fixtureVault());
-    registerFallbackValue(const DecryptedVault());
+    registerFallbackValue(DecryptedVault());
   });
   setUp(setUpRecoverBullBloc);
   tearDown(tearDownRecoverBullBloc);
@@ -224,7 +224,7 @@ void main() {
   test('mismatched vault does not mark the current backup verified', () async {
     final verifier = MockVerifyVault();
     final vault = fixtureVault();
-    final decrypted = const DecryptedVault(masterFingerprint: 'another-wallet');
+    final decrypted = DecryptedVault(masterFingerprint: 'another-wallet');
     when(
       () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
     ).thenReturn(Ok(decrypted));
@@ -253,7 +253,7 @@ void main() {
   test('vault verification errors remain decryption failures', () async {
     final verifier = MockVerifyVault();
     final vault = fixtureVault();
-    final decrypted = const DecryptedVault(masterFingerprint: 'another-wallet');
+    final decrypted = DecryptedVault(masterFingerprint: 'another-wallet');
     when(
       () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
     ).thenReturn(Ok(decrypted));

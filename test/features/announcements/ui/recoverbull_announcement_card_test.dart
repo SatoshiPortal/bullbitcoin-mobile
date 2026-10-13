@@ -1,3 +1,9 @@
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/recoverbull_announcement.dart';
 import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart';
@@ -8,7 +14,58 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+class _Wallets extends Mock implements RecoverBullWalletRepository {}
+
+class _Seeds extends Mock implements RecoverBullSeedPort {}
+
+class _Defaults extends Mock implements RecoverBullDefaultWalletsPort {}
+
+class _Settings extends Mock implements RecoverBullSettingsPort {}
+
+class _Tor extends Mock implements Tor {}
+
+class _Embedded extends Mock implements EmbeddedTor {}
+
+class _Watcher extends Mock implements WatchTorConnectionUsecase {}
+
+class _Log extends Mock implements LogSink {
+  @override
+  LogSink scoped(String scope) => this;
+}
+
+late RecoverBullFeature _feature;
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late Directory fixtureDirectory;
+  setUpAll(() async {
+    fixtureDirectory = await Directory.systemTemp.createTemp(
+      'announcement-recoverbull-',
+    );
+    final tor = _Tor();
+    final embedded = _Embedded();
+    when(() => tor.embedded).thenReturn(embedded);
+    when(() => embedded.watcher).thenReturn(_Watcher());
+    _feature = await RecoverBullFeature.create(
+      navigation: RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () {},
+        onOpenWalletHome: () {},
+      ),
+      config: RecoverBullConfig(
+        databasePath: '${fixtureDirectory.path}/recoverbull.sqlite',
+      ),
+      wallets: _Wallets(),
+      seeds: _Seeds(),
+      defaultWallets: _Defaults(),
+      settings: _Settings(),
+      tor: tor,
+      log: _Log(),
+    );
+  });
+  tearDownAll(() async {
+    await _feature.lifecycle.dispose();
+    await fixtureDirectory.delete(recursive: true);
+  });
   testWidgets('RecoverBull announcement exposes the app close action', (
     tester,
   ) async {
@@ -290,23 +347,14 @@ Future<void> _pumpCard(
   VoidCallback? onTap,
   VoidCallback? onDismiss,
 }) async {
-  await tester.pumpWidget(
-    MaterialApp(
-      locale: locale,
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
-        RecoverBullLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: ValueListenableBuilder<double>(
-          valueListenable: textScaleNotifier ?? ValueNotifier(textScale),
-          builder: (context, scale, child) => MediaQuery(
-            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-            child: child!,
-          ),
-          child: AnnouncementCard(
+  final scaleNotifier = textScaleNotifier ?? ValueNotifier(textScale);
+  if (textScaleNotifier == null) addTearDown(scaleNotifier.dispose);
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, _) => Scaffold(
+          body: AnnouncementCard(
             announcement: announcement,
             onTap:
                 onTap ??
@@ -316,6 +364,30 @@ Future<void> _pumpCard(
             onDismiss: onDismiss ?? () {},
           ),
         ),
+      ),
+      ..._feature.routes,
+    ],
+  );
+  addTearDown(router.dispose);
+  await tester.pumpWidget(
+    MaterialApp.router(
+      routerConfig: router,
+      locale: locale,
+      theme: AppTheme.themeData(AppThemeType.light),
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        RecoverBullLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => ValueListenableBuilder<double>(
+        valueListenable: scaleNotifier,
+        builder: (context, scale, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(scale)),
+          child: child!,
+        ),
+        child: child,
       ),
     ),
   );

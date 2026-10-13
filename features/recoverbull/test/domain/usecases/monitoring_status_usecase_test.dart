@@ -1,3 +1,4 @@
+import '../../support/monitoring_repository.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
@@ -9,7 +10,10 @@ void main() {
     final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
     await database.ensureState();
     final store = RecoverBullAttemptMonitoringStore(database);
-    final controller = RecoverBullAttemptMonitoring(store, enabled: true);
+    final controller = RecoverBullAttemptMonitoring(
+      monitoringRepository(store),
+      enabled: true,
+    );
 
     final empty = await controller.status();
     expect(empty.enabled, isTrue);

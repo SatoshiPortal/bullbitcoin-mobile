@@ -1,4 +1,5 @@
-import '../../data/file_system_repository.dart';
+import '../entities/encrypted_vault.dart';
+import '../repositories/file_system_repository.dart';
 import '../recoverbull_failure.dart';
 import 'package:primitives/primitives.dart';
 
@@ -8,9 +9,6 @@ class SaveFileToSystemUsecase {
   SaveFileToSystemUsecase({required this._fileSystemRepository});
 
   Future<Result<Null, RecoverBullFailure>> execute({
-    required String content,
-    required String filename,
-  }) {
-    return _fileSystemRepository.saveFile(content, filename);
-  }
+    required EncryptedVault vault,
+  }) => _fileSystemRepository.saveVault(vault);
 }

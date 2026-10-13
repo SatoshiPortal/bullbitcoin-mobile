@@ -1,8 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
-import 'bull_aliases.dart';
-import 'with_bull_theme.dart';
 
 class BackupSuccessScreen extends StatelessWidget {
   final String title;
@@ -19,8 +16,7 @@ class BackupSuccessScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.appColors.surface,
+  Widget build(BuildContext context) => BullScaffold(
     body: Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -36,11 +32,11 @@ class BackupSuccessScreen extends StatelessWidget {
                 image: BullAssets.animations.successTick,
               ),
               const Gap(BullSpacing.sm),
-              BBText(title, style: context.font.headlineLarge),
+              BullText(title, style: context.bullText.headlineLarge),
               const Gap(BullSpacing.sm),
-              BBText(
+              BullText(
                 message,
-                style: context.font.bodyMedium,
+                style: context.bullText.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -50,10 +46,10 @@ class BackupSuccessScreen extends StatelessWidget {
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).size.height * 0.05,
             ),
-            child: BBButton.big(
+            child: BullButton.big(
               label: buttonLabel,
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
+              bgColor: context.bull.secondary,
+              textColor: context.bull.onSecondary,
               onPressed: onTap ?? () {},
               disabled: onTap == null,
             ),

@@ -1,9 +1,10 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import '../../support/monitoring_repository.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/entities/monitored_backup.dart';
 import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
@@ -84,13 +85,15 @@ void main() {
     final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
     await database.ensureState();
     final store = RecoverBullAttemptMonitoringStore(database);
-    final monitoring = RecoverBullAttemptMonitoring(store);
+    final monitoring = RecoverBullAttemptMonitoring(
+      monitoringRepository(store),
+    );
     await monitoring.setEnabled(true);
     final backup = sdk.RecoverBull.createBackup(
       secret: [1, 2, 3],
       backupKey: List<int>.filled(32, 9),
     );
-    final vault = EncryptedVault(file: backup.toJson());
+    final vault = EncryptedVaultMapper.parse(backup.toJson());
     await store.registerBackup(convert.hex.decode(vault.id));
     final repository = _Repository();
     final ensure = _Ensure();
@@ -137,7 +140,7 @@ void main() {
     await FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: ensure,
-      recordAttempt: RecordLocalAttemptUsecase(store),
+      recordAttempt: RecordLocalAttemptUsecase(monitoringRepository(store)),
       alertPort: monitoring,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: route);
@@ -150,7 +153,7 @@ void main() {
     await FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: ensure,
-      recordAttempt: RecordLocalAttemptUsecase(store),
+      recordAttempt: RecordLocalAttemptUsecase(monitoringRepository(store)),
       alertPort: monitoring,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
@@ -162,7 +165,7 @@ void main() {
     await TrashVaultKeyUsecase(
       repository: repository,
       ensureSession: ensure,
-      recordAttempt: RecordLocalAttemptUsecase(store),
+      recordAttempt: RecordLocalAttemptUsecase(monitoringRepository(store)),
       alertPort: monitoring,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: route);
@@ -188,11 +191,11 @@ void main() {
       secret: [1, 2, 3],
       backupKey: List<int>.filled(32, 9),
     );
-    final vault = EncryptedVault(file: backup.toJson());
+    final vault = EncryptedVaultMapper.parse(backup.toJson());
     final result = await FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: _Ensure(),
-      recordAttempt: RecordLocalAttemptUsecase(store),
+      recordAttempt: RecordLocalAttemptUsecase(monitoringRepository(store)),
       alertPort: alerts,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: _route());
@@ -220,7 +223,7 @@ void main() {
         secret: [1, 2, 3],
         backupKey: List<int>.filled(32, 9),
       );
-      final vault = EncryptedVault(file: backup.toJson());
+      final vault = EncryptedVaultMapper.parse(backup.toJson());
       final repository = _Repository();
       when(
         () => repository.fetchVaultKeyWithStatus(any(), any(), any(), any()),
@@ -234,7 +237,7 @@ void main() {
         repository: repository,
         ensureTor: _Ensure(),
         recordAttempt: RecordLocalAttemptUsecase(
-          store,
+          monitoringRepository(store),
           remote: _ServiceBusyRemote(),
         ),
         log: const TestLogSink(),
@@ -261,7 +264,7 @@ void main() {
         secret: [1, 2, 3],
         backupKey: List<int>.filled(32, 9),
       );
-      final vault = EncryptedVault(file: backup.toJson());
+      final vault = EncryptedVaultMapper.parse(backup.toJson());
       final repository = _Repository();
       when(
         () => repository.fetchVaultKeyWithStatus(any(), any(), any(), any()),
@@ -276,7 +279,10 @@ void main() {
           await FetchVaultKeyFromServerUsecase(
                 repository: repository,
                 ensureTor: _Ensure(),
-                recordAttempt: RecordLocalAttemptUsecase(store, remote: remote),
+                recordAttempt: RecordLocalAttemptUsecase(
+                  monitoringRepository(store),
+                  remote: remote,
+                ),
                 log: const TestLogSink(),
               )
               .execute(vault: vault, password: 'password', route: _route())
@@ -305,7 +311,7 @@ void main() {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       await database.ensureState();
       final monitoring = RecoverBullAttemptMonitoring(
-        RecoverBullAttemptMonitoringStore(database),
+        monitoringRepository(RecoverBullAttemptMonitoringStore(database)),
       );
       monitoring.publish(
         SuspiciousActivityAlert(

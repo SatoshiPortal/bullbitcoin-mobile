@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
   "recoverbullSettingsUrlInvalid": "Μη έγκυρο URL",
-  "recoverbullErrorUnexpected": "Ανεπιθύμητο λάθος, δείτε αρχεία καταγραφής",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "Έλεγχος σύνδεσης για RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Συνδέοντας με τον Key Server πάνω από το Tor. Αυτό μπορεί να διαρκέσει έως και ένα λεπτό.",
-  "recoverbullMonitoringDisableCancel": "Ακύρωση"
+  "recoverbullMonitoringDisableCancel": "Ακύρωση",
+  "recoverbullMonitoringServerUnsupported": "Αυτός ο διακομιστής δεν υποστηρίζει την παρακολούθηση προσπαθειών. Μπορείτε ακόμα να δημιουργείτε αντίγραφα ασφαλείας και να ανακτάτε θησαυροφυλάκια."
 }

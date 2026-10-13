@@ -16,12 +16,16 @@ abstract interface class GoogleDriveRepository {
   Future<Result<EncryptedVault, RecoverBullFailure>> fetchVault(String fileId);
   Future<Result<String, RecoverBullFailure>> fetchRawFile(String fileId);
   Future<Result<EncryptedVault, RecoverBullFailure>> fetchLatestVault();
-  Future<Result<Null, RecoverBullFailure>> store(String content);
+  Future<Result<Null, RecoverBullFailure>> store(EncryptedVault vault);
   Future<Result<Null, RecoverBullFailure>> trash(String fileId);
 }
 
 abstract interface class GoogleDriveDiscoverySession {
   String get account;
+
+  /// Holds the account while a short local reconciliation commits.
+  /// The action must not call other Drive operations on this repository.
+  Future<T> withCurrentAccount<T>(Future<T> Function() action);
   Future<List<DriveFileMetadata>> fetchAllMetadata();
   Future<String> fetchRawFile(String fileId);
 }

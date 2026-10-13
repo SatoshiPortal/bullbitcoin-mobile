@@ -72,7 +72,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "პირდაპირ უკავშირდება Tor-ქსელს, მისაერთებელი ტრანსპორტის გარეშე.",
   "recoverbullSettingsUrlInvalid": "URL არასწორია",
-  "recoverbullErrorUnexpected": "მოულოდნელი შეცდომა, იხილეთ ჟურნალები",
   "recoverbullCheckingConnection": "RecoverBull-ის კავშირის შემოწმება",
   "recoverbullErrorInvalidCredentials": "არასწორი პაროლი ამ სარეზერვო ასლის ფაილისთვის",
   "recoverbullGoBackEdit": "<< დაბრუნება და ჩასწორება",
@@ -150,5 +149,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor-ის მეშვეობით ხდება დაკავშირება გასაღების სერვერთან. ამას შეიძლება წუთამდე დასჭირდეს.",
-  "recoverbullMonitoringDisableCancel": "გაუქმება"
+  "recoverbullMonitoringDisableCancel": "გაუქმება",
+  "recoverbullMonitoringServerUnsupported": "ეს სერვერი არ უჭერს მხარს მცდელობების მონიტორინგს. თქვენ კვლავ შეგიძლიათ საცავების სარეზერვო ასლების შექმნა და აღდგენა."
 }

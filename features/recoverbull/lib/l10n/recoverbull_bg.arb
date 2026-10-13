@@ -249,10 +249,6 @@
   },
   "torSettingsModeDirectDescription": "Свързва се пряко с мрежата Tor, без сменяем транспорт.",
   "recoverbullSettingsUrlInvalid": "URL не е валиден",
-  "recoverbullErrorUnexpected": "Неочаквана грешка, вижте логовете",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "Проверка на връзката към RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -477,5 +473,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
-  "recoverbullMonitoringDisableCancel": "Отказ"
+  "recoverbullMonitoringDisableCancel": "Отказ",
+  "recoverbullMonitoringServerUnsupported": "Този сървър не поддържа наблюдение на опитите. Все още можете да архивирате и възстановявате хранилища."
 }

@@ -1,7 +1,1 @@
-enum RecoverBullFlow {
-  secureVault,
-  recoverVault,
-  testVault,
-  viewVaultKey,
-  settings,
-}
+export '../domain/entities/recoverbull_flow.dart';

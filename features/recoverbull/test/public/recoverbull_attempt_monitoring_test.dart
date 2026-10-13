@@ -1,3 +1,4 @@
+import '../support/monitoring_repository.dart';
 import 'dart:async';
 
 import 'package:drift/drift.dart';
@@ -38,22 +39,15 @@ void main() {
     expect(harness.log.entries.single.message, isNot(contains('00010203')));
   });
 
-  test('logs unexpected monitoring failures without raw details', () async {
-    final harness = await _Harness.create();
-    await harness.database.close();
-
-    await harness.monitoring.check();
-
-    expect(
-      harness.log.entries.single.message,
-      contains('recoverbull.attempts.monitoring.failed error_type='),
-    );
-    expect(harness.log.entries.single.message, isNot(contains('sentinel')));
-    expect(
-      (await harness.monitoring.check()).single.kind,
-      RecoverBullAttemptAlertKind.unavailable,
-    );
-  });
+  test(
+    'programmer misuse of a closed store propagates without logging details',
+    () async {
+      final harness = await _Harness.create();
+      await harness.database.close();
+      await expectLater(harness.monitoring.check(), throwsStateError);
+      expect(harness.log.entries, isEmpty);
+    },
+  );
 
   test(
     'delivers a pre-subscription alert once to the next subscriber',
@@ -342,7 +336,7 @@ final class _Harness {
     harness = _Harness(
       database,
       RecoverBullAttemptMonitoring(
-        store,
+        monitoringRepository(store),
         enabled: true,
         poll: callback,
         log: log,

@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
 import '../repositories/recoverbull_repository.dart';
 
 class FetchRecoverbullUrlUsecase {
@@ -5,7 +7,6 @@ class FetchRecoverbullUrlUsecase {
 
   FetchRecoverbullUrlUsecase({required this.recoverBullRepository});
 
-  Future<Uri> execute() async {
-    return await recoverBullRepository.fetchUrl();
-  }
+  Future<Result<Uri, RecoverBullFailure>> execute() =>
+      recoverBullRepository.fetchUrl();
 }

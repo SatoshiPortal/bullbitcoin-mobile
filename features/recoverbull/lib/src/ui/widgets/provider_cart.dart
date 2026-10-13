@@ -1,10 +1,6 @@
 import '../../domain/entities/vault_provider.dart';
-import 'package:flutter/material.dart';
-import 'with_bull_theme.dart';
-import 'bull_aliases.dart';
-import 'options_tag.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import '../../l10n/context_localizations.dart';
 
 class ProviderCard extends StatefulWidget {
@@ -52,7 +48,7 @@ class _ProviderCardState extends State<ProviderCard>
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Material(
-        color: context.appColors.transparent,
+        color: context.bull.transparent,
         child: InkWell(
           onTapDown: widget.enabled ? (_) => _controller.forward() : null,
           onTapUp: widget.enabled ? (_) => _controller.reverse() : null,
@@ -66,7 +62,7 @@ class _ProviderCardState extends State<ProviderCard>
           borderRadius: BorderRadius.circular(8),
           child: Ink(
             decoration: BoxDecoration(
-              color: context.appColors.surface,
+              color: context.bull.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Container(
@@ -87,21 +83,21 @@ class _ProviderCardState extends State<ProviderCard>
                     child: Column(
                       crossAxisAlignment: .start,
                       children: [
-                        BBText(
+                        BullText(
                           _providerName(context),
-                          style: context.font.headlineMedium?.copyWith(
+                          style: context.bullText.headlineMedium?.copyWith(
                             color: widget.enabled
-                                ? context.appColors.onSurface
-                                : context.appColors.textMuted,
+                                ? context.bull.onSurface
+                                : context.bull.textMuted,
                           ),
                         ),
                         const Gap(10),
-                        OptionsTag(text: _providerDescription(context)),
+                        BullOptionsTag(text: _providerDescription(context)),
                       ],
                     ),
                   ),
                   const Gap(8),
-                  Icon(Icons.arrow_forward, color: context.appColors.onSurface),
+                  Icon(Icons.arrow_forward, color: context.bull.onSurface),
                 ],
               ),
             ),

@@ -1,3 +1,8 @@
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:primitives/primitives.dart';
+import '../../support/vault_fixture.dart';
+import '../../support/monitoring_repository.dart';
 import 'package:crypto/crypto.dart' show sha256;
 import 'dart:async';
 import 'dart:convert';
@@ -26,7 +31,7 @@ void main() {
   test(
     'discovers unique and duplicate vaults, and reports invalid files',
     () async {
-      expect(EncryptedVault.isValid(_valid('01')), isTrue);
+      expect(EncryptedVaultMapper.parse(_valid('01')), isA<EncryptedVault>());
       final (db, store) = await build();
       final drive = _FakeDrive({
         'a': _valid('01'),
@@ -37,9 +42,9 @@ void main() {
       final log = _CaptureLog();
       final result = await DiscoverDriveBackupsUsecase(
         drive: drive,
-        store: store,
+        store: monitoringRepository(store),
         log: log,
-      ).execute();
+      ).execute().requireOk();
       expect(result.status, DriveDiscoveryStatus.partial);
       expect(result.listed, 4);
       expect(result.invalid, 1);
@@ -63,13 +68,16 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('03')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
+      await discovery.execute().requireOk();
       expect(drive.contentCalls, 1);
       await store.setEnabled(false);
       await store.setEnabled(true);
-      await discovery.execute();
+      await discovery.execute().requireOk();
       expect(drive.contentCalls, 2);
       expect(await store.driveBackups('old-account'), hasLength(1));
       await db.close();
@@ -82,8 +90,8 @@ void main() {
     final drive = _FakeDrive({'a': _valid('0d')});
     final result = await DiscoverDriveBackupsUsecase(
       drive: drive,
-      store: store,
-    ).execute();
+      store: monitoringRepository(store),
+    ).execute().requireOk();
     expect(result.status, DriveDiscoveryStatus.disabled);
     expect(drive.accountCalls, 0);
     expect(drive.filesCalls, 0);
@@ -97,8 +105,11 @@ void main() {
     final drive = _FakeDrive({'a': _valid('0e')});
     final gate = Completer<String>();
     drive.blockedContent = gate;
-    final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-    final pending = discovery.execute();
+    final discovery = DiscoverDriveBackupsUsecase(
+      drive: drive,
+      store: monitoringRepository(store),
+    );
+    final pending = discovery.execute().requireOk();
     await drive.fetchStarted.future;
     await store.setEnabled(false);
     gate.complete(_valid('0e'));
@@ -109,38 +120,44 @@ void main() {
     await db.close();
   });
 
-  test('closed store is converted to a safe failed result', () async {
-    final (db, store) = await build();
-    await db.close();
-    final log = _CaptureLog();
-    final result = await DiscoverDriveBackupsUsecase(
-      drive: _FakeDrive({'secret-id': _valid('12')}),
-      store: store,
-      log: log,
-    ).execute();
-    expect(result.status, DriveDiscoveryStatus.failed);
-    expect(log.messages, ['recoverbull.drive.discovery.failed']);
-    expect(log.messages.join(), isNot(contains('secret-id')));
-    expect(log.messages.join(), isNot(contains('12')));
-  });
+  test(
+    'a closed store is programmer misuse and propagates its Error',
+    () async {
+      final (db, store) = await build();
+      await db.close();
+      final log = _CaptureLog();
+      await expectLater(
+        DiscoverDriveBackupsUsecase(
+          drive: _FakeDrive({'secret-id': _valid('12')}),
+          store: monitoringRepository(store),
+          log: log,
+        ).execute(),
+        throwsStateError,
+      );
+      expect(log.messages, isEmpty);
+    },
+  );
 
   test(
     'modified and deleted files reconcile mappings and preserve duplicates',
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('04'), 'b': _valid('04')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.filesById['a'] = _valid('05');
       drive.modified['a'] = DateTime.utc(2026, 2);
-      await discovery.execute();
+      await discovery.execute().requireOk();
       expect((await store.driveBackups('old-account')), hasLength(2));
       drive.filesById.remove('a');
-      await discovery.execute();
+      await discovery.execute().requireOk();
       expect((await store.driveBackups('old-account')), hasLength(1));
       expect((await store.driveCache('old-account')), hasLength(1));
       drive.filesById.remove('b');
-      await discovery.execute();
+      await discovery.execute().requireOk();
       expect(await store.driveBackups('old-account'), isEmpty);
       expect(await store.driveCache('old-account'), isEmpty);
       await db.close();
@@ -150,8 +167,11 @@ void main() {
   test('transient content failure preserves the cached mapping', () async {
     final (db, store) = await build();
     final drive = _FakeDrive({'a': _valid('06')});
-    final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-    await discovery.execute();
+    final discovery = DiscoverDriveBackupsUsecase(
+      drive: drive,
+      store: monitoringRepository(store),
+    );
+    await discovery.execute().requireOk();
     final historicalDigest = (await store.driveBackups(
       'old-account',
     )).single.digest;
@@ -161,7 +181,7 @@ void main() {
     drive.filesById['a'] = _valid('11');
     drive.failContent = true;
     drive.modified['a'] = DateTime.utc(2026, 3);
-    final result = await discovery.execute();
+    final result = await discovery.execute().requireOk();
     expect(result.status, DriveDiscoveryStatus.partial);
     expect(result.failed, 1);
     expect(await store.driveBackups('old-account'), hasLength(1));
@@ -175,7 +195,7 @@ void main() {
       isNull,
     );
     drive.failContent = false;
-    final retried = await discovery.execute();
+    final retried = await discovery.execute().requireOk();
     final retriedCache = (await store.driveCache('old-account')).single;
     expect(retried.status, DriveDiscoveryStatus.complete);
     expect(drive.contentCalls, 3);
@@ -189,11 +209,14 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('0f')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.filesById['a'] = '{"invalid":true}';
       drive.modified['a'] = DateTime.utc(2026, 4);
-      final partial = await discovery.execute();
+      final partial = await discovery.execute().requireOk();
       expect(partial.status, DriveDiscoveryStatus.partial);
       expect(partial.invalid, 1);
       expect(await store.driveBackups('old-account'), hasLength(1));
@@ -202,7 +225,7 @@ void main() {
         isNull,
       );
       drive.filesById['a'] = _valid('10');
-      final complete = await discovery.execute();
+      final complete = await discovery.execute().requireOk();
       expect(complete.status, DriveDiscoveryStatus.complete);
       expect(drive.contentCalls, 3);
       expect(
@@ -218,19 +241,31 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('09')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.failListing = true;
-      expect((await discovery.execute()).status, DriveDiscoveryStatus.failed);
+      expect(
+        (await discovery.execute().requireOk()).status,
+        DriveDiscoveryStatus.failed,
+      );
       expect(await store.driveBackups('old-account'), hasLength(1));
       expect(await store.driveCache('old-account'), hasLength(1));
       drive.failListing = false;
       drive.failAccount = true;
-      expect((await discovery.execute()).status, DriveDiscoveryStatus.failed);
+      expect(
+        (await discovery.execute().requireOk()).status,
+        DriveDiscoveryStatus.failed,
+      );
       expect(await store.driveBackups('old-account'), hasLength(1));
       drive.failAccount = false;
       drive.filesById.clear();
-      expect((await discovery.execute()).status, DriveDiscoveryStatus.empty);
+      expect(
+        (await discovery.execute().requireOk()).status,
+        DriveDiscoveryStatus.empty,
+      );
       expect(await store.driveBackups('old-account'), isEmpty);
       expect(await store.driveCache('old-account'), isEmpty);
       await db.close();
@@ -242,11 +277,14 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('0c')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.accountName = null;
 
-      final result = await discovery.execute();
+      final result = await discovery.execute().requireOk();
 
       expect(result.status, DriveDiscoveryStatus.unauthenticated);
       expect(result.listed, 0);
@@ -264,24 +302,29 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('0b')});
-      await DiscoverDriveBackupsUsecase(drive: drive, store: store).execute();
+      await DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      ).execute().requireOk();
       final repository = _MockGoogleDriveRepository();
       var entered = false;
       when(
-        () => repository.withDiscoverySession<DriveDiscoveryResult>(any()),
+        () =>
+            repository.withDiscoverySession<
+              Result<DriveDiscoveryResult, RecoverBullFailure>
+            >(any()),
       ).thenAnswer((invocation) {
         entered = true;
         final action =
             invocation.positionalArguments.single
-                as Future<DriveDiscoveryResult> Function(
-                  GoogleDriveDiscoverySession? session,
-                );
+                as Future<Result<DriveDiscoveryResult, RecoverBullFailure>>
+                Function(GoogleDriveDiscoverySession? session);
         return action(_FailingDiscoverySession());
       });
       final result = await DiscoverDriveBackupsUsecase(
         drive: GoogleDriveBackupDiscoveryAdapter(repository),
-        store: store,
-      ).execute();
+        store: monitoringRepository(store),
+      ).execute().requireOk();
       expect(result.status, DriveDiscoveryStatus.failed);
       expect(entered, isTrue);
       expect(await store.driveBackups('old-account'), hasLength(1));
@@ -295,10 +338,13 @@ void main() {
     () async {
       final (db, store) = await build();
       final drive = _FakeDrive({'a': _valid('0a'), 'b': _valid('0a')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.filesById.remove('a');
-      await discovery.execute();
+      await discovery.execute().requireOk();
       expect(await store.driveBackups('old-account'), hasLength(1));
       expect(await store.driveCache('old-account'), hasLength(1));
       expect(drive.contentCalls, 2);
@@ -312,11 +358,14 @@ void main() {
       final (db, store) = await build();
       await store.registerBackup(List<int>.filled(32, 7));
       final drive = _FakeDrive({'a': _valid('07')});
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
       drive.accountName = 'new-account';
       drive.filesById['b'] = _valid('08');
-      await discovery.execute();
+      await discovery.execute().requireOk();
       final rows = await store.monitoredBackups();
       expect(
         rows.where(
@@ -366,20 +415,20 @@ final class _FakeDrive implements RecoverBullDriveDiscoveryPort {
   Future<T> withDiscoverySession<T>(
     Future<T> Function(RecoverBullDriveDiscoverySession? session) action,
   ) async {
-    if (failAccount) throw StateError('account unavailable');
+    if (failAccount) throw Exception('account unavailable');
     if (accountName == null) return action(null);
     return action(_FakeDiscoverySession(this));
   }
 
   Future<String?> account() async {
     accountCalls++;
-    if (failAccount) throw StateError('account unavailable');
+    if (failAccount) throw Exception('account unavailable');
     return accountName;
   }
 
   Future<List<RecoverBullDriveFile>> files() async {
     filesCalls++;
-    if (failListing) throw StateError('listing unavailable');
+    if (failListing) throw Exception('listing unavailable');
     return [
       for (final id in filesById.keys)
         RecoverBullDriveFile(
@@ -394,7 +443,7 @@ final class _FakeDrive implements RecoverBullDriveDiscoveryPort {
     contentCalls++;
     if (!fetchStarted.isCompleted) fetchStarted.complete();
     if (blockedContent != null) return blockedContent!.future;
-    if (failContent) throw StateError('transient');
+    if (failContent) throw Exception('transient');
     return filesById[fileId]!;
   }
 }
@@ -404,13 +453,17 @@ final class _FakeDiscoverySession implements RecoverBullDriveDiscoverySession {
   const _FakeDiscoverySession(this.drive);
 
   @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+
+  @override
   String get account => drive.accountName!;
 
   @override
   Future<List<RecoverBullDriveFile>> files() => drive.files();
 
   @override
-  Future<String> content(String fileId) => drive.content(fileId);
+  Future<Result<EncryptedVault, RecoverBullFailure>> content(String fileId) =>
+      discoveryVault(() => drive.content(fileId));
 }
 
 final class _CaptureLog implements LogSink {
@@ -444,12 +497,15 @@ final class _FailingDiscoverySession implements GoogleDriveDiscoverySession {
   String get account => 'old-account';
 
   @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+
+  @override
   Future<List<DriveFileMetadata>> fetchAllMetadata() =>
-      Future.error(StateError('metadata unavailable'));
+      Future.error(Exception('metadata unavailable'));
 
   @override
   Future<String> fetchRawFile(String fileId) =>
-      Future.error(StateError('content unavailable'));
+      Future.error(Exception('content unavailable'));
 }
 
 String _accountHash(String account) =>

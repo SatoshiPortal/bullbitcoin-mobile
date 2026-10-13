@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'dart:async';
 
 import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
@@ -15,7 +16,6 @@ import 'package:bull_tor/tor.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
 
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
@@ -588,7 +588,13 @@ void main() {
       final usecase = _usecase(
         settings: _settings(useTorProxy: false),
         ensureTor: _unavailableEmbeddedTor(),
-        recoverBull: RecoverBullFeature.unavailable(log: log.scoped('test')),
+        recoverBull: RecoverBullFeature.unavailable(
+          navigation: RecoverBullNavigationCallbacks(
+            onOpenTorSettings: () {},
+            onOpenWalletHome: () {},
+          ),
+          log: log.scoped('test'),
+        ),
       );
 
       final result = await usecase.execute(network: Network.bitcoinMainnet);

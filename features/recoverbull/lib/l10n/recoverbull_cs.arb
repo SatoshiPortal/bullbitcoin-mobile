@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
   "recoverbullSettingsUrlInvalid": "URL není platná",
-  "recoverbullErrorUnexpected": "Neočekávaná chyba, viz protokoly",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "Kontrola spojení pro obnoveníBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor. To může trvat až minutu.",
-  "recoverbullMonitoringDisableCancel": "Zrušit"
+  "recoverbullMonitoringDisableCancel": "Zrušit",
+  "recoverbullMonitoringServerUnsupported": "Tento server nepodporuje sledování pokusů. Trezory můžete nadále zálohovat a obnovovat."
 }

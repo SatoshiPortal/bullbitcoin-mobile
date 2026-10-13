@@ -1,3 +1,4 @@
+import '../../support/monitoring_repository.dart';
 import 'dart:io';
 
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
@@ -113,7 +114,7 @@ void main() {
       final digest = store.digestFor(identifier);
       final window = DateTime.utc(2026, 8, 5, 14);
       final record = RecordLocalAttemptUsecase(
-        store,
+        monitoringRepository(store),
         remote: _MonitoringRemote(
           RecoverBullAttemptsSnapshot(
             collectionStartedAt: window,

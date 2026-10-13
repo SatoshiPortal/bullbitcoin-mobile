@@ -17,7 +17,7 @@ import 'package:mocktail/mocktail.dart';
 void main() {
   setUpAll(() {
     registerFallbackValue(fixtureVault());
-    registerFallbackValue(const DecryptedVault());
+    registerFallbackValue(DecryptedVault());
   });
   setUp(setUpRecoverBullBloc);
   tearDown(tearDownRecoverBullBloc);
@@ -93,10 +93,7 @@ void main() {
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
         ).thenAnswer((_) async => const Ok(null));
         when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
+          () => saveFile.execute(vault: any(named: 'vault')),
         ).thenAnswer((_) async => const Ok(null));
 
         final bloc = buildBloc(flow: RecoverBullFlow.secureVault, log: logs);
@@ -159,12 +156,7 @@ void main() {
         when(
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
         ).thenAnswer((_) async => const Ok(null));
-        when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
-        ).thenAnswer(
+        when(() => saveFile.execute(vault: any(named: 'vault'))).thenAnswer(
           (_) async => const Err(core.RecoverBullUnexpectedFailure()),
         );
 
@@ -226,12 +218,7 @@ void main() {
       await pumpEventQueue();
 
       expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
-      verifyNever(
-        () => saveFile.execute(
-          content: any(named: 'content'),
-          filename: any(named: 'filename'),
-        ),
-      );
+      verifyNever(() => saveFile.execute(vault: any(named: 'vault')));
       await bloc.close();
     });
 
@@ -246,12 +233,7 @@ void main() {
             network: RecoverBullNetwork.mainnet,
           )),
         );
-        when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
-        ).thenAnswer(
+        when(() => saveFile.execute(vault: any(named: 'vault'))).thenAnswer(
           (_) async => const Err(core.KeyServerUnavailableFailure()),
         );
         when(
@@ -271,10 +253,7 @@ void main() {
         expect(await attemptMonitoringStore.monitoredBackups(), isEmpty);
 
         when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
+          () => saveFile.execute(vault: any(named: 'vault')),
         ).thenAnswer((_) async => const Ok(null));
         bloc.add(
           const OnVaultProviderSelection(
@@ -287,12 +266,7 @@ void main() {
         verify(
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
         ).called(1);
-        verify(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
-        ).called(2);
+        verify(() => saveFile.execute(vault: any(named: 'vault'))).called(2);
         expect(bloc.state.vault, same(vault));
         expect(bloc.state.failure, isNull);
         expect(bloc.state.vaultPassword, isNull);
@@ -318,10 +292,7 @@ void main() {
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
         when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
+          () => saveFile.execute(vault: any(named: 'vault')),
         ).thenAnswer((_) async => const Ok(null));
         when(
           () => storeKey.execute(
@@ -372,10 +343,7 @@ void main() {
           )),
         );
         when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
+          () => saveFile.execute(vault: any(named: 'vault')),
         ).thenAnswer((_) async => const Ok(null));
         when(
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
@@ -450,10 +418,7 @@ void main() {
         final vault = fixtureVault();
         when(() => createVault.execute()).thenAnswer((_) => creation.future);
         when(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
+          () => saveFile.execute(vault: any(named: 'vault')),
         ).thenAnswer((_) async => const Ok(null));
         when(
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
@@ -486,12 +451,7 @@ void main() {
         verify(
           () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
         ).called(1);
-        verify(
-          () => saveFile.execute(
-            content: any(named: 'content'),
-            filename: any(named: 'filename'),
-          ),
-        ).called(1);
+        verify(() => saveFile.execute(vault: any(named: 'vault'))).called(1);
         await bloc.close();
       },
     );
@@ -536,12 +496,7 @@ void main() {
           vaultKey: any(named: 'vaultKey'),
         ),
       );
-      verifyNever(
-        () => saveFile.execute(
-          content: any(named: 'content'),
-          filename: any(named: 'filename'),
-        ),
-      );
+      verifyNever(() => saveFile.execute(vault: any(named: 'vault')));
     });
   });
   test(

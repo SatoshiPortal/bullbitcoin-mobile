@@ -63,7 +63,7 @@ class FetchVaultKeyFromServerUsecase {
       // a vault key this call already retrieved.
       try {
         if (ownsRoute) await session.close();
-      } catch (e, _) {
+      } on Exception catch (e, _) {
         log.warning(
           'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
         );
@@ -80,8 +80,8 @@ class FetchVaultKeyFromServerUsecase {
         final alert = await _recordAttempt?.recordTargetedLockout(
           backupIdHex: vault.id,
         );
-        if (alert != null) _alertPort?.publish(alert);
-      } catch (error, _) {
+        if (alert case Ok(value: final value?)) _alertPort?.publish(value);
+      } on Exception catch (error, _) {
         log.warning(
           'recoverbull.attempts.monitoring.update.failed '
           'error_type=${error.runtimeType}',
@@ -115,8 +115,8 @@ class FetchVaultKeyFromServerUsecase {
         backupIdHex: vault.id,
         attemptStatus: attemptStatus,
       );
-      if (alert != null) _alertPort?.publish(alert);
-    } catch (error, _) {
+      if (alert case Ok(:final value?)) _alertPort?.publish(value);
+    } on Exception catch (error, _) {
       log.warning(
         'recoverbull.attempts.monitoring.update.failed '
         'error_type=${error.runtimeType}',

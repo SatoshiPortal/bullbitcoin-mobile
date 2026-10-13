@@ -252,10 +252,6 @@
   },
   "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
   "recoverbullSettingsUrlInvalid": "URL이 유효하지 않습니다",
-  "recoverbullErrorUnexpected": "오류가 없습니다. 로그",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "recoverbullCheckingConnection": "RecoverBull에 대한 연결 확인",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -486,5 +482,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Tor에 키 서버 연결. 1 분까지 걸릴 수 있습니다.",
-  "recoverbullMonitoringDisableCancel": "취소"
+  "recoverbullMonitoringDisableCancel": "취소",
+  "recoverbullMonitoringServerUnsupported": "이 서버는 시도 모니터링을 지원하지 않습니다. 보관함을 계속 백업하고 복구할 수 있습니다."
 }

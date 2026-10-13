@@ -61,6 +61,10 @@ void main() {
     const invalidBackup = '{not-valid-json-password-secret';
     const password = 'password-secret';
     final feature = await RecoverBullFeature.create(
+      navigation: RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () {},
+        onOpenWalletHome: () {},
+      ),
       config: RecoverBullConfig(databasePath: '${directory.path}/state.sqlite'),
       wallets: _Wallets(),
       seeds: _Seeds(),

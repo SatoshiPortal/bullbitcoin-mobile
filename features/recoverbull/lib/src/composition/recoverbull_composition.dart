@@ -1,11 +1,22 @@
+import 'package:bull_ui/bull_ui.dart' show Widget;
+import '../data/recoverbull_attempt_monitoring_repository_impl.dart';
+import '../data/mappers/encrypted_vault_mapper.dart';
+import '../domain/usecases/select_vault_usecase.dart';
+import '../domain/usecases/save_vault_to_provider_usecase.dart';
+import '../domain/usecases/create_and_store_vault_usecase.dart';
+import '../domain/usecases/complete_vault_recovery_usecase.dart';
+import '../domain/usecases/decrypt_and_accept_vault_usecase.dart';
+import '../domain/usecases/manage_recoverbull_connection_usecase.dart';
+import '../domain/recoverbull_navigation_port.dart';
+import '../ui/screens/attempt_alert_detail_page.dart';
+import '../data/debug_google_drive_repository.dart';
 import '../data/datasources/file_storage_datasource.dart';
 import '../data/datasources/google_drive_datasource.dart';
 import '../data/datasources/recoverbull_remote_datasource.dart';
 import '../data/datasources/recoverbull_settings_datasource.dart';
 import '../data/recoverbull_repository_impl.dart';
-import '../data/file_system_repository.dart';
+import '../data/file_system_repository_impl.dart';
 import '../data/google_drive_repository.dart';
-import '../data/debug_google_drive_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_network.dart';
 import '../domain/recoverbull_failure.dart';
@@ -77,6 +88,7 @@ import '../public/recoverbull.dart';
 /// shows an error page instead of a flow.
 final class RecoverBullFeature {
   final LogSink log;
+  final RecoverBullNavigationPort _navigation;
   final RecoverBullLifecycle lifecycle;
   // Null only in the unavailable feature; set together by [create].
   final RecoverBullRepository? _repository;
@@ -100,6 +112,7 @@ final class RecoverBullFeature {
 
   const RecoverBullFeature._(
     this.log,
+    this._navigation,
     this.lifecycle,
     this._repository,
     this._newBloc,
@@ -112,23 +125,27 @@ final class RecoverBullFeature {
     this._attemptMonitoring,
   );
 
-  RecoverBullFeature.unavailable({required LogSink log})
-    : this._(
-        log,
-        RecoverBullLifecycle(log: log),
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        const _UnavailableAttemptMonitoring(),
-      );
+  RecoverBullFeature.unavailable({
+    required LogSink log,
+    required RecoverBullNavigationPort navigation,
+  }) : this._(
+         log,
+         navigation,
+         RecoverBullLifecycle(log: log),
+         null,
+         null,
+         null,
+         null,
+         null,
+         null,
+         null,
+         null,
+         const _UnavailableAttemptMonitoring(),
+       );
 
   static Future<RecoverBullFeature> create({
     required RecoverBullConfig config,
+    required RecoverBullNavigationPort navigation,
     required RecoverBullWalletRepository wallets,
     required RecoverBullSeedPort seeds,
     required RecoverBullDefaultWalletsPort defaultWallets,
@@ -147,6 +164,10 @@ final class RecoverBullFeature {
       initialServerUrlOverride: config.initialServerUrlOverride,
     );
     final attemptMonitoringStore = RecoverBullAttemptMonitoringStore(database);
+    final monitoringRepository = RecoverBullAttemptMonitoringRepositoryImpl(
+      attemptMonitoringStore,
+      log: log,
+    );
     final settingsDatasource = RecoverbullSettingsDatasource(
       database: database,
       defaultServer: config.effectiveDefaultServer,
@@ -161,7 +182,7 @@ final class RecoverBullFeature {
       remoteDatasource: remote,
       recoverbullSettingsDatasource: settingsDatasource,
     );
-    final files = FileSystemRepository(
+    final files = FileSystemRepositoryImpl(
       log: log,
       datasource: FileStorageDatasource(),
     );
@@ -203,7 +224,7 @@ final class RecoverBullFeature {
           },
         );
     final attemptMonitoring = await RecoverBullAttemptMonitoring.open(
-      attemptMonitoringStore,
+      monitoringRepository,
       enabled: (await database.select(database.recoverbullState).getSingle())
           .attemptMonitoringEnabled,
       poll: productionAttemptMonitoringRemote.poll,
@@ -213,13 +234,35 @@ final class RecoverBullFeature {
       repository: repository,
       ensureTor: ensureTor,
       recordAttempt: RecordLocalAttemptUsecase(
-        attemptMonitoringStore,
+        monitoringRepository,
         remote: productionAttemptMonitoringRemote,
       ),
       alertPort: attemptMonitoring,
       log: log,
     );
     final verifyDecryptedVault = VerifyDecryptedVaultUsecase(wallets, settings);
+    final connectDrive = ConnectToGoogleDriveUsecase(driveRepository: drive);
+    final saveToProvider = SaveVaultToProviderUsecase(
+      log: log,
+      saveFile: SaveFileToSystemUsecase(fileSystemRepository: files),
+      connectDrive: connectDrive,
+      saveDrive: SaveVaultToGoogleDriveUsecase(driveRepository: drive),
+      registerBackup: RegisterMonitoredBackupUsecase(monitoringRepository),
+      lifecycle: lifecycle,
+    );
+    final acceptVault = DecryptAndAcceptVaultUsecase(
+      log: log,
+      fetch: fetchVaultKey,
+      decrypt: decryptVault,
+      verify: verifyDecryptedVault,
+      recover: CompleteVaultRecoveryUsecase(
+        log: log,
+        restore: restoreVault,
+        lifecycle: lifecycle,
+        onWalletUpdated: onWalletUpdated,
+      ),
+      lifecycle: lifecycle,
+    );
     RecoverBullBloc newBloc({
       required RecoverBullFlow flow,
       EncryptedVault? vault,
@@ -227,53 +270,44 @@ final class RecoverBullFeature {
       log: log,
       flow: flow,
       preSelectedVault: vault,
-      pickVaultUsecase: PickVaultUsecase(fileSystemRepository: files),
-      saveFileToSystemUsecase: SaveFileToSystemUsecase(
-        fileSystemRepository: files,
+      selectVaultUsecase: SelectVaultUsecase(
+        pick: PickVaultUsecase(fileSystemRepository: files),
+        connectDrive: connectDrive,
+        latestDrive: FetchLatestGoogleDriveVaultUsecase(driveRepository: drive),
       ),
-      createEncryptedVaultUsecase: CreateEncryptedVaultUsecase(
+      secureVaultUsecase: CreateAndStoreVaultUsecase(
         log: log,
-        recoverBullRepository: repository,
-        seedRepository: seeds,
-        walletRepository: wallets,
-        settings: settings,
-      ),
-      storeVaultKeyIntoServerUsecase: StoreVaultKeyIntoServerUsecase(
-        repository: repository,
-        ensureTor: ensureTor,
-        log: log,
-      ),
-      registerMonitoredBackupUsecase: RegisterMonitoredBackupUsecase(
-        attemptMonitoringStore,
-      ),
-      trashVaultKeyUsecase: TrashVaultKeyUsecase(
-        repository: repository,
-        ensureSession: ensureTor,
-        log: log,
-      ),
-      checkKeyServerConnectionUsecase: check,
-      connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+        create: CreateEncryptedVaultUsecase(
+          log: log,
+          recoverBullRepository: repository,
+          seedRepository: seeds,
+          walletRepository: wallets,
+          settings: settings,
+        ),
         check: check,
-        ensureTor: ensureTor,
+        storeKey: StoreVaultKeyIntoServerUsecase(
+          repository: repository,
+          ensureTor: ensureTor,
+          log: log,
+        ),
+        save: saveToProvider,
+        trash: TrashVaultKeyUsecase(
+          repository: repository,
+          ensureSession: ensureTor,
+          log: log,
+        ),
+      ),
+      acceptVaultUsecase: acceptVault,
+      connectionUsecase: ManageRecoverBullConnectionUsecase(
         log: log,
+        connectToKeyServerUsecase: ConnectToKeyServerUsecase(
+          check: check,
+          ensureTor: ensureTor,
+          log: log,
+        ),
+        ensureRecoverBullTorSessionUsecase: ensureTor,
+        watchTorConnectionUsecase: tor.embedded.watcher,
       ),
-      fetchVaultKeyFromServerUsecase: fetchVaultKey,
-      decryptVaultUsecase: decryptVault,
-      restoreVaultUsecase: restoreVault,
-      connectToGoogleDriveUsecase: ConnectToGoogleDriveUsecase(
-        driveRepository: drive,
-      ),
-      saveToGoogleDriveUsecase: SaveVaultToGoogleDriveUsecase(
-        driveRepository: drive,
-      ),
-      fetchLatestGoogleDriveVaultUsecase: FetchLatestGoogleDriveVaultUsecase(
-        driveRepository: drive,
-      ),
-      ensureRecoverBullTorSessionUsecase: ensureTor,
-      watchTorConnectionUsecase: tor.embedded.watcher,
-      lifecycle: lifecycle,
-      verifyDecryptedVaultUsecase: verifyDecryptedVault,
-      onWalletUpdated: onWalletUpdated,
     );
     RecoverBullGoogleDriveBloc newDriveBloc({required RecoverBullFlow flow}) =>
         RecoverBullGoogleDriveBloc(
@@ -299,65 +333,21 @@ final class RecoverBullFeature {
     }) async {
       final EncryptedVault vault;
       try {
-        vault = EncryptedVault(file: encryptedBackup);
-      } catch (_) {
+        vault = EncryptedVaultMapper.parse(encryptedBackup);
+      } on Exception {
         log.warning(
           'recoverbull.recover_backup.invalid_vault',
           error: 'Invalid encrypted backup format',
         );
         return const RecoverBullRecoveryResult(restored: false);
       }
-      final keyResult = await fetchVaultKey.execute(
+      final result = await acceptVault.execute(
+        flow: RecoverBullFlow.recoverVault,
         vault: vault,
         password: password,
+        cancelled: () => false,
       );
-      final vaultKey = switch (keyResult) {
-        Ok(:final value) => value,
-        Err() => null,
-      };
-      if (vaultKey == null) {
-        return const RecoverBullRecoveryResult(restored: false);
-      }
-      final decryptedResult = decryptVault.execute(
-        vault: vault,
-        vaultKey: vaultKey,
-      );
-      final decryptedVault = switch (decryptedResult) {
-        Ok(:final value) => value,
-        Err() => null,
-      };
-      if (decryptedVault == null) {
-        return const RecoverBullRecoveryResult(restored: false);
-      }
-      final belongsToCurrentWallet = await verifyDecryptedVault.execute(
-        decryptedVault: decryptedVault,
-      );
-      switch (belongsToCurrentWallet) {
-        case Ok(:final value)
-            when value.result != VaultVerificationResult.mismatch:
-          break;
-        case Ok():
-        case Err():
-          return const RecoverBullRecoveryResult(restored: false);
-      }
-      final RecoverBullNetwork network;
-      switch (await restoreVault.execute(decryptedVault: decryptedVault)) {
-        case Ok(:final value):
-          network = value;
-        case Err():
-          return const RecoverBullRecoveryResult(restored: false);
-      }
-      try {
-        await lifecycle.markVerified(network);
-      } catch (_) {
-        log.warning('recoverbull.lifecycle.mark_verified_failed');
-      }
-      try {
-        await onWalletUpdated?.call();
-      } catch (_) {
-        log.warning('recoverbull.wallet_refresh.restore_failed');
-      }
-      return const RecoverBullRecoveryResult(restored: true);
+      return RecoverBullRecoveryResult(restored: result is Ok);
     }
 
     // Silent Google sign-in and a Drive listing leave the device in clear,
@@ -372,11 +362,14 @@ final class RecoverBullFeature {
         }
       }
       if (!hasEncryptedBackup) return;
-      await DiscoverDriveBackupsUsecase(
+      final discoveryResult = await DiscoverDriveBackupsUsecase(
         drive: driveDiscovery ?? GoogleDriveBackupDiscoveryAdapter(drive),
-        store: attemptMonitoringStore,
+        store: monitoringRepository,
         log: log,
       ).execute();
+      if (discoveryResult is Err) {
+        log.warning('recoverbull.drive.discovery.failed');
+      }
     }
 
     Future<bool> ensureTorReady() async {
@@ -389,6 +382,7 @@ final class RecoverBullFeature {
 
     return RecoverBullFeature._(
       log,
+      navigation,
       lifecycle,
       repository,
       newBloc,
@@ -470,28 +464,54 @@ final class RecoverBullFeature {
     return FetchRecoverBullStatusUsecase(repository).execute(network);
   }
 
-  Future<RecoverBullServerSettings> serverSettings() =>
-      FetchRecoverBullServerSettingsUsecase(_requireRepository()).execute();
+  Future<Result<RecoverBullServerSettings, RecoverBullFailure>>
+  serverSettings() async {
+    final repository = _repository;
+    if (repository == null) {
+      return const Err(RecoverBullUnexpectedFailure('RecoverBull unavailable'));
+    }
+    return FetchRecoverBullServerSettingsUsecase(repository).execute();
+  }
 
-  Future<void> setServer(Uri server) => StoreRecoverbullUrlUsecase(
-    recoverBullRepository: _requireRepository(),
-  ).execute(server);
+  Future<Result<Null, RecoverBullFailure>> setServer(Uri server) async {
+    final repository = _repository;
+    if (repository == null) {
+      return const Err(RecoverBullUnexpectedFailure('RecoverBull unavailable'));
+    }
+    return StoreRecoverbullUrlUsecase(
+      recoverBullRepository: repository,
+    ).execute(server);
+  }
 
-  Future<void> setPermission(bool granted) => AllowPermissionUsecase(
-    recoverBullRepository: _requireRepository(),
-  ).execute(granted);
+  Future<Result<Null, RecoverBullFailure>> setPermission(bool granted) async {
+    final repository = _repository;
+    if (repository == null) {
+      return const Err(RecoverBullUnexpectedFailure('RecoverBull unavailable'));
+    }
+    return AllowPermissionUsecase(
+      recoverBullRepository: repository,
+    ).execute(granted);
+  }
 
-  Future<void> markBackupStored(RecoverBullNetwork network) =>
-      MarkRecoverBullBackupStoredUsecase(_requireRepository()).execute(network);
+  Future<Result<Null, RecoverBullFailure>> markBackupStored(
+    RecoverBullNetwork network,
+  ) async {
+    final repository = _repository;
+    if (repository == null) {
+      return const Err(RecoverBullUnexpectedFailure('RecoverBull unavailable'));
+    }
+    return MarkRecoverBullBackupStoredUsecase(repository).execute(network);
+  }
 
-  Future<void> markBackupVerified(RecoverBullNetwork network) =>
-      MarkRecoverBullBackupVerifiedUsecase(
-        _requireRepository(),
-      ).execute(network);
-
-  /// Callers check [isAvailable] before changing settings or backup state.
-  RecoverBullRepository _requireRepository() =>
-      _repository ?? (throw StateError('RecoverBull is unavailable'));
+  Future<Result<Null, RecoverBullFailure>> markBackupVerified(
+    RecoverBullNetwork network,
+  ) async {
+    final repository = _repository;
+    if (repository == null) {
+      return const Err(RecoverBullUnexpectedFailure('RecoverBull unavailable'));
+    }
+    return MarkRecoverBullBackupVerifiedUsecase(repository).execute(network);
+  }
 
   List<RouteBase> get routes {
     final repository = _repository;
@@ -531,61 +551,76 @@ final class RecoverBullFeature {
         name: route.name,
         path: route.path,
         builder: (context, state) {
+          if (route == RecoverBullRoute.recoverbullAttemptAlerts) {
+            final alerts = state.extra;
+            if (alerts is! List<RecoverBullAttemptAlert> || alerts.isEmpty) {
+              return const RecoverBullUnavailablePage();
+            }
+            return RecoverBullAttemptAlertDetailPage(
+              sourceAlerts: List.unmodifiable(alerts),
+            );
+          }
           final extra = state.extra is RecoverBullFlowsExtra
               ? state.extra! as RecoverBullFlowsExtra
               : RecoverBullFlowsExtra(flow: _flow(route));
           if (route == RecoverBullRoute.recoverbullSettings) {
-            return RecoverBullFlowNavigator(
-              flow: RecoverBullFlow.settings,
-              fetchPermissionUsecase: FetchPermissionUsecase(
-                recoverBullRepository: repository,
-              ),
-              settingsPageBuilder: (context) => SettingsPage(
-                log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+            return _withNavigation(
+              RecoverBullFlowNavigator(
+                flow: RecoverBullFlow.settings,
+                fetchPermissionUsecase: FetchPermissionUsecase(
                   recoverBullRepository: repository,
                 ),
-                storeUrlUsecase: StoreRecoverbullUrlUsecase(
-                  recoverBullRepository: repository,
+                settingsPageBuilder: (context) => SettingsPage(
+                  log: log,
+                  fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                    recoverBullRepository: repository,
+                  ),
+                  storeUrlUsecase: StoreRecoverbullUrlUsecase(
+                    recoverBullRepository: repository,
+                  ),
+                  monitoring: _attemptMonitoring,
                 ),
-                monitoring: _attemptMonitoring,
-              ),
-              requestPermissionPageBuilder: (context) => RequestPermissionPage(
-                log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
-                  recoverBullRepository: repository,
-                ),
-                allowPermissionUsecase: AllowPermissionUsecase(
-                  recoverBullRepository: repository,
-                ),
+                requestPermissionPageBuilder: (context) =>
+                    RequestPermissionPage(
+                      log: log,
+                      fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                        recoverBullRepository: repository,
+                      ),
+                      allowPermissionUsecase: AllowPermissionUsecase(
+                        recoverBullRepository: repository,
+                      ),
+                    ),
               ),
             );
           }
-          return BlocProvider(
-            create: (_) => newBloc(flow: extra.flow, vault: extra.vault),
-            child: RecoverBullFlowNavigator(
-              flow: extra.flow,
-              fetchPermissionUsecase: FetchPermissionUsecase(
-                recoverBullRepository: repository,
-              ),
-              settingsPageBuilder: (context) => SettingsPage(
-                log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+          return _withNavigation(
+            BlocProvider(
+              create: (_) => newBloc(flow: extra.flow, vault: extra.vault),
+              child: RecoverBullFlowNavigator(
+                flow: extra.flow,
+                fetchPermissionUsecase: FetchPermissionUsecase(
                   recoverBullRepository: repository,
                 ),
-                storeUrlUsecase: StoreRecoverbullUrlUsecase(
-                  recoverBullRepository: repository,
+                settingsPageBuilder: (context) => SettingsPage(
+                  log: log,
+                  fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                    recoverBullRepository: repository,
+                  ),
+                  storeUrlUsecase: StoreRecoverbullUrlUsecase(
+                    recoverBullRepository: repository,
+                  ),
+                  monitoring: _attemptMonitoring,
                 ),
-                monitoring: _attemptMonitoring,
-              ),
-              requestPermissionPageBuilder: (context) => RequestPermissionPage(
-                log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
-                  recoverBullRepository: repository,
-                ),
-                allowPermissionUsecase: AllowPermissionUsecase(
-                  recoverBullRepository: repository,
-                ),
+                requestPermissionPageBuilder: (context) =>
+                    RequestPermissionPage(
+                      log: log,
+                      fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                        recoverBullRepository: repository,
+                      ),
+                      allowPermissionUsecase: AllowPermissionUsecase(
+                        recoverBullRepository: repository,
+                      ),
+                    ),
               ),
             ),
           );
@@ -626,6 +661,12 @@ final class RecoverBullFeature {
     ),
   ];
 
+  Widget _withNavigation(Widget child) =>
+      RepositoryProvider<RecoverBullNavigationPort>.value(
+        value: _navigation,
+        child: child,
+      );
+
   static RecoverBullFlow _flow(RecoverBullRoute route) => switch (route) {
     RecoverBullRoute.recoverbullFlows => RecoverBullFlow.recoverVault,
     RecoverBullRoute.recoverbullSecureVault => RecoverBullFlow.secureVault,
@@ -633,6 +674,11 @@ final class RecoverBullFeature {
     RecoverBullRoute.recoverbullTestVault => RecoverBullFlow.testVault,
     RecoverBullRoute.recoverbullViewVaultKey => RecoverBullFlow.viewVaultKey,
     RecoverBullRoute.recoverbullSettings => RecoverBullFlow.settings,
+    RecoverBullRoute.recoverbullAttemptAlerts => throw ArgumentError.value(
+      route,
+      'route',
+      'Alert details are not a vault flow',
+    ),
   };
 }
 

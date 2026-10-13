@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/src/domain/recoverbull_navigation_port.dart';
 import 'dart:async';
 
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -65,6 +66,7 @@ void main() {
     addTearDown(bloc.close);
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
@@ -119,10 +121,18 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
-        theme: ThemeData(),
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
+        builder: (_, child) =>
+            RepositoryProvider<RecoverBullNavigationPort>.value(
+              value: RecoverBullNavigationCallbacks(
+                onOpenTorSettings: () => router.pushNamed('torSettings'),
+                onOpenWalletHome: () => router.go('/wallet'),
+              ),
+              child: child!,
+            ),
       ),
     );
     await tester.pumpAndSettle();
@@ -183,9 +193,18 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
+        builder: (_, child) =>
+            RepositoryProvider<RecoverBullNavigationPort>.value(
+              value: RecoverBullNavigationCallbacks(
+                onOpenTorSettings: () => router.pushNamed('torSettings'),
+                onOpenWalletHome: () => router.go('/wallet'),
+              ),
+              child: child!,
+            ),
       ),
     );
     unawaited(router.push('/fetch'));
@@ -227,6 +246,7 @@ void main() {
       addTearDown(bloc.close);
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,

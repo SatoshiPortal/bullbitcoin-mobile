@@ -51,6 +51,10 @@ void main() {
     when(() => tor.embedded).thenReturn(embedded);
     when(() => embedded.watcher).thenReturn(_WatchTorConnection());
     final feature = await RecoverBullFeature.create(
+      navigation: RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () {},
+        onOpenWalletHome: () {},
+      ),
       config: RecoverBullConfig(
         databasePath: '${tempDirectory.path}/recoverbull.sqlite',
       ),

@@ -1,6 +1,9 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -47,7 +50,10 @@ final class RecoverBullSetup {
       recoverBullLog.error(
         'recoverbull.setup.unavailable error_type=${error.runtimeType}',
       );
-      composed = RecoverBullFeature.unavailable(log: recoverBullLog);
+      composed = RecoverBullFeature.unavailable(
+        log: recoverBullLog,
+        navigation: _navigation(),
+      );
     }
     locator.registerSingleton<RecoverBullFeature>(composed);
     // The feature facade is the only package service registered in the shell.
@@ -64,6 +70,14 @@ final class RecoverBullSetup {
     }
   }
 
+  static RecoverBullNavigationPort _navigation() =>
+      RecoverBullNavigationCallbacks(
+        onOpenTorSettings: () =>
+            AppRouter.router.pushNamed(TorSettingsRoute.torSettings.name),
+        onOpenWalletHome: () =>
+            AppRouter.router.go(WalletRoute.walletHome.path),
+      );
+
   static Future<RecoverBullFeature> _compose(
     GetIt locator,
     SqliteDatabase database,
@@ -79,6 +93,7 @@ final class RecoverBullSetup {
     final settingsRepository = locator<SettingsRepository>();
     final walletRepository = locator<WalletRepository>();
     final composed = await RecoverBullFeature.create(
+      navigation: _navigation(),
       config: RecoverBullConfig(
         databasePath: '${documents.path}/recoverbull.sqlite',
         initialPermissionGranted: legacySettings.permissionGranted,

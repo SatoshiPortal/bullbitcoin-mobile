@@ -1,3 +1,8 @@
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:primitives/primitives.dart';
+import '../../support/vault_fixture.dart';
+import '../../support/monitoring_repository.dart';
 import 'package:crypto/crypto.dart' show sha256;
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
@@ -91,6 +96,9 @@ final class _CountingDrive implements RecoverBullDriveDiscoveryPort {
 
 final class _TestDiscoverySession implements RecoverBullDriveDiscoverySession {
   @override
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+
+  @override
   final String account;
   final Future<List<RecoverBullDriveFile>> Function() _files;
   final Future<String> Function(String) _content;
@@ -105,7 +113,8 @@ final class _TestDiscoverySession implements RecoverBullDriveDiscoverySession {
   Future<List<RecoverBullDriveFile>> files() => _files();
 
   @override
-  Future<String> content(String fileId) => _content(fileId);
+  Future<Result<EncryptedVault, RecoverBullFailure>> content(String fileId) =>
+      discoveryVault(() => _content(fileId));
 }
 
 void main() {
@@ -133,9 +142,9 @@ void main() {
           totalAttempts: {digest: 1},
         );
       final alerts = await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute(forceRefresh: true);
+      ).execute(forceRefresh: true).requireOk();
       expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
       expect(
         (await store.monitoredBackups())
@@ -158,10 +167,10 @@ void main() {
       );
 
     final alerts = await CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => DateTime.utc(2027, 1, 1, 16),
-    ).execute(forceRefresh: true);
+    ).execute(forceRefresh: true).requireOk();
 
     expect(
       alerts,
@@ -179,7 +188,7 @@ void main() {
         final (db, store) = await build();
         await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
         final alerts = await CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: _Remote()
             ..response = RecoverBullAttemptsSnapshot(
               collectionStartedAt: window,
@@ -188,7 +197,7 @@ void main() {
               maxAttemptIdentifiers: 10,
             ),
           clock: () => DateTime.utc(2027, 1, 1, 16),
-        ).execute(forceRefresh: true);
+        ).execute(forceRefresh: true).requireOk();
         expect(
           alerts,
           contains(
@@ -206,12 +215,15 @@ void main() {
     'a failed poll does not break local recovery and marks monitoring pending',
     () async {
       final (db, store) = await build();
-      final remote = _Remote()..error = StateError('poll failed');
-      final usecase = RecordLocalAttemptUsecase(store, remote: remote);
-
-      final result = await usecase.execute(
-        backupIdHex: '000102030405060708090a0b0c0d0e0f',
+      final remote = _Remote()..error = Exception('poll failed');
+      final usecase = RecordLocalAttemptUsecase(
+        monitoringRepository(store),
+        remote: remote,
       );
+
+      final result = await usecase
+          .execute(backupIdHex: '000102030405060708090a0b0c0d0e0f')
+          .requireOk();
 
       expect(result, isNull);
       expect(await store.monitoredBackups(), hasLength(1));
@@ -262,10 +274,10 @@ void main() {
         final (db, store) = await build();
         await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
         final alerts = await CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: _Remote()..response = snapshot,
           clock: () => DateTime.utc(2027, 1, 1, 16),
-        ).execute(forceRefresh: true);
+        ).execute(forceRefresh: true).requireOk();
         expect(alerts.whereType<ServicePressureAlert>(), isEmpty);
         await db.close();
       }
@@ -276,7 +288,7 @@ void main() {
     final (db, store) = await build();
     await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
     final alerts = await CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: window,
@@ -286,16 +298,20 @@ void main() {
           maxAttemptIdentifiers: 10,
         ),
       clock: () => DateTime.utc(2027, 1, 1, 16),
-    ).execute(forceRefresh: true);
+    ).execute(forceRefresh: true).requireOk();
     expect(alerts.whereType<ServicePressureAlert>(), hasLength(2));
     await db.close();
   });
 
   test('registering a backup does not count an attempt', () async {
     final (db, store) = await build();
-    await RegisterMonitoredBackupUsecase(store).execute(
-      backupIdHex: id.map((b) => b.toRadixString(16).padLeft(2, '0')).join(),
-    );
+    await RegisterMonitoredBackupUsecase(monitoringRepository(store))
+        .execute(
+          backupIdHex: id
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join(),
+        )
+        .requireOk();
     expect(
       (await store.monitoredBackups())
           .single
@@ -309,8 +325,8 @@ void main() {
     final (db, store) = await build();
     await DiscoverDriveBackupsUsecase(
       drive: const _DriveDiscovery(),
-      store: store,
-    ).execute();
+      store: monitoringRepository(store),
+    ).execute().requireOk();
     final row = (await store.monitoredBackups()).single;
     expect(row.expectedServerDistinctCandidateTotal, 0);
     expect(row.lastWarningWindow, 0);
@@ -326,9 +342,12 @@ void main() {
         'file',
         '101112131415161718191a1b1c1d1e1f',
       );
-      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
-      await discovery.execute();
-      await discovery.execute();
+      final discovery = DiscoverDriveBackupsUsecase(
+        drive: drive,
+        store: monitoringRepository(store),
+      );
+      await discovery.execute().requireOk();
+      await discovery.execute().requireOk();
       expect(drive.contentCalls, 1);
       await store.registerBackup(
         List<int>.filled(16, 7),
@@ -339,7 +358,10 @@ void main() {
         'new-file',
         '202122232425262728292a2b2c2d2e2f',
       );
-      await DiscoverDriveBackupsUsecase(drive: next, store: store).execute();
+      await DiscoverDriveBackupsUsecase(
+        drive: next,
+        store: monitoringRepository(store),
+      ).execute().requireOk();
       final rows = await store.monitoredBackups();
       expect(rows, hasLength(2));
       expect(
@@ -379,7 +401,7 @@ void main() {
     final digest = (await store.monitoredBackups()).single.digest;
     var now = DateTime.utc(2027, 1, 1, 16);
     final check = CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: window,
@@ -388,14 +410,17 @@ void main() {
         ),
       clock: () => now,
     );
-    expect(await check.execute(), isEmpty);
+    expect(await check.execute().requireOk(), isEmpty);
     (check.remote as _Remote).response = RecoverBullAttemptsSnapshot(
       collectionStartedAt: window,
       totalAttempts: {digest: 4},
       windowStartedAt: {digest: window},
     );
     now = now.add(const Duration(hours: 2));
-    expect((await check.execute()).single, isA<SuspiciousActivityAlert>());
+    expect(
+      (await check.execute().requireOk()).single,
+      isA<SuspiciousActivityAlert>(),
+    );
     await db.close();
   });
 
@@ -404,14 +429,14 @@ void main() {
     await store.registerBackup(id, origin: MonitoredBackupOrigin.created);
     final digest = (await store.monitoredBackups()).single.digest;
     final alerts = await CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: window,
           totalAttempts: {digest: 1},
           windowStartedAt: {digest: window},
         ),
-    ).execute();
+    ).execute().requireOk();
     expect(alerts.single, isA<SuspiciousActivityAlert>());
     await db.close();
   });
@@ -419,17 +444,21 @@ void main() {
   test('status recording uses the server total as the baseline', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
-    await RecordLocalAttemptUsecase(store).execute(
-      backupIdHex: id.map((b) => b.toRadixString(16).padLeft(2, '0')).join(),
-      attemptStatus: KeyServerAttemptStatus(
-        totalAttempts: 2,
-        failedAttempts: 1,
-        remainingAttempts: 1,
-        windowStartedAt: window,
-        previousAttemptAt: null,
-        resetsAt: window.add(const Duration(days: 1)),
-      ),
-    );
+    await RecordLocalAttemptUsecase(monitoringRepository(store))
+        .execute(
+          backupIdHex: id
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join(),
+          attemptStatus: KeyServerAttemptStatus(
+            totalAttempts: 2,
+            failedAttempts: 1,
+            remainingAttempts: 1,
+            windowStartedAt: window,
+            previousAttemptAt: null,
+            resetsAt: window.add(const Duration(days: 1)),
+          ),
+        )
+        .requireOk();
     expect(
       (await store.monitoredBackups())
           .single
@@ -451,13 +480,13 @@ void main() {
         etag: 'one',
       );
     final check = CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => DateTime.utc(2026, 8, 5, 15),
     );
-    final first = await check.execute();
+    final first = await check.execute().requireOk();
     expect(first.single, isA<SuspiciousActivityAlert>());
-    final second = await check.execute();
+    final second = await check.execute().requireOk();
     expect(second, isEmpty);
     await db.close();
   });
@@ -485,9 +514,9 @@ void main() {
       );
     expect(
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute(),
+      ).execute().requireOk(),
       isEmpty,
     );
     await db.close();
@@ -506,9 +535,9 @@ void main() {
         notModified: true,
       );
     await CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
-    ).execute();
+    ).execute().requireOk();
     expect((await store.state()).lastSuccessfulCheckAt, isNotNull);
     await db.close();
   });
@@ -536,10 +565,10 @@ void main() {
           notModified: true,
         );
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => now,
-      ).execute();
+      ).execute().requireOk();
       expect(await store.monitoredBackups(), hasLength(1));
       expect((await store.state()).collectionStartedAt, window);
       await db.close();
@@ -571,10 +600,10 @@ void main() {
           serviceBusy: true,
         );
       final alerts = await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => now,
-      ).execute();
+      ).execute().requireOk();
       expect(alerts, contains(isA<ServicePressureAlert>()));
       expect((await store.state()).consecutiveFailures, 1);
       expect(
@@ -604,10 +633,10 @@ void main() {
           totalAttempts: const {},
         );
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => now,
-      ).execute();
+      ).execute().requireOk();
       expect(await store.monitoredBackups(), hasLength(1));
       await db.close();
     },
@@ -658,18 +687,18 @@ void main() {
         etag: 'cached',
       );
     final check = CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => now,
     );
-    await check.execute();
+    await check.execute().requireOk();
     remote.response = RecoverBullAttemptsSnapshot(
       collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       totalAttempts: {},
       notModified: true,
     );
     now = now.add(const Duration(seconds: 61));
-    await check.execute();
+    await check.execute().requireOk();
     expect(remote.lastEtag, 'cached');
     await db.close();
   });
@@ -690,9 +719,9 @@ void main() {
         );
       expect(
         await CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: remote,
-        ).execute(),
+        ).execute().requireOk(),
         isEmpty,
       );
       expect(
@@ -719,9 +748,9 @@ void main() {
       );
     expect(
       (await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute()).single,
+      ).execute().requireOk()).single,
       isA<ServicePressureAlert>(),
     );
     await db.close();
@@ -733,14 +762,14 @@ void main() {
       final (db, store) = await build();
       await store.registerBackup(id);
       final alerts = await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: _Remote()
           ..response = RecoverBullAttemptsSnapshot(
             collectionStartedAt: window,
             totalAttempts: const {},
             serviceBusy: true,
           ),
-      ).execute();
+      ).execute().requireOk();
       expect(alerts.single, isA<ServicePressureAlert>());
       await db.close();
     },
@@ -750,9 +779,13 @@ void main() {
     final (db, store) = await build();
     await store.registerBackup(id);
     final generation = (await store.state()).generation;
-    await SetRecoverbullAttemptMonitoringEnabledUsecase(store).execute(false);
+    await SetRecoverbullAttemptMonitoringEnabledUsecase(
+      monitoringRepository(store),
+    ).execute(false).requireOk();
     expect(
-      await IsRecoverbullAttemptMonitoringEnabledUsecase(store).execute(),
+      await IsRecoverbullAttemptMonitoringEnabledUsecase(
+        monitoringRepository(store),
+      ).execute().requireOk(),
       isFalse,
     );
     expect(await store.monitoredBackups(), isEmpty);
@@ -763,7 +796,9 @@ void main() {
   test('old server response without status does not count locally', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
-    await RecordLocalAttemptUsecase(store).execute(backupIdHex: '00');
+    await RecordLocalAttemptUsecase(
+      monitoringRepository(store),
+    ).execute(backupIdHex: '00').requireOk();
     expect(
       (await store.monitoredBackups())
           .single
@@ -785,9 +820,9 @@ void main() {
         );
 
       await RecordLocalAttemptUsecase(
-        store,
+        monitoringRepository(store),
         remote: remote,
-      ).execute(backupIdHex: _hex(id));
+      ).execute(backupIdHex: _hex(id)).requireOk();
 
       final row = (await store.monitoredBackups()).single;
       expect(row.expectedServerDistinctCandidateTotal, 4);
@@ -806,9 +841,9 @@ void main() {
       );
 
     await RecordLocalAttemptUsecase(
-      store,
+      monitoringRepository(store),
       remote: remote,
-    ).execute(backupIdHex: _hex(id));
+    ).execute(backupIdHex: _hex(id)).requireOk();
 
     expect(await store.monitoredBackups(), isEmpty);
     await db.close();
@@ -831,9 +866,9 @@ void main() {
       final remote = _ThrowingRemote();
       await expectLater(
         CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: remote,
-        ).execute(),
+        ).execute().requireOk(),
         completes,
       );
       await db.close();
@@ -844,8 +879,8 @@ void main() {
     final (db, store) = await build();
     await store.registerBackup(id);
     await RecordLocalAttemptUsecase(
-      store,
-    ).execute(backupIdHex: _hex(id), attemptStatus: _status(1));
+      monitoringRepository(store),
+    ).execute(backupIdHex: _hex(id), attemptStatus: _status(1)).requireOk();
     expect(
       (await store.monitoredBackups())
           .single
@@ -859,8 +894,8 @@ void main() {
     final (db, store) = await build();
     await store.registerBackup(id);
     final alert = await RecordLocalAttemptUsecase(
-      store,
-    ).execute(backupIdHex: _hex(id), attemptStatus: _status(3));
+      monitoringRepository(store),
+    ).execute(backupIdHex: _hex(id), attemptStatus: _status(3)).requireOk();
     expect(alert, isA<SuspiciousActivityAlert>());
     expect(alert!.expectedTotal, 1);
     await db.close();
@@ -870,10 +905,12 @@ void main() {
     final (db, store) = await build();
     await store.registerBackup(id);
     await store.recordStatus(id, _status(3));
-    await RecordLocalAttemptUsecase(store).execute(
-      backupIdHex: _hex(id),
-      attemptStatus: _status(1, at: window.add(const Duration(days: 1))),
-    );
+    await RecordLocalAttemptUsecase(monitoringRepository(store))
+        .execute(
+          backupIdHex: _hex(id),
+          attemptStatus: _status(1, at: window.add(const Duration(days: 1))),
+        )
+        .requireOk();
     final row = (await store.monitoredBackups()).single;
     expect(row.expectedServerDistinctCandidateTotal, 1);
     expect(
@@ -890,9 +927,9 @@ void main() {
       await store.registerBackup(id);
       for (var i = 0; i < 3; i++) {
         expect(
-          await RecordLocalAttemptUsecase(
-            store,
-          ).execute(backupIdHex: _hex(id), attemptStatus: _status(1)),
+          await RecordLocalAttemptUsecase(monitoringRepository(store))
+              .execute(backupIdHex: _hex(id), attemptStatus: _status(1))
+              .requireOk(),
           isNull,
         );
       }
@@ -904,8 +941,8 @@ void main() {
       );
       expect(
         await RecordLocalAttemptUsecase(
-          store,
-        ).execute(backupIdHex: _hex(id), attemptStatus: _status(3)),
+          monitoringRepository(store),
+        ).execute(backupIdHex: _hex(id), attemptStatus: _status(3)).requireOk(),
         isA<SuspiciousActivityAlert>(),
       );
       await db.close();
@@ -917,9 +954,9 @@ void main() {
     final remote = _Remote();
     expect(
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute(),
+      ).execute().requireOk(),
       isEmpty,
     );
     expect(remote.calls, 0);
@@ -938,10 +975,10 @@ void main() {
     final remote = _Remote();
     expect(
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => window.add(const Duration(seconds: 1)),
-      ).execute(),
+      ).execute().requireOk(),
       isEmpty,
     );
     expect(remote.calls, 0);
@@ -965,10 +1002,10 @@ void main() {
           totalAttempts: {id: 9},
         );
       final alerts = await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => DateTime.utc(2027, 1, 1, 16, 2),
-      ).execute();
+      ).execute().requireOk();
       expect(alerts, isEmpty);
       expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
       await db.close();
@@ -997,13 +1034,13 @@ void main() {
           serverUnsupported: true,
         );
       final usecase = CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => DateTime.utc(2027, 1, 5, 16),
       );
 
       for (var i = 0; i < 4; i++) {
-        expect(await usecase.execute(forceRefresh: true), isEmpty);
+        expect(await usecase.execute(forceRefresh: true).requireOk(), isEmpty);
       }
       final after = await store.state();
       expect(after.consecutiveFailures, 0);
@@ -1027,18 +1064,18 @@ void main() {
       final remote = _Remote()..response = unsupported();
       var now = DateTime.utc(2027, 1, 5, 16);
       final usecase = CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => now,
       );
 
-      expect(await usecase.execute(forceRefresh: true), isEmpty);
+      expect(await usecase.execute(forceRefresh: true).requireOk(), isEmpty);
       expect(remote.calls, 1);
       now = now.add(const Duration(hours: 23));
-      expect(await usecase.execute(forceRefresh: true), isEmpty);
+      expect(await usecase.execute(forceRefresh: true).requireOk(), isEmpty);
       expect(remote.calls, 1);
       now = now.add(const Duration(hours: 1));
-      expect(await usecase.execute(forceRefresh: true), isEmpty);
+      expect(await usecase.execute(forceRefresh: true).requireOk(), isEmpty);
       expect(remote.calls, 2);
       await db.close();
     },
@@ -1052,18 +1089,18 @@ void main() {
       final remote = _Remote()..response = unsupported();
       final now = DateTime.utc(2027, 1, 5, 16);
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => now,
-      ).execute(forceRefresh: true);
+      ).execute(forceRefresh: true).requireOk();
       expect(remote.calls, 1);
 
       final other = List<int>.generate(16, (i) => 100 + i);
       await RecordLocalAttemptUsecase(
-        store,
+        monitoringRepository(store),
         remote: remote,
         clock: () => now.add(const Duration(hours: 1)),
-      ).execute(backupIdHex: _hex(other));
+      ).execute(backupIdHex: _hex(other)).requireOk();
 
       expect(remote.calls, 1);
       expect(await store.isMonitored(other), isTrue);
@@ -1077,16 +1114,16 @@ void main() {
     final remote = _Remote()..response = unsupported();
     final now = DateTime.utc(2027, 1, 5, 16);
     final usecase = CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => now,
     );
-    await usecase.execute(forceRefresh: true);
+    await usecase.execute(forceRefresh: true).requireOk();
 
     await RecoverbullSettingsDatasource(
       database: db,
     ).store(Uri.parse('http://other-server.onion'));
-    await usecase.execute(forceRefresh: true);
+    await usecase.execute(forceRefresh: true).requireOk();
 
     expect(remote.calls, 2);
     await db.close();
@@ -1103,10 +1140,10 @@ void main() {
     );
     final remote = _ThrowingRemote();
     final alerts = await CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => DateTime.utc(2027, 1, 5, 16),
-    ).execute();
+    ).execute().requireOk();
     expect(alerts.single, isA<AttemptMonitoringUnavailableAlert>());
     await db.close();
   });
@@ -1126,9 +1163,9 @@ void main() {
         );
       expect(
         await CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: remote,
-        ).execute(),
+        ).execute().requireOk(),
         isEmpty,
       );
       await db.close();
@@ -1149,9 +1186,9 @@ void main() {
           windowStartedAt: {digest: DateTime.utc(2026, 8, 5, 14)},
         );
       final alerts = await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute();
+      ).execute().requireOk();
       expect(alerts.whereType<SuspiciousActivityAlert>(), hasLength(1));
       await db.close();
     },
@@ -1186,9 +1223,9 @@ void main() {
       );
     expect(
       (await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
-      ).execute()).whereType<SuspiciousActivityAlert>(),
+      ).execute().requireOk()).whereType<SuspiciousActivityAlert>(),
       hasLength(1),
     );
     await db.close();
@@ -1202,14 +1239,14 @@ void main() {
       final remote = _ThrowingRemote();
       final clock = window.add(const Duration(days: 4));
       final usecase = CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: remote,
         clock: () => clock,
       );
-      expect(await usecase.execute(), isEmpty);
-      expect(await usecase.execute(), isEmpty);
+      expect(await usecase.execute().requireOk(), isEmpty);
+      expect(await usecase.execute().requireOk(), isEmpty);
       expect(
-        (await usecase.execute()).single,
+        (await usecase.execute().requireOk()).single,
         isA<AttemptMonitoringUnavailableAlert>(),
       );
       await db.close();
@@ -1221,9 +1258,9 @@ void main() {
     await store.registerBackup(id);
     expect(
       await CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: _ThrowingRemote(),
-      ).execute(),
+      ).execute().requireOk(),
       isEmpty,
     );
     await db.close();
@@ -1248,14 +1285,15 @@ void main() {
       final (db, store) = await build();
       await store.registerBackup(id);
       final usecase = CheckBackupAttemptMonitoringUsecase(
-        store: store,
+        store: monitoringRepository(store),
         remote: _ThrowingRemote(),
         clock: () => window,
       );
-      await usecase.execute();
-      await usecase.execute();
+      await usecase.execute().requireOk();
+      await usecase.execute().requireOk();
       final alert =
-          (await usecase.execute()).single as AttemptMonitoringUnavailableAlert;
+          (await usecase.execute().requireOk()).single
+              as AttemptMonitoringUnavailableAlert;
       expect(alert.since, isNull);
       await db.close();
     },
@@ -1273,17 +1311,17 @@ void main() {
       );
     var now = DateTime.utc(2027, 1, 1, 16);
     final check = CheckBackupAttemptMonitoringUsecase(
-      store: store,
+      store: monitoringRepository(store),
       remote: remote,
       clock: () => now,
     );
     expect(
-      (await check.execute()).whereType<SuspiciousActivityAlert>(),
+      (await check.execute().requireOk()).whereType<SuspiciousActivityAlert>(),
       hasLength(1),
     );
     now = now.add(const Duration(hours: 2));
     expect(
-      (await check.execute()).whereType<SuspiciousActivityAlert>(),
+      (await check.execute().requireOk()).whereType<SuspiciousActivityAlert>(),
       hasLength(1),
     );
     await db.close();
@@ -1330,7 +1368,7 @@ class _ThrowingRemote implements RecoverBullAttemptMonitoringRemotePort {
   Future<RecoverBullAttemptsSnapshot?> poll({
     required String? etag,
     required List<String> backupDigests,
-  }) => Future.error(StateError('offline'));
+  }) => Future.error(Exception('offline'));
 }
 
 String _accountHash(String account) =>

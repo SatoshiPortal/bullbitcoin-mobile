@@ -1,6 +1,5 @@
 import 'package:bull_logs/generated/l10n/logs_localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
 
 Future<void> showLogsShareSheet({
   required BuildContext context,

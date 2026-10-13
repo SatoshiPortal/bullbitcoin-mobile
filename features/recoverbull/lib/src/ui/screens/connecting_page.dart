@@ -1,3 +1,4 @@
+import '../../domain/recoverbull_navigation_port.dart';
 import 'dart:async';
 
 import '../../presentation/bloc.dart';
@@ -7,12 +8,9 @@ import './password_input_page.dart';
 import './vault_provider_selection_page.dart';
 import '../widgets/tor_bull_mascot.dart';
 import '../../router/flow_type.dart';
-import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/with_bull_theme.dart';
-import '../widgets/bull_aliases.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_tor/tor.dart' as tor;
 
@@ -164,7 +162,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
           previous.torConnection != current.torConnection ||
           previous.keyServerStatus != current.keyServerStatus,
       listener: _onStateChanged,
-      child: Scaffold(
+      child: BullScaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
           leading: IconButton(
@@ -177,7 +175,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: BlocBuilder<RecoverBullBloc, RecoverBullState>(
               // Centred when it fits, scrollable when it does not — without
-              // ever measuring the body's intrinsic height. `BBText` degrades
+              // ever measuring the body's intrinsic height. `BullText` degrades
               // to `AutoSizeText`, which is a `LayoutBuilder`, and asking a
               // `LayoutBuilder` for intrinsics throws during layout: that is
               // what left this screen blank for the whole bootstrap.
@@ -389,10 +387,10 @@ class _Body extends StatelessWidget {
           ),
         ),
         const Gap(12),
-        BBText(
+        BullText(
           context.loc.recoverbullCheckingConnection,
           textAlign: .center,
-          style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
+          style: context.bullText.headlineLarge?.copyWith(fontWeight: .bold),
         ),
         const Gap(12),
         if (!_hasFailure)
@@ -403,39 +401,39 @@ class _Body extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: switch (_mascotState) {
-                  TorBullState.filtered => context.appColors.warningContainer,
-                  TorBullState.failed => context.appColors.errorContainer,
-                  _ => context.appColors.surface,
+                  TorBullState.filtered => context.bull.warningContainer,
+                  TorBullState.failed => context.bull.errorContainer,
+                  _ => context.bull.surface,
                 },
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 children: [
                   if (_mascotState == TorBullState.filtered)
-                    BBText(
+                    BullText(
                       context.loc.torSettingsStatusCensored,
                       textAlign: .center,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.warning,
+                      style: context.bullText.bodyLarge?.copyWith(
+                        color: context.bull.warning,
                         fontWeight: .w700,
                       ),
                     ),
                   if (_mascotState == TorBullState.snowflake)
-                    BBText(
+                    BullText(
                       context.loc.torSettingsActiveTransport(
                         context.loc.torSettingsModeSnowflake,
                       ),
                       textAlign: .center,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.info,
+                      style: context.bullText.bodyLarge?.copyWith(
+                        color: context.bull.info,
                         fontWeight: .w700,
                       ),
                     ),
-                  BBText(
+                  BullText(
                     _connectionNarrative(context),
                     textAlign: .center,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
+                    style: context.bullText.bodySmall?.copyWith(
+                      color: context.bull.textMuted,
                     ),
                     maxLines: 4,
                   ),
@@ -444,11 +442,11 @@ class _Body extends StatelessWidget {
             ),
           ),
         const Gap(20),
-        BBText(
+        BullText(
           context.loc.recoverbullElapsedSinceStart(_formatElapsed(elapsed)),
           textAlign: .center,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.textMuted,
+          style: context.bullText.bodySmall?.copyWith(
+            color: context.bull.textMuted,
           ),
         ),
         const Gap(12),
@@ -480,7 +478,9 @@ class _Body extends StatelessWidget {
             message: _failureMessage(context),
             onOpenTorSettings:
                 state.failure is ExternalTorProxyUnavailableFailure
-                ? () => context.pushNamed('torSettings')
+                ? () => context
+                      .read<RecoverBullNavigationPort>()
+                      .openTorSettings()
                 : null,
             // A single event: `OnTorInitialization` chains to the server check
             // itself, and `restart` guarantees a stuck client is replaced rather
@@ -489,13 +489,13 @@ class _Body extends StatelessWidget {
             onRetry: onRetry,
           )
         else
-          BBText(
+          BullText(
             elapsed >= _reassureAfter
                 ? context.loc.recoverbullLongestStep
                 : context.loc.recoverbullPleaseWait,
             textAlign: .center,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.textMuted,
+            style: context.bullText.bodyMedium?.copyWith(
+              color: context.bull.textMuted,
             ),
             maxLines: 3,
           ),
@@ -559,9 +559,9 @@ class _PhaseCard extends StatelessWidget {
   });
 
   Color _color(BuildContext context) => switch (phase) {
-    _PhaseState.done => context.appColors.success,
-    _PhaseState.failed => context.appColors.error,
-    _PhaseState.active || _PhaseState.pending => context.appColors.textMuted,
+    _PhaseState.done => context.bull.success,
+    _PhaseState.failed => context.bull.error,
+    _PhaseState.active || _PhaseState.pending => context.bull.textMuted,
   };
 
   String _statusLabel(BuildContext context) => switch (phase) {
@@ -578,7 +578,7 @@ class _PhaseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: context.appColors.surface,
+        color: context.bull.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -589,16 +589,16 @@ class _PhaseCard extends StatelessWidget {
               _PhaseIcon(phase: phase, color: color),
               const Gap(12),
               Expanded(
-                child: BBText(
+                child: BullText(
                   label,
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.onSurface,
+                  style: context.bullText.bodyLarge?.copyWith(
+                    color: context.bull.onSurface,
                   ),
                 ),
               ),
-              BBText(
+              BullText(
                 _statusLabel(context),
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullText.bodyMedium?.copyWith(
                   color: color,
                   fontWeight: .w600,
                 ),
@@ -613,19 +613,19 @@ class _PhaseCard extends StatelessWidget {
                 crossAxisAlignment: .start,
                 children: [
                   if (caption != null)
-                    BBText(
+                    BullText(
                       caption!,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.textMuted,
+                      style: context.bullText.bodySmall?.copyWith(
+                        color: context.bull.textMuted,
                       ),
                       maxLines: 2,
                     ),
                   if (trailingDetail != null) ...[
                     const Gap(6),
-                    BBText(
+                    BullText(
                       [?trailingDetail].join('  ·  '),
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.textMuted,
+                      style: context.bullText.bodySmall?.copyWith(
+                        color: context.bull.textMuted,
                       ),
                     ),
                   ],
@@ -692,29 +692,29 @@ class _FailurePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BBText(
+        BullText(
           message,
           textAlign: .center,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.error,
+          style: context.bullText.bodyMedium?.copyWith(
+            color: context.bull.error,
           ),
           maxLines: 4,
         ),
         const Gap(24),
-        BBButton.big(
+        BullButton.big(
           label: context.loc.recoverbullRetry,
-          textStyle: context.font.headlineLarge,
-          bgColor: context.appColors.onSurface,
-          textColor: context.appColors.surface,
+          textStyle: context.bullText.headlineLarge,
+          bgColor: context.bull.onSurface,
+          textColor: context.bull.surface,
           onPressed: onRetry,
         ),
         if (onOpenTorSettings != null) ...[
           const Gap(12),
-          BBButton.big(
+          BullButton.big(
             label: context.loc.torSettingsTitle,
-            textStyle: context.font.headlineLarge,
-            bgColor: context.appColors.surface,
-            textColor: context.appColors.onSurface,
+            textStyle: context.bullText.headlineLarge,
+            bgColor: context.bull.surface,
+            textColor: context.bull.onSurface,
             onPressed: () => onOpenTorSettings!(),
           ),
         ],

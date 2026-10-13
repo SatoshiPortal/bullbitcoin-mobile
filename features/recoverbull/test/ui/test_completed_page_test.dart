@@ -1,3 +1,6 @@
+import 'package:bull_recoverbull/src/domain/recoverbull_navigation_port.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/ui/screens/test_completed_page.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +21,18 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
+        builder: (_, child) =>
+            RepositoryProvider<RecoverBullNavigationPort>.value(
+              value: RecoverBullNavigationCallbacks(
+                onOpenTorSettings: () {},
+                onOpenWalletHome: () => router.go('/wallet'),
+              ),
+              child: child!,
+            ),
       ),
     );
     await tester.pumpAndSettle();

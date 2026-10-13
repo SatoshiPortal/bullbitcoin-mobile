@@ -1,4 +1,6 @@
-import 'dart:typed_data';
+import 'dart:convert';
+import 'package:bull_recoverbull/src/data/mappers/decrypted_vault_mapper.dart';
+import 'package:bull_recoverbull/src/data/models/decrypted_vault_model.dart';
 import 'dart:async';
 
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
@@ -7,8 +9,6 @@ import 'package:bull_recoverbull/src/data/recoverbull_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bip32_keys/bip32_keys.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:primitives/primitives.dart';
@@ -455,7 +455,9 @@ void main() {
         fetchRequest: (url, client, backupId, password, salt) async {
           final request = await client.postUrl(url);
           await request.close();
-          throw StateError('the SOCKS proxy rejected the connection');
+          throw const SocketException(
+            'the SOCKS proxy rejected the connection',
+          );
         },
       );
       final endpoint = TorProxyEndpoint(
@@ -795,13 +797,13 @@ void main() {
           any(),
           route: any(named: 'route'),
         ),
-      ).thenThrow(StateError('sentinel payload'));
+      ).thenThrow(Exception('sentinel payload'));
 
       await repository.storeVaultKey('00', 'password', '00', '00', route);
 
       expect(
         logSink.entries.single.message,
-        'recoverbull.key.store.unexpected error_type=StateError',
+        'recoverbull.key.store.unexpected error_type=_Exception',
       );
       expect(logSink.entries.single.error, isNull);
       expect(
@@ -818,13 +820,13 @@ void main() {
           any(),
           route: any(named: 'route'),
         ),
-      ).thenThrow(StateError('sentinel payload'));
+      ).thenThrow(Exception('sentinel payload'));
 
       await repository.trashVaultKeyWithStatus('00', 'password', '00', route);
 
       expect(
         logSink.entries.single.message,
-        'recoverbull.key.trash.unexpected error_type=StateError',
+        'recoverbull.key.trash.unexpected error_type=_Exception',
       );
       expect(logSink.entries.single.error, isNull);
       expect(
@@ -920,22 +922,20 @@ void main() {
   });
 
   test(
-    'createVault derives, assembles, and preserves the path in an isolate',
+    'createVault encrypts and preserves the path with only its derived key',
     () async {
-      final mnemonic = Mnemonic.fromWords(
-        words: List.generate(11, (index) => 'zoo') + ['wrong'],
-      );
-      final rootXprv = Bip32Keys.fromSeed(
-        Uint8List.fromList(mnemonic.seed),
-      ).toBase58();
       const path = "1608'/0'/632486385'";
       const expectedVaultKey =
           '32255e6651db67fa5b5a44240b6a5d2189cb58666bcc3830c35aff5a2b01b84f';
       const plaintext = '{"mnemonic":[],"masterFingerprint":"deadbeef"}';
 
       final result = await repository.createVault(
-        rootXprv: rootXprv,
-        plaintext: plaintext,
+        backupKey: expectedVaultKey,
+        plaintext: DecryptedVaultMapper.toEntity(
+          DecryptedVaultModel.fromMap(
+            jsonDecode(plaintext) as Map<String, dynamic>,
+          ),
+        ),
         derivationPath: path,
       );
 
@@ -972,8 +972,8 @@ void main() {
     'createVault invalid input returns the existing failure without output',
     () async {
       final result = await repository.createVault(
-        rootXprv: 'not-an-xprv',
-        plaintext: '{}',
+        backupKey: 'not-a-vault-key',
+        plaintext: DecryptedVault(),
         derivationPath: "1608'/0'/42'",
       );
 

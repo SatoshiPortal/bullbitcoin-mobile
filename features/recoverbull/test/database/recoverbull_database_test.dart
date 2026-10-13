@@ -1,3 +1,4 @@
+import '../support/monitoring_repository.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/recoverbull_network.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
@@ -418,10 +419,10 @@ void main() {
         );
       expect(
         await CheckBackupAttemptMonitoringUsecase(
-          store: store,
+          store: monitoringRepository(store),
           remote: remote,
           clock: () => DateTime.utc(2026, 1, 2, 1),
-        ).execute(),
+        ).execute().requireOk(),
         isEmpty,
       );
       await database.close();

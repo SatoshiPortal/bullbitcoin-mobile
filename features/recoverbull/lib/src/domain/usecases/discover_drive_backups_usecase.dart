@@ -1,7 +1,12 @@
+import 'package:primitives/primitives.dart';
+import '../recoverbull_failure.dart';
+import '../entities/attempt_monitoring_state.dart';
+import '../entities/monitored_backup.dart';
+import '../entities/drive_backup_cache_entry.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
-import '../entities/encrypted_vault.dart';
+import '../entities/attempt_monitoring_snapshot.dart';
+import '../repositories/recoverbull_attempt_monitoring_repository.dart';
 import '../recoverbull_drive_discovery_port.dart';
 
 enum DriveDiscoveryStatus {
@@ -33,7 +38,7 @@ final class DriveDiscoveryResult {
 
 final class DiscoverDriveBackupsUsecase {
   final RecoverBullDriveDiscoveryPort drive;
-  final RecoverBullAttemptMonitoringStore store;
+  final RecoverBullAttemptMonitoringRepository store;
   final LogSink? log;
 
   const DiscoverDriveBackupsUsecase({
@@ -42,69 +47,96 @@ final class DiscoverDriveBackupsUsecase {
     this.log,
   });
 
-  Future<DriveDiscoveryResult> execute() async {
+  Future<Result<DriveDiscoveryResult, RecoverBullFailure>> execute() async {
     try {
       return await _execute();
-    } catch (_) {
+    } on Exception catch (_) {
       log?.warning('recoverbull.drive.discovery.failed');
-      return const DriveDiscoveryResult(
-        status: DriveDiscoveryStatus.failed,
-        listed: 0,
-        monitored: 0,
-        invalid: 0,
-        failed: 1,
+      return const Ok(
+        DriveDiscoveryResult(
+          status: DriveDiscoveryStatus.failed,
+          listed: 0,
+          monitored: 0,
+          invalid: 0,
+          failed: 1,
+        ),
       );
     }
   }
 
-  Future<DriveDiscoveryResult> _execute() async {
-    if (!(await store.state()).attemptMonitoringEnabled) {
-      return const DriveDiscoveryResult(
-        status: DriveDiscoveryStatus.disabled,
-        listed: 0,
-        monitored: 0,
-        invalid: 0,
-        failed: 0,
-      );
-    }
-    return drive.withDiscoverySession((session) async {
-      if (session == null) {
-        return const DriveDiscoveryResult(
-          status: DriveDiscoveryStatus.unauthenticated,
+  Future<Result<DriveDiscoveryResult, RecoverBullFailure>> _execute() async {
+    final storageResult1 = await store.state();
+    if (storageResult1 case Err(:final failure)) return Err(failure);
+    if (!((storageResult1 as Ok<AttemptMonitoringState, RecoverBullFailure>)
+            .value)
+        .attemptMonitoringEnabled) {
+      return const Ok(
+        DriveDiscoveryResult(
+          status: DriveDiscoveryStatus.disabled,
           listed: 0,
           monitored: 0,
           invalid: 0,
           failed: 0,
+        ),
+      );
+    }
+    return drive.withDiscoverySession((session) async {
+      if (session == null) {
+        return const Ok(
+          DriveDiscoveryResult(
+            status: DriveDiscoveryStatus.unauthenticated,
+            listed: 0,
+            monitored: 0,
+            invalid: 0,
+            failed: 0,
+          ),
         );
       }
       final account = session.account;
       final List<RecoverBullDriveFile> files;
       try {
         files = await session.files();
-      } catch (_) {
+      } on Exception catch (_) {
         log?.warning('recoverbull.drive.discovery.failed');
-        return const DriveDiscoveryResult(
-          status: DriveDiscoveryStatus.failed,
-          listed: 0,
-          monitored: 0,
-          invalid: 0,
-          failed: 1,
+        return const Ok(
+          DriveDiscoveryResult(
+            status: DriveDiscoveryStatus.failed,
+            listed: 0,
+            monitored: 0,
+            invalid: 0,
+            failed: 1,
+          ),
         );
       }
       if (files.isEmpty) {
-        final applied = await store.reconcileDriveBackups(account, const []);
-        if (!applied) return _disabledResult;
-        return const DriveDiscoveryResult(
-          status: DriveDiscoveryStatus.empty,
-          listed: 0,
-          monitored: 0,
-          invalid: 0,
-          failed: 0,
+        final storageResult2 = await session.withCurrentAccount(
+          () => store.reconcileDriveBackups(account, const []),
+        );
+        if (storageResult2 case Err(:final failure)) return Err(failure);
+        final applied = (storageResult2 as Ok<bool, RecoverBullFailure>).value;
+        if (!applied) return const Ok(_disabledResult);
+        return const Ok(
+          DriveDiscoveryResult(
+            status: DriveDiscoveryStatus.empty,
+            listed: 0,
+            monitored: 0,
+            invalid: 0,
+            failed: 0,
+          ),
         );
       }
 
-      final cache = await store.driveCache(account);
-      final monitored = await store.monitoredBackups();
+      final storageResult3 = await store.driveCache(account);
+      if (storageResult3 case Err(:final failure)) return Err(failure);
+      final cache =
+          (storageResult3
+                  as Ok<List<DriveBackupCacheEntry>, RecoverBullFailure>)
+              .value;
+      final storageResult4 = await store.monitoredBackups();
+      if (storageResult4 case Err(:final failure)) return Err(failure);
+      final monitored =
+          (storageResult4 as Ok<List<MonitoredBackup>, RecoverBullFailure>)
+              .value;
       final monitoredDigests = {for (final row in monitored) _key(row.digest)};
       final observations = <DriveBackupObservation>[];
       var invalid = 0;
@@ -126,49 +158,42 @@ final class DiscoverDriveBackupsUsecase {
           );
           continue;
         }
-        final String content;
-        try {
-          content = await session.content(file.id);
-        } catch (_) {
-          failed++;
-          if (old != null) {
+        final result = await session.content(file.id);
+        switch (result) {
+          case Ok(:final value):
             observations.add(
               DriveBackupObservation(
                 fileId: file.id,
-                digest: old.backupDigest,
-                createdAt: old.driveFileCreatedAt,
-                modifiedAt: old.driveFileModifiedAt,
+                digest: store.digestFor(_decode(value.id)),
+                createdAt: file.createdTime,
+                modifiedAt: file.modifiedTime,
               ),
             );
-          }
-          continue;
-        }
-        try {
-          final vault = EncryptedVault(file: content);
-          observations.add(
-            DriveBackupObservation(
-              fileId: file.id,
-              digest: store.digestFor(_decode(vault.id)),
-              createdAt: file.createdTime,
-              modifiedAt: file.modifiedTime,
-            ),
-          );
-        } catch (_) {
-          invalid++;
-          if (old != null) {
-            observations.add(
-              DriveBackupObservation(
-                fileId: file.id,
-                digest: old.backupDigest,
-                createdAt: old.driveFileCreatedAt,
-                modifiedAt: old.driveFileModifiedAt,
-              ),
-            );
-          }
+          case Err(:final failure):
+            if (failure is InvalidVaultFileFailure) {
+              invalid++;
+            } else {
+              failed++;
+            }
+            if (old != null) {
+              observations.add(
+                DriveBackupObservation(
+                  fileId: file.id,
+                  digest: old.backupDigest,
+                  createdAt: old.driveFileCreatedAt,
+                  modifiedAt: old.driveFileModifiedAt,
+                ),
+              );
+            }
         }
       }
-      final applied = await store.reconcileDriveBackups(account, observations);
-      if (!applied) return _disabledResult;
+
+      final storageResult5 = await session.withCurrentAccount(
+        () => store.reconcileDriveBackups(account, observations),
+      );
+      if (storageResult5 case Err(:final failure)) return Err(failure);
+      final applied = (storageResult5 as Ok<bool, RecoverBullFailure>).value;
+      if (!applied) return const Ok(_disabledResult);
       final status = failed > 0 || invalid > 0
           ? DriveDiscoveryStatus.partial
           : DriveDiscoveryStatus.complete;
@@ -179,12 +204,14 @@ final class DiscoverDriveBackupsUsecase {
           'invalid=$invalid failed=$failed',
         );
       }
-      return DriveDiscoveryResult(
-        status: status,
-        listed: files.length,
-        monitored: {for (final item in observations) item.digestKey}.length,
-        invalid: invalid,
-        failed: failed,
+      return Ok(
+        DriveDiscoveryResult(
+          status: status,
+          listed: files.length,
+          monitored: {for (final item in observations) item.digestKey}.length,
+          invalid: invalid,
+          failed: failed,
+        ),
       );
     });
   }

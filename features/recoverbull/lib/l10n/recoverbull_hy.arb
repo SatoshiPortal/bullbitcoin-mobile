@@ -72,7 +72,6 @@
   "recoverbullPIN": "PIN",
   "torSettingsModeDirectDescription": "Միանում է Tor ցանցին ուղիղ՝ առանց միացվող փոխադրման։",
   "recoverbullSettingsUrlInvalid": "URL-ը վավեր չէ",
-  "recoverbullErrorUnexpected": "Անսպասելի սխալ, տես մատյանները",
   "recoverbullCheckingConnection": "Ստուգվում է կապը RecoverBull-ի հետ",
   "recoverbullErrorInvalidCredentials": "Այս պահուստի ֆայլի համար սխալ գաղտնաբառ",
   "recoverbullGoBackEdit": "<< Վերադառնալ և խմբագրել",
@@ -150,5 +149,6 @@
     "description": "Button to close the value dialog."
   },
   "recoverbullConnectingTor": "Միանում ենք Բանալիների սերվերին Tor-ի միջոցով։ Դա կարող է տևել մինչև մեկ րոպե։",
-  "recoverbullMonitoringDisableCancel": "Չեղարկել"
+  "recoverbullMonitoringDisableCancel": "Չեղարկել",
+  "recoverbullMonitoringServerUnsupported": "Այս սերվերը չի աջակցում փորձերի մոնիթորինգին։ Դուք դեռ կարող եք պահոցների պահուստային պատճեններ ստեղծել և վերականգնել դրանք։"
 }
