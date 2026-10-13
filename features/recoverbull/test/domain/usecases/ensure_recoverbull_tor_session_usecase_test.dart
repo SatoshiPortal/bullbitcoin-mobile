@@ -80,6 +80,31 @@ void main() {
     registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
+  test('a pooled external proxy failure preserves proxy guidance', () async {
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: true));
+    const failure = TorExternalProxyUnavailableFailure('proxy refused');
+    when(() => externalTor.verify(any())).thenAnswer(
+      (_) async =>
+          const TorUnavailable(source: TorSource.external, failure: failure),
+    );
+    final pool = TorRoutePool();
+    addTearDown(pool.close);
+    usecase = EnsureRecoverBullTorSessionUsecase(
+      embeddedTor,
+      settingsRepository,
+      tor,
+      routePool: pool,
+    );
+    final result = await usecase.execute();
+    final error =
+        (result as Err<RecoverBullTorRoute, RecoverBullFailure>).failure;
+    expect(error, isA<ExternalTorProxyUnavailableFailure>());
+    expect(error.logMessage, failure.logMessage);
+    verifyNever(() => embeddedTor.ensureReady());
+  });
+
   test('accepts an embedded Onion route', () async {
     final route = TorRoute(
       source: TorSource.embedded,

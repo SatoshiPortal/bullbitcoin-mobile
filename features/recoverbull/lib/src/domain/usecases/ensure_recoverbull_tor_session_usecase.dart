@@ -62,8 +62,10 @@ class EnsureRecoverBullTorSessionUsecase {
       }
     }
 
+    var usingExternalProxy = false;
     try {
       final settings = await _settingsRepository.fetch();
+      usingExternalProxy = settings.useTorProxy;
       if (settings.useTorProxy) {
         final TorProxyEndpoint endpoint;
         try {
@@ -82,6 +84,9 @@ class EnsureRecoverBullTorSessionUsecase {
                 open: () async {
                   final verified = await _tor.external.verify(endpoint);
                   if (verified case TorReady(:final route)) return route;
+                  if (verified case TorUnavailable(:final failure)) {
+                    throw TorBackendException(failure);
+                  }
                   throw const TorBackendException(
                     TorUnexpectedFailure('External Tor unavailable'),
                   );
@@ -154,10 +159,18 @@ class EnsureRecoverBullTorSessionUsecase {
       return result;
     } on TorBackendException catch (error) {
       reportTiming('failure');
-      return Err(KeyServerUnavailableFailure(error.failure.logMessage));
+      return Err(
+        usingExternalProxy
+            ? ExternalTorProxyUnavailableFailure(error.failure.logMessage)
+            : KeyServerUnavailableFailure(error.failure.logMessage),
+      );
     } on Exception catch (error) {
       reportTiming('failure');
-      return Err(KeyServerUnavailableFailure(error.toString()));
+      return Err(
+        usingExternalProxy
+            ? ExternalTorProxyUnavailableFailure(error.toString())
+            : KeyServerUnavailableFailure(error.toString()),
+      );
     }
   }
 
