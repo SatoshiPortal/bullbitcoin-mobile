@@ -78,6 +78,7 @@ class BullSnackBar {
     final entry = _entry;
     if (entry != null && entry.mounted) entry.remove();
     _entry = null;
+    _activeState = null;
   }
 
   static void _scheduleAutoDismiss() {
@@ -201,12 +202,19 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
     }
 
     animation.addListener(listener);
-    _controller
-      ..reset()
-      ..forward().whenComplete(() {
-        animation.removeListener(listener);
+    _controller.reset();
+    unawaited(() async {
+      try {
+        await _controller.forward().orCancel;
         if (mounted) done?.call();
-      });
+      } on TickerCanceled {
+        // A replacement, drag, or disposal interrupts the animation. It must
+        // never complete a dismissal against the next toast.
+      } finally {
+        animation.removeListener(listener);
+        animation.dispose();
+      }
+    }());
   }
 
   void _beginDismiss(Offset direction) {
@@ -221,7 +229,9 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
       0,
       const Duration(milliseconds: 220),
       Curves.easeIn,
-      BullSnackBar._completeDismiss,
+      () {
+        if (BullSnackBar._activeState == this) BullSnackBar._completeDismiss();
+      },
     );
   }
 
@@ -233,6 +243,7 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
   }
 
   void _snapBack() {
+    if (_dismissing || !mounted) return;
     _runAnim(
       Offset.zero,
       1,
@@ -267,17 +278,23 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
   @override
   Widget build(BuildContext context) => GestureDetector(
     onHorizontalDragStart: (_) => _onDragStart(),
-    onHorizontalDragUpdate: (d) => setState(() {
-      _dragOffset += Offset(d.delta.dx, 0);
-      _offset += Offset(d.delta.dx, 0);
-    }),
+    onHorizontalDragUpdate: (d) {
+      if (_dismissing) return;
+      setState(() {
+        _dragOffset += Offset(d.delta.dx, 0);
+        _offset += Offset(d.delta.dx, 0);
+      });
+    },
     onHorizontalDragEnd: _onHorizontalDragEnd,
     onHorizontalDragCancel: _snapBack,
     onVerticalDragStart: (_) => _onDragStart(),
-    onVerticalDragUpdate: (d) => setState(() {
-      _dragOffset += Offset(0, d.delta.dy);
-      _offset += Offset(0, d.delta.dy);
-    }),
+    onVerticalDragUpdate: (d) {
+      if (_dismissing) return;
+      setState(() {
+        _dragOffset += Offset(0, d.delta.dy);
+        _offset += Offset(0, d.delta.dy);
+      });
+    },
     onVerticalDragEnd: _onVerticalDragEnd,
     onVerticalDragCancel: _snapBack,
     child: Transform.translate(
