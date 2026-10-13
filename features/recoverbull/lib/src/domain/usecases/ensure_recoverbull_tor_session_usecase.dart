@@ -77,10 +77,12 @@ class EnsureRecoverBullTorSessionUsecase {
           reportTiming('failure');
           return const Err(ExternalTorProxyUnavailableFailure());
         }
+        final key = 'external:${endpoint.host}:${endpoint.port}';
+        if (restartEmbedded) await routePool?.invalidate(key: key);
         final shared = routePool == null
             ? null
             : await routePool!.acquire(
-                key: 'external:${endpoint.host}:${endpoint.port}',
+                key: key,
                 open: () async {
                   final verified = await _tor.external.verify(endpoint);
                   if (verified case TorReady(:final route)) return route;

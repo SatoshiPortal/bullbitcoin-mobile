@@ -15,6 +15,15 @@ final class TorRoutePoolEvent {
       'tor.route.${type.name} source=${source.name} holders=$holders';
 }
 
+/// Cancellation of an in-flight open by invalidation or pool shutdown.
+/// Acquiring an already closed pool remains a programmer error.
+final class TorRouteAcquisitionCancelledException implements Exception {
+  const TorRouteAcquisitionCancelledException();
+
+  @override
+  String toString() => 'Tor route acquisition was cancelled';
+}
+
 final class TorRouteLease {
   final TorRoute route;
   final Future<void> Function() _onRelease;
@@ -53,6 +62,8 @@ final class TorRoutePool {
   final TorRoutePoolTimerFactory timerFactory;
   final Map<String, _Entry> _entries = {};
   final Map<String, Future<_Entry>> _acquisitions = {};
+  final Set<Future<_Entry>> _pendingOpens = {};
+  final Map<String, int> _generations = {};
   final Map<String, Future<void>> _closures = {};
   final Set<_Entry> _retired = {};
   bool _closed = false;
@@ -95,17 +106,26 @@ final class TorRoutePool {
     final previousClose = _closures[key];
     if (previousClose != null) {
       await previousClose;
+      if (_closed) throw const TorRouteAcquisitionCancelledException();
       return acquire(key: key, open: open, close: close, onEvent: onEvent);
     }
     late final Future<_Entry> pending;
     if (acquisition == null) {
-      pending = _openAndStore(key, open, close);
+      pending = _openAndStore(key, _generations[key] ?? 0, open, close)
+          .whenComplete(() {
+            if (identical(_acquisitions[key], pending)) {
+              _acquisitions.remove(key);
+            }
+            _pendingOpens.remove(pending);
+          });
       _acquisitions[key] = pending;
+      _pendingOpens.add(pending);
     } else {
       pending = acquisition;
     }
     final entry = await pending;
     if (!identical(_entries[key], entry) || entry.isClosing) {
+      if (_closed) throw const TorRouteAcquisitionCancelledException();
       return acquire(key: key, open: open, close: close, onEvent: onEvent);
     }
     entry.references++;
@@ -124,27 +144,19 @@ final class TorRoutePool {
 
   Future<_Entry> _openAndStore(
     String key,
+    int generation,
     Future<TorRoute> Function() open,
     Future<void> Function() close,
   ) async {
-    try {
-      final route = await open();
-      if (_closed) {
-        try {
-          await close();
-        } finally {
-          _acquisitions.remove(key);
-        }
-        throw StateError('TorRoutePool is closed');
-      }
-      final entry = _Entry(route, close);
-      _entries[key] = entry;
-      _acquisitions.remove(key);
-      return entry;
-    } catch (_) {
-      _acquisitions.remove(key);
-      rethrow;
+    // The opener's Error is never normalized into an operational cancellation.
+    final route = await open();
+    final entry = _Entry(route, close);
+    if (_closed || generation != (_generations[key] ?? 0)) {
+      await _closeEntry(entry);
+      throw const TorRouteAcquisitionCancelledException();
     }
+    _entries[key] = entry;
+    return entry;
   }
 
   Future<void> _release(
@@ -171,6 +183,13 @@ final class TorRoutePool {
   }
 
   Future<void> invalidate({String? key}) async {
+    final keys = key == null
+        ? {..._entries.keys, ..._acquisitions.keys}
+        : {key};
+    for (final entryKey in keys) {
+      _generations[entryKey] = (_generations[entryKey] ?? 0) + 1;
+      _acquisitions.remove(entryKey);
+    }
     final entries = _entries.entries
         .where((item) => key == null || item.key == key)
         .map((item) => (item.key, item.value))
@@ -188,7 +207,7 @@ final class TorRoutePool {
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
-    for (final acquisition in _acquisitions.values.toList()) {
+    for (final acquisition in _pendingOpens.toList()) {
       try {
         await acquisition;
       } catch (_) {

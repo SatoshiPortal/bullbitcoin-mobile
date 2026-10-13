@@ -12,6 +12,67 @@ TorRoute _route(TorSource source) => TorRoute(
 );
 
 void main() {
+  test(
+    'pending invalidation cancels the old generation and opens fresh',
+    () async {
+      final pool = TorRoutePool();
+      addTearDown(pool.close);
+      final gate = Completer<TorRoute>();
+      var opens = 0;
+      var closes = 0;
+      final old = pool
+          .acquire(
+            key: 'external',
+            open: () {
+              opens++;
+              return gate.future;
+            },
+            close: () async => closes++,
+          )
+          .then<Object>((lease) => lease, onError: (Object error) => error);
+      await pool.invalidate(key: 'external');
+      final fresh = pool.acquire(
+        key: 'external',
+        open: () async {
+          opens++;
+          return _route(TorSource.external);
+        },
+        close: () async => closes++,
+      );
+      gate.complete(_route(TorSource.external));
+      final lease = await fresh;
+      expect(await old, isA<Exception>());
+      expect(opens, 2);
+      expect(closes, 1);
+      await lease.release();
+      await pool.close();
+      expect(closes, 2);
+    },
+  );
+
+  test(
+    'a synchronous opener programmer Error propagates and permits retry',
+    () async {
+      final pool = TorRoutePool();
+      addTearDown(pool.close);
+      final error = StateError('programmer bug');
+      await expectLater(
+        pool.acquire(
+          key: 'embedded',
+          open: () => throw error,
+          close: () async {},
+        ),
+        throwsA(same(error)),
+      );
+      final next = await pool.acquire(
+        key: 'embedded',
+        open: () async => _route(TorSource.embedded),
+        close: () async {},
+      );
+      await next.release();
+    },
+  );
+
   test('reuses a route during its grace period', () async {
     final clock = _ManualTimers();
     final pool = TorRoutePool(
@@ -162,7 +223,7 @@ void main() {
       final shutdown = pool.close();
       opened.complete(_route(TorSource.embedded));
 
-      await expectLater(acquisition, throwsStateError);
+      await expectLater(acquisition, throwsA(isA<Exception>()));
       await shutdown;
       expect(closes, 1);
     },
