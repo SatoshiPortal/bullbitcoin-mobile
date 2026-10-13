@@ -241,6 +241,11 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
 
   _PayjoinRoles(this._engine, this._policy, this._wallet, this._fees);
 
+  PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
+    value,
+    fallbackAvailableAt: _engine.receiverFallbackAvailableAt(value.id),
+  );
+
   @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> startSender(
     StartPayjoinSender request,
@@ -653,7 +658,10 @@ final class _DiagnosticsRole implements PayjoinDiagnostics {
       _runtime.relayHealth();
 }
 
-PayjoinSession _toSession(engine.Payjoin value) {
+PayjoinSession _mapSession(
+  engine.Payjoin value, {
+  DateTime? fallbackAvailableAt,
+}) {
   final network = value.isTestnet
       ? BitcoinNetwork.testnet
       : BitcoinNetwork.mainnet;
@@ -686,6 +694,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
       hasOriginalTransaction: value.originalTxBytes != null,
+      fallbackAvailableAt: fallbackAvailableAt,
       ownership: ownership,
     ),
   };

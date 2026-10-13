@@ -5,6 +5,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
@@ -33,6 +34,8 @@ void main() {
   late _MockBlockchainPort blockchain;
   late _MockTransactionPort transactions;
   late _MockLabelsPort labels;
+  late _MockWalletPort wallet;
+  late StreamController<PayjoinReceiverModel> requests;
   late PayjoinRepositoryImpl engine;
 
   setUpAll(() {
@@ -132,9 +135,9 @@ void main() {
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
     labels = _MockLabelsPort();
-    when(
-      () => pdk.requestsForReceivers,
-    ).thenAnswer((_) => const Stream.empty());
+    wallet = _MockWalletPort();
+    requests = StreamController<PayjoinReceiverModel>.broadcast();
+    when(() => pdk.requestsForReceivers).thenAnswer((_) => requests.stream);
     when(() => pdk.proposalsForSenders).thenAnswer((_) => const Stream.empty());
     when(() => pdk.expiredPayjoins).thenAnswer((_) => const Stream.empty());
     when(() => pdk.dispose()).thenAnswer((_) async {});
@@ -154,7 +157,7 @@ void main() {
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger.silent,
-      wallet: _MockWalletPort(),
+      wallet: wallet,
       blockchain: blockchain,
       transactions: transactions,
       policy: policy,
@@ -164,6 +167,7 @@ void main() {
 
   tearDown(() async {
     await engine.dispose();
+    await requests.close();
     await database.close();
   });
 
@@ -505,6 +509,102 @@ void main() {
     expect(await local.fetchReceiver(model.id), isNull);
     verifyNever(() => pdk.startListeningForRequest(model));
   });
+
+  test(
+    'publishing a proposal gates manual fallback across fresh reads',
+    () async {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+      );
+      final proposal = model.copyWith(
+        proposalPsbt: 'proposal',
+        txId: 'payjoin-tx',
+      );
+      await local.storeReceiver(model);
+      registerFallbackValue(model);
+      registerFallbackValue(<PayjoinInputPairModel>[]);
+      registerFallbackValue((Outpoint _) => true);
+      registerFallbackValue((Uint8List _) => true);
+      registerFallbackValue((String psbt) => psbt);
+      when(
+        () => wallet.spendableUtxos(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async => [
+          PayjoinUtxo(
+            outpoint: (txId: 'wallet-utxo', vout: 0),
+            value: Sats.fromInt(100000),
+            scriptPubkey: Uint8List.fromList([0, 20]),
+            confirmed: true,
+          ),
+        ],
+      );
+      when(
+        () => wallet.createOwnershipChecker(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () => wallet.createOutpointOwnershipChecker(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Outpoint _) => true,
+      );
+      when(
+        () => wallet.createPsbtProcessor(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+      when(
+        () => pdk.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          ownsOutpoint: any(named: 'ownsOutpoint'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      ).thenAnswer((_) async => proposal);
+      final proposed = engine.payjoinStream.firstWhere(
+        (session) => session.status == internal.PayjoinStatus.proposed,
+      );
+      requests.add(model);
+      await proposed.timeout(const Duration(seconds: 5));
+      final until = engine.receiverFallbackAvailableAt(model.id);
+      expect(until, isNotNull);
+      expect(
+        until!.difference(DateTime.now()).inSeconds,
+        inInclusiveRange(58, 60),
+      );
+      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+      final fresh = await engine.getPayjoinById(model.id);
+      final result = await engine.tryBroadcastOriginalTransaction(fresh!);
+      expect(
+        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+        isA<PayjoinFallbackUnavailableFailure>(),
+      );
+      expect(engine.receiverFallbackAvailableAt(model.id), until);
+      verifyNever(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      );
+    },
+  );
 
   test('manual fallback can replace a proposal that is not visible', () async {
     final model = receiver(
