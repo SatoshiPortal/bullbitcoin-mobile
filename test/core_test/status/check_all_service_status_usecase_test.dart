@@ -1,3 +1,4 @@
+import '../../support/recoverbull_ui_labels.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'dart:async';
 
@@ -586,6 +587,7 @@ void main() {
         settings: _settings(useTorProxy: false),
         ensureTor: _unavailableEmbeddedTor(),
         recoverBull: RecoverBullFeature.unavailable(
+          uiLabels: testUiLabels,
           navigation: RecoverBullNavigationCallbacks(
             onOpenTorSettings: () {},
             onOpenWalletHome: () {},
