@@ -168,7 +168,8 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
       case PayjoinLogLevel.debug || PayjoinLogLevel.info:
         log.info(message);
       case PayjoinLogLevel.warning:
-        log.warning(message);
+        // The cause tells the many warnings of one code apart.
+        log.warning(message, error: event.error);
       case PayjoinLogLevel.severe:
         // The engine's own error when it gave us one: Sentry groups on it, so
         // substituting a synthetic error would file every failure of a given

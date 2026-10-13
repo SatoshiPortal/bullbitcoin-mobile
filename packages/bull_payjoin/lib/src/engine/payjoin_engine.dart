@@ -425,6 +425,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session not found locally',
+        code: api.PayjoinLogCode.fallbackRejected,
+        sessionRef: payjoin.id,
       );
       return const Err(
         api.PayjoinFallbackUnavailableFailure('Session not found locally'),
@@ -448,6 +450,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session is unsafe to abort or a competing transaction is visible',
+        code: api.PayjoinLogCode.fallbackRejected,
+        sessionRef: payjoin.id,
       );
       return const Err(
         api.PayjoinFallbackUnavailableFailure(
@@ -543,7 +547,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } on StateError catch (e) {
         // A previous attempt may already have advanced the PDK typestate.
         // Broadcasting the persisted original remains the safe recovery.
-        _log.warning('Receiver decline already applied: $e');
+        _log.warning(
+          'Receiver decline already applied',
+          code: api.PayjoinLogCode.storageFailure,
+          sessionRef: declined.id,
+          error: e,
+        );
       }
 
       final result = await _broadcastOriginalWithRetry(declined.toEntity());
@@ -748,6 +757,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         _log.warning(
           'Payjoin request ${model.id} arrived after Payjoin was disabled; '
           'broadcasting the original transaction instead',
+          code: api.PayjoinLogCode.requestAfterDisable,
+          sessionRef: model.id,
         );
         result = await _settleReceiverAfterDisable(model);
       } else if (isBelowPayjoinMinimum(
@@ -758,6 +769,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           'Payjoin request ${model.id} below minimum '
           '(${policy.minimumAmount.value} sat); declining and '
           'broadcasting original instead',
+          code: api.PayjoinLogCode.requestBelowMinimum,
+          sessionRef: model.id,
         );
         result = await _settleReceiverAfterDisable(model);
       } else {
@@ -838,6 +851,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       'Failed to broadcast the original transaction after $maxAttempts '
       'attempts; leaving payjoin ${payjoin.logRef} unfinished so the next app '
       'start retries',
+      code: api.PayjoinLogCode.broadcastFailure,
+      sessionRef: payjoin.id,
     );
     return null;
   }
@@ -957,6 +972,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         } catch (e, st) {
           _log.warning(
             'Payjoin broadcast succeeded but labeling failed',
+            code: api.PayjoinLogCode.labelFailure,
+            sessionRef: payjoin.id,
             error: e,
             trace: st,
           );
@@ -1440,6 +1457,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         _log.warning(
           'Skipping payjoin proposal for ${freshModel.toEntity().logRef}: '
           'session already resolved (${freshModel.status})',
+          code: api.PayjoinLogCode.proposalSkipped,
+          sessionRef: freshModel.id,
         );
         return null;
       }
@@ -1596,6 +1615,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           'Payjoin ${payjoinModel.toEntity().logRef} broadcast after the '
           'original transaction was observed; the network will resolve the '
           'conflict',
+          code: api.PayjoinLogCode.conflictingBroadcast,
+          sessionRef: payjoinModel.id,
         );
       }
       completedModel = (persisted ?? payjoinModel).copyWith(
@@ -1785,7 +1806,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
                 transactionId: txId,
               );
             } catch (e) {
-              _log.warning('Payjoin $kind watch lookup failed: $e');
+              _log.warning(
+                'Payjoin $kind watch lookup failed',
+                code: api.PayjoinLogCode.watchFailure,
+                sessionRef: payjoinId,
+                error: e,
+              );
               return false;
             }
           })
@@ -1796,7 +1822,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             //  unhandled zone error.
             unawaited(
               onSeen(payjoinId).catchError((Object e) {
-                _log.warning('Payjoin $kind completion handler failed: $e');
+                _log.warning(
+                  'Payjoin $kind completion handler failed',
+                  code: api.PayjoinLogCode.watchFailure,
+                  sessionRef: payjoinId,
+                  error: e,
+                );
               }),
             );
           });
@@ -1818,8 +1849,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRefForId: payjoinId is the raw session id, which for a sender IS
       //  the full BIP21 URI (address+amount) — never log it raw.
       _log.warning(
-        'Failed to arm the $kind watch for '
-        '${Payjoin.logRefForId(payjoinId)}: $e',
+        'Failed to arm the $kind watch for ${Payjoin.logRefForId(payjoinId)}',
+        code: api.PayjoinLogCode.watchFailure,
+        sessionRef: payjoinId,
+        error: e,
       );
     }
   }
@@ -1867,7 +1900,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           refresh: true,
         );
       } catch (e) {
-        _log.warning('Payjoin $kind poll failed: $e');
+        _log.warning(
+          'Payjoin $kind poll failed',
+          code: api.PayjoinLogCode.watchFailure,
+          sessionRef: payjoinId,
+          error: e,
+        );
       }
 
       // Re-check: the session may have resolved through the passive watcher
@@ -1880,7 +1918,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         try {
           await onSeen(payjoinId);
         } catch (e) {
-          _log.warning('Payjoin $kind completion handler failed: $e');
+          _log.warning(
+            'Payjoin $kind completion handler failed',
+            code: api.PayjoinLogCode.watchFailure,
+            sessionRef: payjoinId,
+            error: e,
+          );
         }
         if (watchers.containsKey(key)) {
           _scheduleTransactionPoll(
@@ -2080,7 +2123,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       Future(() => _transactions.refreshWallet(walletId)).catchError((
         Object e,
       ) {
-        _log.warning('Failed to sync wallet after payjoin broadcast: $e');
+        _log.warning(
+          'Failed to sync wallet after payjoin broadcast',
+          code: api.PayjoinLogCode.walletFailure,
+          error: e,
+        );
       }),
     );
   }
@@ -2097,7 +2144,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      _log.warning('Failed to label payjoin transaction', error: e);
+      _log.warning(
+        'Failed to label payjoin transaction',
+        code: api.PayjoinLogCode.labelFailure,
+        error: e,
+      );
     }
   }
 
@@ -2121,7 +2172,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      _log.warning('Failed to label completed payjoin send', error: e);
+      _log.warning(
+        'Failed to label completed payjoin send',
+        code: api.PayjoinLogCode.labelFailure,
+        error: e,
+      );
     }
   }
 }
