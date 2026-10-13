@@ -40,7 +40,6 @@ final class RecoverBullSetup {
   static Future<void> setup(
     GetIt locator, {
     required SqliteDatabase database,
-    required bool startAttemptMonitoring,
   }) async {
     final recoverBullLog = log.scoped('recoverbull');
     RecoverBullFeature composed;
@@ -61,9 +60,9 @@ final class RecoverBullSetup {
     locator.registerSingleton<RecoverBullLifecyclePort>(composed.lifecycle);
 
     // Advisory only: neither the attempt check, Drive discovery nor the
-    // key-server warm-up may delay app startup. The background composition
-    // passes false so that no network call runs outside the foreground app.
-    if (startAttemptMonitoring && composed.isAvailable) {
+    // key-server warm-up may delay app startup. Background composition skips
+    // this entire foreground-only feature setup.
+    if (composed.isAvailable) {
       unawaited(checkRecoverBullOnAppLaunch(composed.attemptMonitoring));
       unawaited(composed.discoverDriveBackups());
       unawaited(composed.warmKeyServerRoute());

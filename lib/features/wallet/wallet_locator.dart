@@ -89,7 +89,9 @@ class WalletLocator {
         watchElectrum: locator<WatchElectrumSyncResultsUsecase>(),
       ),
     );
-    // Bloc
+    // The foreground shell owns one WalletBloc for its lifetime. RecoverBull
+    // restore callbacks resolve this same instance, even before the first
+    // wallet screen mounts, so restored wallets refresh the visible shell.
     locator.registerLazySingleton<WalletBloc>(
       () => WalletBloc(
         checkSpWalletSetupForWalletUsecase:

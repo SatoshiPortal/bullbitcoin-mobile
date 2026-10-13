@@ -153,11 +153,7 @@ class AppLocator {
     BitcoinPriceLocator.setup(locator);
     WalletLocator.setup(locator);
     if (startRecoverBull) {
-      await RecoverBullSetup.setup(
-        locator,
-        database: database,
-        startAttemptMonitoring: true,
-      );
+      await RecoverBullSetup.setup(locator, database: database);
     }
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
