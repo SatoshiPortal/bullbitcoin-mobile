@@ -61,7 +61,7 @@ class RecoverBullRemoteDatasource {
     this.storeRequest,
     this.trashRequest,
     this.attemptsRequest,
-    this.operationTimeout = const Duration(seconds: 20),
+    this.operationTimeout = const Duration(seconds: 75),
     this.healthCheckTimeout = const Duration(seconds: 75),
   });
 
