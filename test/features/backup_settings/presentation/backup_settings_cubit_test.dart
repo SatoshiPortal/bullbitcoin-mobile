@@ -13,7 +13,12 @@ class _GetWallets extends Mock implements GetWalletsUsecase {}
 
 class _GetSettings extends Mock implements GetSettingsUsecase {}
 
-class _Wallet extends Mock implements Wallet {}
+class _Wallet extends Mock implements Wallet {
+  _Wallet() {
+    when(() => latestEncryptedBackup).thenReturn(null);
+    when(() => isEncryptedVaultTested).thenReturn(false);
+  }
+}
 
 class _Settings extends Mock implements SettingsEntity {}
 
@@ -33,7 +38,7 @@ _GetEncryptedBackupStatus _statusUsecase(
 void main() {
   setUpAll(() => registerFallbackValue(Environment.mainnet));
 
-  test('maps encrypted backup presence from RecoverBullStatus', () async {
+  test('package backup status makes the encrypted backup available', () async {
     final wallets = _GetWallets();
     final getSettings = _GetSettings();
     final wallet = _Wallet();
@@ -63,7 +68,7 @@ void main() {
   });
 
   test(
-    'does not fall back to wallet metadata when package status is fresh',
+    'legacy backups stay accessible without importing historical verification',
     () async {
       final wallets = _GetWallets();
       final getSettings = _GetSettings();
@@ -92,10 +97,9 @@ void main() {
 
       await cubit.checkBackupStatus();
 
-      expect(cubit.state.hasEncryptedBackup, isFalse);
+      expect(cubit.state.hasEncryptedBackup, isTrue);
       expect(cubit.state.isDefaultEncryptedBackupTested, isFalse);
-      verifyNever(() => wallet.latestEncryptedBackup);
-      verifyNever(() => wallet.isEncryptedVaultTested);
+      verify(() => wallet.latestEncryptedBackup).called(1);
     },
   );
 
