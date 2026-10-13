@@ -173,13 +173,23 @@ final class RecoverBullFeature {
     final lifecycle = RecoverBullLifecycle(log: log);
     final path = config.databasePath;
     RecoverBullDatabase database;
-    const storageMode = RecoverBullStorageMode.persistent;
-    if (path == null) throw const RecoverBullStorageUnavailableException();
-    database = await lifecycle.openDatabase(
-      path,
-      initialPermissionGranted: config.initialPermissionGranted,
-      initialServerUrlOverride: config.initialServerUrlOverride,
-    );
+    var storageMode = RecoverBullStorageMode.persistent;
+    try {
+      if (path == null) throw const RecoverBullStorageUnavailableException();
+      database = await lifecycle.openDatabase(
+        path,
+        initialPermissionGranted: config.initialPermissionGranted,
+        initialServerUrlOverride: config.initialServerUrlOverride,
+      );
+    } on Exception catch (error) {
+      // Storage is advisory. Keep the original file intact, use no imported
+      // permission/custom URL, and require consent for this temporary session.
+      log.warning(
+        'recoverbull.storage.temporary error_type=${error.runtimeType}',
+      );
+      storageMode = RecoverBullStorageMode.temporary;
+      database = await lifecycle.openTemporary();
+    }
     final attemptMonitoringStore = RecoverBullAttemptMonitoringStore(database);
     final monitoringRepository = RecoverBullAttemptMonitoringRepositoryImpl(
       attemptMonitoringStore,
