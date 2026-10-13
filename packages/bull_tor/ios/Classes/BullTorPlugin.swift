@@ -15,16 +15,20 @@ public final class BullTorPlugin: NSObject, FlutterPlugin {
         create: true
       )
       for directory in ["tor_state", "tor_state_snowflake", "tor_cache"] {
-        var torStateURL = supportURL.appendingPathComponent(directory, isDirectory: true)
-        try FileManager.default.createDirectory(
-          at: torStateURL,
-          withIntermediateDirectories: true,
-          attributes: nil
-        )
+        do {
+          var torStateURL = supportURL.appendingPathComponent(directory, isDirectory: true)
+          try FileManager.default.createDirectory(
+            at: torStateURL,
+            withIntermediateDirectories: true,
+            attributes: nil
+          )
 
-        var resourceValues = URLResourceValues()
-        resourceValues.isExcludedFromBackup = true
-        try torStateURL.setResourceValues(resourceValues)
+          var resourceValues = URLResourceValues()
+          resourceValues.isExcludedFromBackup = true
+          try torStateURL.setResourceValues(resourceValues)
+        } catch {
+          NSLog("Failed to exclude Tor directory from backup: %@", directory)
+        }
       }
     } catch {
       NSLog("Failed to exclude Tor state from backup: %@", error.localizedDescription)
