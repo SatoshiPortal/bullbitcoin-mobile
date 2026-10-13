@@ -10,13 +10,21 @@ const _rawReason =
     'PlatformException(-25308, errSecInteractionNotAllowed, '
     'seed_a1b2c3d4 legal winner thank year, null)';
 
-final _everyFailure = <AppStartupFailure>[
+final _genericFailures = <AppStartupFailure>[
   const AppStartupKeychainLockedFailure(_rawReason),
   const AppStartupWalletCheckFailure(_rawReason),
-  const AppStartupMissingDefaultSecretFailure(_rawReason),
   const AppStartupResetFailure(_rawReason),
   const AppStartupPinCheckFailure(_rawReason),
+  const AppStartupRestoreFailure(_rawReason),
 ];
+
+/// The two that tell the user what to do: their own messages.
+final _guidingFailures = <AppStartupFailure>[
+  const AppStartupMissingDefaultSecretFailure(_rawReason),
+  const AppStartupRestoreMismatchFailure(_rawReason),
+];
+
+final _everyFailure = [..._genericFailures, ..._guidingFailures];
 
 Future<String> _translate(WidgetTester tester, AppStartupFailure f) async {
   late String message;
@@ -66,17 +74,34 @@ void main() {
       }
     });
 
-    testWidgets('every variant reads the same, by design', (tester) async {
+    testWidgets('the generic variants read the same, by design', (
+      tester,
+    ) async {
       // Startup has no wallet, session or screen to return to, so there is no
       // action to offer beyond the support link the screen already shows.
       // This pins that deliberate choice: if someone adds per-variant copy,
       // this fails and they have to justify it.
       final messages = <String>{};
-      for (final failure in _everyFailure) {
+      for (final failure in _genericFailures) {
         messages.add(await _translate(tester, failure));
       }
 
       expect(messages, hasLength(1));
+    });
+
+    testWidgets('a missing secret and a refused phrase each say what to do', (
+      tester,
+    ) async {
+      // The justified exception: a missing secret has an action — entering
+      // the recovery phrase again — and a refused phrase must say why.
+      final generic = await _translate(tester, _genericFailures.first);
+      final messages = <String>{};
+      for (final failure in _guidingFailures) {
+        messages.add(await _translate(tester, failure));
+      }
+
+      expect(messages, hasLength(_guidingFailures.length));
+      expect(messages, isNot(contains(generic)));
     });
   });
 }

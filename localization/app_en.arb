@@ -15359,5 +15359,17 @@
   "screenPrivacyUnavailable": "Screen protection could not be turned on, so this secret stays hidden.",
   "@screenPrivacyUnavailable": {
     "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled"
+  },
+  "appStartupMissingSecretMessage": "This device no longer holds your wallet’s recovery phrase. Enter it again to get your wallet back.",
+  "@appStartupMissingSecretMessage": {
+    "description": "App startup: the default wallet exists but its recovery phrase is missing from the device keystore"
+  },
+  "appStartupRestoreSecretButton": "Enter my recovery phrase",
+  "@appStartupRestoreSecretButton": {
+    "description": "App startup: button that opens recovery phrase entry to restore a missing default wallet secret"
+  },
+  "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
+  "@appStartupRestoreMismatch": {
+    "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
   }
 }

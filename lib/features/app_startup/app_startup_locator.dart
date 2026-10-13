@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.da
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
@@ -30,6 +31,12 @@ class AppStartupLocator {
         secrets: locator<Secrets>(),
       ),
     );
+    locator.registerFactory<RestoreMissingDefaultSecretUsecase>(
+      () => RestoreMissingDefaultSecretUsecase(
+        secrets: locator<Secrets>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
     locator.registerFactory<InitializeRequiredTorUsecase>(
       () => InitializeRequiredTorUsecase(
         locator<AppStartupWalletPort>(),
@@ -47,6 +54,8 @@ class AppStartupLocator {
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),
         initializeRequiredTorUsecase: locator<InitializeRequiredTorUsecase>(),
+        restoreMissingDefaultSecretUsecase:
+            locator<RestoreMissingDefaultSecretUsecase>(),
       ),
     );
   }

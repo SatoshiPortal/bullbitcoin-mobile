@@ -346,7 +346,7 @@ tell this apart from everything else and says the right thing:
 
 | what the device looks like | what the package reports | what the app does |
 |---|---|---|
-| nothing under `seed_` | `list()` → `Ok([])`, `fetch` → `SecretNotFoundFailure` after the full retry budget | `MissingDefaultSecretException` at startup → the restore flow, `hasBackup` on |
+| nothing under `seed_` | `list()` → `Ok([])`, `fetch` → `SecretNotFoundFailure` after the full retry budget | `AppStartupMissingDefaultSecretFailure` at startup → the user re-enters the recovery phrase, checked against the missing fingerprint before it is stored |
 | an fss9 value still under `seed_<fp>` | `list()` includes an `UnreadableSecret`; `fetch` → `FetchSecretFailure` | the generic failure — **never** a restore offer, because the bytes may still be recoverable |
 | unmigrated EncryptedSharedPreferences data in the plugin's file | the pinned plugin (10.3.3, `migrateOnAlgorithmChange: false`) refuses to initialise on every call: `list()` and `fetch` → `FetchSecretFailure`, `import` and `DatabaseKeys.getOrCreate` → `StoreSecretFailure`, nothing written | the generic failure, as above |
 | the keystore is locked | `KeystoreLockedFailure` | `KeychainLockedException` → wait for unlock and retry, no screen |

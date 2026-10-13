@@ -5012,5 +5012,8 @@
   "spHeaderValidationInvalidChain": "Electrum-Server liefert eine falsche Blockchain",
   "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server.",
   "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar.",
-  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen."
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen.",
+  "appStartupMissingSecretMessage": "Dieses Gerät enthält die Wiederherstellungsphrase Ihrer Wallet nicht mehr. Geben Sie sie erneut ein, um Ihre Wallet zurückzuerhalten.",
+  "appStartupRestoreSecretButton": "Meine Wiederherstellungsphrase eingeben",
+  "appStartupRestoreMismatch": "Diese Wiederherstellungsphrase gehört zu einer anderen Wallet. Geben Sie die Phrase der Wallet auf diesem Gerät ein."
 }
