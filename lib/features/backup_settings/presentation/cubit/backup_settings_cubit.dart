@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/domain/encrypted_backup_availability.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -66,12 +67,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final currentNetworkWallets = defaultWallets
           .where((wallet) => wallet.network == network)
           .toList(growable: false);
-      final hasEncryptedBackup = recoverBullStatus.isKnown
-          ? recoverBullStatus.hasEncryptedBackup
-          : false;
-      final isDefaultEncryptedBackupTested = recoverBullStatus.isKnown
-          ? recoverBullStatus.hasVerifiedEncryptedBackup
-          : false;
+      final availability = EncryptedBackupAvailability.fromStatus(
+        status: recoverBullStatus,
+        network: network,
+        defaultWallets: defaultWallets,
+      );
 
       final lastPhysicalBackup = currentNetworkWallets.isEmpty
           ? null
@@ -79,8 +79,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           isDefaultPhysicalBackupTested: isDefaultPhysicalBackupTested,
-          hasEncryptedBackup: hasEncryptedBackup,
-          isDefaultEncryptedBackupTested: isDefaultEncryptedBackupTested,
+          hasEncryptedBackup: availability.hasEncryptedBackup,
+          isDefaultEncryptedBackupTested:
+              availability.hasVerifiedEncryptedBackup,
           lastPhysicalBackup: lastPhysicalBackup,
           status: BackupSettingsStatus.success,
           failure: null,
