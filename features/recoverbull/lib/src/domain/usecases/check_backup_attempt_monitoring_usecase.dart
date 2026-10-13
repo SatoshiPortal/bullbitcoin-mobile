@@ -91,7 +91,9 @@ final class CheckBackupAttemptMonitoringUsecase {
       for (final entry in snapshot.totalAttempts.entries)
         _hex(entry.key): entry.value,
     };
-    for (final row in rows) {
+    // Local attempts and rebaselines may have changed while the poll waited.
+    final currentRows = await store.monitoredBackups();
+    for (final row in currentRows) {
       if (row.awaitsBaseline) continue;
       final hash = _hex(row.digest);
       final observed = entries[hash];
