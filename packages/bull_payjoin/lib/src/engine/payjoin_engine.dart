@@ -467,6 +467,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (completed != null) return Ok(completed);
     }
+    if (competingTxId != null && competingTxId == freshEntity.originalTxId) {
+      final aborted = await _completeOnOriginalTransactionSeen(freshEntity.id);
+      if (aborted != null) return Ok(aborted);
+    }
     if (!freshEntity.canManuallyBroadcastOriginal ||
         competingTxId != null ||
         _isWaitingForSender(freshEntity)) {
@@ -2072,45 +2076,49 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// "payjoin" — this is by definition not a real one.
   Future<void> _onOriginalTransactionSeen(String payjoinId) => _withSessionLock(
     payjoinId,
-    () async {
-      final receiverModel = await _localPayjoinDatasource.fetchReceiver(
-        payjoinId,
-      );
-      final PayjoinModel? model =
-          receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
-      if (model == null || model.isCompleted || model.isAborted) {
-        _stopWatching(payjoinId);
-        return;
-      }
-
-      final PayjoinModel abortedModel = model is PayjoinReceiverModel
-          ? model.copyWith(isExpired: false, isAborted: true, txId: null)
-          : (model as PayjoinSenderModel).copyWith(
-              isExpired: false,
-              isAborted: true,
-              txId: null,
-            );
-      final applied = await _localPayjoinDatasource.markAborted(abortedModel);
-      if (!applied) {
-        final refreshed = model is PayjoinReceiverModel
-            ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
-            : await _localPayjoinDatasource.fetchSender(payjoinId);
-        if (refreshed?.isCompleted == true || refreshed?.isAborted == true) {
-          _stopWatching(payjoinId);
-        }
-        return;
-      }
-      _stopWatching(payjoinId);
-      _syncWalletAfterBroadcast(abortedModel.walletId);
-      final abortedEntity = abortedModel.toEntity();
-      _payjoinStreamController.add(abortedEntity);
-      _log.info(
-        'Payjoin ${abortedEntity.logRef} resolved via the original '
-        'transaction observed on-chain (fallback, not necessarily broadcast '
-        'by this device)',
-      );
-    },
+    () => _completeOnOriginalTransactionSeen(payjoinId),
   );
+
+  /// Body of [_onOriginalTransactionSeen] for callers holding the session lock.
+  Future<Payjoin?> _completeOnOriginalTransactionSeen(String payjoinId) async {
+    final receiverModel = await _localPayjoinDatasource.fetchReceiver(
+      payjoinId,
+    );
+    final PayjoinModel? model =
+        receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (model == null || model.isCompleted || model.isAborted) {
+      _stopWatching(payjoinId);
+      return null;
+    }
+
+    final PayjoinModel abortedModel = model is PayjoinReceiverModel
+        ? model.copyWith(isExpired: false, isAborted: true, txId: null)
+        : (model as PayjoinSenderModel).copyWith(
+            isExpired: false,
+            isAborted: true,
+            txId: null,
+          );
+    final applied = await _localPayjoinDatasource.markAborted(abortedModel);
+    if (!applied) {
+      final refreshed = model is PayjoinReceiverModel
+          ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
+          : await _localPayjoinDatasource.fetchSender(payjoinId);
+      if (refreshed?.isCompleted == true || refreshed?.isAborted == true) {
+        _stopWatching(payjoinId);
+      }
+      return null;
+    }
+    _stopWatching(payjoinId);
+    _syncWalletAfterBroadcast(abortedModel.walletId);
+    final abortedEntity = abortedModel.toEntity();
+    _payjoinStreamController.add(abortedEntity);
+    _log.info(
+      'Payjoin ${abortedEntity.logRef} resolved via the original '
+      'transaction observed on-chain (fallback, not necessarily broadcast '
+      'by this device)',
+    );
+    return abortedEntity;
+  }
 
   /// Stops every watcher of a session — the real-payjoin broadcast watch
   /// ([_watchForBroadcast]), the original-transaction fallback watch

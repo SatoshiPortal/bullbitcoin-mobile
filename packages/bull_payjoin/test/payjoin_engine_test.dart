@@ -696,7 +696,7 @@ void main() {
     expect(persisted?.isAborted, isFalse);
   });
 
-  test('manual fallback is unavailable when the original is visible', () async {
+  test('manual fallback settles when the original is visible', () async {
     final model = receiver(
       originalTransaction: Uint8List.fromList([1, 2, 3]),
       originalTransactionId: 'original-tx',
@@ -715,10 +715,18 @@ void main() {
       model.toEntity(),
     );
 
-    expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
     expect(
-      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
-      isA<PayjoinFallbackUnavailableFailure>(),
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.isAborted,
+      isTrue,
+    );
+    final persisted = await local.fetchReceiver(model.id);
+    expect(persisted?.isAborted, isTrue);
+    expect(persisted?.txId, isNull);
+    verifyNever(
+      () => labels.labelTransaction(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
     );
     verifyNever(
       () => blockchain.broadcastTransaction(
