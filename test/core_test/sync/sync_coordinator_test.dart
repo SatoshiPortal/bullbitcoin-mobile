@@ -57,11 +57,15 @@ void main() {
     final bitcoin = Completer<void>();
     final liquid = Completer<void>();
     final sp = Completer<void>();
-    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer((_) async {
       await bitcoin.future;
       return const Ok<List<Wallet>, WalletFailure>([]);
     });
-    when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).thenAnswer((_) async {
       await liquid.future;
       return const Ok<List<Wallet>, WalletFailure>([]);
     });
@@ -129,23 +133,31 @@ void main() {
       'a user sync bypasses it', () async {
     // No gating: each kind completes immediately so _lastSuccessAt is set.
     when(
-      () => getWallets.execute(onlyBitcoin: true),
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
-      () => getWallets.execute(onlyLiquid: true),
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
     await coordinator.sync(trigger: SyncTrigger.automatic);
     // Immediately again (well within the 2s window); every kind is throttled.
     await coordinator.sync(trigger: SyncTrigger.automatic);
 
-    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-    verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).called(1);
+    verify(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).called(1);
     verifyNever(syncSwaps.call);
     // A user gesture bypasses the throttle and re-runs every kind.
     await coordinator.sync(trigger: SyncTrigger.user);
 
-    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-    verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).called(1);
+    verify(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).called(1);
     verifyNever(syncSwaps.call);
   });
 
@@ -156,13 +168,15 @@ void main() {
       // normally, stamping _lastSuccessAt — so the sync would be reported as
       // successful AND the throttle would then suppress the retry that would
       // recover from a transient read failure.
-      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
+      when(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).thenAnswer(
         (_) async => const Err<List<Wallet>, WalletFailure>(
           WalletStorageFailure('SqliteException(11): disk image is malformed'),
         ),
       );
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
 
       await expectLater(
@@ -173,17 +187,23 @@ void main() {
       // Not throttled away: the next automatic round retries bitcoin.
       await coordinator.sync(trigger: SyncTrigger.automatic).catchError((_) {});
 
-      verify(() => getWallets.execute(onlyBitcoin: true)).called(2);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(2);
     },
   );
 
   test('a general sync does not wait for swap polling', () async {
     final order = <String>[];
-    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer((_) async {
       order.add('bitcoin');
       return const Ok<List<Wallet>, WalletFailure>([]);
     });
-    when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).thenAnswer((_) async {
       order.add('liquid');
       return const Ok<List<Wallet>, WalletFailure>([]);
     });
@@ -216,10 +236,10 @@ void main() {
 
   test('does not sync swaps while the app is paused', () async {
     when(
-      () => getWallets.execute(onlyBitcoin: true),
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
-      () => getWallets.execute(onlyLiquid: true),
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
     TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
       AppLifecycleState.paused,
@@ -237,10 +257,10 @@ void main() {
   group('SyncKind.sp', () {
     test('sync() invokes the registered syncSp once', () async {
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       var spCalls = 0;
@@ -254,10 +274,10 @@ void main() {
     test('a syncSp throw does not sink bitcoin/liquid and '
         'surfaces as the sp failure', () async {
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       spCallback = () async => throw Exception('sp boom');
@@ -270,8 +290,12 @@ void main() {
       }
 
       // The other kinds still ran to completion despite sp failing.
-      verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(1);
+      verify(
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+      ).called(1);
       // sp's failure is reported, not swallowed, and is the only failed kind.
       expect(thrown, isA<SyncCoordinatorException>());
       final failures = (thrown! as SyncCoordinatorException).failures;
@@ -281,10 +305,10 @@ void main() {
     test('sp is throttled like the others: an automatic re-sync within the '
         'window is skipped; a user sync bypasses it', () async {
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       var spCalls = 0;
@@ -300,18 +324,22 @@ void main() {
 
     test('a user sync leaves sp out unless asked for it', () async {
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       when(
-        () => getWallets.execute(onlyLiquid: true),
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
       ).thenAnswer((_) async => Ok(<Wallet>[]));
       var spCalls = 0;
       spCallback = () async => spCalls++;
 
       await coordinator.sync(trigger: SyncTrigger.user);
 
-      verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      verify(
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+      ).called(1);
+      verify(
+        () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+      ).called(1);
       expect(spCalls, 0);
     });
   });

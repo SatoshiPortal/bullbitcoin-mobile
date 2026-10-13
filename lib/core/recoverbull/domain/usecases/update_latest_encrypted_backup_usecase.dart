@@ -39,7 +39,6 @@ class UpdateLatestEncryptedVaultTestUsecase {
       final settings = await _settingsRepository.fetch();
       final List<Wallet> availableWallets;
       switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
         environment: settings.environment,
       )) {
         case Ok(:final value):
@@ -52,17 +51,9 @@ class UpdateLatestEncryptedVaultTestUsecase {
       }
 
       for (final wallet in availableWallets) {
-        if (wallet.masterFingerprint == decodedFingerprint) {
+        if (wallet.singleLocalSeedFingerprint == decodedFingerprint) {
           await _walletRepository.updateEncryptedBackupTime(
             time: DateTime.now(),
-            walletId: wallet.id,
-          );
-        } else {
-          log.warning(
-            'The vault mnemonic does not match the current default wallet.',
-          );
-          await _walletRepository.updateEncryptedBackupTime(
-            time: null,
             walletId: wallet.id,
           );
         }

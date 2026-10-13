@@ -269,40 +269,34 @@ class BoltzDatasource {
     boltzUrl: _httpsUrl,
   );
 
-  Future<List<BtcLnSwap>> restoreBtcLnSwaps({
+  Future<RestoredBtcLnSwaps> restoreBtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
-  }) => boltz
-      .restoreLnBtcSwaps(
-        swapMasterKey: swapMasterKey.toBoltz(),
-        electrumUrl: electrumUrl,
-        boltzUrl: _httpsUrl,
-      )
-      .then((restored) => restored.swaps);
+  }) => boltz.restoreLnBtcSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    electrumUrl: electrumUrl,
+    boltzUrl: _httpsUrl,
+  );
 
-  Future<List<LbtcLnSwap>> restoreLbtcLnSwaps({
+  Future<RestoredLbtcLnSwaps> restoreLbtcLnSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
-  }) => boltz
-      .restoreLnLbtcSwaps(
-        swapMasterKey: swapMasterKey.toBoltz(),
-        electrumUrl: electrumUrl,
-        boltzUrl: _httpsUrl,
-      )
-      .then((restored) => restored.swaps);
+  }) => boltz.restoreLnLbtcSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    electrumUrl: electrumUrl,
+    boltzUrl: _httpsUrl,
+  );
 
-  Future<List<ChainSwap>> restoreChainSwaps({
+  Future<RestoredChainSwaps> restoreChainSwaps({
     required SwapMasterKeyModel swapMasterKey,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-  }) => boltz
-      .restoreChainSwaps(
-        swapMasterKey: swapMasterKey.toBoltz(),
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
-        boltzUrl: _httpsUrl,
-      )
-      .then((restored) => restored.swaps);
+  }) => boltz.restoreChainSwaps(
+    swapMasterKey: swapMasterKey.toBoltz(),
+    btcElectrumUrl: btcElectrumUrl,
+    lbtcElectrumUrl: lbtcElectrumUrl,
+    boltzUrl: _httpsUrl,
+  );
 
   // Highest swap-key index boltz has on record for this wallet's xpub, or -1
   // when it knows of none.

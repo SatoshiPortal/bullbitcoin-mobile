@@ -169,13 +169,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         .map(
           (metadata) => metadata.isBitcoin
               ? WalletModel.publicBdk(
-                  externalDescriptor: metadata.externalPublicDescriptor,
-                  internalDescriptor: metadata.internalPublicDescriptor,
+                  descriptor: metadata.publicDescriptor,
                   isTestnet: metadata.isTestnet,
                   id: metadata.id,
                 )
               : WalletModel.publicLwk(
-                  combinedCtDescriptor: metadata.externalPublicDescriptor,
+                  combinedCtDescriptor: metadata.publicDescriptor,
                   isTestnet: metadata.isTestnet,
                   id: metadata.id,
                 ),

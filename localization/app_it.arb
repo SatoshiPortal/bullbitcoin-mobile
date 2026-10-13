@@ -1127,7 +1127,6 @@
   "exchangeDcaFrequencyDay": "giorno",
   "payBumpFee": "Bump Fee",
   "bitboxActionImportWalletProcessingSubtext": "Impostare il portafoglio solo orologio...",
-  "psbtFlowDone": "Ho finito",
   "exchangeHomeDepositButton": "Deposito",
   "testBackupRecoverWallet": "Recuperare Wallet",
   "sendEstimatedDelivery": "Consegna prevista ~ ",

@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/send/request_identifier/request_identifier_cu
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,13 +18,27 @@ enum SendRoute {
   final String path;
 }
 
-class SendRouteArgs {
+final class SendRouteArgs {
   final Wallet? wallet;
+  final String? pendingTransactionId;
+  final String? fixedRecipient;
+  final bool sendMax;
   final bool isSpMode;
 
-  const SendRouteArgs({this.wallet, this.isSpMode = false});
+  const SendRouteArgs({
+    this.wallet,
+    this.pendingTransactionId,
+    this.fixedRecipient,
+    this.sendMax = false,
+    this.isSpMode = false,
+  });
 
-  const SendRouteArgs.sp() : wallet = null, isSpMode = true;
+  const SendRouteArgs.sp()
+    : wallet = null,
+      pendingTransactionId = null,
+      fixedRecipient = null,
+      sendMax = false,
+      isSpMode = true;
 }
 
 class SendRouter {
@@ -39,12 +54,15 @@ class SendRouter {
       final wallet =
           args?.wallet ??
           (state.extra is Wallet ? state.extra! as Wallet : null);
-      return BlocProvider(
-        create: (_) => locator<SendCubit>(
-          param1: wallet,
-          param2: args?.isSpMode == true ? context.loc.walletSpTitle : null,
-        )..loadWalletWithRatesAndFees(),
-        child: const SendScreen(),
+      return _SendRouteView(
+        key: state.pageKey,
+        wallet: wallet,
+        pendingTransactionId: args?.pendingTransactionId,
+        spWalletLabel: args?.isSpMode == true
+            ? context.loc.walletSpTitle
+            : null,
+        fixedRecipient: args?.fixedRecipient,
+        sendMax: args?.sendMax ?? false,
       );
     },
     routes: [
@@ -58,4 +76,77 @@ class SendRouter {
       ),
     ],
   );
+}
+
+class _SendRouteView extends StatefulWidget {
+  final Wallet? wallet;
+  final String? pendingTransactionId;
+  final String? fixedRecipient;
+  final bool sendMax;
+  final String? spWalletLabel;
+
+  const _SendRouteView({
+    super.key,
+    this.wallet,
+    this.pendingTransactionId,
+    this.fixedRecipient,
+    this.sendMax = false,
+    this.spWalletLabel,
+  });
+
+  @override
+  State<_SendRouteView> createState() => _SendRouteViewState();
+}
+
+class _SendRouteViewState extends State<_SendRouteView> {
+  late final SendCubit _cubit;
+  late final Future<bool> _initialization;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = locator<SendCubit>(
+      param1: widget.wallet,
+      param2: widget.spWalletLabel,
+    );
+    _initialization = _initialize();
+  }
+
+  Future<bool> _initialize() async {
+    await _cubit.loadWalletWithRatesAndFees();
+    if (widget.pendingTransactionId case final id?) {
+      final restored = await _cubit.loadPendingTransaction(id);
+      if (!restored) return false;
+      if (widget.fixedRecipient case final recipient?) {
+        return _cubit.restrictRestoredSend(recipient);
+      }
+      return true;
+    } else if (widget.fixedRecipient case final recipient?) {
+      return _cubit.configureRestrictedSend(
+        recipient: recipient,
+        sendMax: widget.sendMax,
+      );
+    }
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final requiresInitialization =
+        widget.pendingTransactionId != null || widget.fixedRecipient != null;
+    final child = !requiresInitialization
+        ? const SendScreen()
+        : FutureBuilder<bool>(
+            future: _initialization,
+            builder: (_, snapshot) {
+              if (snapshot.connectionState != .done) {
+                return const SendLoadingScreen();
+              }
+              return snapshot.data == true
+                  ? const SendScreen()
+                  : const SendLoadingScreen(hasError: true);
+            },
+          );
+    return BlocProvider(lazy: false, create: (_) => _cubit, child: child);
+  }
 }

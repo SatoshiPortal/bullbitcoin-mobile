@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -27,7 +28,7 @@ void main() {
     ).thenAnswer((_) async => 'txid');
     final cubit = BroadcastSignedTxCubit(
       broadcastBitcoinTransactionUsecase: broadcast,
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 
@@ -51,7 +52,7 @@ void main() {
     final cubit = BroadcastSignedTxCubit(
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
-      unsignedPsbt: unsignedPsbt,
+      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
     );
     addTearDown(cubit.close);
 

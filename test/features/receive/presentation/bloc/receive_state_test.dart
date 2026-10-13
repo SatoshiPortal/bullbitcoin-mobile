@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -21,13 +22,19 @@ void main() {
   Wallet localWallet({BigInt? balanceSat}) => Wallet(
     origin: 'test-origin',
     network: Network.bitcoinMainnet,
-    xpubFingerprint: '00000000',
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: '',
+        xpubFingerprint: '00000000',
+        xpub: '',
+        derivationPath: "m/84'/0'/0'",
+        descriptorPath: standardSingleSignatureDescriptorPath,
+        signer: SignerEntity.local,
+        signerDevice: null,
+      ),
+    ],
     scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
-    signerDevice: null,
+    publicDescriptor: 'wpkh(xpub/<0;1>/*)',
     balanceSat: balanceSat ?? BigInt.from(50000),
     // hasUtxos gates on confirmedBalanceSat, not balanceSat — mirror it here
     // so these tests keep exercising the isPayjoinLoading/isPayjoinAwaitingFunds

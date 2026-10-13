@@ -6482,9 +6482,9 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
-  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "sendErrorHardwareWalletCannotSwap": "This wallet cannot be used for swaps. Select a standard Bull wallet.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when the selected wallet does not support swaps and a standard Bull wallet is required"
   },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {
@@ -8144,10 +8144,6 @@
   "psbtFlowInstructions": "Instructions",
   "@psbtFlowInstructions": {
     "description": "Instructions section header in psbt flow"
-  },
-  "psbtFlowDone": "I'm done",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
   },
   "psbtFlowSignViaNfc": "Sign via NFC",
   "@psbtFlowSignViaNfc": {
@@ -10875,6 +10871,10 @@
   "ledgerErrorBitcoinAppNotOpen": "Please open the Bitcoin app on your Ledger device and try again.",
   "@ledgerErrorBitcoinAppNotOpen": {
     "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerErrorBitcoinAppUpdateRequired": "Update the Bitcoin app on your Ledger and try again.",
+  "@ledgerErrorBitcoinAppUpdateRequired": {
+    "description": "Error shown when the connected Ledger Bitcoin app is too old for the wallet policy"
   },
   "ledgerErrorMissingPsbt": "PSBT is required for signing",
   "@ledgerErrorMissingPsbt": {
@@ -13771,6 +13771,168 @@
   "@mnemonicShuffleKeyboardHint": {
     "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   },
+  "walletRegistrationTitle": "Register on external device",
+  "@walletRegistrationTitle": {
+    "description": "Title and wallet-details action for exporting a wallet policy to an external signing device"
+  },
+  "walletRegistrationDescription": "Choose a device to register this wallet’s spending policy.",
+  "@walletRegistrationDescription": {
+    "description": "Description shown above device-specific wallet registration exports"
+  },
+  "walletRegistrationDeviceAction": "Register on {device}",
+  "@walletRegistrationDeviceAction": {
+    "description": "Action label for exporting wallet registration data for a device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationAvailable": "Registration export available",
+  "@walletRegistrationAvailable": {
+    "description": "Subtitle for a device with an available registration export"
+  },
+  "walletRegistrationUnavailable": "Not available for this wallet",
+  "@walletRegistrationUnavailable": {
+    "description": "Subtitle for a device that cannot register the current wallet policy"
+  },
+  "walletRegistrationNoDevices": "No supported registration devices are assigned to this wallet.",
+  "@walletRegistrationNoDevices": {
+    "description": "Message shown when a wallet has no assigned device that supports registration export"
+  },
+  "walletRegistrationScanDescription": "On {device}, choose the option to import a wallet, then scan this QR.",
+  "@walletRegistrationScanDescription": {
+    "description": "Instructions for scanning a wallet registration QR on a device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationFileDescription": "{device} does not scan wallet registration QR codes. Send it via NFC or share the file.",
+  "@walletRegistrationFileDescription": {
+    "description": "Instructions for a device that imports wallet registration data from a file",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationShareFile": "Share registration file",
+  "@walletRegistrationShareFile": {
+    "description": "Button label for sharing a wallet registration file"
+  },
+  "walletRegistrationReviewNotice": "Review the wallet policy on the device before confirming it.",
+  "@walletRegistrationReviewNotice": {
+    "description": "Security notice shown with wallet registration exports"
+  },
+  "walletRegistrationUnsupportedPolicy": "{device} does not support this wallet policy through this registration method.",
+  "@walletRegistrationUnsupportedPolicy": {
+    "description": "Message explaining that a device registration format cannot represent the wallet policy",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationUnsupportedKeyOrigins": "This wallet uses key origins that {device}’s registration format cannot represent.",
+  "@walletRegistrationUnsupportedKeyOrigins": {
+    "description": "Message explaining that device registration cannot represent the descriptor key origins",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "walletRegistrationQrError": "Could not create the registration QR.",
+  "@walletRegistrationQrError": {
+    "description": "Error shown when a wallet registration QR cannot be generated"
+  },
+  "hardwareWalletSignerMismatch": "The connected device does not match this wallet signer.",
+  "@hardwareWalletSignerMismatch": {
+    "description": "Shown when a connected hardware wallet has a different fingerprint or account key."
+  },
+  "hardwareWalletPolicyUnsupported": "This hardware wallet does not support this wallet policy.",
+  "@hardwareWalletPolicyUnsupported": {
+    "description": "Shown when a device or firmware cannot register or use the selected wallet policy."
+  },
+  "hardwareWalletPolicyNotRegistered": "Register this wallet on the device before continuing.",
+  "@hardwareWalletPolicyNotRegistered": {
+    "description": "Shown when address verification or signing requires prior device registration."
+  },
+  "hardwareWalletAddressMismatch": "The address shown by the device does not match Bull.",
+  "@hardwareWalletAddressMismatch": {
+    "description": "Shown when hardware-wallet address verification returns a different address."
+  },
+  "walletRegistrationConnectDevice": "Connect the device to register",
+  "@walletRegistrationConnectDevice": {
+    "description": "Subtitle for connected hardware-wallet registration actions."
+  },
+  "bitboxRegisterWalletPolicyTitle": "Register on BitBox02",
+  "@bitboxRegisterWalletPolicyTitle": {
+    "description": "Title for registering a descriptor wallet policy on BitBox02."
+  },
+  "bitboxRegisterWalletPolicyButton": "Register wallet",
+  "@bitboxRegisterWalletPolicyButton": {
+    "description": "Button that starts BitBox02 wallet-policy registration."
+  },
+  "bitboxRegisterWalletPolicyProcessing": "Registering wallet",
+  "@bitboxRegisterWalletPolicyProcessing": {
+    "description": "Status while BitBox02 registers a wallet policy."
+  },
+  "bitboxRegisterWalletPolicyProcessingSubtext": "Review the wallet policy on your BitBox02 and confirm it.",
+  "@bitboxRegisterWalletPolicyProcessingSubtext": {
+    "description": "Instructions while BitBox02 registers a wallet policy."
+  },
+  "bitboxRegisterWalletPolicySuccess": "Wallet registered",
+  "@bitboxRegisterWalletPolicySuccess": {
+    "description": "Success title after BitBox02 wallet-policy registration."
+  },
+  "bitboxRegisterWalletPolicySuccessSubtext": "This wallet is ready for address verification and signing on BitBox02.",
+  "@bitboxRegisterWalletPolicySuccessSubtext": {
+    "description": "Success explanation after BitBox02 wallet-policy registration."
+  },
+  "ledgerRegisterWalletPolicyTitle": "Register on Ledger",
+  "@ledgerRegisterWalletPolicyTitle": {
+    "description": "Title for registering a BIP388 wallet policy on Ledger."
+  },
+  "ledgerRegisterWalletPolicyButton": "Register wallet",
+  "@ledgerRegisterWalletPolicyButton": {
+    "description": "Button that starts Ledger wallet-policy registration."
+  },
+  "ledgerRegisterWalletPolicyProcessing": "Registering wallet",
+  "@ledgerRegisterWalletPolicyProcessing": {
+    "description": "Status while Ledger registers a wallet policy."
+  },
+  "ledgerRegisterWalletPolicyProcessingSubtext": "Review the wallet policy on your Ledger and confirm it.",
+  "@ledgerRegisterWalletPolicyProcessingSubtext": {
+    "description": "Instructions while Ledger registers a wallet policy."
+  },
+  "ledgerRegisterWalletPolicySuccess": "Wallet registered",
+  "@ledgerRegisterWalletPolicySuccess": {
+    "description": "Success title after Ledger wallet-policy registration."
+  },
+  "ledgerRegisterWalletPolicySuccessSubtext": "This wallet is ready for address verification and signing on Ledger.",
+  "@ledgerRegisterWalletPolicySuccessSubtext": {
+    "description": "Success explanation after Ledger wallet-policy registration."
+  },
+  "ledgerErrorMissingWalletPolicy": "Wallet policy details are missing.",
+  "@ledgerErrorMissingWalletPolicy": {
+    "description": "Shown when a Ledger wallet-policy route was opened without its required request."
+  },
+  "walletRegistrationShareNfc": "Send via NFC",
+  "@walletRegistrationShareNfc": {
+    "description": "Button label for sending wallet registration data to a Coldcard over NFC"
+  },
+  "walletRegistrationShareNfcTitle": "Tap your {device} to send the wallet registration via NFC",
+  "@walletRegistrationShareNfcTitle": {
+    "description": "NFC write sheet title for sending wallet registration data to a Coldcard",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "@settingsScreenPrivacyTitle": {
     "description": "Settings entry title for the screen-capture/screenshot protection toggle on sensitive screens"
@@ -14481,133 +14643,289 @@
     "description": "Shown when a signed PSBT cannot be finalized before broadcast"
   },
   "limitOrdersTitle": "Limit orders",
-  "@limitOrdersTitle": {"description": "Title for the Limit Orders feature"},
+  "@limitOrdersTitle": {
+    "description": "Title for the Limit Orders feature"
+  },
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
-  "@limitOrdersDashboardDescription": {"description": "Description on the Exchange dashboard Limit Orders card"},
+  "@limitOrdersDashboardDescription": {
+    "description": "Description on the Exchange dashboard Limit Orders card"
+  },
   "limitOrdersOpen": "Open a limit order",
-  "@limitOrdersOpen": {"description": "Action that starts the Limit Order creation flow"},
+  "@limitOrdersOpen": {
+    "description": "Action that starts the Limit Order creation flow"
+  },
   "limitOrdersActiveTitle": "Active limit orders",
-  "@limitOrdersActiveTitle": {"description": "Heading above active Limit Orders"},
+  "@limitOrdersActiveTitle": {
+    "description": "Heading above active Limit Orders"
+  },
   "limitOrdersCreateNew": "Create new",
-  "@limitOrdersCreateNew": {"description": "Action to create another Limit Order"},
+  "@limitOrdersCreateNew": {
+    "description": "Action to create another Limit Order"
+  },
   "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
-  "@limitOrdersMaximumActiveHint": {"description": "Shown when the five-active-Limit-Order cap has been reached"},
+  "@limitOrdersMaximumActiveHint": {
+    "description": "Shown when the five-active-Limit-Order cap has been reached"
+  },
   "limitOrdersBuyAt": "Buy at {price}",
-  "@limitOrdersBuyAt": {"description": "Summary of a Limit Order target price", "placeholders": {"price": {"type": "String"}}},
+  "@limitOrdersBuyAt": {
+    "description": "Summary of a Limit Order target price",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "limitOrdersCancelAll": "Cancel all",
-  "@limitOrdersCancelAll": {"description": "Action to cancel all active Limit Orders"},
+  "@limitOrdersCancelAll": {
+    "description": "Action to cancel all active Limit Orders"
+  },
   "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
-  "@limitOrdersCancelAllTitle": {"description": "Title of the cancel-all Limit Orders confirmation"},
+  "@limitOrdersCancelAllTitle": {
+    "description": "Title of the cancel-all Limit Orders confirmation"
+  },
   "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
-  "@limitOrdersCancelAllMessage": {"description": "Warning shown before all active Limit Orders are cancelled"},
+  "@limitOrdersCancelAllMessage": {
+    "description": "Warning shown before all active Limit Orders are cancelled"
+  },
   "limitOrdersDialogConfirm": "Confirm",
-  "@limitOrdersDialogConfirm": {"description": "Confirmation action in Limit Order dialogs"},
+  "@limitOrdersDialogConfirm": {
+    "description": "Confirmation action in Limit Order dialogs"
+  },
   "limitOrdersDone": "Done",
-  "@limitOrdersDone": {"description": "Closes a completed Limit Order screen"},
+  "@limitOrdersDone": {
+    "description": "Closes a completed Limit Order screen"
+  },
   "limitOrdersIntroTitle": "Open a limit order",
-  "@limitOrdersIntroTitle": {"description": "Title of the Limit Order introduction step"},
+  "@limitOrdersIntroTitle": {
+    "description": "Title of the Limit Order introduction step"
+  },
   "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
-  "@limitOrdersIntroDescription": {"description": "Description of how Limit Orders work"},
+  "@limitOrdersIntroDescription": {
+    "description": "Description of how Limit Orders work"
+  },
   "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
-  "@limitOrdersIntroBulletPrice": {"description": "Limit Order introduction bullet about the target price"},
+  "@limitOrdersIntroBulletPrice": {
+    "description": "Limit Order introduction bullet about the target price"
+  },
   "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
-  "@limitOrdersIntroBulletBalance": {"description": "Limit Order introduction bullet about account balance"},
+  "@limitOrdersIntroBulletBalance": {
+    "description": "Limit Order introduction bullet about account balance"
+  },
   "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
-  "@limitOrdersIntroBulletExecution": {"description": "Limit Order introduction bullet about payout"},
+  "@limitOrdersIntroBulletExecution": {
+    "description": "Limit Order introduction bullet about payout"
+  },
   "limitOrdersTargetTitle": "Choose your target price",
-  "@limitOrdersTargetTitle": {"description": "Title of the Limit Order target-price step"},
+  "@limitOrdersTargetTitle": {
+    "description": "Title of the Limit Order target-price step"
+  },
   "limitOrdersPaymentMethod": "Payment method",
-  "@limitOrdersPaymentMethod": {"description": "Label for the fiat balance used by a Limit Order"},
+  "@limitOrdersPaymentMethod": {
+    "description": "Label for the fiat balance used by a Limit Order"
+  },
   "limitOrdersCurrentPrice": "Current index price",
-  "@limitOrdersCurrentPrice": {"description": "Label for the current Bitcoin index price"},
+  "@limitOrdersCurrentPrice": {
+    "description": "Label for the current Bitcoin index price"
+  },
   "limitOrdersTargetPrice": "Target price",
-  "@limitOrdersTargetPrice": {"description": "Label for the Limit Order target price"},
+  "@limitOrdersTargetPrice": {
+    "description": "Label for the Limit Order target price"
+  },
   "limitOrdersDiscount": "Discount from current price",
-  "@limitOrdersDiscount": {"description": "Label for the Limit Order discount percentage"},
+  "@limitOrdersDiscount": {
+    "description": "Label for the Limit Order discount percentage"
+  },
   "limitOrdersAmountTitle": "Set the amount",
-  "@limitOrdersAmountTitle": {"description": "Title of the Limit Order fiat-amount step"},
+  "@limitOrdersAmountTitle": {
+    "description": "Title of the Limit Order fiat-amount step"
+  },
   "limitOrdersAvailableBalance": "Available: {amount}",
-  "@limitOrdersAvailableBalance": {"description": "Available fiat balance", "placeholders": {"amount": {"type": "String"}}},
+  "@limitOrdersAvailableBalance": {
+    "description": "Available fiat balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "limitOrdersFiatAmount": "Amount",
-  "@limitOrdersFiatAmount": {"description": "Label for the Limit Order fiat amount"},
+  "@limitOrdersFiatAmount": {
+    "description": "Label for the Limit Order fiat amount"
+  },
   "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
-  "@limitOrdersEstimatedBitcoin": {"description": "Estimated bitcoin amount for a Limit Order", "placeholders": {"amount": {"type": "String"}}},
+  "@limitOrdersEstimatedBitcoin": {
+    "description": "Estimated bitcoin amount for a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "limitOrdersWalletTitle": "Choose a payout wallet",
-  "@limitOrdersWalletTitle": {"description": "Title of the Limit Order wallet-selection step"},
+  "@limitOrdersWalletTitle": {
+    "description": "Title of the Limit Order wallet-selection step"
+  },
   "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
-  "@limitOrdersWalletDescription": {"description": "Explains the Limit Order payout wallet"},
+  "@limitOrdersWalletDescription": {
+    "description": "Explains the Limit Order payout wallet"
+  },
   "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
-  "@limitOrdersNoDefaultWallets": {"description": "Shown when no default payout wallet is configured"},
+  "@limitOrdersNoDefaultWallets": {
+    "description": "Shown when no default payout wallet is configured"
+  },
   "limitOrdersManageDefaultWallets": "Manage default wallets",
-  "@limitOrdersManageDefaultWallets": {"description": "Opens default-wallet settings from Limit Orders"},
+  "@limitOrdersManageDefaultWallets": {
+    "description": "Opens default-wallet settings from Limit Orders"
+  },
   "limitOrdersWalletBitcoin": "Bitcoin address",
-  "@limitOrdersWalletBitcoin": {"description": "Bitcoin on-chain Limit Order payout option"},
+  "@limitOrdersWalletBitcoin": {
+    "description": "Bitcoin on-chain Limit Order payout option"
+  },
   "limitOrdersWalletLightning": "Lightning address",
-  "@limitOrdersWalletLightning": {"description": "Lightning Limit Order payout option"},
+  "@limitOrdersWalletLightning": {
+    "description": "Lightning Limit Order payout option"
+  },
   "limitOrdersWalletLiquid": "Liquid address",
-  "@limitOrdersWalletLiquid": {"description": "Liquid Limit Order payout option"},
+  "@limitOrdersWalletLiquid": {
+    "description": "Liquid Limit Order payout option"
+  },
   "limitOrdersConfirmationTitle": "Confirm limit order",
-  "@limitOrdersConfirmationTitle": {"description": "Title of the Limit Order confirmation step"},
+  "@limitOrdersConfirmationTitle": {
+    "description": "Title of the Limit Order confirmation step"
+  },
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
-  "@limitOrdersEstimatedBuyPrice": {"description": "Estimated user buy price after spread"},
+  "@limitOrdersEstimatedBuyPrice": {
+    "description": "Estimated user buy price after spread"
+  },
   "limitOrdersBalancePayment": "{currency} balance",
-  "@limitOrdersBalancePayment": {"description": "Fiat balance used to fund the order", "placeholders": {"currency": {"type": "String"}}},
+  "@limitOrdersBalancePayment": {
+    "description": "Fiat balance used to fund the order",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
   "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
-  "@limitOrdersTermsNotice": {"description": "Terms and spread notice before creating a Limit Order"},
+  "@limitOrdersTermsNotice": {
+    "description": "Terms and spread notice before creating a Limit Order"
+  },
   "limitOrdersConfirm": "Confirm",
-  "@limitOrdersConfirm": {"description": "Creates the Limit Order"},
+  "@limitOrdersConfirm": {
+    "description": "Creates the Limit Order"
+  },
   "limitOrdersCreatedTitle": "Limit order active",
-  "@limitOrdersCreatedTitle": {"description": "Title shown after a Limit Order is created"},
+  "@limitOrdersCreatedTitle": {
+    "description": "Title shown after a Limit Order is created"
+  },
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
-  "@limitOrdersCreatedMessage": {"description": "Success summary after creating a Limit Order", "placeholders": {"amount": {"type": "String"}, "price": {"type": "String"}}},
+  "@limitOrdersCreatedMessage": {
+    "description": "Success summary after creating a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "limitOrdersBackToExchange": "Back to Exchange",
-  "@limitOrdersBackToExchange": {"description": "Returns from Limit Order success to the Exchange dashboard"},
+  "@limitOrdersBackToExchange": {
+    "description": "Returns from Limit Order success to the Exchange dashboard"
+  },
   "limitOrderDetailsTitle": "Limit order details",
-  "@limitOrderDetailsTitle": {"description": "Title of the Limit Order details screen"},
+  "@limitOrderDetailsTitle": {
+    "description": "Title of the Limit Order details screen"
+  },
   "limitOrderDetailsStatus": "Status",
-  "@limitOrderDetailsStatus": {"description": "Limit Order status label"},
+  "@limitOrderDetailsStatus": {
+    "description": "Limit Order status label"
+  },
   "limitOrderDetailsNumber": "Order number",
-  "@limitOrderDetailsNumber": {"description": "Limit Order number label"},
+  "@limitOrderDetailsNumber": {
+    "description": "Limit Order number label"
+  },
   "limitOrderDetailsAddress": "Payout address",
-  "@limitOrderDetailsAddress": {"description": "Limit Order payout address label"},
+  "@limitOrderDetailsAddress": {
+    "description": "Limit Order payout address label"
+  },
   "limitOrderDetailsCreated": "Created",
-  "@limitOrderDetailsCreated": {"description": "Limit Order creation date label"},
+  "@limitOrderDetailsCreated": {
+    "description": "Limit Order creation date label"
+  },
   "limitOrderDetailsExpires": "Expires",
-  "@limitOrderDetailsExpires": {"description": "Limit Order expiry date label"},
+  "@limitOrderDetailsExpires": {
+    "description": "Limit Order expiry date label"
+  },
   "limitOrderCancel": "Cancel limit order",
-  "@limitOrderCancel": {"description": "Action to cancel one active Limit Order"},
+  "@limitOrderCancel": {
+    "description": "Action to cancel one active Limit Order"
+  },
   "limitOrderCancelTitle": "Cancel this limit order?",
-  "@limitOrderCancelTitle": {"description": "Title of the single Limit Order cancellation dialog"},
+  "@limitOrderCancelTitle": {
+    "description": "Title of the single Limit Order cancellation dialog"
+  },
   "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
-  "@limitOrderCancelMessage": {"description": "Warning before one Limit Order is cancelled"},
+  "@limitOrderCancelMessage": {
+    "description": "Warning before one Limit Order is cancelled"
+  },
   "limitOrderStatusActive": "Active",
-  "@limitOrderStatusActive": {"description": "Active Limit Order status"},
+  "@limitOrderStatusActive": {
+    "description": "Active Limit Order status"
+  },
   "limitOrderStatusExecuted": "Executed",
-  "@limitOrderStatusExecuted": {"description": "Executed Limit Order status"},
+  "@limitOrderStatusExecuted": {
+    "description": "Executed Limit Order status"
+  },
   "limitOrderStatusCancelled": "Cancelled",
-  "@limitOrderStatusCancelled": {"description": "Cancelled Limit Order status"},
+  "@limitOrderStatusCancelled": {
+    "description": "Cancelled Limit Order status"
+  },
   "limitOrderStatusExpired": "Expired",
-  "@limitOrderStatusExpired": {"description": "Expired Limit Order status"},
+  "@limitOrderStatusExpired": {
+    "description": "Expired Limit Order status"
+  },
   "limitOrderStatusFailed": "Failed",
-  "@limitOrderStatusFailed": {"description": "Failed or unknown Limit Order status"},
+  "@limitOrderStatusFailed": {
+    "description": "Failed or unknown Limit Order status"
+  },
   "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
-  "@limitOrdersAccountUnavailableError": {"description": "Shown when Limit Order account data is unavailable"},
+  "@limitOrdersAccountUnavailableError": {
+    "description": "Shown when Limit Order account data is unavailable"
+  },
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
-  "@limitOrdersMaximumActiveError": {"description": "Shown when the backend rejects a sixth active Limit Order"},
+  "@limitOrdersMaximumActiveError": {
+    "description": "Shown when the backend rejects a sixth active Limit Order"
+  },
   "limitOrderNotFoundError": "This limit order could not be found.",
-  "@limitOrderNotFoundError": {"description": "Shown when a Limit Order no longer exists"},
+  "@limitOrderNotFoundError": {
+    "description": "Shown when a Limit Order no longer exists"
+  },
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "@limitOrderInvalidAddressError": {"description": "Shown when the backend rejects a Limit Order payout address"},
+  "@limitOrderInvalidAddressError": {
+    "description": "Shown when the backend rejects a Limit Order payout address"
+  },
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "@limitOrderInvalidTargetError": {"description": "Shown for an invalid Limit Order target price"},
+  "@limitOrderInvalidTargetError": {
+    "description": "Shown for an invalid Limit Order target price"
+  },
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
-  "@limitOrderInvalidAmountError": {"description": "Shown for an invalid Limit Order fiat amount"},
+  "@limitOrderInvalidAmountError": {
+    "description": "Shown for an invalid Limit Order fiat amount"
+  },
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
-  "@limitOrdersLoadError": {"description": "Shown when Limit Orders cannot be loaded"},
+  "@limitOrdersLoadError": {
+    "description": "Shown when Limit Orders cannot be loaded"
+  },
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "@limitOrderCreationError": {"description": "Shown when a Limit Order cannot be created"},
+  "@limitOrderCreationError": {
+    "description": "Shown when a Limit Order cannot be created"
+  },
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
-  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"},
+  "@limitOrderCancellationError": {
+    "description": "Shown when one or all Limit Orders cannot be cancelled"
+  },
   "limitOrdersYourWalletsTitle": "Your wallets",
   "@limitOrdersYourWalletsTitle": {
     "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
@@ -15470,5 +15788,1681 @@
   "spHeaderValidationInvalidChainDetail": "This server does not follow the real Bitcoin chain. Switch to another Electrum server in the settings.",
   "@spHeaderValidationInvalidChainDetail": {
     "description": "SP header card detail when the Electrum server serves a chain that contradicts the built-in checkpoint; tells the user to change server"
-  }
+  },
+  "walletSignerLabelWithFingerprint": "Signer {index} · {fingerprint}",
+  "importWatchOnlyErrorSignerOriginRequired": "This hardware signer export is missing its fingerprint and account path. Export a descriptor or an account xpub with key origin information.",
+  "@importWatchOnlyErrorFixedPublicKeyUnsupported": {
+    "description": "Error shown when a descriptor contains a fixed public key instead of an extended public key"
+  },
+  "walletSignerLabel": "Signer {index}",
+  "importWatchOnlyErrorFixedPublicKeyUnsupported": "This descriptor contains fixed public keys, which Bull does not support yet. Use extended public keys for every signer.",
+  "@walletSignerLabel": {
+    "description": "Label identifying a wallet signer by position",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "importWatchOnlyBullMobileDevice": "Bull Wallet (this device)",
+  "importWatchOnlyChangePathTitle": "Change path",
+  "@importWatchOnlyErrorSignerOriginRequired": {
+    "description": "Shown when a hardware-wallet xpub is missing the key origin needed for signing."
+  },
+  "@importWatchOnlyChangePathTitle": {
+    "description": "Title shown when Bull infers the change branch from a receive-only descriptor"
+  },
+  "@walletSignerLabelWithFingerprint": {
+    "description": "Label identifying a wallet signer by position and fingerprint",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "@importWatchOnlyBullMobileDevice": {
+    "description": "Device name shown when a descriptor key belongs to the local Bull wallet"
+  },
+  "@importWatchOnlyChangePathDescription": {
+    "description": "Explains the change branch inferred from a conventional external descriptor"
+  },
+  "importWatchOnlyChangePathDescription": "This descriptor specifies receive addresses on /0/*. Bull will use /1/* for change.",
+  "@walletDetailsCompleteConditions": {
+    "description": "Explanation for a threshold of spending conditions",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsAbsoluteTimeCondition": {
+    "description": "Absolute timestamp timelock condition",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSearchSigningKeyExportKeywords": "extended public key|xpub|descriptor key|wallet signer|multisig signer",
+  "@walletDetailsNestedSegwitP2wsh": {
+    "description": "Address type label for a nested SegWit script descriptor"
+  },
+  "@walletDetailsNativeSegwitP2wpkh": {
+    "description": "Address type label for a native SegWit single-key descriptor"
+  },
+  "@walletDetailsSignersLabel": {
+    "description": "Heading for wallet signer details"
+  },
+  "@walletDetailsViewButton": {
+    "description": "Button label for opening more wallet details"
+  },
+  "walletDetailsAvailableSpendingPaths": "Available spending paths",
+  "@walletDetailsUnavailableLabel": {
+    "description": "Status shown when wallet details cannot be loaded"
+  },
+  "@walletDetailsSpendingConditionsLabel": {
+    "description": "Title for the readable wallet spending policy"
+  },
+  "@walletDetailsNativeSegwitP2wsh": {
+    "description": "Address type label for a native SegWit script descriptor"
+  },
+  "@walletDetailsLegacyP2pkh": {
+    "description": "Address type label for a legacy single-key descriptor"
+  },
+  "walletDetailsSignersLabel": "Signers",
+  "@walletDetailsAbsoluteBlockCondition": {
+    "description": "Absolute block timelock condition",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsLegacyP2pkh": "Legacy (P2PKH)",
+  "@walletDetailsExternalSignerLabel": {
+    "description": "Label for a signer controlled outside Bull Wallet"
+  },
+  "walletDetailsCompleteConditions": "Complete {threshold} of these {count} conditions",
+  "walletDetailsRelativeBlocksCondition": "This condition becomes available for each coin {count, plural, =1{1 block} other{{count} blocks}} after it is confirmed",
+  "@walletDetailsRelativeMinutesCondition": {
+    "description": "Relative minute timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsNestedSegwitP2wpkh": {
+    "description": "Address type label for a nested SegWit single-key descriptor"
+  },
+  "@walletDetailsAvailableSpendingPaths": {
+    "description": "Label introducing the wallet spending paths"
+  },
+  "walletDetailsAllConditionsRequired": "All of these conditions are required",
+  "signingKeyExportDescription": "Use this key to add Bull Wallet as a signer to another wallet.",
+  "@walletDetailsRelativeBlocksCondition": {
+    "description": "Relative block timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsNestedSegwitP2wpkh": "Nested SegWit (P2SH-P2WPKH)",
+  "@signingKeyExportDescription": {
+    "description": "Explains how the exported signing key can be used"
+  },
+  "@walletDetailsSpendingPathTitle": {
+    "description": "Heading for a numbered wallet spending path",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletPolicySignaturesRequired": {
+    "description": "Explanation of a multisig signature threshold.",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsRelativeHoursCondition": {
+    "description": "Relative hour timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsSpendingPathTitle": "Spending path {index}",
+  "signingKeyExportTitle": "Use Bull as signer",
+  "@walletDetailsRelativeDaysCondition": {
+    "description": "Relative day timelock condition explained per coin",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailsAbsoluteTimeCondition": "This condition becomes available after {timestamp}",
+  "walletDetailsRelativeMinutesCondition": "This condition becomes available for each coin {count, plural, =1{1 minute} other{{count} minutes}} after it is confirmed",
+  "@walletDetailsUnassignedSignerLabel": {
+    "description": "Label for a wallet key with no assigned signer type"
+  },
+  "walletDetailsKeyLabel": "Key {index}",
+  "@signingKeyExportAccountHelp": {
+    "description": "Explains how to avoid reusing an exported signing key across wallets"
+  },
+  "walletDetailsViewButton": "View",
+  "@signingKeyExportPrivacyNotice": {
+    "description": "Privacy notice shown with an exported extended public key"
+  },
+  "walletDetailsRelativeDaysCondition": "This condition becomes available for each coin {count, plural, =1{1 day} other{{count} days}} after it is confirmed",
+  "walletDetailsLegacyP2sh": "Legacy (P2SH)",
+  "signingKeyExportAccountHelp": "Use a different account for each separate wallet. After adding this key to a wallet, mark the account as used.",
+  "signingKeyExportAccount": "Account",
+  "@walletDetailsKeyLabel": {
+    "description": "Heading for one of multiple keys belonging to a signer",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@walletDetailsLegacyP2sh": {
+    "description": "Address type label for a legacy script descriptor"
+  },
+  "walletDetailsRelativeHoursCondition": "This condition becomes available for each coin {count, plural, =1{1 hour} other{{count} hours}} after it is confirmed",
+  "walletDetailsExternalSignerLabel": "External signer",
+  "walletPolicySignaturesRequired": "{threshold} of {count} signatures required",
+  "walletDetailsLoadingLabel": "Loading...",
+  "walletDetailsNestedSegwitP2wsh": "Nested SegWit (P2SH-P2WSH)",
+  "@settingsSearchSigningKeyExportKeywords": {
+    "description": "Search aliases for exporting Bull signing keys"
+  },
+  "walletDetailsAbsoluteBlockCondition": "This condition becomes available at block {height}",
+  "@signingKeyExportTitle": {
+    "description": "Title for exporting the Bull Wallet signing key"
+  },
+  "walletDetailsSpendingConditionsLabel": "Spending conditions",
+  "walletDetailsNativeSegwitP2wpkh": "Native SegWit (P2WPKH)",
+  "@walletDetailsLoadingLabel": {
+    "description": "Status shown while wallet details are loading"
+  },
+  "signingKeyExportPrivacyNotice": "Anyone with this key can view the addresses and transaction history derived from it, but cannot spend your bitcoin.",
+  "@signingKeyExportAccount": {
+    "description": "Label for the BIP48 account number used when exporting a signing key"
+  },
+  "@walletDetailsAllConditionsRequired": {
+    "description": "Explanation for a spending path requiring every listed condition"
+  },
+  "walletDetailsUnassignedSignerLabel": "Unassigned",
+  "walletDetailsUnavailableLabel": "Unavailable",
+  "walletDetailsNativeSegwitP2wsh": "Native SegWit (P2WSH)",
+  "psbtSigningReviewTitle": "Review transaction",
+  "@psbtSigningChooseFile": {
+    "description": "Button label for importing a PSBT file."
+  },
+  "@walletPolicyWaitBlocks": {
+    "description": "Description of a relative block timelock condition",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@psbtSigningTimingUnverified": {
+    "description": "Warning shown when timelock maturity cannot be verified for the PSBT inputs."
+  },
+  "psbtSigningSignWithDevice": "Sign with this device",
+  "psbtSigningNotMineableForBlocks": "Bull can sign now, but this transaction cannot be mined for {count, plural, =1{1 more block} other{{count} more blocks}}.",
+  "@psbtSigningTitle": {
+    "description": "Title for the external PSBT signing flow."
+  },
+  "psbtSigningFrozenUtxo": "This PSBT spends a frozen coin. Unfreeze it before signing.",
+  "@psbtSigningWalletUnavailable": {
+    "description": "Error shown when the selected wallet cannot sign PSBTs."
+  },
+  "@psbtSigningEdit": {
+    "description": "Button label for starting another standalone PSBT signing flow."
+  },
+  "psbtSigningShareFile": "Share PSBT file",
+  "@psbtSigningNotMineableForBlocks": {
+    "description": "PSBT warning for unsatisfied relative block sequences.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@psbtSigningNotMineableBeforeTime": {
+    "description": "PSBT warning for an unsatisfied time-based lock.",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "walletPolicyConditionsRequired": "{threshold} of {count} conditions required",
+  "@psbtFlowSharePsbt": {
+    "description": "Button label for sharing an unsigned PSBT"
+  },
+  "psbtSigningInvalidPsbt": "This is not a valid PSBT.",
+  "@psbtSigningQrDescription": {
+    "description": "Instructions for scanning the signed PSBT QR code."
+  },
+  "@psbtFlowCopyPsbt": {
+    "description": "Button label for copying an unsigned PSBT to the clipboard"
+  },
+  "@psbtSigningWalletMismatch": {
+    "description": "Error shown when a PSBT does not belong to the selected wallet."
+  },
+  "importSignedPsbtPasteHint": "Paste a signed PSBT",
+  "@psbtSigningNonAddressOutput": {
+    "description": "Label for a transaction output that has no displayable address."
+  },
+  "@psbtSigningReviewTitle": {
+    "description": "Heading for the external PSBT transaction review."
+  },
+  "@walletPolicyAfterTimestamp": {
+    "description": "Description of an absolute timestamp condition",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@psbtSigningInvalidPsbt": {
+    "description": "Error shown when imported text is not a valid PSBT."
+  },
+  "@psbtSigningSignWithDevice": {
+    "description": "Button label for signing the PSBT with this device."
+  },
+  "@psbtSigningQrTitle": {
+    "description": "Title of the signed PSBT QR screen."
+  },
+  "psbtSigningEdit": "Sign another PSBT",
+  "walletPolicyWaitDays": "Wait {count, plural, =1{1 day} other{{count} days}}",
+  "psbtSigningIntro": "Import a PSBT. Bull verifies its inputs and wallet-owned outputs before signing.",
+  "@psbtSigningShareFile": {
+    "description": "Button label for sharing a signed PSBT file."
+  },
+  "@psbtSigningPasteHint": {
+    "description": "Placeholder for the PSBT text input."
+  },
+  "psbtSigningTitle": "Sign a PSBT",
+  "@psbtSigningMissingUtxo": {
+    "description": "Error shown when a PSBT lacks input data required for safe review."
+  },
+  "walletPolicyAfterTimestamp": "After timestamp {timestamp}",
+  "@psbtSigningMissingLocalKey": {
+    "description": "Error shown when a PSBT has no key origin for the local signer."
+  },
+  "psbtSigningPasteHint": "Paste a PSBT",
+  "@walletPolicyConditionsRequired": {
+    "description": "Explanation of a spending-condition threshold.",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@importSignedPsbtTitle": {
+    "description": "Page title when collecting a signed PSBT from another signer"
+  },
+  "@psbtSigningPartialDescription": {
+    "description": "Instructions for sharing a partially signed PSBT."
+  },
+  "@psbtSigningNoSignatureAdded": {
+    "description": "Error shown when signing adds no new local signature."
+  },
+  "@walletPolicyThisDevice": {
+    "description": "Name for the mobile wallet signer in a spending path"
+  },
+  "psbtSigningMissingUtxo": "The PSBT is missing the input data needed for safe review.",
+  "@psbtSigningFrozenUtxo": {
+    "description": "Shown when standalone PSBT signing is blocked because an input coin is frozen"
+  },
+  "importSignedPsbtTitle": "Import signed PSBT",
+  "psbtSigningWalletMismatch": "This PSBT does not belong to the selected wallet.",
+  "@walletPolicyWaitMinutes": {
+    "description": "Description of a relative time timelock measured in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningTimingUnverified": "Bull can sign now, but could not verify when this transaction can be mined.",
+  "psbtSigningWalletUnavailable": "This wallet is not available for PSBT signing.",
+  "walletPolicyWaitHours": "Wait {count, plural, =1{1 hour} other{{count} hours}}",
+  "psbtSigningNotMineableBeforeTime": "Bull can sign now, but this transaction cannot be mined before {timestamp}.",
+  "@psbtSigningSignedWithDeviceTitle": {
+    "description": "Title shown after this device signs the PSBT."
+  },
+  "psbtSigningNotMineableBeforeBlock": "Bull can sign now, but this transaction cannot be mined before block {height}.",
+  "psbtSigningWalletOutput": "Back to this wallet",
+  "@walletPolicyAfterBlock": {
+    "description": "Description of an absolute block-height condition",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "walletPolicyThisDevice": "this device",
+  "@psbtSigningCopyPsbt": {
+    "description": "Button label for copying a signed PSBT."
+  },
+  "@psbtSigningFinalDescription": {
+    "description": "Instructions for sharing a fully signed PSBT."
+  },
+  "@walletPolicyWaitHours": {
+    "description": "Description of a relative time timelock measured in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@importSignedPsbtPasteHint": {
+    "description": "Input hint when collecting a signed PSBT from another signer"
+  },
+  "psbtSigningPartialDescription": "Share this signed PSBT to continue.",
+  "walletPolicyWaitMinutes": "Wait {count, plural, =1{1 minute} other{{count} minutes}}",
+  "copiedToClipboardMessage": "Copied to clipboard",
+  "walletPolicyAfterBlock": "After block {height}",
+  "walletPolicyWaitBlocks": "Wait {count, plural, =1{1 block} other{{count} blocks}}",
+  "psbtSigningFinalDescription": "This PSBT is fully signed and ready to share.",
+  "walletPolicyHashPreimage": "Provide hash preimage",
+  "@walletPolicyWaitDays": {
+    "description": "Description of a relative time timelock measured in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningChooseFile": "Choose file",
+  "@psbtSigningAuthorization": {
+    "description": "Label for the transaction authorization requirements."
+  },
+  "psbtSigningNonAddressOutput": "Non-address output",
+  "psbtSigningQrDescription": "Scan this QR to import the signed PSBT.",
+  "psbtSigningMissingLocalKey": "This PSBT does not include a key origin for Bull on this device.",
+  "psbtSigningSignedWithDeviceTitle": "PSBT signed with this device",
+  "@psbtSigningNotMineableBeforeBlock": {
+    "description": "PSBT warning for an unsatisfied absolute block locktime.",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "psbtSigningFileReadFailed": "Bull could not read this PSBT file.",
+  "psbtSigningShowQr": "Show QR",
+  "@psbtSigningWalletOutput": {
+    "description": "Label for an output returning funds to the selected wallet."
+  },
+  "@psbtSigningUnsupportedSighash": {
+    "description": "Error shown when a PSBT uses an unsupported signature hash mode."
+  },
+  "psbtSigningUnsupportedSighash": "This PSBT uses a signing mode Bull does not support.",
+  "@walletPolicySignWith": {
+    "description": "Description of a signature condition in a Miniscript path",
+    "placeholders": {
+      "signer": {
+        "type": "String"
+      }
+    }
+  },
+  "@walletPolicyHashPreimage": {
+    "description": "Description of a Miniscript hashlock condition"
+  },
+  "psbtFlowCopyPsbt": "Copy PSBT",
+  "psbtSigningQrTitle": "Signed PSBT",
+  "@psbtSigningIntro": {
+    "description": "Introduction to importing and safely reviewing a PSBT."
+  },
+  "psbtSigningAuthorization": "Authorization",
+  "psbtSigningNoSignatureAdded": "Bull could not add a new signature to this PSBT.",
+  "psbtSigningCopyPsbt": "Copy signed PSBT",
+  "psbtSigningScanQr": "Scan QR",
+  "psbtFlowSharePsbt": "Share PSBT",
+  "@psbtSigningFileReadFailed": {
+    "description": "Error shown when an imported PSBT file cannot be read."
+  },
+  "@psbtSigningScanQr": {
+    "description": "Button label for scanning a PSBT QR code."
+  },
+  "@psbtSigningShowQr": {
+    "description": "Button label for displaying a signed PSBT as a QR code."
+  },
+  "walletPolicySignWith": "Sign with {signer}",
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "@sendAuthorization": {
+    "description": "Label for the transaction authorization conditions"
+  },
+  "@sendPolicyViewDetails": {
+    "description": "Action to show technical transaction authorization conditions"
+  },
+  "@sendDraftLabelTitle": {
+    "description": "Title for the optional draft label editor."
+  },
+  "@sendPolicyAnotherAmountAvailableInBlocks": {
+    "description": "Additional balance that the same authorization option can spend after more blocks.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendDraftKeptForLater": {
+    "description": "Notice after switching a saved Bitcoin draft to another payment type"
+  },
+  "sendPolicyAuthorizationAvailableInBlocks": "Authorization becomes available in {count, plural, =1{1 block} other{{count} blocks}}",
+  "sendPolicyAmountAvailableInBlocks": "This option can spend {amount} in {count, plural, =1{1 block} other{{count} blocks}}",
+  "sendRestartSigningConfirm": "Restart signing",
+  "sendSigningConflictTitle": "Transaction conflict",
+  "@sendPolicyChooseOneOption": {
+    "description": "Instruction for selecting one transaction authorization option"
+  },
+  "@sendSigningRestart": {
+    "description": "Action confirming that signing should restart from an edited transaction."
+  },
+  "sendPolicyAvailableNow": "This option is available now",
+  "sendSigningDeleteLocalCopy": "Delete local copy",
+  "@sendLoadingTransaction": {
+    "description": "Message shown while restoring a saved transaction"
+  },
+  "@sendPolicyChooseConditions": {
+    "description": "Instruction for selecting Miniscript threshold branches",
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendSignersNeeded": {
+    "description": "Number of additional signers needed to satisfy a transaction policy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSigningContinue": "Continue signing",
+  "@sendPolicyAmountAvailableInBlocks": {
+    "description": "Status for a relatively timelocked authorization option when a specific amount becomes spendable after more blocks.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendPolicyUnavailableForFunds": {
+    "description": "Status for an authorization option that cannot spend the selected funds"
+  },
+  "sendPendingConflict": "Conflict",
+  "@sendSigningConflictMessage": {
+    "description": "Explanation for a conflicting saved signing transaction."
+  },
+  "@sendSigningContinue": {
+    "description": "Action to remain in the signing session."
+  },
+  "sendTransactionFallback": "Transaction",
+  "sendPendingTransactionsTitle": "Drafts",
+  "@sendContinueToSigning": {
+    "description": "Action that freezes transaction details and opens signing coordination."
+  },
+  "@sendDraftSaved": {
+    "description": "Passive status shown after a transaction draft has been saved."
+  },
+  "@sendTransactionFallback": {
+    "description": "Fallback name for an unlabeled resumable signing transaction without an amount."
+  },
+  "sendPolicyHideDetails": "Hide details",
+  "sendSignersNeeded": "{count, plural, =1{1 more signer needed} other{{count} more signers needed}}",
+  "sendSigningDeleteWarning": "Deleting Bull’s local copy does not invalidate PSBTs or signatures already shared with other signers. An external copy may still be completed and broadcast.",
+  "sendDraftBackMessage": "You can save this transaction as a draft and continue later.",
+  "sendSigningBackTitle": "Finish signing later?",
+  "@sendPolicyAuthorizationAvailableAtBlock": {
+    "description": "Activation status for an unavailable absolute block-height path",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSpendingPathRequired": "Selection required",
+  "sendFinishLater": "Finish later",
+  "@sendDraftBackMessage": {
+    "description": "Explanation when leaving a new unsaved transaction."
+  },
+  "sendPolicyPreimageInvalid": "This preimage does not match the spending condition",
+  "@sendPendingConflict": {
+    "description": "Status for a saved transaction whose inputs were spent elsewhere."
+  },
+  "sendAuthorizeTransaction": "Authorize transaction",
+  "@sendRestartSigningConfirm": {
+    "description": "Confirmation action for rebuilding a transaction with a different spending path"
+  },
+  "@sendContinueEditing": {
+    "description": "Action to stay in the transaction editor."
+  },
+  "@sendChooseAuthorizationDescription": {
+    "description": "Explanation shown above transaction authorization choices"
+  },
+  "sendDraftDiscard": "Discard",
+  "@sendDraftLabelHint": {
+    "description": "Hint for an optional transaction draft label."
+  },
+  "sendPolicyChangePath": "Change-address funds",
+  "sendPolicyAmountAvailableNow": "This option can spend {amount} now",
+  "@sendPolicyAuthorizationAvailableAtTime": {
+    "description": "Activation status for an unavailable absolute timestamp path",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendPolicyAmountAvailableNow": {
+    "description": "Spendable amount available through an authorization option",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sendDraftFallback": "Draft",
+  "@sendDraftDiscard": {
+    "description": "Action to discard an unsaved transaction."
+  },
+  "@sendRestartSigningTitle": {
+    "description": "Title of the warning shown when changing a spending path after signatures were added"
+  },
+  "sendPolicyAuthorizationAvailableAtBlock": "Authorization becomes available at block {height}",
+  "sendPolicyViewDetails": "View details",
+  "sendPolicyChooseOneOption": "Choose one option",
+  "sendPolicyUnavailableForFunds": "Not available for these funds",
+  "@sendPolicyHideDetails": {
+    "description": "Action to hide technical transaction authorization conditions"
+  },
+  "sendAuthorization": "Authorization",
+  "sendSigningRestartTitle": "Restart signing?",
+  "sendSigningRestartMessage": "Editing creates a new unsigned transaction. Collected signatures cannot be kept if the transaction changes.",
+  "sendDraftFallbackAmount": "Draft · {amount}",
+  "sendSigningUnavailableTitle": "Signing is not available yet",
+  "@sendPolicyPreimageProvided": {
+    "description": "Confirmation that the required hash preimage has been supplied"
+  },
+  "@sendDraftBackTitle": {
+    "description": "Title when leaving a new unsaved transaction."
+  },
+  "@sendPolicyChooseSignatures": {
+    "description": "Instruction for selecting the required number of signer keys",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendPolicyAmountAvailableAfter": "This option can spend {amount} after {timestamp}",
+  "@sendSigningReady": {
+    "description": "Status shown once the selected spending policy has enough signatures"
+  },
+  "@sendPolicyAnotherAmountAvailableAfter": {
+    "description": "Additional balance that the same authorization option can spend after a time.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendFinishLater": {
+    "description": "Action to leave a signing session while preserving it."
+  },
+  "sendSignerSign": "Sign",
+  "@sendPolicyPreimageInvalid": {
+    "description": "Validation error for an incorrect Miniscript hash preimage"
+  },
+  "@sendSigningRestartMessage": {
+    "description": "Warning that editing a signing transaction invalidates signatures."
+  },
+  "sendDraftLabelHint": "Optional label",
+  "@sendPolicyAmountAvailableAfter": {
+    "description": "Status for a relatively timelocked authorization option when a specific amount becomes spendable after a time.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendSigningDeleteLocalCopy": {
+    "description": "Action to remove a saved signing session from Bull."
+  },
+  "sendSigningKeepForLater": "Keep for later",
+  "sendPolicyAvailableAfter": "This option becomes available after {timestamp}",
+  "@sendSigningDeleteWarning": {
+    "description": "Warning shown before deleting a local signing session."
+  },
+  "sendSignerSigned": "Signed",
+  "@sendPolicyChangePath": {
+    "description": "Label for an internal-keychain spending path when descriptors differ"
+  },
+  "sendSigningRestart": "Restart signing",
+  "sendPolicyAnotherAmountAvailableInBlocks": "It can spend another {amount} in {count, plural, =1{1 block} other{{count} blocks}}",
+  "@sendSpendingPathRequired": {
+    "description": "Status shown when a Miniscript spending path has not been selected"
+  },
+  "@sendPolicyAvailableAtBlock": {
+    "description": "Status for an authorization option locked until a block height",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "sendChooseAuthorizationDescription": "Choose how this transaction will be authorized.",
+  "sendPolicyAuthorizationAvailableAtTime": "Authorization becomes available after {timestamp}",
+  "sendPolicyAvailableAtBlock": "This option becomes available at block {height}",
+  "@sendPolicyAvailableNow": {
+    "description": "Status for an authorization option that can be used immediately"
+  },
+  "sendPendingDraft": "Draft",
+  "sendSigningReady": "Ready to broadcast",
+  "sendContinueEditing": "Continue editing",
+  "sendDraftLabelTitle": "Save draft",
+  "@sendEditTransaction": {
+    "description": "Action to return a frozen signing transaction to editing."
+  },
+  "@sendSigningTitle": {
+    "description": "Heading for coordinating signatures on a multisig transaction"
+  },
+  "sendPolicyChooseSignatures": "Choose {count} signatures",
+  "sendSigningUnavailableMessage": "The selected spending conditions are not currently satisfied. Try again after the wallet has synced or the required time has passed.",
+  "@sendPolicyAuthorizationAvailableInBlocks": {
+    "description": "Activation status for UTXOs under a relative block timelock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sendPolicyAvailableAfter": {
+    "description": "Status for an authorization option locked until a date and time",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendSigningRestartTitle": {
+    "description": "Title shown before editing a transaction that already has signatures."
+  },
+  "sendRestartSigningDescription": "This spending path changes the transaction inputs or timing. Existing signatures can’t be reused.",
+  "@sendSigningKeepForLater": {
+    "description": "Action to preserve a signing session and leave."
+  },
+  "sendSigningTitle": "Sign transaction",
+  "@sendSignerSigned": {
+    "description": "Status shown for a signer whose signature is present in the PSBT"
+  },
+  "sendLoadingTransaction": "Loading transaction...",
+  "sendPolicyPreimageProvided": "Preimage provided",
+  "sendPolicyReceivePath": "Receive-address funds",
+  "@sendSigningConflictTitle": {
+    "description": "Title shown when a saved signing transaction has spent inputs."
+  },
+  "@sendSigningUnavailableTitle": {
+    "description": "Title shown when the saved spending path is not currently usable."
+  },
+  "sendEditTransaction": "Edit transaction",
+  "sendPolicyPreimageHint": "Enter the 32-byte preimage as hexadecimal",
+  "@sendDraftFallbackAmount": {
+    "description": "Fallback name for an unlabeled draft with an amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sendDraftSaved": "Saved",
+  "sendDeleteDraft": "Delete draft",
+  "@sendSigningUnavailableMessage": {
+    "description": "Explanation when a saved signing policy is not currently available."
+  },
+  "sendSigningConflictMessage": "One or more inputs are spent or frozen. Unfreeze frozen coins to resume. If an input was spent, restart this transaction.",
+  "@sendSigningBackTitle": {
+    "description": "Title when leaving an active signing session."
+  },
+  "@sendTransactionFallbackAmount": {
+    "description": "Fallback name for an unlabeled resumable signing transaction with an amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendAuthorizeTransaction": {
+    "description": "Title for the transaction authorization selector"
+  },
+  "sendTransactionFallbackAmount": "Transaction · {amount}",
+  "@sendPolicyNoPathAvailable": {
+    "description": "Status shown when every Miniscript spending path is still timelocked or otherwise unavailable"
+  },
+  "@sendPolicyPreimageHint": {
+    "description": "Hint for the Miniscript hash preimage input"
+  },
+  "sendPolicyNoPathAvailable": "No spending path is available yet",
+  "sendDraftBackTitle": "Save this transaction?",
+  "sendPolicyAnotherAmountAvailableAfter": "It can spend another {amount} after {timestamp}",
+  "@sendDraftFallback": {
+    "description": "Fallback name for an unlabeled draft without a valid amount."
+  },
+  "@sendDeleteDraft": {
+    "description": "Action to delete a transaction draft."
+  },
+  "@sendSignerSign": {
+    "description": "Action for adding a signature with Bull Wallet on this device"
+  },
+  "@sendPendingTransactionsTitle": {
+    "description": "Heading above local resumable transaction items."
+  },
+  "@sendPendingDraft": {
+    "description": "Status for an editable saved transaction."
+  },
+  "@sendPolicyReceivePath": {
+    "description": "Label for an external-keychain spending path when descriptors differ"
+  },
+  "sendRestartSigningTitle": "Restart signing?",
+  "@sendRestartSigningDescription": {
+    "description": "Warning that a spending-path change changes transaction signing fields and discards existing signatures"
+  },
+  "sendPolicyChooseConditions": "Choose {threshold} of {count} conditions",
+  "sendDraftKeptForLater": "Your Bitcoin draft is still saved. This payment will continue separately.",
+  "sendContinueToSigning": "Continue to signing",
+  "@sendPendingTransactionsInvalid": {
+    "description": "Warning shown when one or more saved transactions are invalid."
+  },
+  "sendPendingTransactionsInvalid": "Some saved transactions couldn’t be loaded.",
+  "walletAddressTypeTaproot": "Taproot",
+  "@walletAddressTypeTaproot": {
+    "description": "Address type for Taproot descriptor wallets"
+  },
+  "@sendErrorUnsupportedPolicyPath": {
+    "description": "Error shown when Bull cannot unambiguously construct the selected Taproot spending path"
+  },
+  "@psbtSigningUnsupportedSpendMode": {
+    "description": "Shown when a PSBT combines Taproot input spend modes that Bull cannot safely sign in one operation."
+  },
+  "sendErrorUnsupportedPolicyPath": "This Taproot spending option isn’t supported yet. Choose another option.",
+  "psbtSigningUnsupportedSpendMode": "This PSBT mixes Taproot key-path and script-path inputs, which Bull cannot sign together yet.",
+  "signingKeyExportAccountMarked": "Account {account} is marked as used. Account {nextAccount} is ready for another wallet.",
+  "signingKeyExportAccountUsed": "This account is already marked as used. Reuse it only if you intend to use the same key again.",
+  "@signingKeyExportAccountMarked": {
+    "description": "Confirmation after reserving a manually exported signing-key account",
+    "placeholders": {
+      "account": {
+        "type": "int"
+      },
+      "nextAccount": {
+        "type": "int"
+      }
+    }
+  },
+  "@signingKeyExportMarkUsed": {
+    "description": "Action confirming that the displayed Bull signing key was added to a wallet"
+  },
+  "signingKeyExportMarkUsed": "I used this key",
+  "@signingKeyExportAccountUsed": {
+    "description": "Warning shown when the selected BIP48 signing-key account is already reserved"
+  },
+  "@signingKeyExportShowDetails": {
+    "description": "Action to deliberately reveal a signing key for an account already marked as used"
+  },
+  "signingKeyExportShowDetails": "Show key details",
+  "@bullVaultTitle": {},
+  "@bullVaultSkipMobileBackup": {
+    "description": "Action requesting to continue BullVault setup without either mobile-key backup"
+  },
+  "bullVaultSkipMobileBackupTitle": "Continue without a mobile-key backup?",
+  "bullVaultOr": "or",
+  "bullVaultPreviousVaultBalance": "{amount} sats remaining",
+  "bullVaultReviewTitle": "Review your BullVault",
+  "bullVaultConfirmAirgappedSetupTitle": "Confirm hardware setup",
+  "bullVaultColdKeyTwo": "Cold key 2",
+  "bullVaultFailureSignerReuse": "Everyday, cold, and inheritance keys must use independent seeds.",
+  "@bullVaultRenewalActivated": {
+    "description": "Confirmation that the replacement BullVault is active and the previous vault is migrating"
+  },
+  "bullVaultRecoveryPackageDescription": "Save this recovery file somewhere safe. It contains the wallet details and recovery schedule, but no private keys.",
+  "@bullVaultHardwareSetupComplete": {
+    "description": "Completed status for a BullVault hardware signer."
+  },
+  "@bullVaultCurrentRecoveryDates": {
+    "description": "Heading above the exact activation dates of the current BullVault policy."
+  },
+  "bullVaultPreviousVaultMigrating": "The previous vault remains monitored permanently for late deposits. Move any remaining funds to the active vault.",
+  "bullVaultProtectionStandard": "Standard (recommended)",
+  "bullVaultCompatibleDescriptorTitle": "Compatible descriptor",
+  "bullVaultOpenWallet": "Open wallet list",
+  "bullVaultRegisterAndConfirmNow": "Set up on this device",
+  "@bullVaultRegistrationRequired": {
+    "description": "Instruction requiring hardware policy registration before BullVault setup is treated as complete",
+    "placeholders": {
+      "hardwareSignerCount": {
+        "type": "int"
+      }
+    }
+  },
+  "@bullVaultTimeRemaining": {
+    "description": "Time remaining before the first BullVault recovery path",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultDeferHardwareSetupTitle": {
+    "description": "Warning title before deferring BullVault hardware setup."
+  },
+  "bullVaultPreviousVaultsDescription": "Retired or cancelled vaults remain monitored. Move any remaining or late-arriving funds into the current BullVault.",
+  "@walletDeletionErrorProtectedWallet": {
+    "description": "Error shown when a wallet is protected from deletion by its owning feature"
+  },
+  "@bullVaultPreviousVaultsDescription": {
+    "description": "Explains why inactive BullVault generations remain visible"
+  },
+  "bullVaultRegisterNow": "Register wallet",
+  "bullVaultProtectionExtra": "Extra protection",
+  "@bullVaultScanDescriptor": {
+    "description": "Title shown while scanning a BullVault descriptor QR code"
+  },
+  "@bullVaultRecoveryDelay": {},
+  "@bullVaultPreviousVaultBalance": {
+    "description": "Balance remaining in an earlier BullVault generation.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultFailureInvalidSchedule": "Choose recovery delays in the allowed ranges, with each recovery path later than the previous one.",
+  "bullVaultActivateRenewal": "Activate renewed vault",
+  "@bullVaultPhysicalBackupVerified": {
+    "description": "BullVault status for a verified physical Bull mnemonic backup"
+  },
+  "bullVaultInheritanceDelay": "Inheritance key can spend alone",
+  "@bullVaultColdKeyOne": {
+    "description": "Label for the first cold key in a two-cold-key BullVault."
+  },
+  "@bullVaultRestoreEntry": {
+    "description": "Settings entry for restoring a BullVault"
+  },
+  "@bullVaultPreviousVaultEmpty": {
+    "description": "Shown when an earlier BullVault generation has no balance."
+  },
+  "bullVaultReplaceDeviceKey": "Use a different key",
+  "@bullVaultContinueMovingFunds": {
+    "description": "Action that resumes a saved BullVault migration transaction."
+  },
+  "@bullVaultCheckingChainTime": {
+    "description": "Progress text while preparing the BullVault recovery timestamps."
+  },
+  "bullVaultContinueMovingFunds": "Continue moving funds",
+  "@bullVaultInheritanceTitle": {},
+  "@bullVaultRegisterNow": {
+    "description": "Action for a connected BullVault hardware signer that can confirm registration."
+  },
+  "bullVaultDeviceKeyPath": "Export the public account key from {device} at {path}, then scan it here.",
+  "bullVaultYears": "{years, plural, =1 {1 year} other {{years} years}}",
+  "bullVaultPreviousVaultGeneration": "Vault version {generation}",
+  "bullVaultColdRecoveryPath": "Cold recovery",
+  "bullVaultRecoverBullMissing": "No tested RecoverBull backup",
+  "bullVaultPreviousVaultEmpty": "No funds remain in this vault.",
+  "@bullVaultSkipMobileBackupTitle": {
+    "description": "Title of the strong BullVault mobile-key backup warning"
+  },
+  "bullVaultInheritanceRecovery": "Inheritance recovery",
+  "@bullVaultActivateRenewal": {
+    "description": "Button that activates a replacement BullVault after setup"
+  },
+  "bullVaultFailureClockMismatch": "Your phone time does not match Bitcoin network time. Check the phone clock and try again.",
+  "@bullVaultCompatibleDescriptorTitle": {
+    "description": "Heading for descriptor fallback restore"
+  },
+  "@bullVaultOpenWallet": {},
+  "bullVaultTestDeposit": "Start with a small deposit and test your recovery options.",
+  "@bullVaultPublicKeyLabel": {},
+  "bullVaultRenewDescription": "Create a replacement vault with new recovery dates while keeping the same independent keys.",
+  "bullVaultGetKeyFromDevice": "Continue with {device}",
+  "@bullVaultProtectionChoiceTitle": {
+    "description": "Title for choosing the BullVault owner-key setup."
+  },
+  "@bullVaultScanPublicKey": {},
+  "@bullVaultReplaceDeviceKey": {},
+  "bullVaultNewRecoveryDates": "New recovery dates",
+  "bullVaultRecoveryPackageTitle": "Save your recovery package",
+  "@bullVaultRestoreDescription": {
+    "description": "Explains BullVault restore choices"
+  },
+  "bullVaultMobileBackupTitle": "Protect your mobile key",
+  "bullVaultEverydayDelay": "Everyday-key-only recovery",
+  "@bullVaultGenericSignerWarning": {},
+  "@bullVaultCreating": {},
+  "@bullVaultEitherColdDelay": {
+    "description": "Label for choosing the delay before either cold key can recover alone."
+  },
+  "@bullVaultRecoveryPackageDescription": {
+    "description": "Explains BullVault recovery-package contents"
+  },
+  "@bullVaultEverydayKey": {},
+  "bullVaultAddInheritance": "Add inheritance protection",
+  "@bullVaultEverydayRecovery": {
+    "description": "Label for recovery using only the everyday key"
+  },
+  "bullVaultRecoveryDelay": "Inheritance can spend with another key",
+  "bullVaultCurrentRecoveryDates": "Current recovery dates",
+  "@bullVaultSaveRecoveryData": {
+    "description": "Button saving the BullVault recovery package through the system share sheet"
+  },
+  "bullVaultSecondColdTitle": "Connect your second cold key",
+  "bullVaultTwoKeyRecoveryPath": "Two-key recovery",
+  "@bullVaultSecondColdTitle": {
+    "description": "Title for adding the second BullVault cold key."
+  },
+  "@bullVaultConfirmAirgappedSetupTitle": {
+    "description": "Confirmation title after an air-gapped BullVault registration flow."
+  },
+  "@bullVaultDescriptorHint": {
+    "description": "Hint for BullVault descriptor input"
+  },
+  "@bullVaultPreviousVaultGeneration": {
+    "description": "User-facing label for an earlier BullVault version.",
+    "placeholders": {
+      "generation": {
+        "type": "int"
+      }
+    }
+  },
+  "@bullVaultFailureInvalidSchedule": {},
+  "@bullVaultDoHardwareSetupLater": {
+    "description": "Action that defers BullVault hardware policy registration."
+  },
+  "@bullVaultEitherColdRecoveryPath": {
+    "description": "Label for recovery using either cold key."
+  },
+  "@bullVaultTestDeposit": {},
+  "@bullVaultRestorePackageTitle": {
+    "description": "Heading for BullVault recovery package restore"
+  },
+  "bullVaultRenewalActivated": "Renewed vault activated",
+  "bullVaultReceiveVerifyReminder": "Before depositing, verify this address on your hardware wallet.",
+  "bullVaultColdKeyOne": "Cold key 1",
+  "bullVaultFinishSetupDescription": "Complete any remaining device checks and mobile-key backup.",
+  "bullVaultPhysicalBackupVerified": "Physical mnemonic backup verified",
+  "@bullVaultMobileBackupDescription": {
+    "description": "Explains the scope and recommended redundancy of BullVault mobile-key backups"
+  },
+  "@bullVaultChooseDevice": {},
+  "@bullVaultRecoverBullVerified": {
+    "description": "BullVault status for a tested RecoverBull backup"
+  },
+  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for the selected network.",
+  "bullVaultPrimaryPathValue": "Your everyday key and cold key must sign together.",
+  "@bullVaultColdKey": {},
+  "@bullVaultMoveFunds": {
+    "description": "Action that starts a constrained sweep from an earlier BullVault."
+  },
+  "@bullVaultProtectionStandard": {
+    "description": "Label for the standard BullVault protection setup."
+  },
+  "@bullVaultProtectionExtra": {
+    "description": "Label for the higher-security BullVault setup."
+  },
+  "@bullVaultExtraPrimaryPathValue": {
+    "description": "Immediate spending rule for the two-cold-key BullVault setup."
+  },
+  "@bullVaultAdvancedSetup": {},
+  "bullVaultChooseDevice": "Choose signer",
+  "bullVaultReviewDescription": "Check your keys and recovery schedule carefully. To change them later, you will need to create a new BullVault.",
+  "bullVaultDoHardwareSetupLater": "Do this later",
+  "bullVaultExtraInheritanceChoiceDescription": "Optionally add an inheritance key. It can help recover the vault after the delay you choose.",
+  "bullVaultEitherColdRecoveryPath": "Either cold key",
+  "@bullVaultOr": {
+    "description": "Separator between BullVault restore methods"
+  },
+  "@bullVaultPreviousVaultsTitle": {
+    "description": "Title for retired or cancelled BullVault generations"
+  },
+  "@bullVaultReviewTitle": {},
+  "@bullVaultRenewDescription": {
+    "description": "Explanation of ordinary BullVault renewal"
+  },
+  "bullVaultRestorePackageTitle": "Recovery package",
+  "@bullVaultThisPhoneRecommended": {},
+  "bullVaultPrimaryPath": "Everyday access",
+  "bullVaultMobileBackupDescription": "Your Bull mnemonic and RecoverBull can both restore the mobile key. Neither replaces the BullVault recovery package.",
+  "@bullVaultEverydayDelay": {},
+  "bullVaultDeferHardwareSetupDescription": "This BullVault is not registered on every hardware device. You can continue, but register it before depositing funds.",
+  "bullVaultCreatedTitle": "BullVault created",
+  "@bullVaultRecoveryDateUtc": {
+    "description": "Secondary exact UTC date committed to a BullVault recovery path.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultWalletLabel": {
+    "description": "Default label for a newly created BullVault wallet"
+  },
+  "bullVaultSaveRecoveryData": "Save recovery data",
+  "@bullVaultPrimaryPath": {},
+  "@bullVaultDeferHardwareSetupDescription": {
+    "description": "Warning shown before allowing BullVault hardware setup to be deferred."
+  },
+  "bullVaultRestoreDescriptorDescription": "Use this when the recovery package is unavailable. Bull checks the vault policy and which keys are available on this phone.",
+  "bullVaultCreateEntry": "Create BullVault",
+  "@bullVaultColdRecoveryPath": {},
+  "@bullVaultGeneration": {
+    "description": "User-facing one-based BullVault version label.",
+    "placeholders": {
+      "generation": {
+        "type": "int"
+      }
+    }
+  },
+  "bullVaultHardwareSetupTitle": "Register on your hardware keys",
+  "@bullVaultSetupChoiceTitle": {
+    "description": "Heading on the default BullVault setup choice screen."
+  },
+  "bullVaultTimeRemaining": "{time} remaining until the first recovery path",
+  "bullVaultEitherColdDelay": "Either cold key can spend after",
+  "@bullVaultFinishSetup": {},
+  "bullVaultHardwareSetupComplete": "Wallet registered",
+  "@bullVaultRegisterAndConfirmNow": {
+    "description": "Action for air-gapped BullVault hardware signers."
+  },
+  "bullVaultCreatedDescription": "Your BullVault is ready to use.",
+  "@bullVaultExtraNoInheritanceWarning": {
+    "description": "Recovery and renewal warning for two-cold-key BullVaults without inheritance."
+  },
+  "bullVaultRecoveryDateUtc": "Available {date} UTC",
+  "@bullVaultColdDelay": {},
+  "@bullVaultRecoverBullDescription": {
+    "description": "Explains RecoverBull as a backup of the Bull mobile key"
+  },
+  "bullVaultRecoveryPackageExported": "Recovery package ready to save",
+  "@bullVaultSkipMobileBackupConfirm": {
+    "description": "Confirmation action for continuing without a BullVault mobile-key backup"
+  },
+  "@bullVaultRenew": {
+    "description": "Button that starts BullVault renewal"
+  },
+  "@bullVaultPhysicalBackupDescription": {
+    "description": "Explains the physical mnemonic backup method"
+  },
+  "bullVaultExtraInheritanceDescription": "After the recovery delay, inheritance can spend with any one owner key.",
+  "bullVaultDeferHardwareSetupTitle": "Finish hardware setup later?",
+  "@bullVaultCreate": {},
+  "@bullVaultDeviceKeyPath": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultRestorePackageDescription": {
+    "description": "Explains recovery package restore"
+  },
+  "@bullVaultInheritanceChoiceTitle": {
+    "description": "Title for choosing whether BullVault includes an inheritance key"
+  },
+  "bullVaultEverydayKey": "Everyday key",
+  "@bullVaultRecoverBullMissing": {
+    "description": "BullVault status when no tested RecoverBull backup exists"
+  },
+  "bullVaultEarlyRenewalWarning": "This vault still has most of its original protection period remaining. You can renew it now, but renewal may not be necessary yet.",
+  "bullVaultColdTitle": "Connect your cold key",
+  "bullVaultChooseRecoveryPackage": "Choose recovery package",
+  "bullVaultPhysicalBackupMissing": "Physical mnemonic backup not verified",
+  "bullVaultColdDelay": "Cold key can spend alone",
+  "bullVaultInheritanceChoiceDescription": "Add a third key for someone you trust. Your everyday and cold keys still approve transactions together; after the recovery delay, any two keys can spend.",
+  "bullVaultRenewalPreparedTitle": "Replacement vault prepared",
+  "@bullVaultPrimaryPathValue": {},
+  "bullVaultProtectionStandardDescription": "BullVault combines this phone with one cold key. Both approve payments, while recovery options help if a key is lost.",
+  "bullVaultRestoreEntry": "Restore BullVault",
+  "bullVaultThisPhoneRecommended": "This phone (recommended)",
+  "bullVaultCreating": "Creating your BullVault…",
+  "@bullVaultCreatedDescription": {},
+  "bullVaultRegistrationRequired": "{hardwareSignerCount, plural, =1 {Register this BullVault on your hardware device.} other {Register this BullVault on each hardware device.}}",
+  "bullVaultCustomizeSetup": "Advanced setup",
+  "walletDeletionErrorProtectedWallet": "This wallet cannot be deleted here.",
+  "bullVaultRestorePackageDescription": "Restores the wallet details and recovery schedule. The recovery package contains no private keys.",
+  "bullVaultScanDescriptor": "Scan BullVault descriptor",
+  "@bullVaultCreateEntry": {},
+  "bullVaultMoveFunds": "Move all funds to current BullVault",
+  "bullVaultDescriptorHint": "Paste the BullVault descriptor",
+  "@bullVaultInheritanceChoiceDescription": {
+    "description": "Explains the optional BullVault inheritance key"
+  },
+  "@bullVaultFailureInvalidRecovery": {
+    "description": "BullVault restore validation failure"
+  },
+  "bullVaultCheckingChainTime": "Checking phone time against Bitcoin…",
+  "bullVaultSetupChoiceTitle": "Protect your bitcoin with two keys",
+  "@bullVaultRestoreDescriptorDescription": {
+    "description": "Explains descriptor fallback restore"
+  },
+  "@bullVaultRestoreDescriptorAction": {
+    "description": "Action to restore BullVault from a descriptor"
+  },
+  "@bullVaultExtraInheritanceDescription": {
+    "description": "Description of inheritance in the two-cold-key setup."
+  },
+  "@bullVaultChooseRecoveryPackage": {
+    "description": "Action to select a BullVault recovery package file"
+  },
+  "@bullVaultInheritanceKeyTitle": {
+    "description": "Title for connecting the optional BullVault inheritance key"
+  },
+  "@bullVaultSecondColdDescription": {
+    "description": "Instructions for the second BullVault cold key."
+  },
+  "@bullVaultUseOtherSigner": {},
+  "@bullVaultNoInheritance": {
+    "description": "Choice to create BullVault without an inheritance key"
+  },
+  "@bullVaultPreviousVaultMigrating": {
+    "description": "Explanation shown after BullVault renewal"
+  },
+  "bullVaultRestoreDescription": "Use a BullVault recovery package when possible. A compatible descriptor can be used as a fallback.",
+  "bullVaultGeneration": "Vault version {generation}",
+  "@bullVaultGetKeyFromDevice": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultRecoverBullDescription": "An encrypted RecoverBull backup can restore the same Bull mnemonic if the phone and physical copy are lost.",
+  "@bullVaultAddInheritance": {},
+  "@bullVaultEarlyRenewalWarning": {
+    "description": "Warning shown when more than half of the first delay remains"
+  },
+  "@bullVaultInheritanceDelay": {},
+  "@bullVaultRecoveryPackageTitle": {
+    "description": "Heading for the BullVault recovery-package export step"
+  },
+  "bullVaultInheritanceChoiceTitle": "Add inheritance protection?",
+  "@bullVaultColdKeyTwo": {
+    "description": "Label for the second cold key in a two-cold-key BullVault."
+  },
+  "@bullVaultCustomizeSetup": {
+    "description": "Secondary action for choosing additional BullVault protection and inheritance options."
+  },
+  "@bullVaultHardwareSetupTitle": {
+    "description": "Heading for the BullVault hardware policy registration step."
+  },
+  "bullVaultDeviceKeyLoaded": "Public account key received from {device}.",
+  "bullVaultRestoreDescriptorAction": "Restore from descriptor",
+  "@bullVaultPreviousFundsAction": {
+    "description": "Wallet-settings action shown when a retired BullVault still has funds."
+  },
+  "@bullVaultProtectionStandardDescription": {
+    "description": "Description of standard BullVault protection."
+  },
+  "@bullVaultRecoveryPackageConfirmation": {
+    "description": "User confirmation that the BullVault recovery package was stored"
+  },
+  "@bullVaultDeferredSetupDescription": {
+    "description": "Reminder on the BullVault ready screen when optional setup was deferred"
+  },
+  "bullVaultScanPublicKey": "Scan public account key",
+  "bullVaultPublicKeyHint": "[fingerprint/path]xpub or tpub…",
+  "bullVaultSettingsTitle": "BullVault settings",
+  "@bullVaultSettingsTitle": {
+    "description": "Title of the wallet-specific BullVault settings screen"
+  },
+  "bullVaultUseOtherSigner": "Other signer",
+  "bullVaultPreviousVaultsTitle": "Inactive vaults",
+  "bullVaultWalletLabel": "BullVault",
+  "@bullVaultFailureInvalidSigner": {},
+  "@bullVaultCreatedTitle": {},
+  "bullVaultRestoreTitle": "Restore BullVault",
+  "@bullVaultScheduleDescription": {},
+  "bullVaultDeferredSetupDescription": "Finish the remaining setup from Wallet settings before depositing funds.",
+  "@bullVaultPublicKeyHint": {},
+  "@bullVaultRecoveryPackageExported": {
+    "description": "Toast shown after exporting the BullVault recovery package"
+  },
+  "@bullVaultNewRecoveryDates": {
+    "description": "Heading above the exact activation dates proposed for the renewed BullVault policy."
+  },
+  "bullVaultEverydayRecovery": "Everyday key recovery",
+  "@bullVaultFailureSignerReuse": {},
+  "@bullVaultMigrationDestinationLocked": {
+    "description": "Explains that a BullVault migration cannot be redirected."
+  },
+  "bullVaultFailureReviewExpired": "The recovery dates were refreshed. Review them again before continuing.",
+  "bullVaultRecoveryPackageConfirmation": "I saved the recovery package",
+  "@bullVaultFailureReviewExpired": {
+    "description": "Shown when BullVault recovery dates are refreshed because the prior review was left open too long."
+  },
+  "@bullVaultPhysicalBackupMissing": {
+    "description": "BullVault status when the physical Bull mnemonic backup is unverified"
+  },
+  "bullVaultRecoverBullVerified": "RecoverBull backup tested",
+  "bullVaultFailureInvalidSigner": "This signer key is invalid or is missing the origin information required by the selected device.",
+  "bullVaultConfirmAirgappedSetupDescription": "Confirm that you registered this BullVault on {device}.",
+  "bullVaultCreate": "Create BullVault",
+  "bullVaultScheduleTitle": "Recovery schedule",
+  "bullVaultSkipMobileBackup": "Continue without a mobile-key backup",
+  "bullVaultProtectionChoiceTitle": "Choose your protection",
+  "bullVaultMigrationDestinationLocked": "The current BullVault address is fixed as the destination.",
+  "bullVaultPreviousFundsAction": "Previous BullVault funds need attention",
+  "bullVaultScheduleDescription": "Choose when each recovery option becomes available.",
+  "@bullVaultFailureClockMismatch": {
+    "description": "BullVault setup error when phone UTC and Bitcoin median time differ by more than the allowed tolerance."
+  },
+  "@bullVaultReceiveVerifyReminder": {
+    "description": "Reminder shown beside address verification for a BullVault receive address."
+  },
+  "bullVaultRenew": "Renew vault",
+  "@bullVaultMobileBackupTitle": {
+    "description": "Heading for optional BullVault mobile-key backup methods"
+  },
+  "bullVaultPhysicalBackupDescription": "A physical copy of the Bull mnemonic can restore the mobile key.",
+  "bullVaultInheritanceKeyTitle": "Connect the inheritance key",
+  "@bullVaultYears": {
+    "placeholders": {
+      "years": {
+        "type": "int"
+      }
+    }
+  },
+  "@bullVaultTwoKeyRecoveryPath": {
+    "description": "Title for the BullVault delayed any-two-of-three recovery path."
+  },
+  "@bullVaultColdDescription": {},
+  "@bullVaultSkipMobileBackupDescription": {
+    "description": "Strong warning shown before continuing without a mobile-key backup"
+  },
+  "bullVaultSecondColdDescription": "Use a different key with a separate seed. Store it apart from your phone and first cold key.",
+  "@bullVaultRestoreTitle": {
+    "description": "Title of the BullVault restore screen"
+  },
+  "bullVaultTitle": "Create BullVault",
+  "bullVaultSkipMobileBackupConfirm": "Continue anyway",
+  "bullVaultExtraNoInheritanceWarning": "If two keys are lost, the remaining key becomes available after its recovery delay. Renew before the first recovery date to keep two-key protection.",
+  "bullVaultSkipMobileBackupDescription": "If you lose both your phone and Bull mnemonic, the mobile key is lost. You may have to wait years for another recovery path, and the BullVault recovery package does not contain private keys.",
+  "bullVaultPublicKeyLabel": "Public account key",
+  "bullVaultGenericSignerWarning": "Bull cannot confirm registration automatically. Make sure this signer supports BullVault and register the wallet before continuing.",
+  "bullVaultColdKey": "Cold key",
+  "@bullVaultRenewalPreparedTitle": {
+    "description": "Title after preparing a renewed BullVault"
+  },
+  "bullVaultColdDescription": "Choose a supported hardware wallet or another compatible signer. Store this key separately from your phone.",
+  "@bullVaultConfirmAirgappedSetupDescription": {
+    "description": "Manual registration confirmation for an air-gapped BullVault signer.",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultInheritanceRecovery": {
+    "description": "Label for recovery using only the inheritance key"
+  },
+  "@bullVaultFinishSetupDescription": {},
+  "bullVaultInheritanceTitle": "Inheritance protection",
+  "@bullVaultReviewDescription": {},
+  "@bullVaultDeviceKeyLoaded": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultColdTitle": {},
+  "bullVaultExtraPrimaryPathValue": "Any two of your everyday key and two cold keys can spend.",
+  "bullVaultFinishSetup": "Finish setup",
+  "bullVaultNoInheritance": "Continue without inheritance",
+  "@bullVaultScheduleTitle": {},
+  "@bullVaultExtraInheritanceChoiceDescription": {
+    "description": "Inheritance choice explanation for the two-cold-key setup."
+  },
+  "bullVaultAdvancedSetup": "Advanced setup",
+  "@bullVaultCancelRenewalTitle": {
+    "description": "Title of the BullVault renewal cancellation confirmation"
+  },
+  "@bullVaultRenewalReadyDescription": {
+    "description": "Description shown when a replacement BullVault is ready to activate"
+  },
+  "bullVaultRenewalReadyDescription": "Your recovery data is saved and the replacement wallet is registered. Activate it when you are ready.",
+  "bullVaultCancelRenewalTitle": "Cancel this renewal?",
+  "@bullVaultCancelRenewalHasFunds": {
+    "description": "Shown when a funded BullVault replacement cannot be cancelled"
+  },
+  "bullVaultCancelRenewalHasFunds": "This replacement BullVault already contains funds. Complete and activate it before continuing.",
+  "bullVaultRenewConfirmationTitle": "Renew this BullVault?",
+  "@bullVaultCancelRenewal": {
+    "description": "Action that abandons a prepared BullVault replacement before activation"
+  },
+  "@bullVaultCancelRenewalDescription": {
+    "description": "Explains the effect of cancelling a prepared BullVault renewal"
+  },
+  "bullVaultReviewRenewal": "Review renewal",
+  "bullVaultCancelRenewal": "Cancel renewal",
+  "@bullVaultRenewConfirmationDescription": {
+    "description": "Explains the required setup before starting a BullVault renewal"
+  },
+  "@bullVaultRenewConfirmationTitle": {
+    "description": "Title shown before a BullVault renewal is prepared"
+  },
+  "@bullVaultReviewRenewal": {
+    "description": "Open the preview of a new BullVault recovery schedule"
+  },
+  "bullVaultCancelRenewalDescription": "Your current BullVault will stay active. Bull will keep watching the cancelled vault in case it receives funds. Do not use its recovery data.",
+  "bullVaultRenewConfirmationDescription": "This creates a renewed vault with new recovery dates. You will need to save new recovery data and register it again on each cold device.",
+  "bullVaultUsePassphrase": "Use a passphrase",
+  "@bullVaultInheritanceHardware": {
+    "description": "Inheritance key source using a hardware wallet."
+  },
+  "@bullVaultPracticeWarningTitle": {
+    "description": "Title for confirming an hour-based BullVault."
+  },
+  "@bullVaultRegistrationNameTitle": {
+    "description": "Title for editing a hardware policy registration name."
+  },
+  "bullVaultInheritanceSourceTitle": "Choose the inheritance key",
+  "@bullVaultDelayedMobileRecovery": {
+    "description": "Label for Bull mobile recovery without a passphrase."
+  },
+  "bullVaultHours": "{count, plural, =1 {1 hour} other {{count} hours}}",
+  "@bullVaultLastResortDescription": {},
+  "@bullVaultMobileBackupRecoveryDescription": {
+    "description": "Explains mobile backup coverage when delayed passphrase-free recovery is enabled."
+  },
+  "bullVaultPassphraseDescription": "This passphrase is required whenever your everyday mobile key signs. Bull cannot recover or store it.",
+  "bullVaultPassphraseFreeRecoveryDescription": "Before the recovery date, your mobile key requires the passphrase. After that date, your Bull backup can recover without it.",
+  "@bullVaultDays": {
+    "description": "Time remaining until a BullVault recovery becomes available, in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bullVaultMobileBackupPassphraseDescription": "Your Bull mnemonic and RecoverBull protect the mobile seed. Store the passphrase separately. The BullVault recovery package is still required.",
+  "bullVaultConfirmPassphraseLabel": "Confirm passphrase",
+  "@bullVaultPracticeWarningDescription": {
+    "description": "Warning for creating a BullVault with hour-based recovery."
+  },
+  "@bullVaultPracticeBadge": {
+    "description": "Label identifying a BullVault with hour-based recovery."
+  },
+  "bullVaultRegistrationNameTitle": "Name on hardware wallet",
+  "bullVaultPassphraseRequired": "Passphrase required",
+  "bullVaultMobileBackupRecoveryDescription": "Your Bull mnemonic and RecoverBull can restore delayed recovery without the passphrase. Everyday spending still needs it. The BullVault recovery package is still required.",
+  "@bullVaultPassphraseNotRequired": {
+    "description": "Label indicating delayed BullVault mobile recovery does not need the passphrase."
+  },
+  "bullVaultPracticeWarningTitle": "Create a practice BullVault?",
+  "bullVaultLastResortRecovery": "Last-resort recovery",
+  "@bullVaultPassphraseFreeRecoveryTitle": {
+    "description": "Title for optional delayed passphrase-free recovery."
+  },
+  "bullVaultInheritanceImportMnemonic": "Enter an existing recovery phrase",
+  "bullVaultLastResortPassphraseFreeDescription": "This path uses your delayed mobile recovery key, without the passphrase.",
+  "bullVaultPassphraseFreeRecoveryTitle": "Recover without your passphrase",
+  "@bullVaultInheritanceMnemonicWarning": {
+    "description": "Warning for inheritance mnemonics."
+  },
+  "@bullVaultUsePassphrase": {
+    "description": "Label for enabling a Bull mobile BIP39 passphrase."
+  },
+  "@sendBullVaultPassphraseDescription": {
+    "description": "Description for the BullVault signing passphrase prompt."
+  },
+  "sendBullVaultPassphraseDescription": "Enter the passphrase for this BullVault mobile key. It is used only for this signature.",
+  "@bullVaultConfirmPassphraseLabel": {
+    "description": "Label for repeated BullVault passphrase input."
+  },
+  "bullVaultInheritanceMnemonicWarning": "Keep this recovery phrase separate from your phone and other BullVault keys. Bull keeps only its public key.",
+  "@bullVaultHardwareWallet": {
+    "description": "Label for an external hardware wallet."
+  },
+  "bullVaultEverydayKeySourceTitle": "Choose your everyday key",
+  "@bullVaultInheritancePublicKey": {
+    "description": "Inheritance key source using a public account key."
+  },
+  "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
+  "bullVaultMobileProtection": "Mobile protection",
+  "@bullVaultPhysicalBackupPassphraseDescription": {
+    "description": "Explains physical backup coverage for a passphrase-protected mobile key."
+  },
+  "bullVaultRegistrationNameInvalid": "Use a name supported by this hardware wallet.",
+  "@bullVaultLastResortRecovery": {
+    "description": "Optional final path where the existing everyday key can spend alone, after inheritance recovery."
+  },
+  "@bullVaultMobileBackupPassphraseDescription": {
+    "description": "Explains mobile backup coverage when a BullVault passphrase is required."
+  },
+  "@bullVaultRegistrationNameLabel": {
+    "description": "Input label for a hardware policy registration name."
+  },
+  "@bullVaultPassphraseLabel": {
+    "description": "Label for BullVault passphrase input."
+  },
+  "bullVaultRecoverBullPassphraseDescription": "RecoverBull restores the Bull mnemonic, but not the passphrase. Store the passphrase separately.",
+  "bullVaultPracticeTimelineDescription": "Use hours instead of years to practice setup and recovery with a small amount.",
+  "@bullVaultRestoreMobilePassphraseLabel": {
+    "description": "Optional passphrase field label shown while restoring a BullVault"
+  },
+  "sendBullVaultPassphraseIncorrect": "This passphrase does not match the BullVault mobile key.",
+  "@bullVaultInheritanceMnemonicShowTitle": {
+    "description": "Title for displaying a generated inheritance mnemonic."
+  },
+  "@bullVaultPassphraseFreeRecoveryDescription": {
+    "description": "Description for optional delayed passphrase-free recovery."
+  },
+  "@bullVaultPassphraseDescription": {
+    "description": "Description for BullVault mobile passphrase entry."
+  },
+  "@bullVaultInheritanceMnemonicVerifyTitle": {
+    "description": "Title for verifying a generated inheritance mnemonic."
+  },
+  "@bullVaultInheritanceImportMnemonic": {
+    "description": "Inheritance key source that accepts an existing mnemonic."
+  },
+  "@bullVaultNoPassphrase": {
+    "description": "Label for a Bull mobile key without a BIP39 passphrase."
+  },
+  "bullVaultPassphraseFreeRecoveryWarning": "Anyone with your Bull mnemonic or RecoverBull backup can use delayed recovery after {date} UTC without the passphrase.",
+  "@bullVaultPhysicalBackupRecoveryDescription": {
+    "description": "Explains physical backup coverage for delayed passphrase-free recovery."
+  },
+  "@bullVaultRecoverBullRecoveryDescription": {
+    "description": "Explains RecoverBull coverage for delayed passphrase-free recovery."
+  },
+  "bullVaultDays": "{count, plural, =1 {1 day} other {{count} days}}",
+  "bullVaultInheritanceMnemonicShowTitle": "Save the inheritance phrase",
+  "bullVaultPassphraseMismatch": "The passphrases do not match.",
+  "@bullVaultPassphraseRequired": {
+    "description": "Label indicating that a BullVault mobile key requires its passphrase."
+  },
+  "@bullVaultLastResortPassphraseFreeDescription": {},
+  "bullVaultDelayedMobileRecovery": "Delayed mobile recovery",
+  "bullVaultPassphraseLabel": "Passphrase",
+  "bullVaultPhysicalBackupPassphraseDescription": "A physical copy restores the Bull mnemonic. The passphrase is still needed for the mobile key.",
+  "bullVaultPhysicalBackupRecoveryDescription": "A physical copy can restore delayed recovery after its recovery date without the passphrase.",
+  "bullVaultRecoverBullRecoveryDescription": "RecoverBull can restore delayed recovery after its recovery date without the passphrase. Everyday spending still needs it.",
+  "bullVaultPracticeBadge": "Practice BullVault",
+  "@bullVaultPassphraseFreeRecoveryWarning": {
+    "description": "Warns when passphrase-free BullVault recovery becomes usable.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@bullVaultPassphraseMismatch": {
+    "description": "Error for mismatched BullVault passphrases."
+  },
+  "@bullVaultRegistrationNameInvalid": {
+    "description": "Error for an invalid hardware policy registration name."
+  },
+  "bullVaultHardwareWallet": "Hardware wallet",
+  "@bullVaultLastResortOrder": {},
+  "@bullVaultRegistrationNameDescription": {
+    "description": "Description for a hardware policy registration name."
+  },
+  "@bullVaultEverydayKeySourceTitle": {
+    "description": "Title for selecting the signer used for normal BullVault spending."
+  },
+  "@bullVaultPracticeTimeline": {
+    "description": "Title for hour-based BullVault practice mode."
+  },
+  "@bullVaultPracticeTimelineDescription": {
+    "description": "Description for BullVault practice mode."
+  },
+  "sendBullVaultPassphraseTitle": "Enter your BullVault passphrase",
+  "bullVaultRegistrationNameLabel": "Wallet name",
+  "@bullVaultLastResortDelay": {},
+  "bullVaultLastResortDelay": "Everyday key can spend alone",
+  "bullVaultDelayValue": "After {delay}",
+  "bullVaultInheritanceGenerateMnemonic": "Generate a new recovery phrase",
+  "bullVaultInheritanceHardware": "Hardware wallet",
+  "bullVaultThisPhone": "This phone",
+  "bullVaultPassphraseBackupAcknowledgement": "I saved this passphrase separately",
+  "bullVaultInheritancePublicKey": "Scan or paste public key",
+  "@bullVaultMobileProtection": {
+    "description": "Title for Bull mobile passphrase settings."
+  },
+  "@bullVaultThisPhone": {
+    "description": "Label for Bull mobile as the everyday signer."
+  },
+  "bullVaultPassphraseTitle": "Protect your mobile key",
+  "@bullVaultPassphraseTitle": {
+    "description": "Title for entering a BullVault mobile-key passphrase."
+  },
+  "bullVaultHardwareEverydayHint": "If this hardware wallet uses a passphrase, select that wallet on the device before continuing.",
+  "bullVaultInheritanceMnemonicVerifyTitle": "Verify the inheritance phrase",
+  "@sendBullVaultPassphraseTitle": {
+    "description": "Title for the secure passphrase prompt before BullVault signing."
+  },
+  "bullVaultNoPassphrase": "No passphrase",
+  "@bullVaultRestoreMobilePassphraseDescription": {
+    "description": "Explanation for the optional BullVault restoration passphrase"
+  },
+  "@bullVaultHardwareEverydayHint": {
+    "description": "Advice shown when a hardware wallet is the everyday BullVault key."
+  },
+  "bullVaultPracticeWarningDescription": "This creates a real BullVault whose recovery permissions activate within hours. Use only a small practice amount.",
+  "@bullVaultHours": {
+    "description": "Formats a BullVault delay in hours.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@bullVaultPassphraseBackupAcknowledgement": {
+    "description": "Acknowledgement that the BullVault passphrase was backed up."
+  },
+  "bullVaultPracticeTimeline": "Practice timeline",
+  "@sendBullVaultPassphraseIncorrect": {
+    "description": "Message shown when BullVault signing derives a different mobile key."
+  },
+  "bullVaultRestoreMobilePassphraseLabel": "Mobile passphrase (if configured)",
+  "@bullVaultInheritanceSourceTitle": {
+    "description": "Title for inheritance key source selection."
+  },
+  "bullVaultPassphraseNotRequired": "Passphrase not required",
+  "bullVaultGeneratedInheritanceIdentity": "Inheritance key ready · fingerprint {fingerprint}",
+  "@bullVaultRecoverBullPassphraseDescription": {
+    "description": "Explains RecoverBull coverage for a passphrase-protected mobile key."
+  },
+  "@bullVaultInheritanceGenerateMnemonic": {
+    "description": "Inheritance key source that creates a new mnemonic."
+  },
+  "bullVaultLastResortDescription": "After the final delay, your everyday key can spend alone.",
+  "@bullVaultDelayValue": {
+    "description": "Formats a BullVault delay using an already localized duration.",
+    "placeholders": {
+      "delay": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultRegistrationNameDescription": "This name identifies the BullVault on your hardware wallet.",
+  "bullVaultRestoreMobilePassphraseDescription": "Enter the passphrase to restore mobile signing. You can leave this blank when recovering through a passphrase-free recovery key.",
+  "@bullVaultGeneratedInheritanceIdentity": {
+    "description": "Confirms the public identity derived from an inheritance mnemonic.",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "@sendPendingBroadcast": {
+    "description": "Status of a saved Bitcoin transaction whose broadcast outcome needs to be checked"
+  },
+  "sendPendingBroadcast": "Broadcast pending",
+  "@sendPendingSubmissionMessage": {
+    "description": "Explanation on an immutable payment submission recovery screen"
+  },
+  "@sendPendingPayjoin": {
+    "description": "Status of a saved payment handed off to Payjoin"
+  },
+  "sendPendingSubmissionMessage": "This payment may already have been sent. Continue to check its status or retry the same payment. Its recipient, amount and coins cannot be changed.",
+  "sendPendingPayjoin": "Payjoin pending",
+  "@bullVaultRestoreHardwareSetup": {},
+  "bullVaultRestoreHardwareSetup": "Register the vault on your hardware wallets again before using them to sign.",
+  "@bullVaultRestoreWatchOnly": {},
+  "@bullVaultRestoreMobileAvailable": {},
+  "bullVaultRestoreRecoveryOnly": "Delayed mobile recovery is available. To use your mobile key before that date, enter its original passphrase when signing.",
+  "@bullVaultRestoreRecoveryOnly": {},
+  "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
+  "@bullVaultRestoreCompleteTitle": {},
+  "bullVaultRestoreCompleteTitle": "BullVault restored",
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
 }

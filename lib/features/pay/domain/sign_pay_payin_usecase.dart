@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -7,11 +7,11 @@ import 'package:primitives/primitives.dart';
 
 /// Signs the pay payin on either network.
 class SignPayPayinUsecase {
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final BitcoinSigningPort _bitcoinSigningPort;
   final LiquidWalletRepository _liquidWalletRepository;
 
   const SignPayPayinUsecase({
-    required this._bitcoinWalletRepository,
+    required this._bitcoinSigningPort,
     required this._liquidWalletRepository,
   });
 
@@ -25,12 +25,20 @@ class SignPayPayinUsecase {
     required String walletId,
   }) async {
     try {
-      final signedPsbt = await _bitcoinWalletRepository.signPsbt(
+      final signingResult = await _bitcoinSigningPort.signPsbt(
         psbt,
         walletId: walletId,
       );
-      final txSize = await _bitcoinWalletRepository.getTxSize(psbt: signedPsbt);
-      return Ok((signedPsbt: signedPsbt, txSize: txSize));
+      switch (signingResult) {
+        case Ok(value: final signed) when signed.isFinalized:
+          final txSize = await _bitcoinSigningPort.getTxSize(
+            psbt: signed.psbt,
+            walletId: walletId,
+          );
+          return Ok((signedPsbt: signed.psbt, txSize: txSize));
+        case Ok() || Err():
+          return const Err(PayTransactionSigningFailedFailure());
+      }
     } catch (e, st) {
       log.severe(
         message: 'Failed to sign the Bitcoin pay payin',

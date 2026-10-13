@@ -26,7 +26,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -34,10 +34,13 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'wallet_signer_test_fixture.dart';
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -69,16 +72,25 @@ void main() {
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
   late BitcoinWalletRepository repository;
 
-  const metadata = WalletMetadataModel(
+  final metadata = WalletMetadataModel(
     id: _walletId,
-    masterFingerprint: '73c5da0a',
-    xpubFingerprint: 'deadbeef',
+    network: Network.bitcoinTestnet,
+    signers: [
+      walletSignerModel(
+        id: 'signer-0',
+        descriptorKeyId: 'key-0',
+        masterFingerprint: '73c5da0a',
+        xpubFingerprint: 'deadbeef',
+        xpub: 'tpub-test',
+        derivationPath: "m/84'/1'/0'",
+        descriptorPath: '/<0;1>/*',
+        signer: Signer.local,
+        signerDevice: null,
+      ),
+    ],
     isEncryptedVaultTested: false,
     isPhysicalBackupTested: false,
-    xpub: 'tpub-test',
-    externalPublicDescriptor: 'wpkh(external)',
-    internalPublicDescriptor: 'wpkh(internal)',
-    signer: Signer.local,
+    publicDescriptor: 'wpkh([73c5da0a/84h/1h/0h]tpub-test/<0;1>/*)',
     isDefault: true,
   );
 
@@ -86,8 +98,7 @@ void main() {
     registerFallbackValue(
       const WalletModel.publicBdk(
         id: _walletId,
-        externalDescriptor: 'wpkh(external)',
-        internalDescriptor: 'wpkh(internal)',
+        descriptor: 'wpkh([73c5da0a/84h/1h/0h]tpub-test/<0;1>/*)',
         isTestnet: true,
       ),
     );

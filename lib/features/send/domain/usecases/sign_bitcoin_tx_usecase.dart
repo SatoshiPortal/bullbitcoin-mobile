@@ -1,27 +1,69 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
+
+typedef SignedBitcoinTransaction = ({
+  String signedPsbt,
+  int txSize,
+  bool isFinalized,
+});
 
 class SignBitcoinTxUsecase {
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final BitcoinSigningPort _bitcoinSigningPort;
 
-  SignBitcoinTxUsecase({required this._bitcoinWalletRepository});
-  Future<({String signedPsbt, int txSize})> execute({
+  SignBitcoinTxUsecase(this._bitcoinSigningPort);
+
+  Future<Result<SignedBitcoinTransaction, SendFailure>> execute({
     required String psbt,
     required String walletId,
+    String? externalPsbt,
+    bool requireFinalized = true,
+    bool tryFinalize = true,
+    String? signerId,
+    String? passphrase,
   }) async {
+    final signingResult = externalPsbt == null
+        ? await _bitcoinSigningPort.signPsbt(
+            psbt,
+            walletId: walletId,
+            tryFinalize: tryFinalize,
+            signerId: signerId,
+            passphrase: passphrase,
+          )
+        : await _bitcoinSigningPort.combinePsbts(
+            currentPsbt: psbt,
+            signedPsbt: externalPsbt,
+            walletId: walletId,
+            tryFinalize: tryFinalize,
+          );
+    final ({String psbt, bool isFinalized}) signed;
+    switch (signingResult) {
+      case Ok(:final value):
+        signed = value;
+      case Err(:final failure):
+        return Err(SendFailure.fromBitcoinSigning(failure));
+    }
+    if (requireFinalized && !signed.isFinalized) {
+      return const Err(SendTransactionSigningFailure('incomplete'));
+    }
     try {
-      final signedPsbt = await _bitcoinWalletRepository.signPsbt(
-        psbt,
+      final size = await _bitcoinSigningPort.getTxSize(
+        psbt: signed.psbt,
         walletId: walletId,
       );
-      final size = await _bitcoinWalletRepository.getTxSize(psbt: signedPsbt);
-      return (signedPsbt: signedPsbt, txSize: size);
-    } catch (e) {
-      throw SignBitcoinTxException(e.toString());
+      return Ok((
+        signedPsbt: signed.psbt,
+        txSize: size,
+        isFinalized: signed.isFinalized,
+      ));
+    } on Exception catch (error, stackTrace) {
+      log.severe(
+        message: 'Failed to calculate signed Bitcoin transaction size',
+        error: error,
+        trace: stackTrace,
+      );
+      return const Err(SendUnexpectedFailure());
     }
   }
-}
-
-class SignBitcoinTxException extends BullException {
-  SignBitcoinTxException(super.message);
 }

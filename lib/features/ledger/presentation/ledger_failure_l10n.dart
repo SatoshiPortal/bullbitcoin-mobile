@@ -19,12 +19,21 @@ extension LedgerFailureL10n on LedgerFailure {
     LedgerDeviceLockedFailure() => context.loc.ledgerErrorDeviceLocked,
     LedgerBitcoinAppNotOpenFailure() =>
       context.loc.ledgerErrorBitcoinAppNotOpen,
+    LedgerBitcoinAppUpdateRequiredFailure() =>
+      context.loc.ledgerErrorBitcoinAppUpdateRequired,
     LedgerMissingPsbtFailure() => context.loc.ledgerErrorMissingPsbt,
     LedgerMissingAddressFailure() => context.loc.ledgerErrorMissingAddress,
     LedgerMissingDerivationPathFailure() =>
       context.loc.ledgerErrorMissingDerivationPath,
     LedgerMissingScriptTypeFailure() =>
       context.loc.ledgerErrorMissingScriptType,
+    LedgerMissingWalletPolicyFailure() =>
+      context.loc.ledgerErrorMissingWalletPolicy,
+    LedgerUnsupportedWalletPolicyFailure() =>
+      context.loc.hardwareWalletPolicyUnsupported,
+    LedgerWalletPolicyNotRegisteredFailure() =>
+      context.loc.hardwareWalletPolicyNotRegistered,
+    LedgerAddressMismatchFailure() => context.loc.hardwareWalletAddressMismatch,
     LedgerUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

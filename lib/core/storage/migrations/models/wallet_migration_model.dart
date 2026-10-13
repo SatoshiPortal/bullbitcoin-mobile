@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

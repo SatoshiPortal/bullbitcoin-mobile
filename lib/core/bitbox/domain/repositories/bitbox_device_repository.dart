@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:meta/meta.dart';
 
 abstract class BitBoxDeviceRepository {
@@ -46,6 +47,31 @@ abstract class BitBoxDeviceRepository {
     required String derivationPath,
     required ScriptType scriptType,
     required bool isTestnet,
+  });
+
+  @useResult
+  Future<Result<void, BitBoxFailure>> registerWalletPolicy(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+    String? signerId,
+  });
+
+  @useResult
+  Future<Result<String, BitBoxFailure>> signWalletPsbt(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+    required String signerId,
+    required String psbt,
+  });
+
+  @useResult
+  Future<Result<bool, BitBoxFailure>> verifyWalletAddress(
+    BitBoxDeviceEntity device, {
+    required Wallet wallet,
+    required String address,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
+    String? signerId,
   });
 
   Future<Result<void, BitBoxFailure>> disconnectConnection(

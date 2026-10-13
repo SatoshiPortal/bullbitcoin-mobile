@@ -5,6 +5,11 @@ import 'package:flutter/widgets.dart';
 
 extension PayFailureL10n on PayFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    PayTransactionSigningFailedFailure() => context.loc.oopsSomethingWentWrong,
+    PaySelectedCoinsUnavailableFailure() =>
+      context.loc.sendErrorSelectedCoinsUnavailable,
+    PaySelectedCoinsInsufficientFailure() =>
+      context.loc.sendErrorSelectedCoinsInsufficient,
     PayUnauthenticatedFailure() => context.loc.payUnauthenticatedError,
     PayBelowMinAmountFailure(:final minAmount, :final currency) =>
       context.loc.payBelowMinAmountError(

@@ -1,0 +1,26 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+
+class CheckPhysicalBackupVerifiedUsecase {
+  final GetWalletsUsecase _getWalletsUsecase;
+
+  const CheckPhysicalBackupVerifiedUsecase(this._getWalletsUsecase);
+
+  Future<bool> execute(String fingerprint) async {
+    final normalized = fingerprint.toLowerCase();
+    if (!RegExp(r'^[0-9a-f]{8}$').hasMatch(normalized)) return false;
+
+    final result = await _getWalletsUsecase.execute(
+      onlyBitcoin: true,
+      includeHidden: true,
+    );
+    return switch (result) {
+      Err() => false,
+      Ok(:final value) => value.any(
+        (wallet) =>
+            wallet.isPhysicalBackupTested &&
+            wallet.singleLocalSeedFingerprint == normalized,
+      ),
+    };
+  }
+}

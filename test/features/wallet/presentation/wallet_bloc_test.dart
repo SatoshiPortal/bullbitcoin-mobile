@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -348,18 +349,21 @@ WatchSpWalletUsecase _stubbedSpWatch() {
 /// A bloc whose wallet reads succeed but whose sync round fails, so the
 /// stale-balance path can be driven.
 final _syncedWallet = Wallet(
+  publicDescriptor: 'desc',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'abcd1234',
+      xpubFingerprint: 'abcd1234',
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   origin: 'w1',
   label: 'Test',
   network: Network.bitcoinMainnet,
   isDefault: true,
-  masterFingerprint: 'abcd1234',
-  xpubFingerprint: 'abcd1234',
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.zero,
 );
 

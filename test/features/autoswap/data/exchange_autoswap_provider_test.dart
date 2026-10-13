@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
@@ -37,13 +38,17 @@ Wallet _wallet({required bool liquid}) => Wallet(
   origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
   network: liquid ? Network.liquidTestnet : Network.bitcoinTestnet,
   isDefault: true,
-  xpubFingerprint: 'fingerprint',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'fingerprint',
+      xpubFingerprint: 'fingerprint',
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'external',
   balanceSat: BigInt.from(liquid ? 3000000 : 0),
 );
 

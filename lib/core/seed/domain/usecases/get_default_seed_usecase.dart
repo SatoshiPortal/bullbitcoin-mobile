@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -22,9 +23,10 @@ class GetDefaultSeedUsecase {
   /// failure: only the exception's runtime type. A `logMessage` is reachable
   /// from presentation, and this is key material (#1895).
   @useResult
-  Future<Result<Seed, SeedFailure>> execute() async {
+  Future<Result<Seed, SeedFailure>> execute({Environment? environment}) async {
     final List<Wallet> wallets;
     switch (await _walletRepository.getWallets(
+      environment: environment,
       onlyDefaults: true,
       onlyBitcoin: true,
     )) {
@@ -43,7 +45,9 @@ class GetDefaultSeedUsecase {
     // areas, so converting it is its own change. Until then this use case is
     // the boundary for it.
     try {
-      return Ok(await _seedRepository.get(wallets.first.masterFingerprint));
+      return Ok(
+        await _seedRepository.get(wallets.first.localSeedFingerprints.single),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the default seed',

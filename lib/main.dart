@@ -261,7 +261,7 @@ class Bull {
   }
 }
 
-Future main() async {
+Future<void> main() async {
   await runZonedGuarded(
     () async {
       try {

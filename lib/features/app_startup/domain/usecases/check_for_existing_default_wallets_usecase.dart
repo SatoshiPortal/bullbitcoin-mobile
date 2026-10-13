@@ -82,43 +82,34 @@ class CheckForExistingDefaultWalletsUsecase {
         error: StateError('missing $missing default wallet'),
         trace: StackTrace.current,
       );
-      try {
-        final seed = await _seedRepository.get(
-          defaultWallets.first.masterFingerprint,
-        );
-        final network = !hasBitcoin
-            ? (environment.isMainnet
-                  ? Network.bitcoinMainnet
-                  : Network.bitcoinTestnet)
-            : (environment.isMainnet
-                  ? Network.liquidMainnet
-                  : Network.liquidTestnet);
-        await _walletRepository.createWallet(
-          seed: seed,
-          network: network,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        );
-        // Best effort, like the rest of the heal: a failed re-read keeps the
-        // wallets already found, and the seed check below still runs.
-        switch (await _walletRepository.getWallets(
-          onlyDefaults: true,
-          environment: environment,
-        )) {
-          case Ok(:final value):
-            defaultWallets = value;
-          case Err(:final failure):
-            log.warning(
-              'Default wallets re-read after heal failed: '
-              '${failure.runtimeType}',
-            );
-        }
-      } catch (e, stackTrace) {
-        log.severe(
-          message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
-          error: e,
-          trace: stackTrace,
-        );
+      final seed = await _seedRepository.get(
+        defaultWallets.first.localSeedFingerprints.single,
+      );
+      final network = !hasBitcoin
+          ? (environment.isMainnet
+                ? Network.bitcoinMainnet
+                : Network.bitcoinTestnet)
+          : (environment.isMainnet
+                ? Network.liquidMainnet
+                : Network.liquidTestnet);
+      await _walletRepository.createWallet(
+        seed: seed,
+        network: network,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+      );
+      switch (await _walletRepository.getWallets(
+        onlyDefaults: true,
+        environment: environment,
+      )) {
+        case Ok(:final value):
+          defaultWallets = value;
+        case Err(:final failure):
+          return Err(_walletCheckFailed(failure));
+      }
+      if (!defaultWallets.any((wallet) => wallet.network.isBitcoin) ||
+          !defaultWallets.any((wallet) => wallet.network.isLiquid)) {
+        return const Err(AppStartupWalletCheckFailure());
       }
     }
 
@@ -126,7 +117,7 @@ class CheckForExistingDefaultWalletsUsecase {
     await Future.wait(
       defaultWallets.map((wallet) async {
         try {
-          await _seedRepository.get(wallet.masterFingerprint);
+          await _seedRepository.get(wallet.localSeedFingerprints.single);
           log.fine('FINE: Seed Found');
         } catch (e) {
           log.severe(

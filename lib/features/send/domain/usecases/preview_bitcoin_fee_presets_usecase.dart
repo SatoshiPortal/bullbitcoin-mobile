@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 
@@ -27,6 +28,7 @@ class PreviewBitcoinFeePresetsUsecase {
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
     required bool drain,
+    BitcoinPolicyPath? policyPath,
   }) async {
     String rateKey(NetworkFee fee) => switch (fee) {
       AbsoluteFee(:final sats) => 'abs:$sats',
@@ -43,6 +45,7 @@ class PreviewBitcoinFeePresetsUsecase {
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
         drain: drain,
+        policyPath: policyPath,
       ),
     );
     final results = await Future.wait([

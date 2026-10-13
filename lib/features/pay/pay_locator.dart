@@ -25,7 +25,7 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 
@@ -88,7 +88,7 @@ class PayLocator {
     );
     locator.registerFactory<SignPayPayinUsecase>(
       () => SignPayPayinUsecase(
-        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        bitcoinSigningPort: locator<BitcoinSigningPort>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );

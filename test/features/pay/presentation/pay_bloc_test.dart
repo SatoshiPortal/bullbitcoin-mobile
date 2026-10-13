@@ -1299,5 +1299,28 @@ void main() {
       // Let the confirmation settle so nothing emits after tearDown closes.
       await Future<void>.delayed(const Duration(seconds: 6));
     }, timeout: const Timeout(Duration(seconds: 60)));
+    test('reports an unavailable manual coin selection', () async {
+      when(
+        () => preparePayBitcoinPayin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(PaySelectedCoinsUnavailableFailure()),
+      );
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      final paymentState =
+          await bloc.stream.firstWhere(
+                (state) => state is PayPaymentState && state.error != null,
+              )
+              as PayPaymentState;
+
+      expect(paymentState.error, isA<PaySelectedCoinsUnavailableFailure>());
+    });
   });
 }

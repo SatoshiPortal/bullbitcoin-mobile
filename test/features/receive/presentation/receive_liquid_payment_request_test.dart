@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -9,15 +10,19 @@ void main() {
   for (final network in [Network.liquidMainnet, Network.liquidTestnet]) {
     final address = network.isTestnet ? 'tlq1testaddress' : 'lq1testaddress';
     final wallet = Wallet(
+      publicDescriptor: '',
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: '00000000',
+          xpubFingerprint: '00000000',
+          xpub: '',
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
       origin: 'test-origin',
       network: network,
-      xpubFingerprint: '00000000',
       scriptType: ScriptType.bip84,
-      xpub: '',
-      externalPublicDescriptor: '',
-      internalPublicDescriptor: '',
-      signer: SignerEntity.local,
-      signerDevice: null,
       balanceSat: BigInt.zero,
     );
     final state = ReceiveState(

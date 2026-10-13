@@ -65,7 +65,7 @@ void main() {
       // This family has a single unexpected variant, so the TYPE cannot tell
       // the two causes apart — the message is the only signal, and it must not
       // claim the user has no wallet.
-      expect(failure.logMessage, isNot(contains('No default Bitcoin wallet')));
+      expect(failure.logMessage, isNot(contains('No Bitcoin wallet')));
       // The wallet layer's raw reason stays in the log.
       expect(failure.logMessage, isNot(contains('disk image is malformed')));
       // Nothing was backed up, so the vault was never touched.
@@ -74,17 +74,14 @@ void main() {
     },
   );
 
-  test(
-    'an genuinely empty default set still reports no default wallet',
-    () async {
-      stubWallets(const Ok([]));
+  test('an empty default set reports no Bitcoin wallet', () async {
+    stubWallets(const Ok([]));
 
-      final result = await usecase.execute();
+    final result = await usecase.execute();
 
-      final failure = (result as Err).failure as RecoverBullCoreFailure;
-      expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
-      expect(failure.logMessage, contains('No default Bitcoin wallet'));
-      verifyZeroInteractions(recoverBullRepository);
-    },
-  );
+    final failure = (result as Err).failure as RecoverBullCoreFailure;
+    expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
+    expect(failure.logMessage, contains('No Bitcoin wallet'));
+    verifyZeroInteractions(recoverBullRepository);
+  });
 }
