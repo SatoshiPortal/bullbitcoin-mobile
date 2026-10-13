@@ -26,6 +26,9 @@ import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 /// text when `value` diverges from the controller, so `value` must always be
 /// read from the controller itself at build time — never from a stale
 /// snapshot.
+/// The thresholds fit in a few digits, so their fields stay narrow.
+const _fieldWidth = 140.0;
+
 class PayjoinAdvancedSettingsScreen extends StatefulWidget {
   const PayjoinAdvancedSettingsScreen({super.key});
 
@@ -37,7 +40,6 @@ class PayjoinAdvancedSettingsScreen extends StatefulWidget {
 class _PayjoinAdvancedSettingsScreenState
     extends State<PayjoinAdvancedSettingsScreen> {
   static const _debounceDuration = Duration(milliseconds: 500);
-  static const _fieldWidth = 140.0;
 
   static final _minimumExpireMinutes =
       PayjoinPolicy.minimumSessionLifetime.inMinutes;
@@ -268,10 +270,7 @@ class _ThresholdField extends StatelessWidget {
               ),
             ),
             const Gap(16),
-            SizedBox(
-              width: _PayjoinAdvancedSettingsScreenState._fieldWidth,
-              child: field,
-            ),
+            SizedBox(width: _fieldWidth, child: field),
           ],
         ),
         if (error != null) ...[
