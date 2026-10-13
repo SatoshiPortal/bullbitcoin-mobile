@@ -15,6 +15,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   final LogSink log;
   final GoogleDriveAppDatasource _dataSource;
   Future<void> _queue = Future<void>.value();
+  int _accountGeneration = 0;
 
   GoogleDriveRepositoryImpl({
     required this.log,
@@ -24,6 +25,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   @override
   Future<Result<Null, RecoverBullFailure>> connect() async {
     return _serialized(() async {
+      _accountGeneration++;
       try {
         await _dataSource.connect();
         return const Ok(null);
@@ -43,16 +45,27 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   Future<String?> connectSilently() => _serialized(_dataSource.connectSilently);
 
   @override
-  Future<void> disconnect() => _serialized(_dataSource.disconnect);
+  Future<void> disconnect() => _serialized(() async {
+    _accountGeneration++;
+    await _dataSource.disconnect();
+  });
 
   @override
   Future<T> withDiscoverySession<T>(
     Future<T> Function(GoogleDriveDiscoverySession? session) action,
-  ) => _serialized(() async {
-    final account = await _dataSource.connectSilently();
-    if (account == null) return action(null);
-    return action(_Session(this, account));
-  });
+  ) async {
+    final session = await _serialized(() async {
+      final account = await _dataSource.connectSilently();
+      return account == null
+          ? null
+          : _Session(this, account, _accountGeneration);
+    });
+    try {
+      return await action(session);
+    } finally {
+      session?._active = false;
+    }
+  }
 
   @override
   Future<Result<List<DriveFileMetadata>, RecoverBullFailure>>
@@ -191,24 +204,63 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return result;
   }
 
-  Future<List<DriveFileMetadata>> _sessionMetadata() => _fetchAllMetadata();
+  Future<T> _withCurrentAccount<T>(
+    _Session session,
+    Future<T> Function() action,
+  ) => _serialized(() async {
+    if (!session._active || session._generation != _accountGeneration) {
+      throw const _DiscoverySessionExpiredException();
+    }
+    final account = await _dataSource.connectSilently();
+    if (account != session.account ||
+        session._generation != _accountGeneration) {
+      throw const _DiscoverySessionExpiredException();
+    }
+    return action();
+  });
+
+  Future<List<DriveFileMetadata>> _sessionMetadata(_Session session) async {
+    final files = <DriveFileMetadata>[];
+    final seenTokens = <String>{};
+    String? token;
+    while (true) {
+      final page = await _withCurrentAccount(
+        session,
+        () => _dataSource.fetchMetadataPage(token),
+      );
+      files.addAll(page.files.map((file) => file.toEntity()));
+      final next = page.nextPageToken;
+      if (next == null || next.isEmpty) return files;
+      if (!seenTokens.add(next)) {
+        throw const FormatException('Drive pagination repeated a page token');
+      }
+      token = next;
+    }
+  }
 }
 
 final class _Session implements GoogleDriveDiscoverySession {
   final GoogleDriveRepositoryImpl _repository;
   @override
   final String account;
+  final int _generation;
+  bool _active = true;
 
-  const _Session(this._repository, this.account);
+  _Session(this._repository, this.account, this._generation);
 
   @override
-  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) =>
+      _repository._withCurrentAccount(this, action);
 
   @override
   Future<List<DriveFileMetadata>> fetchAllMetadata() =>
-      _repository._sessionMetadata();
+      _repository._sessionMetadata(this);
 
   @override
   Future<String> fetchRawFile(String fileId) =>
-      _repository._fetchContent(fileId);
+      withCurrentAccount(() => _repository._fetchContent(fileId));
+}
+
+final class _DiscoverySessionExpiredException implements Exception {
+  const _DiscoverySessionExpiredException();
 }

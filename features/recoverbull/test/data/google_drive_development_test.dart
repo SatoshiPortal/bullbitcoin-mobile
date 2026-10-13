@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_recoverbull/src/data/datasources/google_drive_datasource.dart';
@@ -112,29 +114,33 @@ void main() {
   );
 
   test(
-    'debug discovery session serializes disconnect until the action completes',
+    'debug foreground disconnect is not held by discovery callback',
     () async {
       final fake = DebugGoogleDriveRepository();
-      Future<void>? pendingDisconnect;
-      Future<dynamic>? pendingRead;
-      var readCompleted = false;
-      var disconnectCompleted = false;
-      final sessionDone = fake.withDiscoverySession((session) async {
-        expect(session, isNotNull);
-        pendingDisconnect = fake.disconnect();
-        pendingRead = fake.fetchAllMetadata();
-        pendingDisconnect!.whenComplete(() => disconnectCompleted = true);
-        pendingRead!.whenComplete(() => readCompleted = true);
-        expect(disconnectCompleted, isFalse);
-        expect(readCompleted, isFalse);
-        return null;
+      final opened = Completer<void>();
+      final resume = Completer<void>();
+      addTearDown(() {
+        if (!resume.isCompleted) resume.complete();
       });
-      await sessionDone;
-      await pendingDisconnect;
-      await pendingRead;
+      var disconnectCompleted = false;
+      final discovery = fake.withDiscoverySession((session) async {
+        expect(session, isNotNull);
+        opened.complete();
+        await resume.future;
+        await expectLater(
+          session!.fetchRawFile('debug-file-0'),
+          throwsA(isA<Exception>()),
+        );
+      });
+      await opened.future;
+      final disconnect = fake.disconnect().then(
+        (_) => disconnectCompleted = true,
+      );
+      await Future<void>.delayed(Duration.zero);
       expect(disconnectCompleted, isTrue);
-      expect(readCompleted, isTrue);
-      await fake.disconnect();
+      resume.complete();
+      await discovery;
+      await disconnect;
     },
   );
 
