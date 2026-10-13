@@ -33,7 +33,8 @@ class BullButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.compact = false,
-  }) : size = BullButtonSize.large;
+  }) : size = BullButtonSize.large,
+       _textOnly = false;
 
   const BullButton.small({
     super.key,
@@ -50,7 +51,29 @@ class BullButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.compact = false,
-  }) : size = BullButtonSize.small;
+  }) : size = BullButtonSize.small,
+       _textOnly = false;
+
+  /// An inline action using the same localized label and theme contract.
+  const BullButton.text({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    required this.bgColor,
+    required this.textColor,
+    this.iconData,
+    this.textStyle,
+    this.disabled = false,
+  }) : size = BullButtonSize.small,
+       _textOnly = true,
+       iconFirst = true,
+       outlined = false,
+       borderColor = null,
+       height = null,
+       width = null,
+       compact = true;
+
+  final bool _textOnly;
 
   /// Optional leading/trailing icon glyph.
   final IconData? iconData;
@@ -97,6 +120,25 @@ class BullButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_textOnly) {
+      final style = TextButton.styleFrom(
+        foregroundColor: textColor,
+        backgroundColor: bgColor,
+        textStyle: textStyle,
+      );
+      return iconData == null
+          ? TextButton(
+              onPressed: disabled ? null : onPressed,
+              style: style,
+              child: Text(label),
+            )
+          : TextButton.icon(
+              onPressed: disabled ? null : onPressed,
+              style: style,
+              icon: Icon(iconData),
+              label: Text(label),
+            );
+    }
     final radius = BorderRadius.circular(BullRadius.xxs);
 
     final image = iconData != null

@@ -19,15 +19,9 @@ final class _LogSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BullScaffold(
-    appBar: AppBar(
-      backgroundColor: context.bull.background,
-      foregroundColor: context.bull.onSurface,
-      surfaceTintColor: context.bull.background,
-      scrolledUnderElevation: 0,
-      title: Text(
-        LogsLocalizations.of(context).logSettingsLogsTitle,
-        style: TextStyle(color: context.bull.onSurface),
-      ),
+    appBar: BullTopBar.appBar(
+      title: LogsLocalizations.of(context).logSettingsLogsTitle,
+      onBack: () => Navigator.of(context).pop(),
       actions: [
         IconButton(
           key: const ValueKey('logs-delete'),
