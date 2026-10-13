@@ -24,6 +24,11 @@ class BroadcastOriginalTransactionUsecase {
       Err(failure: PayjoinFallbackUnavailableFailure()) => const Err(
         TransactionPayjoinFallbackUnavailableFailure(),
       ),
+      Err(failure: PayjoinUnavailableFailure()) => const Err(
+        TransactionPayjoinVerificationFailure(
+          'Could not verify competing transactions',
+        ),
+      ),
       Err(:final failure) => Err(
         TransactionPayjoinBroadcastFailure(
           'broadcastOriginal failed: ${failure.runtimeType}',

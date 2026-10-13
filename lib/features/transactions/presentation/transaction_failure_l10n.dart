@@ -18,6 +18,7 @@ extension TransactionFailureL10n on TransactionFailure {
       context.loc.transactionPayjoinBroadcastFailed,
     TransactionLabelLimitFailure() => context.loc.transactionLabelLimitReached,
     // Never `logMessage`.
-    TransactionUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    TransactionUnexpectedFailure() || TransactionPayjoinVerificationFailure() =>
+      context.loc.oopsSomethingWentWrong,
   };
 }

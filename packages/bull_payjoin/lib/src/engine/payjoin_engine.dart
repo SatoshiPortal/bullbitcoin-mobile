@@ -451,9 +451,25 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
     }
     final freshEntity = freshModel.toEntity();
-    final competingTxId = freshEntity.canManuallyBroadcastOriginal
-        ? await _visibleCompetingTransaction(freshEntity)
-        : null;
+    final String? competingTxId;
+    try {
+      competingTxId = freshEntity.canManuallyBroadcastOriginal
+          ? await _visibleCompetingTransaction(freshEntity)
+          : null;
+    } on Exception catch (error, trace) {
+      _log.warning(
+        '',
+        code: api.PayjoinLogCode.watchFailure,
+        sessionRef: freshEntity.id,
+        error: error,
+        trace: trace,
+      );
+      return const Err(
+        api.PayjoinUnavailableFailure(
+          'Could not verify competing transactions',
+        ),
+      );
+    }
     if (competingTxId != null && competingTxId == freshEntity.txId) {
       // The payjoin already reached the network: the user is paid. Settle the
       // session now instead of leaving them on a spinner until a watcher

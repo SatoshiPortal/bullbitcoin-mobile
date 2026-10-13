@@ -484,6 +484,38 @@ void main() {
     expect(persisted?.isAborted, isFalse);
   });
 
+  test(
+    'a failed visibility check never attempts a fallback broadcast',
+    () async {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+      );
+      await local.storeReceiver(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: model.originalTxId!,
+          refresh: true,
+        ),
+      ).thenThrow(Exception('server unreachable'));
+      final result = await engine.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+      expect(
+        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+        isA<PayjoinUnavailableFailure>(),
+      );
+      expect((await local.fetchReceiver(model.id))?.isAborted, isFalse);
+      verifyNever(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      );
+    },
+  );
+
   test('manual fallback settles when the original is visible', () async {
     final model = receiver(
       originalTransaction: Uint8List.fromList([1, 2, 3]),
