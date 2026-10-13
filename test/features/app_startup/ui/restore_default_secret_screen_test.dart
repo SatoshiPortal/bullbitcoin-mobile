@@ -47,4 +47,24 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('the system back cancels instead of closing the app', (
+    tester,
+  ) async {
+    var cancelled = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) =>
+            RestoreDefaultSecretScreen(onCancel: () => cancelled++),
+        home: const SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    expect(cancelled, 1);
+  });
 }

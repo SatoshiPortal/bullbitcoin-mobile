@@ -25,13 +25,14 @@ class RestoreDefaultSecretScreen extends StatefulWidget {
 }
 
 class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
-    with PrivacyScreen {
+    with PrivacyScreen, WidgetsBindingObserver {
   String? _error;
   bool _busy = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Best-effort, like every screen where words are typed: refusing entry
     // over a platform hiccup would block the only way back.
     unawaited(enableScreenPrivacy());
@@ -39,8 +40,17 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(disableScreenPrivacy());
     super.dispose();
+  }
+
+  /// The system back reaches the app's router first, which has nothing to pop
+  /// at startup and would close the app; here it cancels, like the back button.
+  @override
+  Future<bool> didPopRoute() async {
+    widget.onCancel();
+    return true;
   }
 
   Future<void> _submit(List<String> words) async {
