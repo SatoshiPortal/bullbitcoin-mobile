@@ -247,6 +247,13 @@ enum PayjoinLogCode {
   broadcastFailure,
   storageFailure,
   migrationFailure,
+  labelFailure,
+  watchFailure,
+  fallbackRejected,
+  requestAfterDisable,
+  requestBelowMinimum,
+  proposalSkipped,
+  conflictingBroadcast,
 }
 
 final class PayjoinLogEvent {
