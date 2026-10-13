@@ -9,7 +9,7 @@ import '../domain/usecases/decrypt_and_accept_vault_usecase.dart';
 import '../domain/usecases/manage_recoverbull_connection_usecase.dart';
 import '../domain/recoverbull_navigation_port.dart';
 import '../ui/screens/attempt_alert_detail_page.dart';
-import '../data/debug_google_drive_repository.dart';
+import 'google_drive_composition.dart';
 import '../data/datasources/file_storage_datasource.dart';
 import '../data/datasources/google_drive_datasource.dart';
 import '../data/datasources/recoverbull_remote_datasource.dart';

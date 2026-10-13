@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'mappers/encrypted_vault_mapper.dart';
 import 'dart:convert';
 
@@ -254,15 +253,4 @@ final class _DebugDriveFile {
   final DateTime createdAt;
 
   const _DebugDriveFile({required this.content, required this.createdAt});
-}
-
-GoogleDriveRepository selectGoogleDriveRepository({
-  required GoogleDriveRepository production,
-  bool fakeEnabled = const bool.fromEnvironment('RECOVERBULL_FAKE_DRIVE'),
-  bool debugMode = kDebugMode,
-}) {
-  if (fakeEnabled && !debugMode) {
-    throw StateError('RECOVERBULL_FAKE_DRIVE is debug-only');
-  }
-  return fakeEnabled ? DebugGoogleDriveRepository() : production;
 }
