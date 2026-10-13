@@ -424,6 +424,181 @@ void main() {
   );
 
   test(
+    'an own 401 without telemetry keeps its allowance across a window change',
+    () async {
+      await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+      final next = window.add(const Duration(hours: 1));
+      final record = RecordLocalAttemptUsecase(
+        repository,
+        remote: _Remote(() async => null),
+        clock: () => next.add(const Duration(minutes: 15)),
+      );
+      final operation = (await record
+          .beginOwnOperation(
+            backupIdHex: '010203',
+            password: 'new-window-candidate',
+          )
+          .requireOk())!;
+      expect(
+        await record
+            .completeOwnOperation(operation: operation, counted: true)
+            .requireOk(),
+        isNull,
+      );
+      expect(
+        await check(_Remote(() async => snapshot(1, counterWindow: next))),
+        isEmpty,
+      );
+      final alert =
+          (await check(
+                _Remote(() async => snapshot(2, counterWindow: next)),
+              )).single
+              as SuspiciousActivityAlert;
+      expect(alert.expectedTotal, 1);
+      expect(alert.observedTotal, 2);
+    },
+  );
+
+  test('the local clock alone cannot move a known server window', () async {
+    await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+    final record = RecordLocalAttemptUsecase(
+      repository,
+      clock: () => window.add(const Duration(hours: 1, minutes: 15)),
+    );
+    final operation = (await record
+        .beginOwnOperation(
+          backupIdHex: '010203',
+          password: 'clock-ahead-candidate',
+        )
+        .requireOk())!;
+    await record
+        .completeOwnOperation(operation: operation, counted: true)
+        .requireOk();
+    expect(
+      (await store.monitoredBackups()).single.currentWindow,
+      attemptWindowIdentity(window),
+    );
+    expect(await check(_Remote(() async => snapshot(1))), isEmpty);
+    final alert =
+        (await check(_Remote(() async => snapshot(2)))).single
+            as SuspiciousActivityAlert;
+    expect(alert.expectedTotal, 1);
+  });
+
+  test(
+    'duplicate unobserved candidates cannot conceal a real next-window excess',
+    () async {
+      await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+      final next = window.add(const Duration(hours: 1));
+      final record = RecordLocalAttemptUsecase(repository, clock: () => next);
+      for (var attempt = 0; attempt < 2; attempt++) {
+        final operation = (await record
+            .beginOwnOperation(
+              backupIdHex: '010203',
+              password: 'same-candidate',
+            )
+            .requireOk())!;
+        await record
+            .completeOwnOperation(operation: operation, counted: true)
+            .requireOk();
+      }
+      final alert =
+          (await check(
+                _Remote(() async => snapshot(2, counterWindow: next)),
+              )).single
+              as SuspiciousActivityAlert;
+      expect(alert.expectedTotal, 1);
+      expect(alert.observedTotal, 2);
+    },
+  );
+
+  test(
+    'a late unknown completion cannot credit a newer known server window',
+    () async {
+      await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+      final record = recorder();
+      final old = (await record
+          .beginOwnOperation(
+            backupIdHex: '010203',
+            password: 'old-unknown-candidate',
+          )
+          .requireOk())!;
+      final next = window.add(const Duration(hours: 1));
+      await store.recordOwnAttempt(id, serverTotalAttempts: 1, window: next);
+      await record
+          .completeOwnOperation(operation: old, counted: true)
+          .requireOk();
+      final alert =
+          (await check(
+                _Remote(() async => snapshot(2, counterWindow: next)),
+              )).single
+              as SuspiciousActivityAlert;
+      expect(alert.expectedTotal, 1);
+    },
+  );
+
+  test(
+    'a new server dataset discards unresolved own-candidate allowances',
+    () async {
+      await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+      expect(await check(_Remote(() async => snapshot(0))), isEmpty);
+      final next = window.add(const Duration(hours: 1));
+      final record = RecordLocalAttemptUsecase(repository, clock: () => next);
+      final operation = (await record
+          .beginOwnOperation(
+            backupIdHex: '010203',
+            password: 'previous-dataset-candidate',
+          )
+          .requireOk())!;
+      await record
+          .completeOwnOperation(operation: operation, counted: true)
+          .requireOk();
+      RecoverBullAttemptsSnapshot changedDataset(int count) =>
+          RecoverBullAttemptsSnapshot(
+            collectionStartedAt: collection.add(const Duration(days: 1)),
+            totalAttempts: {store.digestFor(id): count},
+            windowStartedAt: {store.digestFor(id): next},
+          );
+      expect(await check(_Remote(() async => changedDataset(0))), isEmpty);
+      final alert =
+          (await check(_Remote(() async => changedDataset(1)))).single
+              as SuspiciousActivityAlert;
+      expect(alert.expectedTotal, 0);
+    },
+  );
+
+  test(
+    'a server change discards unresolved own-candidate allowances',
+    () async {
+      await store.recordOwnAttempt(id, serverTotalAttempts: 0, window: window);
+      final next = window.add(const Duration(hours: 1));
+      final record = RecordLocalAttemptUsecase(repository, clock: () => next);
+      final operation = (await record
+          .beginOwnOperation(
+            backupIdHex: '010203',
+            password: 'previous-server-candidate',
+          )
+          .requireOk())!;
+      await record
+          .completeOwnOperation(operation: operation, counted: true)
+          .requireOk();
+      await RecoverbullSettingsDatasource(
+        database: db,
+      ).store(Uri.parse('http://next-server.onion'));
+      expect(
+        await check(_Remote(() async => snapshot(0, counterWindow: next))),
+        isEmpty,
+      );
+      final alert =
+          (await check(
+                _Remote(() async => snapshot(1, counterWindow: next)),
+              )).single
+              as SuspiciousActivityAlert;
+      expect(alert.expectedTotal, 0);
+    },
+  );
+
+  test(
     'a conflicting newer window cannot be compared to old window counts',
     () async {
       await store.recordOwnAttempt(id, serverTotalAttempts: 1, window: window);

@@ -24,6 +24,7 @@ final class RecoverBullAttemptMonitoringStore {
   final Map<int, _OwnOperation> _ownOperations = {};
   final Map<String, int> _ownActivityRevisions = {};
   final Map<String, Map<int, Set<String>>> _ownCandidates = {};
+  final Map<String, Map<String, Set<int>>> _unattributedOwnCandidates = {};
   final List<int> _candidateSalt = List.generate(
     32,
     (_) => Random.secure().nextInt(256),
@@ -95,6 +96,7 @@ final class RecoverBullAttemptMonitoringStore {
   void _clearOwnOperations() {
     _ownOperations.clear();
     _ownCandidates.clear();
+    _unattributedOwnCandidates.clear();
     _ownActivityRevisions.clear();
   }
 
@@ -102,6 +104,50 @@ final class RecoverBullAttemptMonitoringStore {
     if (_ownGeneration == generation) return;
     _clearOwnOperations();
     _ownGeneration = generation;
+  }
+
+  int _consumeUnattributedOwnCandidates(
+    String digest,
+    int window,
+    int observed,
+    int anchor,
+  ) {
+    final pending = _unattributedOwnCandidates[digest];
+    if (pending == null) return 0;
+    pending.removeWhere(
+      (_, windows) => windows.every((value) => value < window),
+    );
+    if (pending.isEmpty) {
+      _unattributedOwnCandidates.remove(digest);
+      return 0;
+    }
+    if (observed <= anchor ||
+        !pending.values.any((windows) => windows.contains(window))) {
+      return 0;
+    }
+    var windows = _ownCandidates[digest];
+    if (windows == null && _ownCandidates.length < 256) {
+      windows = <int, Set<String>>{};
+      _ownCandidates[digest] = windows;
+    }
+    if (windows == null) return 0;
+    final candidates = windows.putIfAbsent(window, () => <String>{});
+    var credit = 0;
+    for (final entry in pending.entries.toList()) {
+      if (!entry.value.contains(window)) continue;
+      if (candidates.contains(entry.key)) {
+        pending.remove(entry.key);
+        continue;
+      }
+      if (candidates.length >= 32 || credit >= observed - anchor) break;
+      candidates.add(entry.key);
+      pending.remove(entry.key);
+      credit++;
+    }
+    if (pending.isEmpty) _unattributedOwnCandidates.remove(digest);
+    // Only the actual observed server window defines the attribution ledger.
+    windows.removeWhere((key, _) => key != window);
+    return credit;
   }
 
   bool _ownActivityChanged(
@@ -149,6 +195,27 @@ final class RecoverBullAttemptMonitoringStore {
                 .map((entry) => entry.value)
                 .firstOrNull ??
             snapshot?.collectionStartedAt;
+        if (observed == null &&
+            observedAt == null &&
+            row != null &&
+            row.currentWindow != 0 &&
+            pending.window != row.currentWindow) {
+          // A local clock does not prove the server's counter window. Keep a
+          // bounded allowance until a compatible server observation arrives.
+          if (pending.window < row.currentWindow) return null;
+          var candidates = _unattributedOwnCandidates[operation.backupDigest];
+          if (candidates == null && _unattributedOwnCandidates.length < 256) {
+            candidates = <String, Set<int>>{};
+            _unattributedOwnCandidates[operation.backupDigest] = candidates;
+          }
+          if (candidates != null && candidates.length < 32) {
+            candidates.putIfAbsent(
+              pending.candidate,
+              () => {row.currentWindow, pending.window},
+            );
+          }
+          return null;
+        }
         final window = observedAt == null
             ? (row != null && row.currentWindow != 0
                   ? row.currentWindow
@@ -191,7 +258,15 @@ final class RecoverBullAttemptMonitoringStore {
             : 0;
         final ownCredit =
             ownNewCandidate && (observed == null || observed > anchor) ? 1 : 0;
-        final expected = anchor + ownCredit;
+        final deferredCredit = observed == null
+            ? 0
+            : _consumeUnattributedOwnCandidates(
+                operation.backupDigest,
+                window,
+                observed,
+                anchor + ownCredit,
+              );
+        final expected = anchor + ownCredit + deferredCredit;
         final anotherPending = _ownOperations.values.any(
           (other) =>
               other.operation.id != operation.id &&
@@ -630,6 +705,7 @@ final class RecoverBullAttemptMonitoringStore {
           state.revision != resolvedToken.stateRevision) {
         return const RecoverBullAttemptMonitoringApplyResult(false, 0);
       }
+      _syncOwnGeneration(state.generation);
       var conflicts = 0;
       final eligibleDigests = <String>{};
       final alerts = <SuspiciousActivityAlert>[];
@@ -693,6 +769,12 @@ final class RecoverBullAttemptMonitoringStore {
           continue;
         }
         if (row.currentWindow != 0 && row.currentWindow != observedWindow) {
+          final expected = _consumeUnattributedOwnCandidates(
+            _hex(row.digest),
+            observedWindow,
+            observed,
+            0,
+          );
           await (database.update(database.recoverbullMonitoredBackup)..where(
                 (t) =>
                     t.digest.equals(row.digest) &
@@ -700,20 +782,20 @@ final class RecoverBullAttemptMonitoringStore {
               ))
               .write(
                 RecoverbullMonitoredBackupCompanion(
-                  expectedServerDistinctCandidateTotal: const Value(0),
+                  expectedServerDistinctCandidateTotal: Value(expected),
                   currentWindow: Value(observedWindow),
-                  lastWarningWindow: observed > 0
+                  lastWarningWindow: observed > expected
                       ? Value(observedWindow)
                       : const Value(null),
                   rowRevision: Value(row.rowRevision + 1),
                 ),
               );
-          if (observed > 0) {
+          if (observed > expected) {
             alerts.add(
               SuspiciousActivityAlert(
                 backupIdHash: _hex(row.digest),
                 observedTotal: observed,
-                expectedTotal: 0,
+                expectedTotal: expected,
                 windowStartedAt: DateTime.fromMillisecondsSinceEpoch(
                   observedWindow * 1000,
                   isUtc: true,
@@ -724,8 +806,21 @@ final class RecoverBullAttemptMonitoringStore {
           continue;
         }
         eligibleDigests.add(_hex(row.digest));
-        if (observed <= row.expectedServerDistinctCandidateTotal) continue;
-        alerts.add(_snapshotAlert(row, observed, observedWindow));
+        final deferredCredit = _consumeUnattributedOwnCandidates(
+          _hex(row.digest),
+          observedWindow,
+          observed,
+          row.expectedServerDistinctCandidateTotal,
+        );
+        final expected =
+            row.expectedServerDistinctCandidateTotal + deferredCredit;
+        final suspicious = observed > expected;
+        if (!suspicious && deferredCredit == 0) continue;
+        if (suspicious) {
+          alerts.add(
+            _snapshotAlert(row, observed, observedWindow, expected: expected),
+          );
+        }
         await (database.update(database.recoverbullMonitoredBackup)..where(
               (t) =>
                   t.digest.equals(row.digest) &
@@ -733,7 +828,10 @@ final class RecoverBullAttemptMonitoringStore {
             ))
             .write(
               RecoverbullMonitoredBackupCompanion(
-                lastWarningWindow: Value(observedWindow),
+                expectedServerDistinctCandidateTotal: Value(expected),
+                lastWarningWindow: suspicious
+                    ? Value(observedWindow)
+                    : const Value.absent(),
                 currentWindow: Value(observedWindow),
                 rowRevision: Value(row.rowRevision + 1),
               ),
@@ -784,6 +882,7 @@ final class RecoverBullAttemptMonitoringStore {
           state.revision != token.stateRevision) {
         return const RecoverBullAttemptMonitoringApplyResult(false, 0);
       }
+      _unattributedOwnCandidates.clear();
       var conflicts = 0;
       final rows = await database
           .select(database.recoverbullMonitoredBackup)
@@ -1007,11 +1106,12 @@ final class RecoverBullAttemptMonitoringStore {
   static SuspiciousActivityAlert _snapshotAlert(
     RecoverbullMonitoredBackupData row,
     int observed,
-    int window,
-  ) => SuspiciousActivityAlert(
+    int window, {
+    int? expected,
+  }) => SuspiciousActivityAlert(
     backupIdHash: _hex(row.digest),
     observedTotal: observed,
-    expectedTotal: row.expectedServerDistinctCandidateTotal,
+    expectedTotal: expected ?? row.expectedServerDistinctCandidateTotal,
     windowStartedAt: DateTime.fromMillisecondsSinceEpoch(
       window * 1000,
       isUtc: true,
