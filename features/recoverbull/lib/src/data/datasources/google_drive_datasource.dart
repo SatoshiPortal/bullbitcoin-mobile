@@ -1,3 +1,4 @@
+import 'package:http/http.dart' as http;
 import '../mappers/encrypted_vault_mapper.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -19,28 +20,38 @@ class GoogleDriveAppDatasource {
   final GoogleSignIn _google;
 
   drive.DriveApi? _driveApi;
+  http.Client? _client;
+  String? _authenticatedAccount;
+  final Future<http.Client?> Function() _authenticatedClient;
+  bool _disposed = false;
 
   GoogleDriveAppDatasource({
     required this.log,
     this.pageLister,
     GoogleSignIn? googleSignIn,
-  }) : _google = googleSignIn ?? _sharedGoogle;
+    Future<http.Client?> Function()? authenticatedClient,
+  }) : _google = googleSignIn ?? _sharedGoogle,
+       _authenticatedClient =
+           authenticatedClient ??
+           (() => (googleSignIn ?? _sharedGoogle).authenticatedClient());
 
   void _checkConnection() {
+    if (_disposed) throw StateError('Drive datasource is disposed');
     if (_driveApi == null) throw Exception('Drive authentication unavailable');
   }
 
   Future<void> connect() async {
+    if (_disposed) throw StateError('Drive datasource is disposed');
     try {
       final account = await _google.signIn();
       if (account == null) throw Exception('Drive sign-in unavailable');
 
-      final client = await _google.authenticatedClient();
+      final client = await _authenticatedClient();
       if (client == null) {
         throw Exception('Drive authenticated client unavailable');
       }
 
-      _driveApi = drive.DriveApi(client);
+      _replaceClient(client, account.email);
     } on Exception catch (e) {
       log.error(
         'recoverbull.drive.sign_in.unexpected error_type=${e.runtimeType}',
@@ -49,35 +60,89 @@ class GoogleDriveAppDatasource {
       // Only forget the cached client: disconnecting would revoke the user's
       // Drive grant over what may be a transient network or Play Services
       // failure.
-      _driveApi = null;
+      _clearClient();
       rethrow;
     }
   }
 
   Future<String?> connectSilently() async {
+    if (_disposed) throw StateError('Drive datasource is disposed');
     try {
-      final account = await _google.signInSilently();
-      if (account == null) return null;
-      final client = await _google.authenticatedClient();
+      final account = await _google.signInSilently(suppressErrors: false);
+      if (account == null) {
+        // A real sign-out is different from a transient probe failure.
+        _clearClient();
+        return null;
+      }
+      if (_authenticatedAccount != null &&
+          _authenticatedAccount != account.email) {
+        // Never let an authenticated operation reuse the previous account.
+        _clearClient();
+      }
+      final client = await _authenticatedClient();
       if (client == null) return null;
-      _driveApi = drive.DriveApi(client);
+      _replaceClient(client, account.email);
       return account.email;
     } on Exception catch (error) {
       log.warning(
         'recoverbull.drive.silent_sign_in.unavailable '
         'error_type=${error.runtimeType}',
       );
-      // Only forget the cached client: disconnecting would revoke the user's
-      // Drive grant over what may be a transient network or Play Services
-      // failure.
-      _driveApi = null;
+      final currentAccount = _google.currentUser;
+      if (currentAccount == null ||
+          currentAccount.email != _authenticatedAccount) {
+        _clearClient();
+      }
+      // Discovery failed to authenticate. Preserve any foreground client for
+      // the same account; the discovery session still receives no capability.
       return null;
     }
   }
 
   Future<void> disconnect() async {
-    await _google.disconnect();
+    try {
+      await _google.disconnect();
+    } finally {
+      _clearClient();
+    }
+  }
+
+  void _replaceClient(http.Client client, String account) {
+    if (_disposed || _google.currentUser?.email != account) {
+      if (!identical(_client, client)) _closeClient(client);
+      _clearClient();
+      throw const _DriveAuthenticationCancelledException();
+    }
+    final previous = _client;
+    _client = client;
+    _authenticatedAccount = account;
+    _driveApi = drive.DriveApi(client);
+    if (previous != null && !identical(previous, client)) {
+      _closeClient(previous);
+    }
+  }
+
+  void _clearClient() {
+    final previous = _client;
+    _client = null;
     _driveApi = null;
+    _authenticatedAccount = null;
+    if (previous != null) _closeClient(previous);
+  }
+
+  void _closeClient(http.Client client) {
+    try {
+      client.close();
+    } on Exception {
+      log.warning('recoverbull.drive.client.close_failed');
+    }
+  }
+
+  /// Releases transport resources without revoking the user's Drive grant.
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _clearClient();
   }
 
   Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {
@@ -167,4 +232,8 @@ final class GoogleDriveMetadataPage {
   final String? nextPageToken;
 
   const GoogleDriveMetadataPage({required this.files, this.nextPageToken});
+}
+
+final class _DriveAuthenticationCancelledException implements Exception {
+  const _DriveAuthenticationCancelledException();
 }

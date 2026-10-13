@@ -10,7 +10,9 @@ class _GoogleSignIn extends Mock implements GoogleSignIn {}
 void main() {
   test('a failed silent sign-in keeps the user\'s Drive grant', () async {
     final google = _GoogleSignIn();
-    when(google.signInSilently).thenThrow(Exception('transient'));
+    when(
+      () => google.signInSilently(suppressErrors: false),
+    ).thenThrow(Exception('transient'));
     when(google.disconnect).thenAnswer((_) async => null);
     when(google.signOut).thenAnswer((_) async => null);
     final datasource = GoogleDriveAppDatasource(
@@ -50,7 +52,9 @@ void main() {
 
   test('silent sign-in propagates programmer errors', () async {
     final google = _GoogleSignIn();
-    when(google.signInSilently).thenThrow(StateError('programmer bug'));
+    when(
+      () => google.signInSilently(suppressErrors: false),
+    ).thenThrow(StateError('programmer bug'));
     final datasource = GoogleDriveAppDatasource(
       log: const TestLogSink(),
       googleSignIn: google,

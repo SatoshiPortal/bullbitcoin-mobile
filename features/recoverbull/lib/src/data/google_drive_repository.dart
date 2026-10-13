@@ -16,6 +16,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   final GoogleDriveAppDatasource _dataSource;
   Future<void> _queue = Future<void>.value();
   int _accountGeneration = 0;
+  bool _disposed = false;
 
   GoogleDriveRepositoryImpl({
     required this.log,
@@ -197,9 +198,23 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return utf8.decode(bytes);
   }
 
+  /// Cancels queued discovery capabilities and closes the owned HTTP client.
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _accountGeneration++;
+    _dataSource.dispose();
+  }
+
   Future<T> _serialized<T>(Future<T> Function() action) {
+    if (_disposed) throw StateError('Drive repository is disposed');
     final start = _queue;
-    final result = start.then((_) => action(), onError: (_, _) => action());
+    Future<T> run() {
+      if (_disposed) throw const _DiscoverySessionExpiredException();
+      return action();
+    }
+
+    final result = start.then((_) => run(), onError: (_, _) => run());
     _queue = result.then<void>((_) {}, onError: (_, _) {});
     return result;
   }
