@@ -1,8 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// A full-bleed page with a gradient-faded footer pinned to the bottom —
-/// duplicated from `core/widgets/template/screen_template.dart` (`StackedPage`).
+/// A full-bleed page with a gradient-faded footer pinned to the bottom.
 ///
 /// [child] fills the screen; [bottomChild] (typically action buttons) floats
 /// over it behind a bottom-up gradient that fades into the surface colour.
