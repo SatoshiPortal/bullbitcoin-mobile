@@ -319,7 +319,7 @@ final class _Harness {
     await store.registerBackup(
       List<int>.generate(16, (index) => index),
       origin: MonitoredBackupOrigin.adopted,
-      window: 1,
+      window: DateTime.utc(2026, 8, 5, 14).millisecondsSinceEpoch ~/ 1000,
     );
     if (initialEtag != null) {
       await database
