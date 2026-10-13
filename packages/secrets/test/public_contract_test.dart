@@ -159,6 +159,24 @@ void main() {
     final protectedId = Fingerprint('b4e3f5ed');
 
     test(
+      'mnemonic verification judges the words as they were when asked',
+      () async {
+        final secrets = service(
+          FakeSecureStoragePlatform(entries: {'seed_${id.hex}': entry}),
+        );
+        final secret = ok(await secrets.fetch(id));
+        final candidate = List<String>.of(words);
+
+        // The comparison runs after the secret has loaded; a caller reusing
+        // its list in between must not change the verdict.
+        final verdict = secret.verify.mnemonic(candidate);
+        candidate[0] = candidate[0] == 'zoo' ? 'abandon' : 'zoo';
+
+        expect(ok(await verdict), isTrue);
+      },
+    );
+
+    test(
       'mnemonic verification uses words while seed verification includes the passphrase',
       () async {
         final secrets = service(

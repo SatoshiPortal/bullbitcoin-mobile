@@ -298,17 +298,20 @@ final class Secret extends SecretEntry {
 
   /// Compares user-typed words against the stored ones without exposing either.
   @internal
-  Future<Result<bool, SecretFailure>> verifyWords(
-    List<String> candidate,
-  ) => _repository.useMnemonic(info, (m) {
-    if (m.words.length != candidate.length) return false;
-    var match = true;
-    // No early exit: the loop's duration must not depend on where the first wrong word is.
-    for (var i = 0; i < candidate.length; i++) {
-      if (m.words[i] != candidate[i]) match = false;
-    }
-    return match;
-  });
+  Future<Result<bool, SecretFailure>> verifyWords(List<String> words) {
+    // Copied now: the comparison runs after the secret has loaded, and a
+    // caller that reuses its list in between must not change the verdict.
+    final candidate = List<String>.of(words);
+    return _repository.useMnemonic(info, (m) {
+      if (m.words.length != candidate.length) return false;
+      var match = true;
+      // No early exit: the loop's duration must not depend on where the first wrong word is.
+      for (var i = 0; i < candidate.length; i++) {
+        if (m.words[i] != candidate[i]) match = false;
+      }
+      return match;
+    });
+  }
 
   /// Compares every seed byte, including the stored passphrase for a mnemonic.
   @internal
