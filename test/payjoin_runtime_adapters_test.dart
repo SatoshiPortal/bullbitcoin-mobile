@@ -1,3 +1,5 @@
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -10,6 +12,8 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+class _MockLogger extends Mock implements Logger {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -54,7 +58,10 @@ void main() {
   late _FakeServers servers;
   late AppPayjoinTransactionAdapter adapter;
 
-  setUpAll(() => registerFallbackValue(_connection));
+  setUpAll(() {
+    registerFallbackValue(_connection);
+    registerFallbackValue(StackTrace.empty);
+  });
 
   setUp(() {
     wallets = _MockWalletRepository();
@@ -76,6 +83,44 @@ void main() {
     when(
       () => transactions.getWalletTransaction(_txId, walletId: _walletId),
     ).thenAnswer((_) async => null);
+  });
+
+  test('foreign warning and severe causes cannot leak payment data', () {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+    const adapter = AppPayjoinLogAdapter();
+    final cause = Exception(
+      'bitcoin:private-address?pj=https://private-server '
+      'raw-transaction-id',
+    );
+    for (final level in [PayjoinLogLevel.warning, PayjoinLogLevel.severe]) {
+      adapter.write(
+        PayjoinLogEvent(
+          level: level,
+          code: PayjoinLogCode.watchFailure,
+          sessionRef: '0123456789abcdef',
+          error: cause,
+          trace: StackTrace.current,
+        ),
+      );
+    }
+    final warning = verify(() => logger.warning(captureAny())).captured.single;
+    expect(warning, 'Payjoin watchFailure 0123456789abcdef _Exception');
+    final errors = verify(
+      () => logger.severe(
+        message: captureAny(named: 'message'),
+        error: captureAny(named: 'error'),
+        trace: any(named: 'trace'),
+      ),
+    ).captured;
+    expect(errors.whereType<String>().single, warning);
+    final reportedError = errors.whereType<Exception>().single.toString();
+    expect(reportedError, isNot(contains('private-address')));
+    expect(reportedError, isNot(contains('private-server')));
+    expect(reportedError, isNot(contains('raw-transaction-id')));
+    expect(reportedError, isNot(contains('0123456789abcdef')));
   });
 
   test('answers from the wallet without asking the server', () async {
