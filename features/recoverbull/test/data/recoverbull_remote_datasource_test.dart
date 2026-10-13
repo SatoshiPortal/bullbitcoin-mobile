@@ -50,6 +50,34 @@ void main() {
     client,
   );
 
+  test('a store can finish after a cold onion rendezvous', () {
+    fakeAsync((async) {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://test.onion'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        storeRequest: (_, _, _, _, _, _) =>
+            Future.delayed(const Duration(seconds: 61)),
+      );
+      Object? failure;
+      var finished = false;
+      datasource
+          .store([1], [2], [3], [4], route: routeFor(_Client()))
+          .then(
+            (_) => finished = true,
+            onError: (Object error) => failure = error,
+          );
+      async.flushMicrotasks();
+      async.elapse(const Duration(seconds: 62));
+      async.flushMicrotasks();
+      expect(failure, isNull);
+      expect(finished, isTrue);
+    });
+  });
+
   test('info and fetch reuse the route client without closing it', () async {
     final settings = _Settings();
     final client = _Client();
