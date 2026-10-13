@@ -76,6 +76,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
+    on<ReceivePayjoinSenderWaitElapsed>(_onPayjoinSenderWaitElapsed);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
     // restartable(): a rapid on/off/on toggle must not let a stale event's
     //  in-flight session creation land after a newer event already decided
@@ -154,8 +155,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
   late final StreamSubscription<int> _payjoinMinAmountChangeSubscription;
 
+  /// How long the sender gets to broadcast the payjoin before the receiver is
+  /// offered the plain payment instead.
+  static const payjoinSenderWait = Duration(seconds: 60);
+
+  Timer? _payjoinSenderWaitTimer;
+
   @override
   Future<void> close() async {
+    _payjoinSenderWaitTimer?.cancel();
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
@@ -1006,8 +1014,31 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.type == ReceiveType.bitcoin &&
         state.payjoin?.id != null &&
         updatedPayjoin.id == state.payjoin!.id) {
-      emit(state.copyWith(payjoin: updatedPayjoin));
+      final proposalJustSent =
+          updatedPayjoin.status == PayjoinStatus.proposed &&
+          state.payjoin!.status != PayjoinStatus.proposed;
+      if (proposalJustSent) {
+        _payjoinSenderWaitTimer?.cancel();
+        _payjoinSenderWaitTimer = Timer(payjoinSenderWait, () {
+          if (!isClosed) add(const ReceivePayjoinSenderWaitElapsed());
+        });
+      }
+      emit(
+        state.copyWith(
+          payjoin: updatedPayjoin,
+          isWaitingForPayjoinSender:
+              updatedPayjoin.isOngoing &&
+              (proposalJustSent || state.isWaitingForPayjoinSender),
+        ),
+      );
     }
+  }
+
+  void _onPayjoinSenderWaitElapsed(
+    ReceivePayjoinSenderWaitElapsed event,
+    Emitter<ReceiveState> emit,
+  ) {
+    emit(state.copyWith(isWaitingForPayjoinSender: false));
   }
 
   /// User tapped the payjoin toggle on the receive screen. Persists the new
@@ -1120,17 +1151,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final payjoin = state.payjoin;
-    // canManuallyBroadcastOriginal is a backstop against a stale UI snapshot:
-    //  once a proposal is sent (or the session resolved), broadcasting the
-    //  original would race the sender's payjoin transaction spending the same
-    //  inputs — either a no-op rejected by RBF's insufficient-fee rule
-    //  (observed live) or, worse, replacing a payment that already carried a
-    //  privacy benefit. The button's visibility is gated on the same getter,
-    //  so this can never disagree with what the UI showed.
+    // canOfferPayjoinFallback is a backstop against a stale UI snapshot:
+    //  while the sender should be broadcasting the payjoin (or once the
+    //  session resolved), broadcasting the original would race the sender's
+    //  payjoin transaction spending the same inputs — either a no-op
+    //  rejected by RBF's insufficient-fee rule (observed live) or, worse,
+    //  replacing a payment that already carried a privacy benefit. The
+    //  button's visibility is gated on the same getter, so this can never
+    //  disagree with what the UI showed.
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.hasOriginalTransaction &&
-        payjoin.canManuallyBroadcastOriginal) {
+        state.canOfferPayjoinFallback) {
       emit(
         state.copyWith(isBroadcastingOriginalTransaction: true, failure: null),
       );

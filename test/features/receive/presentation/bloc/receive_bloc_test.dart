@@ -441,6 +441,53 @@ void main() {
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
 
+    test('waits for the sender after a proposal before offering the '
+        'fallback', () async {
+      final requestedPayjoin = _receiver(
+        status: PayjoinStatus.requested,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => Ok(requestedPayjoin));
+      final proposedPayjoin = _receiver(
+        status: PayjoinStatus.proposed,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      );
+      when(
+        () => broadcastOriginalTransaction.execute(any()),
+      ).thenAnswer((_) async => Ok(proposedPayjoin));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(ReceivePayjoinUpdated(proposedPayjoin));
+      await Future<void>.delayed(Duration.zero);
+
+      // The sender normally broadcasts the payjoin within seconds.
+      expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+      expect(bloc.state.canOfferPayjoinFallback, isFalse);
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(() => broadcastOriginalTransaction.execute(any()));
+
+      // A sender that never broadcasts must not strand the receiver.
+      bloc.add(const ReceivePayjoinSenderWaitElapsed());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.canOfferPayjoinFallback, isTrue);
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
+      ).called(1);
+    });
+
     test(
       'does not surface an error when fallback becomes unavailable',
       () async {

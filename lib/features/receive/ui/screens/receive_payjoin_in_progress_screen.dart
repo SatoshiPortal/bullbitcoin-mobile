@@ -142,12 +142,10 @@ class PayjoinInProgressPage extends StatelessWidget {
     );
     // The single source of truth ReceiveBloc's own action guard
     // (_onPayjoinOriginalTxBroadcasted) agrees with — see
-    // Payjoin.canManuallyBroadcastOriginal's doc comment. Deriving the
-    // button's visibility from the exact same getter as the action means
-    // they can never disagree.
+    // ReceiveState.canOfferPayjoinFallback. Deriving the button's visibility
+    // from the exact same getter as the action means they can never disagree.
     final canManuallyBroadcastOriginal = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
+      (ReceiveBloc bloc) => bloc.state.canOfferPayjoinFallback,
     );
     final payjoinExpiresAt = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.expiresAt,
@@ -253,7 +251,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                   // Gated on the same canManuallyBroadcastOriginal as the
                   // fallback button below — a single source of truth so the
                   // countdown never outlives the action it is counting down
-                  // to (see Payjoin.canManuallyBroadcastOriginal).
+                  // to (see ReceiveState.canOfferPayjoinFallback).
                   if (canManuallyBroadcastOriginal &&
                       payjoinExpiresAt != null &&
                       isFallbackImminent) ...[
