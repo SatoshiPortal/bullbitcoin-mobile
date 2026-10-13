@@ -14,22 +14,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   final LogSink log;
-  final RecoverBullSettingsCubit cubit;
-  SettingsPage({
+  final RecoverBullSettingsCubit? cubit;
+  final FetchRecoverbullUrlUsecase? fetchUrlUsecase;
+  final StoreRecoverbullUrlUsecase? storeUrlUsecase;
+  final RecoverBullAttemptMonitoringController? monitoring;
+
+  const SettingsPage({
     super.key,
     required this.log,
-    RecoverBullSettingsCubit? cubit,
-    FetchRecoverbullUrlUsecase? fetchUrlUsecase,
-    StoreRecoverbullUrlUsecase? storeUrlUsecase,
-    RecoverBullAttemptMonitoringController? monitoring,
-  }) : cubit =
-           cubit ??
-           RecoverBullSettingsCubit(
-             log: log,
-             fetchUrl: fetchUrlUsecase!,
-             storeUrl: storeUrlUsecase!,
-             monitoring: monitoring,
-           );
+    this.cubit,
+    this.fetchUrlUsecase,
+    this.storeUrlUsecase,
+    this.monitoring,
+  });
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -39,30 +36,37 @@ class _SettingsPageState extends State<SettingsPage> {
   final _urlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
+  late final RecoverBullSettingsCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    widget.cubit.load();
+    _cubit =
+        widget.cubit ??
+        RecoverBullSettingsCubit(
+          log: widget.log,
+          fetchUrl: widget.fetchUrlUsecase!,
+          storeUrl: widget.storeUrlUsecase!,
+          monitoring: widget.monitoring,
+        );
+    _cubit.load();
   }
 
   @override
   void dispose() {
     _urlController.dispose();
+    if (widget.cubit == null) _cubit.close();
     super.dispose();
   }
 
   Future<void> _saveUrl() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final saved = await widget.cubit.save(_urlController.text);
+    final saved = await _cubit.save(_urlController.text);
     if (saved && mounted) {
       setState(() => _isEditing = false);
     } else if (mounted) {
-      BullSnackBar.show(
-        context,
-        message: context.loc.oopsSomethingWentWrong,
-      );
+      BullSnackBar.show(context, message: context.loc.oopsSomethingWentWrong);
     }
   }
 
@@ -89,7 +93,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       if (confirmed != true || !mounted) return;
     }
-    await widget.cubit.setMonitoringEnabled(enabled);
+    await _cubit.setMonitoringEnabled(enabled);
   }
 
   Future<void> _openRecoverBullWebsite() async {
@@ -136,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
       body: BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>(
-        bloc: widget.cubit,
+        bloc: _cubit,
         builder: (context, settings) => settings.loading
             ? const Center(child: CircularProgressIndicator())
             : Padding(

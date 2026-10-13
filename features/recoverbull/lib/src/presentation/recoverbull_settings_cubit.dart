@@ -47,18 +47,20 @@ final class RecoverBullSettingsCubit extends Cubit<RecoverBullSettingsState> {
   Future<void> load() async {
     try {
       final url = await fetchUrl.execute();
+      final monitoringStatus = await monitoring?.status();
+      if (isClosed) return;
       emit(
         state.copyWith(
           loading: false,
           url: url.toString(),
-          monitoring: await monitoring?.status(),
+          monitoring: monitoringStatus,
         ),
       );
     } catch (error, _) {
       log.warning(
         'recoverbull.settings.load_failed error_type=${error.runtimeType}',
       );
-      emit(state.copyWith(loading: false));
+      if (!isClosed) emit(state.copyWith(loading: false));
     }
   }
 
@@ -67,13 +69,14 @@ final class RecoverBullSettingsCubit extends Cubit<RecoverBullSettingsState> {
     try {
       final url = Uri.parse(value);
       await storeUrl.execute(url);
+      if (isClosed) return false;
       emit(state.copyWith(saving: false, url: url.toString()));
       return true;
     } catch (error, _) {
       log.warning(
         'recoverbull.settings.save_failed error_type=${error.runtimeType}',
       );
-      emit(state.copyWith(saving: false));
+      if (!isClosed) emit(state.copyWith(saving: false));
       return false;
     }
   }
@@ -82,6 +85,7 @@ final class RecoverBullSettingsCubit extends Cubit<RecoverBullSettingsState> {
     final controller = monitoring;
     if (controller == null) return;
     await controller.setEnabled(enabled);
-    emit(state.copyWith(monitoring: await controller.status()));
+    final status = await controller.status();
+    if (!isClosed) emit(state.copyWith(monitoring: status));
   }
 }
