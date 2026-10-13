@@ -2108,10 +2108,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Legacy Transactions",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Μην δείξετε ξανά αυτή την προειδοποίηση.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3166,10 +3162,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Exchange Account Ρυθμίσεις",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Ανεβαίνετε μέχρι {maxFiles} αρχεία. Επιτρέπονται μορφές: PDF, JPG, PNG, GIF, HEIC. Μέγιστη μέγεθος αρχείου: 10MB ανά αρχείο.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3458,10 +3450,6 @@
   "sellSendPaymentEurBalance": "EUR EUR EUR EUR EUR EUR ισορροπία ισορροπία",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "Μεταφορά",
   "@swapProgressCompleted": {
@@ -6262,10 +6250,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "Legacy Transactions Έρχεται σύντομα",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "Απόδειξη της Διεύθυνσης",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -6596,10 +6580,6 @@
   "sendConfirmSwap": "Επιβεβαίωση Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Έρχεται σύντομα",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Συνολικός όγκος συναλλαγών",
   "@exchangeStatisticsTotalVolume": {
@@ -8211,10 +8191,6 @@
   "payPayee": "Payee",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "Αυτό το χαρακτηριστικό έρχεται σύντομα.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "Πουλήστε στην πρόοδο...",
   "@sellInProgress": {

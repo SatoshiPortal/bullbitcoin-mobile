@@ -2490,10 +2490,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "การทําธุรกรรม",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "อย่าแสดงการแจ้งเตือนนี้อีกครั้ง.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3737,10 +3733,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "การตั้งค่าบัญชี",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "อัปโหลด {maxFiles} ไฟล์ ใช้รูปแบบ: PDF, JPG, PNG, GIF ขนาดไฟล์สูงสุด: 10MB ต่อไฟล์.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4077,10 +4069,6 @@
   "sellSendPaymentEurBalance": "EUR สมดุล",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "บัญชี",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "การโอนเงิน",
   "@swapProgressCompleted": {
@@ -7435,10 +7423,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "การทําธุรกรรม - ไม่นาน",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "เอกสาร",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7844,10 +7828,6 @@
   "sendConfirmSwap": "ยืนยัน",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "เข้าสู่ระบบ",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "ปริมาณการซื้อขาย",
   "@exchangeStatisticsTotalVolume": {
@@ -9814,10 +9794,6 @@
   "payPayee": "ชําระเงิน",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "คุณลักษณะนี้เกิดขึ้นทันที.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "ขายในความคืบหน้า ...",
   "@sellInProgress": {
