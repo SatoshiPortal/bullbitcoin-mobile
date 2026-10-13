@@ -181,4 +181,61 @@ void main() {
 
     expect(find.text('drag me'), findsNothing);
   });
+  testWidgets('replacing a dismissing toast preserves its replacement', (
+    tester,
+  ) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Builder(
+          builder: (value) {
+            context = value;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    BullSnackBar.show(context, message: 'first');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    BullSnackBar.dismiss();
+    await tester.pump(const Duration(milliseconds: 80));
+    BullSnackBar.show(context, message: 'replacement');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('first'), findsNothing);
+    expect(find.text('replacement'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a canceled pointer does not interrupt toast dismissal', (
+    tester,
+  ) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Builder(
+          builder: (value) {
+            context = value;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    BullSnackBar.show(context, message: 'dismiss me');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.text('dismiss me')),
+    );
+    await gesture.moveBy(const Offset(20, 0));
+    BullSnackBar.dismiss();
+    await tester.pump(const Duration(milliseconds: 80));
+    await gesture.cancel();
+    await tester.pumpAndSettle();
+    expect(find.text('dismiss me'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 }

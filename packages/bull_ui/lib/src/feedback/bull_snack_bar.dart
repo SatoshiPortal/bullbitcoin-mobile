@@ -96,6 +96,7 @@ class BullSnackBar {
     final entry = _entry;
     if (entry != null && entry.mounted) entry.remove();
     _entry = null;
+    _activeState = null;
   }
 
   static void _scheduleAutoDismiss() {
@@ -229,12 +230,19 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
     }
 
     anim.addListener(listener);
-    _controller
-      ..reset()
-      ..forward().whenComplete(() {
+    _controller.reset();
+    unawaited(() async {
+      try {
+        await _controller.forward().orCancel;
+        if (mounted) onComplete?.call();
+      } on TickerCanceled {
+        // A replacement, drag, or disposal interrupts the anim. It must
+        // never complete a dismissal against the next toast.
+      } finally {
         anim.removeListener(listener);
-        if (mounted && onComplete != null) onComplete();
-      });
+        anim.dispose();
+      }
+    }());
   }
 
   void _beginDismiss({required Offset direction}) {
@@ -254,11 +262,14 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
       toOpacity: 0,
       curve: Curves.easeIn,
       duration: const Duration(milliseconds: 220),
-      onComplete: BullSnackBar._completeDismiss,
+      onComplete: () {
+        if (BullSnackBar._activeState == this) BullSnackBar._completeDismiss();
+      },
     );
   }
 
   void _snapBack() {
+    if (_dismissing || !mounted) return;
     _runAnim(
       toOffset: Offset.zero,
       toOpacity: 1,
