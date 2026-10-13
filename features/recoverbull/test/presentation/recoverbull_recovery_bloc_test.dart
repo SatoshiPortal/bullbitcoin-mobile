@@ -387,6 +387,10 @@ void main() {
 
         expect(bloc.state.failure, isNull);
         expect(bloc.state.vaultKey, 'vault-key');
+        bloc.add(const OnVaultKeyHidden());
+        await pumpEventQueue();
+        expect(bloc.state.vaultKey, isNull);
+        expect(bloc.state.vaultPassword, isNull);
       },
     );
   });

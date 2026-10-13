@@ -133,6 +133,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnServerCheck>(_onServerCheck, transformer: droppable());
     on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
     on<OnClearError>(_onClearError);
+    on<OnVaultKeyHidden>((event, emit) {
+      emit(state.copyWith(vaultKey: null, vaultPassword: null));
+    });
     on<_OnTorConnectionChanged>(_onTorConnectionChanged);
     on<_OnTorReadinessGraceExpired>(_onTorReadinessGraceExpired);
 
