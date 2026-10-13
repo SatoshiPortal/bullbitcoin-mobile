@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' as convert;
+import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
+import 'package:unorm_dart/unorm_dart.dart';
 
 /// How a secret gets its fingerprint: words → seed → BIP32 master fingerprint.
 ///
@@ -15,10 +18,14 @@ final class FingerprintDeriver {
   const FingerprintDeriver();
 
   /// The BIP39 seed of [words] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.
+  ///
+  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`.
   Uint8List seed(List<String> words, {String passphrase = ''}) {
     _elements(words);
-    return Uint8List.fromList(
-      bip39.Mnemonic.fromWords(words: words, passphrase: passphrase).seed,
+    final mnemonic = bip39.Mnemonic.fromWords(words: words);
+    return _pbkdf2HmacSha512(
+      password: utf8.encode(nfkd(mnemonic.words.join(' '))),
+      salt: utf8.encode(nfkd('mnemonic$passphrase')),
     );
   }
 
@@ -49,4 +56,21 @@ final class FingerprintDeriver {
       );
     }
   }
+}
+
+/// BIP39's PBKDF2: HMAC-SHA512, 2048 iterations, one 64-byte block.
+Uint8List _pbkdf2HmacSha512({
+  required List<int> password,
+  required List<int> salt,
+}) {
+  final hmac = Hmac(sha512, password);
+  var u = hmac.convert([...salt, 0, 0, 0, 1]).bytes;
+  final t = Uint8List.fromList(u);
+  for (var i = 1; i < 2048; i++) {
+    u = hmac.convert(u).bytes;
+    for (var j = 0; j < t.length; j++) {
+      t[j] ^= u[j];
+    }
+  }
+  return t;
 }
