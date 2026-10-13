@@ -1,4 +1,6 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -66,6 +68,20 @@ void main() {
     when(() => settings.environment).thenAnswer((_) => environment);
     when(settingsRepository.fetch).thenAnswer((_) async => settings);
   });
+
+  test(
+    'background composition can resolve backup checks without RecoverBull',
+    () async {
+      stubWallets(Ok([wallet(physicalTested: false)]));
+      final locator = GetIt.asNewInstance();
+      addTearDown(locator.reset);
+      locator.registerSingleton<WalletRepository>(walletRepository);
+      locator.registerSingleton<SettingsRepository>(settingsRepository);
+      WalletLocator.setup(locator);
+      final backgroundCheck = locator<CheckBackupNeededUsecase>();
+      expect((await backgroundCheck.execute() as Ok).value, isTrue);
+    },
+  );
 
   test('a wallet with neither backup tested needs a backup', () async {
     stubWallets(Ok([wallet(physicalTested: false)]));
