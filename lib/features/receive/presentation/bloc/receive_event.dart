@@ -22,7 +22,7 @@ class ReceiveEvent with _$ReceiveEvent {
   ) = ReceivePayjoinUpdated;
   const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
       ReceivePayjoinOriginalTxBroadcasted;
-  const factory ReceiveEvent.receivePayjoinSenderWaitElapsed() =
+  const factory ReceiveEvent.receivePayjoinSenderWaitElapsed(String sessionId) =
       ReceivePayjoinSenderWaitElapsed;
   const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =
       ReceiveTransactionReceived;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -24,12 +26,32 @@ class _BroadcastPayjoinOriginalTxButtonState
     extends State<BroadcastPayjoinOriginalTxButton> {
   late bool _isVisible;
   var _requestId = 0;
+  Timer? _senderWaitTimer;
 
   @override
   void initState() {
     super.initState();
     _isVisible = widget.payjoin.canManuallyBroadcastOriginal;
+    _scheduleSenderWait();
     _refreshVisibility();
+  }
+
+  @override
+  void dispose() {
+    _senderWaitTimer?.cancel();
+    super.dispose();
+  }
+
+  void _scheduleSenderWait() {
+    _senderWaitTimer?.cancel();
+    if (widget.payjoin case PayjoinReceiverSession(
+      :final fallbackAvailableAt?,
+    )) {
+      final remaining = fallbackAvailableAt.difference(DateTime.now());
+      if (widget.payjoin.isOngoing && remaining > Duration.zero) {
+        _senderWaitTimer = Timer(remaining, _refreshVisibility);
+      }
+    }
   }
 
   @override
@@ -37,6 +59,7 @@ class _BroadcastPayjoinOriginalTxButtonState
     super.didUpdateWidget(oldWidget);
     if (_visibilityKey(oldWidget.payjoin) != _visibilityKey(widget.payjoin)) {
       _isVisible = widget.payjoin.canManuallyBroadcastOriginal;
+      _scheduleSenderWait();
       _refreshVisibility();
     }
   }
@@ -47,6 +70,7 @@ class _BroadcastPayjoinOriginalTxButtonState
     payjoin.txId,
     payjoin.originalTxId,
     payjoin.hasProposal,
+    payjoin is PayjoinReceiverSession ? payjoin.fallbackAvailableAt : null,
     payjoin is PayjoinReceiverSession && payjoin.hasOriginalTransaction,
   );
 

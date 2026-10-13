@@ -38,6 +38,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // queued on it.
   final Map<String, Lock> _sessionLocks = {};
 
+  /// Shared across screens for the lifetime of this engine. A cold restart
+  /// restores the previous immediate-fallback behavior without a schema change.
+  final Map<String, DateTime> _receiverFallbackAvailableAt = {};
+  static const receiverSenderWait = Duration(seconds: 60);
+
   final StreamController<Payjoin> _payjoinStreamController;
 
   // Per-session subscriptions watching for a completed payjoin transaction to
@@ -104,6 +109,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Registration alone must not start protocol work in background locators.
   }
 
+  DateTime? receiverFallbackAvailableAt(String sessionId) =>
+      _receiverFallbackAvailableAt[sessionId];
+
+  bool _isWaitingForSender(Payjoin payjoin) {
+    final until = receiverFallbackAvailableAt(payjoin.id);
+    return payjoin is PayjoinReceiver &&
+        payjoin.isOngoing &&
+        until != null &&
+        DateTime.now().isBefore(until);
+  }
+
   /// Releases all long-lived subscriptions and closes the payjoin stream.
   /// The production singleton lives for the whole app session and is never
   /// disposed, but tests (and any future teardown) need a clean exit.
@@ -132,6 +148,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       await sub.cancel();
     }
     _datasourceSubscriptions.clear();
+    _receiverFallbackAvailableAt.clear();
     await _pdkPayjoinDatasource.dispose();
     await _payjoinStreamController.close();
   }
@@ -362,6 +379,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async =>
       payjoin.canManuallyBroadcastOriginal &&
+      !_isWaitingForSender(payjoin) &&
       await _visibleCompetingTransaction(payjoin) == null;
 
   /// The first of the session's competing spends the network already knows,
@@ -446,7 +464,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (completed != null) return Ok(completed);
     }
-    if (!freshEntity.canManuallyBroadcastOriginal || competingTxId != null) {
+    if (!freshEntity.canManuallyBroadcastOriginal ||
+        competingTxId != null ||
+        _isWaitingForSender(freshEntity)) {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session is unsafe to abort or a competing transaction is visible',
@@ -1490,6 +1510,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         processPsbt: signPsbtSync,
       );
 
+      _receiverFallbackAvailableAt.putIfAbsent(
+        payjoin.id,
+        () => DateTime.now().add(receiverSenderWait),
+      );
       try {
         final recorded = await _localPayjoinDatasource.recordReceiverProposal(
           updatedModel,
@@ -2078,6 +2102,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// awaiting it would make completion latency depend on the upstream
   /// stream's teardown.
   void _stopWatching(String payjoinId) {
+    _receiverFallbackAvailableAt.remove(payjoinId);
     _broadcastPollTimers.remove(payjoinId)?.cancel();
     final broadcastSubscription = _broadcastWatchers.remove(payjoinId);
     if (broadcastSubscription != null) {
