@@ -1,3 +1,4 @@
+import '../entities/attempt_alert.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import '../recoverbull_failure.dart';
@@ -16,6 +17,36 @@ abstract interface class RecoverBullAttemptMonitoringRemotePort {
 
 /// Optimistic snapshot writes reject changes after capture, including reset.
 abstract interface class RecoverBullAttemptMonitoringRepository {
+  @useResult
+  Future<Result<RecoverBullOwnAttemptOperation?, RecoverBullFailure>>
+  beginOwnOperation(
+    List<int> identifier, {
+    required String password,
+    required DateTime now,
+  });
+
+  @useResult
+  Future<Result<SuspiciousActivityAlert?, RecoverBullFailure>>
+  completeOwnOperation(
+    RecoverBullOwnAttemptOperation operation, {
+    required bool counted,
+    KeyServerAttemptStatus? status,
+    RecoverBullAttemptsSnapshot? snapshot,
+  });
+
+  @useResult
+  Future<Result<bool, RecoverBullFailure>> isOwnOperationCurrent(
+    RecoverBullOwnAttemptOperation operation,
+  );
+
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> endOwnOperation(
+    RecoverBullOwnAttemptOperation operation,
+  );
+
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> cancelOwnOperations();
+
   @useResult
   Future<Result<List<MonitoredBackup>, RecoverBullFailure>> monitoredBackups();
 
@@ -109,8 +140,10 @@ abstract interface class RecoverBullAttemptMonitoringRepository {
   );
 
   @useResult
-  Future<Result<bool, RecoverBullFailure>> recordPollFailure({
+  Future<Result<RecoverBullPollFailureResult, RecoverBullFailure>>
+  recordPollFailure({
     required DateTime now,
+    RecoverBullAttemptMonitoringSnapshotToken? token,
   });
 
   @useResult

@@ -1,4 +1,5 @@
 import '../entities/attempt_monitoring_state.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import '../recoverbull_failure.dart';
 import 'package:convert/convert.dart' as convert;
@@ -13,14 +14,95 @@ final class RecordLocalAttemptUsecase {
   final RecoverBullAttemptMonitoringRepository store;
   final RecoverBullAttemptMonitoringRemotePort? remote;
   final DateTime Function() now;
+  final LogSink? log;
 
   const RecordLocalAttemptUsecase(
     this.store, {
     this.remote,
+    this.log,
     DateTime Function()? clock,
   }) : now = clock ?? _utcNow;
 
   static DateTime _utcNow() => DateTime.now().toUtc();
+
+  Future<Result<RecoverBullOwnAttemptOperation?, RecoverBullFailure>>
+  beginOwnOperation({required String backupIdHex, required String password}) =>
+      store.beginOwnOperation(
+        convert.hex.decode(backupIdHex.replaceAll(RegExp(r'\s'), '')),
+        password: password,
+        now: now(),
+      );
+
+  Future<Result<Null, RecoverBullFailure>> endOwnOperation(
+    RecoverBullOwnAttemptOperation operation,
+  ) => store.endOwnOperation(operation);
+
+  Future<Result<SuspiciousActivityAlert?, RecoverBullFailure>>
+  completeOwnOperation({
+    required RecoverBullOwnAttemptOperation operation,
+    required bool counted,
+    KeyServerAttemptStatus? status,
+  }) async {
+    try {
+      final active = await store.isOwnOperationCurrent(operation);
+      if (active case Err(:final failure)) return Err(failure);
+      if (!(active as Ok<bool, RecoverBullFailure>).value) {
+        return const Ok(null);
+      }
+      RecoverBullAttemptsSnapshot? snapshot;
+      if (counted && status == null && remote != null) {
+        final stateResult = await store.state();
+        if (stateResult case Err(:final failure)) return Err(failure);
+        final current = now();
+        if (!(stateResult as Ok<AttemptMonitoringState, RecoverBullFailure>)
+            .value
+            .attemptsUnsupportedAt(current)) {
+          final tokenResult = await store.captureToken();
+          if (tokenResult case Err(:final failure)) return Err(failure);
+          final token =
+              (tokenResult
+                      as Ok<
+                        RecoverBullAttemptMonitoringSnapshotToken,
+                        RecoverBullFailure
+                      >)
+                  .value;
+          try {
+            snapshot = await remote!.poll(
+              etag: null,
+              backupDigests: [operation.backupDigest],
+            );
+          } on Exception {
+            snapshot = null;
+          }
+          final stillActive = await store.isOwnOperationCurrent(operation);
+          if (stillActive case Err(:final failure)) return Err(failure);
+          if (!(stillActive as Ok<bool, RecoverBullFailure>).value) {
+            return const Ok(null);
+          }
+          if (snapshot?.serverUnsupported == true) {
+            final unsupported = await store.recordAttemptsUnsupported(
+              until: current.add(
+                CheckBackupAttemptMonitoringUsecase.unsupportedServerRetryAfter,
+              ),
+              token: token,
+            );
+            if (unsupported case Err(:final failure)) return Err(failure);
+          }
+        }
+      }
+      return await store.completeOwnOperation(
+        operation,
+        counted: counted,
+        status: status,
+        snapshot: snapshot,
+      );
+    } finally {
+      final ended = await store.endOwnOperation(operation);
+      if (ended case Err()) {
+        log?.warning('recoverbull.attempts.release_failed');
+      }
+    }
+  }
 
   Future<Result<SuspiciousActivityAlert?, RecoverBullFailure>> execute({
     required String backupIdHex,
@@ -197,7 +279,17 @@ final class RecordLocalAttemptUsecase {
   /// Records a server lockout without treating the current counter as a
   /// baseline. The digest is the only identifier emitted in the alert.
   Future<Result<TargetedLockoutAlert?, RecoverBullFailure>>
-  recordTargetedLockout({required String backupIdHex}) async {
+  recordTargetedLockout({
+    required String backupIdHex,
+    RecoverBullOwnAttemptOperation? operation,
+  }) async {
+    if (operation != null) {
+      final current = await store.isOwnOperationCurrent(operation);
+      if (current case Err(:final failure)) return Err(failure);
+      if (!(current as Ok<bool, RecoverBullFailure>).value) {
+        return const Ok(null);
+      }
+    }
     final enabledResult = await store.state();
     if (enabledResult case Err(:final failure)) return Err(failure);
     if (!(enabledResult as Ok<AttemptMonitoringState, RecoverBullFailure>)
