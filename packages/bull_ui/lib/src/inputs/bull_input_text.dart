@@ -3,8 +3,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// The standard themed text field — duplicated from
-/// `core/widgets/inputs/text_input.dart` (`BBInputText`).
+/// The standard themed text field.
 ///
 /// Supports a fixed prefix, trailing icon, obscuring, numeric/paste-only
 /// keyboards, length limits and single/multi-line layouts. Keeps the original

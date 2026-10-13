@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDialPad, Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -244,7 +243,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                   if (inputType == InputType.pin)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: DialPad(
+                      child: BullDialPad(
                         disableFeedback: true,
                         onlyDigits: true,
                         onNumberPressed: (e) => inputController.text += e,

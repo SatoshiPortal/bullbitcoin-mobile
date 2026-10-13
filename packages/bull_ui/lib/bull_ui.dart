@@ -121,6 +121,7 @@ export 'src/inputs/bull_dial_pad.dart';
 export 'src/inputs/bull_dropdown.dart';
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
+export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_paste_input.dart';
 export 'src/inputs/bull_selectable_list.dart';

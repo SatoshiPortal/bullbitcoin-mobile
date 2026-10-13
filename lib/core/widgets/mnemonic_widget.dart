@@ -5,12 +5,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/bip39.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput, Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -207,7 +206,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    LabeledTextInput(
+                    BullLabeledTextInput(
                       label: 'Passphrase',
                       hint: 'Optional Passphrase',
                       value: passphrase,
@@ -228,7 +227,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowLabel) ...[
                     const Gap(16),
-                    LabeledTextInput(
+                    BullLabeledTextInput(
                       label: 'Label',
                       hint: 'Required',
                       value: label,
