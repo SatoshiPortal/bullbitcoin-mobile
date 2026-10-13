@@ -1659,14 +1659,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// The sender typically finalizes and broadcasts within seconds of
   /// receiving the proposal, so the first forced lookup comes quickly.
   @visibleForTesting
-  static const broadcastPollInitialDelay = Duration(seconds: 5);
+  static const broadcastPollInitialDelay = Duration(seconds: 2);
 
   /// Cap for the exponential backoff between active broadcast polls.
   @visibleForTesting
   static const broadcastPollMaxDelay = Duration(minutes: 5);
 
   /// Number of active broadcast polls before giving up on forcing syncs
-  /// ourselves (≈35 minutes with the initial delay doubling up to the cap).
+  /// ourselves (≈30 minutes with the initial delay doubling up to the cap).
   /// The passive sync-driven watcher stays armed afterwards, so a very late
   /// broadcast is still caught by the next organic wallet sync — this bound
   /// only stops a stranded session from forcing network syncs forever.
