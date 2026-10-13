@@ -24,6 +24,42 @@ final class _DatabaseTestRemote
 }
 
 void main() {
+  test(
+    'resetting an imported server survives reopening with legacy settings',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'recoverbull-import-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final path = p.join(directory.path, 'recoverbull.sqlite');
+      const legacy = 'http://legacy.onion';
+      var database = RecoverBullDatabase.open(
+        path,
+        initialServerUrlOverride: legacy,
+      );
+      await database.forceOpen();
+      final settings = RecoverbullSettingsDatasource(database: database);
+      expect((await settings.fetch()).toString(), legacy);
+      await settings.store(Uri.parse(recoverBullDefaultServerUrl));
+      final state = await database
+          .select(database.recoverbullState)
+          .getSingle();
+      await database.close();
+      database = RecoverBullDatabase.open(
+        path,
+        initialServerUrlOverride: legacy,
+      );
+      addTearDown(database.close);
+      await database.forceOpen();
+      final reopened = await database
+          .select(database.recoverbullState)
+          .getSingle();
+      expect(reopened.serverUrlOverride, isNull);
+      expect(reopened.generation, state.generation);
+      expect(reopened.permissionGranted, isFalse);
+    },
+  );
+
   test('a new database records no backup status on any network', () async {
     final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
     await database.ensureState();

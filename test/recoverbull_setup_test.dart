@@ -10,7 +10,6 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -87,23 +86,6 @@ void main() {
     expect(settings.readFailed, isTrue);
     expect(reported, isTrue);
   });
-
-  test(
-    'migration can be replayed without overwriting package settings',
-    () async {
-      final package = RecoverBullDatabase.forTesting(NativeDatabase.memory());
-      await package.ensureState(
-        initialServerUrlOverride: 'http://existing.onion',
-      );
-      await package.ensureState(
-        initialServerUrlOverride: 'http://legacy.onion',
-      );
-
-      final state = await package.select(package.recoverbullState).getSingle();
-      expect(state.serverUrlOverride, 'http://existing.onion');
-      await package.close();
-    },
-  );
 
   test('app startup continues with RecoverBull unavailable when its database '
       'cannot be opened', () async {
