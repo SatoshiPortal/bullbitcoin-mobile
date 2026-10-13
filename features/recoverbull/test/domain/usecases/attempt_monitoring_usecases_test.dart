@@ -703,36 +703,33 @@ void main() {
     await db.close();
   });
 
-  test(
-    'window rollover adopts the new server baseline without an attack alert',
-    () async {
-      final (db, store) = await build();
-      await store.registerBackup(id);
-      await store.recordStatus(id, _status(3));
-      final digest = (await store.monitoredBackups()).single.digest;
-      final next = window.add(const Duration(hours: 1));
-      final remote = _Remote()
-        ..response = RecoverBullAttemptsSnapshot(
-          collectionStartedAt: DateTime.utc(2026, 8, 5, 9),
-          totalAttempts: {digest: 1},
-          windowStartedAt: {digest: next},
-        );
-      expect(
-        await CheckBackupAttemptMonitoringUsecase(
-          store: monitoringRepository(store),
-          remote: remote,
-        ).execute().requireOk(),
-        isEmpty,
+  test('window rollover resets own credit and retains real activity', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id);
+    await store.recordStatus(id, _status(3));
+    final digest = (await store.monitoredBackups()).single.digest;
+    final next = window.add(const Duration(hours: 1));
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: DateTime.utc(2026, 8, 5, 9),
+        totalAttempts: {digest: 1},
+        windowStartedAt: {digest: next},
       );
-      expect(
-        (await store.monitoredBackups())
-            .single
-            .expectedServerDistinctCandidateTotal,
-        1,
-      );
-      await db.close();
-    },
-  );
+    expect(
+      await CheckBackupAttemptMonitoringUsecase(
+        store: monitoringRepository(store),
+        remote: remote,
+      ).execute().requireOk(),
+      contains(isA<SuspiciousActivityAlert>()),
+    );
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      0,
+    );
+    await db.close();
+  });
 
   test('service pressure is advisory', () async {
     final (db, store) = await build();

@@ -1,3 +1,5 @@
+import 'dart:math';
+import '../domain/entities/attempt_alert.dart';
 import '../domain/entities/attempt_monitoring_snapshot.dart';
 export '../domain/entities/attempt_monitoring_snapshot.dart';
 export '../domain/repositories/recoverbull_attempt_monitoring_repository.dart';
@@ -19,8 +21,214 @@ import '../domain/entities/monitored_backup.dart';
 final class RecoverBullAttemptMonitoringStore {
   static Future<void> _writeTail = Future<void>.value();
   final RecoverBullDatabase database;
+  final Map<int, _OwnOperation> _ownOperations = {};
+  final Map<String, int> _ownActivityRevisions = {};
+  final Map<String, Map<int, Set<String>>> _ownCandidates = {};
+  final List<int> _candidateSalt = List.generate(
+    32,
+    (_) => Random.secure().nextInt(256),
+  );
+  int _nextOwnOperation = 0;
+  int? _ownGeneration;
+  bool _monitoringClosed = false;
 
   RecoverBullAttemptMonitoringStore(this.database);
+
+  Future<RecoverBullOwnAttemptOperation?> beginOwnOperation(
+    List<int> identifier, {
+    required String password,
+    required DateTime now,
+  }) async {
+    if (_monitoringClosed) return null;
+    return database.transaction(() async {
+      final current = await state();
+      _syncOwnGeneration(current.generation);
+      if (!current.attemptMonitoringEnabled ||
+          _monitoringClosed ||
+          _ownOperations.length >= 128) {
+        return null;
+      }
+      final digest = _hex(_digest(identifier));
+      final operation = RecoverBullOwnAttemptOperation(
+        id: ++_nextOwnOperation,
+        generation: current.generation,
+        backupDigest: digest,
+      );
+      final candidate = sha256.convert([
+        ..._candidateSalt,
+        ...utf8.encode(password),
+      ]).toString();
+      _ownOperations[operation.id] = _OwnOperation(
+        operation,
+        candidate,
+        attemptWindowIdentity(now),
+      );
+      _ownActivityRevisions[digest] = (_ownActivityRevisions[digest] ?? 0) + 1;
+      return operation;
+    });
+  }
+
+  Future<bool> isOwnOperationCurrent(
+    RecoverBullOwnAttemptOperation operation,
+  ) async {
+    if (_monitoringClosed ||
+        !identical(_ownOperations[operation.id]?.operation, operation)) {
+      return false;
+    }
+    final current = await state();
+    return current.attemptMonitoringEnabled &&
+        current.generation == operation.generation;
+  }
+
+  Future<void> endOwnOperation(RecoverBullOwnAttemptOperation operation) async {
+    if (!identical(_ownOperations[operation.id]?.operation, operation)) return;
+    _ownOperations.remove(operation.id);
+    _ownActivityRevisions[operation.backupDigest] =
+        (_ownActivityRevisions[operation.backupDigest] ?? 0) + 1;
+  }
+
+  Future<void> cancelOwnOperations() async {
+    _monitoringClosed = true;
+    _clearOwnOperations();
+  }
+
+  void _clearOwnOperations() {
+    _ownOperations.clear();
+    _ownCandidates.clear();
+    _ownActivityRevisions.clear();
+  }
+
+  void _syncOwnGeneration(int generation) {
+    if (_ownGeneration == generation) return;
+    _clearOwnOperations();
+    _ownGeneration = generation;
+  }
+
+  bool _ownActivityChanged(
+    RecoverBullAttemptMonitoringSnapshotToken token,
+    List<int> digest,
+  ) {
+    final hash = _hex(digest);
+    return (token.ownActivityRevisions[hash] ?? 0) !=
+            (_ownActivityRevisions[hash] ?? 0) ||
+        _ownOperations.values.any(
+          (pending) => pending.operation.backupDigest == hash,
+        );
+  }
+
+  Future<SuspiciousActivityAlert?> completeOwnOperation(
+    RecoverBullOwnAttemptOperation operation, {
+    required bool counted,
+    KeyServerAttemptStatus? status,
+    RecoverBullAttemptsSnapshot? snapshot,
+  }) async {
+    final pending = _ownOperations[operation.id];
+    if (_monitoringClosed ||
+        pending == null ||
+        !identical(pending.operation, operation)) {
+      return null;
+    }
+    try {
+      if (!counted) return null;
+      return await database.transaction(() async {
+        final current = await state();
+        if (!current.attemptMonitoringEnabled ||
+            current.generation != operation.generation ||
+            _monitoringClosed) {
+          return null;
+        }
+        final digest = Uint8List.fromList(_decodeHash(operation.backupDigest));
+        final row = await _row(digest);
+        final observed =
+            status?.totalAttempts ??
+            (snapshot == null ? null : _observed(snapshot, digest));
+        final observedAt =
+            status?.windowStartedAt ??
+            snapshot?.windowStartedAt.entries
+                .where((entry) => _same(entry.key, digest))
+                .map((entry) => entry.value)
+                .firstOrNull ??
+            snapshot?.collectionStartedAt;
+        final window = observedAt == null
+            ? (row != null && row.currentWindow != 0
+                  ? row.currentWindow
+                  : pending.window)
+            : attemptWindowIdentity(observedAt);
+        // Older inline responses cannot replace a newer window's baseline.
+        if (row != null && row.currentWindow > window) return null;
+        var windows = _ownCandidates[operation.backupDigest];
+        if (windows == null && _ownCandidates.length < 256) {
+          windows = <int, Set<String>>{};
+          _ownCandidates[operation.backupDigest] = windows;
+        }
+        windows?.removeWhere((key, _) => key != window);
+        final candidates = windows?.putIfAbsent(window, () => <String>{});
+        // Once bounded memory is full, attribution is unproven. Never
+        // repeatedly credit a candidate that cannot be remembered.
+        final ownNewCandidate =
+            candidates != null &&
+            candidates.length < 32 &&
+            !candidates.contains(pending.candidate);
+        if (ownNewCandidate) candidates.add(pending.candidate);
+        if (row == null ||
+            (row.currentWindow == 0 && row.lastWarningWindow == 0)) {
+          await database
+              .into(database.recoverbullMonitoredBackup)
+              .insertOnConflictUpdate(
+                RecoverbullMonitoredBackupCompanion.insert(
+                  digest: digest,
+                  origin: const Value('adopted'),
+                  expectedServerDistinctCandidateTotal: Value(observed ?? 0),
+                  currentWindow: Value(observed == null ? 0 : window),
+                  lastWarningWindow: Value(observed == null ? 0 : window),
+                  rowRevision: Value((row?.rowRevision ?? -1) + 1),
+                ),
+              );
+          return null;
+        }
+        final anchor = row.currentWindow == window
+            ? row.expectedServerDistinctCandidateTotal
+            : 0;
+        final ownCredit =
+            ownNewCandidate && (observed == null || observed > anchor) ? 1 : 0;
+        final expected = anchor + ownCredit;
+        final anotherPending = _ownOperations.values.any(
+          (other) =>
+              other.operation.id != operation.id &&
+              other.operation.backupDigest == operation.backupDigest,
+        );
+        final suspicious =
+            !anotherPending && observed != null && observed > expected;
+        await (database.update(database.recoverbullMonitoredBackup)..where(
+              (entry) =>
+                  entry.digest.equals(digest) &
+                  entry.rowRevision.equals(row.rowRevision),
+            ))
+            .write(
+              RecoverbullMonitoredBackupCompanion(
+                expectedServerDistinctCandidateTotal: Value(expected),
+                currentWindow: Value(window),
+                lastWarningWindow: suspicious
+                    ? Value(window)
+                    : const Value.absent(),
+                rowRevision: Value(row.rowRevision + 1),
+              ),
+            );
+        if (!suspicious) return null;
+        return SuspiciousActivityAlert(
+          backupIdHash: operation.backupDigest,
+          observedTotal: observed,
+          expectedTotal: expected,
+          windowStartedAt: DateTime.fromMillisecondsSinceEpoch(
+            window * 1000,
+            isUtc: true,
+          ),
+        );
+      });
+    } finally {
+      await endOwnOperation(operation);
+    }
+  }
 
   Future<List<MonitoredBackup>> monitoredBackups() async => [
     for (final row
@@ -386,6 +594,7 @@ final class RecoverBullAttemptMonitoringStore {
       final state = await database
           .select(database.recoverbullState)
           .getSingle();
+      _syncOwnGeneration(state.generation);
       final rows = await database
           .select(database.recoverbullMonitoredBackup)
           .get();
@@ -393,6 +602,7 @@ final class RecoverBullAttemptMonitoringStore {
         generation: state.generation,
         stateRevision: state.revision,
         etag: state.etag,
+        ownActivityRevisions: Map.unmodifiable(_ownActivityRevisions),
         rowRevisions: {
           for (final row in rows)
             Uint8List.fromList(row.digest): row.rowRevision,
@@ -405,8 +615,14 @@ final class RecoverBullAttemptMonitoringStore {
     RecoverBullAttemptsSnapshot snapshot, [
     RecoverBullAttemptMonitoringSnapshotToken? token,
   ]) async {
+    if (_monitoringClosed) {
+      return const RecoverBullAttemptMonitoringApplyResult(false, 0);
+    }
     final resolvedToken = token ?? await captureToken();
     return database.transaction(() async {
+      if (_monitoringClosed) {
+        return const RecoverBullAttemptMonitoringApplyResult(false, 0);
+      }
       final state = await database
           .select(database.recoverbullState)
           .getSingle();
@@ -415,16 +631,38 @@ final class RecoverBullAttemptMonitoringStore {
         return const RecoverBullAttemptMonitoringApplyResult(false, 0);
       }
       var conflicts = 0;
+      final eligibleDigests = <String>{};
+      final alerts = <SuspiciousActivityAlert>[];
       final rows = await database
           .select(database.recoverbullMonitoredBackup)
           .get();
       for (final row in rows) {
+        if (_ownActivityChanged(resolvedToken, row.digest)) {
+          conflicts++;
+          continue;
+        }
         final revision = resolvedToken.rowRevisions.entries
             .where((entry) => _same(entry.key, row.digest))
             .map((entry) => entry.value)
             .firstOrNull;
         if (revision == null || revision != row.rowRevision) {
           conflicts++;
+          final window = _window(
+            snapshot.windowStartedAt.entries
+                    .where((entry) => _same(entry.key, row.digest))
+                    .map((entry) => entry.value)
+                    .firstOrNull ??
+                snapshot.collectionStartedAt,
+          );
+          if (row.currentWindow == window &&
+              !(row.currentWindow == 0 && row.lastWarningWindow == 0)) {
+            eligibleDigests.add(_hex(row.digest));
+            final observed = _observed(snapshot, row.digest);
+            if (observed != null &&
+                observed > row.expectedServerDistinctCandidateTotal) {
+              alerts.add(_snapshotAlert(row, observed, window));
+            }
+          }
           continue;
         }
         final observed = _observed(snapshot, row.digest);
@@ -462,14 +700,32 @@ final class RecoverBullAttemptMonitoringStore {
               ))
               .write(
                 RecoverbullMonitoredBackupCompanion(
-                  expectedServerDistinctCandidateTotal: Value(observed),
+                  expectedServerDistinctCandidateTotal: const Value(0),
                   currentWindow: Value(observedWindow),
+                  lastWarningWindow: observed > 0
+                      ? Value(observedWindow)
+                      : const Value(null),
                   rowRevision: Value(row.rowRevision + 1),
                 ),
               );
+          if (observed > 0) {
+            alerts.add(
+              SuspiciousActivityAlert(
+                backupIdHash: _hex(row.digest),
+                observedTotal: observed,
+                expectedTotal: 0,
+                windowStartedAt: DateTime.fromMillisecondsSinceEpoch(
+                  observedWindow * 1000,
+                  isUtc: true,
+                ),
+              ),
+            );
+          }
           continue;
         }
+        eligibleDigests.add(_hex(row.digest));
         if (observed <= row.expectedServerDistinctCandidateTotal) continue;
+        alerts.add(_snapshotAlert(row, observed, observedWindow));
         await (database.update(database.recoverbullMonitoredBackup)..where(
               (t) =>
                   t.digest.equals(row.digest) &
@@ -478,6 +734,7 @@ final class RecoverBullAttemptMonitoringStore {
             .write(
               RecoverbullMonitoredBackupCompanion(
                 lastWarningWindow: Value(observedWindow),
+                currentWindow: Value(observedWindow),
                 rowRevision: Value(row.rowRevision + 1),
               ),
             );
@@ -486,7 +743,9 @@ final class RecoverBullAttemptMonitoringStore {
             ..where((t) => t.id.equals(1) & t.revision.equals(state.revision)))
           .write(
             RecoverbullStateCompanion(
-              etag: snapshot.notModified
+              etag: conflicts > 0
+                  ? const Value(null)
+                  : snapshot.notModified
                   ? Value(state.etag)
                   : Value(snapshot.etag),
               collectionStartedAt: snapshot.notModified
@@ -498,7 +757,12 @@ final class RecoverBullAttemptMonitoringStore {
               revision: Value(state.revision + 1),
             ),
           );
-      return RecoverBullAttemptMonitoringApplyResult(true, conflicts);
+      return RecoverBullAttemptMonitoringApplyResult(
+        true,
+        conflicts,
+        eligibleDigests: eligibleDigests,
+        alerts: alerts,
+      );
     });
   }
 
@@ -506,7 +770,13 @@ final class RecoverBullAttemptMonitoringStore {
     RecoverBullAttemptsSnapshot snapshot,
     RecoverBullAttemptMonitoringSnapshotToken token,
   ) async {
+    if (_monitoringClosed) {
+      return const RecoverBullAttemptMonitoringApplyResult(false, 0);
+    }
     return database.transaction(() async {
+      if (_monitoringClosed) {
+        return const RecoverBullAttemptMonitoringApplyResult(false, 0);
+      }
       final state = await database
           .select(database.recoverbullState)
           .getSingle();
@@ -519,6 +789,10 @@ final class RecoverBullAttemptMonitoringStore {
           .select(database.recoverbullMonitoredBackup)
           .get();
       for (final row in rows) {
+        if (_ownActivityChanged(token, row.digest)) {
+          conflicts++;
+          continue;
+        }
         final expectedRevision = token.rowRevisions.entries
             .where((entry) => _same(entry.key, row.digest))
             .map((entry) => entry.value)
@@ -553,7 +827,7 @@ final class RecoverBullAttemptMonitoringStore {
             ..where((t) => t.id.equals(1) & t.revision.equals(state.revision)))
           .write(
             RecoverbullStateCompanion(
-              etag: Value(snapshot.etag),
+              etag: conflicts > 0 ? const Value(null) : Value(snapshot.etag),
               collectionStartedAt: Value(snapshot.collectionStartedAt),
               lastSuccessfulCheckAt: Value(DateTime.now().toUtc()),
               consecutiveFailures: const Value(0),
@@ -565,9 +839,24 @@ final class RecoverBullAttemptMonitoringStore {
     });
   }
 
-  Future<bool> recordPollFailure({required DateTime now}) async {
+  Future<RecoverBullPollFailureResult> recordPollFailure({
+    required DateTime now,
+    RecoverBullAttemptMonitoringSnapshotToken? token,
+  }) async {
+    if (_monitoringClosed) {
+      return const RecoverBullPollFailureResult(false, false);
+    }
     while (true) {
+      if (_monitoringClosed) {
+        return const RecoverBullPollFailureResult(false, false);
+      }
       final state = await this.state();
+      if (!state.attemptMonitoringEnabled ||
+          (token != null &&
+              (state.generation != token.generation ||
+                  state.revision != token.stateRevision))) {
+        return const RecoverBullPollFailureResult(false, false);
+      }
       final failures = state.consecutiveFailures + 1;
       final stale = state.lastSuccessfulCheckAt == null
           ? failures >= 3
@@ -591,7 +880,7 @@ final class RecoverBullAttemptMonitoringStore {
                   revision: Value(state.revision + 1),
                 ),
               );
-      if (updated == 1) return canWarn;
+      if (updated == 1) return RecoverBullPollFailureResult(true, canWarn);
     }
   }
 
@@ -601,7 +890,9 @@ final class RecoverBullAttemptMonitoringStore {
     required DateTime until,
     RecoverBullAttemptMonitoringSnapshotToken? token,
   }) async {
+    if (_monitoringClosed) return;
     await database.transaction(() async {
+      if (_monitoringClosed) return;
       final current = await state();
       if (!current.attemptMonitoringEnabled) return;
       if (token != null &&
@@ -676,6 +967,8 @@ final class RecoverBullAttemptMonitoringStore {
               attemptsUnsupportedUntil: const Value(null),
             ),
           );
+      _clearOwnOperations();
+      _ownGeneration = state.generation + 1;
       if (!enabled) {
         await database.delete(database.recoverbullMonitoredBackup).go();
         await database.delete(database.recoverbullAcknowledgedAlert).go();
@@ -689,6 +982,8 @@ final class RecoverBullAttemptMonitoringStore {
       final state = await database
           .select(database.recoverbullState)
           .getSingle();
+      _clearOwnOperations();
+      _ownGeneration = state.generation + 1;
       await database.delete(database.recoverbullMonitoredBackup).go();
       await database.delete(database.recoverbullAcknowledgedAlert).go();
       await database
@@ -700,11 +995,28 @@ final class RecoverBullAttemptMonitoringStore {
               etag: const Value(null),
               collectionStartedAt: const Value(null),
               lastSuccessfulCheckAt: const Value(null),
+              attemptsUnsupportedUntil: const Value(null),
+              consecutiveFailures: const Value(0),
+              lastUnavailabilityWarningAt: const Value(null),
             ),
           );
     });
     await _truncateWalBestEffort();
   }
+
+  static SuspiciousActivityAlert _snapshotAlert(
+    RecoverbullMonitoredBackupData row,
+    int observed,
+    int window,
+  ) => SuspiciousActivityAlert(
+    backupIdHash: _hex(row.digest),
+    observedTotal: observed,
+    expectedTotal: row.expectedServerDistinctCandidateTotal,
+    windowStartedAt: DateTime.fromMillisecondsSinceEpoch(
+      window * 1000,
+      isUtc: true,
+    ),
+  );
 
   static MonitoredBackup _monitoredBackup(RecoverbullMonitoredBackupData row) =>
       MonitoredBackup(
@@ -808,4 +1120,11 @@ final class RecoverBullAttemptMonitoringStore {
   static bool _same(List<int> a, List<int> b) =>
       a.length == b.length &&
       Iterable<int>.generate(a.length).every((i) => a[i] == b[i]);
+}
+
+final class _OwnOperation {
+  final RecoverBullOwnAttemptOperation operation;
+  final String candidate;
+  final int window;
+  const _OwnOperation(this.operation, this.candidate, this.window);
 }

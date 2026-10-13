@@ -312,6 +312,7 @@ void main() {
       await database.ensureState();
       final monitoring = RecoverBullAttemptMonitoring(
         monitoringRepository(RecoverBullAttemptMonitoringStore(database)),
+        enabled: true,
       );
       monitoring.publish(
         SuspiciousActivityAlert(

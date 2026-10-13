@@ -1,3 +1,5 @@
+import 'attempt_alert.dart';
+
 final class RecoverBullAttemptsSnapshot {
   final String? etag;
   final DateTime collectionStartedAt;
@@ -30,20 +32,29 @@ final class RecoverBullAttemptMonitoringSnapshotToken {
   final int stateRevision;
   final Map<List<int>, int> rowRevisions;
   final String? etag;
+  final Map<String, int> ownActivityRevisions;
 
   const RecoverBullAttemptMonitoringSnapshotToken({
     required this.generation,
     required this.stateRevision,
     required this.rowRevisions,
     required this.etag,
+    this.ownActivityRevisions = const {},
   });
 }
 
 final class RecoverBullAttemptMonitoringApplyResult {
   final bool accepted;
   final int conflicts;
+  final Set<String> eligibleDigests;
+  final List<SuspiciousActivityAlert> alerts;
 
-  const RecoverBullAttemptMonitoringApplyResult(this.accepted, this.conflicts);
+  const RecoverBullAttemptMonitoringApplyResult(
+    this.accepted,
+    this.conflicts, {
+    this.eligibleDigests = const {},
+    this.alerts = const [],
+  });
 }
 
 final class DriveBackupObservation {
@@ -61,4 +72,22 @@ final class DriveBackupObservation {
 
   String get digestKey =>
       digest.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+}
+
+final class RecoverBullPollFailureResult {
+  final bool accepted;
+  final bool shouldWarn;
+  const RecoverBullPollFailureResult(this.accepted, this.shouldWarn);
+}
+
+/// Identifies one local request without retaining its credentials.
+final class RecoverBullOwnAttemptOperation {
+  final int id;
+  final int generation;
+  final String backupDigest;
+  const RecoverBullOwnAttemptOperation({
+    required this.id,
+    required this.generation,
+    required this.backupDigest,
+  });
 }

@@ -65,23 +65,33 @@ final class CheckBackupAttemptMonitoringUsecase {
         backupDigests: rows.map((row) => _hex(row.digest)).toList(),
       );
     } on Exception catch (_) {
-      final storageResult4 = await store.recordPollFailure(now: current);
+      final storageResult4 = await store.recordPollFailure(
+        now: current,
+        token: token,
+      );
       if (storageResult4 case Err(:final failure)) return Err(failure);
       final unavailable =
-          (storageResult4 as Ok<bool, RecoverBullFailure>).value;
+          (storageResult4
+                  as Ok<RecoverBullPollFailureResult, RecoverBullFailure>)
+              .value;
       return Ok(
-        unavailable
+        unavailable.shouldWarn
             ? [const AttemptMonitoringUnavailableAlert(since: null)]
             : const [],
       );
     }
     if (snapshot == null) {
-      final storageResult5 = await store.recordPollFailure(now: current);
+      final storageResult5 = await store.recordPollFailure(
+        now: current,
+        token: token,
+      );
       if (storageResult5 case Err(:final failure)) return Err(failure);
       final unavailable =
-          (storageResult5 as Ok<bool, RecoverBullFailure>).value;
+          (storageResult5
+                  as Ok<RecoverBullPollFailureResult, RecoverBullFailure>)
+              .value;
       return Ok(
-        unavailable
+        unavailable.shouldWarn
             ? [const AttemptMonitoringUnavailableAlert(since: null)]
             : const [],
       );
@@ -102,23 +112,26 @@ final class CheckBackupAttemptMonitoringUsecase {
       return const Ok([]);
     }
     if (snapshot.serviceBusy) {
-      final storageResult8 = await store.recordPollFailure(now: current);
+      final storageResult8 = await store.recordPollFailure(
+        now: current,
+        token: token,
+      );
       if (storageResult8 case Err(:final failure)) return Err(failure);
       final unavailable =
-          (storageResult8 as Ok<bool, RecoverBullFailure>).value;
+          (storageResult8
+                  as Ok<RecoverBullPollFailureResult, RecoverBullFailure>)
+              .value;
+      if (!unavailable.accepted) return const Ok([]);
       return Ok([
         const ServicePressureAlert(ServicePressureKind.serviceBusy),
         if (_isIdentifierSaturated(snapshot))
           const ServicePressureAlert(ServicePressureKind.identifierSaturation),
-        if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
+        if (unavailable.shouldWarn)
+          const AttemptMonitoringUnavailableAlert(since: null),
       ]);
     }
     final alerts = <AttemptAlert>[];
-    final storageResult9 = await store.state();
-    if (storageResult9 case Err(:final failure)) return Err(failure);
-    final collection =
-        (storageResult9 as Ok<AttemptMonitoringState, RecoverBullFailure>)
-            .value;
+    final collection = state;
     if (collection.isOtherCollection(snapshot.collectionStartedAt)) {
       final storageResult10 = await store.rebaseline(snapshot, token);
       if (storageResult10 case Err(:final failure)) return Err(failure);
@@ -148,47 +161,12 @@ final class CheckBackupAttemptMonitoringUsecase {
         const ServicePressureAlert(ServicePressureKind.identifierSaturation),
       );
     }
-    final entries = {
-      for (final entry in snapshot.totalAttempts.entries)
-        _hex(entry.key): entry.value,
-    };
-    // Local attempts and rebaselines may have changed while the poll waited.
-    final storageResult12 = await store.monitoredBackups();
-    if (storageResult12 case Err(:final failure)) return Err(failure);
-    final currentRows =
-        (storageResult12 as Ok<List<MonitoredBackup>, RecoverBullFailure>)
-            .value;
-    for (final row in currentRows) {
-      if (row.awaitsBaseline) continue;
-      final hash = _hex(row.digest);
-      final observed = entries[hash];
-      if (observed == null ||
-          observed <= row.expectedServerDistinctCandidateTotal) {
-        continue;
-      }
-      alerts.add(
-        SuspiciousActivityAlert(
-          backupIdHash: hash,
-          observedTotal: observed,
-          expectedTotal: row.expectedServerDistinctCandidateTotal,
-          windowStartedAt: _windowOf(snapshot, hash),
-        ),
-      );
-    }
+    alerts.addAll(applied.alerts);
     return Ok(alerts);
   }
 
   static String _hex(List<int> bytes) =>
       bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
-
-  /// The attempt window the counter belongs to: the alert identity is scoped
-  /// to it, so a new window raises a dismissed alert again.
-  static DateTime _windowOf(RecoverBullAttemptsSnapshot snapshot, String hash) {
-    for (final entry in snapshot.windowStartedAt.entries) {
-      if (_hex(entry.key) == hash) return entry.value;
-    }
-    return snapshot.collectionStartedAt;
-  }
 
   static bool _isIdentifierSaturated(RecoverBullAttemptsSnapshot snapshot) {
     final total = snapshot.totalEntries;

@@ -1,3 +1,5 @@
+import 'dart:async';
+import '../entities/attempt_monitoring_snapshot.dart';
 import 'package:primitives/primitives.dart';
 import '../entities/encrypted_vault.dart';
 import '../entities/key_server_attempts.dart';
@@ -43,6 +45,15 @@ final class TrashVaultKeyUsecase {
     RecoverBullTorRoute route, {
     required bool ownsRoute,
   }) async {
+    final started = await recordAttempt?.beginOwnOperation(
+      backupIdHex: vault.id,
+      password: password,
+    );
+    final operation =
+        started is Ok<RecoverBullOwnAttemptOperation?, RecoverBullFailure>
+        ? started.value
+        : null;
+    var delegatedCompletion = false;
     try {
       final result = await repository.trashVaultKeyWithStatus(
         vault.id,
@@ -50,11 +61,18 @@ final class TrashVaultKeyUsecase {
         vault.salt,
         route,
       );
+      if (result case Err(failure: KeyServerInvalidCredentialsFailure())) {
+        if (operation != null) {
+          delegatedCompletion = true;
+          unawaited(_recordRejectedAttempt(operation));
+        }
+      }
       switch (result) {
         case Err(:final failure) when failure is KeyServerRateLimitedFailure:
           try {
             final alert = await recordAttempt?.recordTargetedLockout(
               backupIdHex: vault.id,
+              operation: operation,
             );
             if (alert case Ok(value: final value?)) alertPort?.publish(value);
           } on Exception catch (error, _) {
@@ -83,6 +101,9 @@ final class TrashVaultKeyUsecase {
       }
       return result;
     } finally {
+      if (!delegatedCompletion && operation != null) {
+        await recordAttempt?.endOwnOperation(operation);
+      }
       if (ownsRoute) {
         try {
           await route.close();
@@ -92,6 +113,19 @@ final class TrashVaultKeyUsecase {
           );
         }
       }
+    }
+  }
+
+  Future<void> _recordRejectedAttempt(
+    RecoverBullOwnAttemptOperation operation,
+  ) async {
+    final result = await recordAttempt?.completeOwnOperation(
+      operation: operation,
+      counted: true,
+    );
+    if (result case Ok(:final value?)) alertPort?.publish(value);
+    if (result case Err()) {
+      log.warning('recoverbull.attempts.monitoring.update.failed');
     }
   }
 }

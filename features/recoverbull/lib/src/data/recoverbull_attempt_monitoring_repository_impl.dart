@@ -1,3 +1,4 @@
+import '../domain/entities/attempt_alert.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
@@ -33,6 +34,57 @@ final class RecoverBullAttemptMonitoringRepositoryImpl
       );
     }
   }
+
+  @override
+  Future<Result<RecoverBullOwnAttemptOperation?, RecoverBullFailure>>
+  beginOwnOperation(
+    List<int> identifier, {
+    required String password,
+    required DateTime now,
+  }) => _run(
+    'beginOwnOperation',
+    () => _store.beginOwnOperation(identifier, password: password, now: now),
+  );
+
+  @override
+  Future<Result<SuspiciousActivityAlert?, RecoverBullFailure>>
+  completeOwnOperation(
+    RecoverBullOwnAttemptOperation operation, {
+    required bool counted,
+    KeyServerAttemptStatus? status,
+    RecoverBullAttemptsSnapshot? snapshot,
+  }) => _run(
+    'completeOwnOperation',
+    () => _store.completeOwnOperation(
+      operation,
+      counted: counted,
+      status: status,
+      snapshot: snapshot,
+    ),
+  );
+
+  @override
+  Future<Result<bool, RecoverBullFailure>> isOwnOperationCurrent(
+    RecoverBullOwnAttemptOperation operation,
+  ) => _run(
+    'isOwnOperationCurrent',
+    () => _store.isOwnOperationCurrent(operation),
+  );
+
+  @override
+  Future<Result<Null, RecoverBullFailure>> endOwnOperation(
+    RecoverBullOwnAttemptOperation operation,
+  ) => _run('endOwnOperation', () async {
+    await _store.endOwnOperation(operation);
+    return null;
+  });
+
+  @override
+  Future<Result<Null, RecoverBullFailure>> cancelOwnOperations() =>
+      _run('cancelOwnOperations', () async {
+        await _store.cancelOwnOperations();
+        return null;
+      });
 
   @override
   List<int> digestFor(List<int> identifier) => _store.digestFor(identifier);
@@ -178,9 +230,14 @@ final class RecoverBullAttemptMonitoringRepositoryImpl
   ) => _run('rebaseline', () => _store.rebaseline(snapshot, token));
 
   @override
-  Future<Result<bool, RecoverBullFailure>> recordPollFailure({
+  Future<Result<RecoverBullPollFailureResult, RecoverBullFailure>>
+  recordPollFailure({
     required DateTime now,
-  }) => _run('recordPollFailure', () => _store.recordPollFailure(now: now));
+    RecoverBullAttemptMonitoringSnapshotToken? token,
+  }) => _run(
+    'recordPollFailure',
+    () => _store.recordPollFailure(now: now, token: token),
+  );
 
   @override
   Future<Result<Null, RecoverBullFailure>> recordAttemptsUnsupported({
