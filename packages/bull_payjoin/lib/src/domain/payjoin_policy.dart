@@ -29,11 +29,16 @@ final class PayjoinPolicy {
   /// economic exposure (fee contribution, UTXO probing).
   final bool receiveEnabled;
 
-  /// On by default: the exchange is already the trusted counterparty to the
-  /// trade, so the payjoin reveals nothing it does not know.
+  /// On by default, without the disclaimer: the exchange is the trusted
+  /// counterparty to the trade. Still a disclosure: as the receiver, the
+  /// wallet contributes an input, so the exchange learns one more UTXO linked
+  /// to the user's account. The minimum amount bounds probing through small
+  /// orders.
   final bool buyEnabled;
 
-  /// On by default, for the same reason as [buyEnabled].
+  /// On by default: as the sender, the wallet's inputs are already in the
+  /// original transaction the exchange receives, so the payjoin reveals
+  /// nothing new to it.
   final bool sellEnabled;
 
   final Sats minimumAmount;
