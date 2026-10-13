@@ -23,6 +23,15 @@ void main() {
       );
     });
 
+    test('fails closed when a confirmed transaction needs txindex', () {
+      expect(
+        BdkBitcoinBlockchainDatasource.isUnknownTransactionReply(
+          'No such mempool transaction. Use -txindex or provide a block hash',
+        ),
+        isFalse,
+      );
+    });
+
     test('treats any other server error as unknown, not absent', () {
       expect(
         BdkBitcoinBlockchainDatasource.isUnknownTransactionReply(

@@ -68,6 +68,8 @@ class BdkBitcoinBlockchainDatasource {
         client = buildClient();
       }
       try {
+        // Only existence matters: unlike fetchTx, the raw call avoids
+        // constructing a decoded Transaction and its associated FFI handle.
         client.transactionGetRaw(txid: bdk.Txid.fromString(hex: txId));
         return true;
       } on bdk.ProtocolElectrumException catch (error) {
@@ -82,6 +84,9 @@ class BdkBitcoinBlockchainDatasource {
   /// Recognizes the "unknown transaction" replies of the Electrum servers we
   /// ship: electrs and esplora answer `missing transaction`, Fulcrum relays
   /// bitcoind's `No such mempool or blockchain transaction`.
+  /// `No such mempool transaction. Use -txindex or provide a block hash`
+  /// remains an error: it can mean a confirmed transaction is unavailable
+  /// without an index, so treating it as absent could permit a competing spend.
   static bool isUnknownTransactionReply(String message) {
     final normalized = message.toLowerCase();
     return normalized.contains('missing transaction') ||
