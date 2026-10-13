@@ -112,11 +112,7 @@ void main() {
     final legacy = database();
     addTearDown(legacy.close);
 
-    await RecoverBullSetup.setup(
-      locator,
-      database: legacy,
-      startAttemptMonitoring: true,
-    );
+    await RecoverBullSetup.setup(locator, database: legacy);
 
     final feature = locator<RecoverBullFeature>();
     expect((await feature.status(RecoverBullNetwork.mainnet)).isKnown, isFalse);
