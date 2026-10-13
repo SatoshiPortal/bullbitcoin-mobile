@@ -116,8 +116,15 @@ final class RecoverBullSetup {
     SqliteDatabase database,
     LogSink recoverBullLog,
   ) async {
-    final documents = await getApplicationDocumentsDirectory();
-    final databasePath = '${documents.path}/recoverbull.sqlite';
+    String? databasePath;
+    try {
+      final documents = await getApplicationDocumentsDirectory();
+      databasePath = '${documents.path}/recoverbull.sqlite';
+    } on Exception catch (error) {
+      recoverBullLog.warning(
+        'recoverbull.storage.path_unavailable error_type=${error.runtimeType}',
+      );
+    }
     final legacySettings = await readRecoverBullLegacySettings(
       database,
       onReadFailure: () => recoverBullLog.warning(

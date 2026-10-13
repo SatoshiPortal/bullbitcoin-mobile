@@ -36,6 +36,8 @@ class _Tor extends Mock implements Tor {}
 
 class _EmbeddedTor extends Mock implements EmbeddedTor {}
 
+class _Watcher extends Mock implements WatchTorConnectionUsecase {}
+
 void main() {
   SqliteDatabase database() => SqliteDatabase(NativeDatabase.memory());
 
@@ -87,44 +89,56 @@ void main() {
     expect(reported, isTrue);
   });
 
-  test('app startup continues with RecoverBull unavailable when its database '
-      'cannot be opened', () async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    final documents = await Directory.systemTemp.createTemp(
-      'recoverbull-setup-',
-    );
-    addTearDown(() => documents.delete(recursive: true));
-    // A directory where the database file belongs is not corruption, so
-    // the package cannot recover from it by archiving.
-    await Directory('${documents.path}/recoverbull.sqlite').create();
-    final previousPathProvider = PathProviderPlatform.instance;
-    PathProviderPlatform.instance = _Documents(documents.path);
-    addTearDown(() => PathProviderPlatform.instance = previousPathProvider);
-    final tor = _Tor();
-    when(() => tor.embedded).thenReturn(_EmbeddedTor());
-    final locator = GetIt.asNewInstance()
-      ..registerSingleton<SettingsRepository>(_Settings())
-      ..registerSingleton<WalletRepository>(_Wallets())
-      ..registerSingleton<SeedRepository>(_Seeds())
-      ..registerSingleton<CreateDefaultWalletsUsecase>(_DefaultWallets())
-      ..registerSingleton<Tor>(tor)
-      ..registerSingleton<TorRoutePool>(TorRoutePool());
-    final legacy = database();
-    addTearDown(legacy.close);
+  test(
+    'app startup keeps recovery available with temporary storage when its database '
+    'cannot be opened',
+    () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      final documents = await Directory.systemTemp.createTemp(
+        'recoverbull-setup-',
+      );
+      addTearDown(() => documents.delete(recursive: true));
+      // A directory where the database file belongs is not corruption, so
+      // the package cannot recover from it by archiving.
+      await Directory('${documents.path}/recoverbull.sqlite').create();
+      final previousPathProvider = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = _Documents(documents.path);
+      addTearDown(() => PathProviderPlatform.instance = previousPathProvider);
+      final tor = _Tor();
+      final embedded = _EmbeddedTor();
+      final watcher = _Watcher();
+      when(watcher.execute).thenAnswer((_) => const Stream.empty());
+      when(() => embedded.watcher).thenReturn(watcher);
+      when(() => tor.embedded).thenReturn(embedded);
+      final locator = GetIt.asNewInstance()
+        ..registerSingleton<SettingsRepository>(_Settings())
+        ..registerSingleton<WalletRepository>(_Wallets())
+        ..registerSingleton<SeedRepository>(_Seeds())
+        ..registerSingleton<CreateDefaultWalletsUsecase>(_DefaultWallets())
+        ..registerSingleton<Tor>(tor)
+        ..registerSingleton<TorRoutePool>(TorRoutePool());
+      final legacy = database();
+      addTearDown(legacy.close);
 
-    await RecoverBullSetup.setup(locator, database: legacy);
+      await RecoverBullSetup.setup(locator, database: legacy);
 
-    final feature = locator<RecoverBullFeature>();
-    expect((await feature.status(RecoverBullNetwork.mainnet)).isKnown, isFalse);
-    expect(await feature.checkService(), RecoverBullHealth.offline);
-    expect(feature.attemptMonitoring.enabled, isFalse);
-    expect(
-      feature.routes.whereType<GoRoute>().map((route) => route.name),
-      containsAll([
-        for (final route in RecoverBullRoute.values) route.name,
-        for (final route in RecoverBullGoogleDriveRoute.values) route.name,
-      ]),
-    );
-    await locator<RecoverBullLifecycle>().dispose();
-  });
+      final feature = locator<RecoverBullFeature>();
+      expect(
+        (await feature.status(RecoverBullNetwork.mainnet)).isKnown,
+        isFalse,
+      );
+      expect(feature.isAvailable, isTrue);
+      expect(feature.storageMode, RecoverBullStorageMode.temporary);
+      expect(feature.attemptMonitoring.enabled, isFalse);
+      expect(
+        feature.routes.whereType<GoRoute>().map((route) => route.name),
+        containsAll([
+          for (final route in RecoverBullRoute.values) route.name,
+          for (final route in RecoverBullGoogleDriveRoute.values) route.name,
+        ]),
+      );
+      await locator.reset();
+      expect(feature.lifecycle.isDisposed, isTrue);
+    },
+  );
 }
