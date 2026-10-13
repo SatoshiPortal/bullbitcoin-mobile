@@ -17,6 +17,7 @@ final class SaveVaultToProviderUsecase {
   final SaveVaultToGoogleDriveUsecase saveDrive;
   final RegisterMonitoredBackupUsecase? registerBackup;
   final RecoverBullLifecyclePort? lifecycle;
+  final bool Function()? advisoryAvailable;
 
   const SaveVaultToProviderUsecase({
     required this.log,
@@ -25,6 +26,7 @@ final class SaveVaultToProviderUsecase {
     required this.saveDrive,
     this.registerBackup,
     this.lifecycle,
+    this.advisoryAvailable,
   });
 
   Future<Result<PendingVaultBackup, RecoverBullFailure>> execute({
@@ -32,6 +34,7 @@ final class SaveVaultToProviderUsecase {
     required VaultProvider provider,
     required bool Function() cancelled,
   }) async {
+    if (cancelled()) return const Err(VaultProviderSaveFailure());
     try {
       final Result<Null, RecoverBullFailure> saved;
       switch (provider) {
@@ -46,9 +49,11 @@ final class SaveVaultToProviderUsecase {
         case VaultProvider.iCloud:
           return const Err(SelectVaultFailure());
       }
-      if (saved is Err || cancelled()) {
+      if (saved is Err) {
         return const Err(VaultProviderSaveFailure());
       }
+      // A completed external save remains authoritative after route cancellation.
+      if (advisoryAvailable?.call() == false) return Ok(pending);
       // Advisory writes cannot change a successful external save into a failure.
       try {
         final registration = await registerBackup?.execute(
@@ -60,7 +65,7 @@ final class SaveVaultToProviderUsecase {
       } on Exception {
         log.warning('recoverbull.attempts.monitoring.registration.failed');
       }
-      if (cancelled()) return const Err(VaultProviderSaveFailure());
+      if (advisoryAvailable?.call() == false) return Ok(pending);
       try {
         await lifecycle?.markStored(pending.network);
       } on Exception {
