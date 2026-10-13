@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'mappers/encrypted_vault_mapper.dart';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/drive_file_metadata.dart';
@@ -17,6 +17,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
   int _nextId = 0;
   bool _connected = false;
   Future<void> _queue = Future<void>.value();
+  int _accountGeneration = 0;
 
   DebugGoogleDriveRepository({
     this.accountEmail = 'recoverbull.debug@example.invalid',
@@ -34,6 +35,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
 
   @override
   Future<Result<Null, RecoverBullFailure>> connect() => _serialized(() async {
+    _accountGeneration++;
     _connected = true;
     return const Ok(null);
   });
@@ -45,15 +47,25 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
   });
 
   @override
-  Future<void> disconnect() => _serialized(() async => _connected = false);
+  Future<void> disconnect() => _serialized(() async {
+    _accountGeneration++;
+    _connected = false;
+  });
 
   @override
   Future<T> withDiscoverySession<T>(
     Future<T> Function(GoogleDriveDiscoverySession? session) action,
-  ) => _serialized(() async {
-    _connected = true;
-    return action(_DebugSession(this, accountEmail));
-  });
+  ) async {
+    final session = await _serialized(() async {
+      _connected = true;
+      return _DebugSession(this, accountEmail, _accountGeneration);
+    });
+    try {
+      return await action(session);
+    } finally {
+      session._active = false;
+    }
+  }
 
   @override
   Future<Result<List<DriveFileMetadata>, RecoverBullFailure>>
@@ -68,7 +80,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
       for (final entry in _files.entries)
         DriveFileMetadata(
           id: entry.key,
-          name: EncryptedVault(file: entry.value.content).filename,
+          name: EncryptedVaultMapper.parse(entry.value.content).filename,
           createdTime: entry.value.createdAt,
           modifiedTime: null,
         ),
@@ -90,7 +102,7 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
     if (content == null) {
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
-    return Ok(EncryptedVault(file: content));
+    return Ok(EncryptedVaultMapper.parse(content));
   }
 
   @override
@@ -169,6 +181,18 @@ final class DebugGoogleDriveRepository implements GoogleDriveRepository {
     return result;
   }
 
+  Future<T> _withCurrentAccount<T>(
+    _DebugSession session,
+    Future<T> Function() action,
+  ) => _serialized(() async {
+    if (!session._active ||
+        !_connected ||
+        session._generation != _accountGeneration) {
+      throw const _DebugDiscoverySessionExpiredException();
+    }
+    return action();
+  });
+
   static EncryptedVault _fixture(int index) {
     final id = List<int>.generate(32, (i) => (i + index) & 0xff);
     final salt = List<int>.generate(16, (i) => (i * 3 + index) & 0xff);
@@ -189,15 +213,20 @@ final class _DebugSession implements GoogleDriveDiscoverySession {
   final DebugGoogleDriveRepository repository;
   @override
   final String account;
+  final int _generation;
+  bool _active = true;
 
-  const _DebugSession(this.repository, this.account);
+  _DebugSession(this.repository, this.account, this._generation);
 
   @override
-  Future<T> withCurrentAccount<T>(Future<T> Function() action) => action();
+  Future<T> withCurrentAccount<T>(Future<T> Function() action) =>
+      repository._withCurrentAccount(this, action);
 
   @override
   Future<List<DriveFileMetadata>> fetchAllMetadata() async {
-    final result = await repository._fetchAllMetadataUnlocked();
+    final result = await withCurrentAccount(
+      repository._fetchAllMetadataUnlocked,
+    );
     return switch (result) {
       Ok(:final value) => value,
       Err() => throw Exception('Drive metadata unavailable'),
@@ -206,12 +235,18 @@ final class _DebugSession implements GoogleDriveDiscoverySession {
 
   @override
   Future<String> fetchRawFile(String fileId) async {
-    final result = await repository._fetchRawFileUnlocked(fileId);
+    final result = await withCurrentAccount(
+      () => repository._fetchRawFileUnlocked(fileId),
+    );
     return switch (result) {
       Ok(:final value) => value,
       Err() => throw Exception('Drive content unavailable'),
     };
   }
+}
+
+final class _DebugDiscoverySessionExpiredException implements Exception {
+  const _DebugDiscoverySessionExpiredException();
 }
 
 final class _DebugDriveFile {
