@@ -59,14 +59,14 @@ class _ProviderCardState extends State<ProviderCard>
                   widget.onTap();
                 }
               : null,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(BullRadius.sm),
           child: Ink(
             decoration: BoxDecoration(
               color: context.bull.surface,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(BullRadius.sm),
             ),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(BullSpacing.md),
               child: Row(
                 children: [
                   SizedBox(
@@ -78,7 +78,7 @@ class _ProviderCardState extends State<ProviderCard>
                       fit: BoxFit.cover,
                     ),
                   ),
-                  const Gap(12),
+                  const Gap(BullSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: .start,
@@ -96,7 +96,7 @@ class _ProviderCardState extends State<ProviderCard>
                       ],
                     ),
                   ),
-                  const Gap(8),
+                  const Gap(BullSpacing.xs),
                   Icon(Icons.arrow_forward, color: context.bull.onSurface),
                 ],
               ),

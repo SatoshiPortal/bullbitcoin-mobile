@@ -23,13 +23,11 @@ class DriveVaultsListPage extends StatelessWidget {
     final driveMetadata = state.driveMetadata;
 
     return BullScaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: BullTopBar(
-          onBack: () => context.pop(),
-          title: context.loc.recoverbullGoogleDriveScreenTitle,
-        ),
+      appBar: BullTopBar.appBar(
+        titleStyle: context.bullText.headlineMedium,
+        title: context.loc.recoverbullGoogleDriveScreenTitle,
+        onBack: () => context.pop(),
+        materialTransparency: true,
       ),
       body: Column(
         children: [
@@ -45,7 +43,7 @@ class DriveVaultsListPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(failure.toTranslated(context)),
-                        const Gap(12),
+                        const Gap(BullSpacing.sm),
                         BullButton.small(
                           label: context.loc.recoverbullRetry,
                           onPressed: () => context
@@ -166,13 +164,13 @@ class _DriveFileMetadataItem extends StatelessWidget {
                 context.loc.recoverbullGoogleDriveDeleteVaultTitle,
                 style: context.bullText.headlineMedium,
               ),
-              const Gap(16),
+              const Gap(BullSpacing.md),
               BullText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
                 style: context.bullText.bodyMedium,
                 textAlign: .center,
               ),
-              const Gap(24),
+              const Gap(BullSpacing.lg),
               Row(
                 mainAxisAlignment: .spaceEvenly,
                 children: [

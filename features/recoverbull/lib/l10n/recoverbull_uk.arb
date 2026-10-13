@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Fetching Вейф Головна",
   "recoverbullSecureBackup": "Забезпечити резервну копію",
   "backupWalletHowToDecideVaultCloudRecommendationText": "ви хочете переконатися, що ви ніколи не втратите доступ до файлу за замовчуванням, навіть якщо ви втратите ваші пристрої.",
-  "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
-  "torSettingsTitle": "Налаштування Tor",
   "recoverbullPassword": "Логін",
   "recoverbullReenterRequired": "Завантажити {inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "ви впевнені, що ви не втратите файл за замовчуванням і він все ще буде доступний, якщо ви втратите свій телефон.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Українська",
   "recoverbullEnterInput": "{inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Активний транспорт: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Пароль не відповідає",
   "recoverbullErrorDecryptFailed": "Не вдалося розшифрувати запобіжник",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
-  "torSettingsModeAutomaticDescription": "Спершу пробує пряме підключення до Tor, а якщо мережа, схоже, блокує Tor, використовує Snowflake.",
   "recoverbullErrorVaultNotSet": "Не встановлено",
   "recoverbullCreatingVault": "Створення шифрування Виноград",
   "recoverbullTorCantStart": "Наразі Tor не зміг підключитися. Спробуйте ще раз.",
   "recoverbullDecryptVault": "Розшифрування за замовчуванням",
   "recoverbullErrorSelectVault": "Ввімкнено до вибору за замовчуванням",
-  "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
-  "torSettingsModeSnowflakeDescription": "Використовує волонтерські проксі Snowflake, щоб дістатися Tor із фільтрованої мережі.",
-  "backupWalletHowToDecideBackupModalTitle": "Як вирішити",
   "recoverbullSettingsUrlMustBeOnion": "URL має закінчуватися на .onion",
   "recoverbullServerConfirmTitle": "Сервер відновлення сховища",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Заборонено фіксувати помилки з Google Диску",
   "recoverbullSettingsEdit": "Редагувати",
   "recoverbullPIN": "ПІН",
-  "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
   "recoverbullSettingsUrlInvalid": "URL недійсний",
   "recoverbullCheckingConnection": "Перевірка підключення до RecoverBull",
   "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Відновлення даних",
   "recoverbullServerUrlLabel": "URL сервера:",
   "recoverbullTorNetwork": "Веб-сайт",
-  "torSettingsDescConnected": "Tor proxy працює і готовий",
   "recoverbullSettingsTitle": "Налаштування Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "Статус на сервери",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Введіть ключ vault замість",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Дізнатися більше про Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Заборонено видалити сховище з Google Диску",
   "recoverbullVaultCreatedSuccess": "Vault створений успішно",
   "recoverbullConfirm": "Підтвердження",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Вибрані",
   "recoverbullSettingsCancel": "Скасувати",
   "backupWalletHowToDecideVaultCloudRecommendation": "Українська Хмара яблука: ",
-  "backupWalletHowToDecide": "Як вирішити?",
   "durationMinute": "{minutes} хвилин",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "Підключення",
   "recoverbullRetry": "Птиця",
   "recoverbullConnectedTorCheckingServer": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
-  "torSettingsDescDisconnected": "Тор проксі не працює",
-  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Спробувати ще раз",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Продовжити",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Партнерство",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Закрити",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Підключення до Key Server над Tor. Це може прийняти до хвилини.",
   "recoverbullMonitoringDisableCancel": "Скасувати",
-  "recoverbullMonitoringServerUnsupported": "Цей сервер не підтримує відстеження спроб. Ви й надалі можете створювати резервні копії та відновлювати сховища."
+  "recoverbullMonitoringServerUnsupported": "Цей сервер не підтримує відстеження спроб. Ви й надалі можете створювати резервні копії та відновлювати сховища.",
+  "recoverbullTemporaryStorageNotice": "Зараз неможливо зберегти налаштування та перевірку резервних копій. Ви можете схвалити сервер і відновити сховище."
 }

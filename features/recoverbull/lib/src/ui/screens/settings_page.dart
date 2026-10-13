@@ -77,7 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
         context,
         message:
             _cubit.state.failure?.toTranslated(context) ??
-            context.loc.oopsSomethingWentWrong,
+            context.recoverBullLabels.oopsSomethingWentWrong,
       );
     }
   }
@@ -89,21 +89,25 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() => _isChangingMonitoring = true);
     try {
       if (!enabled) {
-        final confirmed = await showDialog<bool>(
+        final confirmed = await BullDialog.showAlert<bool>(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (context) => BullDialog.alert(
             title: Text(context.loc.recoverbullMonitoringDisableTitle),
-            content: Text(context.loc.recoverbullMonitoringDisableWarning),
             actions: [
-              TextButton(
+              BullButton.text(
+                label: context.loc.recoverbullMonitoringDisableCancel,
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(context.loc.recoverbullMonitoringDisableCancel),
+                bgColor: context.bull.transparent,
+                textColor: context.bull.primary,
               ),
-              TextButton(
+              BullButton.text(
+                label: context.loc.recoverbullMonitoringDisableConfirm,
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(context.loc.recoverbullMonitoringDisableConfirm),
+                bgColor: context.bull.transparent,
+                textColor: context.bull.primary,
               ),
             ],
+            child: Text(context.loc.recoverbullMonitoringDisableWarning),
           ),
         );
         if (confirmed != true || !mounted) return;
@@ -162,16 +166,10 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return BullScaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: BullText(
-          context.loc.recoverbullSettingsTitle,
-          style: context.bullText.headlineMedium,
-          color: context.bull.onSurface,
-        ),
+      appBar: BullTopBar.appBar(
+        titleStyle: context.bullText.headlineMedium,
+        title: context.loc.recoverbullSettingsTitle,
+        onBack: () => context.pop(),
       ),
       body: BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>(
         bloc: _cubit,
@@ -196,13 +194,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               )
             : Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(BullSpacing.md),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: .stretch,
                     children: [
-                      const Gap(16),
+                      const Gap(BullSpacing.md),
                       Row(
                         mainAxisAlignment: .spaceBetween,
                         children: [
@@ -212,38 +210,38 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: context.bull.onSurface,
                           ),
                           if (!_isEditing)
-                            TextButton.icon(
+                            BullButton.text(
+                              label: context.loc.recoverbullSettingsEdit,
                               onPressed: () {
                                 _urlController.text = settings.url;
                                 setState(() => _isEditing = true);
                               },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: Text(context.loc.recoverbullSettingsEdit),
+                              bgColor: context.bull.transparent,
+                              textColor: context.bull.primary,
+                              iconData: Icons.edit,
                             ),
                         ],
                       ),
-                      const Gap(12),
+                      const Gap(BullSpacing.sm),
                       if (_isEditing) ...[
-                        TextFormField(
+                        BullInputText(
                           controller: _urlController,
+                          value: _urlController.text,
+                          onChanged: (_) {},
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          hint: context.loc.recoverbullSettingsUrlHint,
                           validator: _validateUrl,
                           maxLines: null,
                           autofocus: true,
                           style: context.bullText.bodyMedium,
-                          decoration: InputDecoration(
-                            hintText: context.loc.recoverbullSettingsUrlHint,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.all(16),
-                          ),
                         ),
                       ] else ...[
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(BullSpacing.md),
                           decoration: BoxDecoration(
                             color: context.bull.cardBackground,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(BullRadius.sm),
                             border: Border.all(color: context.bull.border),
                           ),
                           child: BullText(
@@ -255,18 +253,18 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                       if (_cubit.monitoringStatus != null &&
                           settings.monitoring == null) ...[
-                        const Gap(24),
+                        const Gap(BullSpacing.lg),
                         BullText(
                           context.loc.recoverbullMonitoringTitle,
                           style: context.bullText.titleMedium,
                         ),
-                        const Gap(8),
+                        const Gap(BullSpacing.xs),
                         BullText(
                           settings.failure?.toTranslated(context) ??
-                              context.loc.oopsSomethingWentWrong,
+                              context.recoverBullLabels.oopsSomethingWentWrong,
                           style: context.bullText.bodyMedium,
                         ),
-                        const Gap(8),
+                        const Gap(BullSpacing.xs),
                         BullButton.big(
                           label: context.loc.recoverbullRetry,
                           bgColor: context.bull.primary,
@@ -276,7 +274,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ],
                       if (settings.monitoring case final monitoring?) ...[
-                        const Gap(24),
+                        const Gap(BullSpacing.lg),
                         BullText(
                           context.loc.recoverbullMonitoringTitle,
                           style: context.bullText.titleMedium,
@@ -293,7 +291,9 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             BullSwitch(
                               value: monitoring.enabled,
-                              onChanged: _isChangingMonitoring
+                              onChanged:
+                                  (_isChangingMonitoring ||
+                                      !monitoring.enabledAllowed)
                                   ? null
                                   : _setMonitoringEnabled,
                             ),
@@ -323,7 +323,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             style: context.bullText.bodySmall,
                           ),
-                        const Gap(8),
+                        const Gap(BullSpacing.xs),
                         Text(
                           context.loc.recoverbullMonitoringExplanation,
                           style: context.bullText.bodySmall,
@@ -341,7 +341,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 textColor: context.bull.onSurface,
                               ),
                             ),
-                            const Gap(8),
+                            const Gap(BullSpacing.xs),
                             Expanded(
                               child: BullButton.big(
                                 label: context.loc.recoverbullSettingsSave,
@@ -353,7 +353,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                           ],
                         ),
-                        const Gap(16),
+                        const Gap(BullSpacing.md),
                       ],
                       GestureDetector(
                         onTap: _openRecoverBullWebsite,
@@ -365,7 +365,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               size: 20,
                               color: context.bull.primary,
                             ),
-                            const Gap(8),
+                            const Gap(BullSpacing.xs),
                             BullText(
                               context.loc.recoverbullLearnMore,
                               style: context.bullText.bodyMedium,
@@ -374,7 +374,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                       ),
-                      const Gap(24),
+                      const Gap(BullSpacing.lg),
                     ],
                   ),
                 ),

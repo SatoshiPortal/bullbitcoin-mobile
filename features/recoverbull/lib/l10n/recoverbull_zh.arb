@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Fetching Vault 关键",
   "recoverbullSecureBackup": "确保你们的支持",
   "backupWalletHowToDecideVaultCloudRecommendationText": "你们想要确保,即使你失去装置,你也永远不会失去接触你的ault.",
-  "walletSetupErrorTryAgain": "设置钱包时出了点问题，请重试。",
-  "torSettingsTitle": "三、背景",
   "recoverbullPassword": "密码",
   "recoverbullReenterRequired": "重新加入{inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "你相信,你不会丢失ault,如果你失去电话,仍然可以查阅.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "谷歌运动",
   "recoverbullEnterInput": "{inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "当前传输方式：{transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "密码不匹配",
   "recoverbullErrorDecryptFailed": "未能加密",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 他们只能进入与关键服务器(在线服务,储存你的加密密码)相勾结的不太可能的事件。 如果关键服务器破碎,那么,谷歌或 Apple云可能会有风险.",
-  "torSettingsModeAutomaticDescription": "先尝试直连 Tor；若网络似乎屏蔽 Tor，则改用 Snowflake。",
   "recoverbullErrorVaultNotSet": "无",
   "recoverbullCreatingVault": "建立加密 缩略语",
   "recoverbullTorCantStart": "Tor 暂时无法连接。请重试。",
   "recoverbullDecryptVault": "加密",
   "recoverbullErrorSelectVault": "未选定过失",
-  "torSettingsStatusCensored": "连接似乎被过滤",
-  "torSettingsModeSnowflakeDescription": "通过志愿者提供的 Snowflake 代理，从被过滤的网络连接 Tor。",
-  "backupWalletHowToDecideBackupModalTitle": "如何决定",
   "recoverbullSettingsUrlMustBeOnion": "URL 必须以 .onion 结尾",
   "recoverbullServerConfirmTitle": "保险库恢复服务器",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Valle Drive",
   "recoverbullSettingsEdit": "编辑",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "不使用可插拔传输，直接连接 Tor 网络。",
   "recoverbullSettingsUrlInvalid": "URL 无效",
   "recoverbullCheckingConnection": "RecoverBull检查连接",
   "recoverbullErrorInvalidCredentials": "这一备份卷宗的密码",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "试验恢复",
   "recoverbullServerUrlLabel": "服务器 URL：",
   "recoverbullTorNetwork": "Tor Network",
-  "torSettingsDescConnected": "代理正在运行并准备就绪",
   "recoverbullSettingsTitle": "Recoverbull 设置",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull服务器",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "A. 取而代之",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "了解更多关于 Recoverbull 的信息",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor 无法连接到网络。这通常意味着连接正在被过滤。",
   "recoverbullGoogleDriveErrorDeleteFailed": "页: 1",
   "recoverbullVaultCreatedSuccess": "成功制造",
   "recoverbullConfirm": "执 行",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Vault Selected",
   "recoverbullSettingsCancel": "取消",
   "backupWalletHowToDecideVaultCloudRecommendation": "谷歌 肥料云: ",
-  "backupWalletHowToDecide": "如何决定?",
   "durationMinute": "{minutes}分钟",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "连接",
   "recoverbullRetry": "学历",
   "recoverbullConnectedTorCheckingServer": "连接Tor。\n时间可长达一分钟.",
-  "torSettingsDescDisconnected": "委托代理公司没有运行",
-  "oopsSomethingWentWrong": "Oops! 某些错误",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "重试",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "继续",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "页: 1",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "近距离",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "连接Tor。 时间可长达一分钟.",
   "recoverbullMonitoringDisableCancel": "取消",
-  "recoverbullMonitoringServerUnsupported": "此服务器不支持尝试监控。您仍可备份和恢复保险库。"
+  "recoverbullMonitoringServerUnsupported": "此服务器不支持尝试监控。您仍可备份和恢复保险库。",
+  "recoverbullTemporaryStorageNotice": "目前无法保存设置和备份验证。您仍可批准服务器并恢复保险库。"
 }

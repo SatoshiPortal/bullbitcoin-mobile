@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'dart:async';
@@ -48,6 +49,7 @@ void main() {
       repository.fetchUrl,
     ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
     Widget app() => MaterialApp(
+      builder: (context, child) => withTestUiLabels(context, child!),
       theme: ThemeData(extensions: const [testBullTheme]),
       localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
       supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -105,6 +107,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
@@ -179,6 +182,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -217,6 +221,7 @@ void main() {
     addTearDown(cubit.close);
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -244,6 +249,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -285,6 +291,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
@@ -333,6 +340,7 @@ void main() {
       });
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
@@ -413,6 +421,7 @@ void main() {
       ).thenAnswer((_) => changing.future);
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,

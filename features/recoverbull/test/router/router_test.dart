@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_ui/testing.dart' show testBullTheme;
 import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -51,6 +52,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
       ),
@@ -107,6 +109,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,

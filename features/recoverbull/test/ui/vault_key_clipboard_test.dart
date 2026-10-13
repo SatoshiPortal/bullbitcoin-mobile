@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'dart:async';
 
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
@@ -36,6 +37,7 @@ class _Clipboard {
 }
 
 Widget _app(Widget home) => MaterialApp(
+  builder: (context, child) => withTestUiLabels(context, child!),
   theme: ThemeData(extensions: const [testBullTheme]),
   localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,

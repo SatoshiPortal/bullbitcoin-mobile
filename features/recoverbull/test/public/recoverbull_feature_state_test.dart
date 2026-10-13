@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_ui/testing.dart' show testBullTheme;
 import 'dart:io';
 
@@ -54,6 +55,7 @@ Future<RecoverBullFeature> _createFeature(
   when(watcher.execute).thenAnswer((_) => const Stream.empty());
   when(() => embedded.watcher).thenReturn(watcher);
   return RecoverBullFeature.create(
+    uiLabels: testUiLabels,
     navigation: RecoverBullNavigationCallbacks(
       onOpenTorSettings: () {},
       onOpenWalletHome: () {},
@@ -264,6 +266,7 @@ void main() {
 
     test('does nothing when the feature is unavailable', () async {
       final feature = RecoverBullFeature.unavailable(
+        uiLabels: testUiLabels,
         navigation: RecoverBullNavigationCallbacks(
           onOpenTorSettings: () {},
           onOpenWalletHome: () {},
@@ -291,6 +294,7 @@ void main() {
 
   test('the unavailable feature builds no flow bloc', () {
     final feature = RecoverBullFeature.unavailable(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},
@@ -308,6 +312,7 @@ void main() {
     tester,
   ) async {
     final feature = RecoverBullFeature.unavailable(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},
@@ -322,6 +327,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,

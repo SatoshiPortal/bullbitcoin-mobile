@@ -46,3 +46,11 @@ export 'src/domain/recoverbull_failure.dart'
 
 export 'src/domain/recoverbull_navigation_port.dart'
     show RecoverBullNavigationPort, RecoverBullNavigationCallbacks;
+
+export 'src/public/recoverbull_ui_labels.dart'
+    show
+        RecoverBullUiLabels,
+        RecoverBullUiLabelsScope,
+        RecoverBullUiLabelsContext;
+
+export 'src/domain/recoverbull_storage_mode.dart' show RecoverBullStorageMode;

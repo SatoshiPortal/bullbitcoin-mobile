@@ -10,19 +10,17 @@ import './view_vault_key_page.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../router/flow_type.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/progress_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
-  final String input;
-  final InputType inputType;
+  final _SecretSubmission _submission;
 
-  const FetchVaultKeyPage({
+  FetchVaultKeyPage({
     super.key,
-    required this.input,
-    required this.inputType,
-  });
+    required String input,
+    required InputType inputType,
+  }) : _submission = _SecretSubmission(input, inputType);
 
   @override
   State<FetchVaultKeyPage> createState() => _FetchVaultKeyPageState();
@@ -36,18 +34,24 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        switch (widget.inputType) {
-          case InputType.pin || InputType.password:
-            context.read<RecoverBullBloc>().add(
-              OnVaultPasswordSet(password: widget.input),
-            );
-          case InputType.vaultKey:
-            context.read<RecoverBullBloc>().add(
-              OnVaultDecryption(vaultKey: widget.input),
-            );
-        }
+        widget._submission.submit(context.read<RecoverBullBloc>());
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant FetchVaultKeyPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget._submission, widget._submission)) {
+      oldWidget._submission.discard();
+      widget._submission.discard();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget._submission.discard();
+    super.dispose();
   }
 
   @override
@@ -67,8 +71,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   @override
   Widget build(BuildContext context) {
     return BullScaffold(
-      appBar: AppBar(
-        title: Text(context.loc.recoverbullFetchVaultKey),
+      appBar: BullTopBar.appBar(
+        title: context.loc.recoverbullFetchVaultKey,
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -149,7 +153,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           return SafeArea(
             child: state.isLoading
                 ? Center(
-                    child: ProgressScreen(
+                    child: BullProgressScreen(
                       isLoading: true,
                       title: context.loc.recoverbullFetchingVaultKey,
                       description:
@@ -162,4 +166,26 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
       ),
     );
   }
+}
+
+/// Owns the route handoff only until its first mounted frame. No secret getter.
+final class _SecretSubmission {
+  String? _input;
+  final InputType type;
+
+  _SecretSubmission(this._input, this.type);
+
+  void submit(RecoverBullBloc bloc) {
+    final input = _input;
+    _input = null;
+    if (input == null || bloc.isClosed) return;
+    switch (type) {
+      case InputType.pin || InputType.password:
+        bloc.add(OnVaultPasswordSet(password: input));
+      case InputType.vaultKey:
+        bloc.add(OnVaultDecryption(vaultKey: input));
+    }
+  }
+
+  void discard() => _input = null;
 }

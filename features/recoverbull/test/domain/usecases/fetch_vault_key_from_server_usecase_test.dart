@@ -1,3 +1,5 @@
+import 'package:bull_recoverbull/src/domain/recoverbull_attempt_alert_port.dart';
+import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import '../../support/monitoring_repository.dart';
 import 'dart:io';
 
@@ -104,7 +106,7 @@ void main() {
   });
 
   test(
-    'records a successful fetch when the server omits attempt status',
+    'records only its own candidate and reports excess without inline status',
     () async {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       await database.ensureState();
@@ -131,10 +133,12 @@ void main() {
         ),
       );
 
+      final alerts = _RecordedAlerts();
       final result = await FetchVaultKeyFromServerUsecase(
         repository: repository,
         ensureTor: ensure,
         recordAttempt: record,
+        alertPort: alerts,
         log: const TestLogSink(),
       ).execute(vault: vault, password: 'password');
 
@@ -144,9 +148,19 @@ void main() {
         (await store.monitoredBackups())
             .single
             .expectedServerDistinctCandidateTotal,
-        4,
+        1,
       );
+      expect(alerts.alerts.single.observedTotal, 4);
+      expect(alerts.alerts.single.expectedTotal, 1);
       await database.close();
     },
   );
+}
+
+final class _RecordedAlerts implements RecoverBullAttemptAlertPort {
+  final List<SuspiciousActivityAlert> alerts = [];
+  @override
+  void publish(AttemptAlert alert) {
+    if (alert is SuspiciousActivityAlert) alerts.add(alert);
+  }
 }

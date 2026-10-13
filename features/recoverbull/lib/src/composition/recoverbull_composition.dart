@@ -1,4 +1,7 @@
-import 'package:bull_ui/bull_ui.dart' show Widget;
+import '../domain/recoverbull_storage_mode.dart';
+import '../public/recoverbull_ui_labels.dart';
+import '../ui/widgets/recoverbull_storage_notice.dart';
+import 'package:flutter/widgets.dart' show Widget, BuildContext, Builder;
 import '../data/recoverbull_attempt_monitoring_repository_impl.dart';
 import '../data/mappers/encrypted_vault_mapper.dart';
 import '../domain/usecases/select_vault_usecase.dart';
@@ -15,6 +18,7 @@ import '../data/datasources/google_drive_datasource.dart';
 import '../data/datasources/recoverbull_remote_datasource.dart';
 import '../data/datasources/recoverbull_settings_datasource.dart';
 import '../data/recoverbull_repository_impl.dart';
+import '../data/recoverbull_backup_status_writer.dart';
 import '../data/file_system_repository_impl.dart';
 import '../data/google_drive_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
@@ -64,6 +68,7 @@ import '../ui/screens/recoverbull_unavailable_page.dart';
 import '../ui/screens/settings_page.dart';
 import '../google_drive/presentation/state.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import '../database/recoverbull_database.dart';
 import 'package:bull_logger/bull_logger.dart' show LogSink;
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart';
@@ -88,6 +93,8 @@ import '../public/recoverbull.dart';
 /// shows an error page instead of a flow.
 final class RecoverBullFeature {
   final LogSink log;
+  final RecoverBullStorageMode storageMode;
+  final RecoverBullUiLabels Function(BuildContext) _uiLabels;
   final RecoverBullNavigationPort _navigation;
   final RecoverBullLifecycle lifecycle;
   // Null only in the unavailable feature; set together by [create].
@@ -112,6 +119,8 @@ final class RecoverBullFeature {
 
   const RecoverBullFeature._(
     this.log,
+    this.storageMode,
+    this._uiLabels,
     this._navigation,
     this.lifecycle,
     this._repository,
@@ -127,9 +136,12 @@ final class RecoverBullFeature {
 
   RecoverBullFeature.unavailable({
     required LogSink log,
+    required RecoverBullUiLabels Function(BuildContext) uiLabels,
     required RecoverBullNavigationPort navigation,
   }) : this._(
          log,
+         RecoverBullStorageMode.persistent,
+         uiLabels,
          navigation,
          RecoverBullLifecycle(log: log),
          null,
@@ -145,6 +157,7 @@ final class RecoverBullFeature {
 
   static Future<RecoverBullFeature> create({
     required RecoverBullConfig config,
+    required RecoverBullUiLabels Function(BuildContext) uiLabels,
     required RecoverBullNavigationPort navigation,
     required RecoverBullWalletRepository wallets,
     required RecoverBullSeedPort seeds,
@@ -158,8 +171,12 @@ final class RecoverBullFeature {
     @visibleForTesting RecoverBullDriveDiscoveryPort? driveDiscovery,
   }) async {
     final lifecycle = RecoverBullLifecycle(log: log);
-    final database = await lifecycle.openDatabase(
-      config.databasePath,
+    final path = config.databasePath;
+    RecoverBullDatabase database;
+    const storageMode = RecoverBullStorageMode.persistent;
+    if (path == null) throw const RecoverBullStorageUnavailableException();
+    database = await lifecycle.openDatabase(
+      path,
       initialPermissionGranted: config.initialPermissionGranted,
       initialServerUrlOverride: config.initialServerUrlOverride,
     );
@@ -223,22 +240,31 @@ final class RecoverBullFeature {
         );
     final attemptMonitoring = await RecoverBullAttemptMonitoring.open(
       monitoringRepository,
+      enabledAllowed: storageMode == RecoverBullStorageMode.persistent,
       enabled: (await database.select(database.recoverbullState).getSingle())
           .attemptMonitoringEnabled,
       poll: productionAttemptMonitoringRemote.poll,
       log: log,
     );
+    lifecycle.registerBeforeDispose(() => attemptMonitoring.close());
+    lifecycle.registerBeforeDispose(productionDrive.dispose);
     final fetchVaultKey = FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: ensureTor,
       recordAttempt: RecordLocalAttemptUsecase(
         monitoringRepository,
+        log: log,
         remote: productionAttemptMonitoringRemote,
       ),
       alertPort: attemptMonitoring,
       log: log,
     );
     final verifyDecryptedVault = VerifyDecryptedVaultUsecase(wallets, settings);
+    final backupStatus = RecoverBullBackupStatusWriter(
+      repository: repository,
+      isDisposed: () => lifecycle.isDisposed,
+      log: log,
+    );
     final connectDrive = ConnectToGoogleDriveUsecase(driveRepository: drive);
     final saveToProvider = SaveVaultToProviderUsecase(
       log: log,
@@ -246,7 +272,8 @@ final class RecoverBullFeature {
       connectDrive: connectDrive,
       saveDrive: SaveVaultToGoogleDriveUsecase(driveRepository: drive),
       registerBackup: RegisterMonitoredBackupUsecase(monitoringRepository),
-      lifecycle: lifecycle,
+      lifecycle: backupStatus,
+      advisoryAvailable: () => !lifecycle.isDisposed,
     );
     final acceptVault = DecryptAndAcceptVaultUsecase(
       log: log,
@@ -256,10 +283,10 @@ final class RecoverBullFeature {
       recover: CompleteVaultRecoveryUsecase(
         log: log,
         restore: restoreVault,
-        lifecycle: lifecycle,
+        lifecycle: backupStatus,
         onWalletUpdated: onWalletUpdated,
       ),
-      lifecycle: lifecycle,
+      lifecycle: backupStatus,
     );
     RecoverBullBloc newBloc({
       required RecoverBullFlow flow,
@@ -380,6 +407,8 @@ final class RecoverBullFeature {
 
     return RecoverBullFeature._(
       log,
+      storageMode,
+      uiLabels,
       navigation,
       lifecycle,
       repository,
@@ -458,7 +487,9 @@ final class RecoverBullFeature {
   /// The encrypted-backup status of [network]; each network has its own.
   Future<RecoverBullStatus> status(RecoverBullNetwork network) async {
     final repository = _repository;
-    if (repository == null) return const RecoverBullStatus.unavailable();
+    if (repository == null || storageMode == RecoverBullStorageMode.temporary) {
+      return const RecoverBullStatus.unavailable();
+    }
     return FetchRecoverBullStatusUsecase(repository).execute(network);
   }
 
@@ -521,7 +552,7 @@ final class RecoverBullFeature {
     return _availableRoutes(repository, newBloc, newDriveBloc);
   }
 
-  static List<RouteBase> get _unavailableRoutes => [
+  List<RouteBase> get _unavailableRoutes => [
     for (final (name, path) in [
       for (final route in RecoverBullRoute.values) (route.name, route.path),
       for (final route in RecoverBullGoogleDriveRoute.values)
@@ -530,7 +561,8 @@ final class RecoverBullFeature {
       GoRoute(
         name: name,
         path: path,
-        builder: (context, state) => const RecoverBullUnavailablePage(),
+        builder: (context, state) =>
+            _withNavigation(const RecoverBullUnavailablePage()),
       ),
   ];
 
@@ -552,10 +584,12 @@ final class RecoverBullFeature {
           if (route == RecoverBullRoute.recoverbullAttemptAlerts) {
             final alerts = state.extra;
             if (alerts is! List<RecoverBullAttemptAlert> || alerts.isEmpty) {
-              return const RecoverBullUnavailablePage();
+              return _withNavigation(const RecoverBullUnavailablePage());
             }
-            return RecoverBullAttemptAlertDetailPage(
-              sourceAlerts: List.unmodifiable(alerts),
+            return _withNavigation(
+              RecoverBullAttemptAlertDetailPage(
+                sourceAlerts: List.unmodifiable(alerts),
+              ),
             );
           }
           final extra = state.extra is RecoverBullFlowsExtra
@@ -631,39 +665,48 @@ final class RecoverBullFeature {
         final extra = state.extra is RecoverBullFlowsExtra
             ? state.extra! as RecoverBullFlowsExtra
             : const RecoverBullFlowsExtra(flow: RecoverBullFlow.recoverVault);
-        return BlocProvider(
-          create: (_) => newDriveBloc(flow: extra.flow),
-          child:
-              BlocListener<
-                RecoverBullGoogleDriveBloc,
-                RecoverBullGoogleDriveState
-              >(
-                listenWhen: (previous, current) =>
-                    previous.selectedVault != current.selectedVault,
-                listener: (context, driveState) {
-                  final vault = driveState.selectedVault;
-                  if (vault != null) {
-                    context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(
-                        flow: extra.flow,
-                        vault: vault,
-                      ),
-                    );
-                  }
-                },
-                child: const DriveVaultsListPage(),
-              ),
+        return _withNavigation(
+          BlocProvider(
+            create: (_) => newDriveBloc(flow: extra.flow),
+            child:
+                BlocListener<
+                  RecoverBullGoogleDriveBloc,
+                  RecoverBullGoogleDriveState
+                >(
+                  listenWhen: (previous, current) =>
+                      previous.selectedVault != current.selectedVault,
+                  listener: (context, driveState) {
+                    final vault = driveState.selectedVault;
+                    if (vault != null) {
+                      context.pushNamed(
+                        RecoverBullRoute.recoverbullFlows.name,
+                        extra: RecoverBullFlowsExtra(
+                          flow: extra.flow,
+                          vault: vault,
+                        ),
+                      );
+                    }
+                  },
+                  child: const DriveVaultsListPage(),
+                ),
+          ),
         );
       },
     ),
   ];
 
-  Widget _withNavigation(Widget child) =>
-      RepositoryProvider<RecoverBullNavigationPort>.value(
-        value: _navigation,
-        child: child,
-      );
+  Widget _withNavigation(Widget child) => Builder(
+    builder: (context) => RecoverBullUiLabelsScope(
+      labels: _uiLabels(context),
+      child: RepositoryProvider<RecoverBullStorageMode>.value(
+        value: storageMode,
+        child: RepositoryProvider<RecoverBullNavigationPort>.value(
+          value: _navigation,
+          child: RecoverBullStorageNotice(child: child),
+        ),
+      ),
+    ),
+  );
 
   static RecoverBullFlow _flow(RecoverBullRoute route) => switch (route) {
     RecoverBullRoute.recoverbullFlows => RecoverBullFlow.recoverVault,
@@ -710,4 +753,9 @@ final class _UnavailableAttemptMonitoring
         monitoredCount: 0,
         lastSuccessfulCheck: null,
       );
+}
+
+/// The documents path is temporarily unavailable; persistent consent is unknown.
+final class RecoverBullStorageUnavailableException implements Exception {
+  const RecoverBullStorageUnavailableException();
 }

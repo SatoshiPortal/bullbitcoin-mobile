@@ -21,22 +21,31 @@ void main() {
     await lifecycle.dispose();
   });
 
-  test('reports StateError rather than null-crashing after dispose', () async {
-    final directory = await Directory.systemTemp.createTemp(
-      'recoverbull-disposed-',
-    );
-    addTearDown(() => directory.delete(recursive: true));
-    final lifecycle = RecoverBullLifecycle();
-    await lifecycle.open('${directory.path}/recoverbull.sqlite');
-    await lifecycle.dispose();
+  test(
+    'ignores a late successful provider acknowledgement after disposal',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'recoverbull-disposed-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final lifecycle = RecoverBullLifecycle();
+      await lifecycle.open('${directory.path}/recoverbull.sqlite');
+      await lifecycle.dispose();
 
-    expect(
-      () => lifecycle.markStored(RecoverBullNetwork.mainnet),
-      throwsA(isA<StateError>()),
+      await lifecycle.markStored(RecoverBullNetwork.mainnet);
+      await lifecycle.markVerified(RecoverBullNetwork.mainnet);
+    },
+  );
+
+  test('unopened lifecycle retains programmer errors', () async {
+    final lifecycle = RecoverBullLifecycle();
+    await expectLater(
+      lifecycle.markStored(RecoverBullNetwork.mainnet),
+      throwsStateError,
     );
-    expect(
-      () => lifecycle.markVerified(RecoverBullNetwork.mainnet),
-      throwsA(isA<StateError>()),
+    await expectLater(
+      lifecycle.markVerified(RecoverBullNetwork.mainnet),
+      throwsStateError,
     );
   });
 }

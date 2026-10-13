@@ -37,8 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Нещо се обърка при настройването на портфейла ви. Моля, опитайте отново.",
-  "torSettingsTitle": "Настройки на Tor",
   "recoverbullPassword": "Парола",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -56,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Диск",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -123,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Активен транспорт: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Паролите не съвпадат",
   "@recoverbullPasswordMismatch": {
@@ -207,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "Първо опитва пряка връзка с Tor и използва Snowflake, ако мрежата изглежда блокира Tor.",
   "recoverbullErrorVaultNotSet": "Сейфът не е зададен",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -225,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "Връзката изглежда филтрирана",
-  "torSettingsModeSnowflakeDescription": "Използва доброволчески Snowflake прокси сървъри, за да достигне Tor от филтрирана мрежа.",
-  "backupWalletHowToDecideBackupModalTitle": "Как да решите",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "URL трябва да завършва на .onion",
   "recoverbullServerConfirmTitle": "Сървър за възстановяване на трезора",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -247,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "Свързва се пряко с мрежата Tor, без сменяем транспорт.",
   "recoverbullSettingsUrlInvalid": "URL не е валиден",
   "recoverbullCheckingConnection": "Проверка на връзката към RecoverBull",
   "@recoverbullCheckingConnection": {
@@ -279,7 +267,6 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "torSettingsDescConnected": "Tor прокси работи и е готов",
   "recoverbullSettingsTitle": "Настройки на Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull сървър",
@@ -315,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Научете повече за Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Неуспешно изтриване на хранилище от Google Drive.",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -345,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google или Apple облак: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "Как да решите?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} минута",
   "@durationMinute": {
@@ -451,28 +432,8 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor прокси не работи",
-  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Опитай отново",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Продължи",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Копирай",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Затвори",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
   "recoverbullMonitoringDisableCancel": "Отказ",
-  "recoverbullMonitoringServerUnsupported": "Този сървър не поддържа наблюдение на опитите. Все още можете да архивирате и възстановявате хранилища."
+  "recoverbullMonitoringServerUnsupported": "Този сървър не поддържа наблюдение на опитите. Все още можете да архивирате и възстановявате хранилища.",
+  "recoverbullTemporaryStorageNotice": "Настройките и проверката на архивите не могат да бъдат запазени сега. Все още можете да одобрите сървъра и да възстановите хранилище."
 }

@@ -1,3 +1,5 @@
+import '../support/ui_labels.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_navigation_port.dart';
 import 'dart:async';
 
@@ -11,11 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_recoverbull/src/ui/widgets/progress_screen.dart';
 import 'package:bull_recoverbull/src/ui/screens/view_vault_key_page.dart';
 import 'package:bull_recoverbull/src/ui/screens/test_completed_page.dart';
 import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bull_ui/testing.dart';
 
 class _MutableRecoverBullBloc extends Fake implements RecoverBullBloc {
@@ -52,6 +52,46 @@ class _MutableRecoverBullBloc extends Fake implements RecoverBullBloc {
 }
 
 void main() {
+  testWidgets(
+    'secret handoff submits once and does not replay on a route rebuild',
+    (tester) async {
+      final bloc = _MutableRecoverBullBloc(
+        const RecoverBullState(flow: RecoverBullFlow.recoverVault),
+      );
+      addTearDown(bloc.close);
+      Widget app(Widget page) => MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
+        theme: ThemeData(extensions: const [testBullTheme]),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(value: bloc, child: page),
+      );
+      await tester.pumpWidget(
+        app(
+          FetchVaultKeyPage(
+            input: 'initial-secret',
+            inputType: InputType.vaultKey,
+          ),
+        ),
+      );
+      await tester.pump();
+      final submissions = bloc.events.whereType<OnVaultDecryption>().toList();
+      expect(submissions, hasLength(1));
+      expect(submissions.single.vaultKey, 'initial-secret');
+      await tester.pumpWidget(
+        app(
+          FetchVaultKeyPage(
+            input: 'rebuild-secret',
+            inputType: InputType.vaultKey,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(bloc.events.whereType<OnVaultDecryption>(), hasLength(1));
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   testWidgets('centers the fetching progress screen in the available body', (
     tester,
   ) async {
@@ -66,12 +106,13 @@ void main() {
     addTearDown(bloc.close);
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
           value: bloc,
-          child: const FetchVaultKeyPage(
+          child: FetchVaultKeyPage(
             input: 'test input',
             inputType: InputType.password,
           ),
@@ -80,7 +121,7 @@ void main() {
     );
     await tester.pump();
 
-    final progress = tester.getRect(find.byType(ProgressScreen));
+    final progress = tester.getRect(find.byType(BullProgressScreen));
     expect(progress.center.dx, closeTo(200, 0.5));
     expect(progress.center.dy, closeTo(428, 0.5));
   });
@@ -125,13 +166,13 @@ void main() {
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
-        builder: (_, child) =>
+        builder: (context, child) =>
             RepositoryProvider<RecoverBullNavigationPort>.value(
               value: RecoverBullNavigationCallbacks(
                 onOpenTorSettings: () => router.pushNamed('torSettings'),
                 onOpenWalletHome: () => router.go('/wallet'),
               ),
-              child: child!,
+              child: withTestUiLabels(context, child!),
             ),
       ),
     );
@@ -142,7 +183,7 @@ void main() {
       MaterialPageRoute<void>(
         builder: (_) => BlocProvider<RecoverBullBloc>.value(
           value: bloc,
-          child: const FetchVaultKeyPage(
+          child: FetchVaultKeyPage(
             input: 'test input',
             inputType: InputType.password,
           ),
@@ -182,7 +223,7 @@ void main() {
           path: '/fetch',
           builder: (_, _) => BlocProvider<RecoverBullBloc>.value(
             value: bloc,
-            child: const FetchVaultKeyPage(
+            child: FetchVaultKeyPage(
               input: 'test input',
               inputType: InputType.password,
             ),
@@ -197,13 +238,13 @@ void main() {
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
-        builder: (_, child) =>
+        builder: (context, child) =>
             RepositoryProvider<RecoverBullNavigationPort>.value(
               value: RecoverBullNavigationCallbacks(
                 onOpenTorSettings: () => router.pushNamed('torSettings'),
                 onOpenWalletHome: () => router.go('/wallet'),
               ),
-              child: child!,
+              child: withTestUiLabels(context, child!),
             ),
       ),
     );
@@ -246,13 +287,14 @@ void main() {
       addTearDown(bloc.close);
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,
           home: BlocProvider<RecoverBullBloc>.value(
             value: bloc,
-            child: const FetchVaultKeyPage(
+            child: FetchVaultKeyPage(
               input: 'redacted',
               inputType: InputType.vaultKey,
             ),
@@ -284,6 +326,7 @@ void main() {
     final navigatorKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,

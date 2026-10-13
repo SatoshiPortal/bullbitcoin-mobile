@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'dart:io';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -125,6 +126,7 @@ void main() {
     when(() => tor.embedded).thenReturn(embedded);
     when(() => embedded.watcher).thenReturn(_MockWatchTorConnection());
     final recoverBull = await RecoverBullFeature.create(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},
@@ -178,6 +180,7 @@ void main() {
     );
 
     final recoverBull = await RecoverBullFeature.create(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},

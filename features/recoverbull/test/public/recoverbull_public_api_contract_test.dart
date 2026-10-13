@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:primitives/primitives.dart';
 import '../support/log_sink.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -54,6 +55,7 @@ void main() {
     'unavailable facade settings return published failures as values',
     () async {
       final feature = RecoverBullFeature.unavailable(
+        uiLabels: testUiLabels,
         log: const TestLogSink(),
         navigation: RecoverBullNavigationCallbacks(
           onOpenTorSettings: () {},
@@ -154,6 +156,7 @@ void _compilePublicApi() {
   Future<RecoverBullFeature> Function({
     required RecoverBullConfig config,
     required RecoverBullNavigationPort navigation,
+    required RecoverBullUiLabels Function(BuildContext) uiLabels,
     required RecoverBullWalletRepository wallets,
     required RecoverBullSeedPort seeds,
     required RecoverBullDefaultWalletsPort defaultWallets,

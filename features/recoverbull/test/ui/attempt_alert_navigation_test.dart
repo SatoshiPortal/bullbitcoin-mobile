@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/src/ui/screens/attempt_alert_detail_page.dart';
 import 'package:bull_ui/testing.dart';
@@ -36,6 +37,7 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,

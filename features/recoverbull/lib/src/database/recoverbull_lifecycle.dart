@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/isolate.dart' show DriftRemoteException;
-import 'package:drift/native.dart' show SqliteException;
+import 'package:drift/native.dart' show SqliteException, NativeDatabase;
 
 import '../domain/entities/recoverbull_network.dart';
 import '../domain/recoverbull_lifecycle_port.dart';
@@ -21,8 +21,38 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
   Future<RecoverBullDatabase>? _opening;
   String? _openingPath;
   bool _disposed = false;
+  final List<FutureOr<void> Function()> _beforeDispose = [];
 
   RecoverBullLifecycle({this._log});
+
+  bool get isDisposed => _disposed;
+
+  /// Registers owned resources that must stop before the database closes.
+  void registerBeforeDispose(FutureOr<void> Function() action) {
+    if (_disposed) throw StateError('RecoverBull lifecycle is disposed');
+    _beforeDispose.add(action);
+  }
+
+  /// A user-confirmed recovery session when durable storage cannot open.
+  /// Never touches the unavailable file or imports its unverified consent.
+  Future<RecoverBullDatabase> openTemporary() async {
+    if (_disposed || _opening != null || _database != null) {
+      throw StateError('Temporary storage requires an unopened lifecycle');
+    }
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    try {
+      await database.ensureState(initialBackupStatusLost: true);
+      await database.customStatement(
+        'UPDATE recoverbull_state SET attempt_monitoring_enabled = 0',
+      );
+    } on Exception {
+      await database.close();
+      rethrow;
+    }
+    _database = database;
+    _path = null;
+    return database;
+  }
 
   Future<void> open(
     String path, {
@@ -142,11 +172,24 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
   }
 
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
     final database = _database;
     _database = null;
     _path = null;
-    if (database != null) await database.close();
-    _disposed = true;
+    final hooks = List.of(_beforeDispose);
+    _beforeDispose.clear();
+    try {
+      for (final hook in hooks) {
+        try {
+          await hook();
+        } on Exception {
+          _log?.warning('recoverbull.lifecycle.resource_close_failed');
+        }
+      }
+    } finally {
+      if (database != null) await database.close();
+    }
   }
 
   Future<void> reset(String path) async {
@@ -161,21 +204,19 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
   }
 
   @override
-  Future<void> markStored(RecoverBullNetwork network) async =>
-      (await _openDatabase(_requirePath())).markEncryptedBackupStored(network);
+  Future<void> markStored(RecoverBullNetwork network) async {
+    if (_disposed) return;
+    final database = _database;
+    if (database == null) throw StateError('RecoverBull lifecycle is unopened');
+    await database.markEncryptedBackupStored(network);
+  }
 
   @override
-  Future<void> markVerified(RecoverBullNetwork network) async =>
-      (await _openDatabase(
-        _requirePath(),
-      )).markEncryptedBackupVerified(network);
-
-  String _requirePath() {
-    final path = _path;
-    if (_disposed || path == null) {
-      throw StateError('RecoverBull lifecycle is disposed or unopened');
-    }
-    return path;
+  Future<void> markVerified(RecoverBullNetwork network) async {
+    if (_disposed) return;
+    final database = _database;
+    if (database == null) throw StateError('RecoverBull lifecycle is unopened');
+    await database.markEncryptedBackupVerified(network);
   }
 
   static Future<void> _deleteFiles(String path) async {

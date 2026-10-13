@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Obteniendo Clave de Bóveda",
   "recoverbullSecureBackup": "Asegure su respaldo",
   "backupWalletHowToDecideVaultCloudRecommendationText": "desea asegurarse de nunca perder el acceso a su archivo de bóveda incluso si pierde sus dispositivos.",
-  "walletSetupErrorTryAgain": "Algo salió mal al configurar tu billetera. Inténtalo de nuevo.",
-  "torSettingsTitle": "Configuración de Tor",
   "recoverbullPassword": "Contraseña",
   "recoverbullReenterRequired": "Vuelva a ingresar su {inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "está seguro de que no perderá el archivo de la bóveda y que seguirá siendo accesible si pierde su teléfono.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Ingrese su {inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Transporte activo: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Las contraseñas no coinciden",
   "recoverbullErrorDecryptFailed": "Error al descifrar la bóveda",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Los proveedores de almacenamiento en nube como Google o Apple no tendrán acceso a sus Bitcoin porque la contraseña de cifrado es demasiado robusta. Solo pueden acceder a sus Bitcoin en el caso improbable de que colaboren con el servidor de claves (el servicio en línea que almacena su contraseña de cifrado). Si el servidor de claves alguna vez es pirateado, sus Bitcoin podrían estar en riesgo con la nube de Google o Apple.",
-  "torSettingsModeAutomaticDescription": "Prueba primero una conexión directa a Tor y usa Snowflake si la red parece bloquear Tor.",
   "recoverbullErrorVaultNotSet": "La bóveda no está configurada",
   "recoverbullCreatingVault": "Creando Bóveda Cifrada",
   "recoverbullTorCantStart": "Tor no pudo conectarse en este momento. Inténtalo de nuevo.",
   "recoverbullDecryptVault": "Descifrar bóveda",
   "recoverbullErrorSelectVault": "Error al seleccionar la bóveda",
-  "torSettingsStatusCensored": "La conexión parece filtrada",
-  "torSettingsModeSnowflakeDescription": "Usa proxies voluntarios de Snowflake para alcanzar Tor desde una red filtrada.",
-  "backupWalletHowToDecideBackupModalTitle": "Cómo decidir",
   "recoverbullSettingsUrlMustBeOnion": "La URL debe terminar en .onion",
   "recoverbullServerConfirmTitle": "Servidor de recuperación de la bóveda",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Error al obtener los cofres de Google Drive",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Se conecta directamente a la red Tor, sin transporte conectable.",
   "recoverbullSettingsUrlInvalid": "La URL no es válida",
   "recoverbullCheckingConnection": "Verificando conexión para RecoverBull",
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Probar Recuperación",
   "recoverbullServerUrlLabel": "URL del servidor:",
   "recoverbullTorNetwork": "Red Tor",
-  "torSettingsDescConnected": "El proxy Tor está activo y listo",
   "recoverbullSettingsTitle": "Ajustes de Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "Servidor RecoverBull",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Ingresar una clave de bóveda en su lugar",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Más información sobre Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor no pudo alcanzar la red. A menudo significa que la conexión está filtrada.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Error al eliminar el cofre de Google Drive",
   "recoverbullVaultCreatedSuccess": "Bóveda creada con éxito",
   "recoverbullConfirm": "Confirmar",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Bóveda Seleccionada",
   "recoverbullSettingsCancel": "Cancelar",
   "backupWalletHowToDecideVaultCloudRecommendation": "Nube de Google o Apple: ",
-  "backupWalletHowToDecide": "¿Cómo decidir?",
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "Conectando",
   "recoverbullRetry": "Reintentar",
   "recoverbullConnectedTorCheckingServer": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
-  "torSettingsDescDisconnected": "El proxy Tor no está activo",
-  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Intentar de nuevo",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Continuar",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Copiar",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Cerrar",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Conectando al servidor de claves a través de Tor. Esto puede tomar hasta un minuto.",
   "recoverbullMonitoringDisableCancel": "Cancelar",
-  "recoverbullMonitoringServerUnsupported": "Este servidor no admite el seguimiento de intentos. Puedes seguir creando copias de seguridad y recuperando bóvedas."
+  "recoverbullMonitoringServerUnsupported": "Este servidor no admite el seguimiento de intentos. Puedes seguir creando copias de seguridad y recuperando bóvedas.",
+  "recoverbullTemporaryStorageNotice": "Ahora no se pueden guardar los ajustes ni la verificación de las copias de seguridad. Puedes aprobar el servidor y recuperar una bóveda."
 }

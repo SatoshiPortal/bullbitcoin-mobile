@@ -142,7 +142,9 @@ class _ConnectingPageState extends State<ConnectingPage> {
       _elapsed = Duration.zero;
     });
     final bloc = context.read<RecoverBullBloc>();
-    if (bloc.state.torConnection is tor.TorReady) {
+    if (bloc.state.torConnection case tor.TorReady(
+      :final route,
+    ) when route.source == tor.TorSource.embedded) {
       bloc.add(const OnServerCheck());
     } else {
       bloc.add(const OnTorInitialization(restart: true));
@@ -163,12 +165,10 @@ class _ConnectingPageState extends State<ConnectingPage> {
           previous.keyServerStatus != current.keyServerStatus,
       listener: _onStateChanged,
       child: BullScaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          leading: IconButton(
-            onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back),
-          ),
+        appBar: BullTopBar.appBar(
+          title: '',
+          onBack: () => context.pop(),
+          materialTransparency: true,
         ),
         body: SafeArea(
           child: Padding(
@@ -322,13 +322,15 @@ class _Body extends StatelessWidget {
     }
 
     return switch (_mascotState) {
-      TorBullState.direct => context.loc.torSettingsModeDirectDescription,
+      TorBullState.direct =>
+        context.recoverBullLabels.torSettingsModeDirectDescription,
       TorBullState.filtered => [
-        context.loc.torSettingsDescCensored,
-        context.loc.torSettingsModeAutomaticDescription,
+        context.recoverBullLabels.torSettingsDescCensored,
+        context.recoverBullLabels.torSettingsModeAutomaticDescription,
       ].join(' '),
-      TorBullState.snowflake => context.loc.torSettingsModeSnowflakeDescription,
-      TorBullState.ready => context.loc.torSettingsDescConnected,
+      TorBullState.snowflake =>
+        context.recoverBullLabels.torSettingsModeSnowflakeDescription,
+      TorBullState.ready => context.recoverBullLabels.torSettingsDescConnected,
       TorBullState.failed => _failureMessage(context),
       TorBullState.idle => context.loc.recoverbullPleaseWait,
     };
@@ -343,13 +345,13 @@ class _Body extends StatelessWidget {
     final diagnostic = _diagnostic ?? _failureDiagnostic;
     if (diagnostic != null) {
       if (diagnostic.suggestsCensorship) {
-        return context.loc.torSettingsDescCensored;
+        return context.recoverBullLabels.torSettingsDescCensored;
       }
       return switch (diagnostic) {
         tor.TorDiagnostic.offline => context.loc.recoverbullTorOffline,
         tor.TorDiagnostic.clockSkewed => context.loc.recoverbullTorClockSkewed,
-        tor.TorDiagnostic.filtering ||
-        tor.TorDiagnostic.cantReachTor => context.loc.torSettingsDescCensored,
+        tor.TorDiagnostic.filtering || tor.TorDiagnostic.cantReachTor =>
+          context.recoverBullLabels.torSettingsDescCensored,
         tor.TorDiagnostic.cantBootstrap ||
         tor.TorDiagnostic.unknown => context.loc.recoverbullTorCantStart,
       };
@@ -386,13 +388,13 @@ class _Body extends StatelessWidget {
             semanticLabel: context.loc.recoverbullTorNetwork,
           ),
         ),
-        const Gap(12),
+        const Gap(BullSpacing.sm),
         BullText(
           context.loc.recoverbullCheckingConnection,
           textAlign: .center,
           style: context.bullText.headlineLarge?.copyWith(fontWeight: .bold),
         ),
-        const Gap(12),
+        const Gap(BullSpacing.sm),
         if (!_hasFailure)
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
@@ -405,13 +407,13 @@ class _Body extends StatelessWidget {
                   TorBullState.failed => context.bull.errorContainer,
                   _ => context.bull.surface,
                 },
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(BullRadius.md),
               ),
               child: Column(
                 children: [
                   if (_mascotState == TorBullState.filtered)
                     BullText(
-                      context.loc.torSettingsStatusCensored,
+                      context.recoverBullLabels.torSettingsStatusCensored,
                       textAlign: .center,
                       style: context.bullText.bodyLarge?.copyWith(
                         color: context.bull.warning,
@@ -420,8 +422,8 @@ class _Body extends StatelessWidget {
                     ),
                   if (_mascotState == TorBullState.snowflake)
                     BullText(
-                      context.loc.torSettingsActiveTransport(
-                        context.loc.torSettingsModeSnowflake,
+                      context.recoverBullLabels.torSettingsActiveTransport(
+                        context.recoverBullLabels.torSettingsModeSnowflake,
                       ),
                       textAlign: .center,
                       style: context.bullText.bodyLarge?.copyWith(
@@ -449,7 +451,7 @@ class _Body extends StatelessWidget {
             color: context.bull.textMuted,
           ),
         ),
-        const Gap(12),
+        const Gap(BullSpacing.sm),
         _PhaseCard(
           key: const ValueKey('tor-phase-card'),
           label: context.loc.recoverbullTorNetwork,
@@ -460,7 +462,7 @@ class _Body extends StatelessWidget {
           caption: _torCaption(context),
           statusLabels: _torStatusLabels(context),
         ),
-        const Gap(8),
+        const Gap(BullSpacing.xs),
         _PhaseCard(
           key: const ValueKey('server-phase-card'),
           label: context.loc.recoverbullRecoverBullServer,
@@ -472,7 +474,7 @@ class _Body extends StatelessWidget {
               ? '${state.keyServerAttempt}/${state.keyServerAttempts}'
               : null,
         ),
-        const Gap(24),
+        const Gap(BullSpacing.lg),
         if (_hasFailure)
           _FailurePanel(
             message: _failureMessage(context),
@@ -579,7 +581,7 @@ class _PhaseCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.bull.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(BullRadius.sm),
       ),
       child: Column(
         crossAxisAlignment: .start,
@@ -587,7 +589,7 @@ class _PhaseCard extends StatelessWidget {
           Row(
             children: [
               _PhaseIcon(phase: phase, color: color),
-              const Gap(12),
+              const Gap(BullSpacing.sm),
               Expanded(
                 child: BullText(
                   label,
@@ -606,7 +608,7 @@ class _PhaseCard extends StatelessWidget {
             ],
           ),
           if (caption != null || trailingDetail != null) ...[
-            const Gap(8),
+            const Gap(BullSpacing.xs),
             Padding(
               padding: const EdgeInsets.only(left: 32),
               child: Column(
@@ -700,7 +702,7 @@ class _FailurePanel extends StatelessWidget {
           ),
           maxLines: 4,
         ),
-        const Gap(24),
+        const Gap(BullSpacing.lg),
         BullButton.big(
           label: context.loc.recoverbullRetry,
           textStyle: context.bullText.headlineLarge,
@@ -709,9 +711,9 @@ class _FailurePanel extends StatelessWidget {
           onPressed: onRetry,
         ),
         if (onOpenTorSettings != null) ...[
-          const Gap(12),
+          const Gap(BullSpacing.sm),
           BullButton.big(
-            label: context.loc.torSettingsTitle,
+            label: context.recoverBullLabels.torSettingsTitle,
             textStyle: context.bullText.headlineLarge,
             bgColor: context.bull.surface,
             textColor: context.bull.onSurface,

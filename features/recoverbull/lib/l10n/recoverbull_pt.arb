@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Fetching Vault Chaveiro",
   "recoverbullSecureBackup": "Proteja seu backup",
   "backupWalletHowToDecideVaultCloudRecommendationText": "você quer se certificar de que você nunca perder o acesso ao seu arquivo de vault mesmo se você perder seus dispositivos.",
-  "walletSetupErrorTryAgain": "Algo correu mal ao configurar a sua carteira. Por favor, tente novamente.",
-  "torSettingsTitle": "Configurações do Tor",
   "recoverbullPassword": "Senha",
   "recoverbullReenterRequired": "Reiniciar seu {inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "você está confiante de que você não vai perder o arquivo do vault e ainda será acessível se você perder seu telefone.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Digite seu {inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Transporte ativo: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "As senhas não coincidem",
   "recoverbullErrorDecryptFailed": "Falhado para descriptografar o cofre",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Eles só podem acessar seu Bitcoin no caso improvável que eles colludem com o servidor chave (o serviço on-line que armazena sua senha de criptografia). Se o servidor chave alguma vez for hackeado, seu Bitcoin pode estar em risco com o Google ou a nuvem da Apple.",
-  "torSettingsModeAutomaticDescription": "Tenta primeiro uma ligação Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
   "recoverbullErrorVaultNotSet": "Vault não está definido",
   "recoverbullCreatingVault": "Criando criptografia Vault",
   "recoverbullTorCantStart": "O Tor não conseguiu ligar-se neste momento. Tenta novamente.",
   "recoverbullDecryptVault": "Descriptografar cofre",
   "recoverbullErrorSelectVault": "Falhado para selecionar o cofre",
-  "torSettingsStatusCensored": "A ligação parece filtrada",
-  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários Snowflake para alcançar o Tor a partir de uma rede filtrada.",
-  "backupWalletHowToDecideBackupModalTitle": "Como decidir",
   "recoverbullSettingsUrlMustBeOnion": "O URL deve terminar em .onion",
   "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Falhado para buscar cofres do Google Drive",
   "recoverbullSettingsEdit": "Editar",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Liga-se diretamente à rede Tor, sem pluggable transport.",
   "recoverbullSettingsUrlInvalid": "O URL não é válido",
   "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
   "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
@@ -123,10 +114,6 @@
   "recoverbullTestRecovery": "Recuperação de Teste",
   "recoverbullServerUrlLabel": "URL do servidor:",
   "recoverbullTorNetwork": "Rede de Torno",
-  "torSettingsDescConnected": "O Proxy Tor está em execução e pronto",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
   "recoverbullSettingsTitle": "Definições do Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "Servidor de recuperação",
@@ -146,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Digite uma chave de cofre em vez",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Saber mais sobre o Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isto indica muitas vezes uma ligação filtrada.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Falhado para excluir o vault do Google Drive",
   "recoverbullVaultCreatedSuccess": "Vault criado com sucesso",
   "recoverbullConfirm": "Confirmação",
@@ -156,7 +141,6 @@
   "recoverbullVaultSelected": "Vault selecionado",
   "recoverbullSettingsCancel": "Cancelar",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google ou Nuvem da Apple: ",
-  "backupWalletHowToDecide": "Como decidir?",
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
     "placeholders": {
@@ -214,31 +198,8 @@
   "recoverbullConnecting": "Conexão",
   "recoverbullRetry": "Repito",
   "recoverbullConnectedTorCheckingServer": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
-  "torSettingsDescDisconnected": "O proxy do Tor não está em execução",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! Algo correu mal",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Tentar novamente",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Continuar",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Entendido",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Fechar",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor. Isto pode demorar até um minuto.",
   "recoverbullMonitoringDisableCancel": "Cancelar",
-  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres."
+  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres.",
+  "recoverbullTemporaryStorageNotice": "As configurações e a verificação dos backups não podem ser salvas agora. Você ainda pode aprovar o servidor e recuperar um cofre."
 }

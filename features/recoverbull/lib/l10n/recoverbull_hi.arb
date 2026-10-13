@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "आपका वॉलेट सेटअप करते समय कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
-  "torSettingsTitle": "Tor सेटिंग्स",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "पासवर्ड",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "गूगल ड्राइव",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "पासवर्ड मैच नहीं करते",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "पहले सीधा Tor कनेक्शन आज़माता है और यदि नेटवर्क Tor को रोकता प्रतीत हो तो Snowflake का उपयोग करता है।",
   "recoverbullErrorVaultNotSet": "वॉल्ट सेट नहीं है",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
-  "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
-  "backupWalletHowToDecideBackupModalTitle": "कैसे तय करें",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": ".onion से समाप्त होना चाहिए URL",
   "recoverbullServerConfirmTitle": "Vault रिकवरी सर्वर",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
   "recoverbullSettingsUrlInvalid": "URL मान्य नहीं है",
   "recoverbullCheckingConnection": "RecoverBull",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "टोर नेटवर्क",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor प्रॉक्सी चल रहा है और तैयार है",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Recoverbull सेटिंग्स",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Recoverbull के बारे में और जानें",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
   "recoverbullGoogleDriveErrorDeleteFailed": "Google ड्राइव से वॉल्ट को हटाने में विफल रहा",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "गूगल एप्पल बादल: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "कैसे तय करें?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} मिनट",
   "@durationMinute": {
@@ -457,31 +432,8 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor प्रॉक्सी नहीं चल रहा है",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "पुनः प्रयास करें",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "जारी रखें",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "कॉपी",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "बंद",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Tor पर कुंजी सर्वर से जुड़ना। यह एक मिनट तक ले सकता है।।",
   "recoverbullMonitoringDisableCancel": "रद्द करें",
-  "recoverbullMonitoringServerUnsupported": "यह सर्वर प्रयासों की निगरानी का समर्थन नहीं करता। आप अब भी वॉल्ट का बैकअप ले सकते हैं और उन्हें पुनर्स्थापित कर सकते हैं।"
+  "recoverbullMonitoringServerUnsupported": "यह सर्वर प्रयासों की निगरानी का समर्थन नहीं करता। आप अब भी वॉल्ट का बैकअप ले सकते हैं और उन्हें पुनर्स्थापित कर सकते हैं।",
+  "recoverbullTemporaryStorageNotice": "अभी सेटिंग और बैकअप सत्यापन सहेजे नहीं जा सकते। आप अब भी सर्वर को मंजूरी देकर वॉल्ट को पुनर्स्थापित कर सकते हैं।"
 }

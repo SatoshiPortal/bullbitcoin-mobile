@@ -31,17 +31,15 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
   Widget build(BuildContext context) {
     final vaultKey = widget.vaultKey;
     return BullScaffold(
-      appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
+      appBar: BullTopBar.appBar(title: context.loc.recoverbullVaultKey),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: .center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(BullSpacing.lg),
               child: CopyInput(
-                text: vaultKey.length >= 6
-                    ? vaultKey.substring(0, 6) + '*' * (vaultKey.length - 6)
-                    : '',
+                text: '*' * vaultKey.length,
                 canShowValueModal: true,
                 maxLines: 1,
 

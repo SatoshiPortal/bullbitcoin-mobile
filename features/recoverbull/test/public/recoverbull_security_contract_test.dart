@@ -1,4 +1,6 @@
+import '../support/ui_labels.dart';
 import 'dart:io';
+import 'package:bull_recoverbull/src/data/models/decrypted_vault_model.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
@@ -40,6 +42,11 @@ void main() {
       event.toString(),
       decryptEvent.toString(),
       DecryptedVault(mnemonic: [mnemonic]).toString(),
+      DecryptedVaultModel(mnemonic: [mnemonic]).toString(),
+      RecoverBullSeedMaterial(
+        bytes: const [1, 2, 3],
+        mnemonicWords: const [mnemonic],
+      ).toString(),
     ]) {
       expect(representation, isNot(contains(password)));
       expect(representation, isNot(contains(vaultKey)));
@@ -61,6 +68,7 @@ void main() {
     const invalidBackup = '{not-valid-json-password-secret';
     const password = 'password-secret';
     final feature = await RecoverBullFeature.create(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},

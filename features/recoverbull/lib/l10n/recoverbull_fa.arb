@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "در راه‌اندازی کیف پول شما مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
-  "torSettingsTitle": "تنظیمات Tor",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "Password",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "حامل فعال: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "پسوردها مطابقت ندارند",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "ابتدا اتصال مستقیم به Tor را می‌آزماید و اگر به‌نظر برسد شبکه Tor را مسدود می‌کند، از Snowflake استفاده می‌کند.",
   "recoverbullErrorVaultNotSet": "Vault تنظیم نشده است",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "به‌نظر می‌رسد اتصال فیلتر شده است",
-  "torSettingsModeSnowflakeDescription": "از پروکسی‌های داوطلبانه Snowflake استفاده می‌کند تا از شبکه‌ای فیلترشده به Tor برسد.",
-  "backupWalletHowToDecideBackupModalTitle": "چگونه تصمیم بگیریم",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "آدرس باید به .onion ختم شود",
   "recoverbullServerConfirmTitle": "سرور بازیابی والت",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "بدون حامل اتصال‌پذیر، مستقیماً به شبکه Tor متصل می‌شود.",
   "recoverbullSettingsUrlInvalid": "آدرس معتبر نیست",
   "recoverbullCheckingConnection": "بررسی ارتباط برای بازیابیBull",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "شبکه Tor",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor پروکسی در حال اجرا و آماده است",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "تنظیمات Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "درباره Recoverbull بیشتر بدانید",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor نتوانست به شبکه برسد. این معمولاً یعنی اتصال در حال فیلتر شدن است.",
   "recoverbullGoogleDriveErrorDeleteFailed": "شکست برای حذف شکاف از Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "گوگل یا Apple Cloud : ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "چگونه تصمیم بگیریم؟?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} دقیقه",
   "@durationMinute": {
@@ -457,31 +432,8 @@
     "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor پروکسی در حال اجرا نیست",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "تلاش مجدد",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "ادامه",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "کپی رایت",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "نزدیک",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "اتصال به Key Server over Tor این می تواند تا یک دقیقه طول بکشد.",
   "recoverbullMonitoringDisableCancel": "لغو",
-  "recoverbullMonitoringServerUnsupported": "این سرور از پایش تلاش‌ها پشتیبانی نمی‌کند. همچنان می‌توانید از خزانه‌ها نسخهٔ پشتیبان تهیه کنید و آن‌ها را بازیابی کنید."
+  "recoverbullMonitoringServerUnsupported": "این سرور از پایش تلاش‌ها پشتیبانی نمی‌کند. همچنان می‌توانید از خزانه‌ها نسخهٔ پشتیبان تهیه کنید و آن‌ها را بازیابی کنید.",
+  "recoverbullTemporaryStorageNotice": "اکنون نمی‌توان تنظیمات و تأیید نسخهٔ پشتیبان را ذخیره کرد. همچنان می‌توانید سرور را تأیید و یک خزانه را بازیابی کنید."
 }

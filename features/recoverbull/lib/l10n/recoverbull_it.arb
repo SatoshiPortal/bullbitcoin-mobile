@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Vai alla scheda chiave",
   "recoverbullSecureBackup": "Proteggi il backup",
   "backupWalletHowToDecideVaultCloudRecommendationText": "si desidera assicurarsi di non perdere mai l'accesso al file del vault anche se si perde i dispositivi.",
-  "walletSetupErrorTryAgain": "Si è verificato un errore durante la configurazione del portafoglio. Riprova.",
-  "torSettingsTitle": "Impostazioni Tor",
   "recoverbullPassword": "Password",
   "recoverbullReenterRequired": "Inserisci di nuovo {inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "si è sicuri che non perderà il file del vault e sarà ancora accessibile se si perde il telefono.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Inserisci {inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Trasporto attivo: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Le password non corrispondono",
   "recoverbullErrorDecryptFailed": "Non è riuscito a decifrare la volta",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Provider di storage cloud come Google o Apple non avranno accesso al tuo Bitcoin perché la password di crittografia è troppo forte. Possono accedere solo al Bitcoin nell'improbabile evento che colludono con il server chiave (il servizio online che memorizza la password di crittografia). Se il server chiave viene mai hackerato, il Bitcoin potrebbe essere a rischio con Google o Apple cloud.",
-  "torSettingsModeAutomaticDescription": "Prova prima una connessione Tor diretta e usa Snowflake se la rete sembra bloccare Tor.",
   "recoverbullErrorVaultNotSet": "Vault non è impostato",
   "recoverbullCreatingVault": "Creare crittografato Vaccino",
   "recoverbullTorCantStart": "Tor non è riuscito a connettersi al momento. Riprova.",
   "recoverbullDecryptVault": "Decrypt vault",
   "recoverbullErrorSelectVault": "Non selezionare il caveau",
-  "torSettingsStatusCensored": "La connessione sembra filtrata",
-  "torSettingsModeSnowflakeDescription": "Usa i proxy volontari Snowflake per raggiungere Tor da una rete filtrata.",
-  "backupWalletHowToDecideBackupModalTitle": "Come decidere",
   "recoverbullSettingsUrlMustBeOnion": "L'URL deve terminare con .onion",
   "recoverbullServerConfirmTitle": "Server di recupero del caveau",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Impossibile recuperare le casseforti da Google Drive",
   "recoverbullSettingsEdit": "Modifica",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Si connette direttamente alla rete Tor, senza pluggable transport.",
   "recoverbullSettingsUrlInvalid": "L'URL non è valido",
   "recoverbullCheckingConnection": "Controllo della connessione per RecoverBull",
   "recoverbullErrorInvalidCredentials": "Password sbagliata per questo file di backup",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Verifica il recupero",
   "recoverbullServerUrlLabel": "URL del server:",
   "recoverbullTorNetwork": "Rete",
-  "torSettingsDescConnected": "Il proxy Tor è in esecuzione e pronto",
   "recoverbullSettingsTitle": "Impostazioni Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull Server",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Inserisci invece la chiave della cassaforte",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Scopri di più su Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor non è riuscito a raggiungere la rete. Spesso indica una connessione filtrata.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Non è riuscito a cancellare la volta da Google Drive",
   "recoverbullVaultCreatedSuccess": "Vault creato con successo",
   "recoverbullConfirm": "Conferma",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Vault Selezionato",
   "recoverbullSettingsCancel": "Annulla",
   "backupWalletHowToDecideVaultCloudRecommendation": "Cloud Google o Apple: ",
-  "backupWalletHowToDecide": "Come decidere?",
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "Connessione in corso...",
   "recoverbullRetry": "Reazione",
   "recoverbullConnectedTorCheckingServer": "Collegamento a Key Server tramite Tor.\nCi vorra' un minuto.",
-  "torSettingsDescDisconnected": "Tor proxy non è in esecuzione",
-  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Riprova",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Continua",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Copia",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Chiudi",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Collegamento a Key Server tramite Tor. Ci vorra' un minuto.",
   "recoverbullMonitoringDisableCancel": "Annulla",
-  "recoverbullMonitoringServerUnsupported": "Questo server non supporta il monitoraggio dei tentativi. Puoi continuare a eseguire il backup e il ripristino dei vault."
+  "recoverbullMonitoringServerUnsupported": "Questo server non supporta il monitoraggio dei tentativi. Puoi continuare a eseguire il backup e il ripristino dei vault.",
+  "recoverbullTemporaryStorageNotice": "Le impostazioni e la verifica dei backup non possono essere salvate ora. Puoi comunque approvare il server e ripristinare un vault."
 }

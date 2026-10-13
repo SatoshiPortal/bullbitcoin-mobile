@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Haetaan holviavainta",
   "recoverbullSecureBackup": "Suojaa varmuuskopio",
   "backupWalletHowToDecideVaultCloudRecommendationText": "Haluat varmistaa, ettet koskaan menetä pääsyä holvitiedostoosi, vaikka menettäisit laitteesi.",
-  "walletSetupErrorTryAgain": "Jotain meni pieleen lompakkoasi määritettäessä. Yritä uudelleen.",
-  "torSettingsTitle": "Tor-asetukset",
   "recoverbullPassword": "Salasana",
   "recoverbullReenterRequired": "Syötä {inputType} uudelleen",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "Olet varma, ettet menetä holvitiedostoa ja että se on edelleen saatavilla, jos menetät puhelimesi.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Syötä {inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Salasanat eivät täsmää",
   "recoverbullErrorDecryptFailed": "Holvin purku epäonnistui",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Pilvipalveluntarjoajilla, kuten Googlella tai Applella, ei ole pääsyä Bitcoineihisi, koska salausavain on liian vahva. He voivat saada pääsyn vain epätodennäköisessä tilanteessa, jossa he tekevät yhteistyötä avainpalvelimen kanssa (verkkopalvelu, joka tallentaa salausavaimen). Jos avainpalvelin koskaan hakkeroidaan, Bitcoinesi voivat olla vaarassa Google- tai Apple-pilvessä.",
-  "torSettingsModeAutomaticDescription": "Kokeilee ensin suoraa Tor-yhteyttä ja käyttää Snowflakea, jos verkko näyttää estävän Torin.",
   "recoverbullErrorVaultNotSet": "Holvi ei ole asetettu",
   "recoverbullCreatingVault": "Luodaan salattua holvia",
   "recoverbullTorCantStart": "Tor ei saanut yhteyttä juuri nyt. Yritä uudelleen.",
   "recoverbullDecryptVault": "Pura holvi",
   "recoverbullErrorSelectVault": "Holvin valinta epäonnistui",
-  "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
-  "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
-  "backupWalletHowToDecideBackupModalTitle": "Miten valita",
   "recoverbullSettingsUrlMustBeOnion": "URL-osoitteen on päätyttävä .onion",
   "recoverbullServerConfirmTitle": "Holvin palautuspalvelin",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Holvien hakeminen Google Drivesta epäonnistui",
   "recoverbullSettingsEdit": "Muokkaa",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
   "recoverbullSettingsUrlInvalid": "URL ei ole kelvollinen",
   "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
   "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Palautuksen testaus",
   "recoverbullServerUrlLabel": "Palvelimen URL:",
   "recoverbullTorNetwork": "Tor-verkko",
-  "torSettingsDescConnected": "Tor-välityspalvelin on käynnissä ja valmiina",
   "recoverbullSettingsTitle": "Recoverbull-asetukset",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull-palvelin",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Lue lisää Recoverbullista",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Holvin poistaminen Google Drivesta epäonnistui",
   "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
   "recoverbullConfirm": "Vahvista",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullSettingsCancel": "Peruuta",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google tai Apple -pilvi: ",
-  "backupWalletHowToDecide": "Miten valita?",
   "durationMinute": "{minutes} minuutti",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "Yhdistetään",
   "recoverbullRetry": "Yritä uudelleen",
   "recoverbullConnectedTorCheckingServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
-  "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
-  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Yritä uudelleen",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Jatka",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Kopioi",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Sulje",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu. Tämä voi kestää jopa minuutin.",
   "recoverbullMonitoringDisableCancel": "Peruuta",
-  "recoverbullMonitoringServerUnsupported": "Tämä palvelin ei tue yritysten seurantaa. Voit edelleen varmuuskopioida ja palauttaa holveja."
+  "recoverbullMonitoringServerUnsupported": "Tämä palvelin ei tue yritysten seurantaa. Voit edelleen varmuuskopioida ja palauttaa holveja.",
+  "recoverbullTemporaryStorageNotice": "Asetuksia ja varmuuskopioiden tarkistusta ei voi tallentaa nyt. Voit silti hyväksyä palvelimen ja palauttaa holvin."
 }

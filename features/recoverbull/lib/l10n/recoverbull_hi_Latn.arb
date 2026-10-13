@@ -37,14 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
-  "@walletSetupErrorTryAgain": {
-    "description": "Generic error shown when default-wallet creation or recovery fails."
-  },
-  "torSettingsTitle": "Tor Settings",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "Password",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -62,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -129,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Active transport: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Passwords match nahi karte",
   "@recoverbullPasswordMismatch": {
@@ -213,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
   "recoverbullErrorVaultNotSet": "Vault set nahi hai",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -231,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "Connection filtered lag raha hai",
-  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
-  "backupWalletHowToDecideBackupModalTitle": "Kaise decide karein",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "URL .onion se khatam hona chahiye",
   "recoverbullServerConfirmTitle": "Vault Recovery Server",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -253,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
   "recoverbullSettingsUrlInvalid": "URL valid nahi hai",
   "recoverbullCheckingConnection": "RecoverBull ka connection check ho raha hai",
   "@recoverbullCheckingConnection": {
@@ -284,10 +266,6 @@
   "recoverbullTorNetwork": "Tor Network",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor proxy chal raha hai aur ready hai",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Recoverbull Settings",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -324,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Recoverbull ke baare mein aur jaano",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive se vault delete karne mein dikkat aayi",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -354,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google ya Apple cloud: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "Kaise decide karein?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} minute",
   "@durationMinute": {
@@ -460,30 +432,7 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor proxy nahi chal raha",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Dobara Try Karo",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Continue",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Copy Karo",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Band Karo",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Tor ke zariye Key Server se connect ho raha hai. Ismein ek minute lag sakta hai.",
-  "recoverbullMonitoringServerUnsupported": "Yeh server prayason ki nigrani ka samarthan nahin karta. Aap ab bhi vault ka backup le sakte hain aur unhein punarsthapit kar sakte hain."
+  "recoverbullMonitoringServerUnsupported": "Yeh server prayason ki nigrani ka samarthan nahin karta. Aap ab bhi vault ka backup le sakte hain aur unhein punarsthapit kar sakte hain.",
+  "recoverbullTemporaryStorageNotice": "Abhi settings aur backup satyapan saheje nahin ja sakte. Aap ab bhi server ko manzoori dekar vault ko punarsthapit kar sakte hain."
 }

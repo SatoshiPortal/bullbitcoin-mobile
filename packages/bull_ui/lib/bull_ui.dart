@@ -45,6 +45,7 @@ export 'package:flutter/widgets.dart'
         HitTestBehavior,
         IconData,
         IntrinsicHeight,
+        InheritedWidget,
         Key,
         LayoutBuilder,
         ListView,
@@ -205,8 +206,6 @@ export 'package:flutter/widgets.dart'
         PopScope;
 export 'package:flutter/material.dart'
     show
-        AlertDialog,
-        AppBar,
         AutovalidateMode,
         CircularProgressIndicator,
         Form,
@@ -216,20 +215,12 @@ export 'package:flutter/material.dart'
         Icons,
         Ink,
         InkWell,
-        InputDecoration,
         Material,
         MaterialLocalizations,
         MaterialPageRoute,
         MediaQuery,
         ModalRoute,
-        OutlineInputBorder,
-        Scaffold,
-        SelectableText,
-        TextAlignVertical,
-        TextButton,
-        TextFormField,
-        VisualDensity,
-        showDialog;
+        VisualDensity;
 
 export 'src/feedback/bull_progress_screen.dart';
 export 'src/feedback/bull_status_screen.dart';

@@ -10,12 +10,9 @@
   "recoverbullFetchingVaultKey": "Đang lấy khóa kho lưu trữ",
   "recoverbullSecureBackup": "Bảo mật bản sao lưu của bạn",
   "backupWalletHowToDecideVaultCloudRecommendationText": "bạn muốn đảm bảo không bao giờ mất quyền truy cập vào tệp kho lưu trữ của mình ngay cả khi bạn làm mất thiết bị.",
-  "walletSetupErrorTryAgain": "Đã xảy ra lỗi khi thiết lập ví của bạn. Vui lòng thử lại.",
-  "torSettingsTitle": "Cài đặt Tor",
   "recoverbullPassword": "Mật khẩu",
   "recoverbullReenterRequired": "Nhập lại {inputType} của bạn",
   "backupWalletHowToDecideVaultCustomRecommendationText": "bạn tự tin rằng mình sẽ không làm mất tệp kho lưu trữ và nó vẫn có thể truy cập được nếu bạn làm mất điện thoại.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Nhập {inputType} của bạn",
   "recoverbullSettingsUrlRequired": "URL là bắt buộc",
@@ -33,7 +30,6 @@
   "recoverbullPleaseWait": "Vui lòng chờ trong khi chúng tôi thiết lập kết nối an toàn...",
   "recoverbullPhaseNetworkInfo": "Đang lấy thông tin mạng",
   "recoverbullReenterConfirm": "Vui lòng nhập lại {inputType} của bạn để xác nhận.",
-  "torSettingsActiveTransport": "Phương thức đang dùng: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Các mật khẩu không khớp",
   "recoverbullErrorDecryptFailed": "Không thể giải mã kho lưu trữ",
@@ -54,15 +50,11 @@
   "recoverbullSettingsSave": "Lưu",
   "recoverbullEnterToTest": "Vui lòng nhập {inputType} của bạn để kiểm tra kho lưu trữ của bạn.",
   "backupWalletHowToDecideVaultCloudSecurity": "Các nhà cung cấp lưu trữ đám mây như Google hoặc Apple sẽ không thể truy cập vào Bitcoin của bạn vì mật khẩu mã hóa quá mạnh. Họ chỉ có thể truy cập Bitcoin của bạn trong trường hợp khó xảy ra là họ thông đồng với máy chủ khóa (dịch vụ trực tuyến lưu trữ mật khẩu mã hóa của bạn). Nếu máy chủ khóa từng bị hack, Bitcoin của bạn có thể gặp rủi ro trên đám mây Google hoặc Apple.",
-  "torSettingsModeAutomaticDescription": "Thử kết nối Tor trực tiếp trước, và dùng Snowflake nếu mạng có vẻ chặn Tor.",
   "recoverbullErrorVaultNotSet": "Chưa thiết lập kho lưu trữ",
   "recoverbullCreatingVault": "Đang tạo kho lưu trữ mã hóa",
   "recoverbullTorCantStart": "Hiện Tor không kết nối được. Vui lòng thử lại.",
   "recoverbullDecryptVault": "Giải mã kho lưu trữ",
   "recoverbullErrorSelectVault": "Không thể chọn kho lưu trữ",
-  "torSettingsStatusCensored": "Kết nối có vẻ bị lọc",
-  "torSettingsModeSnowflakeDescription": "Dùng các proxy Snowflake tình nguyện để tiếp cận Tor từ mạng bị lọc.",
-  "backupWalletHowToDecideBackupModalTitle": "Làm sao để quyết định",
   "recoverbullSettingsUrlMustBeOnion": "URL phải kết thúc bằng .onion",
   "recoverbullServerConfirmTitle": "Máy chủ khôi phục Vault",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -70,7 +62,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Không thể lấy kho lưu trữ từ Google Drive",
   "recoverbullSettingsEdit": "Chỉnh sửa",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Kết nối trực tiếp tới mạng Tor, không dùng pluggable transport.",
   "recoverbullSettingsUrlInvalid": "URL không hợp lệ",
   "recoverbullCheckingConnection": "Đang kiểm tra kết nối cho RecoverBull",
   "recoverbullErrorInvalidCredentials": "Sai mật khẩu cho tệp sao lưu này",
@@ -81,7 +72,6 @@
   "recoverbullTestRecovery": "Kiểm tra khôi phục",
   "recoverbullServerUrlLabel": "URL máy chủ:",
   "recoverbullTorNetwork": "Mạng Tor",
-  "torSettingsDescConnected": "Proxy Tor đang chạy và sẵn sàng",
   "recoverbullSettingsTitle": "Cài đặt Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "Máy chủ RecoverBull",
@@ -94,8 +84,6 @@
   "recoverbullEnterVaultKeyInstead": "Nhập khóa kho lưu trữ thay vào đó",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Tìm hiểu thêm về Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor không thể tiếp cận mạng. Điều này thường có nghĩa là kết nối đang bị lọc.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Không thể xóa kho lưu trữ khỏi Google Drive",
   "recoverbullVaultCreatedSuccess": "Đã tạo kho lưu trữ thành công",
   "recoverbullConfirm": "Xác nhận",
@@ -104,7 +92,6 @@
   "recoverbullVaultSelected": "Đã chọn kho lưu trữ",
   "recoverbullSettingsCancel": "Hủy",
   "backupWalletHowToDecideVaultCloudRecommendation": "Đám mây Google hoặc Apple: ",
-  "backupWalletHowToDecide": "Làm sao để quyết định?",
   "durationMinute": "{minutes} phút",
   "recoverbullConnected": "Đã kết nối",
   "recoverbullGoogleDriveDeleteButton": "Xóa",
@@ -127,28 +114,8 @@
   "recoverbullConnecting": "Đang kết nối",
   "recoverbullRetry": "Thử lại",
   "recoverbullConnectedTorCheckingServer": "Đang kết nối đến Máy chủ khóa qua Tor.\nQuá trình này có thể mất đến một phút.",
-  "torSettingsDescDisconnected": "Proxy Tor không đang chạy",
-  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Thử lại",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Tiếp tục",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Sao chép",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Đóng",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Đang kết nối đến Máy chủ khóa qua Tor. Quá trình này có thể mất đến một phút.",
   "recoverbullMonitoringDisableCancel": "Hủy",
-  "recoverbullMonitoringServerUnsupported": "Máy chủ này không hỗ trợ giám sát các lần thử. Bạn vẫn có thể sao lưu và khôi phục kho lưu trữ."
+  "recoverbullMonitoringServerUnsupported": "Máy chủ này không hỗ trợ giám sát các lần thử. Bạn vẫn có thể sao lưu và khôi phục kho lưu trữ.",
+  "recoverbullTemporaryStorageNotice": "Hiện không thể lưu cài đặt và xác minh bản sao lưu. Bạn vẫn có thể chấp thuận máy chủ và khôi phục kho lưu trữ."
 }

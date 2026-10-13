@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -12,13 +13,12 @@ void main() {
     late String expected;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
-            expected = RecoverBullLocalizations.of(
-              context,
-            ).oopsSomethingWentWrong;
+            expected = testUiLabels(context).oopsSomethingWentWrong;
             messages = [
               const RecoverBullUnexpectedFailure(
                 'private diagnostic',
@@ -40,6 +40,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -66,6 +67,7 @@ void main() {
     late String french;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -80,6 +82,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -104,6 +107,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -170,6 +174,7 @@ void main() {
     final messages = <String>[];
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -201,6 +206,7 @@ void main() {
     late List<String> english;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -224,6 +230,7 @@ void main() {
     late List<String> french;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -250,6 +257,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -296,6 +304,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -325,6 +334,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Builder(
@@ -365,6 +375,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -412,6 +423,7 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         locale: const Locale('fr'),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
