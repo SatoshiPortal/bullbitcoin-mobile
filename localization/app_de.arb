@@ -4528,7 +4528,6 @@
   "sendPayjoinFallbackCountdown": "Wechsel zu einer regulären Zahlung in",
   "sendSentWithoutPayjoin": "Ohne Payjoin gesendet: Der Empfänger hat Payjoin nicht abgeschlossen. Daher wurde stattdessen eine Standardtransaktion veröffentlicht.",
   "settingsPayjoinDirectoryLabel": "Payjoin-Verzeichnis",
-  "settingsPayjoinEnabledLabel": "Payjoin aktiviert",
   "settingsPayjoinExpireDescription": "Legt fest, wie viele Sekunden eine Payjoin-Sitzung geöffnet bleibt, bevor zu einer regulären Zahlung gewechselt wird.",
   "settingsPayjoinExpireRangeError": "Der Wert muss zwischen {min} und {max} Sekunden liegen",
   "settingsPayjoinExpireTitle": "Sitzungsablauf",
@@ -5085,5 +5084,11 @@
   "recipientsVirtualIbanBankAddress": "Bankadresse",
   "recipientsVirtualIbanBankAddressHelp": "Die offizielle Bankadresse, falls Ihre Bank diese benötigt.",
   "recipientsConfidentialSepaNameMustMatchHint": "Die Namen Ihres Bankkontos und Ihres virtuellen IBAN-Kontos müssen übereinstimmen, sonst werden Überweisungen automatisch zurückgesendet.",
-  "copiedToClipboard": "In die Zwischenablage kopiert"
+  "copiedToClipboard": "In die Zwischenablage kopiert",
+  "settingsPayjoinUsersSection": "Mit anderen Nutzern",
+  "settingsPayjoinSendLabel": "Senden",
+  "settingsPayjoinReceiveLabel": "Empfangen",
+  "settingsPayjoinExchangeSection": "Mit der Bull Bitcoin Börse",
+  "settingsPayjoinBuyLabel": "Kaufen",
+  "settingsPayjoinSellLabel": "Verkaufen und Rechnungen bezahlen"
 }

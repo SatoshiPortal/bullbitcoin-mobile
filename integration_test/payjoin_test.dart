@@ -46,7 +46,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   late Wallet receiverWallet;
   late Wallet senderWallet;
-  bool? previousPayjoinEnabled;
+  PayjoinPolicy? previousPayjoinPolicy;
 
   /// Fee rate for every transaction this fixture broadcasts, in sat/vB.
   ///
@@ -177,12 +177,15 @@ Future<void> main({bool isInitialized = false}) async {
         isA<Ok<void, SettingsFailure>>(),
       );
       final currentPolicy = await policy.load();
-      previousPayjoinEnabled = switch (currentPolicy) {
-        Ok(:final value) => value.enabled,
+      previousPayjoinPolicy = switch (currentPolicy) {
+        Ok(:final value) => value,
         Err(:final failure) => throw failure,
       };
-      final enabled = await policy.setEnabled(true);
-      if (enabled case Err(:final failure)) throw failure;
+      // A payjoin between two user wallets needs both user switches.
+      for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
+        final enabled = await policy.setActionEnabled(action, enabled: true);
+        if (enabled case Err(:final failure)) throw failure;
+      }
 
       final receiverSeed = await seedRepository.createFromMnemonic(
         mnemonicWords: receiverMnemonic!.split(' '),
@@ -204,9 +207,14 @@ Future<void> main({bool isInitialized = false}) async {
 
     tearDownAll(() async {
       try {
-        if (previousPayjoinEnabled case final enabled?) {
-          final restored = await policy.setEnabled(enabled);
-          if (restored case Err(:final failure)) throw failure;
+        if (previousPayjoinPolicy case final previous?) {
+          for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
+            final restored = await policy.setActionEnabled(
+              action,
+              enabled: previous.allows(action),
+            );
+            if (restored case Err(:final failure)) throw failure;
+          }
         }
       } finally {
         // Teardown: assert rather than discard, so a failed restore surfaces

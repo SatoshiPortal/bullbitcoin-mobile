@@ -5,5 +5,5 @@ class WatchReceivePayjoinEnabledUsecase {
 
   const WatchReceivePayjoinEnabledUsecase(this._settings);
 
-  Stream<bool> execute() => _settings.watchPayjoinEnabled();
+  Stream<bool> execute() => _settings.watchPayjoinReceiveEnabled();
 }

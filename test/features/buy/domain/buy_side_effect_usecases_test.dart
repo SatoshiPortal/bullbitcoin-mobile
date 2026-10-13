@@ -82,7 +82,10 @@ void main() {
     test('reports the configured value', () async {
       final policy = _MockPayjoinPolicy();
       final value = PayjoinPolicy(
-        enabled: true,
+        sendEnabled: false,
+        receiveEnabled: false,
+        buyEnabled: true,
+        sellEnabled: false,
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(hours: 1),
       );

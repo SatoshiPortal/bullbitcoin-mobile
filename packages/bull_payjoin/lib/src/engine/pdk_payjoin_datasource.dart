@@ -139,6 +139,7 @@ class PdkPayjoinDatasource {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isTrade = false,
   }) async {
     try {
       final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
@@ -182,6 +183,7 @@ class PdkPayjoinDatasource {
                 maxFeeRateSatPerVb: maxFeeRateSatPerVb,
                 createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                 expireAfterSec: expireAfterSec,
+                isTrade: isTrade,
               )
               as PayjoinReceiverModel;
 

@@ -50,7 +50,10 @@ void main() {
       when(() => policy.load()).thenAnswer(
         (_) async => Ok(
           PayjoinPolicy(
-            enabled: true,
+            sendEnabled: false,
+            receiveEnabled: false,
+            buyEnabled: true,
+            sellEnabled: false,
             minimumAmount: PayjoinPolicy.minimumAllowedAmount,
             sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
           ),
@@ -97,6 +100,9 @@ void main() {
 
       final expiresAt = captured?.expiresAt;
       expect(expiresAt, isNotNull, reason: 'a payjoin session must be started');
+      // Started under the buy switch while receiving from users is off: the
+      // session must stay gated by buy, not by receive.
+      expect(captured!.isTrade, isTrue);
 
       // Bracketed against the wall clock either side of the call: the use case
       // computes its own `now` somewhere between `before` and `after`, so the

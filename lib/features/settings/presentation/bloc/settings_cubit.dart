@@ -359,20 +359,27 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<Result<bool, SettingsFailure>> togglePayjoinEnabled(
+    PayjoinAction action,
     bool enabled, {
     required Future<bool> Function() requestConsent,
   }) async {
     log.config(
-      'Payjoin enabled toggled: $enabled was ${state.isPayjoinEnabled}',
+      'Payjoin ${action.name} toggled: $enabled was '
+      '${state.isPayjoinEnabled(action)}',
     );
     final result = await _setPayjoinEnabledUsecase.execute(
+      action,
       enabled,
       requestConsent: requestConsent,
     );
     return result.fold((updated) {
       final policy = state.payjoinPolicy;
-      if (policy != null && policy.enabled != updated) {
-        emit(state.copyWith(payjoinPolicy: policy.copyWith(enabled: updated)));
+      if (policy != null && policy.allows(action) != updated) {
+        emit(
+          state.copyWith(
+            payjoinPolicy: policy.withAction(action, enabled: updated),
+          ),
+        );
       }
       return Ok(updated);
     }, (failure) => Err(failure));

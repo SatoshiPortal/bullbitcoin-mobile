@@ -26,6 +26,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
     @Default(false) bool isAborted,
+    @Default(false) bool isTrade,
   }) = PayjoinReceiverModel;
   const factory PayjoinModel.sender({
     required String uri,
@@ -70,6 +71,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         isExpired: table.isExpired,
         isCompleted: table.isCompleted,
         isAborted: table.isAborted,
+        isTrade: table.isTrade,
       );
 
   factory PayjoinModel.fromSenderTable(PayjoinSenderRow table) =>
@@ -191,6 +193,7 @@ extension PayjoinReceiverSqlite on PayjoinReceiverModel {
     isExpired: isExpired,
     isCompleted: isCompleted,
     isAborted: isAborted,
+    isTrade: isTrade,
   );
 }
 

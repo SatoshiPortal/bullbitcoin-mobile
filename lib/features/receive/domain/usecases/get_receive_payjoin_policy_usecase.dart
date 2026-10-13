@@ -4,8 +4,9 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:meta/meta.dart';
 
-/// The payjoin receiver policy: whether payjoin is on, and the anti-probing
-/// minimum below which the receiver declines a request.
+/// The payjoin receiver policy: whether payjoin is on for receiving from other
+/// users, and the anti-probing minimum below which the receiver declines a
+/// request.
 typedef ReceivePayjoinPolicy = ({bool enabled, int minimumAmountSat});
 
 /// Receive-owned wrapper around the settings feature's public contract.
@@ -24,7 +25,11 @@ class GetReceivePayjoinPolicyUsecase {
   @useResult
   Future<Result<ReceivePayjoinPolicy, ReceiveFailure>> execute() async {
     try {
-      return Ok(await _settings.watchPayjoinPolicy().first);
+      final policy = await _settings.watchPayjoinReceivePolicy().first;
+      return Ok((
+        enabled: policy.receiveEnabled,
+        minimumAmountSat: policy.minimumAmountSat,
+      ));
     } on Object catch (e, st) {
       // Logged HERE, at the boundary that owns the raw reason. The failure's
       // logMessage stays secondary (equality, debug): if a caller chooses not
