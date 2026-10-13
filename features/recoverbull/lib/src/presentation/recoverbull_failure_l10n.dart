@@ -43,33 +43,31 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    KeyServerInvalidCredentialsFailure() =>
-      context.loc.recoverbullErrorUnexpected,
-    KeyServerRateLimitedFailure() => context.loc.recoverbullErrorUnexpected,
+    KeyServerInvalidCredentialsFailure() => context.loc.oopsSomethingWentWrong,
+    KeyServerRateLimitedFailure() => context.loc.oopsSomethingWentWrong,
     KeyServerBusyFailure(:final retryIn) =>
       retryIn == null
           ? context.loc.recoverbullErrorServiceBusy
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    KeyServerRejectedFailure() => context.loc.recoverbullErrorUnexpected,
-    KeyServerUnavailableFailure() => context.loc.recoverbullErrorUnexpected,
-    KeyServerHealthCheckTimeoutFailure() =>
-      context.loc.recoverbullErrorUnexpected,
+    KeyServerRejectedFailure() => context.loc.oopsSomethingWentWrong,
+    KeyServerUnavailableFailure() => context.loc.oopsSomethingWentWrong,
+    KeyServerHealthCheckTimeoutFailure() => context.loc.oopsSomethingWentWrong,
     RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
       retryIn == null
           ? context.loc.recoverbullErrorServiceBusy
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    InvalidVaultFileFailure() => context.loc.recoverbullErrorUnexpected,
+    InvalidVaultFileFailure() => context.loc.oopsSomethingWentWrong,
     RecoverBullGoogleDriveFetchFailure() =>
       context.loc.recoverbullGoogleDriveErrorFetchFailed,
     RecoverBullGoogleDriveDeleteFailure() =>
       context.loc.recoverbullGoogleDriveErrorDeleteFailed,
     RecoverBullGoogleDriveExportFailure() =>
       context.loc.recoverbullGoogleDriveErrorExportFailed,
-    RecoverBullUnexpectedFailure() => context.loc.recoverbullErrorUnexpected,
+    RecoverBullUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 
   String _cooldown(BuildContext context, Duration retryIn) {
