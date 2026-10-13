@@ -162,7 +162,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       await widget.allowPermissionUsecase.execute(true);
                       if (!context.mounted) return;
                       final state = context.read<RecoverBullBloc>().state;
-                      context.goNamed(
+                      context.pushReplacementNamed(
                         RecoverBullRoute.recoverbullFlows.name,
                         extra: RecoverBullFlowsExtra(
                           flow: state.flow,
