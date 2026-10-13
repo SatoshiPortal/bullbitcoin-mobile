@@ -1,9 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullStackedPage, Gap;
 
 /// A screen that handles three states: loading, success, and error
 class StatusScreen extends StatelessWidget {
@@ -29,52 +25,17 @@ class StatusScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.surface,
-      body: BullStackedPage(
-        bottomChild: (!isLoading && onTap != null)
-            ? BBButton.big(
-                label:
-                    buttonText ??
-                    (hasError
-                        ? context.loc.statusScreenTryAgain
-                        : context.loc.statusScreenContinue),
-                onPressed: onTap!,
-                textColor: context.appColors.onSecondary,
-                bgColor: context.appColors.secondary,
-              )
-            : const SizedBox.shrink(),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Column(
-                children: [
-                  if (hasError)
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 80,
-                      color: context.appColors.error,
-                    ),
-                  ProgressScreen(
-                    title: hasError
-                        ? context.loc.oopsSomethingWentWrong
-                        : title,
-                    description: hasError ? errorMessage : description,
-                    isLoading: isLoading && !hasError,
-                  ),
-                  if (extras.isNotEmpty && !hasError) ...[
-                    const Gap(16),
-                    ...extras,
-                  ],
-                  const Gap(30),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => BullStatusScreen(
+    title: title,
+    description: description,
+    extras: extras,
+    isLoading: isLoading,
+    hasError: hasError,
+    errorMessage: errorMessage,
+    onTap: onTap,
+    buttonText: buttonText,
+    errorTitle: context.loc.oopsSomethingWentWrong,
+    retryLabel: context.loc.statusScreenTryAgain,
+    continueLabel: context.loc.statusScreenContinue,
+  );
 }

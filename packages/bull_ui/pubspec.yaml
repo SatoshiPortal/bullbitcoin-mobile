@@ -14,6 +14,7 @@ dependencies:
   auto_size_text: ^3.0.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
+  gif: ^2.3.0
 
 dev_dependencies:
   flutter_test:

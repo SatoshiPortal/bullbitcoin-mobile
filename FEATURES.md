@@ -12,6 +12,9 @@ graph TB
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
+    BULL_UI[Bull UI Package<br/>Theme, components, flow screens]
+    SCREEN_PRIVACY[Screen Privacy Package]
+    ONBOARDING[Onboarding]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
     %% Feature modules
@@ -19,7 +22,7 @@ graph TB
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
-    RECOVERBULL[RecoverBull]
+    RECOVERBULL[RecoverBull Workspace Feature]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -151,6 +154,13 @@ graph TB
     WALLETS --> TOR
     WALLETS --> RECOVERBULL
     WALLETS --> ELECTRUM_SETTINGS
+    RECOVERBULL --> BULL_LOGGER
+    RECOVERBULL --> PRIMITIVES
+    RECOVERBULL --> SCREEN_PRIVACY
+    ONBOARDING --> RECOVERBULL
+    ONBOARDING --> CORE
+    RECOVERBULL --> BULL_UI
+    CORE --> BULL_UI
     RECOVERBULL --> TOR
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
@@ -175,8 +185,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class PRIMITIVES,BULL_PAYJOIN,BULL_UI,SCREEN_PRIVACY,TOR,RECOVERBULL packageStyle
+    class ONBOARDING,SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams

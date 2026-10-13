@@ -38,7 +38,19 @@ class BullInputText extends StatefulWidget {
     this.maxLines,
     this.minLines,
     this.fixedPrefix,
+    this.readOnly = false,
+    this.autofocus = false,
+    this.validator,
+    this.autovalidateMode = AutovalidateMode.disabled,
+    this.errorMaxLines,
   });
+
+  /// Form validation and read-only input use the same themed field.
+  final bool readOnly;
+  final bool autofocus;
+  final FormFieldValidator<String>? validator;
+  final AutovalidateMode autovalidateMode;
+  final int? errorMaxLines;
 
   /// Key applied to the inner [TextField] (for widget tests).
   final Key? uiKey;
@@ -173,9 +185,13 @@ class _BullInputTextState extends State<BullInputText> {
     final shouldPreventNewlines =
         effectiveMaxLines != null && effectiveMaxLines <= 2;
 
-    return TextField(
+    return TextFormField(
       key: widget.uiKey,
       controller: _controller,
+      readOnly: widget.readOnly,
+      autofocus: widget.autofocus,
+      validator: widget.validator,
+      autovalidateMode: widget.autovalidateMode,
       onChanged: widget.onChanged,
       focusNode: widget.focusNode,
       enabled: !widget.disabled,
@@ -213,11 +229,12 @@ class _BullInputTextState extends State<BullInputText> {
             color: colors.onSurface,
           ),
       onTap: () => widget.onEnter?.call(),
-      onSubmitted: widget.onDone,
+      onFieldSubmitted: widget.onDone,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
+        errorMaxLines: widget.errorMaxLines,
         suffixText: widget.suffixText,
         hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
         prefixIcon: widget.fixedPrefix != null
