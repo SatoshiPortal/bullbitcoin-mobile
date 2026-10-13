@@ -266,7 +266,7 @@ class RecoverBullRemoteDatasource {
 final class RecoverBullAttemptMonitoringRemoteAdapter
     implements RecoverBullAttemptMonitoringRemotePort {
   final RecoverBullRemoteDatasource datasource;
-  final Future<RecoverBullTorRoute> Function() routeFactory;
+  final Future<RecoverBullTorRoute?> Function() routeFactory;
 
   const RecoverBullAttemptMonitoringRemoteAdapter({
     required this.datasource,
@@ -279,6 +279,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
     required List<String> backupDigests,
   }) async {
     final route = await routeFactory();
+    if (route == null) return null;
     try {
       final result = await datasource.attempts(
         route: route,

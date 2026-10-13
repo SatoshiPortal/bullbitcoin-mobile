@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_settings_port.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_tor_settings.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,6 +107,83 @@ void main() {
     expect(error.logMessage, failure.logMessage);
     verifyNever(() => embeddedTor.ensureReady());
   });
+
+  test(
+    'explicit external retry invalidates a stale pooled verification',
+    () async {
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _settings(useTorProxy: true));
+      final pool = TorRoutePool();
+      addTearDown(pool.close);
+      usecase = EnsureRecoverBullTorSessionUsecase(
+        embeddedTor,
+        settingsRepository,
+        tor,
+        routePool: pool,
+      );
+      final first =
+          (await usecase.execute()
+                  as Ok<RecoverBullTorRoute, RecoverBullFailure>)
+              .value;
+      externalTorPort.available = false;
+      final retry = await usecase.execute(restartEmbedded: true);
+      expect(retry, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
+      expect(
+        (retry as Err<RecoverBullTorRoute, RecoverBullFailure>).failure,
+        isA<ExternalTorProxyUnavailableFailure>(),
+      );
+      verify(() => externalTor.verify(any())).called(2);
+      verifyNever(() => embeddedTor.retry());
+      verifyNever(() => embeddedTor.ensureReady());
+      await first.close();
+    },
+  );
+
+  test(
+    'pool shutdown during session opening becomes a recoverable cancellation',
+    () async {
+      final gate = Completer<TorSession>();
+      final opened = Completer<void>();
+      var closes = 0;
+      when(() => embeddedTor.ensureReady()).thenAnswer(
+        (_) async => TorReady(
+          TorRoute(
+            source: TorSource.embedded,
+            endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 19050),
+            evidence: TorReadinessEvidence.embeddedBootstrap,
+          ),
+        ),
+      );
+      when(() => sessions.open()).thenAnswer((_) {
+        opened.complete();
+        return gate.future;
+      });
+      final pool = TorRoutePool();
+      usecase = EnsureRecoverBullTorSessionUsecase(
+        embeddedTor,
+        settingsRepository,
+        tor,
+        routePool: pool,
+      );
+      final result = usecase.execute().then<Object>(
+        (value) => value,
+        onError: (Object error) => error,
+      );
+      await opened.future;
+      final shutdown = pool.close();
+      gate.complete(
+        TorSession(
+          TorProxyEndpoint(host: '127.0.0.1', port: 19051),
+          TorTransport.direct,
+          () async => closes++,
+        ),
+      );
+      expect(await result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
+      await shutdown;
+      expect(closes, 1);
+    },
+  );
 
   test('accepts an embedded Onion route', () async {
     final route = TorRoute(

@@ -37,6 +37,10 @@ class _MockTor extends Mock implements Tor {}
 
 class _MockExternalTor extends Mock implements ExternalTor {}
 
+class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
+
+class _MockTorSessions extends Mock implements TorSessions {}
+
 SettingsEntity _settings({required bool useTorProxy, int port = 9050}) =>
     SettingsEntity(
       environment: Environment.mainnet,
@@ -431,6 +435,99 @@ void main() {
       throwsA(isA<StateError>()),
     );
   });
+
+  test(
+    'a status deadline does not cancel the recovery caller joined to its opener',
+    () async {
+      final pool = TorRoutePool(timerFactory: _ManualTimers().create);
+      addTearDown(pool.close);
+      final ready = Completer<TorConnectionState>();
+      final started = Completer<void>();
+      final ensureTor = _MockEnsureTorReadyUsecase();
+      when(ensureTor.execute).thenAnswer((_) {
+        started.complete();
+        return ready.future;
+      });
+      final tor = _MockTor();
+      final embedded = _MockEmbeddedTor();
+      final sessions = _MockTorSessions();
+      var closes = 0;
+      when(() => tor.embedded).thenReturn(embedded);
+      when(() => embedded.sessions).thenReturn(sessions);
+      when(() => sessions.open()).thenAnswer(
+        (_) async => TorSession(
+          TorProxyEndpoint(host: '127.0.0.1', port: 19051),
+          TorTransport.direct,
+          () async => closes++,
+        ),
+      );
+      final usecase = _usecase(
+        settings: _settings(useTorProxy: false),
+        tor: tor,
+        ensureTor: ensureTor,
+        routePool: pool,
+        recoverBullHealthProbe: () async => RecoverBullHealth.offline,
+        recoverBullStatusProbe: (_) async => _backedUp,
+        torStatusTimeout: const Duration(milliseconds: 20),
+      );
+      final status = usecase.execute(network: Network.bitcoinMainnet);
+      await started.future;
+      final recovery = pool
+          .acquire(
+            key: 'embedded',
+            open: () async => throw StateError('must join status acquisition'),
+            close: () async {},
+          )
+          .then<Object>((lease) => lease, onError: (Object error) => error);
+      expect((await status).tor.status, ServiceStatus.offline);
+      ready.complete(TorReady(_route(TorSource.embedded)));
+      final outcome = await recovery;
+      expect(outcome, isA<TorRouteLease>());
+      expect(closes, 0);
+      final lease = outcome as TorRouteLease;
+      expect(lease.route.endpoint.port, 19051);
+      await lease.release();
+      await pool.close();
+      expect(closes, 1);
+      verify(ensureTor.execute).called(1);
+      verify(() => sessions.open()).called(1);
+    },
+  );
+
+  test(
+    'pooled unavailable startup is operational and programmer Error still propagates',
+    () async {
+      final pool = TorRoutePool();
+      addTearDown(pool.close);
+      final usecase = _usecase(
+        settings: _settings(useTorProxy: false),
+        ensureTor: _unavailableEmbeddedTor(),
+        routePool: pool,
+        recoverBullHealthProbe: () async => RecoverBullHealth.offline,
+        recoverBullStatusProbe: (_) async => _backedUp,
+      );
+      expect(
+        (await usecase.execute(network: Network.bitcoinMainnet)).tor.status,
+        ServiceStatus.offline,
+      );
+      final failedPool = TorRoutePool();
+      addTearDown(failedPool.close);
+      final error = StateError('opener programmer bug');
+      final programmerErrorTor = _MockEnsureTorReadyUsecase();
+      when(programmerErrorTor.execute).thenAnswer((_) => Future.error(error));
+      final failedUsecase = _usecase(
+        settings: _settings(useTorProxy: false),
+        routePool: failedPool,
+        ensureTor: programmerErrorTor,
+        recoverBullHealthProbe: () async => RecoverBullHealth.offline,
+        recoverBullStatusProbe: (_) async => _backedUp,
+      );
+      await expectLater(
+        failedUsecase.execute(network: Network.bitcoinMainnet),
+        throwsA(same(error)),
+      );
+    },
+  );
 
   test(
     'opens one route when the key-server probe and Tor check run together',

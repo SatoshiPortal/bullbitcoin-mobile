@@ -217,9 +217,7 @@ final class RecoverBullFeature {
             final result = await ensureTor.execute();
             return switch (result) {
               Ok(:final value) => value,
-              Err(:final failure) => throw StateError(
-                failure.logMessage ?? 'route unavailable',
-              ),
+              Err() => null,
             };
           },
         );

@@ -14,10 +14,8 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 
 class CheckAllServiceStatusUsecase {
-  /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
-  /// and hold the whole screen. Generous enough for a warm client to answer and
-  /// for a cold direct bootstrap to usually finish, short enough that a blocked
-  /// network reports `offline` instead of hanging.
+  /// Ceiling for each status caller's wait, so a cold bootstrap does not hold the screen.
+  /// A pooled opener continues after this deadline for recovery callers sharing it.
   static const defaultTorStatusTimeout = Duration(seconds: 20);
 
   final ElectrumConnectivityPort _electrumConnectivityPort;
@@ -313,7 +311,12 @@ class CheckAllServiceStatusUsecase {
           open: () async {
             final result = await _tor.external.verify(endpoint);
             if (result case TorReady(:final route)) return route;
-            throw StateError('External Tor unavailable');
+            if (result case TorUnavailable(:final failure)) {
+              throw TorBackendException(failure);
+            }
+            throw const TorBackendException(
+              TorUnexpectedFailure('External Tor unavailable'),
+            );
           },
           close: () async {},
         ),
@@ -358,10 +361,8 @@ class CheckAllServiceStatusUsecase {
       () => routePool!.acquire(
         key: 'embedded',
         open: () async {
-          final state = await _ensureTorReadyUsecase.execute().timeout(
-            torStatusTimeout,
-            onTimeout: () => const TorUninitialized(),
-          );
+          // A status caller's deadline must not poison a recovery caller sharing this acquisition; only its lease wait is bounded.
+          final state = await _ensureTorReadyUsecase.execute();
           if (state case TorReady(
             :final route,
           ) when route.source == TorSource.embedded) {
@@ -373,7 +374,12 @@ class CheckAllServiceStatusUsecase {
               transport: session!.transport,
             );
           }
-          throw StateError('Embedded Tor unavailable');
+          if (state case TorUnavailable(:final failure)) {
+            throw TorBackendException(failure);
+          }
+          throw const TorBackendException(
+            TorUnexpectedFailure('Embedded Tor unavailable'),
+          );
         },
         close: () async {
           await session?.close();
@@ -400,7 +406,7 @@ class CheckAllServiceStatusUsecase {
       // A late lease must still be handed back, or the route never closes.
       unawaited(acquisition!.then((lease) => lease.release(), onError: (_) {}));
       return false;
-    } catch (_) {
+    } on Exception {
       return false;
     }
   }

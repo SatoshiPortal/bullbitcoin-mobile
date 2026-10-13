@@ -50,6 +50,31 @@ void main() {
     client,
   );
 
+  test(
+    'monitoring treats an unavailable Tor route as a failed probe',
+    () async {
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: _AttemptsDatasource(log: const TestLogSink()),
+        routeFactory: () async => null,
+      );
+      expect(await adapter.poll(etag: null, backupDigests: const []), isNull);
+    },
+  );
+
+  test(
+    'monitoring does not mask a programmer error in its route factory',
+    () async {
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: _AttemptsDatasource(log: const TestLogSink()),
+        routeFactory: () async => throw StateError('programmer bug'),
+      );
+      await expectLater(
+        adapter.poll(etag: null, backupDigests: const []),
+        throwsStateError,
+      );
+    },
+  );
+
   test('a store can finish after a cold onion rendezvous', () {
     fakeAsync((async) {
       final settings = _Settings();
