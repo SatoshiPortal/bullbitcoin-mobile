@@ -30,7 +30,7 @@ import 'package:bull_recoverbull/src/domain/usecases/store_vault_key_into_server
 import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/trash_vault_key_usecase.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';

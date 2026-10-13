@@ -18,7 +18,7 @@ import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_u
 import 'package:bull_recoverbull/src/domain/usecases/set_recoverbull_attempt_monitoring_enabled_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/discover_drive_backups_usecase.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_drive_discovery_port.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';

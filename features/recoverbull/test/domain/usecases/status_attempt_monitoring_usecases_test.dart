@@ -7,7 +7,7 @@ import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_sess
 import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/record_local_attempt_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/trash_vault_key_usecase.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'dart:io';
 

@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_drive_discovery_port.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';

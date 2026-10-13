@@ -1,6 +1,6 @@
 import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
 import 'package:bull_recoverbull/src/domain/entities/monitored_backup.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import 'package:bull_recoverbull/src/data/recoverbull_attempt_monitoring_store.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';

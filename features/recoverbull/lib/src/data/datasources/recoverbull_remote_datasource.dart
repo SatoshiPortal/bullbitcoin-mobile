@@ -5,7 +5,7 @@ import './recoverbull_settings_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 import 'package:convert/convert.dart' as convert;
-import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
+import '../../data/recoverbull_attempt_monitoring_store.dart';
 import '../../domain/recoverbull_server_url.dart';
 import '../../domain/recoverbull_tor_route.dart';
 import '../../domain/recoverbull_timing.dart';
