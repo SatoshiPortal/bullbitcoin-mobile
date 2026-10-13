@@ -1,15 +1,18 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap;
 import 'package:go_router/go_router.dart';
 
 class ExportTransactionsScreen extends StatefulWidget {
@@ -52,7 +55,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           onBack: () => context.pop(),
           title: context.loc.transactionHistoryTitle,
         ),
@@ -79,13 +82,13 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
         child: BlocConsumer<ExportTransactionsCubit, ExportTransactionsState>(
           listener: (context, state) {
             state.mapOrNull(
-              success: (_) => SnackBarUtils.showSnackBar(
+              success: (_) => BullSnackBar.show(
                 context,
-                context.loc.exportTransactionsSuccess,
+                message: context.loc.exportTransactionsSuccess,
               ),
-              failure: (state) => SnackBarUtils.showSnackBar(
+              failure: (state) => BullSnackBar.show(
                 context,
-                state.failure.toTranslated(context),
+                message: state.failure.toTranslated(context),
               ),
             );
           },
@@ -106,7 +109,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Gap(20),
-                        BBText(
+                        BullText(
                           context.loc.exportTransactionsDescription,
                           style: context.font.bodyLarge,
                           textAlign: TextAlign.center,
@@ -140,7 +143,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: context.loc.exportTransactionsButton,
                     onPressed: () async {
                       if (isLoading) return;
@@ -187,7 +190,7 @@ class _DateField extends StatelessWidget {
               ? const Icon(Icons.calendar_today)
               : IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
         ),
-        child: BBText(
+        child: BullText(
           value ?? context.loc.exportTransactionsAnyDate,
           style: context.font.bodyLarge,
         ),

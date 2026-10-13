@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart'
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCarousel, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
 import 'package:go_router/go_router.dart';
 
 class HomeWarnings extends StatelessWidget {
@@ -36,7 +35,7 @@ class HomeWarnings extends StatelessWidget {
         // stale, and which server failed with its own remedy.
         final errorCards = [
           for (final warning in state.warnings)
-            InfoCard(
+            BullInfoCard(
               title: homeWarningTitle(context, warning),
               description: homeWarningDescription(context, warning),
               tagColor: context.appColors.error,
@@ -56,7 +55,7 @@ class HomeWarnings extends StatelessWidget {
           // at the electrum settings could not help. A server outage has its
           // own card above, with its remedy.
           if (loadFailure != null)
-            InfoCard(
+            BullInfoCard(
               title: loadFailure.toTranslated(context),
               description: context.loc.walletLoadFailedRetryHint,
               tagColor: context.appColors.error,

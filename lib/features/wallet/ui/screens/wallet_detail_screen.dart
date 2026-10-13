@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
@@ -23,7 +22,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullShimmerBox, BullShimmerLine, Gap;
+    show BullPullableBody, BullShimmerBox, BullShimmerLine, BullText, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +47,7 @@ class WalletDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: walletName.isEmpty
             ? const BullShimmerLine(width: 150)
-            : BBText(walletName, style: context.font.headlineMedium),
+            : BullText(walletName, style: context.font.headlineMedium),
         actions: [
           IconButton(
             onPressed: () {
@@ -259,7 +258,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                BBText(
+                                BullText(
                                   context.loc.walletButtonCoins,
                                   style: context.font.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w600,
@@ -267,7 +266,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                                 ),
                                 if (subtitle != null) ...[
                                   const Gap(2),
-                                  BBText(
+                                  BullText(
                                     subtitle,
                                     style: context.font.labelMedium?.copyWith(
                                       color: context.appColors.textMuted,
