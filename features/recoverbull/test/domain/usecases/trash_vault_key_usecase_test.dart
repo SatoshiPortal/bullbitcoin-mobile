@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:convert/convert.dart' show hex;
 
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
@@ -39,6 +40,56 @@ void main() {
   setUpAll(() {
     registerFallbackValue(_route());
   });
+
+  test(
+    'successful deletion forgets the backup without publishing an alert',
+    () async {
+      final repository = _Repository();
+      final ensure = _Ensure();
+      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(database.close);
+      await database.ensureState();
+      final store = RecoverBullAttemptMonitoringStore(database);
+      final recordAttempt = RecordLocalAttemptUsecase(store);
+      final alerts = _AlertPort();
+      final backup = sdk.RecoverBull.createBackup(
+        secret: [1],
+        backupKey: List<int>.filled(32, 1),
+      );
+      final vault = EncryptedVault(file: backup.toJson());
+      final window = DateTime.utc(2026, 10, 1);
+      final status = KeyServerAttemptStatus(
+        totalAttempts: 3,
+        failedAttempts: 2,
+        remainingAttempts: 7,
+        windowStartedAt: window,
+        previousAttemptAt: null,
+        resetsAt: window.add(const Duration(days: 1)),
+      );
+      await store.registerBackup(
+        hex.decode(vault.id),
+        observedTotal: 1,
+        window: attemptWindowIdentity(window),
+      );
+      when(() => ensure.execute()).thenAnswer((_) async => Ok(_route()));
+      when(
+        () => repository.trashVaultKeyWithStatus(any(), any(), any(), any()),
+      ).thenAnswer(
+        (_) async =>
+            Ok(VaultKeyFetchResult(vaultKey: 'key', attemptStatus: status)),
+      );
+      final result = await TrashVaultKeyUsecase(
+        repository: repository,
+        ensureSession: ensure,
+        recordAttempt: recordAttempt,
+        alertPort: alerts,
+        log: const TestLogSink(),
+      ).execute(vault: vault, password: 'password');
+      expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
+      expect(await store.monitoredBackups(), isEmpty);
+      expect(alerts.published, isEmpty);
+    },
+  );
 
   test('trash preserves Ok when owned route teardown throws', () async {
     var closed = false;
