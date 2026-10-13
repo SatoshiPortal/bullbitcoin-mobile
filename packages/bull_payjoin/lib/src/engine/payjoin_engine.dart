@@ -484,14 +484,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) => policy.allows(isTrade ? PayjoinAction.buy : PayjoinAction.receive);
 
   @override
-  Future<void> disableReceivers() async {
-    // Only the sessions the current policy no longer permits: turning off
-    // receiving from users must leave a live buy order payout alone.
-    final policy = await _policy.load();
-    await _settleReceivers(
-      (receiver) => !_isReceiverPermitted(policy, isTrade: receiver.isTrade),
-    );
-  }
+  Future<void> settleReceiversNotPermittedBy(PayjoinPolicy policy) =>
+      // Turning off receiving from users must leave a live buy order payout
+      // alone, and the other way round.
+      _settleReceivers(
+        (receiver) => !_isReceiverPermitted(policy, isTrade: receiver.isTrade),
+      );
 
   @override
   Future<void> settleAllReceivers() => _settleReceivers((_) => true);

@@ -471,7 +471,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
           action == PayjoinAction.receive || action == PayjoinAction.buy;
       if (!enabled && gatesReceivers) {
         try {
-          await _engine.disableReceivers();
+          await _engine.settleReceiversNotPermittedBy(saved);
         } catch (_) {
           return const Err(
             PayjoinInvalidSessionTransitionFailure(

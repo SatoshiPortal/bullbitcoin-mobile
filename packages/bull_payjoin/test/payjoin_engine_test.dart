@@ -281,8 +281,11 @@ void main() {
         await local.storeReceiver(regular);
         await local.storeReceiver(trade);
 
-        await policy.setActionEnabled(PayjoinAction.receive, enabled: false);
-        await engine.disableReceivers();
+        final disabled = await policy.setActionEnabled(
+          PayjoinAction.receive,
+          enabled: false,
+        );
+        await engine.settleReceiversNotPermittedBy(disabled);
 
         expect(await local.fetchReceiver(regular.id), isNull);
         expect(await local.fetchReceiver(trade.id), isNotNull);
@@ -297,8 +300,11 @@ void main() {
         await local.storeReceiver(regular);
         await local.storeReceiver(trade);
 
-        await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
-        await engine.disableReceivers();
+        final disabled = await policy.setActionEnabled(
+          PayjoinAction.buy,
+          enabled: false,
+        );
+        await engine.settleReceiversNotPermittedBy(disabled);
 
         expect(await local.fetchReceiver(regular.id), isNotNull);
         expect(await local.fetchReceiver(trade.id), isNull);
@@ -395,10 +401,11 @@ void main() {
     await local.storeReceiver(idle);
     await local.storeReceiver(proposed);
 
-    // Production order: setActionEnabled persists the policy BEFORE the
-    // sweep runs, and the sweep reads the policy to decide what to settle.
-    await policy.setActionEnabled(PayjoinAction.receive, enabled: false);
-    await engine.disableReceivers();
+    final disabled = await policy.setActionEnabled(
+      PayjoinAction.receive,
+      enabled: false,
+    );
+    await engine.settleReceiversNotPermittedBy(disabled);
 
     expect(await local.fetchReceiver(idle.id), isNull);
     expect(await local.fetchReceiver(proposed.id), isNotNull);
@@ -682,8 +689,14 @@ void main() {
         ),
       ).thenThrow(StateError('electrum unavailable'));
 
-      await policy.setActionEnabled(PayjoinAction.receive, enabled: false);
-      await expectLater(engine.disableReceivers(), throwsStateError);
+      final disabled = await policy.setActionEnabled(
+        PayjoinAction.receive,
+        enabled: false,
+      );
+      await expectLater(
+        engine.settleReceiversNotPermittedBy(disabled),
+        throwsStateError,
+      );
 
       expect(
         await local.fetchReceiver(idle.id),
