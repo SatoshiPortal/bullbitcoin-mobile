@@ -21,6 +21,7 @@ import 'dart:convert';
 class _Remote implements RecoverBullAttemptMonitoringRemotePort {
   RecoverBullAttemptsSnapshot? response;
   Object? error;
+  Future<void> Function()? duringPoll;
   int calls = 0;
   String? lastEtag;
 
@@ -30,6 +31,7 @@ class _Remote implements RecoverBullAttemptMonitoringRemotePort {
     required List<String> backupDigests,
   }) async {
     calls++;
+    await duringPoll?.call();
     lastEtag = etag;
     if (error != null) throw error!;
     return response;
@@ -116,6 +118,33 @@ void main() {
     await db.ensureState();
     return (db, RecoverBullAttemptMonitoringStore(db));
   }
+
+  test(
+    'a local attempt during a poll does not raise suspicious activity',
+    () async {
+      final (db, store) = await build();
+      addTearDown(db.close);
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      final remote = _Remote()
+        ..duringPoll = (() => store.recordStatus(id, _status(1)))
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 1},
+        );
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: remote,
+      ).execute(forceRefresh: true);
+      expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
+      expect(
+        (await store.monitoredBackups())
+            .single
+            .expectedServerDistinctCandidateTotal,
+        1,
+      );
+    },
+  );
 
   test('identifier saturation alerts without a matching user hash', () async {
     final (db, store) = await build();
