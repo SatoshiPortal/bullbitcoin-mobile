@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/ui/screens/view_vault_key_page.dart';
 import 'package:bull_recoverbull/src/ui/widgets/copy_input.dart';
@@ -17,12 +19,16 @@ class _Clipboard {
   /// Android 10+ hides the clipboard from an app in the background: reads
   /// return nothing while writes still succeed.
   bool readable = true;
+  bool readThrows = false;
+  Completer<void>? pendingWrite;
 
   Future<Object?> handle(MethodCall call) async {
     switch (call.method) {
       case 'Clipboard.setData':
+        await pendingWrite?.future;
         text = (call.arguments as Map)['text'] as String?;
       case 'Clipboard.getData':
+        if (readThrows) throw PlatformException(code: 'background');
         return text == null || !readable ? null : {'text': text};
     }
     return null;
@@ -54,6 +60,37 @@ void main() {
     BullSnackBar.dismiss();
     await tester.pumpAndSettle();
   }
+
+  testWidgets('a copy finishing after disposal is cleared', (tester) async {
+    final pending = Completer<void>();
+    clipboard.pendingWrite = pending;
+    await tester.pumpWidget(_app(const ViewVaultKeyPage(vaultKey: _vaultKey)));
+    await tester.tap(find.byIcon(Icons.copy_sharp));
+    await tester.pumpWidget(_app(const SizedBox.shrink()));
+    clipboard.pendingWrite = null;
+    pending.complete();
+    await tester.pump();
+    await tester.pump();
+    expect(clipboard.text, isEmpty);
+  });
+
+  testWidgets('a clipboard read exception retries on resume', (tester) async {
+    await tester.pumpWidget(_app(const ViewVaultKeyPage(vaultKey: _vaultKey)));
+    await tester.tap(find.byIcon(Icons.copy_sharp));
+    await tester.pump();
+    await dismissSnackBar(tester);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    clipboard.readThrows = true;
+    await tester.pump(const Duration(seconds: 30));
+    clipboard.readThrows = false;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(clipboard.text, isEmpty);
+  });
 
   testWidgets('a copied vault key is cleared after 30 seconds', (tester) async {
     await tester.pumpWidget(_app(const ViewVaultKeyPage(vaultKey: _vaultKey)));

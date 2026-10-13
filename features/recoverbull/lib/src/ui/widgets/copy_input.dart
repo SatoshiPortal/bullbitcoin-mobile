@@ -65,11 +65,13 @@ class _CopyInputState extends State<CopyInput> {
   }
 
   Future<void> _copy(BuildContext context, String copyValue) async {
-    await Clipboard.setData(ClipboardData(text: copyValue));
     final clearAfter = widget.clearClipboardAfter;
-    if (clearAfter != null && mounted) {
+    await Clipboard.setData(ClipboardData(text: copyValue));
+    if (clearAfter != null) {
       _pendingClear?.cancel();
-      _pendingClear = _ClipboardClear(copyValue, clearAfter);
+      final pending = _ClipboardClear(copyValue, clearAfter);
+      _pendingClear = pending;
+      if (!mounted) unawaited(pending.run());
     }
     if (context.mounted) {
       BullSnackBar.show(context, message: context.loc.copyDialogCopied);
@@ -221,8 +223,11 @@ final class _ClipboardClear {
     try {
       current = await Clipboard.getData(Clipboard.kTextPlain);
     } on PlatformException {
-      // The clipboard could not be read; never clear what may not be ours.
-      cancel();
+      // A background read can throw as well as return null. Retry when the
+      // app can read it again, without clearing content copied elsewhere.
+      _resumeListener ??= AppLifecycleListener(
+        onResume: () => unawaited(run()),
+      );
       return;
     }
     if (_finished) return;
