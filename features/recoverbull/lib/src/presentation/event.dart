@@ -71,6 +71,10 @@ class _OnTorReadinessGraceExpired extends RecoverBullEvent {
   const _OnTorReadinessGraceExpired(this.token);
 }
 
+class OnVaultKeyHidden extends RecoverBullEvent {
+  const OnVaultKeyHidden();
+}
+
 class OnClearError extends RecoverBullEvent {
   const OnClearError();
 }

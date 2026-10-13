@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../presentation/bloc.dart';
 import '../../domain/recoverbull_failure.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
@@ -118,11 +120,18 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             switch (state.flow) {
               case RecoverBullFlow.viewVaultKey:
                 _hasNavigatedAway = true;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ViewVaultKeyPage(vaultKey: state.vaultKey!),
-                  ),
+                final bloc = context.read<RecoverBullBloc>();
+                unawaited(
+                  Navigator.of(context)
+                      .push<void>(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ViewVaultKeyPage(vaultKey: state.vaultKey!),
+                        ),
+                      )
+                      .whenComplete(() {
+                        if (!bloc.isClosed) bloc.add(const OnVaultKeyHidden());
+                      }),
                 );
               case RecoverBullFlow.testVault:
                 break;

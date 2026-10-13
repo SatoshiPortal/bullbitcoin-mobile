@@ -36,6 +36,9 @@ class _MutableRecoverBullBloc extends Fake implements RecoverBullBloc {
   void add(RecoverBullEvent event) => events.add(event);
 
   @override
+  bool get isClosed => _states.isClosed;
+
+  @override
   bool get hasPendingProviderSave => pendingProviderSave;
 
   void emitState(RecoverBullState state) {
@@ -160,8 +163,11 @@ void main() {
     );
     addTearDown(bloc.close);
     final router = GoRouter(
-      initialLocation: '/fetch',
       routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: Text('Previous page')),
+        ),
         GoRoute(
           path: '/fetch',
           builder: (_, _) => BlocProvider<RecoverBullBloc>.value(
@@ -182,7 +188,8 @@ void main() {
         routerConfig: router,
       ),
     );
-    await tester.pump();
+    unawaited(router.push('/fetch'));
+    await tester.pumpAndSettle();
 
     bloc.emitState(
       const RecoverBullState(
@@ -200,6 +207,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ViewVaultKeyPage), findsOneWidget);
+    Navigator.of(tester.element(find.byType(ViewVaultKeyPage))).pop();
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(
+      bloc.events.any(
+        (event) => event.runtimeType.toString() == 'OnVaultKeyHidden',
+      ),
+      isTrue,
+    );
   });
 
   testWidgets(
