@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -27,6 +28,18 @@ PayjoinSenderSession _session(PayjoinStatus status) => PayjoinSenderSession(
 );
 
 void main() {
+  test('fallback verification failures reach the inline button error', () {
+    const failure = TransactionPayjoinVerificationFailure(
+      'preflight unavailable',
+    );
+    final state = TransactionDetailsState(
+      transaction: Transaction(payjoin: _session(PayjoinStatus.requested)),
+      failure: failure,
+    );
+    expect(state.payjoinBroadcastFailure, same(failure));
+    expect(state.loadFailure, isNull);
+  });
+
   testWidgets('receiver details waits for the shared deadline then refreshes', (
     tester,
   ) async {

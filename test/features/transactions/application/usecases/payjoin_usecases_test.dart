@@ -149,6 +149,22 @@ void main() {
       },
     );
 
+    test('a failed preflight does not claim a broadcast failed', () async {
+      final session = _session();
+      when(() => sender.broadcastOriginal(session.id)).thenAnswer(
+        (_) async => const Err<PayjoinSession, PayjoinFailure>(
+          PayjoinUnavailableFailure('Could not verify competing transactions'),
+        ),
+      );
+      final result = await BroadcastOriginalTransactionUsecase(
+        sender,
+      ).execute(session);
+      expect(
+        (result as bb.Err).failure,
+        isA<TransactionPayjoinVerificationFailure>(),
+      );
+    });
+
     test('sanitizes every other broadcast failure', () async {
       final session = _session();
       when(() => sender.broadcastOriginal(session.id)).thenAnswer(

@@ -327,10 +327,11 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
     final broadcastFailure = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.failure is ReceiveBroadcastOriginalTxFailure
-          ? bloc.state.failure
-          : null,
+      (ReceiveBloc bloc) => switch (bloc.state.failure) {
+        final ReceiveBroadcastOriginalTxFailure failure => failure,
+        final ReceiveBroadcastOriginalTxVerificationFailure failure => failure,
+        _ => null,
+      },
     );
     return Padding(
       padding: const EdgeInsets.all(16.0),
