@@ -12,7 +12,7 @@ final class TorRoutePoolEvent {
   const TorRoutePoolEvent(this.type, this.source, this.holders);
 
   String get logMessage =>
-      'recoverbull.tor.route.${type.name} source=${source.name} holders=$holders';
+      'tor.route.${type.name} source=${source.name} holders=$holders';
 }
 
 final class TorRouteLease {

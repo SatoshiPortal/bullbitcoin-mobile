@@ -363,8 +363,8 @@ void main() {
           .where((event) => event.type == TorRoutePoolEventType.opened)
           .map((event) => event.logMessage),
       containsAll([
-        'recoverbull.tor.route.opened source=embedded holders=1',
-        'recoverbull.tor.route.opened source=external holders=1',
+        'tor.route.opened source=embedded holders=1',
+        'tor.route.opened source=external holders=1',
       ]),
     );
     await embedded.release();
