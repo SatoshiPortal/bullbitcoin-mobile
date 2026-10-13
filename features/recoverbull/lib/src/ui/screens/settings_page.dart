@@ -61,7 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
     } else if (mounted) {
       BullSnackBar.show(
         context,
-        message: context.loc.recoverbullErrorUnexpected,
+        message: context.loc.oopsSomethingWentWrong,
       );
     }
   }

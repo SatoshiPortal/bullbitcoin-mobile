@@ -5,6 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('catch-all failures show a generic localized message', (
+    tester,
+  ) async {
+    late List<String> messages;
+    late String expected;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            expected = RecoverBullLocalizations.of(
+              context,
+            ).oopsSomethingWentWrong;
+            messages = [
+              const RecoverBullUnexpectedFailure(
+                'private diagnostic',
+              ).toTranslated(context),
+              const KeyServerUnavailableFailure().toTranslated(context),
+              const InvalidVaultFileFailure().toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    expect(messages, everyElement(expected));
+  });
+
   testWidgets('distinguishes Tor from an unavailable key server', (
     tester,
   ) async {
