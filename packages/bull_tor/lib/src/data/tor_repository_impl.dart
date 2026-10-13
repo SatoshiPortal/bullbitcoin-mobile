@@ -271,7 +271,15 @@ final class TorRepositoryImpl implements TorRepository {
     });
 
     try {
-      final attempts = _attempts();
+      // A readiness dip over a live listener must adopt its accepted transport,
+      // including a Snowflake fallback. Explicit retries still try direct first.
+      final liveTransport = switch (_current) {
+        TorConnecting(:final transport) => transport,
+        _ => null,
+      };
+      final adoptLive =
+          !retry && _accepts(liveTransport) && await _embeddedTor.isAlive();
+      final attempts = adoptLive ? [liveTransport!] : _attempts();
       for (var index = 0; index < attempts.length; index++) {
         final transport = attempts[index];
         final hasFallback = index + 1 < attempts.length;
