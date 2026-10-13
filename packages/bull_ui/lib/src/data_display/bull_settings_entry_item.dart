@@ -12,6 +12,7 @@ class BullSettingsEntryItem extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     this.onTap,
     this.iconColor,
     this.textColor,
@@ -25,6 +26,9 @@ class BullSettingsEntryItem extends StatelessWidget {
 
   /// Row title.
   final String title;
+
+  /// Optional secondary line rendered under [title].
+  final String? subtitle;
 
   /// Tap callback.
   final VoidCallback? onTap;
@@ -54,9 +58,9 @@ class BullSettingsEntryItem extends StatelessWidget {
 
     return ListTile(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(BullRadius.xs),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
       ),
-      tileColor: Colors.transparent,
+      tileColor: colors.transparent,
       contentPadding: contentPadding,
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
@@ -68,6 +72,16 @@ class BullSettingsEntryItem extends StatelessWidget {
           color: textColor ?? colors.onSurface,
         ),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            ),
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,
     );

@@ -44,7 +44,7 @@ class _BullSegmentedState extends State<BullSegmented> {
     final colors = context.bull;
     return Center(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(BullRadius.xs),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
           initialValue: widget.initialValue ?? widget.items.first,
@@ -60,28 +60,27 @@ class _BullSegmentedState extends State<BullSegmented> {
           customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
             color: colors.textMuted.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(BullRadius.xs),
+            borderRadius: BorderRadius.circular(BullRadius.xxs),
           ),
           thumbDecoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(BullRadius.xs),
+            borderRadius: BorderRadius.circular(BullRadius.xxs),
           ),
           children: {
             for (final item in widget.items)
               item: Text(
                 item,
                 style: item == selectedSegment
-                    ? Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: colors.primary,
-                      )
+                    ? Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: colors.primary)
                     : widget.disabledItems.contains(item)
                     ? Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: colors.textMuted.withValues(alpha: 0.5),
+                        color: colors.outline.withValues(alpha: 0.5),
                       )
-                    : Theme.of(
-                        context,
-                      ).textTheme.labelMedium?.copyWith(color: colors.text),
+                    : Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: colors.secondary,
+                      ),
               ),
           },
         ),

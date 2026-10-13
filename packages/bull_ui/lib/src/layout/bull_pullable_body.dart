@@ -14,6 +14,7 @@ class BullPullableBody extends StatelessWidget {
     required this.onRefresh,
     required this.slivers,
     this.bottomChild,
+    this.bottomInset = 0,
   });
 
   /// Forwarded to the inner [BullRefreshIndicator]; use a
@@ -29,6 +30,9 @@ class BullPullableBody extends StatelessWidget {
   /// Optional footer pinned to the bottom of the viewport.
   final Widget? bottomChild;
 
+  /// Space reserved at the end of the scroll content.
+  final double bottomInset;
+
   @override
   Widget build(BuildContext context) {
     return BullRefreshIndicator(
@@ -38,6 +42,8 @@ class BullPullableBody extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           ...slivers,
+          if (bottomInset > 0)
+            SliverToBoxAdapter(child: SizedBox(height: bottomInset)),
           SliverFillRemaining(
             hasScrollBody: false,
             child: bottomChild == null
