@@ -5074,5 +5074,6 @@
   "themeLightDescription": "Helle Darstellung verwenden",
   "comingSoonTitle": "Funktion demnächst verfügbar",
   "allSeedViewDeleteSwapMnemonicMessage": "Dadurch wird der Swap-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Swaps bleiben davon unberührt.",
-  "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar."
+  "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar.",
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen."
 }

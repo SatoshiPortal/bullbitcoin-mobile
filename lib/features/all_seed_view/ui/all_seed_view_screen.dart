@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/core/widgets/screen_privacy_gate.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -34,7 +35,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   /// Awaited before anything draws, like the show/verify screens: an
   /// un-awaited call leaves no guaranteed order between the first frame
   /// and the OS flag (Codex, 2026-09-17).
-  late final Future<void> _privacyFuture = enableScreenPrivacy();
+  late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override
   void dispose() {
@@ -44,16 +45,14 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Nothing draws until the OS flag call has returned (Codex, 2026-09-17:
-    // a builder that ignores `connectionState` runs during `waiting`). The
-    // service absorbs plugin errors itself, so completion is the most this
-    // layer can wait for; that the flag took effect is a device test.
-    return FutureBuilder<void>(
-      future: _privacyFuture,
-      builder: (context, snapshot) =>
-          snapshot.connectionState == ConnectionState.done
-          ? _body(context)
-          : const SizedBox.shrink(),
+    // Nothing draws before capture blocking is confirmed: the gate waits for
+    // the OS flag and hides the seeds if the platform refused it.
+    return ScreenPrivacyGate(
+      protection: _privacyFuture,
+      onRetry: () => setState(() {
+        _privacyFuture = enableScreenPrivacy();
+      }),
+      builder: _body,
     );
   }
 

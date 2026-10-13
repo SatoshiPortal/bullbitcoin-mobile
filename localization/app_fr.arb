@@ -4948,5 +4948,6 @@
   "recoverbullNewRoute": "Autre route",
   "recoverbullTorInitializing": "Initialisation",
   "recoverbullTorReady": "Prêt",
-  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase."
+  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase.",
+  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué."
 }

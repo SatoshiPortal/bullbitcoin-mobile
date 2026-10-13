@@ -15729,5 +15729,9 @@
   "spFailurePassphraseUnsupported": "Silent Payments is not available for a wallet protected by a passphrase.",
   "@spFailurePassphraseUnsupported": {
     "description": "Silent Payments failure: the default wallet has a BIP39 passphrase, which the Silent Payments library cannot use"
+  },
+  "screenPrivacyUnavailable": "Screen protection could not be turned on, so this secret stays hidden.",
+  "@screenPrivacyUnavailable": {
+    "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled"
   }
 }
