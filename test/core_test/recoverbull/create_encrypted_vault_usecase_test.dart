@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -10,6 +12,8 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 /// The backup path. A wallet read that fails must not be reported as "no
 /// default Bitcoin wallet found": an onboarded install always has a default
@@ -22,9 +26,18 @@ void main() {
   setUp(() {
     FakeSecureStoragePlatform().install();
     walletRepository = _MockWalletRepository();
+    final settings = _MockSettingsRepository();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
     usecase = CreateEncryptedVaultUsecase(
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
       walletRepository: walletRepository,
+      settingsRepository: settings,
     );
   });
 

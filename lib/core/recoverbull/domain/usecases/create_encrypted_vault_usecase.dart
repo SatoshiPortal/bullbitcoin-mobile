@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart' show Fingerprint;
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -11,10 +12,12 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class CreateEncryptedVaultUsecase {
   final secrets.Secrets _secrets;
   final WalletRepository _walletRepository;
+  final SettingsRepository _settingsRepository;
 
   CreateEncryptedVaultUsecase({
     required this._secrets,
     required this._walletRepository,
+    required this._settingsRepository,
   });
 
   // Coordinates wallet metadata with the package's sealed backup operation.
@@ -23,10 +26,16 @@ class CreateEncryptedVaultUsecase {
   >
   execute() async {
     try {
+      // Default wallets are created per environment, each from its own secret:
+      // a device that has used both holds a mainnet and a testnet default. The
+      // vault must seal the one the user is looking at, never whichever the
+      // store happens to list first.
+      final settings = await _settingsRepository.fetch();
       final List<Wallet> defaultBitcoinWallets;
       switch (await _walletRepository.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
+        environment: settings.environment,
       )) {
         case Ok(:final value):
           defaultBitcoinWallets = value;
