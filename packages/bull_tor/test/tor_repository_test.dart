@@ -257,6 +257,37 @@ void main() {
       expect(embedded.stopCalls, 0);
     });
 
+    test(
+      'a live Snowflake readiness dip keeps the accepted transport',
+      () async {
+        final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 41001);
+        final first = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.single.completeError(
+          const TorBackendException(TorBootstrapTimeoutFailure('timeout')),
+        );
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.complete(endpoint);
+        await first;
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0.45,
+            transport: TorTransport.snowflake,
+          ),
+        );
+        final second = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+        embedded.starts.last.complete(endpoint);
+        await second;
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+          TorTransport.snowflake,
+        ]);
+        expect(embedded.stopCalls, 0);
+      },
+    );
+
     test('forwards mobile dormancy to embedded Tor', () async {
       final usecase = SetTorDormantUsecase(repository);
 
