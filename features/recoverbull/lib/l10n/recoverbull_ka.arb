@@ -10,12 +10,9 @@
   "recoverbullFetchingVaultKey": "საცავის გასაღების მოძიება",
   "recoverbullSecureBackup": "დაიცავით თქვენი სარეზერვო ასლი",
   "backupWalletHowToDecideVaultCloudRecommendationText": "გსურთ დარწმუნდეთ, რომ არასოდეს დაკარგავთ წვდომას თქვენს საცავის ფაილზე, თუნდაც დაკარგოთ თქვენი მოწყობილობები.",
-  "walletSetupErrorTryAgain": "საფულის დაყენებისას მოხდა შეცდომა. გთხოვთ, სცადოთ ხელახლა.",
-  "torSettingsTitle": "Tor-ის პარამეტრები",
   "recoverbullPassword": "პაროლი",
   "recoverbullReenterRequired": "ხელახლა შეიყვანეთ თქვენი {inputType}",
   "backupWalletHowToDecideVaultCustomRecommendationText": "დარწმუნებული ხართ, რომ არ დაკარგავთ საცავის ფაილს და ის ხელმისაწვდომი დარჩება, ტელეფონის დაკარგვის შემთხვევაშიც კი.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "შეიყვანეთ თქვენი {inputType}",
   "recoverbullSettingsUrlRequired": "URL აუცილებელია",
@@ -33,7 +30,6 @@
   "recoverbullPleaseWait": "გთხოვთ, დაელოდოთ, სანამ დავამყარებთ დაცულ კავშირს...",
   "recoverbullPhaseNetworkInfo": "ქსელის ინფორმაციის მიღება",
   "recoverbullReenterConfirm": "დასადასტურებლად გთხოვთ, ხელახლა შეიყვანოთ თქვენი {inputType}.",
-  "torSettingsActiveTransport": "აქტიური ტრანსპორტი: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "პაროლები არ ემთხვევა",
   "recoverbullErrorDecryptFailed": "საცავის დეშიფვრა ვერ მოხერხდა",
@@ -54,15 +50,11 @@
   "recoverbullSettingsSave": "შენახვა",
   "recoverbullEnterToTest": "გთხოვთ, შეიყვანოთ თქვენი {inputType} საცავის შესამოწმებლად.",
   "backupWalletHowToDecideVaultCloudSecurity": "ღრუბლოვანი საცავის პროვაიდერებს, როგორიცაა Google ან Apple, არ ექნებათ წვდომა თქვენს Bitcoin-ზე, რადგან დაშიფვრის პაროლი ძალიან ძლიერია. მათ შეუძლიათ წვდომა თქვენს Bitcoin-ზე მხოლოდ იმ ნაკლებად სავარაუდო შემთხვევაში, თუ ისინი შეთანხმდებიან გასაღების სერვერთან (ონლაინ სერვისი, რომელიც ინახავს თქვენს დაშიფვრის პაროლს). თუ გასაღების სერვერი ოდესმე გატეხილი აღმოჩნდება, თქვენი Bitcoin შესაძლოა რისკის ქვეშ აღმოჩნდეს Google-ის ან Apple-ის ღრუბელში.",
-  "torSettingsModeAutomaticDescription": "ჯერ ცდილობს პირდაპირ Tor-კავშირს და იყენებს Snowflake-ს, თუ ქსელი, როგორც ჩანს, ბლოკავს Tor-ს.",
   "recoverbullErrorVaultNotSet": "საცავი დაყენებული არ არის",
   "recoverbullCreatingVault": "დაშიფრული საცავის შექმნა",
   "recoverbullTorCantStart": "Tor ამჟამად ვერ დაუკავშირდა. სცადეთ თავიდან.",
   "recoverbullDecryptVault": "საცავის დეშიფვრა",
   "recoverbullErrorSelectVault": "საცავის არჩევა ვერ მოხერხდა",
-  "torSettingsStatusCensored": "კავშირი ფილტრირებული ჩანს",
-  "torSettingsModeSnowflakeDescription": "იყენებს მოხალისეთა Snowflake-პროქსებს, რომ ფილტრირებული ქსელიდან მიაღწიოს Tor-ს.",
-  "backupWalletHowToDecideBackupModalTitle": "როგორ გადავწყვიტო",
   "recoverbullSettingsUrlMustBeOnion": "URL უნდა მთავრდებოდეს .onion-ით",
   "recoverbullServerConfirmTitle": "საცავის აღდგენის სერვერი",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -70,7 +62,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Google Drive-დან საცავების მოძიება ვერ მოხერხდა",
   "recoverbullSettingsEdit": "რედაქტირება",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "პირდაპირ უკავშირდება Tor-ქსელს, მისაერთებელი ტრანსპორტის გარეშე.",
   "recoverbullSettingsUrlInvalid": "URL არასწორია",
   "recoverbullCheckingConnection": "RecoverBull-ის კავშირის შემოწმება",
   "recoverbullErrorInvalidCredentials": "არასწორი პაროლი ამ სარეზერვო ასლის ფაილისთვის",
@@ -81,7 +72,6 @@
   "recoverbullTestRecovery": "აღდგენის ტესტირება",
   "recoverbullServerUrlLabel": "სერვერის URL:",
   "recoverbullTorNetwork": "Tor ქსელი",
-  "torSettingsDescConnected": "Tor პროქსი გაშვებულია და მზადაა გამოსაყენებლად",
   "recoverbullSettingsTitle": "Recoverbull-ის პარამეტრები",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull სერვერი",
@@ -94,8 +84,6 @@
   "recoverbullEnterVaultKeyInstead": "სამაგიეროდ შეიყვანეთ საცავის გასაღები",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "შეიტყვეთ მეტი Recoverbull-ის შესახებ",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor-მა ვერ მიაღწია ქსელს. ეს ხშირად ნიშნავს, რომ კავშირი ფილტრდება.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive-დან საცავის წაშლა ვერ მოხერხდა",
   "recoverbullVaultCreatedSuccess": "საცავი წარმატებით შეიქმნა",
   "recoverbullConfirm": "დადასტურება",
@@ -104,7 +92,6 @@
   "recoverbullVaultSelected": "საცავი არჩეულია",
   "recoverbullSettingsCancel": "გაუქმება",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google-ის ან Apple-ის ღრუბელი: ",
-  "backupWalletHowToDecide": "როგორ გადავწყვიტო?",
   "durationMinute": "{minutes} წუთი",
   "recoverbullConnected": "დაკავშირებულია",
   "recoverbullGoogleDriveDeleteButton": "წაშლა",
@@ -127,28 +114,8 @@
   "recoverbullConnecting": "მიმდინარეობს დაკავშირება",
   "recoverbullRetry": "ხელახლა ცდა",
   "recoverbullConnectedTorCheckingServer": "Tor-ის მეშვეობით ხდება დაკავშირება გასაღების სერვერთან.\nამას შეიძლება წუთამდე დასჭირდეს.",
-  "torSettingsDescDisconnected": "Tor პროქსი გაშვებული არ არის",
-  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "ხელახლა ცდა",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "გაგრძელება",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "კოპირება",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "დახურვა",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Tor-ის მეშვეობით ხდება დაკავშირება გასაღების სერვერთან. ამას შეიძლება წუთამდე დასჭირდეს.",
   "recoverbullMonitoringDisableCancel": "გაუქმება",
-  "recoverbullMonitoringServerUnsupported": "ეს სერვერი არ უჭერს მხარს მცდელობების მონიტორინგს. თქვენ კვლავ შეგიძლიათ საცავების სარეზერვო ასლების შექმნა და აღდგენა."
+  "recoverbullMonitoringServerUnsupported": "ეს სერვერი არ უჭერს მხარს მცდელობების მონიტორინგს. თქვენ კვლავ შეგიძლიათ საცავების სარეზერვო ასლების შექმნა და აღდგენა.",
+  "recoverbullTemporaryStorageNotice": "პარამეტრები და სარეზერვო ასლის შემოწმება ახლა ვერ შეინახება. თქვენ კვლავ შეგიძლიათ სერვერის დამტკიცება და საცავის აღდგენა."
 }

@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Попадание в хранилище Ключ",
   "recoverbullSecureBackup": "Защищайте резервное копирование",
   "backupWalletHowToDecideVaultCloudRecommendationText": "вы хотите убедиться, что вы никогда не потеряете доступ к файлу хранилища, даже если вы потеряете свои устройства.",
-  "walletSetupErrorTryAgain": "Что-то пошло не так при настройке кошелька. Пожалуйста, попробуйте снова.",
-  "torSettingsTitle": "Параметры Tor",
   "recoverbullPassword": "Пароль",
   "recoverbullReenterRequired": "Re-enter your {inputType}",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "вы уверены, что не потеряете файл хранилища, и он все равно будет доступен, если вы потеряете свой телефон.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Введите {inputType}",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Активный транспорт: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Пароли не совпадают",
   "recoverbullErrorDecryptFailed": "Не удалось расшифровать хранилище",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Они могут получить доступ к вашему биткойну только в маловероятном случае, если они столкнутся с ключевым сервером (интернет-сервис, который хранит ваш пароль шифрования). Если ключевой сервер когда-либо взломан, ваш биткойн может быть под угрозой с облаком Google или Apple.",
-  "torSettingsModeAutomaticDescription": "Сначала пробует прямое подключение к Tor, а если сеть, похоже, блокирует Tor, использует Snowflake.",
   "recoverbullErrorVaultNotSet": "Не установлен",
   "recoverbullCreatingVault": "Создание зашифрованного Сбой",
   "recoverbullTorCantStart": "Сейчас Tor не смог подключиться. Попробуйте ещё раз.",
   "recoverbullDecryptVault": "Зашифрованное хранилище",
   "recoverbullErrorSelectVault": "Не удалось выбрать хранилище",
-  "torSettingsStatusCensored": "Похоже, соединение фильтруется",
-  "torSettingsModeSnowflakeDescription": "Использует добровольные прокси Snowflake, чтобы достичь Tor из фильтруемой сети.",
-  "backupWalletHowToDecideBackupModalTitle": "Как решить",
   "recoverbullSettingsUrlMustBeOnion": "URL должен оканчиваться на .onion",
   "recoverbullServerConfirmTitle": "Сервер восстановления хранилища",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Не удалось получить своды из Google Drive",
   "recoverbullSettingsEdit": "Изменить",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Подключается к сети Tor напрямую, без подключаемого транспорта.",
   "recoverbullSettingsUrlInvalid": "URL недействителен",
   "recoverbullCheckingConnection": "Проверка подключения для RecoverBull",
   "recoverbullErrorInvalidCredentials": "Неверный пароль для этого архивного файла",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Восстановление",
   "recoverbullServerUrlLabel": "URL сервера:",
   "recoverbullTorNetwork": "Tor Network",
-  "torSettingsDescConnected": "Тор прокси работает и готов",
   "recoverbullSettingsTitle": "Настройки Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull Server",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Вместо этого введите ключ хранилища",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Подробнее о Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor не смог подключиться к сети. Обычно это означает, что соединение фильтруется.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Не удалось удалить хранилище из Google Drive",
   "recoverbullVaultCreatedSuccess": "Создание хранилища успешно",
   "recoverbullConfirm": "Подтверждение",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Выбранное хранилище",
   "recoverbullSettingsCancel": "Отмена",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google или Облако Apple: ",
-  "backupWalletHowToDecide": "Как решить?",
   "durationMinute": "{minutes}",
   "@durationMinute": {
     "placeholders": {
@@ -211,28 +198,8 @@
   "recoverbullConnecting": "Соединение",
   "recoverbullRetry": "Retry",
   "recoverbullConnectedTorCheckingServer": "Подключение к Key Server через Tor.\nЭто может занять до минуты.",
-  "torSettingsDescDisconnected": "Tor proxy не работает",
-  "oopsSomethingWentWrong": "Упс! Что-то не так",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Попробовать снова",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Продолжить",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Копировать",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Закрыть",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Подключение к Key Server через Tor. Это может занять до минуты.",
   "recoverbullMonitoringDisableCancel": "Отмена",
-  "recoverbullMonitoringServerUnsupported": "Этот сервер не поддерживает отслеживание попыток. Вы по-прежнему можете создавать резервные копии и восстанавливать хранилища."
+  "recoverbullMonitoringServerUnsupported": "Этот сервер не поддерживает отслеживание попыток. Вы по-прежнему можете создавать резервные копии и восстанавливать хранилища.",
+  "recoverbullTemporaryStorageNotice": "Сейчас невозможно сохранить настройки и проверку резервных копий. Вы можете одобрить сервер и восстановить хранилище."
 }

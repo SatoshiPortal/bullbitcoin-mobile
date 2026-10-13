@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_navigation_port.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/testing.dart';
@@ -25,13 +26,13 @@ void main() {
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         routerConfig: router,
-        builder: (_, child) =>
+        builder: (context, child) =>
             RepositoryProvider<RecoverBullNavigationPort>.value(
               value: RecoverBullNavigationCallbacks(
                 onOpenTorSettings: () {},
                 onOpenWalletHome: () => router.go('/wallet'),
               ),
-              child: child!,
+              child: withTestUiLabels(context, child!),
             ),
       ),
     );

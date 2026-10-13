@@ -27,9 +27,11 @@ class RecoverBullAttemptAlertDetailPage extends StatelessWidget {
         .firstWhere((reference) => reference != null, orElse: () => null);
     final security = lockout != null || suspicious != null;
     return BullScaffold(
-      appBar: AppBar(title: Text(l10n.recoverbullAttemptAlertDetailsTitle)),
+      appBar: BullTopBar.appBar(
+        title: l10n.recoverbullAttemptAlertDetailsTitle,
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(BullSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

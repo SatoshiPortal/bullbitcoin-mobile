@@ -1,17 +1,5 @@
 {
   "@@locale": "en",
-  "oopsSomethingWentWrong": "Oops! Something went wrong",
-  "@oopsSomethingWentWrong": {"description": "Generic error title shown by shared status screens."},
-  "statusScreenTryAgain": "Try Again",
-  "@statusScreenTryAgain": {"description": "Action button to retry a failed status screen."},
-  "statusScreenContinue": "Continue",
-  "@statusScreenContinue": {"description": "Action button to continue from a status screen."},
-  "copyDialogButton": "Copy",
-  "@copyDialogButton": {"description": "Button to copy a value from the value dialog."},
-  "copyDialogCopied": "Copied",
-  "@copyDialogCopied": {"description": "Confirmation shown after copying a value."},
-  "closeDialogButton": "Close",
-  "@closeDialogButton": {"description": "Button to close the value dialog."},
   "recoverbullGoogleDriveNoBackupsFound": "No backups found",
   "@recoverbullGoogleDriveNoBackupsFound": {
     "description": "Message displayed when no backups are found in Google Drive"
@@ -52,14 +40,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "@walletSetupErrorTryAgain": {
-    "description": "Generic error shown when default-wallet creation or recovery fails."
-  },
-  "torSettingsTitle": "Tor Settings",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "Password",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -76,10 +56,6 @@
   "backupWalletHowToDecideVaultCustomRecommendationText": "you are confident you will not lose the vault file and it will still be accessible if you lose your phone.",
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
-  },
-  "torSettingsModeSnowflake": "Snowflake",
-  "@torSettingsModeSnowflake": {
-    "description": "Snowflake Tor transport mode label"
   },
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
@@ -155,15 +131,6 @@
     "description": "Instruction to re-enter PIN or password for confirmation",
     "placeholders": {
       "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "torSettingsActiveTransport": "Active transport: {transport}",
-  "@torSettingsActiveTransport": {
-    "description": "Transport currently used by embedded Tor",
-    "placeholders": {
-      "transport": {
         "type": "String"
       }
     }
@@ -271,10 +238,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
-  "@torSettingsModeAutomaticDescription": {
-    "description": "Automatic Tor mode explanation"
-  },
   "recoverbullErrorVaultNotSet": "Vault is not set",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -294,18 +257,6 @@
   "recoverbullErrorSelectVault": "Failed to select vault",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
-  },
-  "torSettingsStatusCensored": "Connection appears filtered",
-  "@torSettingsStatusCensored": {
-    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
-  },
-  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
-  "@torSettingsModeSnowflakeDescription": {
-    "description": "Snowflake Tor mode explanation"
-  },
-  "backupWalletHowToDecideBackupModalTitle": "How to decide",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
   },
   "recoverbullSettingsUrlMustBeOnion": "URL must end with .onion",
   "@recoverbullSettingsUrlMustBeOnion": {
@@ -331,10 +282,6 @@
   "recoverbullPIN": "PIN",
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
-  },
-  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
-  "@torSettingsModeDirectDescription": {
-    "description": "Direct Tor mode explanation"
   },
   "recoverbullSettingsUrlInvalid": "URL is not valid",
   "@recoverbullSettingsUrlInvalid": {
@@ -375,10 +322,6 @@
   "recoverbullTorNetwork": "Tor Network",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor proxy is running and ready",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Recoverbull Settings",
   "@recoverbullSettingsTitle": {
@@ -442,14 +385,6 @@
   "@recoverbullLearnMore": {
     "description": "Link text to learn more about Recoverbull"
   },
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "@torSettingsExternalProxyUnavailableDescription": {
-    "description": "Status description when the external SOCKS5 proxy is unavailable"
-  },
-  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
-  "@torSettingsDescCensored": {
-    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
-  },
   "recoverbullGoogleDriveErrorDeleteFailed": "Failed to delete vault from Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -481,10 +416,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google or Apple cloud: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "How to decide?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} minute",
   "@durationMinute": {
@@ -609,10 +540,6 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown after Tor connects while the backup server is being checked"
   },
-  "torSettingsDescDisconnected": "Tor proxy is not running",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
   "recoverbullMonitoringTitle": "Backup monitoring",
   "recoverbullMonitoringEnabled": "Monitor backups",
   "recoverbullMonitoringCount": "Backups monitored: {count}",
@@ -639,5 +566,9 @@
   "recoverbullMonitoringServerUnsupported": "This server does not support attempt monitoring. You can still back up and recover vaults.",
   "@recoverbullMonitoringServerUnsupported": {
     "description": "Advisory when the server lacks the attempt monitoring API; vault backup and recovery remain supported"
+  },
+  "recoverbullTemporaryStorageNotice": "Settings and backup verification cannot be saved right now. You can still approve the server and recover a vault.",
+  "@recoverbullTemporaryStorageNotice": {
+    "description": "Explains that temporary-session settings and backup verification cannot be persisted while vault recovery remains available"
   }
 }

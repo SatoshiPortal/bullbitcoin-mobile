@@ -5,7 +5,6 @@ import './vault_selected_page.dart';
 import '../widgets/key_server_status_widget.dart';
 import '../../router/flow_type.dart';
 import '../../l10n/context_localizations.dart';
-import '../widgets/progress_screen.dart';
 import '../widgets/recoverbull_vault_provider_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -17,27 +16,24 @@ class VaultProviderSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BullScaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            final bloc = context.read<RecoverBullBloc>();
-            if (bloc.hasPendingProviderSave) {
-              BullSnackBar.show(
-                context,
-                message: context.loc.recoverbullProviderSaveFailed,
-              );
-              return;
-            }
-            final navigator = Navigator.of(context);
-            if (navigator.canPop()) {
-              navigator.pop();
-            } else {
-              context.pop();
-            }
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: Text(context.loc.recoverbullSelectVaultProvider),
+      appBar: BullTopBar.appBar(
+        title: context.loc.recoverbullSelectVaultProvider,
+        onBack: () {
+          final bloc = context.read<RecoverBullBloc>();
+          if (bloc.hasPendingProviderSave) {
+            BullSnackBar.show(
+              context,
+              message: context.loc.recoverbullProviderSaveFailed,
+            );
+            return;
+          }
+          final navigator = Navigator.of(context);
+          if (navigator.canPop()) {
+            navigator.pop();
+          } else {
+            context.pop();
+          }
+        },
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -95,7 +91,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
               if (state.flow == RecoverBullFlow.secureVault && state.isLoading)
                 Expanded(
                   child: Center(
-                    child: ProgressScreen(
+                    child: BullProgressScreen(
                       isLoading: true,
                       title: context.loc.recoverbullCreatingVault,
                       description:
@@ -127,7 +123,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                           );
                         },
                         child: BullText(
-                          context.loc.backupWalletHowToDecide,
+                          context.recoverBullLabels.backupWalletHowToDecide,
                           style: context.bullText.headlineLarge?.copyWith(
                             color: context.bull.primary,
                           ),
@@ -168,7 +164,9 @@ class HowToDecideVaultLocation extends StatelessWidget {
                 children: [
                   const Spacer(),
                   BullText(
-                    context.loc.backupWalletHowToDecideBackupModalTitle,
+                    context
+                        .recoverBullLabels
+                        .backupWalletHowToDecideBackupModalTitle,
                     style: context.bullText.headlineMedium,
                     textAlign: .center,
                   ),
@@ -180,11 +178,11 @@ class HowToDecideVaultLocation extends StatelessWidget {
                 ],
               ),
             ),
-            const Gap(32),
+            const Gap(BullSpacing.xl),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(BullSpacing.lg),
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
@@ -196,7 +194,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                         ),
                         maxLines: 16,
                       ),
-                      const Gap(32),
+                      const Gap(BullSpacing.xl),
                       BullText(
                         context.loc.backupWalletHowToDecideVaultCustomLocation,
                         style: context.bullText.labelMedium?.copyWith(
@@ -205,7 +203,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                         ),
                         maxLines: 16,
                       ),
-                      const Gap(12),
+                      const Gap(BullSpacing.sm),
                       RichText(
                         text: TextSpan(
                           style: context.bullText.bodyMedium,
@@ -227,7 +225,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Gap(12),
+                      const Gap(BullSpacing.sm),
                       RichText(
                         text: TextSpan(
                           style: context.bullText.bodyMedium,
@@ -249,7 +247,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Gap(12),
+                      const Gap(BullSpacing.sm),
                       BullText(
                         context.loc.backupWalletHowToDecideVaultMoreInfo,
                         style: context.bullText.labelMedium?.copyWith(

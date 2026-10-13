@@ -52,11 +52,6 @@ class _PasswordInputPageState extends State<PasswordInputPage>
 
   @override
   Widget build(BuildContext context) {
-    final borderDecoration = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(2),
-      borderSide: BorderSide(color: context.bull.border),
-    );
-
     return BlocBuilder<RecoverBullBloc, RecoverBullState>(
       builder: (context, state) {
         final needPasswordConfirmation =
@@ -101,12 +96,10 @@ class _PasswordInputPageState extends State<PasswordInputPage>
         };
 
         return BullScaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            flexibleSpace: BullTopBar(
-              onBack: () => context.pop(),
-              title: title,
-            ),
+          appBar: BullTopBar.appBar(
+            titleStyle: context.bullText.headlineMedium,
+            title: title,
+            onBack: () => context.pop(),
             actions: const [
               Padding(
                 padding: EdgeInsets.only(right: 20),
@@ -134,7 +127,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                       ),
                     ),
                   ),
-                  const Gap(12),
+                  const Gap(BullSpacing.sm),
                   BullText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
@@ -145,12 +138,16 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                     ),
                   ),
                   const Gap(2),
-                  TextFormField(
+                  BullInputText(
                     controller: inputController,
-                    obscureText: isObscured,
+                    value: inputController.text,
+                    onChanged: (_) {},
+                    obscure: isObscured,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    smartQuotesType: SmartQuotesType.disabled,
+                    smartDashesType: SmartDashesType.disabled,
                     readOnly: inputType == InputType.pin,
-                    textAlign: .left,
-                    textAlignVertical: TextAlignVertical.center,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: context.bullText.headlineSmall?.copyWith(
                       color: context.bull.onSurface,
@@ -179,24 +176,13 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                         return PasswordValidator.validate(value, context);
                       }
                     },
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        padding: const EdgeInsets.all(5),
-                        icon: isObscured
-                            ? const Icon(Icons.visibility_outlined)
-                            : const Icon(Icons.visibility_off_outlined),
-                        onPressed: () =>
-                            setState(() => isObscured = !isObscured),
-                      ),
-                      border: borderDecoration,
-                      enabledBorder: borderDecoration,
-                      focusedBorder: borderDecoration,
-                      disabledBorder: borderDecoration,
-                      contentPadding: const EdgeInsets.all(16),
-                      errorMaxLines: 4,
-                    ),
+                    rightIcon: isObscured
+                        ? const Icon(Icons.visibility_outlined)
+                        : const Icon(Icons.visibility_off_outlined),
+                    onRightTap: () => setState(() => isObscured = !isObscured),
+                    errorMaxLines: 4,
                   ),
-                  const Gap(16),
+                  const Gap(BullSpacing.md),
                   if (needPasswordConfirmation && validatedPassword.isNotEmpty)
                     BullButton.small(
                       label: context.loc.recoverbullGoBackEdit,
@@ -267,7 +253,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                         },
                       ),
                     ),
-                  if (inputType == InputType.pin) const Gap(12),
+                  if (inputType == InputType.pin) const Gap(BullSpacing.sm),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 60),
                     child: BullButton.big(
@@ -311,6 +297,8 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                     password: validatedPassword,
                                   ),
                                 );
+                                validatedPassword = '';
+                                inputController.clear();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
@@ -319,12 +307,14 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                 );
                               }
                             default:
+                              final nextPage = FetchVaultKeyPage(
+                                input: inputController.text,
+                                inputType: inputType,
+                              );
+                              inputController.clear();
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => FetchVaultKeyPage(
-                                    input: inputController.text,
-                                    inputType: inputType,
-                                  ),
+                                  builder: (context) => nextPage,
                                 ),
                               );
                           }

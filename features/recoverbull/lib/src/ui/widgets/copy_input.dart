@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show ImageFilter;
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -71,7 +70,10 @@ class _CopyInputState extends State<CopyInput> {
       if (!mounted) unawaited(pending.run());
     }
     if (context.mounted) {
-      BullSnackBar.show(context, message: context.loc.copyDialogCopied);
+      BullSnackBar.show(
+        context,
+        message: context.recoverBullLabels.copyDialogCopied,
+      );
     }
   }
 
@@ -83,7 +85,7 @@ class _CopyInputState extends State<CopyInput> {
     return Container(
       decoration: BoxDecoration(
         color: colors.onSecondary,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(BullRadius.sm),
         border: Border.all(color: colors.secondaryFixedDim),
       ),
       child: Row(
@@ -135,7 +137,7 @@ class _CopyInputState extends State<CopyInput> {
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
-              tooltip: context.loc.copyDialogButton,
+              tooltip: context.recoverBullLabels.copyDialogButton,
               icon: Icon(Icons.copy_sharp, color: colors.secondary),
               onPressed: () => _copy(context, copyValue),
             ),
@@ -146,49 +148,45 @@ class _CopyInputState extends State<CopyInput> {
   }
 
   void _showModal(BuildContext context, String copyValue) {
-    showDialog<void>(
+    BullDialog.showAlert<void>(
       context: context,
       barrierColor: context.bull.surface.withAlpha(100),
-      builder: (dialogContext) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-        child: AlertDialog(
-          title: modalTitle == null
-              ? null
-              : Text(
-                  modalTitle!,
-                  style: context.bullText.headlineMedium?.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  textAlign: TextAlign.center,
+      blurSigma: 4,
+      builder: (dialogContext) => BullDialog.alert(
+        title: modalTitle == null
+            ? null
+            : Text(
+                modalTitle!,
+                style: context.bullText.headlineMedium?.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
                 ),
-          content: SingleChildScrollView(
-            child: ExcludeSemantics(
-              child: SelectableText(
-                (modalContent ?? value).toString(),
-                style: context.bullText.bodyLarge?.copyWith(fontSize: 18),
+                textAlign: TextAlign.center,
               ),
+        actions: [
+          if (copyValue.isNotEmpty)
+            BullButton.text(
+              label: context.recoverBullLabels.copyDialogButton,
+              onPressed: () => _copy(context, copyValue),
+              bgColor: context.bull.transparent,
+              textColor: context.bull.secondary,
+              textStyle: context.bullText.bodyLarge,
+            ),
+          BullButton.text(
+            label: context.recoverBullLabels.closeDialogButton,
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            bgColor: context.bull.transparent,
+            textColor: context.bull.primary,
+            textStyle: context.bullText.bodyLarge,
+          ),
+        ],
+        child: SingleChildScrollView(
+          child: ExcludeSemantics(
+            child: BullText(
+              (modalContent ?? value).toString(),
+              style: context.bullText.bodyLarge?.copyWith(fontSize: 18),
             ),
           ),
-          actions: [
-            if (copyValue.isNotEmpty)
-              TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: context.bull.secondary,
-                  textStyle: context.bullText.bodyLarge,
-                ),
-                onPressed: () => _copy(context, copyValue),
-                child: Text(context.loc.copyDialogButton),
-              ),
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: context.bull.primary,
-                textStyle: context.bullText.bodyLarge,
-              ),
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.loc.closeDialogButton),
-            ),
-          ],
         ),
       ),
     );

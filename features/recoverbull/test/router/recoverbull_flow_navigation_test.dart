@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -78,6 +79,7 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
@@ -110,6 +112,7 @@ void main() {
     var rebuilds = 0;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -200,6 +203,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp.router(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         routerConfig: router,
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
@@ -259,6 +263,7 @@ void main() {
     ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -315,6 +320,7 @@ class _TestHost extends StatelessWidget {
   Widget build(BuildContext context) {
     final navigator = _navigator(repository);
     return MaterialApp(
+      builder: (context, child) => withTestUiLabels(context, child!),
       theme: ThemeData(extensions: const [testBullTheme]),
       localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
       supportedLocales: RecoverBullLocalizations.supportedLocales,

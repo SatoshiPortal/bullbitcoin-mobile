@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
-  "torSettingsTitle": "Tor 설정",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "비밀번호",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google 드라이브",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "활성 전송: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "비밀번호는 일치하지 않습니다",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "먼저 Tor에 직접 연결하고, 네트워크가 Tor를 차단하는 것으로 보이면 Snowflake를 사용합니다.",
   "recoverbullErrorVaultNotSet": "Vault는 설정되지 않습니다",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
-  "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
-  "backupWalletHowToDecideBackupModalTitle": "결정하는 방법",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "URL은 .onion으로 끝나야 합니다",
   "recoverbullServerConfirmTitle": "볼트 복구 서버",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
   "recoverbullSettingsUrlInvalid": "URL이 유효하지 않습니다",
   "recoverbullCheckingConnection": "RecoverBull에 대한 연결 확인",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "Tor 네트워크",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor 프록시는 실행 및 준비",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Recoverbull 설정",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Recoverbull에 대해 자세히 알아보기",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive에서 vault 삭제",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google 또는 애플 클라우드: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "결정하는 방법?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} 분",
   "@durationMinute": {
@@ -457,31 +432,8 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor 프록시는 실행되지 않습니다",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "다시 시도",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "계속",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "관련 기사",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "뚱 베어",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Tor에 키 서버 연결. 1 분까지 걸릴 수 있습니다.",
   "recoverbullMonitoringDisableCancel": "취소",
-  "recoverbullMonitoringServerUnsupported": "이 서버는 시도 모니터링을 지원하지 않습니다. 보관함을 계속 백업하고 복구할 수 있습니다."
+  "recoverbullMonitoringServerUnsupported": "이 서버는 시도 모니터링을 지원하지 않습니다. 보관함을 계속 백업하고 복구할 수 있습니다.",
+  "recoverbullTemporaryStorageNotice": "지금은 설정 및 백업 확인을 저장할 수 없습니다. 서버를 승인하고 보관함을 복구할 수 있습니다."
 }

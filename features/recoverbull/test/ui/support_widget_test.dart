@@ -1,7 +1,5 @@
+import '../support/ui_labels.dart';
 import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
-import 'package:bull_recoverbull/src/ui/widgets/progress_screen.dart';
-import 'package:bull_recoverbull/src/ui/widgets/status_screen.dart';
-import 'package:bull_recoverbull/src/ui/widgets/backup_success_screen.dart';
 import 'package:bull_recoverbull/src/ui/widgets/copy_input.dart';
 import 'package:bull_recoverbull/src/ui/widgets/recoverbull_vault_provider_selector.dart';
 import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
@@ -21,6 +19,7 @@ void main() {
     late BuildContext context;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         home: Builder(
           builder: (value) {
@@ -63,6 +62,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: const Scaffold(
@@ -85,6 +85,7 @@ void main() {
   testWidgets('CopyInput only shows reveal when enabled', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value')),
@@ -94,6 +95,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value', canShowValueModal: true)),
@@ -105,6 +107,7 @@ void main() {
   testWidgets('CopyInput uses localized modal actions', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(text: 'value', canShowValueModal: true)),
@@ -121,6 +124,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(body: CopyInput(canShowValueModal: true)),
@@ -136,6 +140,7 @@ void main() {
     var backspaces = 0;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(
@@ -161,6 +166,7 @@ void main() {
     final selected = <VaultProvider>[];
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(
@@ -178,13 +184,14 @@ void main() {
     expect(selected, [VaultProvider.googleDrive, VaultProvider.customLocation]);
   });
 
-  testWidgets('ProgressScreen uses the Bull UI loading GIF at 200 pixels', (
+  testWidgets('BullProgressScreen uses the Bull UI loading GIF at 200 pixels', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
-        home: ProgressScreen(isLoading: true),
+        home: BullProgressScreen(isLoading: true),
       ),
     );
     final gif = tester.widget<Gif>(find.byType(Gif));
@@ -194,13 +201,14 @@ void main() {
   });
 
   testWidgets(
-    'BackupSuccessScreen has animated asset and invokes bottom action',
+    'BullBackupSuccessScreen has animated asset and invokes bottom action',
     (tester) async {
       var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
-          home: BackupSuccessScreen(
+          home: BullBackupSuccessScreen(
             title: 'Done',
             message: 'Message',
             buttonLabel: 'Got it',
@@ -220,6 +228,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -227,7 +236,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(StatusScreen), findsNothing);
+    expect(find.byType(BullStatusScreen), findsNothing);
     final gif = tester.widget<Gif>(find.byType(Gif));
     expect(gif.width, 200);
     expect(gif.height, 200);
@@ -240,9 +249,16 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
-        home: const StatusScreen(isLoading: false, onTap: _noop),
+        home: const BullStatusScreen(
+          errorTitle: 'Oops! Something went wrong',
+          retryLabel: 'Try Again',
+          continueLabel: 'Continue',
+          isLoading: false,
+          onTap: _noop,
+        ),
       ),
     );
     expect(find.byType(SingleChildScrollView), findsOneWidget);
@@ -261,6 +277,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
         home: Scaffold(

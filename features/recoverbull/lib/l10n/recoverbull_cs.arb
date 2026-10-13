@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
-  "torSettingsTitle": "Nastavení Toru",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "Heslo",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Disk Google",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Aktivní transport: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Heslo neodpovídají",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
   "recoverbullErrorVaultNotSet": "Vault není nastaven",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
-  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
-  "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "URL musí končit na .onion",
   "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
   "recoverbullSettingsUrlInvalid": "URL není platná",
   "recoverbullCheckingConnection": "Kontrola spojení pro obnoveníBull",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "Tor síť",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor proxy je spuštěn a připraven",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Nastavení Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Více informací o Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Vymazat klenbu z Disku Google",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google nebo Apple cloud: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "Jak se rozhodnout?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} minuta",
   "@durationMinute": {
@@ -457,31 +432,8 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor proxy není spuštěn",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Zkusit znovu",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Pokračovat",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Čeština",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Zavřít",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor. To může trvat až minutu.",
   "recoverbullMonitoringDisableCancel": "Zrušit",
-  "recoverbullMonitoringServerUnsupported": "Tento server nepodporuje sledování pokusů. Trezory můžete nadále zálohovat a obnovovat."
+  "recoverbullMonitoringServerUnsupported": "Tento server nepodporuje sledování pokusů. Trezory můžete nadále zálohovat a obnovovat.",
+  "recoverbullTemporaryStorageNotice": "Nastavení a ověření záloh nyní nelze uložit. Stále můžete schválit server a obnovit trezor."
 }

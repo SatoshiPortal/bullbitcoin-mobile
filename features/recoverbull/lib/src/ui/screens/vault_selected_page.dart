@@ -24,8 +24,8 @@ class VaultSelectedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BullScaffold(
-      appBar: AppBar(
-        title: Text(context.loc.recoverbullVaultSelected),
+      appBar: BullTopBar.appBar(
+        title: context.loc.recoverbullVaultSelected,
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -42,18 +42,18 @@ class VaultSelectedPage extends StatelessWidget {
               textAlign: .left,
               style: context.bullText.bodySmall,
             ),
-            const Gap(16),
+            const Gap(BullSpacing.md),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 border: Border.all(color: context.bull.onSurface),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(BullRadius.xs),
               ),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
                   BullText(vault.id, style: context.bullText.headlineMedium),
-                  const Gap(16),
+                  const Gap(BullSpacing.md),
                   BullText(
                     DateFormat(
                       "yyyy-MMM-dd, HH:mm:ss",
@@ -75,7 +75,7 @@ class VaultSelectedPage extends StatelessWidget {
                 textColor: context.bull.onSurface,
                 outlined: true,
               ),
-              const Gap(16),
+              const Gap(BullSpacing.md),
             ],
             Padding(
               padding: EdgeInsets.only(

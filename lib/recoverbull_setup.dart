@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
@@ -52,12 +54,15 @@ final class RecoverBullSetup {
       composed = RecoverBullFeature.unavailable(
         log: recoverBullLog,
         navigation: _navigation(),
+        uiLabels: _uiLabels,
       );
     }
-    locator.registerSingleton<RecoverBullFeature>(composed);
+    locator.registerSingleton<RecoverBullFeature>(
+      composed,
+      dispose: (feature) => feature.lifecycle.dispose(),
+    );
     // The feature facade is the only package service registered in the shell.
     locator.registerSingleton<RecoverBullLifecycle>(composed.lifecycle);
-    locator.registerSingleton<RecoverBullLifecyclePort>(composed.lifecycle);
 
     // Advisory only: neither the attempt check, Drive discovery nor the
     // key-server warm-up may delay app startup. Background composition skips
@@ -68,6 +73,35 @@ final class RecoverBullSetup {
       unawaited(composed.warmKeyServerRoute());
     }
   }
+
+  static RecoverBullUiLabels _uiLabels(BuildContext context) =>
+      RecoverBullUiLabels(
+        oopsSomethingWentWrong: context.loc.oopsSomethingWentWrong,
+        statusScreenTryAgain: context.loc.statusScreenTryAgain,
+        statusScreenContinue: context.loc.statusScreenContinue,
+        copyDialogButton: context.loc.copyDialogButton,
+        closeDialogButton: context.loc.closeDialogButton,
+        walletSetupErrorTryAgain: context.loc.walletSetupErrorTryAgain,
+        torSettingsTitle: context.loc.torSettingsTitle,
+        torSettingsModeSnowflake: context.loc.torSettingsModeSnowflake,
+        torSettingsActiveTransport: context.loc.torSettingsActiveTransport,
+        torSettingsModeAutomaticDescription:
+            context.loc.torSettingsModeAutomaticDescription,
+        torSettingsStatusCensored: context.loc.torSettingsStatusCensored,
+        torSettingsModeSnowflakeDescription:
+            context.loc.torSettingsModeSnowflakeDescription,
+        backupWalletHowToDecideBackupModalTitle:
+            context.loc.backupWalletHowToDecideBackupModalTitle,
+        torSettingsModeDirectDescription:
+            context.loc.torSettingsModeDirectDescription,
+        torSettingsDescConnected: context.loc.torSettingsDescConnected,
+        torSettingsExternalProxyUnavailableDescription:
+            context.loc.torSettingsExternalProxyUnavailableDescription,
+        torSettingsDescCensored: context.loc.torSettingsDescCensored,
+        backupWalletHowToDecide: context.loc.backupWalletHowToDecide,
+        torSettingsDescDisconnected: context.loc.torSettingsDescDisconnected,
+        copyDialogCopied: context.loc.importWatchOnlyCopiedToClipboard,
+      );
 
   static RecoverBullNavigationPort _navigation() =>
       RecoverBullNavigationCallbacks(
@@ -83,6 +117,7 @@ final class RecoverBullSetup {
     LogSink recoverBullLog,
   ) async {
     final documents = await getApplicationDocumentsDirectory();
+    final databasePath = '${documents.path}/recoverbull.sqlite';
     final legacySettings = await readRecoverBullLegacySettings(
       database,
       onReadFailure: () => recoverBullLog.warning(
@@ -93,8 +128,9 @@ final class RecoverBullSetup {
     final walletRepository = locator<WalletRepository>();
     final composed = await RecoverBullFeature.create(
       navigation: _navigation(),
+      uiLabels: _uiLabels,
       config: RecoverBullConfig(
-        databasePath: '${documents.path}/recoverbull.sqlite',
+        databasePath: databasePath,
         initialPermissionGranted: legacySettings.permissionGranted,
         initialServerUrlOverride: legacySettings.serverUrl,
       ),

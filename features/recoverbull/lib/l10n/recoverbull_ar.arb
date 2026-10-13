@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "torSettingsTitle": "تنظيمات التعذيب",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "كلمة السر",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "كلمات السر لا تتطابق",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "يجرّب اتصالًا مباشرًا بـ Tor أولًا، ويستخدم Snowflake إذا بدا أن الشبكة تحجب Tor.",
   "recoverbullErrorVaultNotSet": "الخزنة ليست جاهزة",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
-  "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
-  "backupWalletHowToDecideBackupModalTitle": "كيفية تقرير",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "يجب أن ينتهي الرابط بـ .onion",
   "recoverbullServerConfirmTitle": "خادم استرداد الخزنة",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
   "recoverbullSettingsUrlInvalid": "الرابط غير صالح",
   "recoverbullCheckingConnection": "وصلة التحقق لـ (ريفري بول)",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "Tor Network",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "(تور بروسي) يركض ويستعد",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "إعدادات Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "اعرف المزيد عن Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
   "recoverbullGoogleDriveErrorDeleteFailed": "فشل في حذف الخزنة من محرك غوغل",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google or سحابة التفاح: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "كيف تقرر؟?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} دقيقة",
   "@durationMinute": {
@@ -457,31 +432,8 @@
     "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "(تور بروسي) لا يهرب",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "! شيء ما حدث",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "حاول مرة أخرى",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "متابعة",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "نسخ",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "اقترب",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "(تواصل مع (كي سيرفر على (تور هذا يمكن أن يستغرق حتى دقيقة.",
   "recoverbullMonitoringDisableCancel": "إلغاء",
-  "recoverbullMonitoringServerUnsupported": "هذا الخادم لا يدعم مراقبة المحاولات. لا يزال بإمكانك نسخ الخزائن احتياطيًا واستعادتها."
+  "recoverbullMonitoringServerUnsupported": "هذا الخادم لا يدعم مراقبة المحاولات. لا يزال بإمكانك نسخ الخزائن احتياطيًا واستعادتها.",
+  "recoverbullTemporaryStorageNotice": "لا يمكن حفظ الإعدادات والتحقق من النسخ الاحتياطية الآن. لا يزال بإمكانك الموافقة على الخادم واستعادة خزنة."
 }

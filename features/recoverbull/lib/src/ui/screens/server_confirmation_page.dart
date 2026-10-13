@@ -70,16 +70,10 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
   @override
   Widget build(BuildContext context) {
     return BullScaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: BullText(
-          context.loc.recoverbullServerConfirmTitle,
-          style: context.bullText.headlineMedium,
-          color: context.bull.onSurface,
-        ),
+      appBar: BullTopBar.appBar(
+        titleStyle: context.bullText.headlineMedium,
+        title: context.loc.recoverbullServerConfirmTitle,
+        onBack: () => context.pop(),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -102,11 +96,11 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
               ),
             )
           : Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(BullSpacing.lg),
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: [
-                  const Gap(24),
+                  const Gap(BullSpacing.lg),
                   Icon(
                     _isUsingDefaultServer
                         ? Icons.verified_user
@@ -116,7 +110,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         ? context.bull.primary
                         : context.bull.tertiary,
                   ),
-                  const Gap(32),
+                  const Gap(BullSpacing.xl),
                   BullText(
                     _isUsingDefaultServer
                         ? context.loc.recoverbullServerUsingDefault
@@ -124,12 +118,12 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     style: context.bullText.headlineMedium,
                     textAlign: .center,
                   ),
-                  const Gap(16),
+                  const Gap(BullSpacing.md),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(BullSpacing.md),
                     decoration: BoxDecoration(
                       color: context.bull.cardBackground,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(BullRadius.sm),
                       border: Border.all(color: context.bull.border, width: 1),
                     ),
                     child: Column(
@@ -141,7 +135,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                             color: context.bull.textMuted,
                           ),
                         ),
-                        const Gap(8),
+                        const Gap(BullSpacing.xs),
                         BullText(
                           _serverUrl ?? recoverBullDefaultServerUrl,
                           style: context.bullText.bodyMedium?.copyWith(
@@ -151,14 +145,14 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       ],
                     ),
                   ),
-                  const Gap(24),
+                  const Gap(BullSpacing.lg),
                   if (!_isUsingDefaultServer) ...[
                     BullInfoCard(
                       description: context.loc.recoverbullServerCustomWarning,
                       tagColor: context.bull.error,
                       bgColor: context.bull.errorContainer,
                     ),
-                    const Gap(24),
+                    const Gap(BullSpacing.lg),
                   ],
                   BullText(
                     context.loc.recoverbullServerTorNotice,
@@ -197,7 +191,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     bgColor: context.bull.onSurface,
                     textColor: context.bull.surface,
                   ),
-                  const Gap(16),
+                  const Gap(BullSpacing.md),
                   GestureDetector(
                     onTap: _openRecoverBullWebsite,
                     child: Row(
@@ -208,7 +202,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           size: 20,
                           color: context.bull.primary,
                         ),
-                        const Gap(8),
+                        const Gap(BullSpacing.xs),
                         BullText(
                           context.loc.recoverbullLearnMore,
                           style: context.bullText.bodyMedium,
@@ -217,7 +211,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       ],
                     ),
                   ),
-                  const Gap(24),
+                  const Gap(BullSpacing.lg),
                 ],
               ),
             ),

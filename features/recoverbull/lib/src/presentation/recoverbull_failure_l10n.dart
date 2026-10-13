@@ -25,12 +25,13 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultProviderSaveFailure() => context.loc.recoverbullProviderSaveFailed,
     TorNotStartedFailure() => context.loc.recoverbullTorNotStarted,
     ExternalTorProxyUnavailableFailure() =>
-      context.loc.torSettingsExternalProxyUnavailableDescription,
+      context.recoverBullLabels.torSettingsExternalProxyUnavailableDescription,
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
     VaultBelongsToAnotherWalletFailure() =>
       context.loc.recoverbullErrorVaultBelongsToAnotherWallet,
-    VaultRecoveryFailure() => context.loc.walletSetupErrorTryAgain,
+    VaultRecoveryFailure() =>
+      context.recoverBullLabels.walletSetupErrorTryAgain,
     InvalidVaultCredentialsFailure() =>
       context.loc.recoverbullErrorInvalidCredentials,
     InvalidVaultFileFormatFailure() =>
@@ -43,31 +44,38 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    KeyServerInvalidCredentialsFailure() => context.loc.oopsSomethingWentWrong,
-    KeyServerRateLimitedFailure() => context.loc.oopsSomethingWentWrong,
+    KeyServerInvalidCredentialsFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
+    KeyServerRateLimitedFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
     KeyServerBusyFailure(:final retryIn) =>
       retryIn == null
           ? context.loc.recoverbullErrorServiceBusy
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    KeyServerRejectedFailure() => context.loc.oopsSomethingWentWrong,
-    KeyServerUnavailableFailure() => context.loc.oopsSomethingWentWrong,
-    KeyServerHealthCheckTimeoutFailure() => context.loc.oopsSomethingWentWrong,
+    KeyServerRejectedFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
+    KeyServerUnavailableFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
+    KeyServerHealthCheckTimeoutFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
     RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
       retryIn == null
           ? context.loc.recoverbullErrorServiceBusy
           : context.loc.recoverbullErrorServiceBusyRetryIn(
               _cooldown(context, retryIn),
             ),
-    InvalidVaultFileFailure() => context.loc.oopsSomethingWentWrong,
+    InvalidVaultFileFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
     RecoverBullGoogleDriveFetchFailure() =>
       context.loc.recoverbullGoogleDriveErrorFetchFailed,
     RecoverBullGoogleDriveDeleteFailure() =>
       context.loc.recoverbullGoogleDriveErrorDeleteFailed,
     RecoverBullGoogleDriveExportFailure() =>
       context.loc.recoverbullGoogleDriveErrorExportFailed,
-    RecoverBullUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    RecoverBullUnexpectedFailure() =>
+      context.recoverBullLabels.oopsSomethingWentWrong,
   };
 
   String _cooldown(BuildContext context, Duration retryIn) {

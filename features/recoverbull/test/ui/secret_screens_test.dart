@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'dart:async';
 
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
@@ -36,6 +37,7 @@ class _FakeRecoverBullBloc extends Fake implements RecoverBullBloc {
 }
 
 Widget _app(Widget home) => MaterialApp(
+  builder: (context, child) => withTestUiLabels(context, child!),
   theme: ThemeData(extensions: const [testBullTheme]),
   localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -86,13 +88,20 @@ void main() {
       await tester.pump();
 
       final visiblePrefix = _vaultKey.substring(0, 6);
-      expect(find.textContaining(visiblePrefix), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp(visiblePrefix)), findsNothing);
+      expect(find.textContaining(visiblePrefix), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp(_vaultKey.substring(0, 4))),
+        findsNothing,
+      );
 
       await tester.tap(find.byIcon(Icons.visibility_outlined));
       await tester.pumpAndSettle();
-      expect(find.textContaining(visiblePrefix), findsWidgets);
-      expect(find.bySemanticsLabel(RegExp(visiblePrefix)), findsNothing);
+      expect(find.textContaining('a1b2 c3'), findsOneWidget);
+      expect(find.byType(SelectableText), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp(_vaultKey.substring(0, 4))),
+        findsNothing,
+      );
       semantics.dispose();
     });
   });
@@ -120,4 +129,31 @@ void main() {
     await tester.pump();
     expect(calls.lastOrNull, 'screenshotOn');
   });
+  testWidgets(
+    'revealing a password keeps keyboard learning and suggestions disabled',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final bloc = _FakeRecoverBullBloc();
+      addTearDown(bloc.close);
+      await tester.pumpWidget(
+        _app(
+          BlocProvider<RecoverBullBloc>.value(
+            value: bloc,
+            child: const PasswordInputPage(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.visibility_outlined));
+      await tester.pump();
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.obscureText, isFalse);
+      expect(field.enableSuggestions, isFalse);
+      expect(field.autocorrect, isFalse);
+      expect(field.enableIMEPersonalizedLearning, isFalse);
+      expect(field.smartQuotesType, SmartQuotesType.disabled);
+      expect(field.smartDashesType, SmartDashesType.disabled);
+    },
+  );
 }

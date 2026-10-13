@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "Algo deu errado ao configurar sua carteira. Por favor, tente novamente.",
-  "torSettingsTitle": "Configurações do Tor",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "Senha",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Transporte ativo: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "As senhas não coincidem",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "Tenta primeiro uma conexão Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
   "recoverbullErrorVaultNotSet": "Vault não está definido",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "A conexão parece filtrada",
-  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários do Snowflake para alcançar o Tor a partir de uma rede filtrada.",
-  "backupWalletHowToDecideBackupModalTitle": "Como decidir",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "O URL deve terminar em .onion",
   "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "Conecta-se diretamente à rede Tor, sem pluggable transport.",
   "recoverbullSettingsUrlInvalid": "O URL não é válido",
   "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "Rede de Torno",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "Tor proxy está em execução e pronto",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "Configurações do Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://exemplo.onion",
   "recoverbullLearnMore": "Saiba mais sobre o Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isso costuma indicar que a conexão está sendo filtrada.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Falhado para excluir o vault do Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google ou Nuvem da Apple: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "Como decidir?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
@@ -457,31 +432,8 @@
   "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "Tor proxy não está funcionando",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! Algo correu mal",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Tente novamente",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Continue",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Entendido",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Fechar",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor. Isto pode demorar até um minuto.",
   "recoverbullMonitoringDisableCancel": "Cancelar",
-  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres."
+  "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres.",
+  "recoverbullTemporaryStorageNotice": "As configurações e a verificação dos backups não podem ser salvas agora. Você ainda pode aprovar o servidor e recuperar um cofre."
 }

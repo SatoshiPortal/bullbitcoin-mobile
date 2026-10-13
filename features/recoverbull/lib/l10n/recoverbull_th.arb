@@ -37,11 +37,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "walletSetupErrorTryAgain": "เกิดข้อผิดพลาดในการตั้งค่ากระเป๋าสตางค์ของคุณ กรุณาลองใหม่อีกครั้ง",
-  "torSettingsTitle": "ปุ่ม",
-  "@torSettingsTitle": {
-    "description": "AppBar title for the Tor settings screen"
-  },
   "recoverbullPassword": "รหัสผ่าน",
   "@recoverbullPassword": {
     "description": "Label for password input type"
@@ -59,7 +54,6 @@
   "@backupWalletHowToDecideVaultCustomRecommendationText": {
     "description": "Recommendation text for when to use custom location"
   },
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google ไดรฟ์",
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
@@ -126,7 +120,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "รหัสผ่านไม่ตรงกับรหัสผ่าน",
   "@recoverbullPasswordMismatch": {
@@ -210,7 +203,6 @@
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
   },
-  "torSettingsModeAutomaticDescription": "ลองเชื่อมต่อ Tor โดยตรงก่อน และใช้ Snowflake หากเครือข่ายดูเหมือนจะบล็อก Tor",
   "recoverbullErrorVaultNotSet": "Vault ไม่ได้ตั้งค่า",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
@@ -228,12 +220,6 @@
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
   },
-  "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
-  "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
-  "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
-  "@backupWalletHowToDecideBackupModalTitle": {
-    "description": "Modal title for backup method comparison help"
-  },
   "recoverbullSettingsUrlMustBeOnion": "URL ต้องลงท้ายด้วย .onion",
   "recoverbullServerConfirmTitle": "เซิร์ฟเวอร์กู้คืนวอลต์",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -250,7 +236,6 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
   "recoverbullSettingsUrlInvalid": "URL ไม่ถูกต้อง",
   "recoverbullCheckingConnection": "ตรวจสอบการเชื่อมต่อสําหรับการกู้คืนBull",
   "@recoverbullCheckingConnection": {
@@ -281,10 +266,6 @@
   "recoverbullTorNetwork": "เครือข่าย",
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
-  },
-  "torSettingsDescConnected": "TorDB เป็นการทํางานและพร้อม",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "recoverbullSettingsTitle": "การตั้งค่า Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
@@ -321,8 +302,6 @@
   },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "เรียนรู้เพิ่มเติมเกี่ยวกับ Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
   "recoverbullGoogleDriveErrorDeleteFailed": "เก็บลบจาก Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
@@ -351,10 +330,6 @@
   "backupWalletHowToDecideVaultCloudRecommendation": "Google หรือ Google แอปเปิ้ล: ",
   "@backupWalletHowToDecideVaultCloudRecommendation": {
     "description": "Bold label for cloud storage recommendation"
-  },
-  "backupWalletHowToDecide": "วิธีการตัดสินใจ?",
-  "@backupWalletHowToDecide": {
-    "description": "Link text to open modal explaining how to choose backup method"
   },
   "durationMinute": "{minutes} นาที",
   "@durationMinute": {
@@ -457,31 +432,8 @@
     "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
-  "torSettingsDescDisconnected": "TorSP ไม่ได้ทํางาน",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "ลองใหม่อีกครั้ง",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "อ่านต่อ",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "คัดลอก",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "ปิด",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "เชื่อมต่อกับเซิร์ฟเวอร์ คุณสามารถเพิ่มนาที.",
   "recoverbullMonitoringDisableCancel": "ยกเลิก",
-  "recoverbullMonitoringServerUnsupported": "เซิร์ฟเวอร์นี้ไม่รองรับการติดตามความพยายาม คุณยังสามารถสำรองและกู้คืนห้องนิรภัยได้"
+  "recoverbullMonitoringServerUnsupported": "เซิร์ฟเวอร์นี้ไม่รองรับการติดตามความพยายาม คุณยังสามารถสำรองและกู้คืนห้องนิรภัยได้",
+  "recoverbullTemporaryStorageNotice": "ขณะนี้ไม่สามารถบันทึกการตั้งค่าและการยืนยันข้อมูลสำรองได้ คุณยังสามารถอนุมัติเซิร์ฟเวอร์และกู้คืนห้องนิรภัยได้"
 }

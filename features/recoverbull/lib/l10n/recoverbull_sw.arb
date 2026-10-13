@@ -10,12 +10,9 @@
   "recoverbullFetchingVaultKey": "Inapata Funguo ya Hifadhi",
   "recoverbullSecureBackup": "Linda nakala rudufu yako",
   "backupWalletHowToDecideVaultCloudRecommendationText": "unataka kuhakikisha hupotezi kamwe ufikiaji wa faili yako ya hifadhi hata ukipoteza vifaa vyako.",
-  "walletSetupErrorTryAgain": "Hitilafu fulani imetokea wakati wa kuweka pochi yako. Tafadhali jaribu tena.",
-  "torSettingsTitle": "Mipangilio ya Tor",
   "recoverbullPassword": "Nenosiri",
   "recoverbullReenterRequired": "Weka tena {inputType} yako",
   "backupWalletHowToDecideVaultCustomRecommendationText": "una uhakika hutapoteza faili ya hifadhi na bado itapatikana ukipoteza simu yako.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Weka {inputType} yako",
   "recoverbullSettingsUrlRequired": "URL inahitajika",
@@ -33,7 +30,6 @@
   "recoverbullPleaseWait": "Tafadhali subiri wakati tunaanzisha muunganisho salama...",
   "recoverbullPhaseNetworkInfo": "Inapata taarifa za mtandao",
   "recoverbullReenterConfirm": "Tafadhali weka tena {inputType} yako ili kuthibitisha.",
-  "torSettingsActiveTransport": "Usafirishaji unaotumika: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Manenosiri hayafanani",
   "recoverbullErrorDecryptFailed": "Imeshindwa kufungua usimbaji wa hifadhi",
@@ -54,15 +50,11 @@
   "recoverbullSettingsSave": "Hifadhi",
   "recoverbullEnterToTest": "Tafadhali weka {inputType} yako ili kujaribu hifadhi yako.",
   "backupWalletHowToDecideVaultCloudSecurity": "Watoa huduma wa hifadhi ya wingu kama Google au Apple hawataweza kufikia Bitcoin yako kwa sababu nenosiri la usimbaji ni thabiti mno. Wanaweza tu kufikia Bitcoin yako endapo watashirikiana na seva ya funguo (huduma ya mtandaoni inayohifadhi nenosiri lako la usimbaji), jambo lisilowezekana sana. Ikiwa seva ya funguo itavamiwa siku moja, Bitcoin yako inaweza kuwa hatarini kwenye wingu la Google au Apple.",
-  "torSettingsModeAutomaticDescription": "Hujaribu kwanza muunganisho wa moja kwa moja wa Tor, na hutumia Snowflake ikiwa mtandao unaonekana kuzuia Tor.",
   "recoverbullErrorVaultNotSet": "Hifadhi haijawekwa",
   "recoverbullCreatingVault": "Inaunda Hifadhi Iliyosimbwa",
   "recoverbullTorCantStart": "Tor haikuweza kuunganisha kwa sasa. Tafadhali jaribu tena.",
   "recoverbullDecryptVault": "Fungua usimbaji wa hifadhi",
   "recoverbullErrorSelectVault": "Imeshindwa kuchagua hifadhi",
-  "torSettingsStatusCensored": "Muunganisho unaonekana kuchujwa",
-  "torSettingsModeSnowflakeDescription": "Hutumia proksi za kujitolea za Snowflake kufikia Tor kutoka mtandao uliochujwa.",
-  "backupWalletHowToDecideBackupModalTitle": "Nichague vipi",
   "recoverbullSettingsUrlMustBeOnion": "URL lazima iishie na .onion",
   "recoverbullServerConfirmTitle": "Seva ya Urejeshaji wa Vault",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -70,7 +62,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Imeshindwa kupata hifadhi kutoka Google Drive",
   "recoverbullSettingsEdit": "Hariri",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Huunganisha moja kwa moja kwenye mtandao wa Tor, bila usafirishaji unaochomekwa.",
   "recoverbullSettingsUrlInvalid": "URL si sahihi",
   "recoverbullCheckingConnection": "Inaangalia muunganisho wa RecoverBull",
   "recoverbullErrorInvalidCredentials": "Nenosiri si sahihi kwa faili hii ya nakala rudufu",
@@ -81,7 +72,6 @@
   "recoverbullTestRecovery": "Jaribu Kurejesha",
   "recoverbullServerUrlLabel": "URL ya Seva:",
   "recoverbullTorNetwork": "Mtandao wa Tor",
-  "torSettingsDescConnected": "Tor proxy inaendesha na iko tayari",
   "recoverbullSettingsTitle": "Mipangilio ya Recoverbull",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "Seva ya RecoverBull",
@@ -94,8 +84,6 @@
   "recoverbullEnterVaultKeyInstead": "Weka funguo ya hifadhi badala yake",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Jifunze zaidi kuhusu Recoverbull",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor haikuweza kufikia mtandao. Mara nyingi hii inamaanisha muunganisho unachujwa.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Imeshindwa kufuta hifadhi kutoka Google Drive",
   "recoverbullVaultCreatedSuccess": "Hifadhi imeundwa kwa mafanikio",
   "recoverbullConfirm": "Thibitisha",
@@ -104,7 +92,6 @@
   "recoverbullVaultSelected": "Hifadhi Imechaguliwa",
   "recoverbullSettingsCancel": "Ghairi",
   "backupWalletHowToDecideVaultCloudRecommendation": "Wingu la Google au Apple: ",
-  "backupWalletHowToDecide": "Nichague vipi?",
   "durationMinute": "dakika {minutes}",
   "recoverbullConnected": "Imeunganishwa",
   "recoverbullGoogleDriveDeleteButton": "Futa",
@@ -127,28 +114,8 @@
   "recoverbullConnecting": "Inaunganisha",
   "recoverbullRetry": "Jaribu Tena",
   "recoverbullConnectedTorCheckingServer": "Inaunganisha na Seva ya Funguo kupitia Tor.\nHii inaweza kuchukua hadi dakika moja.",
-  "torSettingsDescDisconnected": "Tor proxy haiendeshi",
-  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Jaribu Tena",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Endelea",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Nakili",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Funga",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Inaunganisha na Seva ya Funguo kupitia Tor. Hii inaweza kuchukua hadi dakika moja.",
   "recoverbullMonitoringDisableCancel": "Ghairi",
-  "recoverbullMonitoringServerUnsupported": "Seva hii haitumii ufuatiliaji wa majaribio. Bado unaweza kuhifadhi nakala na kurejesha hazina."
+  "recoverbullMonitoringServerUnsupported": "Seva hii haitumii ufuatiliaji wa majaribio. Bado unaweza kuhifadhi nakala na kurejesha hazina.",
+  "recoverbullTemporaryStorageNotice": "Mipangilio na uthibitishaji wa nakala haziwezi kuhifadhiwa sasa. Bado unaweza kuidhinisha seva na kurejesha hazina."
 }

@@ -10,8 +10,6 @@
   "recoverbullFetchingVaultKey": "Tresor-Schlüssel wird abgerufen",
   "recoverbullSecureBackup": "Sichern Sie Ihr Backup",
   "backupWalletHowToDecideVaultCloudRecommendationText": "Du möchtest sicherstellen, dass du nie den Zugriff auf deine Tresordatei verlierst, auch wenn du deine Geräte verlierst.",
-  "walletSetupErrorTryAgain": "Beim Einrichten deiner Wallet ist ein Fehler aufgetreten. Bitte versuch es erneut.",
-  "torSettingsTitle": "Tor-Einstellungen",
   "recoverbullPassword": "Passwort",
   "recoverbullReenterRequired": "Geben Sie Ihren {inputType} erneut ein",
   "@recoverbullReenterRequired": {
@@ -22,7 +20,6 @@
     }
   },
   "backupWalletHowToDecideVaultCustomRecommendationText": "Du bist zuversichtlich, dass du die Tresordatei nicht verlieren wirst und dass du dafür sorgen kannst, dass sie weiterhin zugänglich bleibt, auch wenn du dein Telefon verlierst.",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Geben Sie Ihre {inputType} ein",
   "@recoverbullEnterInput": {
@@ -54,7 +51,6 @@
       }
     }
   },
-  "torSettingsActiveTransport": "Aktiver Transport: {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Passwörter stimmen nicht überein",
   "recoverbullErrorDecryptFailed": "Fehler beim Entschlüsseln des Tresors.",
@@ -96,15 +92,11 @@
     }
   },
   "backupWalletHowToDecideVaultCloudSecurity": "Speicheranbieter wie Google-Cloud oder Apple-iCloud haben keinen Zugriff auf deine Bitcoin, da das Verschlüsselungspasswort zu stark ist. Sie könnten höchstens auf deine Bitcoin zugreifen, wenn sie sich mit dem Betreiber des Schlüsselserver (den Online-Dienst, der dein Verschlüsselungspasswort speichert) gegen dich verschwören. Wenn der Schlüsselserver jemals gehackt wird, können deine Bitcoin bei Google-Cloud oder Apple iCloud gefährdet sein.",
-  "torSettingsModeAutomaticDescription": "Versucht zunächst, eine direkte Tor-Verbindung herzustellen, und verwendet Snowflake, wenn das Netzwerk Tor zu blockieren scheint.",
   "recoverbullErrorVaultNotSet": "Vault ist nicht ausgewählt.",
   "recoverbullCreatingVault": "Verschlüsselten Tresor erstellen",
   "recoverbullTorCantStart": "Tor konnte derzeit keine Verbindung herstellen. Bitte versuchen Sie es erneut.",
   "recoverbullDecryptVault": "Tresor entschlüsseln",
   "recoverbullErrorSelectVault": "Nicht verfügbar",
-  "torSettingsStatusCensored": "Verbindung scheint gefiltert",
-  "torSettingsModeSnowflakeDescription": "Nutzt von Freiwilligen betriebene Snowflake-Proxys, um Tor aus einem gefilterten Netzwerk zu erreichen.",
-  "backupWalletHowToDecideBackupModalTitle": "Wie entscheiden",
   "recoverbullSettingsUrlMustBeOnion": "URL muss mit .onion enden",
   "recoverbullServerConfirmTitle": "Tresor-Wiederherstellungsserver",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -112,7 +104,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Tresore konnten nicht von Google Drive abgerufen werden.",
   "recoverbullSettingsEdit": "Bearbeiten",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Stellt ohne zusätzliches Transportprotokoll eine direkte Verbindung zum Tor-Netzwerk her.",
   "recoverbullSettingsUrlInvalid": "URL ist ungültig",
   "recoverbullCheckingConnection": "Verbindung zu RecoverBull wird geprüft",
   "recoverbullErrorInvalidCredentials": "Falsches Passwort für diese Sicherungsdatei.",
@@ -123,7 +114,6 @@
   "recoverbullTestRecovery": "Wiederherstellung testen",
   "recoverbullServerUrlLabel": "Server-URL:",
   "recoverbullTorNetwork": "Tor-Netzwerk",
-  "torSettingsDescConnected": "Tor-Proxy läuft und ist bereit",
   "recoverbullSettingsTitle": "Recoverbull-Einstellungen",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull-Server",
@@ -143,8 +133,6 @@
   "recoverbullEnterVaultKeyInstead": "Geben Sie stattdessen einen Tresor-Schlüssel ein",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Mehr über Recoverbull erfahren",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
   "recoverbullGoogleDriveErrorDeleteFailed": "Fehler beim Löschen aus Google Drive.",
   "recoverbullVaultCreatedSuccess": "Tresor erfolgreich erstellt",
   "recoverbullConfirm": "Bestätigen",
@@ -153,7 +141,6 @@
   "recoverbullVaultSelected": "Tresor ausgewählt",
   "recoverbullSettingsCancel": "Abbrechen",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google oder Apple Cloud:",
-  "backupWalletHowToDecide": "Wie entscheiden?",
   "durationMinute": "{minutes} Minute",
   "@durationMinute": {
     "placeholders": {
@@ -211,29 +198,9 @@
   "recoverbullConnecting": "Wird verbunden…",
   "recoverbullRetry": "Erneut versuchen",
   "recoverbullConnectedTorCheckingServer": "Verbindung zum Schlüsselserver über Tor wird hergestellt.",
-  "torSettingsDescDisconnected": "Tor-Proxy läuft nicht",
-  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Erneut versuchen",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Fortfahren",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Kopieren",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Schließen",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Verbindung zum Schlüsselserver über Tor wird hergestellt. Dies kann bis zu einer Minute dauern.",
   "recoverbullMonitoringDisableCancel": "Abbrechen",
   "recoverbullReconnecting": "Verbindung wird wiederhergestellt",
-  "recoverbullMonitoringServerUnsupported": "Dieser Server unterstützt keine Überwachung der Versuche. Tresore können weiterhin gesichert und wiederhergestellt werden."
+  "recoverbullMonitoringServerUnsupported": "Dieser Server unterstützt keine Überwachung der Versuche. Tresore können weiterhin gesichert und wiederhergestellt werden.",
+  "recoverbullTemporaryStorageNotice": "Einstellungen und die Überprüfung von Sicherungen können derzeit nicht gespeichert werden. Sie können den Server bestätigen und einen Tresor wiederherstellen."
 }

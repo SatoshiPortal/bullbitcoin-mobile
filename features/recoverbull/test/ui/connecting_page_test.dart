@@ -1,3 +1,4 @@
+import '../support/ui_labels.dart';
 import 'package:bull_ui/testing.dart';
 import 'dart:async';
 
@@ -74,6 +75,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -110,7 +112,10 @@ void main() {
     expect(find.text(l10n.recoverbullTorNetwork), findsOneWidget);
     expect(find.text(l10n.recoverbullRecoverBullServer), findsOneWidget);
     expect(find.byKey(const ValueKey('tor-bull-direct')), findsOneWidget);
-    expect(find.text(l10n.torSettingsModeDirectDescription), findsOneWidget);
+    expect(
+      find.text(testUiLabels().torSettingsModeDirectDescription),
+      findsOneWidget,
+    );
   });
 
   testWidgets('offers Tor Settings for an external proxy failure', (
@@ -128,15 +133,12 @@ void main() {
       ),
     );
 
-    final l10n = await RecoverBullLocalizations.delegate.load(
-      const Locale('en'),
-    );
-    expect(find.text(l10n.torSettingsTitle), findsOneWidget);
+    expect(find.text(testUiLabels().torSettingsTitle), findsOneWidget);
     expect(
-      find.text(l10n.torSettingsExternalProxyUnavailableDescription),
+      find.text(testUiLabels().torSettingsExternalProxyUnavailableDescription),
       findsOneWidget,
     );
-    expect(find.text(l10n.torSettingsDescDisconnected), findsNothing);
+    expect(find.text(testUiLabels().torSettingsDescDisconnected), findsNothing);
   });
 
   testWidgets('does not offer Tor Settings for a key-server failure', (
@@ -159,10 +161,7 @@ void main() {
       ),
     );
 
-    final l10n = await RecoverBullLocalizations.delegate.load(
-      const Locale('en'),
-    );
-    expect(find.text(l10n.torSettingsTitle), findsNothing);
+    expect(find.text(testUiLabels().torSettingsTitle), findsNothing);
   });
 
   testWidgets('uses the attributed Tor failure instead of blaming the server', (
@@ -409,6 +408,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -458,6 +458,7 @@ void main() {
     final bloc = _MutableBloc(initial);
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -499,6 +500,7 @@ void main() {
     final bloc = _MutableBloc(initial);
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -526,6 +528,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -715,6 +718,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -762,6 +766,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -812,6 +817,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
         theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
@@ -870,10 +876,10 @@ void main() {
       ),
     );
 
+    expect(find.text(testUiLabels().torSettingsDescCensored), findsOneWidget);
     final l10n = await RecoverBullLocalizations.delegate.load(
       const Locale('en'),
     );
-    expect(find.text(l10n.torSettingsDescCensored), findsOneWidget);
     expect(find.text(l10n.recoverbullTorCantStart), findsNothing);
   });
 
@@ -929,6 +935,7 @@ void main() {
       BlocProvider<RecoverBullBloc>.value(
         value: bloc,
         child: MaterialApp(
+          builder: (context, child) => withTestUiLabels(context, child!),
           theme: ThemeData(extensions: const [testBullTheme]),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,

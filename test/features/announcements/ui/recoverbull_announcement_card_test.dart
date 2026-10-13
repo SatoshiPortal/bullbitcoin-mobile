@@ -1,3 +1,4 @@
+import '../../../support/recoverbull_ui_labels.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -47,6 +48,7 @@ void main() {
     when(() => tor.embedded).thenReturn(embedded);
     when(() => embedded.watcher).thenReturn(_Watcher());
     _feature = await RecoverBullFeature.create(
+      uiLabels: testUiLabels,
       navigation: RecoverBullNavigationCallbacks(
         onOpenTorSettings: () {},
         onOpenWalletHome: () {},

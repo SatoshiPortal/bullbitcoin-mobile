@@ -10,12 +10,9 @@
   "recoverbullFetchingVaultKey": "Բերվում է պահոցի բանալին",
   "recoverbullSecureBackup": "Ապահովեք ձեր պահուստը",
   "backupWalletHowToDecideVaultCloudRecommendationText": "դուք ցանկանում եք համոզվել, որ երբեք չեք կորցնի ձեր պահոցի ֆայլի հասանելիությունը, նույնիսկ եթե կորցնեք ձեր սարքերը։",
-  "walletSetupErrorTryAgain": "Ինչ-որ բան սխալ գնաց ձեր դրամապանակը կարգավորելիս։ Կրկին փորձեք։",
-  "torSettingsTitle": "Tor կարգավորումներ",
   "recoverbullPassword": "Գաղտնաբառ",
   "recoverbullReenterRequired": "Կրկին մուտքագրեք ձեր {inputType}-ը",
   "backupWalletHowToDecideVaultCustomRecommendationText": "դուք վստահ եք, որ չեք կորցնի պահոցի ֆայլը, և այն դեռ հասանելի կլինի, եթե կորցնեք ձեր հեռախոսը։",
-  "torSettingsModeSnowflake": "Snowflake",
   "recoverbullSelectGoogleDrive": "Google Drive",
   "recoverbullEnterInput": "Մուտքագրեք ձեր {inputType}",
   "recoverbullSettingsUrlRequired": "URL-ը պարտադիր է",
@@ -33,7 +30,6 @@
   "recoverbullPleaseWait": "Խնդրում ենք սպասել, մինչ մենք հաստատում ենք անվտանգ կապ...",
   "recoverbullPhaseNetworkInfo": "Ցանցի տվյալների ստացում",
   "recoverbullReenterConfirm": "Խնդրում ենք կրկին մուտքագրել ձեր {inputType}-ը՝ հաստատելու համար։",
-  "torSettingsActiveTransport": "Ակտիվ փոխադրում՝ {transport}",
   "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
   "recoverbullPasswordMismatch": "Գաղտնաբառերը չեն համընկնում",
   "recoverbullErrorDecryptFailed": "Չհաջողվեց ապագաղտնագրել պահոցը",
@@ -54,15 +50,11 @@
   "recoverbullSettingsSave": "Պահպանել",
   "recoverbullEnterToTest": "Խնդրում ենք մուտքագրել ձեր {inputType}-ը՝ ձեր պահոցը ստուգելու համար։",
   "backupWalletHowToDecideVaultCloudSecurity": "Ամպային պահեստի մատակարարները, ինչպիսիք են Google-ը կամ Apple-ը, հասանելիություն չեն ունենա ձեր Bitcoin-ին, քանի որ գաղտնագրման գաղտնաբառը չափազանց ուժեղ է։ Նրանք կարող են հասանելիություն ունենալ ձեր Bitcoin-ին միայն այն քիչ հավանական դեպքում, երբ գործակցեն բանալիների սերվերի հետ (առցանց ծառայությունը, որը պահում է ձեր գաղտնագրման գաղտնաբառը)։ Եթե բանալիների սերվերը երբևէ կոտրվի, ձեր Bitcoin-ը կարող է վտանգված լինել Google-ի կամ Apple-ի ամպային պահեստում։",
-  "torSettingsModeAutomaticDescription": "Նախ փորձում է ուղիղ Tor կապ, իսկ եթե ցանցը կարծես արգելափակում է Tor-ը, օգտագործում է Snowflake։",
   "recoverbullErrorVaultNotSet": "Պահոցը սահմանված չէ",
   "recoverbullCreatingVault": "Ստեղծվում է գաղտնագրված պահոց",
   "recoverbullTorCantStart": "Tor-ը հիմա չկարողացավ միանալ։ Խնդրում ենք կրկին փորձել։",
   "recoverbullDecryptVault": "Ապագաղտնագրել պահոցը",
   "recoverbullErrorSelectVault": "Չհաջողվեց ընտրել պահոցը",
-  "torSettingsStatusCensored": "Կապը կարծես զտվում է",
-  "torSettingsModeSnowflakeDescription": "Օգտագործում է կամավորների Snowflake պրոքսիները՝ զտված ցանցից Tor-ին հասնելու համար։",
-  "backupWalletHowToDecideBackupModalTitle": "Ինչպես որոշել",
   "recoverbullSettingsUrlMustBeOnion": "URL-ը պետք է ավարտվի .onion-ով",
   "recoverbullServerConfirmTitle": "Պահոցի վերականգնման սերվեր",
   "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
@@ -70,7 +62,6 @@
   "recoverbullGoogleDriveErrorFetchFailed": "Չհաջողվեց բերել պահոցները Google Drive-ից",
   "recoverbullSettingsEdit": "Խմբագրել",
   "recoverbullPIN": "PIN",
-  "torSettingsModeDirectDescription": "Միանում է Tor ցանցին ուղիղ՝ առանց միացվող փոխադրման։",
   "recoverbullSettingsUrlInvalid": "URL-ը վավեր չէ",
   "recoverbullCheckingConnection": "Ստուգվում է կապը RecoverBull-ի հետ",
   "recoverbullErrorInvalidCredentials": "Այս պահուստի ֆայլի համար սխալ գաղտնաբառ",
@@ -81,7 +72,6 @@
   "recoverbullTestRecovery": "Ստուգել վերականգնումը",
   "recoverbullServerUrlLabel": "Սերվերի URL:",
   "recoverbullTorNetwork": "Tor ցանց",
-  "torSettingsDescConnected": "Tor proxy-ն աշխատում է և պատրաստ է",
   "recoverbullSettingsTitle": "Recoverbull-ի կարգավորումներ",
   "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
   "recoverbullRecoverBullServer": "RecoverBull սերվեր",
@@ -94,8 +84,6 @@
   "recoverbullEnterVaultKeyInstead": "Փոխարենը մուտքագրել պահոցի բանալի",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "recoverbullLearnMore": "Իմացեք ավելին Recoverbull-ի մասին",
-  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
-  "torSettingsDescCensored": "Tor-ը չկարողացավ հասնել ցանցին։ Սա հաճախ նշանակում է, որ կապը զտվում է։",
   "recoverbullGoogleDriveErrorDeleteFailed": "Չհաջողվեց ջնջել պահոցը Google Drive-ից",
   "recoverbullVaultCreatedSuccess": "Պահոցը հաջողությամբ ստեղծվեց",
   "recoverbullConfirm": "Հաստատել",
@@ -104,7 +92,6 @@
   "recoverbullVaultSelected": "Պահոցն ընտրված է",
   "recoverbullSettingsCancel": "Չեղարկել",
   "backupWalletHowToDecideVaultCloudRecommendation": "Google կամ Apple ամպային պահեստ. ",
-  "backupWalletHowToDecide": "Ինչպե՞ս որոշել",
   "durationMinute": "{minutes} րոպե",
   "recoverbullConnected": "Միացված է",
   "recoverbullGoogleDriveDeleteButton": "Ջնջել",
@@ -127,28 +114,8 @@
   "recoverbullConnecting": "Միանում է",
   "recoverbullRetry": "Կրկին փորձել",
   "recoverbullConnectedTorCheckingServer": "Միանում ենք Բանալիների սերվերին Tor-ի միջոցով։\nԴա կարող է տևել մինչև մեկ րոպե։",
-  "torSettingsDescDisconnected": "Tor proxy-ն չի աշխատում",
-  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
-  "@oopsSomethingWentWrong": {
-    "description": "Generic error title shown by shared status screens."
-  },
-  "statusScreenTryAgain": "Կրկին փորձել",
-  "@statusScreenTryAgain": {
-    "description": "Action button to retry a failed status screen."
-  },
-  "statusScreenContinue": "Շարունակել",
-  "@statusScreenContinue": {
-    "description": "Action button to continue from a status screen."
-  },
-  "copyDialogButton": "Պատճենել",
-  "@copyDialogButton": {
-    "description": "Button to copy a value from the value dialog."
-  },
-  "closeDialogButton": "Փակել",
-  "@closeDialogButton": {
-    "description": "Button to close the value dialog."
-  },
   "recoverbullConnectingTor": "Միանում ենք Բանալիների սերվերին Tor-ի միջոցով։ Դա կարող է տևել մինչև մեկ րոպե։",
   "recoverbullMonitoringDisableCancel": "Չեղարկել",
-  "recoverbullMonitoringServerUnsupported": "Այս սերվերը չի աջակցում փորձերի մոնիթորինգին։ Դուք դեռ կարող եք պահոցների պահուստային պատճեններ ստեղծել և վերականգնել դրանք։"
+  "recoverbullMonitoringServerUnsupported": "Այս սերվերը չի աջակցում փորձերի մոնիթորինգին։ Դուք դեռ կարող եք պահոցների պահուստային պատճեններ ստեղծել և վերականգնել դրանք։",
+  "recoverbullTemporaryStorageNotice": "Կարգավորումները և պահուստային պատճենների ստուգումը հիմա հնարավոր չէ պահպանել։ Դուք կարող եք հաստատել սերվերը և վերականգնել պահոցը։"
 }
