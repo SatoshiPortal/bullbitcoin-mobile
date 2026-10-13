@@ -4,7 +4,6 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -16,6 +15,7 @@ import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_fail
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDialog;
 
 class AllSeedViewScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
@@ -203,7 +203,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   }
 
   Future<void> _showWarningDialog(BuildContext context) {
-    return BlurredDialog.show<void>(
+    return BullDialog.show<void>(
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
@@ -254,7 +254,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     BuildContext context,
     MnemonicSeed seed,
   ) {
-    return BlurredDialog.show<void>(
+    return BullDialog.show<void>(
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
@@ -305,7 +305,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   }
 
   Future<void> _showDeleteSwapWarningDialog(BuildContext context) {
-    return BlurredDialog.show<void>(
+    return BullDialog.show<void>(
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
