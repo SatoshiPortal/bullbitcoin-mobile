@@ -160,6 +160,19 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
   @override
   int get schemaVersion => schema;
 
+  /// Version 1 is this feature's first, still-unreleased schema. All pending
+  /// changes stay in that baseline until it ships; subsequent upgrades must
+  /// explicitly preserve every published schema through a tested migration.
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) => migrator.createAll(),
+    onUpgrade: (_, from, to) async {
+      // Never let an older app silently rewrite a newer database's version.
+      // Unsupported files stay intact for the compatible app to reopen.
+      throw RecoverBullUnsupportedSchemaException(from: from, to: to);
+    },
+  );
+
   Future<void> ensureState({
     bool initialPermissionGranted = false,
     String? initialServerUrlOverride,
@@ -240,4 +253,19 @@ final class RecoverBullDatabaseIntegrityException implements Exception {
 
   @override
   String toString() => 'RecoverBullDatabaseIntegrityException';
+}
+
+/// The database belongs to a version for which this app has no migration.
+/// This is compatibility failure, not corruption; callers must preserve it.
+final class RecoverBullUnsupportedSchemaException implements Exception {
+  final int from;
+  final int to;
+
+  const RecoverBullUnsupportedSchemaException({
+    required this.from,
+    required this.to,
+  });
+
+  @override
+  String toString() => 'RecoverBullUnsupportedSchemaException($from -> $to)';
 }

@@ -6,5 +6,5 @@ targets:
           databases:
             recoverbull_database: lib/src/database/recoverbull_database.dart
           schema_dir: lib/src/database/schemas/
-          test_dir: test/migrations_test/
+          test_dir: test/database/generated/
           store_date_time_values_as_text: true
