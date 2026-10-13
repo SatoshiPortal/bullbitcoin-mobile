@@ -363,13 +363,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return _canManuallyBroadcastOriginal(freshModel.toEntity());
   }
 
-  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async {
-    if (!payjoin.canManuallyBroadcastOriginal) return false;
+  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async =>
+      payjoin.canManuallyBroadcastOriginal &&
+      await _visibleCompetingTransaction(payjoin) == null;
 
-    // A fresh wallet lookup covers both mempool and confirmed transactions.
-    // Check both competing spends: persisted status can lag a transaction that
-    // has just reached the network, and broadcasting the original in that gap
-    // could race a successfully negotiated payjoin.
+  /// The first of the session's competing spends the network already knows,
+  /// or null when neither is visible.
+  ///
+  /// A fresh lookup covers both mempool and confirmed transactions. Check
+  /// both: persisted status can lag a transaction that has just reached the
+  /// network, and broadcasting the original in that gap could race a
+  /// successfully negotiated payjoin.
+  Future<String?> _visibleCompetingTransaction(Payjoin payjoin) async {
     for (final txId in [payjoin.originalTxId, payjoin.txId]) {
       if (txId == null) continue;
       if (await _transactions.isTransactionVisible(
@@ -377,10 +382,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         transactionId: txId,
         refresh: true,
       )) {
-        return false;
+        return txId;
       }
     }
-    return true;
+    return null;
   }
 
   @override
@@ -431,7 +436,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
     }
     final freshEntity = freshModel.toEntity();
-    if (!await _canManuallyBroadcastOriginal(freshEntity)) {
+    final competingTxId = freshEntity.canManuallyBroadcastOriginal
+        ? await _visibleCompetingTransaction(freshEntity)
+        : null;
+    if (competingTxId != null && competingTxId == freshEntity.txId) {
+      // The payjoin already reached the network: the user is paid. Settle the
+      // session now instead of leaving them on a spinner until a watcher
+      // notices the same transaction.
+      final completed = await _completeOnPayjoinTransactionSeen(
+        freshEntity.id,
+        competingTxId,
+      );
+      if (completed != null) return Ok(completed);
+    }
+    if (!freshEntity.canManuallyBroadcastOriginal || competingTxId != null) {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session is unsafe to abort or a competing transaction is visible',
@@ -1964,13 +1982,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<void> _onPayjoinTransactionSeen(
     String payjoinId,
     String observedTxId,
-  ) => _withSessionLock(payjoinId, () async {
+  ) => _withSessionLock(
+    payjoinId,
+    () => _completeOnPayjoinTransactionSeen(payjoinId, observedTxId),
+  );
+
+  /// Body of [_onPayjoinTransactionSeen], for callers already holding the
+  /// session lock. Returns the completed session, or null when nothing
+  /// changed.
+  Future<Payjoin?> _completeOnPayjoinTransactionSeen(
+    String payjoinId,
+    String observedTxId,
+  ) async {
     final receiver = await _localPayjoinDatasource.fetchReceiver(payjoinId);
     final PayjoinModel? model =
         receiver ?? await _localPayjoinDatasource.fetchSender(payjoinId);
     if (model == null || model.isCompleted) {
       _stopWatching(payjoinId);
-      return;
+      return null;
     }
 
     final PayjoinModel completedModel = model is PayjoinReceiverModel
@@ -1992,7 +2021,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
           : await _localPayjoinDatasource.fetchSender(payjoinId);
       if (refreshed?.isCompleted == true) _stopWatching(payjoinId);
-      return;
+      return null;
     }
 
     // Persistence won. Any already-delivered duplicate callback now observes
@@ -2004,11 +2033,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: completedModel.walletId,
       );
     }
-    _payjoinStreamController.add(completedModel.toEntity());
-    _log.info(
-      'Payjoin ${completedModel.toEntity().logRef} completed on broadcast',
-    );
-  });
+    final completed = completedModel.toEntity();
+    _payjoinStreamController.add(completed);
+    _log.info('Payjoin ${completed.logRef} completed on broadcast');
+    return completed;
+  }
 
   /// The original transaction landed on-chain — regardless of which side
   /// actually broadcast it (this repository's own attempt, possibly already

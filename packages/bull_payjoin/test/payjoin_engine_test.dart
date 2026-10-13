@@ -645,6 +645,47 @@ void main() {
     expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
   });
 
+  test('a manual fallback completes a payjoin already visible', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      transactionId: 'payjoin-tx',
+    );
+    await local.storeReceiver(model);
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: 'payjoin-tx',
+        refresh: true,
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => labels.labelTransaction(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
+    ).thenAnswer((_) async {});
+
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    // The receiver is already paid: settle instead of reporting the fallback
+    // as unavailable and leaving the user waiting on a watcher.
+    expect(
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.isCompleted,
+      isTrue,
+    );
+    expect((await local.fetchReceiver(model.id))?.isCompleted, isTrue);
+    verifyNever(
+      () => blockchain.broadcastTransaction(
+        network: any(named: 'network'),
+        transaction: any(named: 'transaction'),
+      ),
+    );
+  });
+
   group('an expired sender is terminal from our side', () {
     test('a failed fallback releases the frozen inputs', () async {
       final model = expiredSender();
