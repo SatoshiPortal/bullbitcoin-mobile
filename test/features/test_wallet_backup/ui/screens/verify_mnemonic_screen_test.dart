@@ -159,16 +159,19 @@ void main() {
   );
 
   // The spinner animates forever, so pumpAndSettle would never return while
-  // it is on screen. A few plain frames are enough to flush the bloc stream,
-  // the listener and the awaited secret read.
-  // The challenge reads its words inside the package, which does real
-  // asynchronous work: let it run on the real clock between frames.
+  // it is on screen. The challenge reads its words inside the package, which
+  // does real asynchronous work (PBKDF2), so frames alternate with the real
+  // clock until no spinner is left, within a bound generous enough for a
+  // suite running in parallel.
   Future<void> flush(WidgetTester tester) async {
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 25; i++) {
       await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 300)),
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pump();
+      if (i >= 2 && find.byType(CircularProgressIndicator).evaluate().isEmpty) {
+        return;
+      }
     }
   }
 
