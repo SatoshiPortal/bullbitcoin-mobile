@@ -9,6 +9,7 @@ import 'package:bull_recoverbull/src/presentation/recoverbull_settings_cubit.dar
 import 'package:bull_recoverbull/src/ui/screens/settings_page.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
@@ -37,6 +38,54 @@ class _Log implements LogSink {
 }
 
 void main() {
+  testWidgets('owns one settings cubit across rebuilds and closes it', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Uri.parse('http://server.onion'));
+    Widget app() => MaterialApp(
+      theme: ThemeData(extensions: const [testBullTheme]),
+      localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+      supportedLocales: RecoverBullLocalizations.supportedLocales,
+      home: SettingsPage(
+        log: _Log(),
+        fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+          recoverBullRepository: repository,
+        ),
+        storeUrlUsecase: StoreRecoverbullUrlUsecase(
+          recoverBullRepository: repository,
+        ),
+      ),
+    );
+    await tester.pumpWidget(app());
+    await tester.pumpAndSettle();
+    final finder = find.byWidgetPredicate(
+      (widget) =>
+          widget
+              is BlocBuilder<
+                RecoverBullSettingsCubit,
+                RecoverBullSettingsState
+              >,
+    );
+    final initial = tester
+        .widget<
+          BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>
+        >(finder)
+        .bloc!;
+    await tester.pumpWidget(app());
+    await tester.pumpAndSettle();
+    final rebuilt = tester
+        .widget<
+          BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>
+        >(finder)
+        .bloc!;
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(identical(rebuilt, initial), isTrue);
+    expect(initial.isClosed, isTrue);
+  });
+
   testWidgets(
     'shows the loaded server URL and restores it after cancelling edits',
     (tester) async {

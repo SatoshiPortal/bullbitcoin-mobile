@@ -51,7 +51,6 @@ import '../google_drive/ui/screens/drive_vaults_list_page.dart';
 import '../ui/screens/server_confirmation_page.dart';
 import '../ui/screens/recoverbull_unavailable_page.dart';
 import '../ui/screens/settings_page.dart';
-import '../presentation/recoverbull_settings_cubit.dart';
 import '../google_drive/presentation/state.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_logger/bull_logger.dart' show LogSink;
@@ -543,16 +542,13 @@ final class RecoverBullFeature {
               ),
               settingsPageBuilder: (context) => SettingsPage(
                 log: log,
-                cubit: RecoverBullSettingsCubit(
-                  log: log,
-                  fetchUrl: FetchRecoverbullUrlUsecase(
-                    recoverBullRepository: repository,
-                  ),
-                  storeUrl: StoreRecoverbullUrlUsecase(
-                    recoverBullRepository: repository,
-                  ),
-                  monitoring: _attemptMonitoring,
+                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                  recoverBullRepository: repository,
                 ),
+                storeUrlUsecase: StoreRecoverbullUrlUsecase(
+                  recoverBullRepository: repository,
+                ),
+                monitoring: _attemptMonitoring,
               ),
               requestPermissionPageBuilder: (context) => RequestPermissionPage(
                 log: log,
@@ -574,16 +570,13 @@ final class RecoverBullFeature {
               ),
               settingsPageBuilder: (context) => SettingsPage(
                 log: log,
-                cubit: RecoverBullSettingsCubit(
-                  log: log,
-                  fetchUrl: FetchRecoverbullUrlUsecase(
-                    recoverBullRepository: repository,
-                  ),
-                  storeUrl: StoreRecoverbullUrlUsecase(
-                    recoverBullRepository: repository,
-                  ),
-                  monitoring: _attemptMonitoring,
+                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                  recoverBullRepository: repository,
                 ),
+                storeUrlUsecase: StoreRecoverbullUrlUsecase(
+                  recoverBullRepository: repository,
+                ),
+                monitoring: _attemptMonitoring,
               ),
               requestPermissionPageBuilder: (context) => RequestPermissionPage(
                 log: log,
