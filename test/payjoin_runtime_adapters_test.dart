@@ -1,0 +1,192 @@
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/payjoin_runtime_adapters.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
+
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockWalletTransactionRepository extends Mock
+    implements WalletTransactionRepository {}
+
+class _MockBlockchain extends Mock implements BdkBitcoinBlockchainDatasource {}
+
+class _MockWallet extends Mock implements Wallet {}
+
+class _FakeServers implements ElectrumServersPort {
+  ElectrumServerNetwork? network;
+
+  @override
+  Future<T> runWithFallback<T>({
+    required ElectrumServerNetwork network,
+    required Future<T> Function(ElectrumConnection connection) operation,
+    bool Function(Object error)? isTransient,
+  }) {
+    this.network = network;
+    return operation(_connection);
+  }
+}
+
+const _connection = ElectrumConnection(
+  url: 'ssl://electrum.test:50002',
+  retry: 0,
+  timeout: 5,
+  stopGap: 20,
+  validateDomain: true,
+  isCustom: false,
+);
+
+const _walletId = 'wallet';
+const _txId =
+    'bb71279aa030b144a12329126f0b44e6954225834d3dafaab6328bfd48939325';
+
+void main() {
+  late _MockWalletRepository wallets;
+  late _MockWalletTransactionRepository transactions;
+  late _MockBlockchain blockchain;
+  late _FakeServers servers;
+  late AppPayjoinTransactionAdapter adapter;
+
+  setUpAll(() => registerFallbackValue(_connection));
+
+  setUp(() {
+    wallets = _MockWalletRepository();
+    transactions = _MockWalletTransactionRepository();
+    blockchain = _MockBlockchain();
+    servers = _FakeServers();
+    adapter = AppPayjoinTransactionAdapter(
+      wallets,
+      transactions,
+      blockchain,
+      servers,
+    );
+
+    final wallet = _MockWallet();
+    when(() => wallet.isTestnet).thenReturn(true);
+    when(
+      () => wallets.getWallet(_walletId, sync: any(named: 'sync')),
+    ).thenAnswer((_) async => Ok(wallet));
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async => null);
+  });
+
+  test('answers from the wallet without asking the server', () async {
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async => _transaction());
+
+    final visible = await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+
+    expect(visible, isTrue);
+    verifyNever(
+      () => blockchain.isTransactionKnown(
+        any(),
+        connection: any(named: 'connection'),
+      ),
+    );
+  });
+
+  test('stays local when no refresh is asked', () async {
+    final visible = await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+    );
+
+    expect(visible, isFalse);
+    verifyNever(
+      () => blockchain.isTransactionKnown(
+        any(),
+        connection: any(named: 'connection'),
+      ),
+    );
+  });
+
+  test('asks the server for the one transaction instead of syncing', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => true);
+
+    final visible = await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+
+    expect(visible, isTrue);
+    expect(servers.network, ElectrumServerNetwork.bitcoinTestnet);
+    verifyNever(
+      () => transactions.getWalletTransaction(
+        _txId,
+        walletId: _walletId,
+        sync: true,
+      ),
+    );
+    // The wallet catches up in the background.
+    verify(() => wallets.getWallet(_walletId, sync: true)).called(1);
+  });
+
+  test('reports an unknown transaction without syncing the wallet', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => false);
+
+    final visible = await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+
+    expect(visible, isFalse);
+    verifyNever(() => wallets.getWallet(_walletId, sync: true));
+  });
+
+  test('propagates a server failure instead of answering absent', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenThrow(Exception('unreachable'));
+
+    expect(
+      adapter.isTransactionVisible(
+        walletId: _walletId,
+        transactionId: _txId,
+        refresh: true,
+      ),
+      throwsException,
+    );
+  });
+}
+
+WalletTransaction _transaction() => const WalletTransaction(
+  walletId: _walletId,
+  network: Network.bitcoinTestnet,
+  direction: WalletTransactionDirection.incoming,
+  status: WalletTransactionStatus.pending,
+  txId: _txId,
+  amountSat: 20000,
+  feeSat: 209,
+  vsize: 208,
+  inputs: [],
+  outputs: [],
+  isRbf: true,
+);
