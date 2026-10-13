@@ -100,7 +100,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     final wallet = (await _wallets.getWallet(walletId)).fold(
       (wallet) => wallet,
       (failure) =>
-          throw StateError('Payjoin wallet unavailable: ${failure.logMessage}'),
+          throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
     );
     final isKnownRemotely = await _servers.runWithFallback<bool>(
       network: ElectrumServerNetwork.fromEnvironment(
@@ -115,7 +115,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       // the payjoin session is about to report.
       unawaited(
         refreshWallet(walletId).catchError((Object e) {
-          log.warning('Payjoin wallet refresh failed: $e');
+          log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
         }),
       );
     }
@@ -163,20 +163,24 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
     }
     final message =
         'Payjoin ${event.code.name}'
-        '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}';
+        '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}'
+        '${event.error == null ? '' : ' ${event.error.runtimeType}'}';
     switch (event.level) {
       case PayjoinLogLevel.debug || PayjoinLogLevel.info:
         log.info(message);
       case PayjoinLogLevel.warning:
-        // The cause tells the many warnings of one code apart.
-        log.warning(message, error: event.error);
+        // Foreign exception text can contain transaction IDs, payment URIs
+        // or custom server URLs. Keep only its type and the structured code.
+        log.warning(message);
       case PayjoinLogLevel.severe:
-        // The engine's own error when it gave us one: Sentry groups on it, so
-        // substituting a synthetic error would file every failure of a given
-        // code under one signature and hide the cause.
+        // Sentry must not receive arbitrary exception text either. Group by
+        // structured code and cause type, retaining the original stack.
         log.severe(
           message: message,
-          error: event.error ?? StateError('Payjoin engine ${event.code.name}'),
+          error: Exception(
+            'Payjoin ${event.code.name}'
+            '${event.error == null ? '' : ' ${event.error.runtimeType}'}',
+          ),
           trace: event.trace ?? StackTrace.current,
         );
     }
