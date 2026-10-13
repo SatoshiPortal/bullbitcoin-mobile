@@ -166,9 +166,9 @@ void main() {
       alertPort: monitoring,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: route);
-    alerts = await monitoring.alerts.firstWhere((alerts) => alerts.isNotEmpty);
-    expect(alerts.single, isA<RecoverBullAttemptAlert>());
-    await monitoring.acknowledge(alerts.single);
+    // Successful deletion has removed the key and its monitoring row, so it
+    // must not publish a new suspicious-attempt alert for this abandoned vault.
+    expect(await store.monitoredBackups(), isEmpty);
     expect(await monitoring.alerts.first, isEmpty);
     await database.close();
   });
