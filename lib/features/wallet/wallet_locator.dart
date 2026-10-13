@@ -51,7 +51,10 @@ class WalletLocator {
       () => CheckBackupNeededUsecase(
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        recoverBullStatus: locator<RecoverBullFeature>().status,
+        recoverBullStatus: (network) =>
+            locator.isRegistered<RecoverBullFeature>()
+            ? locator<RecoverBullFeature>().status(network)
+            : Future.value(const RecoverBullStatus.unavailable()),
       ),
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
@@ -115,6 +118,7 @@ class WalletLocator {
         checkSpFeatureGateForWalletUsecase:
             locator<CheckSpFeatureGateForWalletUsecase>(),
       ),
+      dispose: (bloc) => bloc.close(),
     );
   }
 }
