@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_recoverbull/src/presentation/bloc.dart';
+import 'package:bull_recoverbull/src/router/recoverbull_router.dart';
 
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/allow_permission_usecase.dart';
@@ -18,7 +21,72 @@ import '../support/log_sink.dart';
 
 class _Repository extends Mock implements RecoverBullRepository {}
 
+class _Bloc extends Mock implements RecoverBullBloc {}
+
 void main() {
+  testWidgets('Continue preserves backup settings under the flow', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    when(
+      () => repository.fetchUrl(),
+    ).thenAnswer((_) async => Uri.parse('https://recoverbull.com'));
+    when(() => repository.allowPermission(true)).thenAnswer((_) async {});
+    final bloc = _Bloc();
+    when(
+      () => bloc.state,
+    ).thenReturn(const RecoverBullState(flow: RecoverBullFlow.secureVault));
+    when(
+      () => bloc.stream,
+    ).thenAnswer((_) => const Stream<RecoverBullState>.empty());
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: Text('Backup settings')),
+        ),
+        GoRoute(
+          path: '/permission',
+          builder: (_, _) => BlocProvider<RecoverBullBloc>.value(
+            value: bloc,
+            child: RequestPermissionPage(
+              log: const TestLogSink(),
+              fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+                recoverBullRepository: repository,
+              ),
+              allowPermissionUsecase: AllowPermissionUsecase(
+                recoverBullRepository: repository,
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/flow',
+          name: RecoverBullRoute.recoverbullFlows.name,
+          builder: (_, _) => const Scaffold(body: Text('Connecting')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+      ),
+    );
+    unawaited(router.push('/permission'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(find.text('Connecting'), findsOneWidget);
+    expect(router.canPop(), isTrue);
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Backup settings'), findsOneWidget);
+    expect(find.byType(RequestPermissionPage), findsNothing);
+  });
+
   testWidgets('caches the permission Future across rebuilds', (tester) async {
     final repository = _Repository();
     var fetchCount = 0;
