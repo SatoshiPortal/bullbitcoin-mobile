@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -26,6 +27,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
     required this._initializeRequiredTorUsecase,
+    required this._restoreMissingDefaultSecretUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -36,6 +38,32 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
+  final RestoreMissingDefaultSecretUsecase _restoreMissingDefaultSecretUsecase;
+
+  /// Stores the recovery phrase of a default wallet whose secret is missing,
+  /// then starts the app again. The words go straight to the use case and are
+  /// never held in state; the result is returned so the entry screen can say
+  /// why a phrase was refused.
+  Future<Result<void, AppStartupFailure>> restoreDefaultSecret(
+    List<String> words,
+  ) async {
+    final failure = switch (state) {
+      AppStartupFailureState(
+        :final AppStartupMissingDefaultSecretFailure failure,
+      ) =>
+        failure,
+      _ => null,
+    };
+    if (failure == null) {
+      return const Err(AppStartupRestoreFailure('no missing secret'));
+    }
+    final result = await _restoreMissingDefaultSecretUsecase.execute(
+      expectedFingerprint: failure.masterFingerprint,
+      words: words,
+    );
+    if (result is Ok) add(const AppStartupStarted());
+    return result;
+  }
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).

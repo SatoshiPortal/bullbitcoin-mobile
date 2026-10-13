@@ -22,13 +22,25 @@ final class AppStartupWalletCheckFailure extends AppStartupFailure {
 /// seed under its fingerprint. Never a locked keystore: that one is
 /// [AppStartupKeychainLockedFailure], transient, and waited out.
 ///
-/// ⚠️ Distinct for the log only: `AppStartupFailureScreen` shows the same
-/// message and "contact support" for every variant, so a user whose keystore
-/// is gone but whose encrypted vault exists cannot reach a restore from there
-/// (reproduced on device, 2026-09-17). That route is a product change,
-/// tracked separately.
+/// The way back is the user's backup: the failure screen offers to enter the
+/// recovery phrase again, which is checked against [masterFingerprint].
 final class AppStartupMissingDefaultSecretFailure extends AppStartupFailure {
-  const AppStartupMissingDefaultSecretFailure([super.logMessage]);
+  /// The wallet whose seed is gone. A fingerprint, never material.
+  final String masterFingerprint;
+
+  const AppStartupMissingDefaultSecretFailure(this.masterFingerprint)
+    : super(masterFingerprint);
+}
+
+/// The recovery phrase entered to restore a missing default secret belongs to
+/// another wallet.
+final class AppStartupRestoreMismatchFailure extends AppStartupFailure {
+  const AppStartupRestoreMismatchFailure([super.logMessage]);
+}
+
+/// The recovery phrase could not be stored again.
+final class AppStartupRestoreFailure extends AppStartupFailure {
+  const AppStartupRestoreFailure([super.logMessage]);
 }
 
 /// Clearing data left behind by a previous install failed.

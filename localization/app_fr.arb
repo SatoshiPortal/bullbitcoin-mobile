@@ -4949,5 +4949,8 @@
   "recoverbullTorInitializing": "Initialisation",
   "recoverbullTorReady": "Prêt",
   "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase.",
-  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué."
+  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
+  "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
+  "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
 }
