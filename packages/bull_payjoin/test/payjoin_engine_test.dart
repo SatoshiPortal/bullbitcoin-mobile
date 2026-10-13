@@ -345,6 +345,80 @@ void main() {
       expect(await local.fetchReceiver(trade.id), isNull);
       verifyNever(() => pdk.startListeningForRequest(trade));
     });
+
+    group('a sender request arriving after a switch changed', () {
+      late StreamController<PayjoinReceiverModel> requests;
+
+      setUp(() async {
+        // The main setUp's engine listens to an empty request stream; replace
+        // it with one this group can feed.
+        await engine.dispose();
+        registerFallbackValue(receiver());
+        requests = StreamController<PayjoinReceiverModel>();
+        when(() => pdk.requestsForReceivers).thenAnswer((_) => requests.stream);
+        when(() => pdk.declineReceiverSession(any())).thenReturn('[]');
+        when(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        ).thenAnswer((_) async {});
+        final wallet = _MockWalletPort();
+        when(
+          () => wallet.spendableUtxos(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+          ),
+        ).thenAnswer((_) async => []);
+        engine = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          log: PayjoinLogger.silent,
+          wallet: wallet,
+          blockchain: blockchain,
+          transactions: transactions,
+          policy: policy,
+          labels: labels,
+        );
+      });
+
+      tearDown(() => requests.close());
+
+      Future<void> deliverRequest(PayjoinReceiverModel stored) async {
+        await local.storeReceiver(stored);
+        requests.add(
+          stored.copyWith(
+            originalTxBytes: Uint8List.fromList([1, 2, 3]),
+            originalTxId: 'original-tx',
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+
+      test('a buy receiver declines and broadcasts the original once buying '
+          'is off', () async {
+        await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
+
+        await deliverRequest(receiver(id: 'trade', isTrade: true));
+
+        verify(() => pdk.declineReceiverSession(any())).called(1);
+        verify(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        ).called(1);
+        expect((await local.fetchReceiver('trade'))?.isAborted, isTrue);
+      });
+
+      test('a user receiver is not declined when only buying is off', () async {
+        await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
+
+        await deliverRequest(receiver(id: 'regular'));
+
+        verifyNever(() => pdk.declineReceiverSession(any()));
+      });
+    });
   });
 
   test('cancel removes an idle receiver without broadcasting', () async {
