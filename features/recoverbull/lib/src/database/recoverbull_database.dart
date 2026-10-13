@@ -186,16 +186,6 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
           );
         }
       }
-      if (initialServerUrlOverride != null) {
-        await (update(recoverbullState)..where(
-              (state) => state.id.equals(1) & state.serverUrlOverride.isNull(),
-            ))
-            .write(
-              RecoverbullStateCompanion(
-                serverUrlOverride: Value(initialServerUrlOverride),
-              ),
-            );
-      }
     });
   }
 
