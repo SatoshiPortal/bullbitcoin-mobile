@@ -4878,5 +4878,6 @@
   "limitOrdersInsufficientBalance": "Solde insuffisant",
   "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
   "limitOrdersFundAccount": "Financer votre compte",
-  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase."
+  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase.",
+  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué."
 }

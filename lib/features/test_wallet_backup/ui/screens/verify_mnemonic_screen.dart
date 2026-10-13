@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/widgets/screen_privacy_gate.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -40,7 +41,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   int _placed = 0;
   int _total = 0;
 
-  late final Future<void> _privacyFuture = enableScreenPrivacy();
+  late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override
   void didChangeDependencies() {
@@ -77,14 +78,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
-        // Nothing draws before the OS flag call has returned: a builder that
-        // ignores `connectionState` runs during `waiting` (Codex, 2026-09-17).
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const SizedBox.shrink();
-        }
+    // Nothing draws before capture blocking is confirmed: the gate waits for
+    // the OS flag and hides the words if the platform refused it.
+    return ScreenPrivacyGate(
+      protection: _privacyFuture,
+      onRetry: () => setState(() {
+        _privacyFuture = enableScreenPrivacy();
+      }),
+      builder: (context) {
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
               previous.selectedWallet?.masterFingerprint !=

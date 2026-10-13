@@ -5011,5 +5011,6 @@
   "spBlindbitBehindWarning": "{count, plural, =1{Der Scan-Server liegt einen Block hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.} other{Der Scan-Server liegt {count} Blöcke hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.}}",
   "spHeaderValidationInvalidChain": "Electrum-Server liefert eine falsche Blockchain",
   "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server.",
-  "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar."
+  "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar.",
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen."
 }
