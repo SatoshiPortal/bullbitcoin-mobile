@@ -62,8 +62,8 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 bull-ui-check:
-	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@echo "🧱 bull_ui import boundary (migrated feature UI imports only package:bull_ui)"
+	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui features/recoverbull/lib/src/ui features/recoverbull/lib/src/google_drive/ui; then echo "migrated feature UI must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
 gen: build-runner translations
 

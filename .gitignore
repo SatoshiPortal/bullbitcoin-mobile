@@ -41,7 +41,6 @@ lib/generated
 # l10n internationalization related
 localization*.dart
 untranslated-messages.txt
-/features/recoverbull/lib/l10n/recoverbull_localizations*.dart
 /features/recoverbull/lib/generated/
 
 # Dev preferences
