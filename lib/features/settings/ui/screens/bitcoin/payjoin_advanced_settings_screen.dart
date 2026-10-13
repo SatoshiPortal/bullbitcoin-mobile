@@ -65,7 +65,10 @@ class _PayjoinAdvancedSettingsScreenState
       text: settings.payjoinMinAmountSat.toString(),
     );
     _expireController = TextEditingController(
-      text: (settings.payjoinExpireAfterSec ~/ Duration.secondsPerMinute)
+      // Rounded: the previous screen took seconds, so a stored value is not
+      // always a whole number of minutes.
+      text: (settings.payjoinExpireAfterSec / Duration.secondsPerMinute)
+          .round()
           .toString(),
     );
   }

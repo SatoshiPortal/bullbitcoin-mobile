@@ -51,6 +51,22 @@ void main() {
     expect(find.text('sats'), findsOneWidget);
   });
 
+  testWidgets('rounds a stored expiry that is not whole minutes', (
+    tester,
+  ) async {
+    when(() => settingsCubit.state).thenReturn(
+      SettingsState(
+        payjoinPolicy: PayjoinPolicy.defaults().copyWith(
+          sessionLifetime: const Duration(seconds: 90),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(_buildPage(settingsCubit));
+
+    expect(find.text('2'), findsOneWidget);
+  });
+
   testWidgets('saves an expiry typed in minutes as seconds', (tester) async {
     await tester.pumpWidget(_buildPage(settingsCubit));
 
