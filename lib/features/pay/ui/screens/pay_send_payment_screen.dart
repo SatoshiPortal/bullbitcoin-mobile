@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
@@ -20,7 +19,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullScrollableColumn, BullSwitch, Gap;
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
@@ -243,7 +243,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                       style: context.font.bodyMedium,
                     ),
                   ),
-                  BBSwitch(
+                  BullSwitch(
                     value: isPayjoinEnabled,
                     onChanged: isConfirmingPayment || isPayinBroadcast
                         ? null

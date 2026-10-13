@@ -5,9 +5,8 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,7 +36,7 @@ class _SpReceiveScreenState extends State<SpReceiveScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: BBSegmentFull(
+              child: BullSegmented(
                 items: {spLabel, taprootLabel},
                 initialValue: _index == 0 ? spLabel : taprootLabel,
                 onSelected: (selected) {
