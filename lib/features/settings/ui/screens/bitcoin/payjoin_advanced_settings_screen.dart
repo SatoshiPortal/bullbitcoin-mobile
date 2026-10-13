@@ -13,7 +13,8 @@ import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 /// Payjoin advanced settings, on their own page (product decision
 /// 2026-07-26 — not an expand/collapse section): the minimum-receive-amount
 /// and session-expiry thresholds, and a read-only view of the servers
-/// involved.
+/// involved. Both thresholds are whole numbers in compact fields: the amount
+/// in sats, the expiry in minutes (stored in seconds).
 ///
 /// Fields auto-save with a debounce (no Save button, matching the autoswap
 /// settings screen — and so typing `86400` doesn't persist `86`, `864` and
@@ -36,6 +37,12 @@ class PayjoinAdvancedSettingsScreen extends StatefulWidget {
 class _PayjoinAdvancedSettingsScreenState
     extends State<PayjoinAdvancedSettingsScreen> {
   static const _debounceDuration = Duration(milliseconds: 500);
+  static const _fieldWidth = 140.0;
+
+  static final _minimumExpireMinutes =
+      PayjoinPolicy.minimumSessionLifetime.inMinutes;
+  static final _maximumExpireMinutes =
+      PayjoinPolicy.maximumSessionLifetime.inMinutes;
 
   late final TextEditingController _minAmountController;
   late final TextEditingController _expireController;
@@ -58,7 +65,8 @@ class _PayjoinAdvancedSettingsScreenState
       text: settings.payjoinMinAmountSat.toString(),
     );
     _expireController = TextEditingController(
-      text: settings.payjoinExpireAfterSec.toString(),
+      text: (settings.payjoinExpireAfterSec ~/ Duration.secondsPerMinute)
+          .toString(),
     );
   }
 
@@ -117,18 +125,19 @@ class _PayjoinAdvancedSettingsScreenState
       setState(() => _expireError = null);
       return;
     }
-    final expireAfterSec = int.tryParse(value);
-    if (expireAfterSec == null ||
-        expireAfterSec < PayjoinPolicy.minimumSessionLifetime.inSeconds ||
-        expireAfterSec > PayjoinPolicy.maximumSessionLifetime.inSeconds) {
+    final expireMinutes = int.tryParse(value);
+    if (expireMinutes == null ||
+        expireMinutes < _minimumExpireMinutes ||
+        expireMinutes > _maximumExpireMinutes) {
       setState(
-        () => _expireError = context.loc.settingsPayjoinExpireRangeError(
-          PayjoinPolicy.minimumSessionLifetime.inSeconds,
-          PayjoinPolicy.maximumSessionLifetime.inSeconds,
+        () => _expireError = context.loc.settingsPayjoinExpireMinutesRangeError(
+          _minimumExpireMinutes,
+          _maximumExpireMinutes,
         ),
       );
       return;
     }
+    final expireAfterSec = expireMinutes * Duration.secondsPerMinute;
     setState(() => _expireError = null);
     _pendingExpireAfterSec = expireAfterSec;
     _expireDebounce = Timer(_debounceDuration, () {
@@ -151,61 +160,33 @@ class _PayjoinAdvancedSettingsScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BBText(
-                    context.loc.settingsPayjoinMinAmountTitle,
-                    style: context.font.bodyLarge,
-                  ),
-                  const Gap(8),
-                  BullInputText(
-                    value: _minAmountController.text,
-                    controller: _minAmountController,
-                    focusNode: _minAmountNode,
-                    onlyNumbers: true,
-                    onChanged: _onMinAmountChanged,
-                  ),
-                  if (_minAmountError != null) ...[
-                    const Gap(4),
-                    BBText(
-                      _minAmountError!,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.error,
-                      ),
-                    ),
-                  ],
-                  const Gap(4),
-                  BBText(
-                    context.loc.settingsPayjoinMinAmountDescription,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  _ThresholdField(
+                    title: context.loc.settingsPayjoinMinAmountTitle,
+                    description:
+                        context.loc.settingsPayjoinMinAmountDescription,
+                    error: _minAmountError,
+                    field: BullInputText(
+                      value: _minAmountController.text,
+                      controller: _minAmountController,
+                      focusNode: _minAmountNode,
+                      digitsOnly: true,
+                      suffixText: context.loc.settingsPayjoinSatsUnit,
+                      onChanged: _onMinAmountChanged,
                     ),
                   ),
                   const Gap(24),
-                  BBText(
-                    context.loc.settingsPayjoinExpireTitle,
-                    style: context.font.bodyLarge,
-                  ),
-                  const Gap(8),
-                  BullInputText(
-                    value: _expireController.text,
-                    controller: _expireController,
-                    focusNode: _expireNode,
-                    onlyNumbers: true,
-                    onChanged: _onExpireChanged,
-                  ),
-                  if (_expireError != null) ...[
-                    const Gap(4),
-                    BBText(
-                      _expireError!,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.error,
-                      ),
-                    ),
-                  ],
-                  const Gap(4),
-                  BBText(
-                    context.loc.settingsPayjoinExpireDescription,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  _ThresholdField(
+                    title: context.loc.settingsPayjoinExpireTitle,
+                    description:
+                        context.loc.settingsPayjoinExpireMinutesDescription,
+                    error: _expireError,
+                    field: BullInputText(
+                      value: _expireController.text,
+                      controller: _expireController,
+                      focusNode: _expireNode,
+                      digitsOnly: true,
+                      suffixText: context.loc.settingsPayjoinMinutesUnit,
+                      onChanged: _onExpireChanged,
                     ),
                   ),
                   const Gap(24),
@@ -239,6 +220,67 @@ class _PayjoinAdvancedSettingsScreenState
           ),
         ),
       ),
+    );
+  }
+}
+
+/// One threshold: its title and explanation beside a compact numeric field,
+/// with the validation error underneath. The values fit in a few digits, so
+/// the field does not take the screen's width.
+class _ThresholdField extends StatelessWidget {
+  const _ThresholdField({
+    required this.title,
+    required this.description,
+    required this.field,
+    this.error,
+  });
+
+  final String title;
+  final String description;
+  final Widget field;
+  final String? error;
+
+  @override
+  Widget build(BuildContext context) {
+    final error = this.error;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText(title, style: context.font.bodyLarge),
+                  const Gap(4),
+                  BBText(
+                    description,
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.onSurfaceVariant,
+                    ),
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+            ),
+            const Gap(16),
+            SizedBox(
+              width: _PayjoinAdvancedSettingsScreenState._fieldWidth,
+              child: field,
+            ),
+          ],
+        ),
+        if (error != null) ...[
+          const Gap(4),
+          BBText(
+            error,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

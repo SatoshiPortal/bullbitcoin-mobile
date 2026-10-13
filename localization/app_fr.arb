@@ -4577,8 +4577,6 @@
   "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin est refusé et le paiement est reçu normalement.",
   "settingsPayjoinMinAmountRangeError": "Doit être compris entre {min} et {max} sats",
   "settingsPayjoinExpireTitle": "Expiration de la session",
-  "settingsPayjoinExpireDescription": "Durée pendant laquelle une session payjoin reste ouverte, en secondes, avant de basculer vers un paiement normal.",
-  "settingsPayjoinExpireRangeError": "Doit être compris entre {min} et {max} secondes",
   "settingsPayjoinServersTitle": "Serveurs",
   "settingsPayjoinDirectoryLabel": "Répertoire payjoin",
   "settingsPayjoinRelaysLabel": "Relais OHTTP",
@@ -4957,5 +4955,9 @@
   "settingsPayjoinReceiveLabel": "Recevoir",
   "settingsPayjoinExchangeSection": "Avec la plateforme Bull Bitcoin",
   "settingsPayjoinBuyLabel": "Acheter",
-  "settingsPayjoinSellLabel": "Vendre et payer des factures"
+  "settingsPayjoinSellLabel": "Vendre et payer des factures",
+  "settingsPayjoinExpireMinutesDescription": "Durée pendant laquelle une session payjoin reste ouverte avant de basculer vers un paiement normal.",
+  "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
+  "settingsPayjoinSatsUnit": "sats",
+  "settingsPayjoinMinutesUnit": "min"
 }

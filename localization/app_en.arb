@@ -13267,22 +13267,6 @@
   "@settingsPayjoinExpireTitle": {
     "description": "Title of the payjoin session expiry field"
   },
-  "settingsPayjoinExpireDescription": "How long a payjoin session stays open, in seconds, before falling back to a normal payment.",
-  "@settingsPayjoinExpireDescription": {
-    "description": "Explanation under the payjoin session expiry field"
-  },
-  "settingsPayjoinExpireRangeError": "Must be between {min} and {max} seconds",
-  "@settingsPayjoinExpireRangeError": {
-    "description": "Validation error when the payjoin session expiry is out of bounds",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
   "settingsPayjoinServersTitle": "Servers",
   "@settingsPayjoinServersTitle": {
     "description": "Title of the read-only payjoin servers section"
@@ -15675,5 +15659,29 @@
   "settingsPayjoinSellLabel": "Sell and pay bills",
   "@settingsPayjoinSellLabel": {
     "description": "Payjoin switch for paying sell and bill-payment orders"
+  },
+  "settingsPayjoinExpireMinutesDescription": "How long a payjoin session stays open before falling back to a normal payment.",
+  "@settingsPayjoinExpireMinutesDescription": {
+    "description": "Explanation next to the payjoin session expiry field, entered in minutes"
+  },
+  "settingsPayjoinExpireMinutesRangeError": "Must be between {min} and {max} minutes",
+  "@settingsPayjoinExpireMinutesRangeError": {
+    "description": "Validation error when the payjoin session expiry, in minutes, is out of bounds",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinSatsUnit": "sats",
+  "@settingsPayjoinSatsUnit": {
+    "description": "Unit shown inside the payjoin minimum amount field"
+  },
+  "settingsPayjoinMinutesUnit": "min",
+  "@settingsPayjoinMinutesUnit": {
+    "description": "Unit shown inside the payjoin session expiry field"
   }
 }
