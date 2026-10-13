@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -272,7 +271,7 @@ Future<void> main({bool isInitialized = false}) async {
             selectedInputs: selection,
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-          throwsA(isA<InsufficientFundsException>()),
+          throwsA(isA<NoSpendableUtxoException>()),
         );
       });
 
