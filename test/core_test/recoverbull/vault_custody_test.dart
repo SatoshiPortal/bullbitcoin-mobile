@@ -143,11 +143,16 @@ void main() {
     when(() => defaultWallet.latestEncryptedBackup).thenReturn(encryptedAt);
     when(() => defaultWallet.latestPhysicalBackup).thenReturn(physicalAt);
     when(
-      () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
+      () => wallets.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([defaultWallet]));
     final create = CreateEncryptedVaultUsecase(
       secrets: custody,
       walletRepository: wallets,
+      settingsRepository: settings,
     );
 
     final result = await create.execute();
@@ -187,6 +192,80 @@ void main() {
     });
   });
 
+  test(
+    'seals the default of the current environment, not the first one listed',
+    () async {
+      // Defaults are created per environment, each from its own secret.
+      final testnetSecret = _value(
+        await custody.import(
+          words:
+              'legal winner thank year wave sausage worth useful legal '
+                      'winner thank yellow'
+                  .split(' '),
+        ),
+      );
+      expect(testnetSecret.id.hex, isNot(fingerprint));
+      final mainnetDefault = wallet(
+        'mainnet-default',
+        fingerprint,
+        Network.bitcoinMainnet,
+      );
+      final testnetDefault = wallet(
+        'testnet-default',
+        testnetSecret.id.hex,
+        Network.bitcoinTestnet,
+      );
+      for (final w in [mainnetDefault, testnetDefault]) {
+        when(() => w.isEncryptedVaultTested).thenReturn(false);
+        when(() => w.isPhysicalBackupTested).thenReturn(false);
+        when(() => w.latestEncryptedBackup).thenReturn(null);
+        when(() => w.latestPhysicalBackup).thenReturn(null);
+      }
+      when(() => settings.fetch()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      // The store lists the mainnet default first, as an unfiltered read may.
+      when(
+        () => wallets.getWallets(
+          onlyBitcoin: true,
+          onlyDefaults: true,
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((invocation) async {
+        final environment = invocation.namedArguments[#environment];
+        return Ok<List<Wallet>, WalletFailure>([
+          if (environment != Environment.testnet) mainnetDefault,
+          if (environment != Environment.mainnet) testnetDefault,
+        ]);
+      });
+
+      final result = await CreateEncryptedVaultUsecase(
+        secrets: custody,
+        walletRepository: wallets,
+        settingsRepository: settings,
+      ).execute();
+
+      final created =
+          (result
+                  as Ok<
+                    ({EncryptedVault vault, String vaultKey}),
+                    RecoverBullCoreFailure
+                  >)
+              .value;
+      final restored = _value(
+        await custody.recoverbull.restore(
+          vault: secrets.EncryptedVault(json: created.vault.toFile()),
+          key: secrets.VaultKey(created.vaultKey),
+        ),
+      );
+      expect(restored.secret.id, testnetSecret.id);
+    },
+  );
+
   test('failed vault creation never marks the backup as tested', () async {
     final defaultWallet = wallet(
       'default',
@@ -194,13 +273,18 @@ void main() {
       Network.bitcoinMainnet,
     );
     when(
-      () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
+      () => wallets.getWallets(
+        onlyBitcoin: true,
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([defaultWallet]));
     storage.locked = true;
 
     final result = await CreateEncryptedVaultUsecase(
       secrets: custody,
       walletRepository: wallets,
+      settingsRepository: settings,
     ).execute();
 
     expect(result, isA<Err>());

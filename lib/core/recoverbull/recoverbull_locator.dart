@@ -87,6 +87,7 @@ class RecoverbullLocator {
       () => CreateEncryptedVaultUsecase(
         secrets: locator<Secrets>(),
         walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<ConnectToGoogleDriveUsecase>(
