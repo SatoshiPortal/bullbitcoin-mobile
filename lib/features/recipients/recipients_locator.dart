@@ -7,8 +7,12 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_preferred
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
@@ -37,6 +41,18 @@ class RecipientsLocator {
         ),
         bullBitcoinTestnetApiClient: BullbitcoinApiRecipientsGateway(
           authenticatedApiClient: locator<Dio>(
+            instanceName: 'authenticatedBullBitcoinApiTestClient',
+          ),
+        ),
+      ),
+    );
+    locator.registerLazySingleton<VirtualIbanRepository>(
+      () => VirtualIbanRepositoryImpl(
+        mainnetDatasource: BullbitcoinApiVirtualIbanDatasource(
+          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
+        ),
+        testnetDatasource: BullbitcoinApiVirtualIbanDatasource(
+          http: locator<Dio>(
             instanceName: 'authenticatedBullBitcoinApiTestClient',
           ),
         ),
@@ -80,6 +96,13 @@ class RecipientsLocator {
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
+      ),
+    );
+    locator.registerFactory<WatchVirtualIbanUsecase>(
+      () => WatchVirtualIbanUsecase(
+        virtualIbanRepository: locator<VirtualIbanRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),

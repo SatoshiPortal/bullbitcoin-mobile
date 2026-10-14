@@ -4835,5 +4835,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 operazione} other{{count} operazioni}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 operazione ({currency})} other{{count} operazioni ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Non è stato possibile caricare lo stato del tuo upload. Si prega di riprovare.",
-  "recipientsTypeConfidentialSepa": "SEPA Riservato"
+  "recipientsTypeConfidentialSepa": "SEPA Riservato",
+  "recipientsTypeConfidentialSepa": "SEPA Riservato",
+  "recipientsErrorVirtualIbanNotAvailable": "Non hai i permessi necessari per accedere a questa opzione di finanziamento. Il tuo KYC è insufficiente o questa opzione non è disponibile per il tuo account",
+  "recipientsErrorEuResidencyRequired": "Devi essere residente nell'Unione Europea per attivare SEPA riservato."
 }

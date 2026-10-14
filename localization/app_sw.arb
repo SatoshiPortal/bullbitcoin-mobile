@@ -3640,5 +3640,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{biashara 1} other{biashara {count}}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{biashara 1 ({currency})} other{biashara {count} ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Hali ya upakiaji wako haikuweza kupakiwa. Tafadhali jaribu tena.",
-  "recipientsTypeConfidentialSepa": "SEPA ya Siri"
+  "recipientsTypeConfidentialSepa": "SEPA ya Siri",
+  "recipientsTypeConfidentialSepa": "SEPA ya Siri",
+  "recipientsErrorVirtualIbanNotAvailable": "Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako",
+  "recipientsErrorEuResidencyRequired": "Unahitaji kuwa mkazi wa Umoja wa Ulaya ili kuwasha SEPA ya siri."
 }

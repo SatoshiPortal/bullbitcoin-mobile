@@ -11826,5 +11826,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{صفقة واحدة} other{{count} صفقات}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{صفقة واحدة ({currency})} other{{count} صفقات ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "تعذر تحميل حالة الرفع الخاصة بك. يرجى المحاولة مرة أخرى.",
-  "recipientsTypeConfidentialSepa": "SEPA السري"
+  "recipientsTypeConfidentialSepa": "SEPA السري",
+  "recipientsTypeConfidentialSepa": "SEPA السري",
+  "recipientsErrorVirtualIbanNotAvailable": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
+  "recipientsErrorEuResidencyRequired": "يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري."
 }

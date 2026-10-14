@@ -15499,5 +15499,13 @@
   "recipientsTypeConfidentialSepa": "Confidential SEPA",
   "@recipientsTypeConfidentialSepa": {
     "description": "Recipient type label for a Confidential SEPA recipient"
+  },
+  "recipientsErrorVirtualIbanNotAvailable": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@recipientsErrorVirtualIbanNotAvailable": {
+    "description": "Shown when the user cannot get a virtual IBAN because their KYC is insufficient or Confidential SEPA is not offered to them"
+  },
+  "recipientsErrorEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
+  "@recipientsErrorEuResidencyRequired": {
+    "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
   }
 }

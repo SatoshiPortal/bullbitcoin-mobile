@@ -4913,5 +4913,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 opération} other{{count} opérations}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 opération ({currency})} other{{count} opérations ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Le statut de votre téléversement n'a pas pu être chargé. Veuillez réessayer.",
-  "recipientsTypeConfidentialSepa": "SEPA Confidentiel"
+  "recipientsTypeConfidentialSepa": "SEPA Confidentiel",
+  "recipientsTypeConfidentialSepa": "SEPA Confidentiel",
+  "recipientsErrorVirtualIbanNotAvailable": "Vous n'avez pas les autorisations requises pour accéder à cette option de financement. Soit votre KYC est insuffisant, soit cette option n'est pas disponible pour votre compte",
+  "recipientsErrorEuResidencyRequired": "Vous devez être résident de l'Union européenne pour activer le SEPA confidentiel."
 }

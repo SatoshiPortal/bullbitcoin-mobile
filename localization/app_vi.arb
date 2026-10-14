@@ -3628,5 +3628,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 giao dịch} other{{count} giao dịch}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 giao dịch ({currency})} other{{count} giao dịch ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Không thể tải trạng thái tải lên của bạn. Vui lòng thử lại.",
-  "recipientsTypeConfidentialSepa": "SEPA Bảo mật"
+  "recipientsTypeConfidentialSepa": "SEPA Bảo mật",
+  "recipientsTypeConfidentialSepa": "SEPA Bảo mật",
+  "recipientsErrorVirtualIbanNotAvailable": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
+  "recipientsErrorEuResidencyRequired": "Bạn cần là cư dân của Liên minh Châu Âu để kích hoạt SEPA bảo mật."
 }

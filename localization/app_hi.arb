@@ -12010,5 +12010,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 ट्रेड} other{{count} ट्रेड}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 ट्रेड ({currency})} other{{count} ट्रेड ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "आपके अपलोड की स्थिति लोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
-  "recipientsTypeConfidentialSepa": "गोपनीय SEPA"
+  "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
+  "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
+  "recipientsErrorEuResidencyRequired": "गोपनीय SEPA सक्रिय करने के लिए आपको यूरोपीय संघ का निवासी होना आवश्यक है।"
 }

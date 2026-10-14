@@ -9194,5 +9194,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 টা লেনদেন} other{{count} টা লেনদেন}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "আপোনাৰ আপলোডৰ স্থিতি ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA"
+  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
+  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং বিকল্পত প্ৰৱেশ কৰিবলৈ আপোনাৰ প্ৰয়োজনীয় অনুমতি নাই। আপোনাৰ KYC অপৰ্যাপ্ত নাইবা এই বিকল্প আপোনাৰ একাউণ্টৰ বাবে উপলব্ধ নহয়",
+  "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্ৰিয় কৰিবলৈ আপুনি ইউৰোপীয় সংঘৰ বাসিন্দা হ'ব লাগিব।"
 }

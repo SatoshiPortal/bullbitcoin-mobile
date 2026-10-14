@@ -9930,5 +9930,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 сделка} other{{count} сделки}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 сделка ({currency})} other{{count} сделки ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Статусът на качването ви не можа да бъде зареден. Моля, опитайте отново.",
-  "recipientsTypeConfidentialSepa": "Поверителен SEPA"
+  "recipientsTypeConfidentialSepa": "Поверителен SEPA",
+  "recipientsTypeConfidentialSepa": "Поверителен SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "recipientsErrorEuResidencyRequired": "Трябва да сте жител на Европейския съюз, за да активирате поверителен SEPA."
 }

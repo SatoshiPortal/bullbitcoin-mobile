@@ -4823,5 +4823,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 kauppa} other{{count} kauppaa}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 kauppa ({currency})} other{{count} kauppaa ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Latauksesi tilaa ei voitu hakea. Yritä uudelleen.",
-  "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA"
+  "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA",
+  "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Sinulla ei ole tarvittavia käyttöoikeuksia tämän rahoitusvaihtoehdon käyttämiseen. Joko KYC-tietosi ovat riittämättömät tai tämä vaihtoehto ei ole käytettävissä tililläsi",
+  "recipientsErrorEuResidencyRequired": "Sinun on asuttava Euroopan unionissa aktivoidaksesi luottamuksellisen SEPAn."
 }

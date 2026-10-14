@@ -11823,5 +11823,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 معامله} other{{count} معامله}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 معامله ({currency})} other{{count} معامله ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "وضعیت بارگذاری شما بارگیری نشد. لطفاً دوباره تلاش کنید.",
-  "recipientsTypeConfidentialSepa": "SEPA محرمانه"
+  "recipientsTypeConfidentialSepa": "SEPA محرمانه",
+  "recipientsTypeConfidentialSepa": "SEPA محرمانه",
+  "recipientsErrorVirtualIbanNotAvailable": "شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست",
+  "recipientsErrorEuResidencyRequired": "برای فعال‌سازی SEPA محرمانه باید ساکن اتحادیه اروپا باشید."
 }

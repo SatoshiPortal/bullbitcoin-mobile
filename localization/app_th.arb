@@ -11827,5 +11827,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 รายการซื้อขาย} other{{count} รายการซื้อขาย}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 รายการซื้อขาย ({currency})} other{{count} รายการซื้อขาย ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "ไม่สามารถโหลดสถานะการอัปโหลดของคุณได้ โปรดลองอีกครั้ง",
-  "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ"
+  "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",
+  "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",
+  "recipientsErrorVirtualIbanNotAvailable": "คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ",
+  "recipientsErrorEuResidencyRequired": "คุณต้องเป็นผู้พำนักในสหภาพยุโรปเพื่อเปิดใช้งาน SEPA แบบเป็นความลับ"
 }

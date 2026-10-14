@@ -12205,5 +12205,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Aapke upload ki sthiti load nahin ho saki. Kripya dobara koshish karein.",
-  "recipientsTypeConfidentialSepa": "Confidential SEPA"
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Is funding option tak pahunchne ke liye aapke paas zaroori permissions nahin hain. Ya to aapka KYC aparyaapt hai ya yeh option aapke account ke liye uplabdh nahin hai",
+  "recipientsErrorEuResidencyRequired": "Confidential SEPA activate karne ke liye aapko European Union ka nivasi hona zaroori hai."
 }

@@ -4841,5 +4841,8 @@
   "exchangeStatisticsTradeCountValue": "{count, plural, one{{count} сделка} few{{count} сделки} many{{count} сделок} other{{count} сделки}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, one{{count} сделка ({currency})} few{{count} сделки ({currency})} many{{count} сделок ({currency})} other{{count} сделки ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Не удалось загрузить статус вашей загрузки. Пожалуйста, попробуйте снова.",
-  "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA"
+  "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",
+  "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "У вас нет необходимых разрешений для доступа к этому способу пополнения. Либо ваш KYC недостаточен, либо этот способ недоступен для вашего аккаунта",
+  "recipientsErrorEuResidencyRequired": "Чтобы активировать конфиденциальный SEPA, вы должны быть резидентом Европейского союза."
 }
