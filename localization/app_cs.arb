@@ -11847,5 +11847,6 @@
   "recipientsVirtualIbanActivatingTitle": "Aktivace Důvěrného SEPA...",
   "recipientsVirtualIbanActivatingDescription": "Vytváříme váš virtuální IBAN. Může to trvat několik minut.",
   "recipientsVirtualIbanActivatedTitle": "Důvěrný SEPA aktivován",
-  "recipientsVirtualIbanActivatedDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromým výběrům peněz."
+  "recipientsVirtualIbanActivatedDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromým výběrům peněz.",
+  "withdrawConfidentialSepaNotActivatedError": "Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA."
 }

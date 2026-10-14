@@ -4856,5 +4856,6 @@
   "recipientsVirtualIbanActivatingTitle": "Активація Конфіденційного SEPA...",
   "recipientsVirtualIbanActivatingDescription": "Створюємо ваш віртуальний IBAN. Це може зайняти кілька хвилин.",
   "recipientsVirtualIbanActivatedTitle": "Конфіденційний SEPA активовано",
-  "recipientsVirtualIbanActivatedDescription": "Тепер ви можете використовувати особистий віртуальний IBAN, щоб виводити гроші конфіденційно."
+  "recipientsVirtualIbanActivatedDescription": "Тепер ви можете використовувати особистий віртуальний IBAN, щоб виводити гроші конфіденційно.",
+  "withdrawConfidentialSepaNotActivatedError": "Будь ласка, активуйте опцію конфіденційного платежу для цього одержувача SEPA."
 }

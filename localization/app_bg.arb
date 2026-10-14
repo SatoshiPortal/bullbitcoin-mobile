@@ -9954,5 +9954,6 @@
   "recipientsVirtualIbanActivatingTitle": "Активиране на Поверителен SEPA...",
   "recipientsVirtualIbanActivatingDescription": "Създаваме виртуалния ви IBAN. Това може да отнеме няколко минути.",
   "recipientsVirtualIbanActivatedTitle": "Поверителният SEPA е активиран",
-  "recipientsVirtualIbanActivatedDescription": "Вече можете да използвате личния си виртуален IBAN, за да теглите пари поверително."
+  "recipientsVirtualIbanActivatedDescription": "Вече можете да използвате личния си виртуален IBAN, за да теглите пари поверително.",
+  "withdrawConfidentialSepaNotActivatedError": "Моля, активирайте опцията за поверително плащане за този получател по SEPA."
 }

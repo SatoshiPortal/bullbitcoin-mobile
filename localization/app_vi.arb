@@ -3652,5 +3652,6 @@
   "recipientsVirtualIbanActivatingTitle": "Đang kích hoạt SEPA Bảo mật...",
   "recipientsVirtualIbanActivatingDescription": "Đang tạo IBAN ảo của bạn. Việc này có thể mất vài phút.",
   "recipientsVirtualIbanActivatedTitle": "Đã kích hoạt SEPA Bảo mật",
-  "recipientsVirtualIbanActivatedDescription": "Giờ bạn có thể dùng IBAN ảo cá nhân để rút tiền một cách riêng tư."
+  "recipientsVirtualIbanActivatedDescription": "Giờ bạn có thể dùng IBAN ảo cá nhân để rút tiền một cách riêng tư.",
+  "withdrawConfidentialSepaNotActivatedError": "Vui lòng kích hoạt tùy chọn thanh toán bảo mật cho người nhận SEPA này."
 }

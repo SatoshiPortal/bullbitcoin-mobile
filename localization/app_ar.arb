@@ -11850,5 +11850,6 @@
   "recipientsVirtualIbanActivatingTitle": "جارٍ تفعيل SEPA السري...",
   "recipientsVirtualIbanActivatingDescription": "جارٍ إنشاء رقم IBAN الافتراضي الخاص بك. قد يستغرق ذلك بضع دقائق.",
   "recipientsVirtualIbanActivatedTitle": "تم تفعيل SEPA السري",
-  "recipientsVirtualIbanActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية."
+  "recipientsVirtualIbanActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية.",
+  "withdrawConfidentialSepaNotActivatedError": "يرجى تفعيل خيار الدفع السري لهذا المستلم عبر SEPA."
 }

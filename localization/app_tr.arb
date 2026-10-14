@@ -11847,5 +11847,6 @@
   "recipientsVirtualIbanActivatingTitle": "Gizli SEPA etkinleştiriliyor...",
   "recipientsVirtualIbanActivatingDescription": "Sanal IBAN’ınız oluşturuluyor. Bu birkaç dakika sürebilir.",
   "recipientsVirtualIbanActivatedTitle": "Gizli SEPA etkinleştirildi",
-  "recipientsVirtualIbanActivatedDescription": "Artık kişisel sanal IBAN’ınızı gizlice para çekmek için kullanabilirsiniz."
+  "recipientsVirtualIbanActivatedDescription": "Artık kişisel sanal IBAN’ınızı gizlice para çekmek için kullanabilirsiniz.",
+  "withdrawConfidentialSepaNotActivatedError": "Lütfen bu SEPA alıcısı için gizli ödeme seçeneğini etkinleştirin."
 }

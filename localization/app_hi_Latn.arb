@@ -12229,5 +12229,6 @@
   "recipientsVirtualIbanActivatingTitle": "Confidential SEPA activate ho raha hai...",
   "recipientsVirtualIbanActivatingDescription": "Aapka virtual IBAN banaya ja raha hai. Ismein kuch minute lag sakte hain.",
   "recipientsVirtualIbanActivatedTitle": "Confidential SEPA activate ho gaya",
-  "recipientsVirtualIbanActivatedDescription": "Ab aap privately paise nikalne ke liye apne personal virtual IBAN ka upyog kar sakte hain."
+  "recipientsVirtualIbanActivatedDescription": "Ab aap privately paise nikalne ke liye apne personal virtual IBAN ka upyog kar sakte hain.",
+  "withdrawConfidentialSepaNotActivatedError": "Kripya is SEPA recipient ke liye confidential payment option activate karein."
 }

@@ -3775,5 +3775,6 @@
   "recipientsVirtualIbanActivatingTitle": "კონფიდენციალური SEPA აქტიურდება...",
   "recipientsVirtualIbanActivatingDescription": "იქმნება თქვენი ვირტუალური IBAN. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
   "recipientsVirtualIbanActivatedTitle": "კონფიდენციალური SEPA გააქტიურდა",
-  "recipientsVirtualIbanActivatedDescription": "ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად გატანა."
+  "recipientsVirtualIbanActivatedDescription": "ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად გატანა.",
+  "withdrawConfidentialSepaNotActivatedError": "გთხოვთ, გაააქტიუროთ კონფიდენციალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის."
 }

@@ -3652,5 +3652,6 @@
   "recipientsVirtualIbanActivatingTitle": "Գաղտնի SEPA-ն ակտիվացվում է...",
   "recipientsVirtualIbanActivatingDescription": "Ստեղծվում է ձեր վիրտուալ IBAN-ը։ Դա կարող է տևել մի քանի րոպե։",
   "recipientsVirtualIbanActivatedTitle": "Գաղտնի SEPA-ն ակտիվացված է",
-  "recipientsVirtualIbanActivatedDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումար գաղտնի դուրս բերելու համար։"
+  "recipientsVirtualIbanActivatedDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումար գաղտնի դուրս բերելու համար։",
+  "withdrawConfidentialSepaNotActivatedError": "Խնդրում ենք ակտիվացնել գաղտնի վճարման տարբերակը այս SEPA ստացողի համար։"
 }

@@ -4847,5 +4847,6 @@
   "recipientsVirtualIbanActivatingTitle": "Aktivoidaan luottamuksellista SEPAa...",
   "recipientsVirtualIbanActivatingDescription": "Luodaan virtuaalista IBAN-tiliäsi. Tämä saattaa kestää muutaman minuutin.",
   "recipientsVirtualIbanActivatedTitle": "Luottamuksellinen SEPA aktivoitu",
-  "recipientsVirtualIbanActivatedDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan nostamiseen yksityisesti."
+  "recipientsVirtualIbanActivatedDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan nostamiseen yksityisesti.",
+  "withdrawConfidentialSepaNotActivatedError": "Aktivoi luottamuksellinen maksuvaihtoehto tälle SEPA-vastaanottajalle."
 }

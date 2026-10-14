@@ -4856,5 +4856,6 @@
   "recipientsVirtualIbanActivatingTitle": "Activando SEPA Confidencial...",
   "recipientsVirtualIbanActivatingDescription": "Estamos creando tu IBAN virtual. Esto puede tardar unos minutos.",
   "recipientsVirtualIbanActivatedTitle": "SEPA Confidencial Activado",
-  "recipientsVirtualIbanActivatedDescription": "Ahora puedes usar tu IBAN virtual personal para retirar dinero de forma privada."
+  "recipientsVirtualIbanActivatedDescription": "Ahora puedes usar tu IBAN virtual personal para retirar dinero de forma privada.",
+  "withdrawConfidentialSepaNotActivatedError": "Activa la opción de pago confidencial para este destinatario SEPA."
 }

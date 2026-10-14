@@ -9218,5 +9218,6 @@
   "recipientsVirtualIbanActivatingTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হৈছে...",
   "recipientsVirtualIbanActivatingDescription": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।",
   "recipientsVirtualIbanActivatedTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হ’ল",
-  "recipientsVirtualIbanActivatedDescription": "আপুনি এতিয়া গোপনে ধন উলিয়াবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।"
+  "recipientsVirtualIbanActivatedDescription": "আপুনি এতিয়া গোপনে ধন উলিয়াবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।",
+  "withdrawConfidentialSepaNotActivatedError": "অনুগ্ৰহ কৰি এই SEPA প্ৰাপকৰ বাবে গোপনীয় পেমেণ্ট বিকল্পটো সক্ৰিয় কৰক।"
 }

@@ -5070,5 +5070,6 @@
   "recipientsVirtualIbanActivatingTitle": "Vertrauliches SEPA wird aktiviert...",
   "recipientsVirtualIbanActivatingDescription": "Ihre virtuelle IBAN wird erstellt. Dies kann einige Minuten dauern.",
   "recipientsVirtualIbanActivatedTitle": "Vertrauliches SEPA aktiviert",
-  "recipientsVirtualIbanActivatedDescription": "Sie können jetzt Ihre persönliche virtuelle IBAN nutzen, um privat Geld auszuzahlen."
+  "recipientsVirtualIbanActivatedDescription": "Sie können jetzt Ihre persönliche virtuelle IBAN nutzen, um privat Geld auszuzahlen.",
+  "withdrawConfidentialSepaNotActivatedError": "Bitte aktivieren Sie die vertrauliche Zahlungsoption für diesen SEPA-Empfänger."
 }

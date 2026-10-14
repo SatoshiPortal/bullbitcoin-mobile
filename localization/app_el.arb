@@ -11847,5 +11847,6 @@
   "recipientsVirtualIbanActivatingTitle": "Ενεργοποίηση Εμπιστευτικού SEPA...",
   "recipientsVirtualIbanActivatingDescription": "Δημιουργείται το εικονικό σας IBAN. Αυτό μπορεί να διαρκέσει λίγα λεπτά.",
   "recipientsVirtualIbanActivatedTitle": "Το Εμπιστευτικό SEPA ενεργοποιήθηκε",
-  "recipientsVirtualIbanActivatedDescription": "Μπορείτε πλέον να χρησιμοποιείτε το προσωπικό σας εικονικό IBAN για να κάνετε αναλήψεις ιδιωτικά."
+  "recipientsVirtualIbanActivatedDescription": "Μπορείτε πλέον να χρησιμοποιείτε το προσωπικό σας εικονικό IBAN για να κάνετε αναλήψεις ιδιωτικά.",
+  "withdrawConfidentialSepaNotActivatedError": "Ενεργοποιήστε την επιλογή εμπιστευτικής πληρωμής για αυτόν τον παραλήπτη SEPA."
 }

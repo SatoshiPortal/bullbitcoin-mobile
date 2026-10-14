@@ -4859,5 +4859,6 @@
   "recipientsVirtualIbanActivatingTitle": "正在启用保密 SEPA...",
   "recipientsVirtualIbanActivatingDescription": "正在创建您的虚拟 IBAN，可能需要几分钟。",
   "recipientsVirtualIbanActivatedTitle": "保密 SEPA 已启用",
-  "recipientsVirtualIbanActivatedDescription": "您现在可以使用个人虚拟 IBAN 私密地提取资金。"
+  "recipientsVirtualIbanActivatedDescription": "您现在可以使用个人虚拟 IBAN 私密地提取资金。",
+  "withdrawConfidentialSepaNotActivatedError": "请为此 SEPA 收件人激活保密付款选项。"
 }

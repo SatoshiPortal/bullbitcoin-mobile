@@ -11851,5 +11851,6 @@
   "recipientsVirtualIbanActivatingTitle": "กำลังเปิดใช้งาน SEPA แบบเป็นความลับ...",
   "recipientsVirtualIbanActivatingDescription": "กำลังสร้าง IBAN เสมือนของคุณ อาจใช้เวลาสักครู่",
   "recipientsVirtualIbanActivatedTitle": "เปิดใช้งาน SEPA แบบเป็นความลับแล้ว",
-  "recipientsVirtualIbanActivatedDescription": "ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อถอนเงินอย่างเป็นส่วนตัวได้แล้ว"
+  "recipientsVirtualIbanActivatedDescription": "ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อถอนเงินอย่างเป็นส่วนตัวได้แล้ว",
+  "withdrawConfidentialSepaNotActivatedError": "โปรดเปิดใช้งานตัวเลือกการชำระเงินแบบเป็นความลับสำหรับผู้รับเงิน SEPA รายนี้"
 }

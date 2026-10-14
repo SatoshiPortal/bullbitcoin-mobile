@@ -15591,5 +15591,9 @@
   "recipientsVirtualIbanActivatedDescription": "You can now use your personal virtual IBAN to withdraw money privately.",
   "@recipientsVirtualIbanActivatedDescription": {
     "description": "Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal"
+  },
+  "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
+  "@withdrawConfidentialSepaNotActivatedError": {
+    "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
   }
 }

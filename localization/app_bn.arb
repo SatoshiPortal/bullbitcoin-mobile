@@ -12051,5 +12051,6 @@
   "recipientsVirtualIbanActivatingTitle": "গোপনীয় SEPA চালু হচ্ছে...",
   "recipientsVirtualIbanActivatingDescription": "আপনার ভার্চুয়াল IBAN তৈরি হচ্ছে। এতে কয়েক মিনিট লাগতে পারে।",
   "recipientsVirtualIbanActivatedTitle": "গোপনীয় SEPA চালু হয়েছে",
-  "recipientsVirtualIbanActivatedDescription": "এখন আপনি গোপনে টাকা তুলতে আপনার ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করতে পারেন।"
+  "recipientsVirtualIbanActivatedDescription": "এখন আপনি গোপনে টাকা তুলতে আপনার ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করতে পারেন।",
+  "withdrawConfidentialSepaNotActivatedError": "অনুগ্রহ করে এই SEPA প্রাপকের জন্য গোপনীয় পেমেন্ট বিকল্পটি সক্রিয় করুন।"
 }
