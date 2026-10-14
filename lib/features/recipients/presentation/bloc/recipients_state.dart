@@ -5,6 +5,8 @@ sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     String? preferredJurisdiction,
     String? jurisdictionFilter,
+    @Default(ConfidentialSepaAvailability.unavailable)
+    ConfidentialSepaAvailability confidentialSepaAvailability,
     @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,
     RecipientsFailure? failedToLoadRecipients,
@@ -37,8 +39,15 @@ sealed class RecipientsState with _$RecipientsState {
     return loadedPages * RecipientsBloc.pageSize < totalRecipients!;
   }
 
-  Set<RecipientType> get selectableRecipientTypes =>
-      allowedRecipientFilters.types.toSet();
+  Set<RecipientType> get selectableRecipientTypes => allowedRecipientFilters
+      .types
+      .where(
+        (type) =>
+            type != RecipientType.confidentialSepaEur ||
+            confidentialSepaAvailability !=
+                ConfidentialSepaAvailability.unavailable,
+      )
+      .toSet();
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 

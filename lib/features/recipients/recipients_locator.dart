@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.
 import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
@@ -88,6 +89,7 @@ class RecipientsLocator {
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
+        sepaVirtualPayeeRepository: locator<SepaVirtualPayeeRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
@@ -114,6 +116,14 @@ class RecipientsLocator {
     locator.registerFactory<GetAccountOwnerNameUsecase>(
       () =>
           GetAccountOwnerNameUsecase(locator<GetExchangeUserSummaryUsecase>()),
+    );
+    locator.registerFactory<GetConfidentialSepaAvailabilityUsecase>(
+      () => GetConfidentialSepaAvailabilityUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        virtualIbanRepository: locator<VirtualIbanRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
+      ),
     );
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
@@ -174,6 +184,8 @@ class RecipientsLocator {
         onRecipientSelectedHook: onRecipientSelected,
         getPreferredJurisdictionUsecase:
             locator<GetPreferredJurisdictionUsecase>(),
+        getConfidentialSepaAvailabilityUsecase:
+            locator<GetConfidentialSepaAvailabilityUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),

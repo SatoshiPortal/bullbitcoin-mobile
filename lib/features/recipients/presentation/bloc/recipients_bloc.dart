@@ -9,6 +9,8 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_preferred
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
@@ -28,6 +30,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientFilterCriteria? allowedRecipientFilters,
     this._onRecipientSelectedHook,
     required this._getPreferredJurisdictionUsecase,
+    required this._getConfidentialSepaAvailabilityUsecase,
     required this._addRecipientUsecase,
     required this._getRecipientsUsecase,
     required this._checkSinpeUsecase,
@@ -50,6 +53,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
+    on<RecipientsVirtualIbanActivated>(_onVirtualIbanActivated);
   }
 
   static const pageSize = 50;
@@ -67,11 +71,28 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
   final GetPreferredJurisdictionUsecase _getPreferredJurisdictionUsecase;
+  final GetConfidentialSepaAvailabilityUsecase
+  _getConfidentialSepaAvailabilityUsecase;
 
   Future<void> _onStarted(
     RecipientsStarted event,
     Emitter<RecipientsState> emit,
   ) async {
+    if (state.allowedRecipientFilters.types.contains(
+      RecipientType.confidentialSepaEur,
+    )) {
+      // Not surfaced as a failure: without an answer the option is hidden.
+      emit(
+        state.copyWith(
+          confidentialSepaAvailability:
+              switch (await _getConfidentialSepaAvailabilityUsecase.execute()) {
+                Ok(:final value) => value,
+                Err() => ConfidentialSepaAvailability.unavailable,
+              },
+        ),
+      );
+    }
+
     final jurisdictions = state.availableJurisdictions;
     if (jurisdictions.length == 1) {
       emit(state.copyWith(jurisdictionFilter: jurisdictions.first));
@@ -235,7 +256,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }
 
   List<RecipientType> _effectiveTypes(RecipientsState state) {
-    final allowed = state.allowedRecipientFilters.types;
+    final allowed = state.selectableRecipientTypes.toList();
     final jurisdiction = state.jurisdictionFilter;
     if (jurisdiction == null) return allowed;
     return allowed
@@ -283,6 +304,17 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         emit(state.copyWith(failedToAddRecipient: failure));
     }
     emit(state.copyWith(isAddingRecipient: false));
+  }
+
+  void _onVirtualIbanActivated(
+    RecipientsVirtualIbanActivated event,
+    Emitter<RecipientsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+      ),
+    );
   }
 
   Future<void> _onSinpeChecked(

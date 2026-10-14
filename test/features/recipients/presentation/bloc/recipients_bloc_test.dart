@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_preferred_jurisdiction_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
@@ -7,9 +8,11 @@ import 'package:bb_mobile/features/recipients/application/usecases/list_cad_bill
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,6 +24,9 @@ class _MockAddRecipient extends Mock implements AddRecipientUsecase {}
 class _MockCheckSinpe extends Mock implements CheckSinpeUsecase {}
 
 class _MockListCadBillers extends Mock implements ListCadBillersUsecase {}
+
+class _MockGetConfidentialSepaAvailability extends Mock
+    implements GetConfidentialSepaAvailabilityUsecase {}
 
 class _MockGetPreferredJurisdiction extends Mock
     implements GetPreferredJurisdictionUsecase {}
@@ -55,6 +61,7 @@ void main() {
   late _MockCheckSinpe checkSinpe;
   late _MockListCadBillers listCadBillers;
   late _MockGetPreferredJurisdiction getPreferredJurisdiction;
+  late _MockGetConfidentialSepaAvailability getConfidentialSepaAvailability;
 
   setUp(() {
     getRecipients = _MockGetRecipients();
@@ -62,6 +69,7 @@ void main() {
     checkSinpe = _MockCheckSinpe();
     listCadBillers = _MockListCadBillers();
     getPreferredJurisdiction = _MockGetPreferredJurisdiction();
+    getConfidentialSepaAvailability = _MockGetConfidentialSepaAvailability();
     registerFallbackValue(GetRecipientsParams());
     registerFallbackValue(
       AddRecipientParams(recipientDetails: _formData().toDto()),
@@ -80,9 +88,12 @@ void main() {
 
   RecipientsBloc buildBloc({
     Future<void>? Function(RecipientViewModel, {required bool isNew})? hook,
+    RecipientFilterCriteria? filters,
   }) => RecipientsBloc(
+    allowedRecipientFilters: filters,
     onRecipientSelectedHook: hook,
     getPreferredJurisdictionUsecase: getPreferredJurisdiction,
+    getConfidentialSepaAvailabilityUsecase: getConfidentialSepaAvailability,
     addRecipientUsecase: addRecipient,
     getRecipientsUsecase: getRecipients,
     checkSinpeUsecase: checkSinpe,
@@ -91,6 +102,73 @@ void main() {
 
   // The whole point of the migration: the failure the bloc holds is the typed
   // one the use-case returned, not an Exception rebuilt from its text.
+  group('Confidential SEPA', () {
+    final sepaFilters = RecipientFilterCriteria(
+      types: const [RecipientType.sepaEur, RecipientType.confidentialSepaEur],
+    );
+
+    Future<RecipientsBloc> startWith(
+      ConfidentialSepaAvailability availability,
+    ) async {
+      when(
+        () => getConfidentialSepaAvailability.execute(),
+      ).thenAnswer((_) async => Ok(availability));
+      final bloc = buildBloc(filters: sepaFilters);
+      addTearDown(bloc.close);
+      bloc.add(const RecipientsStarted());
+      await pumpEventQueue();
+      return bloc;
+    }
+
+    List<RecipientType>? requestedTypes() =>
+        (verify(() => getRecipients.execute(captureAny())).captured.last
+                as GetRecipientsParams)
+            .recipientTypes;
+
+    test('is hidden from a user who cannot use it', () async {
+      final bloc = await startWith(ConfidentialSepaAvailability.unavailable);
+
+      expect(bloc.state.selectableRecipientTypes, {RecipientType.sepaEur});
+      expect(requestedTypes(), [RecipientType.sepaEur]);
+    });
+
+    test('is offered to an eligible user', () async {
+      final bloc = await startWith(
+        ConfidentialSepaAvailability.needsVirtualIban,
+      );
+
+      expect(
+        bloc.state.selectableRecipientTypes,
+        contains(RecipientType.confidentialSepaEur),
+      );
+      expect(requestedTypes(), contains(RecipientType.confidentialSepaEur));
+    });
+
+    test('is ready once the virtual IBAN is activated', () async {
+      final bloc = await startWith(
+        ConfidentialSepaAvailability.needsVirtualIban,
+      );
+
+      bloc.add(const RecipientsEvent.virtualIbanActivated());
+      await pumpEventQueue();
+
+      expect(
+        bloc.state.confidentialSepaAvailability,
+        ConfidentialSepaAvailability.ready,
+      );
+    });
+
+    test('is not checked when the flow does not allow it', () async {
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const RecipientsStarted());
+      await pumpEventQueue();
+
+      verifyNever(() => getConfidentialSepaAvailability.execute());
+    });
+  });
+
   test('a load failure reaches state as the typed failure', () async {
     final bloc = buildBloc();
     addTearDown(bloc.close);
