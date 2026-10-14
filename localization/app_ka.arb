@@ -3761,5 +3761,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "ეს მიმღები ჯერ არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის. ჩვენ ვააქტიურებთ მას ახლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს. სანაცვლოდ შეგიძლიათ გამოიყენოთ მყისიერი და ჩვეულებრივი SEPA.",
   "recipientsConfidentialSepaActivatedTitle": "მიმღები გააქტიურდა",
   "recipientsConfidentialSepaActivatedDescription": "თქვენი მიმღები ახლა აქტიურია კონფიდენციალური SEPA-სთვის.",
-  "recipientsConfidentialSepaUseRegularSepa": "სანაცვლოდ გამოიყენეთ მყისიერი და ჩვეულებრივი SEPA"
+  "recipientsConfidentialSepaUseRegularSepa": "სანაცვლოდ გამოიყენეთ მყისიერი და ჩვეულებრივი SEPA",
+  "recipientsVirtualIbanIntroTitle": "გავააქტიუროთ კონფიდენციალური SEPA?",
+  "recipientsVirtualIbanNewBadge": "ახალი",
+  "recipientsVirtualIbanIntroDescription": "შეავსეთ ანგარიში კონფიდენციალურად თქვენს სახელზე გაცემული პირადი ვირტუალური IBAN-ით. ეს უფასოა.",
+  "recipientsVirtualIbanIntroSelfTransfer": "როცა ბანკიდან Bull Bitcoin-ში თანხას აგზავნით, ის ჩანს როგორც გადარიცხვა საკუთარ თავზე.",
+  "recipientsVirtualIbanIntroNoTransferCode": "გადარიცხვის კოდი საჭირო არ არის.",
+  "recipientsVirtualIbanNameWarningTitle": "მნიშვნელოვანია: სახელი უნდა ემთხვეოდეს",
+  "recipientsVirtualIbanNameWarningDescription": "საბანკო ანგარიშის სახელი ზუსტად უნდა ემთხვეოდეს თქვენი Bull Bitcoin ვირტუალური IBAN-ის სახელს, წინააღმდეგ შემთხვევაში გადარიცხვა ავტომატურად დაბრუნდება. სახელები არ ემთხვევა? დაუკავშირდით მხარდაჭერას.",
+  "recipientsVirtualIbanAccountOwnerName": "ანგარიშის მფლობელის სახელი",
+  "recipientsVirtualIbanNameConfirmation": "ვადასტურებ, რომ სახელი ემთხვევა ჩემს საბანკო ანგარიშ(ებ)ს",
+  "recipientsVirtualIbanActivate": "კონფიდენციალური SEPA-ს გააქტიურება",
+  "recipientsVirtualIbanActivatingTitle": "კონფიდენციალური SEPA აქტიურდება...",
+  "recipientsVirtualIbanActivatingDescription": "იქმნება თქვენი ვირტუალური IBAN. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
+  "recipientsVirtualIbanActivatedTitle": "კონფიდენციალური SEPA გააქტიურდა",
+  "recipientsVirtualIbanActivatedDescription": "ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად გატანა."
 }

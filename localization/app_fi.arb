@@ -4833,5 +4833,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Tätä vastaanottajaa ei ole vielä aktivoitu Luottamuksellista SEPAa varten. Aktivoimme sitä parhaillaan. Tämä voi kestää muutaman minuutin. Voit käyttää sen sijaan Pika- ja tavallista SEPAa.",
   "recipientsConfidentialSepaActivatedTitle": "Vastaanottaja aktivoitu",
   "recipientsConfidentialSepaActivatedDescription": "Vastaanottajasi on nyt aktiivinen Luottamuksellista SEPAa varten.",
-  "recipientsConfidentialSepaUseRegularSepa": "Käytä sen sijaan Pika- ja tavallista SEPAa"
+  "recipientsConfidentialSepaUseRegularSepa": "Käytä sen sijaan Pika- ja tavallista SEPAa",
+  "recipientsVirtualIbanIntroTitle": "Aktivoidaanko luottamuksellinen SEPA?",
+  "recipientsVirtualIbanNewBadge": "Uusi",
+  "recipientsVirtualIbanIntroDescription": "Rahoita tiliäsi yksityisesti käyttämällä henkilökohtaista virtuaalista IBAN-tiliä omalla nimelläsi. Se on ilmaista.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Kun lähetät varoja Bull Bitcoinille pankistasi, se näkyy siirtona itsellesi.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Siirtokoodia ei tarvita.",
+  "recipientsVirtualIbanNameWarningTitle": "Tärkeää: Nimien vastaavuus vaaditaan",
+  "recipientsVirtualIbanNameWarningDescription": "Pankkitilin nimen on vastattava täsmälleen Bull Bitcoinin virtuaalisen IBAN-tilisi nimeä, tai siirto palautetaan automaattisesti. Eivätkö nimet vastaa toisiaan? Ota yhteyttä tukeen.",
+  "recipientsVirtualIbanAccountOwnerName": "Tilin omistajan nimi",
+  "recipientsVirtualIbanNameConfirmation": "Vahvistan, että nimi vastaa pankkitilejäni",
+  "recipientsVirtualIbanActivate": "Aktivoi luottamuksellinen SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Aktivoidaan luottamuksellista SEPAa...",
+  "recipientsVirtualIbanActivatingDescription": "Luodaan virtuaalista IBAN-tiliäsi. Tämä saattaa kestää muutaman minuutin.",
+  "recipientsVirtualIbanActivatedTitle": "Luottamuksellinen SEPA aktivoitu",
+  "recipientsVirtualIbanActivatedDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan nostamiseen yksityisesti."
 }

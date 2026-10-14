@@ -3650,5 +3650,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Mpokeaji huyu bado hajawashwa kwa ajili ya SEPA ya Siri. Tunamwasha sasa. Hii inaweza kuchukua dakika chache. Badala yake unaweza kutumia SEPA ya Papo hapo na ya Kawaida.",
   "recipientsConfidentialSepaActivatedTitle": "Mpokeaji amewashwa",
   "recipientsConfidentialSepaActivatedDescription": "Mpokeaji wako sasa yuko hai kwa ajili ya SEPA ya Siri.",
-  "recipientsConfidentialSepaUseRegularSepa": "Tumia SEPA ya Papo hapo na ya Kawaida badala yake"
+  "recipientsConfidentialSepaUseRegularSepa": "Tumia SEPA ya Papo hapo na ya Kawaida badala yake",
+  "recipientsVirtualIbanIntroTitle": "Washa SEPA ya Siri?",
+  "recipientsVirtualIbanNewBadge": "Mpya",
+  "recipientsVirtualIbanIntroDescription": "Weka pesa kwenye akaunti yako kwa faragha ukitumia IBAN pepe ya kibinafsi kwa jina lako. Ni bure.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Unapotuma pesa kutoka benki yako kwenda Bull Bitcoin, inaonekana kama uhamisho kwako mwenyewe.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Hakuna msimbo wa uhamisho unaohitajika.",
+  "recipientsVirtualIbanNameWarningTitle": "Muhimu: Jina lazima lilingane",
+  "recipientsVirtualIbanNameWarningDescription": "Jina la akaunti ya benki lazima lilingane kabisa na jina la IBAN pepe yako ya Bull Bitcoin, la sivyo uhamisho utarudishwa kiotomatiki. Majina hayalingani? Wasiliana na usaidizi.",
+  "recipientsVirtualIbanAccountOwnerName": "Jina la mmiliki wa akaunti",
+  "recipientsVirtualIbanNameConfirmation": "Ninathibitisha kuwa jina linalingana na akaunti yangu ya benki",
+  "recipientsVirtualIbanActivate": "Washa SEPA ya Siri",
+  "recipientsVirtualIbanActivatingTitle": "Inawasha SEPA ya Siri...",
+  "recipientsVirtualIbanActivatingDescription": "Tunaunda IBAN pepe yako. Hii inaweza kuchukua dakika chache.",
+  "recipientsVirtualIbanActivatedTitle": "SEPA ya Siri imewashwa",
+  "recipientsVirtualIbanActivatedDescription": "Sasa unaweza kutumia IBAN pepe yako ya kibinafsi kutoa pesa kwa faragha."
 }

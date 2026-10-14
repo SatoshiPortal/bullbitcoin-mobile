@@ -15535,5 +15535,61 @@
   "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
   "@recipientsConfidentialSepaUseRegularSepa": {
     "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
+  "@recipientsVirtualIbanIntroTitle": {
+    "description": "Title of the virtual IBAN onboarding screen"
+  },
+  "recipientsVirtualIbanNewBadge": "New",
+  "@recipientsVirtualIbanNewBadge": {
+    "description": "Badge that marks Confidential SEPA as a new feature"
+  },
+  "recipientsVirtualIbanIntroDescription": "Fund your account privately using a personal virtual IBAN in your own name. It's free.",
+  "@recipientsVirtualIbanIntroDescription": {
+    "description": "Explains what the virtual IBAN is on the onboarding screen"
+  },
+  "recipientsVirtualIbanIntroSelfTransfer": "When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.",
+  "@recipientsVirtualIbanIntroSelfTransfer": {
+    "description": "Bullet point: a deposit appears as a transfer to yourself"
+  },
+  "recipientsVirtualIbanIntroNoTransferCode": "No transfer code required.",
+  "@recipientsVirtualIbanIntroNoTransferCode": {
+    "description": "Bullet point: no transfer code is needed"
+  },
+  "recipientsVirtualIbanNameWarningTitle": "Important: Name Matching Required",
+  "@recipientsVirtualIbanNameWarningTitle": {
+    "description": "Title of the warning that the bank account name must match"
+  },
+  "recipientsVirtualIbanNameWarningDescription": "Bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically. Names don't match? Contact support.",
+  "@recipientsVirtualIbanNameWarningDescription": {
+    "description": "Warning that a transfer from a bank account with a different name is returned"
+  },
+  "recipientsVirtualIbanAccountOwnerName": "Account Owner Name",
+  "@recipientsVirtualIbanAccountOwnerName": {
+    "description": "Label above the name the virtual IBAN is issued in"
+  },
+  "recipientsVirtualIbanNameConfirmation": "I confirm the name matches my bank account(s)",
+  "@recipientsVirtualIbanNameConfirmation": {
+    "description": "Checkbox to confirm the name matches the user's bank accounts"
+  },
+  "recipientsVirtualIbanActivate": "Activate Confidential SEPA",
+  "@recipientsVirtualIbanActivate": {
+    "description": "Button that creates the virtual IBAN"
+  },
+  "recipientsVirtualIbanActivatingTitle": "Activating Confidential SEPA...",
+  "@recipientsVirtualIbanActivatingTitle": {
+    "description": "Title while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes.",
+  "@recipientsVirtualIbanActivatingDescription": {
+    "description": "Description while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatedTitle": "Confidential SEPA Activated",
+  "@recipientsVirtualIbanActivatedTitle": {
+    "description": "Title once the virtual IBAN is active"
+  },
+  "recipientsVirtualIbanActivatedDescription": "You can now use your personal virtual IBAN to withdraw money privately.",
+  "@recipientsVirtualIbanActivatedDescription": {
+    "description": "Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal"
   }
 }

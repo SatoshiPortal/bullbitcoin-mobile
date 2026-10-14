@@ -12215,5 +12215,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Yeh recipient abhi tak Confidential SEPA ke liye activate nahi hua hai. Hum ise abhi activate kar rahe hain. Isme kuch minute lag sakte hain. Iske bajaye aap Instant aur Regular SEPA use kar sakte hain.",
   "recipientsConfidentialSepaActivatedTitle": "Recipient activate ho gaya",
   "recipientsConfidentialSepaActivatedDescription": "Aapka recipient ab Confidential SEPA ke liye active hai.",
-  "recipientsConfidentialSepaUseRegularSepa": "Iske bajaye Instant aur Regular SEPA use karein"
+  "recipientsConfidentialSepaUseRegularSepa": "Iske bajaye Instant aur Regular SEPA use karein",
+  "recipientsVirtualIbanIntroTitle": "Confidential SEPA activate karein?",
+  "recipientsVirtualIbanNewBadge": "Naya",
+  "recipientsVirtualIbanIntroDescription": "Apne naam par ek personal virtual IBAN se apne account mein privately paise jama karein. Yeh free hai.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Apne bank se Bull Bitcoin ko paise bhejne par yeh khud ko kiya gaya transfer dikhta hai.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Kisi transfer code ki zaroorat nahin.",
+  "recipientsVirtualIbanNameWarningTitle": "Zaroori: Naam match hona chahiye",
+  "recipientsVirtualIbanNameWarningDescription": "Bank account ka naam aapke Bull Bitcoin virtual IBAN ke naam se bilkul match hona chahiye, warna transfer apne-aap wapas ho jayega. Naam match nahin karte? Support se sampark karein.",
+  "recipientsVirtualIbanAccountOwnerName": "Account dharak ka naam",
+  "recipientsVirtualIbanNameConfirmation": "Main confirm karta/karti hoon ki naam mere bank account(s) se match karta hai",
+  "recipientsVirtualIbanActivate": "Confidential SEPA activate karein",
+  "recipientsVirtualIbanActivatingTitle": "Confidential SEPA activate ho raha hai...",
+  "recipientsVirtualIbanActivatingDescription": "Aapka virtual IBAN banaya ja raha hai. Ismein kuch minute lag sakte hain.",
+  "recipientsVirtualIbanActivatedTitle": "Confidential SEPA activate ho gaya",
+  "recipientsVirtualIbanActivatedDescription": "Ab aap privately paise nikalne ke liye apne personal virtual IBAN ka upyog kar sakte hain."
 }

@@ -11833,5 +11833,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Bu alıcı henüz Gizli SEPA için etkinleştirilmedi. Şimdi etkinleştiriyoruz. Bu işlem birkaç dakika sürebilir. Bunun yerine Anında ve Normal SEPA'yı kullanabilirsiniz.",
   "recipientsConfidentialSepaActivatedTitle": "Alıcı etkinleştirildi",
   "recipientsConfidentialSepaActivatedDescription": "Alıcınız artık Gizli SEPA için etkin.",
-  "recipientsConfidentialSepaUseRegularSepa": "Bunun yerine Anında ve Normal SEPA kullan"
+  "recipientsConfidentialSepaUseRegularSepa": "Bunun yerine Anında ve Normal SEPA kullan",
+  "recipientsVirtualIbanIntroTitle": "Gizli SEPA etkinleştirilsin mi?",
+  "recipientsVirtualIbanNewBadge": "Yeni",
+  "recipientsVirtualIbanIntroDescription": "Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Ücretsizdir.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Bankanızdan Bull Bitcoin’e para gönderdiğinizde, kendinize yapılmış bir transfer olarak görünür.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Transfer kodu gerekmez.",
+  "recipientsVirtualIbanNameWarningTitle": "Önemli: İsim eşleşmesi gerekli",
+  "recipientsVirtualIbanNameWarningDescription": "Banka hesabı adı, Bull Bitcoin sanal IBAN adınızla tam olarak eşleşmelidir; aksi takdirde transfer otomatik olarak iade edilir. İsimler eşleşmiyor mu? Destekle iletişime geçin.",
+  "recipientsVirtualIbanAccountOwnerName": "Hesap sahibinin adı",
+  "recipientsVirtualIbanNameConfirmation": "İsmin banka hesap(lar)ımla eşleştiğini onaylıyorum",
+  "recipientsVirtualIbanActivate": "Gizli SEPA’yı etkinleştir",
+  "recipientsVirtualIbanActivatingTitle": "Gizli SEPA etkinleştiriliyor...",
+  "recipientsVirtualIbanActivatingDescription": "Sanal IBAN’ınız oluşturuluyor. Bu birkaç dakika sürebilir.",
+  "recipientsVirtualIbanActivatedTitle": "Gizli SEPA etkinleştirildi",
+  "recipientsVirtualIbanActivatedDescription": "Artık kişisel sanal IBAN’ınızı gizlice para çekmek için kullanabilirsiniz."
 }

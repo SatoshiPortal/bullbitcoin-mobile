@@ -11837,5 +11837,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "ผู้รับเงินรายนี้ยังไม่ได้เปิดใช้งานสำหรับ SEPA แบบเป็นความลับ เรากำลังเปิดใช้งานอยู่ในขณะนี้ อาจใช้เวลาสักครู่ คุณสามารถใช้ SEPA แบบทันทีและแบบปกติแทนได้",
   "recipientsConfidentialSepaActivatedTitle": "เปิดใช้งานผู้รับเงินแล้ว",
   "recipientsConfidentialSepaActivatedDescription": "ตอนนี้ผู้รับเงินของคุณเปิดใช้งานสำหรับ SEPA แบบเป็นความลับแล้ว",
-  "recipientsConfidentialSepaUseRegularSepa": "ใช้ SEPA แบบทันทีและแบบปกติแทน"
+  "recipientsConfidentialSepaUseRegularSepa": "ใช้ SEPA แบบทันทีและแบบปกติแทน",
+  "recipientsVirtualIbanIntroTitle": "เปิดใช้งาน SEPA แบบเป็นความลับหรือไม่?",
+  "recipientsVirtualIbanNewBadge": "ใหม่",
+  "recipientsVirtualIbanIntroDescription": "เติมเงินเข้าบัญชีอย่างเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง ไม่มีค่าใช้จ่าย",
+  "recipientsVirtualIbanIntroSelfTransfer": "เมื่อคุณโอนเงินจากธนาคารไปยัง Bull Bitcoin รายการจะแสดงเป็นการโอนให้ตัวคุณเอง",
+  "recipientsVirtualIbanIntroNoTransferCode": "ไม่ต้องใช้รหัสการโอน",
+  "recipientsVirtualIbanNameWarningTitle": "สำคัญ: ชื่อต้องตรงกัน",
+  "recipientsVirtualIbanNameWarningDescription": "ชื่อบัญชีธนาคารต้องตรงกับชื่อ IBAN เสมือนของคุณที่ Bull Bitcoin ทุกตัวอักษร มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ ชื่อไม่ตรงกันใช่ไหม? ติดต่อฝ่ายสนับสนุน",
+  "recipientsVirtualIbanAccountOwnerName": "ชื่อเจ้าของบัญชี",
+  "recipientsVirtualIbanNameConfirmation": "ฉันยืนยันว่าชื่อตรงกับบัญชีธนาคารของฉัน",
+  "recipientsVirtualIbanActivate": "เปิดใช้งาน SEPA แบบเป็นความลับ",
+  "recipientsVirtualIbanActivatingTitle": "กำลังเปิดใช้งาน SEPA แบบเป็นความลับ...",
+  "recipientsVirtualIbanActivatingDescription": "กำลังสร้าง IBAN เสมือนของคุณ อาจใช้เวลาสักครู่",
+  "recipientsVirtualIbanActivatedTitle": "เปิดใช้งาน SEPA แบบเป็นความลับแล้ว",
+  "recipientsVirtualIbanActivatedDescription": "ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อถอนเงินอย่างเป็นส่วนตัวได้แล้ว"
 }

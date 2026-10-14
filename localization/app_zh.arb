@@ -4845,5 +4845,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "此收件人尚未激活保密 SEPA。我们正在激活中。这可能需要几分钟。您可以改用即时和常规 SEPA。",
   "recipientsConfidentialSepaActivatedTitle": "收件人已激活",
   "recipientsConfidentialSepaActivatedDescription": "您的收件人现已激活保密 SEPA。",
-  "recipientsConfidentialSepaUseRegularSepa": "改用即时和常规 SEPA"
+  "recipientsConfidentialSepaUseRegularSepa": "改用即时和常规 SEPA",
+  "recipientsVirtualIbanIntroTitle": "启用保密 SEPA？",
+  "recipientsVirtualIbanNewBadge": "新",
+  "recipientsVirtualIbanIntroDescription": "使用以您本人名义开设的个人虚拟 IBAN 私密地为账户充值。完全免费。",
+  "recipientsVirtualIbanIntroSelfTransfer": "从您的银行向 Bull Bitcoin 汇款时，会显示为转账给您本人。",
+  "recipientsVirtualIbanIntroNoTransferCode": "无需转账代码。",
+  "recipientsVirtualIbanNameWarningTitle": "重要：姓名必须一致",
+  "recipientsVirtualIbanNameWarningDescription": "银行账户姓名必须与您的 Bull Bitcoin 虚拟 IBAN 姓名完全一致，否则转账将被自动退回。姓名不一致？请联系客服。",
+  "recipientsVirtualIbanAccountOwnerName": "账户持有人姓名",
+  "recipientsVirtualIbanNameConfirmation": "我确认该姓名与我的银行账户一致",
+  "recipientsVirtualIbanActivate": "启用保密 SEPA",
+  "recipientsVirtualIbanActivatingTitle": "正在启用保密 SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "正在创建您的虚拟 IBAN，可能需要几分钟。",
+  "recipientsVirtualIbanActivatedTitle": "保密 SEPA 已启用",
+  "recipientsVirtualIbanActivatedDescription": "您现在可以使用个人虚拟 IBAN 私密地提取资金。"
 }

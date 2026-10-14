@@ -11833,5 +11833,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "این گیرنده هنوز برای SEPA محرمانه فعال نشده است. اکنون در حال فعال‌سازی آن هستیم. این کار ممکن است چند دقیقه طول بکشد. در عوض می‌توانید از SEPA فوری و عادی استفاده کنید.",
   "recipientsConfidentialSepaActivatedTitle": "گیرنده فعال شد",
   "recipientsConfidentialSepaActivatedDescription": "گیرنده شما اکنون برای SEPA محرمانه فعال است.",
-  "recipientsConfidentialSepaUseRegularSepa": "به‌جای آن از SEPA فوری و عادی استفاده کنید"
+  "recipientsConfidentialSepaUseRegularSepa": "به‌جای آن از SEPA فوری و عادی استفاده کنید",
+  "recipientsVirtualIbanIntroTitle": "SEPA محرمانه فعال شود؟",
+  "recipientsVirtualIbanNewBadge": "جدید",
+  "recipientsVirtualIbanIntroDescription": "با یک IBAN مجازی شخصی به نام خودتان، حساب خود را به‌صورت خصوصی شارژ کنید. رایگان است.",
+  "recipientsVirtualIbanIntroSelfTransfer": "وقتی از بانک خود به Bull Bitcoin وجه می‌فرستید، به‌صورت انتقال به خودتان نمایش داده می‌شود.",
+  "recipientsVirtualIbanIntroNoTransferCode": "نیازی به کد انتقال نیست.",
+  "recipientsVirtualIbanNameWarningTitle": "مهم: نام باید یکسان باشد",
+  "recipientsVirtualIbanNameWarningDescription": "نام حساب بانکی باید دقیقاً با نام IBAN مجازی شما در Bull Bitcoin یکسان باشد، وگرنه انتقال به‌طور خودکار برگشت داده می‌شود. نام‌ها یکسان نیستند؟ با پشتیبانی تماس بگیرید.",
+  "recipientsVirtualIbanAccountOwnerName": "نام صاحب حساب",
+  "recipientsVirtualIbanNameConfirmation": "تأیید می‌کنم که نام با حساب(های) بانکی من یکسان است",
+  "recipientsVirtualIbanActivate": "فعال‌سازی SEPA محرمانه",
+  "recipientsVirtualIbanActivatingTitle": "در حال فعال‌سازی SEPA محرمانه...",
+  "recipientsVirtualIbanActivatingDescription": "در حال ایجاد IBAN مجازی شما. این کار ممکن است چند دقیقه طول بکشد.",
+  "recipientsVirtualIbanActivatedTitle": "SEPA محرمانه فعال شد",
+  "recipientsVirtualIbanActivatedDescription": "اکنون می‌توانید از IBAN مجازی شخصی خود برای برداشت خصوصی پول استفاده کنید."
 }

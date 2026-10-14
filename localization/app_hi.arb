@@ -12020,5 +12020,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "यह प्राप्तकर्ता अभी तक गोपनीय SEPA के लिए सक्रिय नहीं है। हम इसे अभी सक्रिय कर रहे हैं। इसमें कुछ मिनट लग सकते हैं। इसके बजाय आप इंस्टेंट और रेगुलर SEPA का उपयोग कर सकते हैं।",
   "recipientsConfidentialSepaActivatedTitle": "प्राप्तकर्ता सक्रिय हो गया",
   "recipientsConfidentialSepaActivatedDescription": "आपका प्राप्तकर्ता अब गोपनीय SEPA के लिए सक्रिय है।",
-  "recipientsConfidentialSepaUseRegularSepa": "इसके बजाय इंस्टेंट और रेगुलर SEPA का उपयोग करें"
+  "recipientsConfidentialSepaUseRegularSepa": "इसके बजाय इंस्टेंट और रेगुलर SEPA का उपयोग करें",
+  "recipientsVirtualIbanIntroTitle": "गोपनीय SEPA सक्रिय करें?",
+  "recipientsVirtualIbanNewBadge": "नया",
+  "recipientsVirtualIbanIntroDescription": "अपने नाम पर एक निजी वर्चुअल IBAN से अपने खाते में गोपनीय रूप से पैसे जमा करें। यह मुफ़्त है।",
+  "recipientsVirtualIbanIntroSelfTransfer": "अपने बैंक से Bull Bitcoin को पैसे भेजने पर यह खुद को किया गया ट्रांसफ़र दिखता है।",
+  "recipientsVirtualIbanIntroNoTransferCode": "किसी ट्रांसफ़र कोड की ज़रूरत नहीं।",
+  "recipientsVirtualIbanNameWarningTitle": "महत्वपूर्ण: नाम का मेल ज़रूरी है",
+  "recipientsVirtualIbanNameWarningDescription": "बैंक खाते का नाम आपके Bull Bitcoin वर्चुअल IBAN के नाम से बिल्कुल मेल खाना चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिया जाएगा। नाम मेल नहीं खाते? सहायता से संपर्क करें।",
+  "recipientsVirtualIbanAccountOwnerName": "खाताधारक का नाम",
+  "recipientsVirtualIbanNameConfirmation": "मैं पुष्टि करता/करती हूँ कि नाम मेरे बैंक खाते/खातों से मेल खाता है",
+  "recipientsVirtualIbanActivate": "गोपनीय SEPA सक्रिय करें",
+  "recipientsVirtualIbanActivatingTitle": "गोपनीय SEPA सक्रिय हो रहा है...",
+  "recipientsVirtualIbanActivatingDescription": "आपका वर्चुअल IBAN बनाया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsVirtualIbanActivatedTitle": "गोपनीय SEPA सक्रिय हो गया",
+  "recipientsVirtualIbanActivatedDescription": "अब आप गोपनीय रूप से पैसे निकालने के लिए अपने निजी वर्चुअल IBAN का उपयोग कर सकते हैं।"
 }

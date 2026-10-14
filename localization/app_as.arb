@@ -9204,5 +9204,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "এই প্ৰাপকক এতিয়াও গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰা হোৱা নাই। আমি এতিয়া ইয়াক সক্ৰিয় কৰি আছোঁ। ইয়াত কেইমিনিটমান সময় লাগিব পাৰে। ইয়াৰ পৰিৱৰ্তে আপুনি তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰিব পাৰে।",
   "recipientsConfidentialSepaActivatedTitle": "প্ৰাপক সক্ৰিয় কৰা হৈছে",
   "recipientsConfidentialSepaActivatedDescription": "আপোনাৰ প্ৰাপক এতিয়া গোপনীয় SEPA-ৰ বাবে সক্ৰিয় হৈছে।",
-  "recipientsConfidentialSepaUseRegularSepa": "ইয়াৰ পৰিৱৰ্তে তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰক"
+  "recipientsConfidentialSepaUseRegularSepa": "ইয়াৰ পৰিৱৰ্তে তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰক",
+  "recipientsVirtualIbanIntroTitle": "গোপনীয় SEPA সক্ৰিয় কৰিবনে?",
+  "recipientsVirtualIbanNewBadge": "নতুন",
+  "recipientsVirtualIbanIntroDescription": "আপোনাৰ নিজৰ নামত থকা ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰি গোপনে আপোনাৰ একাউণ্টত ধন জমা কৰক। ই বিনামূলীয়া।",
+  "recipientsVirtualIbanIntroSelfTransfer": "আপোনাৰ বেংকৰ পৰা Bull Bitcoin লৈ ধন পঠালে, ই নিজকে কৰা স্থানান্তৰ হিচাপে দেখা যায়।",
+  "recipientsVirtualIbanIntroNoTransferCode": "কোনো স্থানান্তৰ ক’ডৰ প্ৰয়োজন নাই।",
+  "recipientsVirtualIbanNameWarningTitle": "গুৰুত্বপূৰ্ণ: নাম মিল থকাটো বাধ্যতামূলক",
+  "recipientsVirtualIbanNameWarningDescription": "বেংক একাউণ্টৰ নাম আপোনাৰ Bull Bitcoin ভাৰ্চুৱেল IBAN-ৰ নামৰ সৈতে হুবহু মিলিব লাগিব, নহ’লে স্থানান্তৰ স্বয়ংক্ৰিয়ভাৱে ঘূৰাই পঠোৱা হ’ব। নাম মিলা নাই? সহায়তাৰ সৈতে যোগাযোগ কৰক।",
+  "recipientsVirtualIbanAccountOwnerName": "একাউণ্টৰ গৰাকীৰ নাম",
+  "recipientsVirtualIbanNameConfirmation": "মই নিশ্চিত কৰিছোঁ যে নামটো মোৰ বেংক একাউণ্ট(সমূহ)ৰ সৈতে মিলে",
+  "recipientsVirtualIbanActivate": "গোপনীয় SEPA সক্ৰিয় কৰক",
+  "recipientsVirtualIbanActivatingTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হৈছে...",
+  "recipientsVirtualIbanActivatingDescription": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।",
+  "recipientsVirtualIbanActivatedTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হ’ল",
+  "recipientsVirtualIbanActivatedDescription": "আপুনি এতিয়া গোপনে ধন উলিয়াবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।"
 }

@@ -3638,5 +3638,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Այս ստացողը դեռ ակտիվացված չէ Գաղտնի SEPA-ի համար։ Մենք այն այժմ ակտիվացնում ենք։ Սա կարող է տևել մի քանի րոպե։ Փոխարենը կարող եք օգտագործել Ակնթարթային և սովորական SEPA։",
   "recipientsConfidentialSepaActivatedTitle": "Ստացողն ակտիվացված է",
   "recipientsConfidentialSepaActivatedDescription": "Ձեր ստացողն այժմ ակտիվ է Գաղտնի SEPA-ի համար։",
-  "recipientsConfidentialSepaUseRegularSepa": "Փոխարենը օգտագործեք Ակնթարթային և սովորական SEPA"
+  "recipientsConfidentialSepaUseRegularSepa": "Փոխարենը օգտագործեք Ակնթարթային և սովորական SEPA",
+  "recipientsVirtualIbanIntroTitle": "Ակտիվացնե՞լ Գաղտնի SEPA-ն",
+  "recipientsVirtualIbanNewBadge": "Նոր",
+  "recipientsVirtualIbanIntroDescription": "Համալրեք ձեր հաշիվը գաղտնի՝ ձեր անունով անձնական վիրտուալ IBAN-ով։ Այն անվճար է։",
+  "recipientsVirtualIbanIntroSelfTransfer": "Երբ ձեր բանկից միջոցներ եք ուղարկում Bull Bitcoin, դա երևում է որպես փոխանցում ինքներդ ձեզ։",
+  "recipientsVirtualIbanIntroNoTransferCode": "Փոխանցման կոդ պետք չէ։",
+  "recipientsVirtualIbanNameWarningTitle": "Կարևոր է՝ անունը պետք է համընկնի",
+  "recipientsVirtualIbanNameWarningDescription": "Բանկային հաշվի անունը պետք է ճշգրիտ համընկնի ձեր Bull Bitcoin վիրտուալ IBAN-ի անվան հետ, հակառակ դեպքում փոխանցումը ավտոմատ կվերադարձվի։ Անունները չե՞ն համընկնում։ Կապվեք աջակցության հետ։",
+  "recipientsVirtualIbanAccountOwnerName": "Հաշվետիրոջ անունը",
+  "recipientsVirtualIbanNameConfirmation": "Հաստատում եմ, որ անունը համընկնում է իմ բանկային հաշվի(ների) հետ",
+  "recipientsVirtualIbanActivate": "Ակտիվացնել Գաղտնի SEPA-ն",
+  "recipientsVirtualIbanActivatingTitle": "Գաղտնի SEPA-ն ակտիվացվում է...",
+  "recipientsVirtualIbanActivatingDescription": "Ստեղծվում է ձեր վիրտուալ IBAN-ը։ Դա կարող է տևել մի քանի րոպե։",
+  "recipientsVirtualIbanActivatedTitle": "Գաղտնի SEPA-ն ակտիվացված է",
+  "recipientsVirtualIbanActivatedDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումար գաղտնի դուրս բերելու համար։"
 }

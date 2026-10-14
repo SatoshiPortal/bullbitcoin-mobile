@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.
 import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
@@ -109,6 +110,10 @@ class RecipientsLocator {
       () => GetPreferredJurisdictionUsecase(
         locator<GetExchangeUserSummaryUsecase>(),
       ),
+    );
+    locator.registerFactory<GetAccountOwnerNameUsecase>(
+      () =>
+          GetAccountOwnerNameUsecase(locator<GetExchangeUserSummaryUsecase>()),
     );
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(

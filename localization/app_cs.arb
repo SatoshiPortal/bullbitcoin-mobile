@@ -11833,5 +11833,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Tento příjemce zatím není aktivován pro Důvěrný SEPA. Právě jej aktivujeme. Může to trvat několik minut. Mezitím můžete použít Okamžitý a běžný SEPA.",
   "recipientsConfidentialSepaActivatedTitle": "Příjemce aktivován",
   "recipientsConfidentialSepaActivatedDescription": "Váš příjemce je nyní aktivní pro Důvěrný SEPA.",
-  "recipientsConfidentialSepaUseRegularSepa": "Použít místo toho Okamžitý a běžný SEPA"
+  "recipientsConfidentialSepaUseRegularSepa": "Použít místo toho Okamžitý a běžný SEPA",
+  "recipientsVirtualIbanIntroTitle": "Aktivovat Důvěrný SEPA?",
+  "recipientsVirtualIbanNewBadge": "Nové",
+  "recipientsVirtualIbanIntroDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Je to zdarma.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Když posíláte prostředky ze své banky do Bull Bitcoin, zobrazí se to jako převod sobě samému.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Není potřeba kód převodu.",
+  "recipientsVirtualIbanNameWarningTitle": "Důležité: Jména se musí shodovat",
+  "recipientsVirtualIbanNameWarningDescription": "Jméno bankovního účtu se musí přesně shodovat se jménem vašeho virtuálního IBAN u Bull Bitcoin, jinak bude převod automaticky vrácen. Jména se neshodují? Kontaktujte podporu.",
+  "recipientsVirtualIbanAccountOwnerName": "Jméno majitele účtu",
+  "recipientsVirtualIbanNameConfirmation": "Potvrzuji, že jméno odpovídá mému bankovnímu účtu/účtům",
+  "recipientsVirtualIbanActivate": "Aktivovat Důvěrný SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Aktivace Důvěrného SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "Vytváříme váš virtuální IBAN. Může to trvat několik minut.",
+  "recipientsVirtualIbanActivatedTitle": "Důvěrný SEPA aktivován",
+  "recipientsVirtualIbanActivatedDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromým výběrům peněz."
 }

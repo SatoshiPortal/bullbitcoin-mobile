@@ -4842,5 +4842,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Este destinatario aún no está activado para SEPA Confidencial. Lo estamos activando ahora. Esto puede tardar unos minutos. Mientras tanto, puedes usar SEPA Instantáneo y Normal.",
   "recipientsConfidentialSepaActivatedTitle": "Destinatario activado",
   "recipientsConfidentialSepaActivatedDescription": "Tu destinatario ya está activo para SEPA Confidencial.",
-  "recipientsConfidentialSepaUseRegularSepa": "Usar SEPA Instantáneo y Normal en su lugar"
+  "recipientsConfidentialSepaUseRegularSepa": "Usar SEPA Instantáneo y Normal en su lugar",
+  "recipientsVirtualIbanIntroTitle": "¿Activar SEPA Confidencial?",
+  "recipientsVirtualIbanNewBadge": "Nuevo",
+  "recipientsVirtualIbanIntroDescription": "Financia tu cuenta de forma privada usando un IBAN virtual personal a tu nombre. Es gratis.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Cuando envías fondos a Bull Bitcoin desde tu banco, aparece como una transferencia a ti mismo.",
+  "recipientsVirtualIbanIntroNoTransferCode": "No se requiere código de transferencia.",
+  "recipientsVirtualIbanNameWarningTitle": "Importante: Se requiere coincidencia de nombres",
+  "recipientsVirtualIbanNameWarningDescription": "El nombre de la cuenta bancaria debe coincidir exactamente con el nombre de tu IBAN virtual de Bull Bitcoin, o la transferencia será devuelta automáticamente. ¿Los nombres no coinciden? Contacta con soporte.",
+  "recipientsVirtualIbanAccountOwnerName": "Nombre del Titular de la Cuenta",
+  "recipientsVirtualIbanNameConfirmation": "Confirmo que el nombre coincide con mi(s) cuenta(s) bancaria(s)",
+  "recipientsVirtualIbanActivate": "Activar SEPA Confidencial",
+  "recipientsVirtualIbanActivatingTitle": "Activando SEPA Confidencial...",
+  "recipientsVirtualIbanActivatingDescription": "Estamos creando tu IBAN virtual. Esto puede tardar unos minutos.",
+  "recipientsVirtualIbanActivatedTitle": "SEPA Confidencial Activado",
+  "recipientsVirtualIbanActivatedDescription": "Ahora puedes usar tu IBAN virtual personal para retirar dinero de forma privada."
 }

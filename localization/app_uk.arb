@@ -4842,5 +4842,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Цього одержувача ще не активовано для Конфіденційного SEPA. Ми активуємо його зараз. Це може зайняти кілька хвилин. Тим часом ви можете скористатися Миттєвим і звичайним SEPA.",
   "recipientsConfidentialSepaActivatedTitle": "Одержувача активовано",
   "recipientsConfidentialSepaActivatedDescription": "Ваш одержувач тепер активний для Конфіденційного SEPA.",
-  "recipientsConfidentialSepaUseRegularSepa": "Скористатися Миттєвим і звичайним SEPA замість цього"
+  "recipientsConfidentialSepaUseRegularSepa": "Скористатися Миттєвим і звичайним SEPA замість цього",
+  "recipientsVirtualIbanIntroTitle": "Активувати Конфіденційний SEPA?",
+  "recipientsVirtualIbanNewBadge": "Нове",
+  "recipientsVirtualIbanIntroDescription": "Поповнюйте рахунок конфіденційно за допомогою особистого віртуального IBAN на ваше ім’я. Це безкоштовно.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Коли ви надсилаєте кошти зі свого банку до Bull Bitcoin, це виглядає як переказ самому собі.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Код переказу не потрібен.",
+  "recipientsVirtualIbanNameWarningTitle": "Важливо: ім’я має збігатися",
+  "recipientsVirtualIbanNameWarningDescription": "Ім’я власника банківського рахунку має точно збігатися з ім’ям вашого віртуального IBAN у Bull Bitcoin, інакше переказ буде автоматично повернуто. Імена не збігаються? Зверніться до підтримки.",
+  "recipientsVirtualIbanAccountOwnerName": "Ім’я власника рахунку",
+  "recipientsVirtualIbanNameConfirmation": "Підтверджую, що ім’я збігається з моїм банківським рахунком (рахунками)",
+  "recipientsVirtualIbanActivate": "Активувати Конфіденційний SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Активація Конфіденційного SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "Створюємо ваш віртуальний IBAN. Це може зайняти кілька хвилин.",
+  "recipientsVirtualIbanActivatedTitle": "Конфіденційний SEPA активовано",
+  "recipientsVirtualIbanActivatedDescription": "Тепер ви можете використовувати особистий віртуальний IBAN, щоб виводити гроші конфіденційно."
 }

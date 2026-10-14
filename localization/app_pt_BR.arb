@@ -11845,5 +11845,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Este destinatário ainda não está ativado para o SEPA Confidencial. Estamos ativando agora. Isso pode levar alguns minutos. Enquanto isso, você pode usar o SEPA Instantâneo e Regular.",
   "recipientsConfidentialSepaActivatedTitle": "Destinatário ativado",
   "recipientsConfidentialSepaActivatedDescription": "Seu destinatário agora está ativo para o SEPA Confidencial.",
-  "recipientsConfidentialSepaUseRegularSepa": "Usar o SEPA Instantâneo e Regular no lugar"
+  "recipientsConfidentialSepaUseRegularSepa": "Usar o SEPA Instantâneo e Regular no lugar",
+  "recipientsVirtualIbanIntroTitle": "Ativar SEPA Confidencial?",
+  "recipientsVirtualIbanNewBadge": "Novo",
+  "recipientsVirtualIbanIntroDescription": "Financie sua conta de forma privada com um IBAN virtual pessoal em seu nome. É grátis.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Quando você envia fundos do seu banco para a Bull Bitcoin, aparece como uma transferência para você mesmo.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Não é necessário código de transferência.",
+  "recipientsVirtualIbanNameWarningTitle": "Importante: O nome precisa corresponder",
+  "recipientsVirtualIbanNameWarningDescription": "O nome da conta bancária precisa corresponder exatamente ao nome do seu IBAN virtual da Bull Bitcoin, caso contrário a transferência será devolvida automaticamente. Os nomes não correspondem? Entre em contato com o suporte.",
+  "recipientsVirtualIbanAccountOwnerName": "Nome do titular da conta",
+  "recipientsVirtualIbanNameConfirmation": "Confirmo que o nome corresponde à(s) minha(s) conta(s) bancária(s)",
+  "recipientsVirtualIbanActivate": "Ativar SEPA Confidencial",
+  "recipientsVirtualIbanActivatingTitle": "Ativando SEPA Confidencial...",
+  "recipientsVirtualIbanActivatingDescription": "Criando seu IBAN virtual. Isso pode levar alguns minutos.",
+  "recipientsVirtualIbanActivatedTitle": "SEPA Confidencial ativado",
+  "recipientsVirtualIbanActivatedDescription": "Agora você pode usar seu IBAN virtual pessoal para sacar dinheiro de forma privada."
 }

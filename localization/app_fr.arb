@@ -4923,5 +4923,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "Ce destinataire n'est pas encore activé pour le SEPA Confidentiel. Nous l'activons actuellement. Cela peut prendre quelques minutes. Vous pouvez utiliser le SEPA Instantané et Standard à la place.",
   "recipientsConfidentialSepaActivatedTitle": "Destinataire activé",
   "recipientsConfidentialSepaActivatedDescription": "Votre destinataire est désormais actif pour le SEPA Confidentiel.",
-  "recipientsConfidentialSepaUseRegularSepa": "Utiliser le SEPA Instantané et Standard à la place"
+  "recipientsConfidentialSepaUseRegularSepa": "Utiliser le SEPA Instantané et Standard à la place",
+  "recipientsVirtualIbanIntroTitle": "Activer le SEPA Confidentiel ?",
+  "recipientsVirtualIbanNewBadge": "Nouveau",
+  "recipientsVirtualIbanIntroDescription": "Financez votre compte en privé en utilisant un IBAN virtuel personnel à votre nom. C'est gratuit.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Lorsque vous envoyez des fonds à Bull Bitcoin depuis votre banque, cela apparaît comme un transfert à vous-même.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Aucun code de transfert requis.",
+  "recipientsVirtualIbanNameWarningTitle": "Important : Correspondance des noms requise",
+  "recipientsVirtualIbanNameWarningDescription": "Le nom du compte bancaire doit correspondre exactement au nom de votre IBAN virtuel Bull Bitcoin, sinon le transfert sera retourné automatiquement. Les noms ne correspondent pas ? Contactez le support.",
+  "recipientsVirtualIbanAccountOwnerName": "Nom du Titulaire du Compte",
+  "recipientsVirtualIbanNameConfirmation": "Je confirme que le nom correspond à mon/mes compte(s) bancaire(s)",
+  "recipientsVirtualIbanActivate": "Activer le SEPA Confidentiel",
+  "recipientsVirtualIbanActivatingTitle": "Activation du SEPA Confidentiel...",
+  "recipientsVirtualIbanActivatingDescription": "Création de votre IBAN virtuel. Cela peut prendre quelques minutes.",
+  "recipientsVirtualIbanActivatedTitle": "SEPA Confidentiel Activé",
+  "recipientsVirtualIbanActivatedDescription": "Vous pouvez maintenant utiliser votre IBAN virtuel personnel pour retirer de l'argent en toute confidentialité."
 }

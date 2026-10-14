@@ -11833,5 +11833,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "이 수신자는 아직 기밀 SEPA용으로 활성화되지 않았습니다. 지금 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다. 대신 즉시 및 일반 SEPA를 사용할 수 있습니다.",
   "recipientsConfidentialSepaActivatedTitle": "수신자 활성화됨",
   "recipientsConfidentialSepaActivatedDescription": "이제 수신자가 기밀 SEPA용으로 활성화되었습니다.",
-  "recipientsConfidentialSepaUseRegularSepa": "대신 즉시 및 일반 SEPA 사용"
+  "recipientsConfidentialSepaUseRegularSepa": "대신 즉시 및 일반 SEPA 사용",
+  "recipientsVirtualIbanIntroTitle": "기밀 SEPA를 활성화할까요?",
+  "recipientsVirtualIbanNewBadge": "신규",
+  "recipientsVirtualIbanIntroDescription": "본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 무료입니다.",
+  "recipientsVirtualIbanIntroSelfTransfer": "은행에서 Bull Bitcoin으로 자금을 보내면 본인에게 송금한 것으로 표시됩니다.",
+  "recipientsVirtualIbanIntroNoTransferCode": "송금 코드가 필요하지 않습니다.",
+  "recipientsVirtualIbanNameWarningTitle": "중요: 이름이 일치해야 합니다",
+  "recipientsVirtualIbanNameWarningDescription": "은행 계좌 이름이 Bull Bitcoin 가상 IBAN 이름과 정확히 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다. 이름이 일치하지 않나요? 지원팀에 문의하세요.",
+  "recipientsVirtualIbanAccountOwnerName": "계좌 소유자 이름",
+  "recipientsVirtualIbanNameConfirmation": "이름이 내 은행 계좌와 일치함을 확인합니다",
+  "recipientsVirtualIbanActivate": "기밀 SEPA 활성화",
+  "recipientsVirtualIbanActivatingTitle": "기밀 SEPA 활성화 중...",
+  "recipientsVirtualIbanActivatingDescription": "가상 IBAN을 생성하는 중입니다. 몇 분 정도 걸릴 수 있습니다.",
+  "recipientsVirtualIbanActivatedTitle": "기밀 SEPA가 활성화되었습니다",
+  "recipientsVirtualIbanActivatedDescription": "이제 개인 가상 IBAN을 사용해 비공개로 출금할 수 있습니다."
 }

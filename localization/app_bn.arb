@@ -12037,5 +12037,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "এই প্রাপককে এখনও গোপনীয় SEPA-এর জন্য সক্রিয় করা হয়নি। আমরা এখন এটি সক্রিয় করছি। এতে কয়েক মিনিট সময় লাগতে পারে। এর পরিবর্তে আপনি ইনস্ট্যান্ট ও রেগুলার SEPA ব্যবহার করতে পারেন।",
   "recipientsConfidentialSepaActivatedTitle": "প্রাপক সক্রিয় করা হয়েছে",
   "recipientsConfidentialSepaActivatedDescription": "আপনার প্রাপক এখন গোপনীয় SEPA-এর জন্য সক্রিয়।",
-  "recipientsConfidentialSepaUseRegularSepa": "এর পরিবর্তে ইনস্ট্যান্ট ও রেগুলার SEPA ব্যবহার করুন"
+  "recipientsConfidentialSepaUseRegularSepa": "এর পরিবর্তে ইনস্ট্যান্ট ও রেগুলার SEPA ব্যবহার করুন",
+  "recipientsVirtualIbanIntroTitle": "গোপনীয় SEPA চালু করবেন?",
+  "recipientsVirtualIbanNewBadge": "নতুন",
+  "recipientsVirtualIbanIntroDescription": "আপনার নিজের নামে একটি ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করে গোপনে আপনার অ্যাকাউন্টে অর্থ জমা করুন। এটি বিনামূল্যে।",
+  "recipientsVirtualIbanIntroSelfTransfer": "আপনার ব্যাংক থেকে Bull Bitcoin-এ অর্থ পাঠালে তা নিজের কাছে স্থানান্তর হিসেবে দেখায়।",
+  "recipientsVirtualIbanIntroNoTransferCode": "কোনো ট্রান্সফার কোড লাগবে না।",
+  "recipientsVirtualIbanNameWarningTitle": "গুরুত্বপূর্ণ: নাম মিলতে হবে",
+  "recipientsVirtualIbanNameWarningDescription": "ব্যাংক অ্যাকাউন্টের নাম আপনার Bull Bitcoin ভার্চুয়াল IBAN-এর নামের সঙ্গে হুবহু মিলতে হবে, না হলে ট্রান্সফার স্বয়ংক্রিয়ভাবে ফেরত যাবে। নাম মিলছে না? সাপোর্টে যোগাযোগ করুন।",
+  "recipientsVirtualIbanAccountOwnerName": "অ্যাকাউন্ট মালিকের নাম",
+  "recipientsVirtualIbanNameConfirmation": "আমি নিশ্চিত করছি যে নামটি আমার ব্যাংক অ্যাকাউন্ট(গুলি)-র সঙ্গে মেলে",
+  "recipientsVirtualIbanActivate": "গোপনীয় SEPA চালু করুন",
+  "recipientsVirtualIbanActivatingTitle": "গোপনীয় SEPA চালু হচ্ছে...",
+  "recipientsVirtualIbanActivatingDescription": "আপনার ভার্চুয়াল IBAN তৈরি হচ্ছে। এতে কয়েক মিনিট লাগতে পারে।",
+  "recipientsVirtualIbanActivatedTitle": "গোপনীয় SEPA চালু হয়েছে",
+  "recipientsVirtualIbanActivatedDescription": "এখন আপনি গোপনে টাকা তুলতে আপনার ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করতে পারেন।"
 }

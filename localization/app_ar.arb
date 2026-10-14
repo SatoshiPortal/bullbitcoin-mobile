@@ -11836,5 +11836,19 @@
   "recipientsConfidentialSepaNotActivatedDescription": "لم يتم بعد تفعيل هذا المستلم لخدمة SEPA السري. نقوم بتفعيله الآن. قد يستغرق ذلك بضع دقائق. يمكنك استخدام SEPA الفوري والعادي بدلاً من ذلك.",
   "recipientsConfidentialSepaActivatedTitle": "تم تفعيل المستلم",
   "recipientsConfidentialSepaActivatedDescription": "أصبح المستلم الخاص بك الآن مُفعَّلاً لخدمة SEPA السري.",
-  "recipientsConfidentialSepaUseRegularSepa": "استخدم SEPA الفوري والعادي بدلاً من ذلك"
+  "recipientsConfidentialSepaUseRegularSepa": "استخدم SEPA الفوري والعادي بدلاً من ذلك",
+  "recipientsVirtualIbanIntroTitle": "تفعيل SEPA السري؟",
+  "recipientsVirtualIbanNewBadge": "جديد",
+  "recipientsVirtualIbanIntroDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. الخدمة مجانية.",
+  "recipientsVirtualIbanIntroSelfTransfer": "عند إرسال الأموال من مصرفك إلى Bull Bitcoin، تظهر كتحويل إلى نفسك.",
+  "recipientsVirtualIbanIntroNoTransferCode": "لا حاجة إلى رمز تحويل.",
+  "recipientsVirtualIbanNameWarningTitle": "مهم: يجب أن يتطابق الاسم",
+  "recipientsVirtualIbanNameWarningDescription": "يجب أن يطابق اسم الحساب المصرفي اسم رقم IBAN الافتراضي لدى Bull Bitcoin تمامًا، وإلا فسيُعاد التحويل تلقائيًا. الأسماء غير متطابقة؟ تواصل مع الدعم.",
+  "recipientsVirtualIbanAccountOwnerName": "اسم صاحب الحساب",
+  "recipientsVirtualIbanNameConfirmation": "أؤكد أن الاسم يطابق حسابي/حساباتي المصرفية",
+  "recipientsVirtualIbanActivate": "تفعيل SEPA السري",
+  "recipientsVirtualIbanActivatingTitle": "جارٍ تفعيل SEPA السري...",
+  "recipientsVirtualIbanActivatingDescription": "جارٍ إنشاء رقم IBAN الافتراضي الخاص بك. قد يستغرق ذلك بضع دقائق.",
+  "recipientsVirtualIbanActivatedTitle": "تم تفعيل SEPA السري",
+  "recipientsVirtualIbanActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية."
 }
