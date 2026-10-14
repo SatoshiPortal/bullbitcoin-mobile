@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
@@ -8,7 +7,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_l
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullRefreshIndicator, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -123,7 +122,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           child: BlocBuilder<RecipientsBloc, RecipientsState>(
             builder: (context, state) {
               final recipients = state.selectableRecipients ?? const [];
-              return BBRefreshIndicator(
+              return BullRefreshIndicator(
                 onRefresh: _onRefresh,
                 child: _buildListContent(state, recipients),
               );

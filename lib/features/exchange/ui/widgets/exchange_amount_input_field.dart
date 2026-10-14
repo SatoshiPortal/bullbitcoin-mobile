@@ -3,9 +3,9 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAmountInputFormatter, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountInputFormatter, BullShimmerLine, Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
@@ -64,7 +64,7 @@ class ExchangeAmountInputField extends StatelessWidget {
               crossAxisAlignment: .start,
               children: [
                 if (_isLoading)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                   )
                 else
@@ -154,7 +154,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                 if (_onIsFiatCurrencyInputChanged != null) ...[
                   const Gap(16),
                   if (_isLoading)
-                    const LoadingLineContent(
+                    const BullShimmerLine(
                       padding: EdgeInsets.symmetric(vertical: 12.0),
                     )
                   else

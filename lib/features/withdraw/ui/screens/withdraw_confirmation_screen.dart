@@ -2,15 +2,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullScrollableColumn, BullShimmerLine, Gap;
 
 class WithdrawConfirmationScreen extends StatelessWidget {
   const WithdrawConfirmationScreen({super.key});
@@ -40,7 +39,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            FadingLinearProgress(
+            BullFadingLinearProgress(
               height: 3,
               trigger: context.select<WithdrawBloc, bool>(
                 (bloc) =>
@@ -184,7 +183,7 @@ class _DetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: value == null
-          ? const LoadingLineContent()
+          ? const BullShimmerLine()
           : Row(
               mainAxisAlignment: .spaceBetween,
               children: [

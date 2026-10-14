@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/labels/application/usecases/import_labels_fro
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -14,7 +13,7 @@ import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 
 class Bip329LabelsPage extends StatelessWidget {
@@ -40,7 +39,7 @@ class Bip329LabelsPage extends StatelessWidget {
             child: BlocSelector<Bip329LabelsCubit, Bip329LabelsState, bool>(
               selector: (state) =>
                   state.maybeWhen(loading: () => true, orElse: () => false),
-              builder: (context, isLoading) => FadingLinearProgress(
+              builder: (context, isLoading) => BullFadingLinearProgress(
                 height: 3,
                 trigger: isLoading,
                 backgroundColor: context.appColors.onPrimary,

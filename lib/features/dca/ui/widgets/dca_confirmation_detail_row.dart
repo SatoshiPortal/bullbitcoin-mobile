@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
 
 class DcaConfirmationDetailRow extends StatelessWidget {
   final String label;
@@ -20,7 +20,7 @@ class DcaConfirmationDetailRow extends StatelessWidget {
 
           Expanded(
             child: value == null
-                ? const LoadingLineContent()
+                ? const BullShimmerLine()
                 : Text(
                     value!,
                     textAlign: .end,
