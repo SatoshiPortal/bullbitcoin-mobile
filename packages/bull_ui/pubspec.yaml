@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   auto_size_text: ^3.0.0
   custom_sliding_segmented_control: ^1.8.5
+  intl: any
   shimmer: ^3.0.0
 
 dev_dependencies:
