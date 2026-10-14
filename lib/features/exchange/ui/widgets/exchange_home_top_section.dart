@@ -4,9 +4,10 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat, Gap;
 
 class ExchangeHomeTopSection extends StatelessWidget {
   const ExchangeHomeTopSection({super.key});
@@ -110,7 +111,7 @@ class _BalancesView extends StatelessWidget {
         Gap(topGap),
         if (balances.isEmpty)
           BBText(
-            '0.00',
+            BullNumberFormat.decimal(0, minDecimals: 2),
             style: balanceTextStyle?.copyWith(
               color: context.appColors.onSecondaryFixed,
               fontWeight: FontWeight.w500,
@@ -119,7 +120,7 @@ class _BalancesView extends StatelessWidget {
         else
           ...balances.map(
             (b) => BBText(
-              '${b.amount} ${b.currencyCode}',
+              FormatAmount.fiat(b.amount, b.currencyCode),
               style: balanceTextStyle?.copyWith(
                 color: context.appColors.onSecondaryFixed,
                 fontWeight: FontWeight.w500,

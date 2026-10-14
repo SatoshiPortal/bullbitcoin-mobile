@@ -72,7 +72,7 @@ class SinpeReceiptCard extends StatelessWidget {
             Text(context.loc.paySinpeMonto, style: context.font.bodyMedium),
             const Gap(4),
             Text(
-              '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
+              order.payoutAmountToDisplay,
               style: context.font.headlineSmall?.copyWith(
                 color: context.appColors.secondary,
                 fontWeight: FontWeight.bold,

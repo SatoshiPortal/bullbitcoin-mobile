@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.freezed.dart';
@@ -853,7 +854,7 @@ extension FiatPaymentOrderDisplayX on FiatPaymentOrder {
   /// is used as returned by the server, without going through
   /// [FiatCurrency.fromCode], which throws on codes the app doesn't know yet.
   String get payoutAmountToDisplay =>
-      '${payoutAmount.toStringAsFixed(2)} $payoutCurrency';
+      FormatAmount.fiat(payoutAmount, payoutCurrency);
 
   /// The recipient as shown to the user. The server populates
   /// [beneficiaryName] for most payout processors, but not all (SINPE can

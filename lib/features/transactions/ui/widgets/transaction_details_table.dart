@@ -282,7 +282,10 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payinAmount),
                               )
                             : FormatAmount.btc(order.payinAmount)
-                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      : FormatAmount.fiat(
+                          order.payinAmount,
+                          order.payinCurrency,
+                        ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
@@ -294,14 +297,19 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payoutAmount),
                               )
                             : FormatAmount.btc(order.payoutAmount)
-                      : '${order.payoutAmount} ${order.payoutCurrency}',
+                      : FormatAmount.fiat(
+                          order.payoutAmount,
+                          order.payoutCurrency,
+                        ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -361,14 +369,19 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: FormatAmount.fiat(
+                    order.payoutAmount,
+                    order.payoutCurrency,
+                  ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -435,8 +448,10 @@ class TransactionDetailsTable extends StatelessWidget {
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -503,12 +518,17 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payinAmount,
+                    order.payinCurrency,
+                  ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payoutAmount,
+                    order.payoutCurrency,
+                  ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -558,19 +578,26 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payinAmount,
+                    order.payinCurrency,
+                  ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payoutAmount,
+                    order.payoutCurrency,
+                  ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -628,7 +655,10 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payinAmount),
                               )
                             : FormatAmount.btc(order.payinAmount)
-                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      : FormatAmount.fiat(
+                          order.payinAmount,
+                          order.payinCurrency,
+                        ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
@@ -640,14 +670,19 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payoutAmount),
                               )
                             : FormatAmount.btc(order.payoutAmount)
-                      : '${order.payoutAmount} ${order.payoutCurrency}',
+                      : FormatAmount.fiat(
+                          order.payoutAmount,
+                          order.payoutCurrency,
+                        ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -705,7 +740,10 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payinAmount),
                               )
                             : FormatAmount.btc(order.payinAmount)
-                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      : FormatAmount.fiat(
+                          order.payinAmount,
+                          order.payinCurrency,
+                        ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
@@ -717,14 +755,19 @@ class TransactionDetailsTable extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payoutAmount),
                               )
                             : FormatAmount.btc(order.payoutAmount)
-                      : '${order.payoutAmount} ${order.payoutCurrency}',
+                      : FormatAmount.fiat(
+                          order.payoutAmount,
+                          order.payoutCurrency,
+                        ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -774,19 +817,26 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payinAmount,
+                    order.payinCurrency,
+                  ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue: _fiatOrBitcoin(
+                    order.payoutAmount,
+                    order.payoutCurrency,
+                  ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelExchangeRate,
-                    displayValue:
-                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                    displayValue: FormatAmount.fiat(
+                      order.exchangeRateAmount!,
+                      order.exchangeRateCurrency!,
+                    ),
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
@@ -1154,3 +1204,10 @@ Widget _feeRow(BuildContext context, String label, int amt) {
     ),
   );
 }
+
+/// Funding, withdraw and balance-adjustment orders carry fiat, but a payout
+/// the server reports in bitcoin must not be written with fiat decimals.
+String _fiatOrBitcoin(double amount, String currency) =>
+    currency == 'BTC' || currency == 'L-BTC'
+    ? FormatAmount.btc(amount)
+    : FormatAmount.fiat(amount, currency);

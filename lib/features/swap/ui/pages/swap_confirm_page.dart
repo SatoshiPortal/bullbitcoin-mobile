@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
@@ -84,7 +85,7 @@ class SwapConfirmPage extends StatelessWidget {
                         final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
                         if (rate == 0.0) return '';
                         final fiatAmount = amount * rate / 100000000;
-                        return '${fiatAmount.toStringAsFixed(2)} $currency';
+                        return FormatAmount.fiat(fiatAmount, currency);
                       });
                       final selectedFeeOptionTitle = context.select(
                         (TransferBloc bloc) =>
