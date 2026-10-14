@@ -9,7 +9,12 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountController, BullAmountInputFormatter, BullShimmerLine, Gap;
+    show
+        BullAmountController,
+        BullAmountInputFormatter,
+        BullNumberFormat,
+        BullShimmerLine,
+        Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -598,7 +603,8 @@ class _PreviewLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final unit = isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB;
-    final rateLabel = '${customFee.value} $unit';
+    final rateLabel =
+        '${BullNumberFormat.decimal(customFee.value, maxDecimals: 3)} $unit';
 
     if (previewLoading) {
       return Row(
@@ -633,9 +639,7 @@ class _PreviewLine extends StatelessWidget {
     if (showFiat) {
       text
         ..write(' (~ ')
-        ..write(fiatEq)
-        ..write(' ')
-        ..write(fiatCurrencyCode)
+        ..write(FormatAmount.fiat(fiatEq!, fiatCurrencyCode))
         ..write(')');
     }
     return BBText(text.toString(), style: context.font.labelMedium);

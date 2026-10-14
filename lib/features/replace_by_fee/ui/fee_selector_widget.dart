@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat, Gap;
 
 class BumpFeeSelectorWidget extends StatelessWidget {
   const BumpFeeSelectorWidget({
@@ -124,7 +124,11 @@ class _FastestTile extends StatelessWidget {
                     const Gap(2),
                     BBText(
                       context.loc.replaceByFeeFeeRateDisplay(
-                        fastestFeeRate.feeRate.satPerVbyte.toStringAsFixed(1),
+                        BullNumberFormat.decimal(
+                          fastestFeeRate.feeRate.satPerVbyte,
+                          minDecimals: 1,
+                          maxDecimals: 1,
+                        ),
                       ),
                       style: context.font.labelMedium,
                     ),

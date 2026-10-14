@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -131,7 +131,11 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
             const Gap(16),
             BBText(
               context.loc.replaceByFeeFeeRateDisplay(
-                originalFeeRate.toStringAsFixed(1),
+                BullNumberFormat.decimal(
+                  originalFeeRate,
+                  minDecimals: 1,
+                  maxDecimals: 1,
+                ),
               ),
               style: context.font.labelMedium,
             ),

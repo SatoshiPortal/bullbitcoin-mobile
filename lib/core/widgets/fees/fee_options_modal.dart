@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullSelectableList, BullSelectableListItem, Gap;
+    show BullNumberFormat, BullSelectableList, BullSelectableListItem, Gap;
 
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on
@@ -217,7 +217,9 @@ BullSelectableListItem _presetItem({
       isSubtitle2Loading: true,
     );
   }
-  final rateLabel = '${rate.value} ${context.loc.sendSatsPerVB}';
+  final rateLabel =
+      '${BullNumberFormat.decimal(rate.value, maxDecimals: 3)} '
+      '${context.loc.sendSatsPerVB}';
   final previewFeeSat = slot.feeSat;
   if (previewFeeSat == null) {
     return BullSelectableListItem(
@@ -229,8 +231,7 @@ BullSelectableListItem _presetItem({
     );
   }
   final fiatPart = exchangeRate > 0 && fiatCurrencyCode.isNotEmpty
-      ? ' (~ ${ConvertAmount.satsToFiat(previewFeeSat, exchangeRate)} '
-            '$fiatCurrencyCode)'
+      ? ' (~ ${FormatAmount.fiat(ConvertAmount.satsToFiat(previewFeeSat, exchangeRate), fiatCurrencyCode)})'
       : '';
   return BullSelectableListItem(
     value: title,
