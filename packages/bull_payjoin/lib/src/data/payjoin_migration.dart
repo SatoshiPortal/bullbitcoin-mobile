@@ -81,7 +81,8 @@ Future<void> importLegacyPayjoinData(
     // Seeds the single policy row the store reads with getSingle(). There is
     // nothing to carry over: the root settings payjoin columns only existed in
     // the unreleased schema 14, so every install arrives here without a stored
-    // preference and starts from the conservative defaults (payjoin disabled).
+    // preference and starts from the defaults: exchange orders on, payments
+    // with other users off.
     final defaults = PayjoinPolicy.defaults();
     await database
         .into(database.payjoinPolicies)
