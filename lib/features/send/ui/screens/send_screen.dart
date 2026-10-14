@@ -14,13 +14,11 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -46,7 +44,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullInputText, BullSegmented, Gap;
+    show
+        BullBorderedTile,
+        BullCountdown,
+        BullFadingLinearProgress,
+        BullInputText,
+        BullSegmented,
+        Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -94,7 +98,7 @@ class SendAddressScreen extends StatelessWidget {
         children: [
           Column(
             children: [
-              FadingLinearProgress(
+              BullFadingLinearProgress(
                 height: 3,
                 trigger: context.select(
                   (SendCubit cubit) =>
@@ -313,7 +317,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
       body: Column(
         children: [
-          FadingLinearProgress(
+          BullFadingLinearProgress(
             height: 3,
             trigger: context.select(
               (SendCubit cubit) => cubit.state.creatingSwap,
@@ -719,7 +723,7 @@ class SendConfirmScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          FadingLinearProgress(
+          BullFadingLinearProgress(
             height: 3,
             trigger: context.select(
               (SendCubit cubit) =>
@@ -1796,7 +1800,7 @@ class SendSendingScreen extends StatelessWidget {
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
-                      Countdown(
+                      BullCountdown(
                         until: payjoinExpiresAt.add(
                           const Duration(
                             seconds: PayjoinConstants.directoryPollingInterval,

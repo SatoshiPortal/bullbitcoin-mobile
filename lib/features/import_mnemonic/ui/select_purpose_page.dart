@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 import 'package:go_router/go_router.dart';
 
 class SelectScriptTypePage extends StatelessWidget {
@@ -165,10 +164,7 @@ class _WalletTypeCard extends StatelessWidget {
                   ],
                   if (status == null) ...[
                     const Gap(8),
-                    const LoadingLineContent(
-                      height: 8,
-                      padding: EdgeInsets.zero,
-                    ),
+                    const BullShimmerLine(height: 8, padding: EdgeInsets.zero),
                   ],
                 ],
               ),

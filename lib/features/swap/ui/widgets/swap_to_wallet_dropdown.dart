@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullShimmerLine, Gap;
 
 class SwapToWalletDropdown extends StatelessWidget {
   const SwapToWalletDropdown();
@@ -21,7 +20,7 @@ class SwapToWalletDropdown extends StatelessWidget {
         Text(context.loc.swapToLabel, style: context.font.bodyLarge),
         const Gap(4),
         if (wallets.isEmpty)
-          const LoadingLineContent()
+          const BullShimmerLine()
         else
           BullDropdown<Wallet>(
             items: wallets

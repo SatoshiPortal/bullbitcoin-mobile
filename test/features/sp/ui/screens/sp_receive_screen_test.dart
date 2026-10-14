@@ -5,9 +5,8 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented;
+import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -111,7 +110,7 @@ void main() {
     await tester.pumpWidget(_buildMockPage(mockCubit));
     await tester.pump();
 
-    expect(find.byType(LoadingBoxContent), findsOneWidget);
+    expect(find.byType(BullShimmerBox), findsOneWidget);
     expect(find.byType(QrDisplayWidget), findsNothing);
     expect(find.byType(CopyInput), findsNothing);
   });

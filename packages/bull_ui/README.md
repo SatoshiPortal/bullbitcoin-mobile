@@ -63,9 +63,8 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.
 
-**Feedback** — `BullRefreshIndicator` (`BBRefreshIndicator`), `BullShimmerBox`/
-`BullShimmerLine`, `BullSnackBar`, `BullCountdown` (`Countdown`),
-`BullFadingLinearProgress` (`FadingLinearProgress`).
+**Feedback** — `BullRefreshIndicator`, `BullShimmerBox`/`BullShimmerLine`,
+`BullSnackBar`, `BullCountdown`, `BullFadingLinearProgress`.
 
 **Layout** — `BullScrollableColumn` (`ScrollableColumn`), `BullStackedPage`
 (`StackedPage`), `BullPullableBody` (`BBPullableBody`).

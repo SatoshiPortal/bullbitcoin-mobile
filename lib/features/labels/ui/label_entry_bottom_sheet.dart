@@ -7,12 +7,12 @@ import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/labels/domain/note_violation_to_label_failure.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Shared bottom-sheet editor for user-entered annotations on payment
@@ -304,7 +304,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Gap(tightGap),
-            if (loading) FadingLinearProgress(trigger: true),
+            if (loading) BullFadingLinearProgress(trigger: true),
             if (showChips) ...[
               if (loading) Gap(tightGap),
               SizedBox(
