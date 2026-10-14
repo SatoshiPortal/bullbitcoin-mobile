@@ -19,4 +19,6 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsSelected;
   const factory RecipientsEvent.virtualIbanActivated() =
       RecipientsVirtualIbanActivated;
+  const factory RecipientsEvent.sepaTypeChanged(RecipientType sepaType) =
+      RecipientsSepaTypeChanged;
 }

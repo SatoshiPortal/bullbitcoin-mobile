@@ -54,6 +54,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
     on<RecipientsVirtualIbanActivated>(_onVirtualIbanActivated);
+    on<RecipientsSepaTypeChanged>(
+      _onSepaTypeChanged,
+      transformer: restartable(),
+    );
   }
 
   static const pageSize = 50;
@@ -169,6 +173,14 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     await _loadFirstPage(emit, clearList: false);
   }
 
+  Future<void> _onSepaTypeChanged(
+    RecipientsSepaTypeChanged event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    emit(state.copyWith(sepaType: event.sepaType));
+    await _loadFirstPage(emit, clearList: true);
+  }
+
   Future<void> _onJurisdictionChanged(
     RecipientsJurisdictionChanged event,
     Emitter<RecipientsState> emit,
@@ -256,11 +268,18 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }
 
   List<RecipientType> _effectiveTypes(RecipientsState state) {
-    final allowed = state.selectableRecipientTypes.toList();
+    final hiddenSepaType = !state.canChooseSepaType
+        ? null
+        : state.sepaType == RecipientType.confidentialSepaEur
+        ? RecipientType.sepaEur
+        : RecipientType.confidentialSepaEur;
     final jurisdiction = state.jurisdictionFilter;
-    if (jurisdiction == null) return allowed;
-    return allowed
-        .where((type) => type.jurisdictionCode == jurisdiction)
+    return state.selectableRecipientTypes
+        .where(
+          (type) =>
+              type != hiddenSepaType &&
+              (jurisdiction == null || type.jurisdictionCode == jurisdiction),
+        )
         .toList();
   }
 

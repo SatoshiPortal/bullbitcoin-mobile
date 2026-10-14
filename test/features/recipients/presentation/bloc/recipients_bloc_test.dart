@@ -141,7 +141,6 @@ void main() {
         bloc.state.selectableRecipientTypes,
         contains(RecipientType.confidentialSepaEur),
       );
-      expect(requestedTypes(), contains(RecipientType.confidentialSepaEur));
     });
 
     test('is ready once the virtual IBAN is activated', () async {
@@ -156,6 +155,32 @@ void main() {
         bloc.state.confidentialSepaAvailability,
         ConfidentialSepaAvailability.ready,
       );
+    });
+
+    test('a list that offers both routes shows regular SEPA first', () async {
+      final bloc = await startWith(ConfidentialSepaAvailability.ready);
+
+      expect(bloc.state.canChooseSepaType, isTrue);
+      expect(requestedTypes(), [RecipientType.sepaEur]);
+    });
+
+    test('choosing Confidential SEPA lists its recipients', () async {
+      final bloc = await startWith(ConfidentialSepaAvailability.ready);
+
+      bloc.add(
+        const RecipientsEvent.sepaTypeChanged(
+          RecipientType.confidentialSepaEur,
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(requestedTypes(), [RecipientType.confidentialSepaEur]);
+    });
+
+    test('a user who cannot use it is not offered the choice', () async {
+      final bloc = await startWith(ConfidentialSepaAvailability.unavailable);
+
+      expect(bloc.state.canChooseSepaType, isFalse);
     });
 
     test('is not checked when the flow does not allow it', () async {

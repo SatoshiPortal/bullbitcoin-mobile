@@ -7,6 +7,7 @@ sealed class RecipientsState with _$RecipientsState {
     String? jurisdictionFilter,
     @Default(ConfidentialSepaAvailability.unavailable)
     ConfidentialSepaAvailability confidentialSepaAvailability,
+    @Default(RecipientType.sepaEur) RecipientType sepaType,
     @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,
     RecipientsFailure? failedToLoadRecipients,
@@ -48,6 +49,14 @@ sealed class RecipientsState with _$RecipientsState {
                 ConfidentialSepaAvailability.unavailable,
       )
       .toSet();
+
+  /// Regular and Confidential SEPA list the same accounts, so a list that
+  /// offers both shows one route at a time.
+  bool get canChooseSepaType =>
+      selectableRecipientTypes.contains(RecipientType.sepaEur) &&
+      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur) &&
+      (jurisdictionFilter == null ||
+          jurisdictionFilter == RecipientType.sepaEur.jurisdictionCode);
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 

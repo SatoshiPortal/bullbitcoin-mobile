@@ -30,6 +30,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? debitcard,
     bool? isOwner,
     String? bankAccount,
+    @Default(false) bool isVirtualPayeeActive,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
