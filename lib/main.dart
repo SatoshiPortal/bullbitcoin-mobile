@@ -34,6 +34,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_sdk/bull_sdk.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -481,6 +482,11 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
+                      // Runs below Localizations, so this is the resolved
+                      // language, including a system language.
+                      BullNumberFormat.useLanguage(
+                        Localizations.localeOf(context).languageCode,
+                      );
                       final app = AppStartupWidget(app: child!);
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
