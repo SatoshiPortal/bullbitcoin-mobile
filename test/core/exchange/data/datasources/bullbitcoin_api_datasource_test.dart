@@ -1,4 +1,7 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,6 +18,12 @@ Response<dynamic> _elements(List<Map<String, dynamic>> elements) => Response(
   },
 );
 
+Response<dynamic> _rpcError(Map<String, dynamic> error) => Response(
+  requestOptions: RequestOptions(path: '/ak/api-orders'),
+  statusCode: 200,
+  data: {'error': error},
+);
+
 Response<dynamic> _order(Map<String, dynamic> order) => Response(
   requestOptions: RequestOptions(path: '/ak/api-orders'),
   statusCode: 200,
@@ -29,6 +38,29 @@ void main() {
     dio = _MockDio();
     datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
   });
+
+  void stubPost(Response<dynamic> response) {
+    when(
+      () => dio.post(
+        any(),
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer((_) async => response);
+  }
+
+  Map<String, dynamic> capturedParams() {
+    final request =
+        verify(
+              () => dio.post(
+                '/ak/api-orders',
+                data: captureAny(named: 'data'),
+                options: any(named: 'options'),
+              ),
+            ).captured.single
+            as Map<String, dynamic>;
+    return request['params'] as Map<String, dynamic>;
+  }
 
   void stubList(List<Map<String, dynamic>> elements) {
     when(
@@ -135,6 +167,94 @@ void main() {
           'securityAnswer': 'Montreal',
         },
       });
+    });
+  });
+
+  group('confidential sepa', () {
+    const notActivated = {
+      'code': -32602,
+      'message': 'Invalid params',
+      'data': {
+        'apiError': {
+          'code': 'ERR_ORD_CSRCP400',
+          'message':
+              'Please activate virtual payment option for the SEPA recipient with IBAN: {iban}',
+          'messageData': {'iban': 'FR7630006000011234567890189'},
+        },
+      },
+    };
+
+    test('a withdrawal sends the selected payment processor', () async {
+      stubPost(_order(orderJsonFixture()));
+
+      await datasource.createWithdrawalOrder(
+        apiKey: 'key',
+        fiatAmount: 100,
+        recipientId: 'recipient-1',
+        paymentProcessor: SepaPaymentProcessor.confidential,
+      );
+
+      expect(capturedParams(), {
+        'fiatAmount': 100.0,
+        'recipientId': 'recipient-1',
+        'paymentProcessor': 'CONFIDENTIAL_SEPA',
+      });
+    });
+
+    test('a payment sends the selected payment processor', () async {
+      stubPost(_order(orderJsonFixture()));
+
+      await datasource.createPayOrder(
+        apiKey: 'key',
+        orderAmount: const FiatAmount(100),
+        recipientId: 'recipient-1',
+        network: OrderBitcoinNetwork.bitcoin,
+        paymentProcessor: SepaPaymentProcessor.regular,
+      );
+
+      expect(capturedParams()['paymentProcessor'], 'REGULAR_SEPA');
+    });
+
+    test('no payment processor is sent when none is selected', () async {
+      stubPost(_order(orderJsonFixture()));
+
+      await datasource.createPayOrder(
+        apiKey: 'key',
+        orderAmount: const FiatAmount(100),
+        recipientId: 'recipient-1',
+        network: OrderBitcoinNetwork.bitcoin,
+      );
+
+      expect(capturedParams().containsKey('paymentProcessor'), isFalse);
+    });
+
+    test('an inactive virtual payee rejects a withdrawal', () async {
+      stubPost(_rpcError(notActivated));
+
+      await expectLater(
+        datasource.createWithdrawalOrder(
+          apiKey: 'key',
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
+      );
+    });
+
+    test('an inactive virtual payee rejects a payment', () async {
+      stubPost(_rpcError(notActivated));
+
+      await expectLater(
+        datasource.createPayOrder(
+          apiKey: 'key',
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
+      );
     });
   });
 }

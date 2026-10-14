@@ -1,8 +1,11 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -157,6 +160,60 @@ void main() {
       }
 
       expectTraceReachesTheFailingCall(trace, 'confirmOrder');
+    });
+  });
+
+  group('an inactive confidential sepa payee reaches the caller', () {
+    setUpAll(() {
+      registerFallbackValue(const FiatAmount(0));
+      registerFallbackValue(OrderBitcoinNetwork.bitcoin);
+      registerFallbackValue(SepaPaymentProcessor.regular);
+    });
+
+    test('placePayOrder', () async {
+      when(
+        () => api.createPayOrder(
+          apiKey: any(named: 'apiKey'),
+          orderAmount: any(named: 'orderAmount'),
+          recipientId: any(named: 'recipientId'),
+          network: any(named: 'network'),
+          paymentDescription: any(named: 'paymentDescription'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          usePayjoin: any(named: 'usePayjoin'),
+        ),
+      ).thenThrow(const BullBitcoinApiConfidentialSepaNotActivatedException());
+
+      await expectLater(
+        repository.placePayOrder(
+          orderAmount: const FiatAmount(100),
+          recipientId: 'recipient-1',
+          network: OrderBitcoinNetwork.bitcoin,
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
+      );
+    });
+
+    test('placeWithdrawalOrder', () async {
+      when(
+        () => api.createWithdrawalOrder(
+          apiKey: any(named: 'apiKey'),
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+          securityQuestion: any(named: 'securityQuestion'),
+          securityAnswer: any(named: 'securityAnswer'),
+        ),
+      ).thenThrow(const BullBitcoinApiConfidentialSepaNotActivatedException());
+
+      await expectLater(
+        repository.placeWithdrawalOrder(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+        ),
+        throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
+      );
     });
   });
 }
