@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 
+/// The thresholds fit in a few digits, so their fields stay narrow.
+const _fieldWidth = 140.0;
+
 /// Payjoin advanced settings, on their own page (product decision
 /// 2026-07-26 — not an expand/collapse section): the minimum-receive-amount
 /// and session-expiry thresholds, and a read-only view of the servers
@@ -26,9 +29,6 @@ import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 /// text when `value` diverges from the controller, so `value` must always be
 /// read from the controller itself at build time — never from a stale
 /// snapshot.
-/// The thresholds fit in a few digits, so their fields stay narrow.
-const _fieldWidth = 140.0;
-
 class PayjoinAdvancedSettingsScreen extends StatefulWidget {
   const PayjoinAdvancedSettingsScreen({super.key});
 
