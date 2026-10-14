@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullTransactionDirectionBadge, Gap;
 import 'package:flutter/material.dart';
 
 class TransactionDetailsPage extends StatelessWidget {
@@ -68,7 +67,7 @@ class TransactionDetailsPage extends StatelessWidget {
                     if (isLoading)
                       const LoadingBoxContent(height: 72, width: 72)
                     else
-                      TransactionDirectionBadge(
+                      BullTransactionDirectionBadge(
                         isIncoming: isIncoming,
                         isSwap: isSwap,
                       ),

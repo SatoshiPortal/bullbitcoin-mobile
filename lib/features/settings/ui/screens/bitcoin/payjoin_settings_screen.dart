@@ -3,14 +3,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings (product decision 2026-07-25/26): deliberately minimal —
@@ -81,7 +80,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                 ],
               ),
               const Gap(16),
-              BorderedTappableTile(
+              BullBorderedTile(
                 onTap: () async {
                   await PayjoinDisclaimerDialog.show(context);
                 },
@@ -99,7 +98,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
               ),
               if (isEnabled) ...[
                 const Gap(16),
-                BorderedTappableTile(
+                BullBorderedTile(
                   onTap: () => context.pushNamed(
                     SettingsRoute.payjoinAdvancedSettings.name,
                   ),

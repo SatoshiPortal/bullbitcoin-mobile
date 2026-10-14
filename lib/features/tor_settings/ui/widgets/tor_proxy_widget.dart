@@ -2,11 +2,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullSettingsEntryItem, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart';
@@ -45,7 +45,7 @@ class TorProxyWidget extends StatelessWidget {
 
     return Column(
       children: [
-        SettingsEntryItem(
+        BullSettingsEntryItem(
           icon: Icons.security,
           title: context.loc.torSettingsLocalProxyTitle,
           trailing: Switch(
@@ -76,7 +76,7 @@ class TorProxyWidget extends StatelessWidget {
           child: Text(context.loc.torSettingsLearnAboutOrbot),
         ),
         Card(
-          child: SettingsEntryItem(
+          child: BullSettingsEntryItem(
             icon: Icons.settings_ethernet,
             title: context.loc.torSettingsProxyPort,
             trailing: Text(

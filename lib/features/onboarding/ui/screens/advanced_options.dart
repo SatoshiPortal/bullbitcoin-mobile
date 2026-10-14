@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_c
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, Gap;
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptions extends StatefulWidget {
@@ -65,7 +64,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       ),
                       const Gap(8),
                       const TorProxyWidget(),
-                      SettingsEntryItem(
+                      BullSettingsEntryItem(
                         icon: Icons.hub,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomElectrum,
@@ -75,7 +74,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                           );
                         },
                       ),
-                      SettingsEntryItem(
+                      BullSettingsEntryItem(
                         icon: Icons.memory,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomMempool,
@@ -83,7 +82,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                           context.pushNamed(MempoolSettingsRoute.name);
                         },
                       ),
-                      SettingsEntryItem(
+                      BullSettingsEntryItem(
                         icon: Icons.cloud_circle,
                         title: context
                             .loc
@@ -96,7 +95,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                           );
                         },
                       ),
-                      SettingsEntryItem(
+                      BullSettingsEntryItem(
                         icon: Icons.language,
                         title: context.loc.settingsLanguageTitle,
                         trailing: AppLanguagePicker(

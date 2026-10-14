@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -17,6 +16,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 class ExchangeSettingsScreen extends StatelessWidget {
   const ExchangeSettingsScreen({super.key});
@@ -43,7 +43,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 if (isSuperuser || Platform.isAndroid) ...[
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.account_circle,
                     title: context.loc.exchangeSettingsAccountInformationTitle,
                     onTap: () {
@@ -56,7 +56,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.security,
                     title: context.loc.exchangeSettingsSecuritySettingsTitle,
                     onTap: () {
@@ -67,7 +67,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.people,
                     title: context.loc.exchangeSettingsRecipientsTitle,
                     onTap: () {
@@ -78,7 +78,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.history,
                     title: context.loc.exchangeSettingsTransactionsTitle,
                     onTap: () {
@@ -91,7 +91,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.currency_bitcoin,
                     title: context.loc.exchangeBitcoinWalletsTitle,
                     onTap: () {
@@ -104,7 +104,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.settings,
                     title: context.loc.settingsAppSettingsTitle,
                     onTap: () {
@@ -117,7 +117,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.upload_file,
                     title: context.loc.exchangeFileUploadTitle,
                     onTap: () {
@@ -130,7 +130,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.bar_chart,
                     title: context.loc.exchangeStatisticsTitle,
                     onTap: () {
@@ -143,7 +143,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       }
                     },
                   ),
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.share,
                     title: context.loc.exchangeSettingsReferralsTitle,
                     onTap: () {
@@ -155,7 +155,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     },
                   ),
                   if (state.notLoggedIn)
-                    SettingsEntryItem(
+                    BullSettingsEntryItem(
                       icon: Icons.login,
                       title: context.loc.exchangeSettingsLogInTitle,
                       onTap: () {
@@ -164,7 +164,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     ),
                 ],
                 if (!state.notLoggedIn && !isSuperuser && Platform.isIOS)
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.delete_forever,
                     title: context.loc.exchangeSettingsDeleteAccountTitle,
                     onTap: () {
@@ -187,7 +187,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     },
                   ),
                 if (!state.notLoggedIn)
-                  SettingsEntryItem(
+                  BullSettingsEntryItem(
                     icon: Icons.logout,
                     title: context.loc.exchangeSettingsLogOutTitle,
                     onTap: () {
