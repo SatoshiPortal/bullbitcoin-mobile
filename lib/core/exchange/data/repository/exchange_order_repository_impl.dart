@@ -262,7 +262,6 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
-    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   }) async {
     try {
@@ -284,7 +283,6 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
-        paymentProcessor: paymentProcessor,
         usePayjoin: usePayjoin,
       );
 
@@ -295,8 +293,6 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on BullBitcoinApiMinAmountException {
       rethrow;
     } on BullBitcoinApiMaxAmountException {
-      rethrow;
-    } on BullBitcoinApiConfidentialSepaNotActivatedException {
       rethrow;
     } on ApiKeyException {
       rethrow;

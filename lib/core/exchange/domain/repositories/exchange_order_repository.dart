@@ -28,7 +28,6 @@ abstract class ExchangeOrderRepository {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
-    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({

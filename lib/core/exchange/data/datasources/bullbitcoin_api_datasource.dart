@@ -331,15 +331,12 @@ class BullbitcoinApiDatasource {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
-    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
       'bitcoinNetwork': network.value,
       if (usePayjoin) 'usePayjoin': true,
-      if (paymentProcessor != null)
-        'paymentProcessor': _sepaPaymentProcessorValue(paymentProcessor),
     };
 
     if (orderAmount.isFiat) {

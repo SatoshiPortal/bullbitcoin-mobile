@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -201,33 +200,6 @@ void main() {
       });
     });
 
-    test('a payment sends the selected payment processor', () async {
-      stubPost(_order(orderJsonFixture()));
-
-      await datasource.createPayOrder(
-        apiKey: 'key',
-        orderAmount: const FiatAmount(100),
-        recipientId: 'recipient-1',
-        network: OrderBitcoinNetwork.bitcoin,
-        paymentProcessor: SepaPaymentProcessor.regular,
-      );
-
-      expect(capturedParams()['paymentProcessor'], 'REGULAR_SEPA');
-    });
-
-    test('no payment processor is sent when none is selected', () async {
-      stubPost(_order(orderJsonFixture()));
-
-      await datasource.createPayOrder(
-        apiKey: 'key',
-        orderAmount: const FiatAmount(100),
-        recipientId: 'recipient-1',
-        network: OrderBitcoinNetwork.bitcoin,
-      );
-
-      expect(capturedParams().containsKey('paymentProcessor'), isFalse);
-    });
-
     test('an inactive virtual payee rejects a withdrawal', () async {
       stubPost(_rpcError(notActivated));
 
@@ -236,21 +208,6 @@ void main() {
           apiKey: 'key',
           fiatAmount: 100,
           recipientId: 'recipient-1',
-          paymentProcessor: SepaPaymentProcessor.confidential,
-        ),
-        throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
-      );
-    });
-
-    test('an inactive virtual payee rejects a payment', () async {
-      stubPost(_rpcError(notActivated));
-
-      await expectLater(
-        datasource.createPayOrder(
-          apiKey: 'key',
-          orderAmount: const FiatAmount(100),
-          recipientId: 'recipient-1',
-          network: OrderBitcoinNetwork.bitcoin,
           paymentProcessor: SepaPaymentProcessor.confidential,
         ),
         throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
