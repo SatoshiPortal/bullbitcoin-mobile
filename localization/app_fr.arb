@@ -4912,5 +4912,6 @@
   "limitOrdersFundAccount": "Financer votre compte",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 opération} other{{count} opérations}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 opération ({currency})} other{{count} opérations ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Le statut de votre téléversement n'a pas pu être chargé. Veuillez réessayer."
+  "exchangeSettingsErrorLoadingUploadStatus": "Le statut de votre téléversement n'a pas pu être chargé. Veuillez réessayer.",
+  "recipientsTypeConfidentialSepa": "SEPA Confidentiel"
 }

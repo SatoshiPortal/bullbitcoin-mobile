@@ -11822,5 +11822,6 @@
   "limitOrdersFundAccount": "بودجه حساب شما",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 معامله} other{{count} معامله}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 معامله ({currency})} other{{count} معامله ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "وضعیت بارگذاری شما بارگیری نشد. لطفاً دوباره تلاش کنید."
+  "exchangeSettingsErrorLoadingUploadStatus": "وضعیت بارگذاری شما بارگیری نشد. لطفاً دوباره تلاش کنید.",
+  "recipientsTypeConfidentialSepa": "SEPA محرمانه"
 }

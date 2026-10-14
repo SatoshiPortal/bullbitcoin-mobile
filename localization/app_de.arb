@@ -5045,5 +5045,6 @@
   "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server.",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 Trade} other{{count} Trades}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 Trade ({currency})} other{{count} Trades ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Ihr Upload-Status konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+  "exchangeSettingsErrorLoadingUploadStatus": "Ihr Upload-Status konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "recipientsTypeConfidentialSepa": "Vertrauliches SEPA"
 }

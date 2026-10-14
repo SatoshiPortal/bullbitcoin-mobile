@@ -4834,5 +4834,6 @@
   "limitOrdersFundAccount": "基金",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 笔交易} other{{count} 笔交易}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 笔交易 ({currency})} other{{count} 笔交易 ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "无法加载您的上传状态。请重试。"
+  "exchangeSettingsErrorLoadingUploadStatus": "无法加载您的上传状态。请重试。",
+  "recipientsTypeConfidentialSepa": "保密 SEPA"
 }

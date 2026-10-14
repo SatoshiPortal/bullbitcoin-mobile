@@ -35,7 +35,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }) : super(
          RecipientsState(
            allowedRecipientFilters:
-               allowedRecipientFilters ?? const RecipientFilterCriteria(),
+               allowedRecipientFilters ?? RecipientFilterCriteria(),
          ),
        ) {
     on<RecipientsStarted>(_onStarted);

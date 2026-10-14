@@ -3627,5 +3627,6 @@
   "limitOrdersFundAccount": "Nạp tiền vào tài khoản của bạn",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 giao dịch} other{{count} giao dịch}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 giao dịch ({currency})} other{{count} giao dịch ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Không thể tải trạng thái tải lên của bạn. Vui lòng thử lại."
+  "exchangeSettingsErrorLoadingUploadStatus": "Không thể tải trạng thái tải lên của bạn. Vui lòng thử lại.",
+  "recipientsTypeConfidentialSepa": "SEPA Bảo mật"
 }

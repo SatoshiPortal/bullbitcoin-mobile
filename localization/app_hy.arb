@@ -3627,5 +3627,6 @@
   "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 գործարք} other{{count} գործարք}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 գործարք ({currency})} other{{count} գործարք ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Չհաջողվեց բեռնել ձեր վերբեռնման կարգավիճակը։ Խնդրում ենք փորձել կրկին։"
+  "exchangeSettingsErrorLoadingUploadStatus": "Չհաջողվեց բեռնել ձեր վերբեռնման կարգավիճակը։ Խնդրում ենք փորձել կրկին։",
+  "recipientsTypeConfidentialSepa": "Գաղտնի SEPA"
 }

@@ -4,8 +4,6 @@ class RecipientFilterCriteria {
   final bool? isOwner;
   final List<RecipientType> types;
 
-  const RecipientFilterCriteria({
-    this.isOwner,
-    this.types = RecipientType.values,
-  });
+  RecipientFilterCriteria({this.isOwner, List<RecipientType>? types})
+    : types = types ?? RecipientType.standardTypes;
 }

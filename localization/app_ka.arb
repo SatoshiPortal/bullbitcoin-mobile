@@ -3750,5 +3750,6 @@
   "limitOrdersFundAccount": "შეავსეთ თქვენი ანგარიში",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 გარიგება} other{{count} გარიგება}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 გარიგება ({currency})} other{{count} გარიგება ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "თქვენი ატვირთვის სტატუსის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
+  "exchangeSettingsErrorLoadingUploadStatus": "თქვენი ატვირთვის სტატუსის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA"
 }

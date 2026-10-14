@@ -4822,5 +4822,6 @@
   "limitOrdersFundAccount": "Talletus",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 kauppa} other{{count} kauppaa}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 kauppa ({currency})} other{{count} kauppaa ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Latauksesi tilaa ei voitu hakea. Yritä uudelleen."
+  "exchangeSettingsErrorLoadingUploadStatus": "Latauksesi tilaa ei voitu hakea. Yritä uudelleen.",
+  "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA"
 }

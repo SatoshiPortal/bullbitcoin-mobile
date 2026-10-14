@@ -11822,5 +11822,6 @@
   "limitOrdersFundAccount": "Χρηματοδότηση του λογαριασμού σας",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 συναλλαγή} other{{count} συναλλαγές}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 συναλλαγή ({currency})} other{{count} συναλλαγές ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Δεν ήταν δυνατή η φόρτωση της κατάστασης της μεταφόρτωσής σας. Παρακαλώ δοκιμάστε ξανά."
+  "exchangeSettingsErrorLoadingUploadStatus": "Δεν ήταν δυνατή η φόρτωση της κατάστασης της μεταφόρτωσής σας. Παρακαλώ δοκιμάστε ξανά.",
+  "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA"
 }

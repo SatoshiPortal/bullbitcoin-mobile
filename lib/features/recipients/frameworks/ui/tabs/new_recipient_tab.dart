@@ -145,7 +145,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           RecipientType.nequiColombia => NequiCopForm(
             hookError: widget.hookError,
           ),
-          null => const SizedBox.shrink(),
+          RecipientType.confidentialSepaEur || null => const SizedBox.shrink(),
         },
       ],
     );

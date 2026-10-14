@@ -15495,5 +15495,9 @@
   "exchangeSettingsErrorLoadingUploadStatus": "Your upload status could not be loaded. Please try again.",
   "@exchangeSettingsErrorLoadingUploadStatus": {
     "description": "exchange_settings user-facing failure message when the secure file upload status cannot be loaded"
+  },
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "@recipientsTypeConfidentialSepa": {
+    "description": "Recipient type label for a Confidential SEPA recipient"
   }
 }

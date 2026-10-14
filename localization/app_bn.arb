@@ -12026,5 +12026,6 @@
   "limitOrdersFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1টি লেনদেন} other{{count}টি লেনদেন}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1টি লেনদেন ({currency})} other{{count}টি লেনদেন ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "আপনার আপলোডের অবস্থা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+  "exchangeSettingsErrorLoadingUploadStatus": "আপনার আপলোডের অবস্থা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA"
 }

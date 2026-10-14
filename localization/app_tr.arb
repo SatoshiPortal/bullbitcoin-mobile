@@ -11822,5 +11822,6 @@
   "limitOrdersFundAccount": "Hesabınızı finanse edin",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 işlem} other{{count} işlem}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 işlem ({currency})} other{{count} işlem ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Yükleme durumunuz yüklenemedi. Lütfen tekrar deneyin."
+  "exchangeSettingsErrorLoadingUploadStatus": "Yükleme durumunuz yüklenemedi. Lütfen tekrar deneyin.",
+  "recipientsTypeConfidentialSepa": "Gizli SEPA"
 }

@@ -4831,5 +4831,6 @@
   "limitOrdersFundAccount": "Оберіть Ваш рахунок",
   "exchangeStatisticsTradeCountValue": "{count, plural, one{{count} угода} few{{count} угоди} many{{count} угод} other{{count} угоди}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, one{{count} угода ({currency})} few{{count} угоди ({currency})} many{{count} угод ({currency})} other{{count} угоди ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Не вдалося завантажити статус вашого вивантаження. Будь ласка, спробуйте ще раз."
+  "exchangeSettingsErrorLoadingUploadStatus": "Не вдалося завантажити статус вашого вивантаження. Будь ласка, спробуйте ще раз.",
+  "recipientsTypeConfidentialSepa": "Конфіденційний SEPA"
 }

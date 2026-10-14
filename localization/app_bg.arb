@@ -9929,5 +9929,6 @@
   "limitOrdersFundAccount": "Захрани сметката си",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 сделка} other{{count} сделки}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 сделка ({currency})} other{{count} сделки ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Статусът на качването ви не можа да бъде зареден. Моля, опитайте отново."
+  "exchangeSettingsErrorLoadingUploadStatus": "Статусът на качването ви не можа да бъде зареден. Моля, опитайте отново.",
+  "recipientsTypeConfidentialSepa": "Поверителен SEPA"
 }

@@ -3639,5 +3639,6 @@
   "limitOrdersFundAccount": "Weka fedha kwenye akaunti yako",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{biashara 1} other{biashara {count}}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{biashara 1 ({currency})} other{biashara {count} ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Hali ya upakiaji wako haikuweza kupakiwa. Tafadhali jaribu tena."
+  "exchangeSettingsErrorLoadingUploadStatus": "Hali ya upakiaji wako haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "recipientsTypeConfidentialSepa": "SEPA ya Siri"
 }

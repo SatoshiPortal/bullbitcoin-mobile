@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_details_model.freezed.dart';
@@ -38,6 +39,8 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? firstname,
     String? lastname,
     String? corporateName,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeToJson: false) String? virtualPayeeStatus,
     String? clabe,
     String? institutionCode,
     String? phone,
@@ -105,7 +108,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
 
-      RecipientType.sepaEur => () {
+      RecipientType.sepaEur || RecipientType.confidentialSepaEur => () {
         final d = details as SepaEurDetails;
         return RecipientDetailsModel(
           recipientTypeFiat: type.value,
@@ -261,6 +264,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       firstname: firstname,
       lastname: lastname,
       corporateName: corporateName,
+      virtualPayeeStatus: _virtualPayeeStatusFromApi(virtualPayeeStatus),
       clabe: clabe,
       institutionCode: institutionCode,
       phone: phone,
@@ -279,3 +283,10 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     return dto.toDomain();
   }
 }
+
+SepaVirtualPayeeStatus _virtualPayeeStatusFromApi(String? value) =>
+    switch (value?.toUpperCase()) {
+      null => SepaVirtualPayeeStatus.absent,
+      'ACTIVE' => SepaVirtualPayeeStatus.active,
+      _ => SepaVirtualPayeeStatus.pending,
+    };

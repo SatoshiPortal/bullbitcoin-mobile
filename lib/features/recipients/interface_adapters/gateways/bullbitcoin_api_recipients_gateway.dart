@@ -123,7 +123,10 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     try {
       final filters = <String, dynamic>{
         if (recipientTypes != null && recipientTypes.isNotEmpty)
-          'recipientTypeFiat': recipientTypes.map((t) => t.value).toList(),
+          'recipientTypeFiat': recipientTypes
+              .map((t) => t.value)
+              .toSet()
+              .toList(),
         'isOwner': ?isOwner,
         if (search != null && search.isNotEmpty) 'search': search,
       };
@@ -183,6 +186,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
             }
           })
           .whereType<Recipient>()
+          .expand((r) => _sepaRowsFor(r, recipientTypes))
           .toList();
       return Ok((recipients: recipients, totalRecipients: totalElements));
     } on Object catch (e, st) {
@@ -190,6 +194,30 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         _failureFrom(e, st, 'list fiat recipients', RecipientsLoadFailure.new),
       );
     }
+  }
+
+  /// The API returns one SEPA recipient for both payment routes, so this
+  /// decides which route its row shows:
+  /// - Regular SEPA requested, or no type filter: the regular row.
+  /// - Only Confidential SEPA requested: a confidential row, if the recipient
+  ///   already has a virtual payee or can activate one. Otherwise, no row.
+  Iterable<Recipient> _sepaRowsFor(
+    Recipient recipient,
+    List<RecipientType>? requestedTypes,
+  ) {
+    final details = recipient.details;
+    if (details is! SepaEurDetails) return [recipient];
+
+    final wantsRegular =
+        requestedTypes == null ||
+        requestedTypes.isEmpty ||
+        requestedTypes.contains(RecipientType.sepaEur);
+    if (wantsRegular) return [recipient];
+
+    final canBeConfidential =
+        details.hasVirtualPayee || details.canActivateVirtualPayee;
+    if (!canBeConfidential) return const [];
+    return [recipient.withDetails(details.asConfidential())];
   }
 
   @override

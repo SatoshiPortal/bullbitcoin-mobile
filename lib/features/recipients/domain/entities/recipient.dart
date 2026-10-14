@@ -58,6 +58,16 @@ class Recipient {
 
   RecipientType get type => details.type;
 
+  Recipient withDetails(RecipientDetails details) => Recipient._(
+    recipientId: recipientId,
+    userId: userId,
+    userNbr: userNbr,
+    isArchived: isArchived,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    details: details,
+  );
+
   String? get label => details.label;
   bool get isDefault => details.isDefault;
   bool? get isOwner => details.isOwner;

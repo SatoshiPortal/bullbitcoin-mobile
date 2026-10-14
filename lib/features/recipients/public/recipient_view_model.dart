@@ -73,6 +73,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         return null;
 
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         if (name != null && name!.isNotEmpty) return name!;
         if (firstname != null && lastname != null) {
           return '$firstname $lastname';

@@ -4870,5 +4870,6 @@
   "limitOrdersFundAccount": "Fina sua conta",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 transação} other{{count} transações}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 transação ({currency})} other{{count} transações ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Não foi possível carregar o estado do seu envio. Por favor, tente novamente."
+  "exchangeSettingsErrorLoadingUploadStatus": "Não foi possível carregar o estado do seu envio. Por favor, tente novamente.",
+  "recipientsTypeConfidentialSepa": "SEPA Confidencial"
 }

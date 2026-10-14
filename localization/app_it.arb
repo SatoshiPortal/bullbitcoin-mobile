@@ -4834,5 +4834,6 @@
   "limitOrdersFundAccount": "Finanziamento del tuo conto",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 operazione} other{{count} operazioni}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 operazione ({currency})} other{{count} operazioni ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Non è stato possibile caricare lo stato del tuo upload. Si prega di riprovare."
+  "exchangeSettingsErrorLoadingUploadStatus": "Non è stato possibile caricare lo stato del tuo upload. Si prega di riprovare.",
+  "recipientsTypeConfidentialSepa": "SEPA Riservato"
 }

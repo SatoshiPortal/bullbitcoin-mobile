@@ -11822,5 +11822,6 @@
   "limitOrdersFundAccount": "Fond vašeho účtu",
   "exchangeStatisticsTradeCountValue": "{count, plural, one{{count} obchod} few{{count} obchody} many{{count} obchodu} other{{count} obchodů}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, one{{count} obchod ({currency})} few{{count} obchody ({currency})} many{{count} obchodu ({currency})} other{{count} obchodů ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Stav vašeho nahrání se nepodařilo načíst. Zkuste to prosím znovu."
+  "exchangeSettingsErrorLoadingUploadStatus": "Stav vašeho nahrání se nepodařilo načíst. Zkuste to prosím znovu.",
+  "recipientsTypeConfidentialSepa": "Důvěrný SEPA"
 }

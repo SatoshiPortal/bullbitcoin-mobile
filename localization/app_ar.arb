@@ -11825,5 +11825,6 @@
   "limitOrdersFundAccount": "صندوق حسابك",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{صفقة واحدة} other{{count} صفقات}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{صفقة واحدة ({currency})} other{{count} صفقات ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "تعذر تحميل حالة الرفع الخاصة بك. يرجى المحاولة مرة أخرى."
+  "exchangeSettingsErrorLoadingUploadStatus": "تعذر تحميل حالة الرفع الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "recipientsTypeConfidentialSepa": "SEPA السري"
 }

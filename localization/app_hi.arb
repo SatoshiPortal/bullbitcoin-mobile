@@ -12009,5 +12009,6 @@
   "limitOrdersFundAccount": "अपने खाते को फंड करें",
   "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 ट्रेड} other{{count} ट्रेड}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 ट्रेड ({currency})} other{{count} ट्रेड ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "आपके अपलोड की स्थिति लोड नहीं हो सकी। कृपया पुनः प्रयास करें।"
+  "exchangeSettingsErrorLoadingUploadStatus": "आपके अपलोड की स्थिति लोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
+  "recipientsTypeConfidentialSepa": "गोपनीय SEPA"
 }

@@ -4840,5 +4840,6 @@
   "limitOrdersFundAccount": "Фонд вашего счета",
   "exchangeStatisticsTradeCountValue": "{count, plural, one{{count} сделка} few{{count} сделки} many{{count} сделок} other{{count} сделки}}",
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, one{{count} сделка ({currency})} few{{count} сделки ({currency})} many{{count} сделок ({currency})} other{{count} сделки ({currency})}}",
-  "exchangeSettingsErrorLoadingUploadStatus": "Не удалось загрузить статус вашей загрузки. Пожалуйста, попробуйте снова."
+  "exchangeSettingsErrorLoadingUploadStatus": "Не удалось загрузить статус вашей загрузки. Пожалуйста, попробуйте снова.",
+  "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA"
 }
