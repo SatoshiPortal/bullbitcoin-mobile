@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullViewerActionButton, Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 enum _TransactionNetwork { bitcoin, liquid }
@@ -141,8 +140,9 @@ class TransactionViewer extends StatelessWidget {
   }
 
   void _showDetailDialog(BuildContext context) {
-    BlurredDialog.show(
+    BullDialog.show(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _TransactionDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
@@ -200,7 +200,7 @@ class _TransactionDetailSheet extends StatelessWidget {
   }
 
   Widget _buildCopyAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.copy,
       label: context.loc.viewerTapToCopy,
       onTap: () {
@@ -212,7 +212,7 @@ class _TransactionDetailSheet extends StatelessWidget {
   }
 
   Widget _buildCopyLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.link,
       label: context.loc.viewerCopyLink,
       onTap: () async {
@@ -227,7 +227,7 @@ class _TransactionDetailSheet extends StatelessWidget {
   }
 
   Widget _buildOpenLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.open_in_new,
       label: context.loc.viewerViewInExplorer,
       onTap: () async {

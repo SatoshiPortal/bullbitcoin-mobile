@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDialPad, BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ChoosePinCodeScreen extends StatelessWidget {
@@ -119,7 +118,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: DialPad(
+              child: BullDialPad(
                 onNumberPressed: (value) => context
                     .read<PinCodeSettingBloc>()
                     .add(PinCodeSettingPinCodeNumberAdded(int.parse(value))),

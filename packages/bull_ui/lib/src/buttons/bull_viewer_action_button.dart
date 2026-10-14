@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
 /// Compact icon+label action used inside detail dialogs (Copy, Open in
-/// explorer, …) — duplicated from `core/widgets/viewer_action_button.dart`
-/// (`ViewerActionButton`).
+/// explorer, …).
 ///
 /// Wrapped in an [InkWell] with a 44dp minimum touch target.
 class BullViewerActionButton extends StatelessWidget {
@@ -42,7 +41,7 @@ class BullViewerActionButton extends StatelessWidget {
               const Gap(4),
               BullText(
                 label,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodySmall,
                 color: colors.secondary,
               ),
             ],

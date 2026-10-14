@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullViewerActionButton, Gap;
 
 /// Displays a Lightning invoice truncated to fit the available width.
 ///
@@ -104,8 +103,9 @@ class InvoiceViewer extends StatelessWidget {
     required String data,
     String? clipboardText,
   }) {
-    return BlurredDialog.show<void>(
+    return BullDialog.show<void>(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _InvoiceDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
@@ -149,7 +149,7 @@ class _InvoiceDetailSheet extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const Gap(24),
-          ViewerActionButton(
+          BullViewerActionButton(
             icon: Icons.copy,
             label: context.loc.viewerTapToCopy,
             onTap: () {

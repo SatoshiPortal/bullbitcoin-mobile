@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_account_cop_form.dart';
@@ -21,7 +20,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_ty
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class NewRecipientTab extends StatefulWidget {
   const NewRecipientTab({this.hookError, super.key});
@@ -64,7 +63,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollableColumn(
+    return BullScrollableColumn(
       // Padding is already handled by the parent widget
       padding: EdgeInsets.zero,
       crossAxisAlignment: .start,

@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
@@ -25,7 +24,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +73,7 @@ class WalletDetailScreen extends StatelessWidget {
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: Builder(
-                builder: (context) => BBPullableBody(
+                builder: (context) => BullPullableBody(
                   onRefresh: () async {
                     context.read<BitcoinPriceBloc>().add(
                       const BitcoinPriceFetched(),

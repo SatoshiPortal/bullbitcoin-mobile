@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
+import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -176,7 +176,7 @@ void main() {
 
       await tester.pumpWidget(_buildPage(cubit));
 
-      expect(find.byType(LabeledTextInput), findsNWidgets(2));
+      expect(find.byType(BullLabeledTextInput), findsNWidgets(2));
     });
 
     testWidgets('the URL inputs stay on one line', (tester) async {
@@ -185,8 +185,8 @@ void main() {
       await tester.pumpWidget(_buildPage(cubit));
 
       // Left unbounded the fields wrap and grow as the URL gets longer.
-      final inputs = tester.widgetList<LabeledTextInput>(
-        find.byType(LabeledTextInput),
+      final inputs = tester.widgetList<BullLabeledTextInput>(
+        find.byType(BullLabeledTextInput),
       );
       expect(inputs.map((input) => input.maxLines), everyElement(1));
     });
@@ -200,7 +200,7 @@ void main() {
 
       await tester.pumpWidget(_buildPage(cubit));
       expect(
-        find.widgetWithText(LabeledTextInput, 'http://b.default'),
+        find.widgetWithText(BullLabeledTextInput, 'http://b.default'),
         findsNothing,
       );
 
@@ -215,11 +215,11 @@ void main() {
       await tester.pump();
 
       expect(
-        find.widgetWithText(LabeledTextInput, 'http://b.default'),
+        find.widgetWithText(BullLabeledTextInput, 'http://b.default'),
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(LabeledTextInput, 'tcp://e.default:1'),
+        find.widgetWithText(BullLabeledTextInput, 'tcp://e.default:1'),
         findsOneWidget,
       );
     });
@@ -237,7 +237,7 @@ void main() {
 
       await tester.pumpWidget(_buildPage(cubit));
       expect(
-        find.widgetWithText(LabeledTextInput, 'http://regtest.blindbit'),
+        find.widgetWithText(BullLabeledTextInput, 'http://regtest.blindbit'),
         findsOneWidget,
       );
 
@@ -253,11 +253,11 @@ void main() {
       await tester.pump();
 
       expect(
-        find.widgetWithText(LabeledTextInput, 'http://regtest.blindbit'),
+        find.widgetWithText(BullLabeledTextInput, 'http://regtest.blindbit'),
         findsNothing,
       );
       expect(
-        find.widgetWithText(LabeledTextInput, 'http://bitcoin.blindbit'),
+        find.widgetWithText(BullLabeledTextInput, 'http://bitcoin.blindbit'),
         findsOneWidget,
       );
     });
@@ -348,7 +348,7 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      final field = find.widgetWithText(LabeledTextInput, 'Blindbit URL');
+      final field = find.widgetWithText(BullLabeledTextInput, 'Blindbit URL');
       expect(field, findsOneWidget);
       await tester.enterText(field, 'http://typed.blindbit');
 
@@ -362,7 +362,7 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      final field = find.widgetWithText(LabeledTextInput, 'Electrum URL');
+      final field = find.widgetWithText(BullLabeledTextInput, 'Electrum URL');
       expect(field, findsOneWidget);
       await tester.enterText(field, 'tcp://typed.electrum:50001');
 

@@ -2,9 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/template/screen_template.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullStackedPage, Gap;
 
 /// A screen that handles three states: loading, success, and error
 class StatusScreen extends StatelessWidget {
@@ -33,7 +32,7 @@ class StatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appColors.surface,
-      body: StackedPage(
+      body: BullStackedPage(
         bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(
                 label:

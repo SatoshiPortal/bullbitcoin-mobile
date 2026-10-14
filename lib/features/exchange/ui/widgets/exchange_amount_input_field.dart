@@ -3,10 +3,9 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAmountInputFormatter, Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
@@ -81,7 +80,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                             decimal: true,
                           ),
                           inputFormatters: [
-                            AmountInputFormatter(inputCurrency),
+                            BullAmountInputFormatter(inputCurrency),
                           ],
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.primary,

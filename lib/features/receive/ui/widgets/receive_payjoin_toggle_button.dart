@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
@@ -11,6 +9,7 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch;
 
 /// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
 /// receive address (product decision 2026-07-25 — previously a TopBar chip).
@@ -55,7 +54,7 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
       },
       child: Padding(
         padding: EdgeInsets.only(top: topGap / 2),
-        child: BorderedTappableTile(
+        child: BullBorderedTile(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
           backgroundColor: context.appColors.surfaceContainerHighest,
           onLongPress: () =>
@@ -69,7 +68,7 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
                   color: context.appColors.secondary,
                 ),
               ),
-              BBSwitch(
+              BullSwitch(
                 value: enabled,
                 onChanged: (value) {
                   context.read<ReceiveBloc>().add(

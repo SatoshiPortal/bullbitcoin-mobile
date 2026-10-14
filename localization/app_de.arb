@@ -996,7 +996,7 @@
   },
   "broadcastSignedTxReviewTransaction": "Transaktion überprüfen",
   "importQrDeviceKeystoneStep5": "Wählen Sie „BULL“ aus der Liste der Wallets",
-  "electrumLoadFailedError": "Server konnte nicht geladen werden:.",
+  "electrumLoadFailedError": "Server konnten nicht geladen werden.",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -4584,7 +4584,7 @@
   "sendSwapExpiredMessage": "Dieser Auftrag ist abgelaufen, bevor Guthaben gesendet wurde. Aus Ihrer Wallet wurde nichts gesendet.",
   "torSettingsStatusCensored": "Verbindung scheint gefiltert",
   "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
-  "torSettingsBootstrapProgress": "Verbindung wird hergestellt … {percent} %",
+  "torSettingsBootstrapProgress": "Verbindung wird hergestellt… {percent} %",
   "recoverbullPhaseNetworkInfo": "Netzwerkinformationen werden abgerufen",
   "recoverbullLongestStep": "Dies ist der längste Schritt. Der erste Start kann länger als eine Minute dauern.",
   "recoverbullTorOffline": "Es scheint keine Internetverbindung zu bestehen.",
@@ -4616,7 +4616,7 @@
   "announcementAppUpdateRequiredTitle": "BULL aktualisieren",
   "announcementAppUpdateRequiredDescription": "Um Lightning-Zahlungen und den Swap-Dienst zu nutzen, aktualisieren Sie die BULL-App bitte auf die neue Version.",
   "mempoolErrorNetworkMismatch": "Dieser Server verwendet ein anderes Bitcoin-Netzwerk.",
-  "transactionPayjoinFallbackProcessing": "Wird als reguläre Transaktion verarbeitet …",
+  "transactionPayjoinFallbackProcessing": "Wird als reguläre Transaktion verarbeitet…",
   "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
   "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
   "mnemonicShuffleKeyboardHint": "Tasten und Wortvorschläge bei jedem Tippen neu anordnen",
@@ -4902,8 +4902,8 @@
   "withdrawOrderAlreadyConfirmedError": "Diese Auszahlungsorder wurde bereits bestätigt.",
   "sendErrorAddressNetworkMismatch": "Diese Adresse gehört zu einem anderen Netzwerk als Ihre Wallet.",
   "transactionListPending": "Ausstehend",
-  "spFailureRequiresSuperuser": "Silent Payments erfordert den Superuser-Modus.",
-  "spFailureRequiresDevMode": "Silent Payments erfordert den Entwicklermodus.",
+  "spFailureRequiresSuperuser": "Für Silent Payments ist der Superuser-Modus erforderlich.",
+  "spFailureRequiresDevMode": "Für Silent Payments ist der Entwicklermodus erforderlich.",
   "spFailureNotSetUp": "Ihre Silent-Payments-Wallet ist nicht eingerichtet.",
   "spFailureAlreadySetUp": "Eine Silent-Payments-Wallet ist bereits eingerichtet.",
   "spFailureSessionBusy": "Die Silent-Payments-Wallet ist beschäftigt. Bitte versuchen Sie es erneut.",
@@ -5010,8 +5010,6 @@
   "spDeleteWalletEntry": "Silent-Payments-Wallet löschen",
   "spDeleteWalletTitle": "Silent-Payments-Wallet löschen?",
   "spDeleteWalletContent": "Dadurch wird die lokale Silent-Payments-Wallet entfernt und ihr Geheimnis widerrufen.",
-  "spBackendOnline": "Server online",
-  "spBackendOffline": "Server offline",
   "spNotificationsDebug": "Benachrichtigungen (Debug)",
   "spClearButton": "Löschen",
   "spNoNotifications": "Noch keine Benachrichtigungen.",
@@ -5041,5 +5039,8 @@
   "settingsDevModeSpRevokeFailed": "Die Silent-Payments-Wallet konnte nicht vollständig gelöscht werden. Sie wurde deaktiviert und kann nicht erneut geladen werden. Deaktivieren Sie den Entwicklermodus erneut, um einen weiteren Versuch zu starten.",
   "limitOrdersInsufficientBalance": "Unzureichendes Guthaben",
   "limitOrdersInsufficientBalanceMessage": "Sie haben nicht genug Guthaben, um diese Bestellung zu erstellen.",
-  "limitOrdersFundAccount": "Konto aufladen"
+  "limitOrdersFundAccount": "Konto aufladen",
+  "spBlindbitBehindWarning": "{count, plural, =1{Der Scan-Server liegt einen Block hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.} other{Der Scan-Server liegt {count} Blöcke hinter dem aktuellen Stand der Blockchain. Neuere Zahlungen werden möglicherweise erst angezeigt, wenn der Server aufgeholt hat.}}",
+  "spHeaderValidationInvalidChain": "Electrum-Server liefert eine falsche Blockchain",
+  "spHeaderValidationInvalidChainDetail": "Dieser Server folgt nicht der echten Bitcoin-Blockchain. Wechseln Sie in den Einstellungen zu einem anderen Electrum-Server."
 }

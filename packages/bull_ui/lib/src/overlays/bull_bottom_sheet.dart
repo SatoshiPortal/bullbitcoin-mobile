@@ -26,7 +26,7 @@ class BullBottomSheet extends StatelessWidget {
       isDismissible: isDismissible,
       useSafeArea: true,
       backgroundColor: colors.surface,
-      barrierColor: colors.text.withValues(alpha: 0.4),
+      barrierColor: colors.surface.withAlpha(100),
       // The sheet owns the shape and clips its content to it, so a child's
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,

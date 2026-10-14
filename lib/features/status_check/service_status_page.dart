@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:bb_mobile/features/status_check/presentation/status_check_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody;
 
 class ServiceStatusPage extends StatefulWidget {
   const ServiceStatusPage({super.key});
@@ -37,7 +37,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           final serviceStatus = state.serviceStatus;
           final cubit = context.read<ServiceStatusCubit>();
 
-          return BBPullableBody(
+          return BullPullableBody(
             indicatorKey: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
             slivers: [

@@ -11,9 +11,7 @@ import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -23,7 +21,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullScrollableColumn, BullSwitch, Gap;
 
 class SellSendPaymentScreen extends StatelessWidget {
   const SellSendPaymentScreen({super.key});
@@ -65,7 +64,7 @@ class SellSendPaymentScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: ScrollableColumn(
+        child: BullScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           children: [
             FadingLinearProgress(
@@ -194,7 +193,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                       style: context.font.bodyMedium,
                     ),
                   ),
-                  BBSwitch(
+                  BullSwitch(
                     value: isPayjoinEnabled,
                     onChanged: isConfirmingPayment
                         ? null
