@@ -58,12 +58,15 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     final isEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isPayjoinEnabled(action),
     );
+    final isLoaded = context.select(
+      (SettingsCubit cubit) => cubit.state.payjoinPolicy != null,
+    );
     return Row(
       children: [
         Expanded(child: BBText(label, style: context.font.bodyLarge)),
         BullSwitch(
           value: isEnabled,
-          onChanged: _updating
+          onChanged: _updating || !isLoaded
               ? null
               : (enabled) => _setPayjoinEnabled(action, enabled),
         ),

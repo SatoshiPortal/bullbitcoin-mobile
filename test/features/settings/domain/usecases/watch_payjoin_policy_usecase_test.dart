@@ -15,7 +15,7 @@ void main() {
     expect(policy.sessionLifetime, PayjoinPolicy.defaults().sessionLifetime);
     expect(policy.receiveEnabled, isFalse);
     expect(policy.sendEnabled, isFalse);
-    expect(policy.buyEnabled, isTrue);
-    expect(policy.sellEnabled, isTrue);
+    expect(policy.buyEnabled, isFalse);
+    expect(policy.sellEnabled, isFalse);
   });
 }
