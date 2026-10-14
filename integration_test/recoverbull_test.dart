@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -66,6 +68,13 @@ Future<void> main({bool isInitialized = false}) async {
     Network.bitcoinMainnet,
   );
 
+  // The restore test calls the production key server over Tor, so an outage
+  // there would fail every PR. In CI it runs only on PRs to main and manual
+  // runs; local runs always exercise it.
+  final runLiveKeyServerTest =
+      Platform.environment['CI'] != 'true' ||
+      Platform.environment['RUN_LIVE_KEYSERVER_TEST'] == 'true';
+
   setUpAll(() async {
     final state = await ensureTorReadyUsecase.execute();
     expect(state, isA<TorReady>());
@@ -78,6 +87,9 @@ Future<void> main({bool isInitialized = false}) async {
     test(
       'Restore encrypted vault',
       timeout: const Timeout(Duration(minutes: 2)),
+      skip: runLiveKeyServerTest
+          ? false
+          : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
       () async {
         debugPrint('''
 
