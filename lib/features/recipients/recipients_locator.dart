@@ -7,11 +7,15 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_preferred
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
 import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
@@ -52,6 +56,18 @@ class RecipientsLocator {
           http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
         ),
         testnetDatasource: BullbitcoinApiVirtualIbanDatasource(
+          http: locator<Dio>(
+            instanceName: 'authenticatedBullBitcoinApiTestClient',
+          ),
+        ),
+      ),
+    );
+    locator.registerLazySingleton<SepaVirtualPayeeRepository>(
+      () => SepaVirtualPayeeRepositoryImpl(
+        mainnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
+          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
+        ),
+        testnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
           http: locator<Dio>(
             instanceName: 'authenticatedBullBitcoinApiTestClient',
           ),
@@ -103,6 +119,13 @@ class RecipientsLocator {
     locator.registerFactory<WatchVirtualIbanUsecase>(
       () => WatchVirtualIbanUsecase(
         virtualIbanRepository: locator<VirtualIbanRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
+      ),
+    );
+    locator.registerFactory<WatchSepaVirtualPayeeActivationUsecase>(
+      () => WatchSepaVirtualPayeeActivationUsecase(
+        sepaVirtualPayeeRepository: locator<SepaVirtualPayeeRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
