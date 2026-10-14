@@ -3631,5 +3631,12 @@
   "recipientsTypeConfidentialSepa": "SEPA Bảo mật",
   "recipientsTypeConfidentialSepa": "SEPA Bảo mật",
   "recipientsErrorVirtualIbanNotAvailable": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
-  "recipientsErrorEuResidencyRequired": "Bạn cần là cư dân của Liên minh Châu Âu để kích hoạt SEPA bảo mật."
+  "recipientsErrorEuResidencyRequired": "Bạn cần là cư dân của Liên minh Châu Âu để kích hoạt SEPA bảo mật.",
+  "recipientsConfidentialSepaActivatingTitle": "Đang kích hoạt người nhận",
+  "recipientsConfidentialSepaActivatingDescription": "Người nhận của bạn đang được kích hoạt cho SEPA Bảo mật. Quá trình này có thể mất vài phút.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Người nhận chưa được kích hoạt cho SEPA Bảo mật",
+  "recipientsConfidentialSepaNotActivatedDescription": "Người nhận này chưa được kích hoạt cho SEPA Bảo mật. Chúng tôi đang kích hoạt ngay bây giờ. Quá trình này có thể mất vài phút. Trong thời gian chờ, bạn có thể sử dụng SEPA Tức thì và Thông thường.",
+  "recipientsConfidentialSepaActivatedTitle": "Đã kích hoạt người nhận",
+  "recipientsConfidentialSepaActivatedDescription": "Người nhận của bạn hiện đã được kích hoạt cho SEPA Bảo mật.",
+  "recipientsConfidentialSepaUseRegularSepa": "Sử dụng SEPA Tức thì và Thông thường thay thế"
 }

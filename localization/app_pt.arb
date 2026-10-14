@@ -4874,5 +4874,12 @@
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsErrorVirtualIbanNotAvailable": "Você não tem as permissões necessárias para aceder a esta opção de financiamento. Ou o seu KYC é insuficiente ou esta opção não está disponível para a sua conta",
-  "recipientsErrorEuResidencyRequired": "Precisa de ser residente na União Europeia para ativar o SEPA confidencial."
+  "recipientsErrorEuResidencyRequired": "Precisa de ser residente na União Europeia para ativar o SEPA confidencial.",
+  "recipientsConfidentialSepaActivatingTitle": "A ativar destinatário",
+  "recipientsConfidentialSepaActivatingDescription": "O seu destinatário está a ser ativado para o SEPA Confidencial. Isto pode demorar alguns minutos.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Destinatário não ativado para o SEPA Confidencial",
+  "recipientsConfidentialSepaNotActivatedDescription": "Este destinatário ainda não está ativado para o SEPA Confidencial. Estamos a ativá-lo agora. Isto pode demorar alguns minutos. Entretanto, pode utilizar o SEPA Instantâneo e Normal.",
+  "recipientsConfidentialSepaActivatedTitle": "Destinatário ativado",
+  "recipientsConfidentialSepaActivatedDescription": "O seu destinatário está agora ativo para o SEPA Confidencial.",
+  "recipientsConfidentialSepaUseRegularSepa": "Utilizar o SEPA Instantâneo e Normal em alternativa"
 }

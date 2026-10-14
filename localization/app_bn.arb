@@ -12030,5 +12030,12 @@
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং অপশনে অ্যাক্সেস করার জন্য আপনার প্রয়োজনীয় অনুমতি নেই। হয় আপনার KYC অপর্যাপ্ত, নয়তো এই অপশন আপনার অ্যাকাউন্টের জন্য উপলব্ধ নয়",
-  "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্রিয় করতে আপনাকে ইউরোপীয় ইউনিয়নের বাসিন্দা হতে হবে।"
+  "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্রিয় করতে আপনাকে ইউরোপীয় ইউনিয়নের বাসিন্দা হতে হবে।",
+  "recipientsConfidentialSepaActivatingTitle": "প্রাপক সক্রিয় করা হচ্ছে",
+  "recipientsConfidentialSepaActivatingDescription": "আপনার প্রাপককে গোপনীয় SEPA-এর জন্য সক্রিয় করা হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।",
+  "recipientsConfidentialSepaNotActivatedTitle": "প্রাপক গোপনীয় SEPA-এর জন্য সক্রিয় করা হয়নি",
+  "recipientsConfidentialSepaNotActivatedDescription": "এই প্রাপককে এখনও গোপনীয় SEPA-এর জন্য সক্রিয় করা হয়নি। আমরা এখন এটি সক্রিয় করছি। এতে কয়েক মিনিট সময় লাগতে পারে। এর পরিবর্তে আপনি ইনস্ট্যান্ট ও রেগুলার SEPA ব্যবহার করতে পারেন।",
+  "recipientsConfidentialSepaActivatedTitle": "প্রাপক সক্রিয় করা হয়েছে",
+  "recipientsConfidentialSepaActivatedDescription": "আপনার প্রাপক এখন গোপনীয় SEPA-এর জন্য সক্রিয়।",
+  "recipientsConfidentialSepaUseRegularSepa": "এর পরিবর্তে ইনস্ট্যান্ট ও রেগুলার SEPA ব্যবহার করুন"
 }

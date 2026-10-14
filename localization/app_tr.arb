@@ -11826,5 +11826,12 @@
   "recipientsTypeConfidentialSepa": "Gizli SEPA",
   "recipientsTypeConfidentialSepa": "Gizli SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
-  "recipientsErrorEuResidencyRequired": "Gizli SEPA'yı etkinleştirmek için Avrupa Birliği'nde ikamet ediyor olmanız gerekir."
+  "recipientsErrorEuResidencyRequired": "Gizli SEPA'yı etkinleştirmek için Avrupa Birliği'nde ikamet ediyor olmanız gerekir.",
+  "recipientsConfidentialSepaActivatingTitle": "Alıcı etkinleştiriliyor",
+  "recipientsConfidentialSepaActivatingDescription": "Alıcınız Gizli SEPA için etkinleştiriliyor. Bu işlem birkaç dakika sürebilir.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Alıcı Gizli SEPA için etkinleştirilmedi",
+  "recipientsConfidentialSepaNotActivatedDescription": "Bu alıcı henüz Gizli SEPA için etkinleştirilmedi. Şimdi etkinleştiriyoruz. Bu işlem birkaç dakika sürebilir. Bunun yerine Anında ve Normal SEPA'yı kullanabilirsiniz.",
+  "recipientsConfidentialSepaActivatedTitle": "Alıcı etkinleştirildi",
+  "recipientsConfidentialSepaActivatedDescription": "Alıcınız artık Gizli SEPA için etkin.",
+  "recipientsConfidentialSepaUseRegularSepa": "Bunun yerine Anında ve Normal SEPA kullan"
 }

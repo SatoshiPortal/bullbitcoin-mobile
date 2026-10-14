@@ -9197,5 +9197,12 @@
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং বিকল্পত প্ৰৱেশ কৰিবলৈ আপোনাৰ প্ৰয়োজনীয় অনুমতি নাই। আপোনাৰ KYC অপৰ্যাপ্ত নাইবা এই বিকল্প আপোনাৰ একাউণ্টৰ বাবে উপলব্ধ নহয়",
-  "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্ৰিয় কৰিবলৈ আপুনি ইউৰোপীয় সংঘৰ বাসিন্দা হ'ব লাগিব।"
+  "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্ৰিয় কৰিবলৈ আপুনি ইউৰোপীয় সংঘৰ বাসিন্দা হ'ব লাগিব।",
+  "recipientsConfidentialSepaActivatingTitle": "প্ৰাপক সক্ৰিয় কৰি থকা হৈছে",
+  "recipientsConfidentialSepaActivatingDescription": "আপোনাৰ প্ৰাপকক গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰি থকা হৈছে। ইয়াত কেইমিনিটমান সময় লাগিব পাৰে।",
+  "recipientsConfidentialSepaNotActivatedTitle": "প্ৰাপক গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰা হোৱা নাই",
+  "recipientsConfidentialSepaNotActivatedDescription": "এই প্ৰাপকক এতিয়াও গোপনীয় SEPA-ৰ বাবে সক্ৰিয় কৰা হোৱা নাই। আমি এতিয়া ইয়াক সক্ৰিয় কৰি আছোঁ। ইয়াত কেইমিনিটমান সময় লাগিব পাৰে। ইয়াৰ পৰিৱৰ্তে আপুনি তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰিব পাৰে।",
+  "recipientsConfidentialSepaActivatedTitle": "প্ৰাপক সক্ৰিয় কৰা হৈছে",
+  "recipientsConfidentialSepaActivatedDescription": "আপোনাৰ প্ৰাপক এতিয়া গোপনীয় SEPA-ৰ বাবে সক্ৰিয় হৈছে।",
+  "recipientsConfidentialSepaUseRegularSepa": "ইয়াৰ পৰিৱৰ্তে তৎক্ষণাৎ আৰু নিয়মীয়া SEPA ব্যৱহাৰ কৰক"
 }

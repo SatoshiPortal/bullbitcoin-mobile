@@ -4844,5 +4844,12 @@
   "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",
   "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "У вас нет необходимых разрешений для доступа к этому способу пополнения. Либо ваш KYC недостаточен, либо этот способ недоступен для вашего аккаунта",
-  "recipientsErrorEuResidencyRequired": "Чтобы активировать конфиденциальный SEPA, вы должны быть резидентом Европейского союза."
+  "recipientsErrorEuResidencyRequired": "Чтобы активировать конфиденциальный SEPA, вы должны быть резидентом Европейского союза.",
+  "recipientsConfidentialSepaActivatingTitle": "Активация получателя",
+  "recipientsConfidentialSepaActivatingDescription": "Ваш получатель активируется для Конфиденциального SEPA. Это может занять несколько минут.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Получатель не активирован для Конфиденциального SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Этот получатель ещё не активирован для Конфиденциального SEPA. Сейчас мы его активируем. Это может занять несколько минут. Пока вы можете использовать Мгновенный и обычный SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Получатель активирован",
+  "recipientsConfidentialSepaActivatedDescription": "Ваш получатель теперь активен для Конфиденциального SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Использовать Мгновенный и обычный SEPA вместо этого"
 }

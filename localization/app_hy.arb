@@ -3631,5 +3631,12 @@
   "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
   "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",
-  "recipientsErrorEuResidencyRequired": "Գաղտնի SEPA-ն ակտիվացնելու համար դուք պետք է լինեք Եվրոպական միության բնակիչ։"
+  "recipientsErrorEuResidencyRequired": "Գաղտնի SEPA-ն ակտիվացնելու համար դուք պետք է լինեք Եվրոպական միության բնակիչ։",
+  "recipientsConfidentialSepaActivatingTitle": "Ստացողի ակտիվացում",
+  "recipientsConfidentialSepaActivatingDescription": "Ձեր ստացողն ակտիվացվում է Գաղտնի SEPA-ի համար։ Սա կարող է տևել մի քանի րոպե։",
+  "recipientsConfidentialSepaNotActivatedTitle": "Ստացողը ակտիվացված չէ Գաղտնի SEPA-ի համար",
+  "recipientsConfidentialSepaNotActivatedDescription": "Այս ստացողը դեռ ակտիվացված չէ Գաղտնի SEPA-ի համար։ Մենք այն այժմ ակտիվացնում ենք։ Սա կարող է տևել մի քանի րոպե։ Փոխարենը կարող եք օգտագործել Ակնթարթային և սովորական SEPA։",
+  "recipientsConfidentialSepaActivatedTitle": "Ստացողն ակտիվացված է",
+  "recipientsConfidentialSepaActivatedDescription": "Ձեր ստացողն այժմ ակտիվ է Գաղտնի SEPA-ի համար։",
+  "recipientsConfidentialSepaUseRegularSepa": "Փոխարենը օգտագործեք Ակնթարթային և սովորական SEPA"
 }

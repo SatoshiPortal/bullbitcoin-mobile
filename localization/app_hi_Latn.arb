@@ -12208,5 +12208,12 @@
   "recipientsTypeConfidentialSepa": "Confidential SEPA",
   "recipientsTypeConfidentialSepa": "Confidential SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Is funding option tak pahunchne ke liye aapke paas zaroori permissions nahin hain. Ya to aapka KYC aparyaapt hai ya yeh option aapke account ke liye uplabdh nahin hai",
-  "recipientsErrorEuResidencyRequired": "Confidential SEPA activate karne ke liye aapko European Union ka nivasi hona zaroori hai."
+  "recipientsErrorEuResidencyRequired": "Confidential SEPA activate karne ke liye aapko European Union ka nivasi hona zaroori hai.",
+  "recipientsConfidentialSepaActivatingTitle": "Recipient activate ho raha hai",
+  "recipientsConfidentialSepaActivatingDescription": "Aapka recipient Confidential SEPA ke liye activate kiya ja raha hai. Isme kuch minute lag sakte hain.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Recipient Confidential SEPA ke liye activate nahi hai",
+  "recipientsConfidentialSepaNotActivatedDescription": "Yeh recipient abhi tak Confidential SEPA ke liye activate nahi hua hai. Hum ise abhi activate kar rahe hain. Isme kuch minute lag sakte hain. Iske bajaye aap Instant aur Regular SEPA use kar sakte hain.",
+  "recipientsConfidentialSepaActivatedTitle": "Recipient activate ho gaya",
+  "recipientsConfidentialSepaActivatedDescription": "Aapka recipient ab Confidential SEPA ke liye active hai.",
+  "recipientsConfidentialSepaUseRegularSepa": "Iske bajaye Instant aur Regular SEPA use karein"
 }

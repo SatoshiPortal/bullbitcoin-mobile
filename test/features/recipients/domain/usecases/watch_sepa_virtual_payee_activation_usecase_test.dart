@@ -102,6 +102,7 @@ void main() {
 
     expect(repository.activations, 1);
     expect(statuses(events), [
+      SepaVirtualPayeeStatus.absent,
       SepaVirtualPayeeStatus.pending,
       SepaVirtualPayeeStatus.active,
     ]);
@@ -129,7 +130,12 @@ void main() {
 
     final events = await run(repository);
 
-    expect(events, hasLength(1));
+    expect(events, hasLength(2));
+    expect(
+      (events.first as Ok<SepaVirtualPayeeStatus, RecipientsFailure>).value,
+      SepaVirtualPayeeStatus.absent,
+    );
+    expect(events.last, isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>());
     expect(repository.finds, 1);
   });
 

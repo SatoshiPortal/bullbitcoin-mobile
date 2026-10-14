@@ -4838,5 +4838,12 @@
   "recipientsTypeConfidentialSepa": "保密 SEPA",
   "recipientsTypeConfidentialSepa": "保密 SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "您没有访问此充值选项所需的权限。您的 KYC 可能不足，或此选项不适用于您的账户",
-  "recipientsErrorEuResidencyRequired": "您需要是欧盟居民才能激活保密 SEPA。"
+  "recipientsErrorEuResidencyRequired": "您需要是欧盟居民才能激活保密 SEPA。",
+  "recipientsConfidentialSepaActivatingTitle": "正在激活收件人",
+  "recipientsConfidentialSepaActivatingDescription": "正在为保密 SEPA 激活您的收件人。这可能需要几分钟。",
+  "recipientsConfidentialSepaNotActivatedTitle": "收件人尚未激活保密 SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "此收件人尚未激活保密 SEPA。我们正在激活中。这可能需要几分钟。您可以改用即时和常规 SEPA。",
+  "recipientsConfidentialSepaActivatedTitle": "收件人已激活",
+  "recipientsConfidentialSepaActivatedDescription": "您的收件人现已激活保密 SEPA。",
+  "recipientsConfidentialSepaUseRegularSepa": "改用即时和常规 SEPA"
 }

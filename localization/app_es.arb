@@ -4835,5 +4835,12 @@
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsErrorVirtualIbanNotAvailable": "No tienes los permisos necesarios para acceder a esta opción de fondeo. Tu KYC es insuficiente o esta opción no está disponible para tu cuenta",
-  "recipientsErrorEuResidencyRequired": "Debes ser residente de la Unión Europea para activar SEPA confidencial."
+  "recipientsErrorEuResidencyRequired": "Debes ser residente de la Unión Europea para activar SEPA confidencial.",
+  "recipientsConfidentialSepaActivatingTitle": "Activando destinatario",
+  "recipientsConfidentialSepaActivatingDescription": "Tu destinatario se está activando para SEPA Confidencial. Esto puede tardar unos minutos.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Destinatario no activado para SEPA Confidencial",
+  "recipientsConfidentialSepaNotActivatedDescription": "Este destinatario aún no está activado para SEPA Confidencial. Lo estamos activando ahora. Esto puede tardar unos minutos. Mientras tanto, puedes usar SEPA Instantáneo y Normal.",
+  "recipientsConfidentialSepaActivatedTitle": "Destinatario activado",
+  "recipientsConfidentialSepaActivatedDescription": "Tu destinatario ya está activo para SEPA Confidencial.",
+  "recipientsConfidentialSepaUseRegularSepa": "Usar SEPA Instantáneo y Normal en su lugar"
 }

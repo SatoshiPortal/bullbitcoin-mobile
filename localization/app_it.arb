@@ -4838,5 +4838,12 @@
   "recipientsTypeConfidentialSepa": "SEPA Riservato",
   "recipientsTypeConfidentialSepa": "SEPA Riservato",
   "recipientsErrorVirtualIbanNotAvailable": "Non hai i permessi necessari per accedere a questa opzione di finanziamento. Il tuo KYC è insufficiente o questa opzione non è disponibile per il tuo account",
-  "recipientsErrorEuResidencyRequired": "Devi essere residente nell'Unione Europea per attivare SEPA riservato."
+  "recipientsErrorEuResidencyRequired": "Devi essere residente nell'Unione Europea per attivare SEPA riservato.",
+  "recipientsConfidentialSepaActivatingTitle": "Attivazione del destinatario",
+  "recipientsConfidentialSepaActivatingDescription": "Il tuo destinatario è in fase di attivazione per SEPA Riservato. L'operazione può richiedere alcuni minuti.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Destinatario non attivato per SEPA Riservato",
+  "recipientsConfidentialSepaNotActivatedDescription": "Questo destinatario non è ancora attivato per SEPA Riservato. Lo stiamo attivando ora. L'operazione può richiedere alcuni minuti. Nel frattempo puoi usare SEPA Istantaneo e Ordinario.",
+  "recipientsConfidentialSepaActivatedTitle": "Destinatario attivato",
+  "recipientsConfidentialSepaActivatedDescription": "Il tuo destinatario è ora attivo per SEPA Riservato.",
+  "recipientsConfidentialSepaUseRegularSepa": "Usa invece SEPA Istantaneo e Ordinario"
 }

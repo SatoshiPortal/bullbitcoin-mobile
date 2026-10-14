@@ -11826,5 +11826,12 @@
   "recipientsTypeConfidentialSepa": "기밀 SEPA",
   "recipientsTypeConfidentialSepa": "기밀 SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다",
-  "recipientsErrorEuResidencyRequired": "기밀 SEPA를 활성화하려면 유럽 연합 거주자여야 합니다."
+  "recipientsErrorEuResidencyRequired": "기밀 SEPA를 활성화하려면 유럽 연합 거주자여야 합니다.",
+  "recipientsConfidentialSepaActivatingTitle": "수신자 활성화 중",
+  "recipientsConfidentialSepaActivatingDescription": "수신자를 기밀 SEPA용으로 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다.",
+  "recipientsConfidentialSepaNotActivatedTitle": "수신자가 기밀 SEPA용으로 활성화되지 않음",
+  "recipientsConfidentialSepaNotActivatedDescription": "이 수신자는 아직 기밀 SEPA용으로 활성화되지 않았습니다. 지금 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다. 대신 즉시 및 일반 SEPA를 사용할 수 있습니다.",
+  "recipientsConfidentialSepaActivatedTitle": "수신자 활성화됨",
+  "recipientsConfidentialSepaActivatedDescription": "이제 수신자가 기밀 SEPA용으로 활성화되었습니다.",
+  "recipientsConfidentialSepaUseRegularSepa": "대신 즉시 및 일반 SEPA 사용"
 }

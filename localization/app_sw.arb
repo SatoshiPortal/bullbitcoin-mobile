@@ -3643,5 +3643,12 @@
   "recipientsTypeConfidentialSepa": "SEPA ya Siri",
   "recipientsTypeConfidentialSepa": "SEPA ya Siri",
   "recipientsErrorVirtualIbanNotAvailable": "Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako",
-  "recipientsErrorEuResidencyRequired": "Unahitaji kuwa mkazi wa Umoja wa Ulaya ili kuwasha SEPA ya siri."
+  "recipientsErrorEuResidencyRequired": "Unahitaji kuwa mkazi wa Umoja wa Ulaya ili kuwasha SEPA ya siri.",
+  "recipientsConfidentialSepaActivatingTitle": "Inawasha mpokeaji",
+  "recipientsConfidentialSepaActivatingDescription": "Mpokeaji wako anawashwa kwa ajili ya SEPA ya Siri. Hii inaweza kuchukua dakika chache.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Mpokeaji hajawashwa kwa ajili ya SEPA ya Siri",
+  "recipientsConfidentialSepaNotActivatedDescription": "Mpokeaji huyu bado hajawashwa kwa ajili ya SEPA ya Siri. Tunamwasha sasa. Hii inaweza kuchukua dakika chache. Badala yake unaweza kutumia SEPA ya Papo hapo na ya Kawaida.",
+  "recipientsConfidentialSepaActivatedTitle": "Mpokeaji amewashwa",
+  "recipientsConfidentialSepaActivatedDescription": "Mpokeaji wako sasa yuko hai kwa ajili ya SEPA ya Siri.",
+  "recipientsConfidentialSepaUseRegularSepa": "Tumia SEPA ya Papo hapo na ya Kawaida badala yake"
 }

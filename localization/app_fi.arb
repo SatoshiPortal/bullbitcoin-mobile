@@ -4826,5 +4826,12 @@
   "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA",
   "recipientsTypeConfidentialSepa": "Luottamuksellinen SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Sinulla ei ole tarvittavia käyttöoikeuksia tämän rahoitusvaihtoehdon käyttämiseen. Joko KYC-tietosi ovat riittämättömät tai tämä vaihtoehto ei ole käytettävissä tililläsi",
-  "recipientsErrorEuResidencyRequired": "Sinun on asuttava Euroopan unionissa aktivoidaksesi luottamuksellisen SEPAn."
+  "recipientsErrorEuResidencyRequired": "Sinun on asuttava Euroopan unionissa aktivoidaksesi luottamuksellisen SEPAn.",
+  "recipientsConfidentialSepaActivatingTitle": "Vastaanottajaa aktivoidaan",
+  "recipientsConfidentialSepaActivatingDescription": "Vastaanottajaasi aktivoidaan Luottamuksellista SEPAa varten. Tämä voi kestää muutaman minuutin.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Vastaanottajaa ei ole aktivoitu Luottamuksellista SEPAa varten",
+  "recipientsConfidentialSepaNotActivatedDescription": "Tätä vastaanottajaa ei ole vielä aktivoitu Luottamuksellista SEPAa varten. Aktivoimme sitä parhaillaan. Tämä voi kestää muutaman minuutin. Voit käyttää sen sijaan Pika- ja tavallista SEPAa.",
+  "recipientsConfidentialSepaActivatedTitle": "Vastaanottaja aktivoitu",
+  "recipientsConfidentialSepaActivatedDescription": "Vastaanottajasi on nyt aktiivinen Luottamuksellista SEPAa varten.",
+  "recipientsConfidentialSepaUseRegularSepa": "Käytä sen sijaan Pika- ja tavallista SEPAa"
 }

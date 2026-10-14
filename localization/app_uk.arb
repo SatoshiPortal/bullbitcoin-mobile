@@ -4835,5 +4835,12 @@
   "recipientsTypeConfidentialSepa": "Конфіденційний SEPA",
   "recipientsTypeConfidentialSepa": "Конфіденційний SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "У вас немає необхідних дозволів для доступу до цього способу поповнення. Або ваш KYC недостатній, або цей спосіб недоступний для вашого облікового запису",
-  "recipientsErrorEuResidencyRequired": "Щоб активувати конфіденційний SEPA, ви маєте бути резидентом Європейського Союзу."
+  "recipientsErrorEuResidencyRequired": "Щоб активувати конфіденційний SEPA, ви маєте бути резидентом Європейського Союзу.",
+  "recipientsConfidentialSepaActivatingTitle": "Активація одержувача",
+  "recipientsConfidentialSepaActivatingDescription": "Вашого одержувача активують для Конфіденційного SEPA. Це може зайняти кілька хвилин.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Одержувача не активовано для Конфіденційного SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Цього одержувача ще не активовано для Конфіденційного SEPA. Ми активуємо його зараз. Це може зайняти кілька хвилин. Тим часом ви можете скористатися Миттєвим і звичайним SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Одержувача активовано",
+  "recipientsConfidentialSepaActivatedDescription": "Ваш одержувач тепер активний для Конфіденційного SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Скористатися Миттєвим і звичайним SEPA замість цього"
 }

@@ -3754,5 +3754,12 @@
   "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",
   "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
-  "recipientsErrorEuResidencyRequired": "კონფიდენციალური SEPA-ს გასააქტიურებლად უნდა იყოთ ევროკავშირის რეზიდენტი."
+  "recipientsErrorEuResidencyRequired": "კონფიდენციალური SEPA-ს გასააქტიურებლად უნდა იყოთ ევროკავშირის რეზიდენტი.",
+  "recipientsConfidentialSepaActivatingTitle": "მიმღების გააქტიურება",
+  "recipientsConfidentialSepaActivatingDescription": "თქვენი მიმღები აქტიურდება კონფიდენციალური SEPA-სთვის. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
+  "recipientsConfidentialSepaNotActivatedTitle": "მიმღები არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის",
+  "recipientsConfidentialSepaNotActivatedDescription": "ეს მიმღები ჯერ არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის. ჩვენ ვააქტიურებთ მას ახლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს. სანაცვლოდ შეგიძლიათ გამოიყენოთ მყისიერი და ჩვეულებრივი SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "მიმღები გააქტიურდა",
+  "recipientsConfidentialSepaActivatedDescription": "თქვენი მიმღები ახლა აქტიურია კონფიდენციალური SEPA-სთვის.",
+  "recipientsConfidentialSepaUseRegularSepa": "სანაცვლოდ გამოიყენეთ მყისიერი და ჩვეულებრივი SEPA"
 }

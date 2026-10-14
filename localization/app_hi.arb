@@ -12013,5 +12013,12 @@
   "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
   "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
-  "recipientsErrorEuResidencyRequired": "गोपनीय SEPA सक्रिय करने के लिए आपको यूरोपीय संघ का निवासी होना आवश्यक है।"
+  "recipientsErrorEuResidencyRequired": "गोपनीय SEPA सक्रिय करने के लिए आपको यूरोपीय संघ का निवासी होना आवश्यक है।",
+  "recipientsConfidentialSepaActivatingTitle": "प्राप्तकर्ता सक्रिय किया जा रहा है",
+  "recipientsConfidentialSepaActivatingDescription": "आपके प्राप्तकर्ता को गोपनीय SEPA के लिए सक्रिय किया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsConfidentialSepaNotActivatedTitle": "प्राप्तकर्ता गोपनीय SEPA के लिए सक्रिय नहीं है",
+  "recipientsConfidentialSepaNotActivatedDescription": "यह प्राप्तकर्ता अभी तक गोपनीय SEPA के लिए सक्रिय नहीं है। हम इसे अभी सक्रिय कर रहे हैं। इसमें कुछ मिनट लग सकते हैं। इसके बजाय आप इंस्टेंट और रेगुलर SEPA का उपयोग कर सकते हैं।",
+  "recipientsConfidentialSepaActivatedTitle": "प्राप्तकर्ता सक्रिय हो गया",
+  "recipientsConfidentialSepaActivatedDescription": "आपका प्राप्तकर्ता अब गोपनीय SEPA के लिए सक्रिय है।",
+  "recipientsConfidentialSepaUseRegularSepa": "इसके बजाय इंस्टेंट और रेगुलर SEPA का उपयोग करें"
 }

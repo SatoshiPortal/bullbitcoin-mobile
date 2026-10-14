@@ -5049,5 +5049,12 @@
   "recipientsTypeConfidentialSepa": "Vertrauliches SEPA",
   "recipientsTypeConfidentialSepa": "Vertrauliches SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Sie haben nicht die erforderlichen Berechtigungen, um auf diese Finanzierungsoption zuzugreifen. Entweder ist Ihr KYC unzureichend oder diese Option ist für Ihr Konto nicht verfügbar",
-  "recipientsErrorEuResidencyRequired": "Sie müssen in der Europäischen Union ansässig sein, um vertrauliches SEPA zu aktivieren."
+  "recipientsErrorEuResidencyRequired": "Sie müssen in der Europäischen Union ansässig sein, um vertrauliches SEPA zu aktivieren.",
+  "recipientsConfidentialSepaActivatingTitle": "Empfänger wird aktiviert",
+  "recipientsConfidentialSepaActivatingDescription": "Ihr Empfänger wird für Vertrauliches SEPA aktiviert. Das kann einige Minuten dauern.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Empfänger nicht für Vertrauliches SEPA aktiviert",
+  "recipientsConfidentialSepaNotActivatedDescription": "Dieser Empfänger ist noch nicht für Vertrauliches SEPA aktiviert. Wir aktivieren ihn gerade. Das kann einige Minuten dauern. Sie können stattdessen Sofort- und Standard-SEPA verwenden.",
+  "recipientsConfidentialSepaActivatedTitle": "Empfänger aktiviert",
+  "recipientsConfidentialSepaActivatedDescription": "Ihr Empfänger ist jetzt für Vertrauliches SEPA aktiviert.",
+  "recipientsConfidentialSepaUseRegularSepa": "Stattdessen Sofort- und Standard-SEPA verwenden"
 }

@@ -11826,5 +11826,12 @@
   "recipientsTypeConfidentialSepa": "SEPA محرمانه",
   "recipientsTypeConfidentialSepa": "SEPA محرمانه",
   "recipientsErrorVirtualIbanNotAvailable": "شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست",
-  "recipientsErrorEuResidencyRequired": "برای فعال‌سازی SEPA محرمانه باید ساکن اتحادیه اروپا باشید."
+  "recipientsErrorEuResidencyRequired": "برای فعال‌سازی SEPA محرمانه باید ساکن اتحادیه اروپا باشید.",
+  "recipientsConfidentialSepaActivatingTitle": "در حال فعال‌سازی گیرنده",
+  "recipientsConfidentialSepaActivatingDescription": "گیرنده شما در حال فعال‌سازی برای SEPA محرمانه است. این کار ممکن است چند دقیقه طول بکشد.",
+  "recipientsConfidentialSepaNotActivatedTitle": "گیرنده برای SEPA محرمانه فعال نشده است",
+  "recipientsConfidentialSepaNotActivatedDescription": "این گیرنده هنوز برای SEPA محرمانه فعال نشده است. اکنون در حال فعال‌سازی آن هستیم. این کار ممکن است چند دقیقه طول بکشد. در عوض می‌توانید از SEPA فوری و عادی استفاده کنید.",
+  "recipientsConfidentialSepaActivatedTitle": "گیرنده فعال شد",
+  "recipientsConfidentialSepaActivatedDescription": "گیرنده شما اکنون برای SEPA محرمانه فعال است.",
+  "recipientsConfidentialSepaUseRegularSepa": "به‌جای آن از SEPA فوری و عادی استفاده کنید"
 }

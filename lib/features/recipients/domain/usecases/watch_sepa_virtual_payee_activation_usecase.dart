@@ -4,8 +4,8 @@ import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 
-/// Activates the virtual payee of a SEPA recipient when it has none, then
-/// emits each new status until it is active. It checks often at first,
+/// Emits the status of a SEPA recipient's virtual payee, activates it when
+/// there is none, then emits each new status until it is active. It checks often at first,
 /// because activation usually takes a few seconds, then less often. A
 /// failure is the last event.
 class WatchSepaVirtualPayeeActivationUsecase {
@@ -45,12 +45,14 @@ class WatchSepaVirtualPayeeActivationUsecase {
         return;
     }
 
+    yield Ok(status);
     if (!status.exists) {
       switch (await _sepaVirtualPayeeRepository.activate(
         recipientId: recipientId,
         isTestnet: isTestnet,
       )) {
         case Ok(:final value):
+          if (value != status) yield Ok(value);
           status = value;
         case Err(:final failure):
           yield Err(failure);
@@ -58,7 +60,6 @@ class WatchSepaVirtualPayeeActivationUsecase {
       }
     }
 
-    yield Ok(status);
     var polls = 0;
     while (!status.isActive) {
       await Future<void>.delayed(

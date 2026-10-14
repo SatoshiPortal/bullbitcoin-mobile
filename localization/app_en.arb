@@ -15507,5 +15507,33 @@
   "recipientsErrorEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
   "@recipientsErrorEuResidencyRequired": {
     "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
+  },
+  "recipientsConfidentialSepaActivatingTitle": "Activating recipient",
+  "@recipientsConfidentialSepaActivatingTitle": {
+    "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This can take a few minutes.",
+  "@recipientsConfidentialSepaActivatingDescription": {
+    "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
+  "@recipientsConfidentialSepaNotActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This can take a few minutes. You can use Instant and Regular SEPA instead.",
+  "@recipientsConfidentialSepaNotActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaActivatedTitle": "Recipient activated",
+  "@recipientsConfidentialSepaActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaActivatedDescription": "Your recipient is now active for Confidential SEPA.",
+  "@recipientsConfidentialSepaActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
+  "@recipientsConfidentialSepaUseRegularSepa": {
+    "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
   }
 }

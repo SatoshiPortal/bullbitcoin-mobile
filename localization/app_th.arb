@@ -11830,5 +11830,12 @@
   "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",
   "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",
   "recipientsErrorVirtualIbanNotAvailable": "คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ",
-  "recipientsErrorEuResidencyRequired": "คุณต้องเป็นผู้พำนักในสหภาพยุโรปเพื่อเปิดใช้งาน SEPA แบบเป็นความลับ"
+  "recipientsErrorEuResidencyRequired": "คุณต้องเป็นผู้พำนักในสหภาพยุโรปเพื่อเปิดใช้งาน SEPA แบบเป็นความลับ",
+  "recipientsConfidentialSepaActivatingTitle": "กำลังเปิดใช้งานผู้รับเงิน",
+  "recipientsConfidentialSepaActivatingDescription": "กำลังเปิดใช้งานผู้รับเงินของคุณสำหรับ SEPA แบบเป็นความลับ อาจใช้เวลาสักครู่",
+  "recipientsConfidentialSepaNotActivatedTitle": "ผู้รับเงินยังไม่ได้เปิดใช้งานสำหรับ SEPA แบบเป็นความลับ",
+  "recipientsConfidentialSepaNotActivatedDescription": "ผู้รับเงินรายนี้ยังไม่ได้เปิดใช้งานสำหรับ SEPA แบบเป็นความลับ เรากำลังเปิดใช้งานอยู่ในขณะนี้ อาจใช้เวลาสักครู่ คุณสามารถใช้ SEPA แบบทันทีและแบบปกติแทนได้",
+  "recipientsConfidentialSepaActivatedTitle": "เปิดใช้งานผู้รับเงินแล้ว",
+  "recipientsConfidentialSepaActivatedDescription": "ตอนนี้ผู้รับเงินของคุณเปิดใช้งานสำหรับ SEPA แบบเป็นความลับแล้ว",
+  "recipientsConfidentialSepaUseRegularSepa": "ใช้ SEPA แบบทันทีและแบบปกติแทน"
 }

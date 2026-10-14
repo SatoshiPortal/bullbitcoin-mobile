@@ -11829,5 +11829,12 @@
   "recipientsTypeConfidentialSepa": "SEPA السري",
   "recipientsTypeConfidentialSepa": "SEPA السري",
   "recipientsErrorVirtualIbanNotAvailable": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
-  "recipientsErrorEuResidencyRequired": "يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري."
+  "recipientsErrorEuResidencyRequired": "يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري.",
+  "recipientsConfidentialSepaActivatingTitle": "جارٍ تفعيل المستلم",
+  "recipientsConfidentialSepaActivatingDescription": "جارٍ تفعيل المستلم الخاص بك لخدمة SEPA السري. قد يستغرق ذلك بضع دقائق.",
+  "recipientsConfidentialSepaNotActivatedTitle": "المستلم غير مُفعَّل لخدمة SEPA السري",
+  "recipientsConfidentialSepaNotActivatedDescription": "لم يتم بعد تفعيل هذا المستلم لخدمة SEPA السري. نقوم بتفعيله الآن. قد يستغرق ذلك بضع دقائق. يمكنك استخدام SEPA الفوري والعادي بدلاً من ذلك.",
+  "recipientsConfidentialSepaActivatedTitle": "تم تفعيل المستلم",
+  "recipientsConfidentialSepaActivatedDescription": "أصبح المستلم الخاص بك الآن مُفعَّلاً لخدمة SEPA السري.",
+  "recipientsConfidentialSepaUseRegularSepa": "استخدم SEPA الفوري والعادي بدلاً من ذلك"
 }

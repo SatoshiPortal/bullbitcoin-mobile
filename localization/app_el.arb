@@ -11826,5 +11826,12 @@
   "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
   "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
-  "recipientsErrorEuResidencyRequired": "Πρέπει να είστε κάτοικος της Ευρωπαϊκής Ένωσης για να ενεργοποιήσετε το εμπιστευτικό SEPA."
+  "recipientsErrorEuResidencyRequired": "Πρέπει να είστε κάτοικος της Ευρωπαϊκής Ένωσης για να ενεργοποιήσετε το εμπιστευτικό SEPA.",
+  "recipientsConfidentialSepaActivatingTitle": "Ενεργοποίηση παραλήπτη",
+  "recipientsConfidentialSepaActivatingDescription": "Ο παραλήπτης σας ενεργοποιείται για το Εμπιστευτικό SEPA. Αυτό μπορεί να διαρκέσει μερικά λεπτά.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Ο παραλήπτης δεν έχει ενεργοποιηθεί για το Εμπιστευτικό SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Αυτός ο παραλήπτης δεν έχει ενεργοποιηθεί ακόμη για το Εμπιστευτικό SEPA. Τον ενεργοποιούμε τώρα. Αυτό μπορεί να διαρκέσει μερικά λεπτά. Μπορείτε να χρησιμοποιήσετε το Άμεσο και Κανονικό SEPA αντ' αυτού.",
+  "recipientsConfidentialSepaActivatedTitle": "Ο παραλήπτης ενεργοποιήθηκε",
+  "recipientsConfidentialSepaActivatedDescription": "Ο παραλήπτης σας είναι πλέον ενεργός για το Εμπιστευτικό SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Χρησιμοποιήστε το Άμεσο και Κανονικό SEPA αντ' αυτού"
 }

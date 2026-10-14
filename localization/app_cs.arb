@@ -11826,5 +11826,12 @@
   "recipientsTypeConfidentialSepa": "Důvěrný SEPA",
   "recipientsTypeConfidentialSepa": "Důvěrný SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
-  "recipientsErrorEuResidencyRequired": "Pro aktivaci důvěrného SEPA musíte být rezidentem Evropské unie."
+  "recipientsErrorEuResidencyRequired": "Pro aktivaci důvěrného SEPA musíte být rezidentem Evropské unie.",
+  "recipientsConfidentialSepaActivatingTitle": "Aktivace příjemce",
+  "recipientsConfidentialSepaActivatingDescription": "Váš příjemce se aktivuje pro Důvěrný SEPA. Může to trvat několik minut.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Příjemce není aktivován pro Důvěrný SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Tento příjemce zatím není aktivován pro Důvěrný SEPA. Právě jej aktivujeme. Může to trvat několik minut. Mezitím můžete použít Okamžitý a běžný SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Příjemce aktivován",
+  "recipientsConfidentialSepaActivatedDescription": "Váš příjemce je nyní aktivní pro Důvěrný SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Použít místo toho Okamžitý a běžný SEPA"
 }

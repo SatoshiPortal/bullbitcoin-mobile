@@ -9933,5 +9933,12 @@
   "recipientsTypeConfidentialSepa": "Поверителен SEPA",
   "recipientsTypeConfidentialSepa": "Поверителен SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
-  "recipientsErrorEuResidencyRequired": "Трябва да сте жител на Европейския съюз, за да активирате поверителен SEPA."
+  "recipientsErrorEuResidencyRequired": "Трябва да сте жител на Европейския съюз, за да активирате поверителен SEPA.",
+  "recipientsConfidentialSepaActivatingTitle": "Активиране на получателя",
+  "recipientsConfidentialSepaActivatingDescription": "Вашият получател се активира за Поверителен SEPA. Това може да отнеме няколко минути.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Получателят не е активиран за Поверителен SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Този получател все още не е активиран за Поверителен SEPA. Активираме го в момента. Това може да отнеме няколко минути. Междувременно можете да използвате Незабавен и стандартен SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Получателят е активиран",
+  "recipientsConfidentialSepaActivatedDescription": "Вашият получател вече е активен за Поверителен SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Използвайте Незабавен и стандартен SEPA вместо това"
 }
