@@ -10,7 +10,8 @@ import 'package:flutter/widgets.dart';
 ///
 /// The raw amount is kept alongside the text rather than derived from it on
 /// demand, so it stays right when the language changes under a live field;
-/// the text is then rewritten with the new separators.
+/// the text is then rewritten with the new separators. That subscription
+/// lives as long as the controller, so always [dispose] it.
 class BullAmountController extends TextEditingController {
   /// Creates a controller showing the raw [amount].
   BullAmountController({String amount = ''})

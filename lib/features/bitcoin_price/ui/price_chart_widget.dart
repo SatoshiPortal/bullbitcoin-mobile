@@ -253,10 +253,11 @@ class _PriceDisplay extends StatelessWidget {
               },
               child: Center(
                 child: BBText(
-                  NumberFormat.currency(
-                    symbol: '',
-                    decimalDigits: 2,
-                  ).format(price),
+                  BullNumberFormat.decimal(
+                    price,
+                    minDecimals: 2,
+                    maxDecimals: 2,
+                  ),
                   style: context.font.displaySmall?.copyWith(
                     color: context.appColors.onPrimary,
                   ),

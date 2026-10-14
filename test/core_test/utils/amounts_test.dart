@@ -87,6 +87,14 @@ void main() {
       expect(FormatAmount.fiat(1234.56, 'EUR'), '1,234.56 EUR');
     });
 
+    test('formatFiat keeps each currency\'s own decimal count', () {
+      // Unchanged from before: intl's per-currency digits already overrode
+      // the old `#,##0.00 ¤` pattern.
+      expect(FormatAmount.fiat(1234.5678, 'JPY'), '1,235 JPY');
+      expect(FormatAmount.fiat(1234.5678, 'BHD'), '1,234.568 BHD');
+      expect(FormatAmount.fiat(1234.5678, 'XYZ'), '1,234.57 XYZ');
+    });
+
     test('formatFiat with simpleFormat', () {
       expect(
         FormatAmount.fiat(1234.56, 'USD', simpleFormat: true),

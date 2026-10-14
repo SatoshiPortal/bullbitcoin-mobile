@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,6 +35,13 @@ Future<String> _translate(
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      // As the app root does: numbers follow the resolved app language.
+      builder: (context, child) {
+        BullNumberFormat.useLanguage(
+          Localizations.localeOf(context).languageCode,
+        );
+        return child!;
+      },
       home: Builder(
         builder: (context) {
           message = failure.toTranslated(context);
@@ -46,6 +54,8 @@ Future<String> _translate(
 }
 
 void main() {
+  tearDown(() => BullNumberFormat.useLanguage('en'));
+
   group('WithdrawFailureL10n.toTranslated', () {
     for (final failure in _everyFailure) {
       testWidgets('${failure.runtimeType} resolves to a user-safe message', (

@@ -442,7 +442,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
-                  displayValue: order.payoutAmountToDisplay,
+                  displayValue: FormatAmount.fiat(
+                    order.payoutAmount,
+                    order.payoutCurrency,
+                  ),
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)

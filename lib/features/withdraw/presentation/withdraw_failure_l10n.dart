@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 
 extension WithdrawFailureL10n on WithdrawFailure {
   String toTranslated(BuildContext context) => switch (this) {
@@ -12,12 +12,12 @@ extension WithdrawFailureL10n on WithdrawFailure {
     // than no message: they need the number to fix the amount.
     WithdrawBelowMinAmountFailure(:final minAmount, :final currency) =>
       context.loc.withdrawBelowMinAmountError(
-        _formatBound(context, minAmount),
+        _formatBound(minAmount),
         currency,
       ),
     WithdrawAboveMaxAmountFailure(:final maxAmount, :final currency) =>
       context.loc.withdrawAboveMaxAmountError(
-        _formatBound(context, maxAmount),
+        _formatBound(maxAmount),
         currency,
       ),
 
@@ -32,10 +32,7 @@ extension WithdrawFailureL10n on WithdrawFailure {
 /// Formats a bound without a unit, because the surrounding sentence already
 /// carries the currency in its own `{currency}` placeholder.
 ///
-/// The locale is explicit: the app never sets `Intl.defaultLocale`, so a
-/// bare `NumberFormat` would format as `en_US` and drop "5,000" into an
-/// otherwise French sentence, where it reads as five. `localeName` is what
-/// `AppLocalizations` already canonicalized for intl, so `pt_BR` and
-/// `hi_Latn` resolve the same way the strings around them do.
-String _formatBound(BuildContext context, double amount) =>
-    NumberFormat('#,##0.########', context.loc.localeName).format(amount);
+/// Written with the app's separators, like every other amount: "5 000" in a
+/// French sentence, where "5,000" would read as five.
+String _formatBound(double amount) =>
+    BullNumberFormat.decimal(amount, maxDecimals: 8);

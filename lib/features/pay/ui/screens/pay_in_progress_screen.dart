@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -67,7 +68,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
   /// message says so, instead of asking the user to keep waiting for a
   /// confirmation that already happened.
   String _description(BuildContext context, FiatPaymentOrder order) {
-    final amount = order.payoutAmountToDisplay;
+    final amount = FormatAmount.fiat(order.payoutAmount, order.payoutCurrency);
     final recipient = order.recipientToDisplay ?? context.loc.payNotAvailable;
 
     return order.isPayinCompleted

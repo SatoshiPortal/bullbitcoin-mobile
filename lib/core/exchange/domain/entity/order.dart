@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.freezed.dart';
@@ -850,12 +849,6 @@ sealed class Order with _$Order {
 }
 
 extension FiatPaymentOrderDisplayX on FiatPaymentOrder {
-  /// The fiat amount the recipient gets, e.g. "125.00 CAD". The currency code
-  /// is used as returned by the server, without going through
-  /// [FiatCurrency.fromCode], which throws on codes the app doesn't know yet.
-  String get payoutAmountToDisplay =>
-      FormatAmount.fiat(payoutAmount, payoutCurrency);
-
   /// The recipient as shown to the user. The server populates
   /// [beneficiaryName] for most payout processors, but not all (SINPE can
   /// legitimately have no owner name), so fall back to the label the user gave

@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 /// How numbers are written in the app.
 ///
 /// French writes `7 123,51`: a no-break space between thousands and a comma
-/// before the decimals. Every other language writes `7,123.51`.
+/// before the decimals. Every other language writes `7,123.51`. That split is
+/// the agreed product rule (#2980), not an oversight: don't switch other
+/// languages to their own CLDR separators without changing that decision.
 ///
 /// The app picks the language once at its root with [useLanguage], so callers
 /// without a `BuildContext` (bloc states, failure messages) follow the same
@@ -14,8 +16,9 @@ abstract final class BullNumberFormat {
   /// has a glyph for it, and it still keeps `7 123` on one line.
   static const _frenchGroupSeparator = '\u00A0';
 
-  static bool _french = false;
   static final _language = ValueNotifier<String>('en');
+
+  static bool get _french => _language.value == 'fr';
 
   /// Notifies when [useLanguage] changes the language, so text written with
   /// the previous separators can be rewritten.
@@ -23,7 +26,6 @@ abstract final class BullNumberFormat {
 
   /// Switches the separators to the given app language code, e.g. `fr`.
   static void useLanguage(String languageCode) {
-    _french = languageCode == 'fr';
     _language.value = languageCode;
   }
 
