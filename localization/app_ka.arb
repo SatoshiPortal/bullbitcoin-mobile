@@ -3776,5 +3776,18 @@
   "recipientsVirtualIbanActivatingDescription": "იქმნება თქვენი ვირტუალური IBAN. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
   "recipientsVirtualIbanActivatedTitle": "კონფიდენციალური SEPA გააქტიურდა",
   "recipientsVirtualIbanActivatedDescription": "ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად გატანა.",
-  "withdrawConfidentialSepaNotActivatedError": "გთხოვთ, გაააქტიუროთ კონფიდენციალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის."
+  "withdrawConfidentialSepaNotActivatedError": "გთხოვთ, გაააქტიუროთ კონფიდენციალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის.",
+  "recipientsVirtualIbanCopied": "დაკოპირდა",
+  "recipientsVirtualIbanDone": "დასრულდა",
+  "recipientsVirtualIbanRecipientName": "მიმღების სახელი",
+  "recipientsVirtualIbanIbanLabel": "IBAN ანგარიშის ნომერი",
+  "recipientsVirtualIbanCountry": "საბანკო ანგარიშის ქვეყანა",
+  "recipientsVirtualIbanBic": "BIC კოდი",
+  "fundExchangeMethodConfidentialSepa": "კონფიდენციალური SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "პირადი ვირტუალური IBAN თანხის კონფიდენციალურად შესატანად",
+  "recipientsVirtualIbanActivatedFundingDescription": "ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად შეტანა.",
+  "recipientsVirtualIbanShowDetails": "ჩემი ვირტუალური IBAN-ის დეტალების ჩვენება",
+  "recipientsVirtualIbanDetailsDescription": "შეავსეთ ანგარიში კონფიდენციალურად თქვენს სახელზე გაცემული პირადი ვირტუალური IBAN-ით. შენატანი გამოჩნდება როგორც გადახდა საკუთარ თავზე, გადარიცხვის კოდის გარეშე.",
+  "recipientsVirtualIbanBankAddress": "ბანკის მისამართი",
+  "recipientsVirtualIbanBankAddressHelp": "ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს."
 }

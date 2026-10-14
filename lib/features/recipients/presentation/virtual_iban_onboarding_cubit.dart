@@ -59,6 +59,7 @@ class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
               PendingVirtualIban() => VirtualIbanOnboardingStep.activating,
               ActiveVirtualIban() => VirtualIbanOnboardingStep.active,
             },
+            virtualIban: value is ActiveVirtualIban ? value : null,
             isCreating: false,
             failure: null,
           ),

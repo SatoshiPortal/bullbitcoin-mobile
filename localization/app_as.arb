@@ -9219,5 +9219,18 @@
   "recipientsVirtualIbanActivatingDescription": "আপোনাৰ ভাৰ্চুৱেল IBAN সৃষ্টি কৰা হৈছে। ইয়াত কেইমিনিটমান লাগিব পাৰে।",
   "recipientsVirtualIbanActivatedTitle": "গোপনীয় SEPA সক্ৰিয় কৰা হ’ল",
   "recipientsVirtualIbanActivatedDescription": "আপুনি এতিয়া গোপনে ধন উলিয়াবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।",
-  "withdrawConfidentialSepaNotActivatedError": "অনুগ্ৰহ কৰি এই SEPA প্ৰাপকৰ বাবে গোপনীয় পেমেণ্ট বিকল্পটো সক্ৰিয় কৰক।"
+  "withdrawConfidentialSepaNotActivatedError": "অনুগ্ৰহ কৰি এই SEPA প্ৰাপকৰ বাবে গোপনীয় পেমেণ্ট বিকল্পটো সক্ৰিয় কৰক।",
+  "recipientsVirtualIbanCopied": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "recipientsVirtualIbanDone": "সম্পন্ন",
+  "recipientsVirtualIbanRecipientName": "প্ৰাপকৰ নাম",
+  "recipientsVirtualIbanIbanLabel": "IBAN একাউন্ট নম্বৰ",
+  "recipientsVirtualIbanCountry": "ব্যাংক একাউন্টৰ দেশ",
+  "recipientsVirtualIbanBic": "BIC কোড",
+  "fundExchangeMethodConfidentialSepa": "গোপনীয় SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "গোপনীয়ভাৱে ধন জমা কৰিবলৈ এটা ব্যক্তিগত ভাৰ্চুৱেল IBAN",
+  "recipientsVirtualIbanActivatedFundingDescription": "আপুনি এতিয়া গোপনে ধন জমা কৰিবলৈ আপোনাৰ ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰিব পাৰে।",
+  "recipientsVirtualIbanShowDetails": "মোৰ ভাৰ্চুৱেল IBAN-ৰ বিৱৰণ দেখুৱাওক",
+  "recipientsVirtualIbanDetailsDescription": "আপোনাৰ নিজৰ নামত থকা ব্যক্তিগত ভাৰ্চুৱেল IBAN ব্যৱহাৰ কৰি গোপনে আপোনাৰ একাউণ্টত ধন জমা কৰক। জমাখিনি নিজকে কৰা পৰিশোধ হিচাপে দেখা যাব, কোনো স্থানান্তৰ ক’ডৰ প্ৰয়োজন নহ’ব।",
+  "recipientsVirtualIbanBankAddress": "বেংকৰ ঠিকনা",
+  "recipientsVirtualIbanBankAddressHelp": "বেংকৰ চৰকাৰী ঠিকনা, যদি আপোনাৰ বেংকে বিচাৰে।"
 }

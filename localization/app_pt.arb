@@ -4896,5 +4896,18 @@
   "recipientsVirtualIbanActivatingDescription": "A criar o seu IBAN virtual. Isto pode demorar alguns minutos.",
   "recipientsVirtualIbanActivatedTitle": "SEPA Confidencial ativado",
   "recipientsVirtualIbanActivatedDescription": "Já pode usar o seu IBAN virtual pessoal para levantar dinheiro de forma privada.",
-  "withdrawConfidentialSepaNotActivatedError": "Ative a opção de pagamento confidencial para este destinatário SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "Ative a opção de pagamento confidencial para este destinatário SEPA.",
+  "recipientsVirtualIbanCopied": "Copiado para clipboard",
+  "recipientsVirtualIbanDone": "Feito",
+  "recipientsVirtualIbanRecipientName": "Nome do destinatário",
+  "recipientsVirtualIbanIbanLabel": "Número de conta IBAN",
+  "recipientsVirtualIbanCountry": "País de conta bancária",
+  "recipientsVirtualIbanBic": "Código BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA Confidencial",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Um IBAN virtual pessoal para depositar dinheiro de forma privada",
+  "recipientsVirtualIbanActivatedFundingDescription": "Já pode usar o seu IBAN virtual pessoal para depositar dinheiro de forma privada.",
+  "recipientsVirtualIbanShowDetails": "Mostrar os detalhes do meu IBAN virtual",
+  "recipientsVirtualIbanDetailsDescription": "Financie a sua conta de forma privada com um IBAN virtual pessoal em seu nome. O depósito aparecerá como um pagamento a si próprio, sem código de transferência.",
+  "recipientsVirtualIbanBankAddress": "Morada do banco",
+  "recipientsVirtualIbanBankAddressHelp": "A morada oficial do banco, caso o seu banco a peça."
 }

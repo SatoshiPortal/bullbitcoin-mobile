@@ -11848,5 +11848,18 @@
   "recipientsVirtualIbanActivatingDescription": "در حال ایجاد IBAN مجازی شما. این کار ممکن است چند دقیقه طول بکشد.",
   "recipientsVirtualIbanActivatedTitle": "SEPA محرمانه فعال شد",
   "recipientsVirtualIbanActivatedDescription": "اکنون می‌توانید از IBAN مجازی شخصی خود برای برداشت خصوصی پول استفاده کنید.",
-  "withdrawConfidentialSepaNotActivatedError": "لطفاً گزینه پرداخت محرمانه را برای این گیرنده SEPA فعال کنید."
+  "withdrawConfidentialSepaNotActivatedError": "لطفاً گزینه پرداخت محرمانه را برای این گیرنده SEPA فعال کنید.",
+  "recipientsVirtualIbanCopied": "نصب شده برای Clipboard",
+  "recipientsVirtualIbanDone": "انجام کارها",
+  "recipientsVirtualIbanRecipientName": "نام اضطراری",
+  "recipientsVirtualIbanIbanLabel": "شماره حساب IBAN",
+  "recipientsVirtualIbanCountry": "بانک کشور",
+  "recipientsVirtualIbanBic": "کد BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA محرمانه",
+  "fundExchangeMethodConfidentialSepaSubtitle": "یک IBAN مجازی شخصی برای واریز خصوصی پول",
+  "recipientsVirtualIbanActivatedFundingDescription": "اکنون می‌توانید از IBAN مجازی شخصی خود برای واریز خصوصی پول استفاده کنید.",
+  "recipientsVirtualIbanShowDetails": "نمایش جزئیات IBAN مجازی من",
+  "recipientsVirtualIbanDetailsDescription": "با یک IBAN مجازی شخصی به نام خودتان، حساب خود را به‌صورت خصوصی شارژ کنید. واریز به‌صورت پرداخت به خودتان نمایش داده می‌شود و نیازی به کد انتقال نیست.",
+  "recipientsVirtualIbanBankAddress": "نشانی بانک",
+  "recipientsVirtualIbanBankAddressHelp": "نشانی رسمی بانک، در صورتی که بانک شما آن را بخواهد."
 }

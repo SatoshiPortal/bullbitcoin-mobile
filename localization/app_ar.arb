@@ -11851,5 +11851,18 @@
   "recipientsVirtualIbanActivatingDescription": "جارٍ إنشاء رقم IBAN الافتراضي الخاص بك. قد يستغرق ذلك بضع دقائق.",
   "recipientsVirtualIbanActivatedTitle": "تم تفعيل SEPA السري",
   "recipientsVirtualIbanActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية.",
-  "withdrawConfidentialSepaNotActivatedError": "يرجى تفعيل خيار الدفع السري لهذا المستلم عبر SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "يرجى تفعيل خيار الدفع السري لهذا المستلم عبر SEPA.",
+  "recipientsVirtualIbanCopied": "مركب على لوح مشبك",
+  "recipientsVirtualIbanDone": "تم",
+  "recipientsVirtualIbanRecipientName": "الاسم المستقبِل",
+  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanCountry": "بلد الحساب المصرفي",
+  "recipientsVirtualIbanBic": "رمز BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA السري",
+  "fundExchangeMethodConfidentialSepaSubtitle": "رقم IBAN افتراضي شخصي لإيداع الأموال بخصوصية",
+  "recipientsVirtualIbanActivatedFundingDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لإيداع الأموال بخصوصية.",
+  "recipientsVirtualIbanShowDetails": "عرض تفاصيل رقم IBAN الافتراضي",
+  "recipientsVirtualIbanDetailsDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. سيظهر الإيداع كدفعة إلى نفسك، دون الحاجة إلى رمز تحويل.",
+  "recipientsVirtualIbanBankAddress": "عنوان المصرف",
+  "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك."
 }

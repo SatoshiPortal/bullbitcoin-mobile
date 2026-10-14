@@ -3653,5 +3653,18 @@
   "recipientsVirtualIbanActivatingDescription": "Ստեղծվում է ձեր վիրտուալ IBAN-ը։ Դա կարող է տևել մի քանի րոպե։",
   "recipientsVirtualIbanActivatedTitle": "Գաղտնի SEPA-ն ակտիվացված է",
   "recipientsVirtualIbanActivatedDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումար գաղտնի դուրս բերելու համար։",
-  "withdrawConfidentialSepaNotActivatedError": "Խնդրում ենք ակտիվացնել գաղտնի վճարման տարբերակը այս SEPA ստացողի համար։"
+  "withdrawConfidentialSepaNotActivatedError": "Խնդրում ենք ակտիվացնել գաղտնի վճարման տարբերակը այս SEPA ստացողի համար։",
+  "recipientsVirtualIbanCopied": "Պատճենվեց սեղմատախտակին",
+  "recipientsVirtualIbanDone": "Պատրաստ է",
+  "recipientsVirtualIbanRecipientName": "Ստացողի անուն",
+  "recipientsVirtualIbanIbanLabel": "IBAN հաշվի համար",
+  "recipientsVirtualIbanCountry": "Բանկային հաշվի երկիր",
+  "recipientsVirtualIbanBic": "BIC կոդ",
+  "fundExchangeMethodConfidentialSepa": "Գաղտնի SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Անձնական վիրտուալ IBAN՝ գումարը գաղտնի մուտքագրելու համար",
+  "recipientsVirtualIbanActivatedFundingDescription": "Այժմ կարող եք օգտագործել ձեր անձնական վիրտուալ IBAN-ը՝ գումար գաղտնի մուտքագրելու համար։",
+  "recipientsVirtualIbanShowDetails": "Ցույց տալ իմ վիրտուալ IBAN-ի տվյալները",
+  "recipientsVirtualIbanDetailsDescription": "Համալրեք ձեր հաշիվը գաղտնի՝ ձեր անունով անձնական վիրտուալ IBAN-ով։ Մուտքը կերևա որպես վճարում ինքներդ ձեզ, առանց փոխանցման կոդի։",
+  "recipientsVirtualIbanBankAddress": "Բանկի հասցեն",
+  "recipientsVirtualIbanBankAddressHelp": "Բանկի պաշտոնական հասցեն, եթե ձեր բանկը այն պահանջի։"
 }

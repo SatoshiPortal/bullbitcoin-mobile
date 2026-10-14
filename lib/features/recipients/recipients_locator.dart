@@ -158,7 +158,10 @@ class RecipientsLocator {
       ),
     );
     locator.registerLazySingleton<RecipientsFacade>(
-      () => RecipientsFacade(locator<UpdateInteracSecurityDetailsUsecase>()),
+      () => RecipientsFacade(
+        locator<UpdateInteracSecurityDetailsUsecase>(),
+        locator<GetConfidentialSepaAvailabilityUsecase>(),
+      ),
     );
   }
 

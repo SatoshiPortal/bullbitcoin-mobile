@@ -7,6 +7,10 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Where the user started Confidential SEPA, which decides the wording once
+/// the virtual IBAN is active.
+enum VirtualIbanOnboardingPurpose { withdraw, funding }
+
 /// Creates the user's virtual IBAN, which Confidential SEPA needs.
 /// [onActivated] continues once it is active. [onUseRegularSepa] lets the
 /// user continue with regular SEPA while it is still being created.
@@ -15,10 +19,12 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VirtualIbanOnboardingPurpose purpose;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +36,7 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
       child: VirtualIbanOnboardingView(
         onActivated: onActivated,
         onUseRegularSepa: onUseRegularSepa,
+        purpose: purpose,
       ),
     );
   }
@@ -40,10 +47,12 @@ class VirtualIbanOnboardingView extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VirtualIbanOnboardingPurpose purpose;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +83,7 @@ class VirtualIbanOnboardingView extends StatelessWidget {
                 ),
                 VirtualIbanOnboardingStep.active => _ActiveStep(
                   onActivated: onActivated,
+                  purpose: purpose,
                 ),
               },
             ),
@@ -264,9 +274,10 @@ class _ActivatingStep extends StatelessWidget {
 }
 
 class _ActiveStep extends StatelessWidget {
-  const _ActiveStep({required this.onActivated});
+  const _ActiveStep({required this.onActivated, required this.purpose});
 
   final VoidCallback onActivated;
+  final VirtualIbanOnboardingPurpose purpose;
 
   @override
   Widget build(BuildContext context) {
@@ -274,10 +285,20 @@ class _ActiveStep extends StatelessWidget {
     return _StatusLayout(
       icon: BullIcon(BullIcons.checkCircle, size: 48, color: colors.success),
       title: context.loc.recipientsVirtualIbanActivatedTitle,
-      description: context.loc.recipientsVirtualIbanActivatedDescription,
+      description: switch (purpose) {
+        VirtualIbanOnboardingPurpose.withdraw =>
+          context.loc.recipientsVirtualIbanActivatedDescription,
+        VirtualIbanOnboardingPurpose.funding =>
+          context.loc.recipientsVirtualIbanActivatedFundingDescription,
+      },
       buttons: [
         BullButton.big(
-          label: context.loc.recipientsContinue,
+          label: switch (purpose) {
+            VirtualIbanOnboardingPurpose.withdraw =>
+              context.loc.recipientsContinue,
+            VirtualIbanOnboardingPurpose.funding =>
+              context.loc.recipientsVirtualIbanShowDetails,
+          },
           onPressed: onActivated,
           bgColor: colors.primary,
           textColor: colors.onPrimary,

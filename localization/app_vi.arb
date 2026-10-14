@@ -3653,5 +3653,18 @@
   "recipientsVirtualIbanActivatingDescription": "Đang tạo IBAN ảo của bạn. Việc này có thể mất vài phút.",
   "recipientsVirtualIbanActivatedTitle": "Đã kích hoạt SEPA Bảo mật",
   "recipientsVirtualIbanActivatedDescription": "Giờ bạn có thể dùng IBAN ảo cá nhân để rút tiền một cách riêng tư.",
-  "withdrawConfidentialSepaNotActivatedError": "Vui lòng kích hoạt tùy chọn thanh toán bảo mật cho người nhận SEPA này."
+  "withdrawConfidentialSepaNotActivatedError": "Vui lòng kích hoạt tùy chọn thanh toán bảo mật cho người nhận SEPA này.",
+  "recipientsVirtualIbanCopied": "Đã sao chép vào bộ nhớ tạm",
+  "recipientsVirtualIbanDone": "Xong",
+  "recipientsVirtualIbanRecipientName": "Tên người nhận",
+  "recipientsVirtualIbanIbanLabel": "Số tài khoản IBAN",
+  "recipientsVirtualIbanCountry": "Quốc gia tài khoản ngân hàng",
+  "recipientsVirtualIbanBic": "Mã BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA Bảo mật",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN ảo cá nhân để nạp tiền một cách riêng tư",
+  "recipientsVirtualIbanActivatedFundingDescription": "Giờ bạn có thể dùng IBAN ảo cá nhân để nạp tiền một cách riêng tư.",
+  "recipientsVirtualIbanShowDetails": "Hiển thị thông tin IBAN ảo của tôi",
+  "recipientsVirtualIbanDetailsDescription": "Nạp tiền vào tài khoản một cách riêng tư bằng IBAN ảo cá nhân đứng tên bạn. Khoản nạp sẽ hiển thị là thanh toán cho chính bạn, không cần mã chuyển khoản.",
+  "recipientsVirtualIbanBankAddress": "Địa chỉ ngân hàng",
+  "recipientsVirtualIbanBankAddressHelp": "Địa chỉ chính thức của ngân hàng, phòng khi ngân hàng của bạn yêu cầu."
 }

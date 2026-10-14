@@ -4857,5 +4857,18 @@
   "recipientsVirtualIbanActivatingDescription": "Створюємо ваш віртуальний IBAN. Це може зайняти кілька хвилин.",
   "recipientsVirtualIbanActivatedTitle": "Конфіденційний SEPA активовано",
   "recipientsVirtualIbanActivatedDescription": "Тепер ви можете використовувати особистий віртуальний IBAN, щоб виводити гроші конфіденційно.",
-  "withdrawConfidentialSepaNotActivatedError": "Будь ласка, активуйте опцію конфіденційного платежу для цього одержувача SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "Будь ласка, активуйте опцію конфіденційного платежу для цього одержувача SEPA.",
+  "recipientsVirtualIbanCopied": "Скопіювати до буферу",
+  "recipientsVirtualIbanDone": "Сонце",
+  "recipientsVirtualIbanRecipientName": "Ім'я одержувача",
+  "recipientsVirtualIbanIbanLabel": "Номер рахунку IBAN",
+  "recipientsVirtualIbanCountry": "Країна банківського рахунку",
+  "recipientsVirtualIbanBic": "Код BIC",
+  "fundExchangeMethodConfidentialSepa": "Конфіденційний SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Особистий віртуальний IBAN для конфіденційного поповнення",
+  "recipientsVirtualIbanActivatedFundingDescription": "Тепер ви можете використовувати особистий віртуальний IBAN, щоб вносити гроші конфіденційно.",
+  "recipientsVirtualIbanShowDetails": "Показати реквізити мого віртуального IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Поповнюйте рахунок конфіденційно за допомогою особистого віртуального IBAN на ваше ім’я. Поповнення виглядатиме як платіж самому собі, без коду переказу.",
+  "recipientsVirtualIbanBankAddress": "Адреса банку",
+  "recipientsVirtualIbanBankAddressHelp": "Офіційна адреса банку, якщо ваш банк її попросить."
 }

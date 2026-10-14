@@ -4848,5 +4848,18 @@
   "recipientsVirtualIbanActivatingDescription": "Luodaan virtuaalista IBAN-tiliäsi. Tämä saattaa kestää muutaman minuutin.",
   "recipientsVirtualIbanActivatedTitle": "Luottamuksellinen SEPA aktivoitu",
   "recipientsVirtualIbanActivatedDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan nostamiseen yksityisesti.",
-  "withdrawConfidentialSepaNotActivatedError": "Aktivoi luottamuksellinen maksuvaihtoehto tälle SEPA-vastaanottajalle."
+  "withdrawConfidentialSepaNotActivatedError": "Aktivoi luottamuksellinen maksuvaihtoehto tälle SEPA-vastaanottajalle.",
+  "recipientsVirtualIbanCopied": "Kopioitu leikepöydälle",
+  "recipientsVirtualIbanDone": "Valmis",
+  "recipientsVirtualIbanRecipientName": "Vastaanottajan nimi",
+  "recipientsVirtualIbanIbanLabel": "IBAN-tilinumero",
+  "recipientsVirtualIbanCountry": "Tilin maa",
+  "recipientsVirtualIbanBic": "BIC-koodi",
+  "fundExchangeMethodConfidentialSepa": "Luottamuksellinen SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Henkilökohtainen virtuaalinen IBAN rahan tallettamiseen yksityisesti",
+  "recipientsVirtualIbanActivatedFundingDescription": "Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan tallettamiseen yksityisesti.",
+  "recipientsVirtualIbanShowDetails": "Näytä virtuaalisen IBAN-tilini tiedot",
+  "recipientsVirtualIbanDetailsDescription": "Rahoita tiliäsi yksityisesti käyttämällä henkilökohtaista virtuaalista IBAN-tiliä omalla nimelläsi. Talletus näkyy maksuna itsellesi, eikä siirtokoodia tarvita.",
+  "recipientsVirtualIbanBankAddress": "Pankin osoite",
+  "recipientsVirtualIbanBankAddressHelp": "Virallinen pankin osoite siltä varalta, että pankkisi vaatii sitä."
 }

@@ -4860,5 +4860,18 @@
   "recipientsVirtualIbanActivatingDescription": "正在创建您的虚拟 IBAN，可能需要几分钟。",
   "recipientsVirtualIbanActivatedTitle": "保密 SEPA 已启用",
   "recipientsVirtualIbanActivatedDescription": "您现在可以使用个人虚拟 IBAN 私密地提取资金。",
-  "withdrawConfidentialSepaNotActivatedError": "请为此 SEPA 收件人激活保密付款选项。"
+  "withdrawConfidentialSepaNotActivatedError": "请为此 SEPA 收件人激活保密付款选项。",
+  "recipientsVirtualIbanCopied": "涂料",
+  "recipientsVirtualIbanDone": "Done",
+  "recipientsVirtualIbanRecipientName": "客户名称",
+  "recipientsVirtualIbanIbanLabel": "IBAN账户",
+  "recipientsVirtualIbanCountry": "银行账户",
+  "recipientsVirtualIbanBic": "BIC 守则",
+  "fundExchangeMethodConfidentialSepa": "保密 SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "用于私密存款的个人虚拟 IBAN",
+  "recipientsVirtualIbanActivatedFundingDescription": "您现在可以使用个人虚拟 IBAN 私密地存入资金。",
+  "recipientsVirtualIbanShowDetails": "显示我的虚拟 IBAN 详情",
+  "recipientsVirtualIbanDetailsDescription": "使用以您本人名义开设的个人虚拟 IBAN 私密地为账户充值。存款将显示为付款给您本人，无需转账代码。",
+  "recipientsVirtualIbanBankAddress": "银行地址",
+  "recipientsVirtualIbanBankAddressHelp": "银行的官方地址，以备您的银行要求时使用。"
 }

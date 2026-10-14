@@ -11852,5 +11852,18 @@
   "recipientsVirtualIbanActivatingDescription": "กำลังสร้าง IBAN เสมือนของคุณ อาจใช้เวลาสักครู่",
   "recipientsVirtualIbanActivatedTitle": "เปิดใช้งาน SEPA แบบเป็นความลับแล้ว",
   "recipientsVirtualIbanActivatedDescription": "ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อถอนเงินอย่างเป็นส่วนตัวได้แล้ว",
-  "withdrawConfidentialSepaNotActivatedError": "โปรดเปิดใช้งานตัวเลือกการชำระเงินแบบเป็นความลับสำหรับผู้รับเงิน SEPA รายนี้"
+  "withdrawConfidentialSepaNotActivatedError": "โปรดเปิดใช้งานตัวเลือกการชำระเงินแบบเป็นความลับสำหรับผู้รับเงิน SEPA รายนี้",
+  "recipientsVirtualIbanCopied": "ติดตามคลิปบอร์ด",
+  "recipientsVirtualIbanDone": "อย่าลืม",
+  "recipientsVirtualIbanRecipientName": "ชื่อ",
+  "recipientsVirtualIbanIbanLabel": "จํานวนบัญชี",
+  "recipientsVirtualIbanCountry": "ธนาคารธนาคาร",
+  "recipientsVirtualIbanBic": "รหัส BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA แบบเป็นความลับ",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN เสมือนส่วนบุคคลสำหรับฝากเงินแบบเป็นส่วนตัว",
+  "recipientsVirtualIbanActivatedFundingDescription": "ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อฝากเงินอย่างเป็นส่วนตัวได้แล้ว",
+  "recipientsVirtualIbanShowDetails": "แสดงรายละเอียด IBAN เสมือนของฉัน",
+  "recipientsVirtualIbanDetailsDescription": "เติมเงินเข้าบัญชีอย่างเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง รายการฝากจะแสดงเป็นการชำระเงินให้ตัวคุณเอง โดยไม่ต้องใช้รหัสการโอน",
+  "recipientsVirtualIbanBankAddress": "ที่อยู่ธนาคาร",
+  "recipientsVirtualIbanBankAddressHelp": "ที่อยู่อย่างเป็นทางการของธนาคาร ในกรณีที่ธนาคารของคุณขอ"
 }

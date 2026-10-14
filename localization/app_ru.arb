@@ -4866,5 +4866,18 @@
   "recipientsVirtualIbanActivatingDescription": "Создаём ваш виртуальный IBAN. Это может занять несколько минут.",
   "recipientsVirtualIbanActivatedTitle": "Конфиденциальный SEPA активирован",
   "recipientsVirtualIbanActivatedDescription": "Теперь вы можете использовать личный виртуальный IBAN, чтобы выводить деньги конфиденциально.",
-  "withdrawConfidentialSepaNotActivatedError": "Пожалуйста, активируйте опцию конфиденциального платежа для этого получателя SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "Пожалуйста, активируйте опцию конфиденциального платежа для этого получателя SEPA.",
+  "recipientsVirtualIbanCopied": "Копируется в буфер обмена",
+  "recipientsVirtualIbanDone": "Дон",
+  "recipientsVirtualIbanRecipientName": "Имя получателя",
+  "recipientsVirtualIbanIbanLabel": "Номер счета IBAN",
+  "recipientsVirtualIbanCountry": "Страна с банковским счетом",
+  "recipientsVirtualIbanBic": "Код BIC",
+  "fundExchangeMethodConfidentialSepa": "Конфиденциальный SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Личный виртуальный IBAN для конфиденциального пополнения",
+  "recipientsVirtualIbanActivatedFundingDescription": "Теперь вы можете использовать личный виртуальный IBAN, чтобы вносить деньги конфиденциально.",
+  "recipientsVirtualIbanShowDetails": "Показать реквизиты моего виртуального IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Пополнение будет выглядеть как платёж самому себе, без кода перевода.",
+  "recipientsVirtualIbanBankAddress": "Адрес банка",
+  "recipientsVirtualIbanBankAddressHelp": "Официальный адрес банка, если ваш банк его запросит."
 }

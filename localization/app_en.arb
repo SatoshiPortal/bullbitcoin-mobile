@@ -15595,5 +15595,57 @@
   "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
   "@withdrawConfidentialSepaNotActivatedError": {
     "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
+  },
+  "recipientsVirtualIbanCopied": "Copied to clipboard",
+  "@recipientsVirtualIbanCopied": {
+    "description": "Toast shown after copying a virtual IBAN detail"
+  },
+  "recipientsVirtualIbanDone": "Done",
+  "@recipientsVirtualIbanDone": {
+    "description": "Button that leaves the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "@recipientsVirtualIbanRecipientName": {
+    "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
+  },
+  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "@recipientsVirtualIbanIbanLabel": {
+    "description": "Label of the virtual IBAN account number"
+  },
+  "recipientsVirtualIbanCountry": "Bank account country",
+  "@recipientsVirtualIbanCountry": {
+    "description": "Label of the country of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanBic": "BIC code",
+  "@recipientsVirtualIbanBic": {
+    "description": "Label of the BIC code of the virtual IBAN account"
+  },
+  "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
+  "@fundExchangeMethodConfidentialSepa": {
+    "description": "Title of the Confidential SEPA funding method"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "A personal virtual IBAN to deposit money privately",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle of the Confidential SEPA funding method"
+  },
+  "recipientsVirtualIbanActivatedFundingDescription": "You can now use your personal virtual IBAN to deposit money privately.",
+  "@recipientsVirtualIbanActivatedFundingDescription": {
+    "description": "Description once the virtual IBAN is active, when started from funding"
+  },
+  "recipientsVirtualIbanShowDetails": "Show my virtual IBAN details",
+  "@recipientsVirtualIbanShowDetails": {
+    "description": "Button that shows the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanDetailsDescription": "Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.",
+  "@recipientsVirtualIbanDetailsDescription": {
+    "description": "Explains how to deposit with the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddress": "Bank address",
+  "@recipientsVirtualIbanBankAddress": {
+    "description": "Label of the address of the bank that holds the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddressHelp": "The official bank address, in case your bank asks for it.",
+  "@recipientsVirtualIbanBankAddressHelp": {
+    "description": "Explains when the bank address of the virtual IBAN is needed"
   }
 }

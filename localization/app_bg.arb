@@ -9955,5 +9955,18 @@
   "recipientsVirtualIbanActivatingDescription": "Създаваме виртуалния ви IBAN. Това може да отнеме няколко минути.",
   "recipientsVirtualIbanActivatedTitle": "Поверителният SEPA е активиран",
   "recipientsVirtualIbanActivatedDescription": "Вече можете да използвате личния си виртуален IBAN, за да теглите пари поверително.",
-  "withdrawConfidentialSepaNotActivatedError": "Моля, активирайте опцията за поверително плащане за този получател по SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "Моля, активирайте опцията за поверително плащане за този получател по SEPA.",
+  "recipientsVirtualIbanCopied": "Копирано в клипборда",
+  "recipientsVirtualIbanDone": "Готово",
+  "recipientsVirtualIbanRecipientName": "Име на получателя",
+  "recipientsVirtualIbanIbanLabel": "IBAN номер на сметка",
+  "recipientsVirtualIbanCountry": "Държава на банковата сметка",
+  "recipientsVirtualIbanBic": "BIC код",
+  "fundExchangeMethodConfidentialSepa": "Поверителен SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Личен виртуален IBAN за поверително депозиране на пари",
+  "recipientsVirtualIbanActivatedFundingDescription": "Вече можете да използвате личния си виртуален IBAN, за да внасяте пари поверително.",
+  "recipientsVirtualIbanShowDetails": "Покажи данните на виртуалния ми IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Захранвайте сметката си поверително с личен виртуален IBAN на ваше име. Вноската ще се вижда като плащане към самия вас, без код за превод.",
+  "recipientsVirtualIbanBankAddress": "Адрес на банката",
+  "recipientsVirtualIbanBankAddressHelp": "Официалният адрес на банката, ако банката ви го изисква."
 }

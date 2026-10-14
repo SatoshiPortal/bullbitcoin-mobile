@@ -3665,5 +3665,18 @@
   "recipientsVirtualIbanActivatingDescription": "Tunaunda IBAN pepe yako. Hii inaweza kuchukua dakika chache.",
   "recipientsVirtualIbanActivatedTitle": "SEPA ya Siri imewashwa",
   "recipientsVirtualIbanActivatedDescription": "Sasa unaweza kutumia IBAN pepe yako ya kibinafsi kutoa pesa kwa faragha.",
-  "withdrawConfidentialSepaNotActivatedError": "Tafadhali washa chaguo la malipo ya siri kwa mpokeaji huyu wa SEPA."
+  "withdrawConfidentialSepaNotActivatedError": "Tafadhali washa chaguo la malipo ya siri kwa mpokeaji huyu wa SEPA.",
+  "recipientsVirtualIbanCopied": "Imenakiliwa",
+  "recipientsVirtualIbanDone": "Imekamilika",
+  "recipientsVirtualIbanRecipientName": "Jina la mpokeaji",
+  "recipientsVirtualIbanIbanLabel": "Nambari ya akaunti ya IBAN",
+  "recipientsVirtualIbanCountry": "Nchi ya akaunti ya benki",
+  "recipientsVirtualIbanBic": "Msimbo wa BIC",
+  "fundExchangeMethodConfidentialSepa": "SEPA ya Siri",
+  "fundExchangeMethodConfidentialSepaSubtitle": "IBAN pepe ya binafsi ya kuweka pesa kwa siri",
+  "recipientsVirtualIbanActivatedFundingDescription": "Sasa unaweza kutumia IBAN pepe yako ya kibinafsi kuweka pesa kwa faragha.",
+  "recipientsVirtualIbanShowDetails": "Onyesha maelezo ya IBAN pepe yangu",
+  "recipientsVirtualIbanDetailsDescription": "Weka pesa kwenye akaunti yako kwa faragha ukitumia IBAN pepe ya kibinafsi kwa jina lako. Amana itaonekana kama malipo kwako mwenyewe, bila msimbo wa uhamisho.",
+  "recipientsVirtualIbanBankAddress": "Anwani ya benki",
+  "recipientsVirtualIbanBankAddressHelp": "Anwani rasmi ya benki, ikiwa benki yako itaiomba."
 }

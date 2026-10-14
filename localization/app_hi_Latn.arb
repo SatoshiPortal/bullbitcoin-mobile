@@ -12230,5 +12230,18 @@
   "recipientsVirtualIbanActivatingDescription": "Aapka virtual IBAN banaya ja raha hai. Ismein kuch minute lag sakte hain.",
   "recipientsVirtualIbanActivatedTitle": "Confidential SEPA activate ho gaya",
   "recipientsVirtualIbanActivatedDescription": "Ab aap privately paise nikalne ke liye apne personal virtual IBAN ka upyog kar sakte hain.",
-  "withdrawConfidentialSepaNotActivatedError": "Kripya is SEPA recipient ke liye confidential payment option activate karein."
+  "withdrawConfidentialSepaNotActivatedError": "Kripya is SEPA recipient ke liye confidential payment option activate karein.",
+  "recipientsVirtualIbanCopied": "Clipboard mein copy hua",
+  "recipientsVirtualIbanDone": "Ho gaya",
+  "recipientsVirtualIbanRecipientName": "Praaptakarta ka naam",
+  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanCountry": "Bank account desh",
+  "recipientsVirtualIbanBic": "BIC code",
+  "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Private roop se paisa jama karne ke liye ek personal virtual IBAN",
+  "recipientsVirtualIbanActivatedFundingDescription": "Ab aap privately paise jama karne ke liye apne personal virtual IBAN ka upyog kar sakte hain.",
+  "recipientsVirtualIbanShowDetails": "Mere virtual IBAN ka vivaran dikhayein",
+  "recipientsVirtualIbanDetailsDescription": "Apne naam par ek personal virtual IBAN se apne account mein privately paise jama karein. Deposit khud ko kiye gaye payment ki tarah dikhega, kisi transfer code ki zaroorat nahin.",
+  "recipientsVirtualIbanBankAddress": "Bank ka pata",
+  "recipientsVirtualIbanBankAddressHelp": "Bank ka official pata, agar aapka bank maange."
 }
