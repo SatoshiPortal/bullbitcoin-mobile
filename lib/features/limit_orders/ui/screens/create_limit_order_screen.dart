@@ -31,8 +31,8 @@ final class CreateLimitOrderScreen extends StatefulWidget {
 
 final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   final _discountController = TextEditingController(text: '1');
-  final _limitPriceController = TextEditingController();
-  final _amountController = TextEditingController();
+  final _limitPriceController = BullAmountController();
+  final _amountController = BullAmountController();
   final _lightningController = TextEditingController();
   final _amountNode = FocusNode();
   final _discountNode = FocusNode();
@@ -48,7 +48,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     if (!mounted) return;
     final parsed =
         double.tryParse(
-          _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+          _amountController.amount.replaceAll(RegExp(r'[^0-9.]'), ''),
         ) ??
         0;
     context.read<CreateLimitOrderCubit>().setAmount(parsed);
@@ -241,7 +241,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       final text = state.limitPrice > 0
           ? state.limitPrice.toStringAsFixed(2)
           : '';
-      if (_limitPriceController.text != text) _limitPriceController.text = text;
+      if (_limitPriceController.amount != text) {
+        _limitPriceController.amount = text;
+      }
     }
     if (!_discountNode.hasFocus) {
       final text = state.discount.toStringAsFixed(0);
@@ -289,12 +291,13 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           controller: _limitPriceController,
           focusNode: _limitPriceNode,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [BullAmountInputFormatter(currency.code)],
           decoration: InputDecoration(
             labelText: context.loc.limitOrdersTargetPrice,
             suffixText: currency.code,
           ),
-          onChanged: (value) {
-            final price = double.tryParse(value);
+          onChanged: (_) {
+            final price = double.tryParse(_limitPriceController.amount);
             if (price != null) {
               context.read<CreateLimitOrderCubit>().setLimitPrice(price);
             }

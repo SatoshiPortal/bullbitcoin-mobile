@@ -5,8 +5,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, Gap;
-import 'package:intl/intl.dart';
+    show
+        BullAmountController,
+        BullAmountInputFormatter,
+        BullNumberFormat,
+        BullShimmerLine,
+        Gap;
 
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
@@ -24,7 +28,7 @@ class ExchangeAmountInputField extends StatelessWidget {
 
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;
-  final TextEditingController _amountController;
+  final BullAmountController _amountController;
   final FocusNode? _focusNode;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;
@@ -86,16 +90,19 @@ class ExchangeAmountInputField extends StatelessWidget {
                             color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
-                            hintText: NumberFormat.decimalPatternDigits(
-                              decimalDigits: amountInputDecimals,
-                            ).format(0),
+                            hintText: BullNumberFormat.decimal(
+                              0,
+                              minDecimals: amountInputDecimals,
+                              maxDecimals: amountInputDecimals,
+                            ),
                             hintStyle: context.font.displaySmall?.copyWith(
                               color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
+                          validator: (_) {
+                            final value = _amountController.amount;
+                            if (value.isEmpty) {
                               return context
                                   .loc
                                   .exchangeAmountInputValidationEmpty;

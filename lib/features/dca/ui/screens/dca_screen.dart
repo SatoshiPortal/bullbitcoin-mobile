@@ -13,7 +13,8 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart'
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountController, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class DcaScreen extends StatefulWidget {
 
 class _DcaScreenState extends State<DcaScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final TextEditingController _amountController = TextEditingController();
+  late final _amountController = BullAmountController();
   final FocusNode _amountNode = FocusNode();
   bool _hasFunds = true;
   FiatCurrency? _fiatCurrency;
@@ -140,7 +141,7 @@ class _DcaScreenState extends State<DcaScreen> {
                             if (_formKey.currentState!.validate()) {
                               context.read<DcaBloc>().add(
                                 DcaEvent.buyInputContinuePressed(
-                                  amountInput: _amountController.text,
+                                  amountInput: _amountController.amount,
                                   currency: _fiatCurrency!,
                                   frequency: _frequency!,
                                 ),

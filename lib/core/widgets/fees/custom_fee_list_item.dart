@@ -8,9 +8,8 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, Gap;
+    show BullAmountController, BullAmountInputFormatter, BullShimmerLine, Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -168,7 +167,7 @@ class CustomFeeListItem extends StatefulWidget {
 
 class _CustomFeeListItemState extends State<CustomFeeListItem> {
   late bool _isAbsolute;
-  late TextEditingController _controller;
+  late BullAmountController _controller;
   NetworkFee? _customFee;
   late FocusNode _focusNode;
   // True when the focus node is owned by this widget (no external one was
@@ -204,8 +203,8 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
             (committed == null && widget.defaultAbsolute));
     _isAbsolute = useAbsolute;
     _customFee = committed;
-    _controller = TextEditingController(
-      text: _formatForInput(committed, asAbsolute: useAbsolute),
+    _controller = BullAmountController(
+      amount: _formatForInput(committed, asAbsolute: useAbsolute),
     );
     _ownsFocusNode = widget.focusNode == null;
     _focusNode = (widget.focusNode ?? FocusNode())
@@ -494,7 +493,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                 textInputAction: .done,
                 inputFormatters: [
                   if (_isAbsolute)
-                    FilteringTextInputFormatter.digitsOnly
+                    BullAmountInputFormatter(BitcoinUnit.sats.code)
                   else
                     // Cap the sat/vByte rate at 2 decimals so the typed value
                     // matches what _formatForInput renders back (also 2dp) and
@@ -505,7 +504,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                       maxDecimals: 2,
                     ),
                 ],
-                onChanged: _onValueChanged,
+                // Parse the raw amount, not the localized text the field
+                // shows: `1,5` in French must commit 1.5 sat/vB.
+                onChanged: (_) => _onValueChanged(_controller.amount),
                 style: TextStyle(color: context.appColors.onSurface),
                 decoration: InputDecoration(
                   fillColor: context.appColors.surfaceContainer,

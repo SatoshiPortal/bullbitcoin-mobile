@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountController, BullShimmerLine, Gap;
 import 'package:go_router/go_router.dart';
 
 class SellAmountInputBottomButtons extends StatefulWidget {
@@ -19,7 +20,7 @@ class SellAmountInputBottomButtons extends StatefulWidget {
     this.fiatCurrency,
   });
 
-  final TextEditingController amountController;
+  final BullAmountController amountController;
   final bool isFiatCurrencyInput;
   final GlobalKey<FormState> formKey;
   final FiatCurrency? fiatCurrency;
@@ -41,7 +42,7 @@ class _SellAmountInputBottomButtonsState
 
   void _onAmountChanged() {
     final cadAmount = widget.isFiatCurrencyInput
-        ? double.tryParse(widget.amountController.text) ?? 0.0
+        ? double.tryParse(widget.amountController.amount) ?? 0.0
         : 0.0;
     final newValue = context.read<SellBloc>().state.needsKycUpgrade(
       cadAmount,
@@ -110,7 +111,7 @@ class _SellAmountInputBottomButtonsState
             final state = sellBloc.state;
             sellBloc.add(
               SellEvent.amountInputContinuePressed(
-                amountInput: widget.amountController.text,
+                amountInput: widget.amountController.amount,
                 isFiatCurrencyInput: widget.isFiatCurrencyInput,
                 fiatCurrency:
                     widget.fiatCurrency ??

@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountController, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class SellScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class SellScreen extends StatefulWidget {
 
 class _SellScreenState extends State<SellScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final TextEditingController _amountController = TextEditingController();
+  late final _amountController = BullAmountController();
   final FocusNode _amountNode = FocusNode();
   bool _isFiatCurrencyInput = true;
   FiatCurrency? _fiatCurrency;

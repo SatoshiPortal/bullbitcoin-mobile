@@ -115,6 +115,7 @@ export 'src/buttons/bull_tool_button.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
 
 // Inputs.
+export 'src/inputs/bull_amount_controller.dart';
 export 'src/inputs/bull_amount_input_formatter.dart';
 export 'src/inputs/bull_checkbox.dart';
 export 'src/inputs/bull_dial_pad.dart';

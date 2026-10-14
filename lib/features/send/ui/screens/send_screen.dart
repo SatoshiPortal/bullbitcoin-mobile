@@ -45,10 +45,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmountController,
         BullBorderedTile,
         BullCountdown,
         BullFadingLinearProgress,
         BullInputText,
+        BullNumberFormat,
         BullSegmented,
         Gap;
 import 'package:gif/gif.dart';
@@ -265,7 +267,7 @@ class SendAmountScreen extends StatefulWidget {
 }
 
 class _SendAmountScreenState extends State<SendAmountScreen> {
-  late TextEditingController _amountController;
+  late BullAmountController _amountController;
   late FocusNode _amountFocusNode;
   bool _isMax = false;
 
@@ -273,15 +275,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   void initState() {
     super.initState();
     final amount = context.read<SendCubit>().state.amount;
-    _amountController = TextEditingController.fromValue(
-      TextEditingValue(
-        text: amount,
-        selection: TextSelection.collapsed(offset: amount.length),
-      ),
-    );
+    _amountController = BullAmountController()..amount = amount;
     _amountFocusNode = FocusNode();
     _amountController.addListener(() {
-      final text = _amountController.text;
+      final text = _amountController.amount;
       final cubit = context.read<SendCubit>();
       if (text != cubit.state.amount && !_isMax) {
         cubit.amountChanged(amount: text);
@@ -332,9 +329,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
                     previous.amount != current.amount &&
-                    _amountController.text != current.amount,
+                    _amountController.amount != current.amount,
                 listener: (context, state) {
-                  final amount = state.amount;
+                  final amount = BullNumberFormat.toInputText(state.amount);
                   final currentCursor = _amountController.selection.baseOffset;
                   final safePosition = _isMax
                       ? amount.length
@@ -631,7 +628,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 class SendAmountConfirmButton extends StatelessWidget {
   const SendAmountConfirmButton({super.key, required this.amountController});
 
-  final TextEditingController amountController;
+  final BullAmountController amountController;
 
   @override
   Widget build(BuildContext context) {
@@ -651,7 +648,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       label: context.loc.sendContinue,
       onPressed: () {
         final cubit = context.read<SendCubit>();
-        final currentAmount = amountController.text;
+        final currentAmount = amountController.amount;
         if (currentAmount != cubit.state.amount) {
           cubit.amountChanged(amount: currentAmount);
         }

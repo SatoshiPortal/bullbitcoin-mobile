@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
@@ -102,7 +103,7 @@ void main() {
     ) async {
       await pumpTile(tester, initialFee: const NetworkFee.absolute(1234));
       final field = tester.widget<TextFormField>(find.byType(TextFormField));
-      expect(field.controller!.text, '1234');
+      expect(field.controller!.text, '1,234');
     });
 
     testWidgets('trailing zeros are trimmed when prefilling a relative fee', (
@@ -291,6 +292,79 @@ void main() {
       expect(field.controller!.text, '0.12');
       // What was armed matches what's shown — no hidden extra precision.
       expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
+    });
+  });
+
+  group('CustomFeeListItem — in French', () {
+    // The field shows `1,5` but must commit 1.5 sat/vB: a French rate that
+    // failed to parse would silently leave the previous rate selected.
+    setUp(() => BullNumberFormat.useLanguage('fr'));
+    tearDown(() => BullNumberFormat.useLanguage('en'));
+
+    testWidgets('prefills the committed relative fee with a comma', (
+      tester,
+    ) async {
+      await pumpTile(
+        tester,
+        initialFee: NetworkFee.relativeFromSatPerVbyte(0.5),
+      );
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '0,5');
+    });
+
+    testWidgets('prefills the committed absolute fee grouped', (tester) async {
+      await pumpTile(tester, initialFee: const NetworkFee.absolute(1234));
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '1\u00A0234');
+    });
+
+    for (final typed in ['2,5', '2.5']) {
+      testWidgets('RBF mode commits 2.5 sat/vB typed as $typed', (
+        tester,
+      ) async {
+        NetworkFee? committed;
+        await pumpTile(
+          tester,
+          commitOnChange: true,
+          onCommit: (fee) async => committed = fee,
+        );
+
+        await tester.enterText(find.byType(TextFormField), typed);
+        await tester.pump();
+
+        final field = tester.widget<TextFormField>(find.byType(TextFormField));
+        expect(field.controller!.text, '2,5');
+        expect((committed! as RelativeFee).satPerVbyte, closeTo(2.5, 0.003));
+      });
+    }
+
+    testWidgets('caps the rate at 2 decimals', (tester) async {
+      NetworkFee? armed;
+      await pumpTile(tester, onArm: (fee) => armed = fee);
+
+      await tester.enterText(find.byType(TextFormField), '0,12345678');
+      await tester.pump();
+
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.controller!.text, '0,12');
+      expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
+    });
+
+    testWidgets('RBF mode does not commit a below-floor rate', (tester) async {
+      NetworkFee? committed;
+      var invalidated = false;
+      await pumpTile(
+        tester,
+        commitOnChange: true,
+        onCommit: (fee) async => committed = fee,
+        onInvalid: () => invalidated = true,
+      );
+
+      await tester.enterText(find.byType(TextFormField), '0,05');
+      await tester.pump();
+
+      expect(committed, isNull);
+      expect(invalidated, isTrue);
     });
   });
 
