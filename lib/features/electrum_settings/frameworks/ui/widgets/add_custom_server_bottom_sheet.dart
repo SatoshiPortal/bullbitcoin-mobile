@@ -3,16 +3,19 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullLowerCaseTextFormatter, BullSettingsEntryItem, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInfoCard,
+        BullLowerCaseTextFormatter,
+        BullSettingsEntryItem,
+        Gap;
 
 class CustomServerInput {
   final String url;
@@ -32,7 +35,7 @@ class AddCustomServerBottomSheet extends StatefulWidget {
   static Future<CustomServerInput?> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
-    return BlurredBottomSheet.show<CustomServerInput>(
+    return BullBottomSheet.show<CustomServerInput>(
       context: context,
       child: TorSettingsScope.provideFrom(
         context: context,
@@ -259,7 +262,7 @@ class _AddCustomServerBottomSheetState
                       onTap: () => TorSettingsBottomSheet.show(context),
                     ),
                     const Gap(8),
-                    InfoCard(
+                    BullInfoCard(
                       description: context.loc.electrumOnionUsesTorDescription,
                       tagColor: context.appColors.primary,
                       bgColor: context.appColors.surfaceContainer,
@@ -281,7 +284,7 @@ class _AddCustomServerBottomSheetState
                     ),
                   ),
                   const Gap(24),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
                     bgColor: context.appColors.onSurface,

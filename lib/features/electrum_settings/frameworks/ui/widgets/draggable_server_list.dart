@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/electrum_servers_error_card.dart';
@@ -8,7 +7,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/serve
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
@@ -37,7 +36,7 @@ class DraggableServerList extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
-          InfoCard(
+          BullInfoCard(
             description: context.loc.electrumDefaultServersInfo,
             tagColor: context.appColors.tertiary,
             bgColor: context.appColors.tertiaryContainer,
