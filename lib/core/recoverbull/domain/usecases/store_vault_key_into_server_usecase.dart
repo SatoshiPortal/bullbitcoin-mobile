@@ -20,7 +20,11 @@ class StoreVaultKeyIntoServerUsecase {
     required String password,
     required EncryptedVault vault,
     required String vaultKey,
+    RecoverBullTorRoute? route,
   }) async {
+    if (route != null) {
+      return _store(password, vault, vaultKey, route, ownsRoute: false);
+    }
     final session = await _ensureTorSessionUsecase.execute();
     return switch (session) {
       Ok(:final value) => _store(password, vault, vaultKey, value),
@@ -32,8 +36,9 @@ class StoreVaultKeyIntoServerUsecase {
     String password,
     EncryptedVault vault,
     String vaultKey,
-    RecoverBullTorRoute session,
-  ) async {
+    RecoverBullTorRoute session, {
+    bool ownsRoute = true,
+  }) async {
     try {
       return await _recoverBullRepository.storeVaultKey(
         vault.id,
@@ -46,7 +51,7 @@ class StoreVaultKeyIntoServerUsecase {
       // A throw here would escape after the key was already stored, leaving the
       // flow half-completed with no typed failure for the caller to act on.
       try {
-        await session.close();
+        if (ownsRoute) await session.close();
       } catch (e, st) {
         log.warning(
           'closing the RecoverBull Tor session failed',

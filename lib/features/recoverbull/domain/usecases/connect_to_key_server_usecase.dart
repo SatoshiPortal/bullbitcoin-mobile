@@ -36,15 +36,15 @@ class ConnectToKeyServerUsecase {
   /// server answers at once.
   Future<Result<bool, RecoverBullCoreFailure>> execute({
     required void Function(int attempt) onAttempt,
+    RecoverBullTorRoute? route,
   }) async {
-    // This route is owned by this execution only: no route or HTTP client is
-    // retained after the finally block completes.
-    RecoverBullTorRoute? route;
+    // A supplied route remains owned by its flow; standalone callers retain the existing acquire-and-close behavior.
+    final ownsRoute = route == null;
     try {
       for (var attempt = 1; attempt <= maxAttempts; attempt++) {
         if (attempt > 1) await _wait(Duration(seconds: attempt - 1));
         onAttempt(attempt);
-        if (attempt == 1) {
+        if (route == null) {
           final ensured = await _ensureTorSessionUsecase.execute();
           switch (ensured) {
             case Ok(:final value):
@@ -71,7 +71,7 @@ class ConnectToKeyServerUsecase {
       return const Ok(false);
     } finally {
       try {
-        if (route != null) await route.close();
+        if (ownsRoute && route != null) await route.close();
       } catch (e, st) {
         // Closing is cleanup only and must not replace the connection result.
         log.warning(

@@ -61,6 +61,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   StreamSubscription<tor.TorConnectionState>? _torSubscription;
   Future<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>?
   _pendingRoutePreparation;
+  RecoverBullTorRoute? _flowRoute;
+  tor.TorSource? _pendingRouteFailureSource;
+  int _routeGeneration = 0;
   bool _closingBloc = false;
 
   RecoverBullBloc({
@@ -91,7 +94,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnServerCheck>(_onServerCheck, transformer: droppable());
     on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
     on<OnClearError>(_onClearError);
-    on<_OnTorConnectionChanged>(_onTorConnectionChanged);
+    on<_OnTorConnectionChanged>(
+      _onTorConnectionChanged,
+      transformer: sequential(),
+    );
 
     // Tor readiness is pushed, so follow it for as long as this flow is open.
     // Taking a single snapshot in `_onServerCheck` reported whatever the status
@@ -106,15 +112,28 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   @override
   Future<void> close() async {
     _closingBloc = true;
+    _routeGeneration++;
     await _torSubscription?.cancel();
     final pending = _pendingRoutePreparation;
     if (pending != null) {
-      final result = await pending;
-      if (result case Ok(:final value)) {
-        await value.close();
-      }
+      if (await pending case Ok(:final value)) await _closeRoute(value);
     }
+    final route = _flowRoute;
+    _flowRoute = null;
+    if (route != null) await _closeRoute(route);
     return super.close();
+  }
+
+  Future<void> _closeRoute(RecoverBullTorRoute route) async {
+    try {
+      await route.close();
+    } catch (error, stackTrace) {
+      log.warning(
+        'closing RecoverBull route failed',
+        error: error,
+        trace: stackTrace,
+      );
+    }
   }
 
   Future<void> _onTorConnectionChanged(
@@ -147,16 +166,41 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         next.diagnostic == null) {
       return;
     }
-    emit(state.copyWith(torConnection: next));
+    if (next case tor.TorUnavailable(
+      :final source,
+    ) when _pendingRoutePreparation != null) {
+      _pendingRouteFailureSource = source;
+    }
+    final route = _flowRoute;
+    final invalidated =
+        next is tor.TorStopped ||
+        next is tor.TorUninitialized ||
+        next is tor.TorUnavailable ||
+        next is tor.TorConnecting && next.diagnostic != null;
+    if (route != null && invalidated) {
+      _routeGeneration++;
+      _flowRoute = null;
+      await _closeRoute(route);
+      if (isClosed || _closingBloc) return;
+    }
+    emit(
+      state.copyWith(
+        torConnection: next,
+        keyServerStatus: route != null && invalidated
+            ? KeyServerStatus.unknown
+            : state.keyServerStatus,
+      ),
+    );
 
-    // The stale-generation arm of `_onTorInitialization` returns without
-    // dispatching a server check, so readiness that arrives through this stream
-    // instead of through that call would otherwise never trigger one — leaving
-    // the screen on "waiting" with no failure and no retry. Picking it up here
-    // is what closes that dead end.
     if (next is tor.TorReady &&
-        state.keyServerStatus == KeyServerStatus.unknown) {
-      add(const OnServerCheck());
+        state.keyServerStatus == KeyServerStatus.unknown &&
+        _pendingRoutePreparation == null) {
+      // Readiness does not own an isolated route. Let initialization acquire it exactly once before checking the server.
+      add(
+        _flowRoute == null
+            ? const OnTorInitialization()
+            : const OnServerCheck(),
+      );
     }
   }
 
@@ -164,46 +208,67 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnTorInitialization event,
     Emitter<RecoverBullState> emit,
   ) async {
+    final generation = ++_routeGeneration;
     emit(
       state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
     );
-    final preparation = _ensureRecoverBullTorSessionUsecase.execute(
-      restartEmbedded: event.restart,
-    );
-    _pendingRoutePreparation = preparation;
-    final result = await preparation;
+    final retained = _flowRoute;
+    if (!event.restart && retained != null) {
+      emit(state.copyWith(torConnection: tor.TorReady(retained.route)));
+      add(const OnServerCheck());
+      return;
+    }
+    _flowRoute = null;
+    if (retained != null) await _closeRoute(retained);
     if (isClosed || _closingBloc) return;
-    switch (result) {
-      case Ok(:final value):
-        final connection = tor.TorReady(value.route);
-        try {
-          await value.close();
-        } catch (error, stackTrace) {
-          log.warning(
-            'closing RecoverBull route failed',
-            error: error,
-            trace: stackTrace,
-          );
-        }
-        if (isClosed || _closingBloc) return;
-        emit(state.copyWith(torConnection: connection));
-        add(const OnServerCheck());
-      case Err(:final failure):
-        final torFailure = failure is core.ExternalTorProxyUnavailableFailure
-            ? tor.TorExternalProxyUnavailableFailure(failure.logMessage)
-            : tor.TorBootstrapFailure(failure.logMessage);
-        emit(
-          state.copyWith(
-            torConnection: tor.TorUnavailable(
-              source: failure is core.ExternalTorProxyUnavailableFailure
-                  ? tor.TorSource.external
-                  : tor.TorSource.embedded,
-              failure: torFailure,
+    var restartEmbedded = event.restart;
+    while (!isClosed && !_closingBloc && generation == _routeGeneration) {
+      _pendingRouteFailureSource = null;
+      final preparation = _ensureRecoverBullTorSessionUsecase.execute(
+        restartEmbedded: restartEmbedded,
+      );
+      restartEmbedded = false;
+      _pendingRoutePreparation = preparation;
+      final result = await preparation;
+      final failedSource = _pendingRouteFailureSource;
+      _pendingRouteFailureSource = null;
+      if (identical(_pendingRoutePreparation, preparation)) {
+        _pendingRoutePreparation = null;
+      }
+      if (isClosed || _closingBloc || generation != _routeGeneration) {
+        if (result case Ok(:final value)) await _closeRoute(value);
+        return;
+      }
+      // A real failure observed during acquisition invalidates that source's late route. An initial Stopped event is normal bootstrap setup.
+      if (result case Ok(:final value) when value.source == failedSource) {
+        await _closeRoute(value);
+        // Ready may have arrived while acquisition was pending. Retry here because a new initialization event would be dropped by this handler.
+        if (state.torConnection is tor.TorReady) continue;
+        return;
+      }
+      switch (result) {
+        case Ok(:final value):
+          _flowRoute = value;
+          emit(state.copyWith(torConnection: tor.TorReady(value.route)));
+          add(const OnServerCheck());
+        case Err(:final failure):
+          final torFailure = failure is core.ExternalTorProxyUnavailableFailure
+              ? tor.TorExternalProxyUnavailableFailure(failure.logMessage)
+              : tor.TorBootstrapFailure(failure.logMessage);
+          emit(
+            state.copyWith(
+              torConnection: tor.TorUnavailable(
+                source: failure is core.ExternalTorProxyUnavailableFailure
+                    ? tor.TorSource.external
+                    : tor.TorSource.embedded,
+                failure: torFailure,
+              ),
+              failure: _torFailure(failure),
+              keyServerStatus: KeyServerStatus.offline,
             ),
-            failure: _torFailure(failure),
-            keyServerStatus: KeyServerStatus.offline,
-          ),
-        );
+          );
+      }
+      return;
     }
   }
 
@@ -211,6 +276,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnServerCheck event,
     Emitter<RecoverBullState> emit,
   ) async {
+    final generation = _routeGeneration;
     try {
       // `torStatus` is not emitted here: it is driven by the subscription set
       // up in the constructor. Emitting a snapshot at this point is what made a
@@ -226,15 +292,18 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       );
 
       final result = await _connectToKeyServerUsecase.execute(
+        route: _flowRoute,
         // Published before the call, so the screen shows which attempt is
         // actually in flight rather than which one already failed. Guarded:
         // the backoff outlives the screen when the user navigates away.
         onAttempt: (attempt) {
-          if (isClosed || _closingBloc) return;
+          if (isClosed || _closingBloc || generation != _routeGeneration) {
+            return;
+          }
           emit(state.copyWith(keyServerAttempt: attempt));
         },
       );
-      if (isClosed || _closingBloc) return;
+      if (isClosed || _closingBloc || generation != _routeGeneration) return;
 
       switch (result) {
         case Err(:final failure):
@@ -266,7 +335,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
       }
     } catch (e) {
-      if (isClosed || _closingBloc) return;
+      if (isClosed || _closingBloc || generation != _routeGeneration) return;
       log.severe(error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
@@ -274,6 +343,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
+    } finally {
+      // A replacement's check may have been dropped while this old check was in flight. Check the current route before leaving the handler.
+      if (!isClosed &&
+          !_closingBloc &&
+          generation != _routeGeneration &&
+          _flowRoute != null) {
+        await _onServerCheck(event, emit);
+      }
     }
   }
 
@@ -381,12 +458,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnVaultCreation event,
     Emitter<RecoverBullState> emit,
   ) async {
+    final generation = _routeGeneration;
+    bool isCurrent() =>
+        !isClosed &&
+        !_closingBloc &&
+        !emit.isDone &&
+        generation == _routeGeneration;
+    if (!isCurrent()) return;
     try {
       emit(state.copyWith(isLoading: true));
 
       final EncryptedVault vault;
       final String vaultKey;
-      switch (await _createEncryptedVaultUsecase.execute()) {
+      final created = await _createEncryptedVaultUsecase.execute();
+      if (!isCurrent()) return;
+      switch (created) {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
@@ -395,7 +481,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           return;
       }
 
-      switch (await _checkKeyServerConnectionUsecase.execute()) {
+      final checked = await _checkKeyServerConnectionUsecase.execute(
+        route: _flowRoute,
+      );
+      if (!isCurrent()) return;
+      switch (checked) {
         case Ok(value: true):
           break;
         case Ok():
@@ -412,17 +502,20 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             content: vault.toFile(),
             filename: vault.filename,
           );
+          if (!isCurrent()) return;
           if (saved case Err()) {
             emit(state.copyWith(failure: const VaultCreationFailure()));
             return;
           }
         case VaultProvider.googleDrive:
           final connected = await _connectToGoogleDriveUsecase.execute();
+          if (!isCurrent()) return;
           if (connected case Err()) {
             emit(state.copyWith(failure: const VaultCreationFailure()));
             return;
           }
           final stored = await _saveToGoogleDriveUsecase.execute(vault);
+          if (!isCurrent()) return;
           if (stored case Err()) {
             emit(state.copyWith(failure: const VaultCreationFailure()));
             return;
@@ -431,11 +524,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           log.warning('iCloud, not supported yet');
       }
 
+      if (!isCurrent()) return;
       final keyStored = await _storeVaultKeyIntoServerUsecase.execute(
+        route: _flowRoute,
         password: event.password,
         vault: vault,
         vaultKey: vaultKey,
       );
+      if (!isCurrent()) return;
       if (keyStored case Err(:final failure)) {
         // Keep the typed key-server detail (rate-limit cooldown, invalid
         // credentials) instead of collapsing it to the generic creation error.
@@ -446,7 +542,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vault: vault, vaultProvider: event.provider));
       log.fine('Vault created and key stored in server');
     } finally {
-      emit(state.copyWith(isLoading: false));
+      if (!isClosed && !_closingBloc && !emit.isDone) {
+        emit(state.copyWith(isLoading: false));
+      }
     }
   }
 
@@ -460,6 +558,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(isLoading: true, vaultKey: null));
 
       switch (await _fetchVaultKeyFromServerUsecase.execute(
+        route: _flowRoute,
         vault: event.vault,
         password: event.password,
       )) {
