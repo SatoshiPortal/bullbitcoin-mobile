@@ -15683,5 +15683,17 @@
   "settingsPayjoinMinutesUnit": "min",
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
+  },
+  "recoverbullDurationHoursMinutes": "{hours} h {minutes} min",
+  "@recoverbullDurationHoursMinutes": {
+    "description": "Compact duration of at least one hour, shown in the key server rate-limit message (e.g. 23 h 18 min)",
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
   }
 }

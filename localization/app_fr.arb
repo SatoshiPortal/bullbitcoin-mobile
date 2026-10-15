@@ -4959,5 +4959,6 @@
   "settingsPayjoinExpireMinutesDescription": "Durée pendant laquelle une session payjoin reste ouverte avant de basculer vers un paiement normal.",
   "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "min"
+  "settingsPayjoinMinutesUnit": "min",
+  "recoverbullDurationHoursMinutes": "{hours} h {minutes} min"
 }

@@ -33,6 +33,14 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     // remaining duration) to 1s so the UI never shows "0 seconds" or a
     // negative value.
     final seconds = retryIn.inSeconds < 1 ? 1 : retryIn.inSeconds;
+    // The key server locks an identifier for hours (a day in production);
+    // "1398 minutes" is unreadable.
+    if (seconds >= Duration.secondsPerHour) {
+      return context.loc.recoverbullDurationHoursMinutes(
+        (seconds ~/ Duration.secondsPerHour).toString(),
+        (seconds % Duration.secondsPerHour ~/ 60).toString(),
+      );
+    }
     if (seconds < 60) {
       return context.loc.durationSeconds(seconds.toString());
     }
