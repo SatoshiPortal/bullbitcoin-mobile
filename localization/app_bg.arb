@@ -3300,10 +3300,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Получатели - Очаква се скоро",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "bip85ExperimentalWarning": "Експериментално",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"

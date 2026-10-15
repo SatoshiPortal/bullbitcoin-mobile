@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_t
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

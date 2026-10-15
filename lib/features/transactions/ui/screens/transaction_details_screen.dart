@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
-import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
