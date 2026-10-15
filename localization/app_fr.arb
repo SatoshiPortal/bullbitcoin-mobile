@@ -4951,5 +4951,6 @@
   "recipientsVirtualIbanDetailsDescription": "Alimentez votre compte en toute confidentialité en utilisant un IBAN virtuel personnel à votre nom. Le dépôt apparaîtra comme un paiement à vous-même, sans code de transfert requis.",
   "recipientsVirtualIbanBankAddress": "Adresse de la banque",
   "recipientsVirtualIbanBankAddressHelp": "L'adresse officielle de la banque, au cas où elle serait requise par votre banque.",
-  "recipientsConfidentialSepaNameMustMatchHint": "Les noms doivent correspondre entre votre banque et votre IBAN virtuel, sinon les virements seront automatiquement retournés."
+  "recipientsConfidentialSepaNameMustMatchHint": "Les noms doivent correspondre entre votre banque et votre IBAN virtuel, sinon les virements seront automatiquement retournés.",
+  "copiedToClipboard": "Copié dans le presse-papiers"
 }

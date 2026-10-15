@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 /// Letters-only keyboard for mnemonic entry.
 ///
@@ -197,7 +197,7 @@ class _LetterKey extends StatelessWidget {
         enabled: enabled,
         onTap: onTap,
         suppressAnimation: paranoid,
-        child: BBText(
+        child: BullText(
           letter,
           style: context.font.headlineLarge,
           color: enabled

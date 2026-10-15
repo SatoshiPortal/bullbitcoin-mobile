@@ -11861,5 +11861,6 @@
   "recipientsVirtualIbanDetailsDescription": "با یک IBAN مجازی شخصی به نام خودتان، حساب خود را به‌صورت خصوصی شارژ کنید. واریز به‌صورت پرداخت به خودتان نمایش داده می‌شود و نیازی به کد انتقال نیست.",
   "recipientsVirtualIbanBankAddress": "نشانی بانک",
   "recipientsVirtualIbanBankAddressHelp": "نشانی رسمی بانک، در صورتی که بانک شما آن را بخواهد.",
-  "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند."
+  "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
 }

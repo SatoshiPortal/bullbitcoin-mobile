@@ -9968,5 +9968,6 @@
   "recipientsVirtualIbanDetailsDescription": "Захранвайте сметката си поверително с личен виртуален IBAN на ваше име. Вноската ще се вижда като плащане към самия вас, без код за превод.",
   "recipientsVirtualIbanBankAddress": "Адрес на банката",
   "recipientsVirtualIbanBankAddressHelp": "Официалният адрес на банката, ако банката ви го изисква.",
-  "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично."
+  "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично.",
+  "copiedToClipboard": "Копирано в клипборда"
 }

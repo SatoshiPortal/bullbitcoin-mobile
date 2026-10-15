@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSwitch, BullText, Gap;
 
 class BalanceRow extends StatelessWidget {
   final String title;
@@ -72,7 +71,7 @@ class BalanceRow extends StatelessWidget {
         if (onMaxToggled != null)
           Row(
             children: [
-              BBText(
+              BullText(
                 'MAX',
                 style: context.font.labelLarge,
                 color: context.appColors.secondary,

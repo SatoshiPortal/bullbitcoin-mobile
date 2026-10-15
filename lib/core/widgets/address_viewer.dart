@@ -1,13 +1,17 @@
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSegmented, BullViewerActionButton, Gap;
+    show
+        BullDialog,
+        BullSegmented,
+        BullSnackBar,
+        BullText,
+        BullViewerActionButton,
+        Gap;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -55,7 +59,7 @@ class AddressViewer extends StatelessWidget {
           showDetail(context, data: data, clipboardText: clipboardText),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
-        SnackBarUtils.showCopiedSnackBar(context);
+        BullSnackBar.show(context, message: context.loc.copiedToClipboard);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -64,7 +68,7 @@ class AddressViewer extends StatelessWidget {
             effectiveStyle,
             constraints.maxWidth,
           );
-          return BBText(
+          return BullText(
             truncated,
             style: effectiveStyle,
             maxLines: 1,
@@ -212,7 +216,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
               },
             )
           else
-            BBText(
+            BullText(
               context.loc.addressViewerTitle,
               style: context.font.titleSmall,
               color: context.appColors.onSurface,
@@ -295,7 +299,10 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
       onTap: () {
         Clipboard.setData(ClipboardData(text: _activeText));
         Navigator.of(widget.dialogContext).pop();
-        SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
+        BullSnackBar.show(
+          widget.dialogContext,
+          message: widget.dialogContext.loc.copiedToClipboard,
+        );
       },
     );
   }
@@ -310,7 +317,10 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         Clipboard.setData(ClipboardData(text: url));
         if (widget.dialogContext.mounted) {
           Navigator.of(widget.dialogContext).pop();
-          SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
+          BullSnackBar.show(
+            widget.dialogContext,
+            message: widget.dialogContext.loc.copiedToClipboard,
+          );
         }
       },
     );

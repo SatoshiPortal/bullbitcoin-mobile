@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 class Bip85DerivationWidget extends StatefulWidget {
   final Bip85DerivationEntity derivation;
@@ -187,7 +188,10 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                       const Duration(seconds: 30),
                       () => Clipboard.setData(const ClipboardData(text: '')),
                     );
-                    SnackBarUtils.showCopiedSnackBar(context);
+                    BullSnackBar.show(
+                      context,
+                      message: context.loc.copiedToClipboard,
+                    );
                   },
                 ),
               ],

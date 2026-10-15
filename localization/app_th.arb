@@ -11865,5 +11865,6 @@
   "recipientsVirtualIbanDetailsDescription": "เติมเงินเข้าบัญชีอย่างเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง รายการฝากจะแสดงเป็นการชำระเงินให้ตัวคุณเอง โดยไม่ต้องใช้รหัสการโอน",
   "recipientsVirtualIbanBankAddress": "ที่อยู่ธนาคาร",
   "recipientsVirtualIbanBankAddressHelp": "ที่อยู่อย่างเป็นทางการของธนาคาร ในกรณีที่ธนาคารของคุณขอ",
-  "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ"
+  "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
 }
