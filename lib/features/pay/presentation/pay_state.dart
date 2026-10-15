@@ -20,6 +20,11 @@ sealed class PayState with _$PayState {
     @Default(false) bool isCreatingPayOrder,
     PayFailure? error,
   }) = PayWalletSelectionState;
+  const factory PayState.preparingPayment({
+    required PayWalletSelectionState input,
+    Wallet? selectedWallet,
+    PayFailure? error,
+  }) = PayPreparingPaymentState;
   const factory PayState.payment({
     required RecipientViewModel selectedRecipient,
     required UserSummary userSummary,
@@ -68,6 +73,7 @@ sealed class PayState with _$PayState {
   UserSummary? get userSummary => switch (this) {
     PayRecipientSelectionState(:final userSummary) => userSummary,
     PayAmountInputState(:final userSummary) => userSummary,
+    PayPreparingPaymentState(:final input) => input.userSummary,
     PayWalletSelectionState(:final userSummary) => userSummary,
     PayPaymentState(:final userSummary) => userSummary,
     PaySuccessState() => null,
@@ -103,6 +109,7 @@ sealed class PayState with _$PayState {
     PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
       selectedRecipient.currencyCode,
     ),
+    PayPreparingPaymentState(:final input) => input.currency,
     PayWalletSelectionState(:final selectedRecipient) => FiatCurrency.fromCode(
       selectedRecipient.currencyCode,
     ),
@@ -124,6 +131,8 @@ sealed class PayState with _$PayState {
         PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
           userSummary: userSummary,
         ),
+        PayPreparingPaymentState(:final input) =>
+          input.cleanRecipientSelectionState,
         PayWalletSelectionState(:final userSummary) =>
           PayRecipientSelectionState(userSummary: userSummary),
         PayPaymentState(:final userSummary) => PayRecipientSelectionState(
@@ -134,6 +143,7 @@ sealed class PayState with _$PayState {
 
   PayAmountInputState? get cleanAmountInputState => switch (this) {
     final PayAmountInputState s => s.copyWith(error: null),
+    PayPreparingPaymentState(:final input) => input.cleanAmountInputState,
     PayWalletSelectionState(:final selectedRecipient, :final userSummary) =>
       PayAmountInputState(
         selectedRecipient: selectedRecipient,
@@ -148,6 +158,7 @@ sealed class PayState with _$PayState {
   };
 
   PayWalletSelectionState? get cleanWalletSelectionState => switch (this) {
+    PayPreparingPaymentState(:final input) => input.cleanWalletSelectionState,
     final PayWalletSelectionState s => s.copyWith(
       isCreatingPayOrder: false,
       error: null,

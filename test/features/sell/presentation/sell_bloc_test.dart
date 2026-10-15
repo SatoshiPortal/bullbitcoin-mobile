@@ -335,6 +335,76 @@ void main() {
 
   tearDown(() => bloc.close());
 
+  group('Sell preparation lifecycle', () {
+    test(
+      'opens preparation before the dependency finishes and ignores duplicate selection',
+      () async {
+        bloc.seed(
+          SellWalletSelectionState(
+            userSummary: userSummary,
+            bitcoinUnit: BitcoinUnit.sats,
+            orderAmount: const FiatAmount(50),
+            fiatCurrency: FiatCurrency.cad,
+          ),
+        );
+        final response = Completer<Result<double, SellFailure>>();
+        when(
+          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
+        ).thenAnswer((_) => response.future);
+        final opened = bloc.stream.firstWhere(
+          (s) => s is SellPreparingPaymentState,
+        );
+        bloc.add(SellEvent.walletSelected(wallet: wallet));
+        final preparing = await opened as SellPreparingPaymentState;
+        expect(preparing.selectedWallet, same(wallet));
+        bloc.add(SellEvent.walletSelected(wallet: wallet));
+        await Future<void>.delayed(Duration.zero);
+        verify(
+          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
+        ).called(1);
+        final failed = bloc.stream.firstWhere(
+          (s) => s is SellPreparingPaymentState && s.error != null,
+        );
+        response.complete(
+          const Err(SellUnexpectedFailure('dependency failed')),
+        );
+        expect((await failed as SellPreparingPaymentState).error, isNotNull);
+      },
+    );
+
+    test(
+      'back discards a late failure without reopening confirmation',
+      () async {
+        bloc.seed(
+          SellWalletSelectionState(
+            userSummary: userSummary,
+            bitcoinUnit: BitcoinUnit.sats,
+            orderAmount: const FiatAmount(50),
+            fiatCurrency: FiatCurrency.cad,
+          ),
+        );
+        final response = Completer<Result<double, SellFailure>>();
+        when(
+          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
+        ).thenAnswer((_) => response.future);
+        final opened = bloc.stream.firstWhere(
+          (s) => s is SellPreparingPaymentState,
+        );
+        bloc.add(SellEvent.walletSelected(wallet: wallet));
+        await opened;
+        final returned = bloc.stream.firstWhere(
+          (s) => s is SellWalletSelectionState,
+        );
+        bloc.add(const SellEvent.paymentPreparationAbandoned());
+        await returned;
+        response.complete(const Err(SellUnexpectedFailure('late failure')));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state, isA<SellWalletSelectionState>());
+        expect((bloc.state as SellWalletSelectionState).error, isNull);
+      },
+    );
+  });
+
   group('SellBloc — broadcast latch', () {
     test('audit reproducer (H6): a wallet selection during confirmation '
         'is ignored', () async {

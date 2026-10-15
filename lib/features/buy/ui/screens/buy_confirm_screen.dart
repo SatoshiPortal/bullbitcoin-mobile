@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullCountdown, BullShimmerLine, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAsyncStatus, BullButton, BullCountdown, BullShimmerLine, BullText, Gap;
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
@@ -141,13 +141,13 @@ class BuyConfirmScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
-                if (isLoading || isConfirmingOrder)
+                if (isLoading)
                   const BullShimmerLine(
                     width: 160,
                     height: 14,
                     padding: EdgeInsets.zero,
                   )
-                else if (buyOrder != null)
+                else if (buyOrder != null && !isConfirmingOrder)
                   Row(
                     mainAxisAlignment: .center,
                     children: [
@@ -175,19 +175,28 @@ class BuyConfirmScreen extends StatelessWidget {
                   BuyOrderFailureMessage(error: confirmFailure),
                 ],
                 const Gap(16),
-                BullButton.big(
-                  label: context.loc.buyConfirmPurchase,
-                  disabled:
-                      buyOrder == null ||
-                      isConfirmingOrder ||
-                      isRefreshingOrder ||
-                      isLoading,
-                  onPressed: () {
-                    context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
-                  },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
-                ),
+                if (isConfirmingOrder)
+                  BullAsyncStatus.progress(
+                    label: context.loc.buyConfirmAwaitingConfirmation,
+                    color: context.appColors.secondary,
+                    textStyle: context.font.bodyMedium,
+                  )
+                else
+                  BullButton.big(
+                    label: context.loc.buyConfirmPurchase,
+                    disabled:
+                        buyOrder == null ||
+                        isConfirmingOrder ||
+                        isRefreshingOrder ||
+                        isLoading,
+                    onPressed: () {
+                      context.read<BuyBloc>().add(
+                        const BuyEvent.confirmOrder(),
+                      );
+                    },
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
               ],
             ),
           ),

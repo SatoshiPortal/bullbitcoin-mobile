@@ -1,3 +1,6 @@
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
+import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -9,25 +12,36 @@ import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullCountdown,
-        BullShimmerLine,
-        BullSnackBar,
-        BullText,
-        BullTopBar,
-        Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullCountdown, BullShimmerLine, BullSnackBar, BullText, BullTopBar, Gap;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final preparation = context.select(
+      (SellBloc bloc) => bloc.state is SellPreparingPaymentState
+          ? bloc.state as SellPreparingPaymentState
+          : null,
+    );
+    if (preparation != null) {
+      return PaymentPreparationView(
+        title: context.loc.sellPleasePayInvoice,
+        detailLabels: [
+          context.loc.sellDepositAddress,
+          context.loc.sellPayinAmount,
+          context.loc.sellPayoutAmount,
+        ],
+        errorMessage: preparation.error?.toTranslated(context),
+        onBack: () => context.read<SellBloc>().add(
+          const SellEvent.paymentPreparationAbandoned(),
+        ),
+      );
+    }
+
     final order = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).sellOrder
@@ -44,180 +58,185 @@ class SellReceivePaymentScreen extends StatelessWidget {
           : '',
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: BullTopBar(
-          title: '',
-          titleWidget: Image.asset(
-            Assets.logos.bbLogoSmall.path,
-            height: 32,
-            width: 32,
+    return PopScope<Object?>(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<SellBloc>().add(
+            const SellEvent.paymentPreparationAbandoned(),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: BullTopBar(
+            title: '',
+            titleWidget: Image.asset(Assets.logos.bbLogoSmall.path, height: 32, width: 32),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
           ),
-          onBack: () {
-            Navigator.of(context).pop();
-          },
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            Center(
-              child: BullText(
-                context.loc.sellPleasePayInvoice,
-                style: context.font.headlineMedium,
-                color: context.appColors.secondary,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Center(
+                child: BullText(
+                  context.loc.sellPleasePayInvoice,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
+                ),
               ),
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: .center,
-                children: [
-                  BullText(
-                    context.loc.sellPriceWillRefreshIn,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.outline,
-                  ),
-                  if (order?.confirmationDeadline case final deadline?)
-                    BullCountdown(
-                      until: deadline,
-                      onTimeout: () {
-                        context.read<SellBloc>().add(
-                          const SellEvent.orderRefreshTimePassed(),
-                        );
-                      },
+              Center(
+                child: Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    BullText(
+                      context.loc.sellPriceWillRefreshIn,
+                      style: context.font.bodyMedium,
+                      color: context.appColors.outline,
                     ),
-                ],
+                    if (order?.confirmationDeadline case final deadline?)
+                      BullCountdown(
+                        until: deadline,
+                        onTimeout: () {
+                          context.read<SellBloc>().add(
+                            const SellEvent.orderRefreshTimePassed(),
+                          );
+                        },
+                      ),
+                  ],
+                ),
               ),
-            ),
-            const Gap(32),
-            if (order == null)
-              const BullShimmerLine()
-            else
-              CopyInput(
-                text: bitcoinUnit == BitcoinUnit.btc
+              const Gap(32),
+              if (order == null)
+                const BullShimmerLine()
+              else
+                CopyInput(
+                  text: bitcoinUnit == BitcoinUnit.btc
+                      ? FormatAmount.btc(order.payinAmount)
+                      : FormatAmount.sats(
+                          ConvertAmount.btcToSats(order.payinAmount),
+                        ),
+                ),
+              const Gap(32),
+              if (order == null)
+                const BullShimmerLine()
+              else
+                _buildPaymentInput(context, order),
+              const Gap(32),
+              Container(
+                height: 1,
+                width: double.infinity,
+                color: context.appColors.secondaryFixedDim,
+              ),
+              const Gap(16),
+              _buildDetailRow(
+                context,
+                context.loc.sellPayoutRecipient,
+                order == null
+                    ? context.loc.sellLoadingGeneric
+                    : switch (order.payoutMethod) {
+                        OrderPaymentMethod.cadBalance =>
+                          context.loc.sellCadBalance,
+                        OrderPaymentMethod.crcBalance =>
+                          context.loc.sellCrcBalance,
+                        OrderPaymentMethod.eurBalance =>
+                          context.loc.sellEurBalance,
+                        OrderPaymentMethod.usdBalance =>
+                          context.loc.sellUsdBalance,
+                        OrderPaymentMethod.mxnBalance =>
+                          context.loc.sellMxnBalance,
+                        OrderPaymentMethod.arsBalance =>
+                          context.loc.sellArsBalance,
+                        OrderPaymentMethod.copBalance =>
+                          context.loc.sellCopBalance,
+                        _ => order.payoutMethod.name,
+                      },
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.sellBitcoinAmount,
+                order == null
+                    ? context.loc.sellLoadingGeneric
+                    : bitcoinUnit == BitcoinUnit.btc
                     ? FormatAmount.btc(order.payinAmount)
                     : FormatAmount.sats(
                         ConvertAmount.btcToSats(order.payinAmount),
                       ),
               ),
-            const Gap(32),
-            if (order == null)
-              const BullShimmerLine()
-            else
-              _buildPaymentInput(context, order),
-            const Gap(32),
-            Container(
-              height: 1,
-              width: double.infinity,
-              color: context.appColors.secondaryFixedDim,
-            ),
-            const Gap(16),
-            _buildDetailRow(
-              context,
-              context.loc.sellPayoutRecipient,
-              order == null
-                  ? context.loc.sellLoadingGeneric
-                  : switch (order.payoutMethod) {
-                      OrderPaymentMethod.cadBalance =>
-                        context.loc.sellCadBalance,
-                      OrderPaymentMethod.crcBalance =>
-                        context.loc.sellCrcBalance,
-                      OrderPaymentMethod.eurBalance =>
-                        context.loc.sellEurBalance,
-                      OrderPaymentMethod.usdBalance =>
-                        context.loc.sellUsdBalance,
-                      OrderPaymentMethod.mxnBalance =>
-                        context.loc.sellMxnBalance,
-                      OrderPaymentMethod.arsBalance =>
-                        context.loc.sellArsBalance,
-                      OrderPaymentMethod.copBalance =>
-                        context.loc.sellCopBalance,
-                      _ => order.payoutMethod.name,
-                    },
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.sellBitcoinAmount,
-              order == null
-                  ? context.loc.sellLoadingGeneric
-                  : bitcoinUnit == BitcoinUnit.btc
-                  ? FormatAmount.btc(order.payinAmount)
-                  : FormatAmount.sats(
-                      ConvertAmount.btcToSats(order.payinAmount),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.sellPayoutAmount,
+                order == null
+                    ? context.loc.sellLoadingGeneric
+                    : FormatAmount.fiat(
+                        order.payoutAmount,
+                        order.payoutCurrency,
+                      ),
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.sellBitcoinPriceLabel,
+                order == null
+                    ? context.loc.sellLoadingGeneric
+                    : FormatAmount.fiat(
+                        order.exchangeRateAmount ??
+                            order.payoutAmount / order.payinAmount,
+                        order.exchangeRateCurrency ?? order.payoutCurrency,
+                      ),
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.sellOrderNumber,
+                order?.orderNumber.toString() ?? 'Loading...',
+                copyValue: order?.orderNumber.toString(),
+              ),
+              const Gap(48),
+              Row(
+                children: [
+                  Expanded(
+                    child: BullButton.big(
+                      label: context.loc.sellCopyInvoice,
+                      onPressed: () {
+                        if (bip21InvoiceData.isNotEmpty) {
+                          Clipboard.setData(
+                            ClipboardData(text: bip21InvoiceData),
+                          );
+                          BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                        }
+                      },
+                      bgColor: context.appColors.transparent,
+                      textColor: context.appColors.secondary,
+                      outlined: true,
+                      borderColor: context.appColors.secondary,
                     ),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.sellPayoutAmount,
-              order == null
-                  ? context.loc.sellLoadingGeneric
-                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.sellBitcoinPriceLabel,
-              order == null
-                  ? context.loc.sellLoadingGeneric
-                  : FormatAmount.fiat(
-                      order.exchangeRateAmount ??
-                          order.payoutAmount / order.payinAmount,
-                      order.exchangeRateCurrency ?? order.payoutCurrency,
+                  ),
+                  const Gap(16),
+                  Expanded(
+                    child: BullButton.big(
+                      label: context.loc.sellShowQrCode,
+                      bgColor: context.appColors.transparent,
+                      textColor: context.appColors.secondary,
+                      outlined: true,
+                      borderColor: context.appColors.secondary,
+                      onPressed: () {
+                        SellQrBottomSheet.show(context, bip21InvoiceData);
+                      },
                     ),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.sellOrderNumber,
-              order?.orderNumber.toString() ?? 'Loading...',
-              copyValue: order?.orderNumber.toString(),
-            ),
-            const Gap(48),
-            Row(
-              children: [
-                Expanded(
-                  child: BullButton.big(
-                    label: context.loc.sellCopyInvoice,
-                    onPressed: () {
-                      if (bip21InvoiceData.isNotEmpty) {
-                        Clipboard.setData(
-                          ClipboardData(text: bip21InvoiceData),
-                        );
-                        BullSnackBar.show(
-                          context,
-                          message: context.loc.copiedToClipboard,
-                        );
-                      }
-                    },
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
                   ),
-                ),
-                const Gap(16),
-                Expanded(
-                  child: BullButton.big(
-                    label: context.loc.sellShowQrCode,
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
-                    onPressed: () {
-                      SellQrBottomSheet.show(context, bip21InvoiceData);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const Gap(40),
-          ],
+                ],
+              ),
+              const Gap(40),
+            ],
+          ),
         ),
       ),
     );
@@ -263,10 +282,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: copyValue));
-                      BullSnackBar.show(
-                        context,
-                        message: context.loc.copiedToClipboard,
-                      );
+                      BullSnackBar.show(context, message: context.loc.copiedToClipboard);
                     },
                     child: Icon(
                       Icons.copy,

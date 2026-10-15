@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
@@ -15,9 +14,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCreatingSellOrder = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellWalletSelectionState &&
-          (bloc.state as SellWalletSelectionState).isCreatingSellOrder,
+      (SellBloc bloc) => bloc.state is SellPreparingPaymentState,
     );
 
     return Scaffold(
@@ -25,12 +22,6 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            BullFadingLinearProgress(
-              height: 3,
-              trigger: isCreatingSellOrder,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
             Expanded(
               child: BullScrollableColumn(
                 children: [

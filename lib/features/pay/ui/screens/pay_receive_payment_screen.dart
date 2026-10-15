@@ -1,3 +1,6 @@
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
+import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -11,12 +14,10 @@ import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_qr_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullCountdown, BullSnackBar, BullText, BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullCountdown, BullSnackBar, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
@@ -52,6 +53,26 @@ class PayReceivePaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.select((PayBloc bloc) => bloc.state);
 
+    final preparation = context.select(
+      (PayBloc bloc) => bloc.state is PayPreparingPaymentState
+          ? bloc.state as PayPreparingPaymentState
+          : null,
+    );
+    if (preparation != null) {
+      return PaymentPreparationView(
+        title: context.loc.payPleasePayInvoice,
+        detailLabels: [
+          context.loc.payDepositAddress,
+          context.loc.payPayinAmount,
+          context.loc.payPayoutAmount,
+        ],
+        errorMessage: preparation.error?.toTranslated(context),
+        onBack: () => context.read<PayBloc>().add(
+          const PayEvent.paymentPreparationAbandoned(),
+        ),
+      );
+    }
+
     if (state is! PayPaymentState) {
       return Scaffold(body: Center(child: Text(context.loc.payInvalidState)));
     }
@@ -63,182 +84,180 @@ class PayReceivePaymentScreen extends StatelessWidget {
     // Get bip21InvoiceData from the state
     final bip21InvoiceData = state.bip21InvoiceData;
 
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: BullTopBar(
-          title: '',
-          titleWidget: Image.asset(
-            Assets.logos.bbLogoSmall.path,
-            height: 32,
-            width: 32,
-          ),
-          onBack: context.pop,
+    return PopScope<Object?>(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<PayBloc>().add(
+            const PayEvent.paymentPreparationAbandoned(),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: BullTopBar(title: '', titleWidget: Image.asset(Assets.logos.bbLogoSmall.path, height: 32, width: 32), onBack: context.pop),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            Center(
-              child: BullText(
-                context.loc.payPleasePayInvoice,
-                style: context.font.headlineMedium,
-                color: context.appColors.secondary,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Center(
+                child: BullText(
+                  context.loc.payPleasePayInvoice,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
+                ),
               ),
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: .center,
+              Center(
+                child: Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    BullText(
+                      context.loc.payPriceRefreshIn,
+                      style: context.font.bodyMedium,
+                      color: context.appColors.outline,
+                    ),
+                    if (order.confirmationDeadline case final deadline?)
+                      BullCountdown(
+                        until: deadline,
+                        onTimeout: () {
+                          context.read<PayBloc>().add(
+                            const PayEvent.orderRefreshTimePassed(),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+              const Gap(32),
+              CopyInput(
+                text: bitcoinUnit == BitcoinUnit.btc
+                    ? FormatAmount.btc(order.payinAmount)
+                    : FormatAmount.sats(
+                        ConvertAmount.btcToSats(order.payinAmount),
+                      ),
+              ),
+              const Gap(32),
+              _buildPaymentInput(context, order),
+              const Gap(32),
+              Container(
+                height: 1,
+                width: double.infinity,
+                color: context.appColors.secondaryFixedDim,
+              ),
+              const Gap(16),
+              _buildDetailRow(
+                context,
+                context.loc.payRecipientType,
+                switch (recipient.type) {
+                  // TODO: Use localization labels instead of hardcoded strings.
+                  // CANADA types
+                  RecipientType.interacEmailCad => 'Interac e-Transfer',
+                  RecipientType.billPaymentCad => 'Bill Payment',
+                  RecipientType.bankTransferCad => 'Bank Transfer',
+                  // EUROPE types
+                  RecipientType.sepaEur => 'SEPA Transfer',
+                  RecipientType.confidentialSepaEur =>
+                    context.loc.recipientsTypeConfidentialSepa,
+                  // MEXICO types
+                  RecipientType.speiClabeMxn => 'SPEI CLABE',
+                  RecipientType.speiSmsMxn => 'SPEI SMS',
+                  RecipientType.speiCardMxn => 'SPEI Card',
+                  // COSTA RICA types
+                  RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
+                  RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
+                  RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+                  // ARGENTINA types
+                  RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
+                  RecipientType.pseColombia => 'Bank Account COP',
+                  RecipientType.nequiColombia => 'Nequi',
+                },
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.payRecipientName,
+                recipient.displayName ?? '-',
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                _getRecipientInfoLabel(recipient),
+                _getRecipientInfoValue(recipient) ?? 'No details available',
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.payBitcoinAmount,
+                bitcoinUnit == BitcoinUnit.btc
+                    ? FormatAmount.btc(order.payinAmount)
+                    : FormatAmount.sats(
+                        ConvertAmount.btcToSats(order.payinAmount),
+                      ),
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.payPayoutAmount,
+                FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.payBitcoinPrice,
+                FormatAmount.fiat(
+                  order.exchangeRateAmount ??
+                      order.payoutAmount / order.payinAmount,
+                  order.exchangeRateCurrency ?? order.payoutCurrency,
+                ),
+              ),
+              const Gap(8),
+              _buildDetailRow(
+                context,
+                context.loc.payOrderNumber,
+                order.orderNumber.toString(),
+                copyValue: order.orderNumber.toString(),
+              ),
+              const Gap(48),
+              Row(
                 children: [
-                  BullText(
-                    context.loc.payPriceRefreshIn,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.outline,
+                  Expanded(
+                    child: BullButton.big(
+                      label: context.loc.payCopyInvoice,
+                      onPressed: () {
+                        if (bip21InvoiceData.isNotEmpty) {
+                          Clipboard.setData(
+                            ClipboardData(text: bip21InvoiceData),
+                          );
+                          BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                        }
+                      },
+                      bgColor: context.appColors.transparent,
+                      textColor: context.appColors.secondary,
+                      outlined: true,
+                      borderColor: context.appColors.secondary,
+                    ),
                   ),
-                  if (order.confirmationDeadline case final deadline?)
-                    BullCountdown(
-                      until: deadline,
-                      onTimeout: () {
-                        context.read<PayBloc>().add(
-                          const PayEvent.orderRefreshTimePassed(),
-                        );
+                  const Gap(16),
+                  Expanded(
+                    child: BullButton.big(
+                      label: context.loc.payShowQrCode,
+                      bgColor: context.appColors.transparent,
+                      textColor: context.appColors.secondary,
+                      outlined: true,
+                      borderColor: context.appColors.secondary,
+                      onPressed: () {
+                        PayQrBottomSheet.show(context, bip21InvoiceData);
                       },
                     ),
+                  ),
                 ],
               ),
-            ),
-            const Gap(32),
-            CopyInput(
-              text: bitcoinUnit == BitcoinUnit.btc
-                  ? FormatAmount.btc(order.payinAmount)
-                  : FormatAmount.sats(
-                      ConvertAmount.btcToSats(order.payinAmount),
-                    ),
-            ),
-            const Gap(32),
-            _buildPaymentInput(context, order),
-            const Gap(32),
-            Container(
-              height: 1,
-              width: double.infinity,
-              color: context.appColors.secondaryFixedDim,
-            ),
-            const Gap(16),
-            _buildDetailRow(
-              context,
-              context.loc.payRecipientType,
-              switch (recipient.type) {
-                // TODO: Use localization labels instead of hardcoded strings.
-                // CANADA types
-                RecipientType.interacEmailCad => 'Interac e-Transfer',
-                RecipientType.billPaymentCad => 'Bill Payment',
-                RecipientType.bankTransferCad => 'Bank Transfer',
-                // EUROPE types
-                RecipientType.sepaEur => 'SEPA Transfer',
-                RecipientType.confidentialSepaEur =>
-                  context.loc.recipientsTypeConfidentialSepa,
-                // MEXICO types
-                RecipientType.speiClabeMxn => 'SPEI CLABE',
-                RecipientType.speiSmsMxn => 'SPEI SMS',
-                RecipientType.speiCardMxn => 'SPEI Card',
-                // COSTA RICA types
-                RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-                RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-                RecipientType.sinpeMovilCrc => 'SINPE Móvil',
-                // ARGENTINA types
-                RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
-                RecipientType.pseColombia => 'Bank Account COP',
-                RecipientType.nequiColombia => 'Nequi',
-              },
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.payRecipientName,
-              recipient.displayName ?? '-',
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              _getRecipientInfoLabel(recipient),
-              _getRecipientInfoValue(recipient) ?? 'No details available',
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.payBitcoinAmount,
-              bitcoinUnit == BitcoinUnit.btc
-                  ? FormatAmount.btc(order.payinAmount)
-                  : FormatAmount.sats(
-                      ConvertAmount.btcToSats(order.payinAmount),
-                    ),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.payPayoutAmount,
-              FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.payBitcoinPrice,
-              FormatAmount.fiat(
-                order.exchangeRateAmount ??
-                    order.payoutAmount / order.payinAmount,
-                order.exchangeRateCurrency ?? order.payoutCurrency,
-              ),
-            ),
-            const Gap(8),
-            _buildDetailRow(
-              context,
-              context.loc.payOrderNumber,
-              order.orderNumber.toString(),
-              copyValue: order.orderNumber.toString(),
-            ),
-            const Gap(48),
-            Row(
-              children: [
-                Expanded(
-                  child: BullButton.big(
-                    label: context.loc.payCopyInvoice,
-                    onPressed: () {
-                      if (bip21InvoiceData.isNotEmpty) {
-                        Clipboard.setData(
-                          ClipboardData(text: bip21InvoiceData),
-                        );
-                        BullSnackBar.show(
-                          context,
-                          message: context.loc.copiedToClipboard,
-                        );
-                      }
-                    },
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
-                  ),
-                ),
-                const Gap(16),
-                Expanded(
-                  child: BullButton.big(
-                    label: context.loc.payShowQrCode,
-                    bgColor: context.appColors.transparent,
-                    textColor: context.appColors.secondary,
-                    outlined: true,
-                    borderColor: context.appColors.secondary,
-                    onPressed: () {
-                      PayQrBottomSheet.show(context, bip21InvoiceData);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const Gap(40),
-          ],
+              const Gap(40),
+            ],
+          ),
         ),
       ),
     );
@@ -284,10 +303,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: copyValue));
-                      BullSnackBar.show(
-                        context,
-                        message: context.loc.copiedToClipboard,
-                      );
+                      BullSnackBar.show(context, message: context.loc.copiedToClipboard);
                     },
                     child: Icon(
                       Icons.copy,
