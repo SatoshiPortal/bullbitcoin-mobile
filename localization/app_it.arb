@@ -1317,7 +1317,6 @@
   },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "sellBitcoinOnChain": "Bitcoin on-chain",
-  "exchangeRecipientsComingSoon": "Recipienti - In arrivo",
   "ledgerWalletTypeLabel": "Tipo di portafoglio:",
   "bip85ExperimentalWarning": "Sperimentale\nEseguire il backup dei percorsi di derivazione manualmente",
   "addressViewBalance": "Bilancio",

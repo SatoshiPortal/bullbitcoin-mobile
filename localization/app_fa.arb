@@ -4397,10 +4397,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Recipients - بزودی می آیند",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "bip85ExperimentalWarning": "تجربی\nراه های انگیزشی خود را به صورت دستی پشتیبان گیری کنید",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
