@@ -9,7 +9,8 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_l
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullRefreshIndicator, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullRefreshIndicator, BullShimmerBox, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -209,7 +210,14 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   ) {
     if (recipients.isEmpty) {
       if (state.isLoadingRecipients) {
-        return const Center(child: CircularProgressIndicator());
+        return ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+          ],
+        );
       }
 
       // Translated from the failure rather than one static string:
