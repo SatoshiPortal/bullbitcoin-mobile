@@ -125,30 +125,55 @@ class _ServiceStatusItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: .stretch,
       children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: .circle,
-            color: _getStatusColor(context),
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: .circle,
+                color: _getStatusColor(context),
+              ),
+            ),
+            const SizedBox(width: 12),
+            BBText(
+              service.name,
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface,
+            ),
+            const Spacer(),
+            BBText(
+              _getStatusText(context),
+              style: context.font.bodySmall,
+              color: context.appColors.onSurfaceVariant,
+            ),
+          ],
+        ),
+        if (_explanation(context) case final explanation?)
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 4),
+            child: BBText(
+              explanation,
+              style: context.font.bodySmall,
+              color: context.appColors.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        BBText(
-          service.name,
-          style: context.font.bodyMedium,
-          color: context.appColors.onSurface,
-        ),
-        const Spacer(),
-        BBText(
-          _getStatusText(context),
-          style: context.font.bodySmall,
-          color: context.appColors.onSurfaceVariant,
-        ),
       ],
     );
+  }
+
+  String? _explanation(BuildContext context) {
+    if (service.isDegraded &&
+        service.reason == ServiceStatusReason.temporarilyUnavailable) {
+      return context.loc.statusCheckTemporarilyUnavailableExplanation;
+    }
+    if (service.reason == ServiceStatusReason.featureUnavailable) {
+      return context.loc.statusCheckFeatureUnavailableExplanation;
+    }
+    return null;
   }
 
   Color _getStatusColor(BuildContext context) {
@@ -157,6 +182,8 @@ class _ServiceStatusItem extends StatelessWidget {
         return context.appColors.success;
       case ServiceStatus.offline:
         return context.appColors.error;
+      case ServiceStatus.degraded:
+        return context.appColors.warning;
       case ServiceStatus.unknown:
       case ServiceStatus.disabled:
         return context.appColors.textMuted;
@@ -164,11 +191,16 @@ class _ServiceStatusItem extends StatelessWidget {
   }
 
   String _getStatusText(BuildContext context) {
+    if (service.reason == ServiceStatusReason.featureUnavailable) {
+      return context.loc.statusCheckFeatureUnavailable;
+    }
     switch (service.status) {
       case ServiceStatus.online:
         return context.loc.statusCheckOnline;
       case ServiceStatus.offline:
         return context.loc.statusCheckOffline;
+      case ServiceStatus.degraded:
+        return context.loc.statusCheckDegraded;
       case ServiceStatus.unknown:
         return context.loc.statusCheckUnknown;
       case ServiceStatus.disabled:

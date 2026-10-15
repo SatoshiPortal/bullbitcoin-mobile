@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -44,6 +45,7 @@ import 'package:bull_tor/tor.dart' as bull_tor;
 import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
 /// only in `main()` for the pre-init / pre-locator window: the wizard
@@ -223,9 +225,16 @@ class Bull {
         (progress * 100).round().clamp(0, 100),
       _ => null,
     };
-    final diagnostic = switch (state) {
-      bull_tor.TorConnecting(:final diagnostic) => diagnostic?.name,
-      _ => null,
+    final (diagnostic, detail) = switch (state) {
+      bull_tor.TorConnecting(:final diagnostic, :final detail) => (
+        diagnostic,
+        detail,
+      ),
+      bull_tor.TorUnavailable(
+        failure: bull_tor.TorBootstrapFailure(:final diagnostic, :final detail),
+      ) =>
+        (diagnostic, detail),
+      _ => (null, null),
     };
     return DiagnosticTorContext(
       source: source,
@@ -238,7 +247,9 @@ class Bull {
       },
       transport: transport,
       progressPercent: progress,
-      diagnostic: diagnostic,
+      diagnostic: diagnostic?.name,
+      blockageDetail: detail?.blockage,
+      bootstrapStage: detail?.stage,
       socksProxyConfigured: socksProxyConfigured,
     );
   }
@@ -341,6 +352,7 @@ class BullBitcoinWalletApp extends StatefulWidget {
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
   late final tor.TorLifecycleController _torLifecycleController;
+  final _torFallbacks = locator<bull_tor.Tor>().embedded.fallbacks;
   // final router = AppRouter.router;
 
   @override
@@ -358,6 +370,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     _listener.dispose();
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
+    }
+    if (locator.isRegistered<RecoverBullLifecycle>()) {
+      unawaited(locator<RecoverBullLifecycle>().dispose());
     }
     _torLifecycleController.dispose();
 
@@ -398,7 +413,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(create: (_) => locator<WalletBloc>()),
+        BlocProvider.value(value: locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated
         BlocProvider(create: (_) => locator<ExchangeCubit>()),
@@ -478,10 +493,19 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates: [
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
+                      RecoverBullLocalizations.delegate,
                     ],
-                    supportedLocales: AppLocalizations.supportedLocales,
+                    supportedLocales: {
+                      ...AppLocalizations.supportedLocales,
+                      ...RecoverBullLocalizations.supportedLocales,
+                    }.toList(),
                     builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
+                      // Announces automatic Tor fallbacks on whatever screen
+                      // is showing.
+                      final app = TorFallbackListener(
+                        fallbacks: _torFallbacks,
+                        child: AppStartupWidget(app: child!),
+                      );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
                       // banner, so this is how testers tell beta from production.

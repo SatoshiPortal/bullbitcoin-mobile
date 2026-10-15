@@ -1,9 +1,22 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:socks5_proxy/socks_client.dart';
 
 import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/tor_failure.dart';
+import 'tor_connection_failure_recorder.dart';
+
+@visibleForTesting
+Future<void> cancelSocket(FutureOr<void> Function() destroy) async {
+  try {
+    await destroy();
+  } catch (_) {
+    // Cancellation must never escape, including when destruction fails
+    // synchronously or asynchronously.
+  }
+}
 
 /// Builds an HTTP client for an already-selected Tor route.
 ///
@@ -16,7 +29,17 @@ import '../domain/tor_failure.dart';
 final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
-  HttpClient create(TorProxyEndpoint endpoint) {
+  @visibleForTesting
+  Future<ConnectionTask<Socket>> createTaskForTesting(
+    Uri uri,
+    TorProxyEndpoint endpoint, {
+    void Function()? onUnderlyingReady,
+  }) => _createTask(uri, endpoint, onUnderlyingReady: onUnderlyingReady);
+
+  HttpClient create(
+    TorProxyEndpoint endpoint, {
+    TorConnectionFailureRecorder? failureRecorder,
+  }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
     // ATYP DOMAINNAME instead of resolving it on the device.
@@ -30,21 +53,75 @@ final class TorHttpClientFactory {
     }
 
     final client = HttpClient();
-    client.connectionFactory = (uri, proxyHost, proxyPort) async {
-      final connection = SocksTCPClient.connect(
-        [ProxySettings(address, endpoint.port, password: null)],
-        InternetAddress(uri.host, type: InternetAddressType.unix),
-        uri.port,
-      );
-      final Future<Socket> socket = uri.scheme == 'https'
-          ? connection.then((value) => value.secure(uri.host))
-          : connection;
-      return ConnectionTask.fromSocket(socket, () {
-        // Cancellation owns cleanup, not the request's error reporting.
-        // The original socket future still delivers failures to HttpClient.
-        socket.then((value) => value.destroy()).ignore();
-      });
+    final recorder = failureRecorder;
+    final proxy = ProxySettings(address, endpoint.port, password: null);
+    client.connectionFactory = (uri, _, _) async {
+      try {
+        final task = await _createTask(uri, endpoint, proxy: proxy);
+        if (recorder == null) return task;
+        final socket = task.socket.then(
+          (value) => value,
+          onError: (Object error, StackTrace trace) {
+            recorder.record(error);
+            Error.throwWithStackTrace(error, trace);
+          },
+        );
+        return ConnectionTask.fromSocket(socket, task.cancel);
+      } catch (error) {
+        recorder?.record(error);
+        rethrow;
+      }
     };
     return client;
+  }
+
+  Future<ConnectionTask<Socket>> _createTask(
+    Uri uri,
+    TorProxyEndpoint endpoint, {
+    ProxySettings? proxy,
+    void Function()? onUnderlyingReady,
+  }) async {
+    final settings =
+        proxy ??
+        ProxySettings(
+          InternetAddress(endpoint.host),
+          endpoint.port,
+          password: null,
+        );
+    final socket = SocksTCPClient.connect(
+      [settings],
+      InternetAddress(uri.host, type: InternetAddressType.unix),
+      uri.port,
+    );
+    if (uri.scheme == 'https') {
+      Socket? underlying;
+      var cancelled = false;
+      final secureSocket = socket.then((raw) {
+        underlying = raw;
+        // Cancelled while the tunnel was still opening: there is no handshake
+        // left to wait for, so the raw socket goes now rather than after TLS.
+        if (cancelled) {
+          raw.destroy();
+          throw const SocketException('Connection cancelled before TLS');
+        }
+        onUnderlyingReady?.call();
+        return raw.secure(uri.host);
+      });
+      unawaited(
+        secureSocket.then<void>(
+          (_) {},
+          onError: (Object error, StackTrace trace) => underlying?.destroy(),
+        ),
+      );
+      return ConnectionTask.fromSocket(secureSocket, () async {
+        cancelled = true;
+        await cancelSocket(() => underlying?.destroy());
+        await cancelSocket(() async => (await secureSocket).destroy());
+      });
+    }
+    return ConnectionTask.fromSocket(
+      socket,
+      () => cancelSocket(() async => (await socket).destroy()),
+    );
   }
 }

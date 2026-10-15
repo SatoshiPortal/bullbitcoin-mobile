@@ -10,12 +10,17 @@ class TorConnectionStatusCard extends StatelessWidget {
   final bool external;
   final VoidCallback? onRetry;
 
+  /// Offered when embedded Tor cannot bootstrap; null hides the action, e.g.
+  /// when Snowflake is already the transport.
+  final VoidCallback? onUseSnowflake;
+
   const TorConnectionStatusCard({
     super.key,
     required this.connection,
     this.routeLabel,
     this.external = false,
     this.onRetry,
+    this.onUseSnowflake,
   });
 
   /// Whether the blockage looks like the network filtering Tor traffic.
@@ -33,6 +38,23 @@ class TorConnectionStatusCard extends StatelessWidget {
     _ => false,
   };
 
+  /// The latest diagnosis of a direct bootstrap, while trying or after it
+  /// gave up.
+  TorDiagnostic? get _diagnostic => switch (connection) {
+    TorConnecting(:final diagnostic) => diagnostic,
+    TorUnavailable(failure: TorBootstrapFailure(:final diagnostic)) =>
+      diagnostic,
+    _ => null,
+  };
+
+  /// Arti's own words about the bootstrap, untranslated, shown beneath the
+  /// localized explanation so support has something precise to go on.
+  TorBootstrapDetail? get _detail => switch (connection) {
+    TorConnecting(:final detail) => detail,
+    TorUnavailable(failure: TorBootstrapFailure(:final detail)) => detail,
+    _ => null,
+  };
+
   _VisualStatus get _status => switch (connection) {
     TorReady() => _VisualStatus.online,
     TorConnecting() => _VisualStatus.connecting,
@@ -40,10 +62,23 @@ class TorConnectionStatusCard extends StatelessWidget {
     TorUninitialized() || TorStopped() => _VisualStatus.unknown,
   };
 
-  bool get _showRetry =>
-      external &&
-      onRetry != null &&
-      (_status == _VisualStatus.offline || _status == _VisualStatus.unknown);
+  bool get _showRetry => external
+      ? onRetry != null &&
+            (_status == _VisualStatus.offline ||
+                _status == _VisualStatus.unknown)
+      : onRetry != null && _offersRecovery;
+
+  bool get _showUseSnowflake =>
+      !external && onUseSnowflake != null && _offersRecovery;
+
+  /// A bootstrap stuck on its directory, or failed on a clock the user has
+  /// since fixed, is worth an explicit restart; arti keeps retrying on its
+  /// own in every other case.
+  bool get _offersRecovery => switch (_diagnostic) {
+    TorDiagnostic.cantBootstrap => true,
+    TorDiagnostic.clockSkewed => connection is TorUnavailable,
+    _ => false,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +118,21 @@ class TorConnectionStatusCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                      // A stuck bootstrap's stage restates the blockage
+                      // ("Stuck at N%: …"), so it is shown only without one.
+                      for (final line in [
+                        _detail?.blockage ?? _detail?.stage,
+                      ].nonNulls) ...[
+                        const Gap(4),
+                        Text(
+                          line,
+                          style: context.font.labelSmall?.copyWith(
+                            color: context.appColors.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                        ),
+                      ],
                       if (routeLabel != null) ...[
                         const Gap(4),
                         Text(routeLabel!, style: context.font.bodySmall),
@@ -92,13 +142,24 @@ class TorConnectionStatusCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (_showRetry) ...[
+            if (_showRetry || _showUseSnowflake) ...[
               const Gap(12),
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: onRetry,
-                  child: Text(context.loc.torSettingsRetry),
+                child: Wrap(
+                  spacing: 8,
+                  children: [
+                    if (_showUseSnowflake)
+                      TextButton(
+                        onPressed: onUseSnowflake,
+                        child: Text(context.loc.torSettingsUseSnowflake),
+                      ),
+                    if (_showRetry)
+                      TextButton(
+                        onPressed: onRetry,
+                        child: Text(context.loc.torSettingsRetry),
+                      ),
+                  ],
                 ),
               ),
             ],
@@ -120,6 +181,19 @@ class TorConnectionStatusCard extends StatelessWidget {
       };
     }
     if (_looksCensored) return context.loc.torSettingsStatusCensored;
+    switch (_diagnostic) {
+      case TorDiagnostic.offline:
+        return context.loc.torSettingsStatusOffline;
+      case TorDiagnostic.clockSkewed:
+        return context.loc.torSettingsStatusClockSkewed;
+      case TorDiagnostic.cantBootstrap:
+        return context.loc.torSettingsStatusCantBootstrap;
+      case TorDiagnostic.filtering ||
+          TorDiagnostic.cantReachTor ||
+          TorDiagnostic.unknown ||
+          null:
+        break;
+    }
     final progress = switch (connection) {
       TorConnecting(:final progress) => progress,
       _ => null,
@@ -146,13 +220,40 @@ class TorConnectionStatusCard extends StatelessWidget {
           context.loc.torSettingsExternalProxyReachableDescription,
         _VisualStatus.connecting =>
           context.loc.torSettingsExternalProxyCheckingDescription,
-        _VisualStatus.offline =>
-          context.loc.torSettingsExternalProxyUnavailableDescription,
+        _VisualStatus.offline => switch (connection) {
+          TorUnavailable(
+            failure: TorExternalProxyUnavailableFailure(:final problem),
+          ) =>
+            switch (problem) {
+              TorExternalProxyProblem.refused =>
+                context.loc.torSettingsExternalProxyRefusedDescription,
+              TorExternalProxyProblem.timeout =>
+                context.loc.torSettingsExternalProxyTimeoutDescription,
+              TorExternalProxyProblem.notSocks5 =>
+                context.loc.torSettingsExternalProxyNotSocksDescription,
+              TorExternalProxyProblem.unknown =>
+                context.loc.torSettingsExternalProxyUnavailableDescription,
+            },
+          _ => context.loc.torSettingsExternalProxyUnavailableDescription,
+        },
         _VisualStatus.unknown =>
           context.loc.torSettingsExternalProxyNotCheckedDescription,
       };
     }
     if (_looksCensored) return context.loc.torSettingsDescCensored;
+    switch (_diagnostic) {
+      case TorDiagnostic.offline:
+        return context.loc.torSettingsDescOffline;
+      case TorDiagnostic.clockSkewed:
+        return context.loc.torSettingsDescClockSkewed;
+      case TorDiagnostic.cantBootstrap:
+        return context.loc.torSettingsDescCantBootstrap;
+      case TorDiagnostic.filtering ||
+          TorDiagnostic.cantReachTor ||
+          TorDiagnostic.unknown ||
+          null:
+        break;
+    }
     switch (_status) {
       case _VisualStatus.online:
         return context.loc.torSettingsDescConnected;

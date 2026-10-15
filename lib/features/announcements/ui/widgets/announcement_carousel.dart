@@ -6,15 +6,59 @@ import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/foundation.dart' show ValueListenable;
+import 'package:flutter/widgets.dart' show TickerMode, TickerModeData;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 /// The home-screen announcements section: a [BullCarousel] of
 /// dismissible banners. Renders nothing (zero height) when there are
 /// no visible announcements — including the moment the user dismisses the last
 /// one, which animates the section closed.
-class AnnouncementCarousel extends StatelessWidget {
+///
+/// The carousel stays mounted under full-screen routes pushed over home, so it
+/// refreshes whenever home becomes visible again: a flow opened from an
+/// announcement (e.g. recreating an encrypted vault) can clear its trigger.
+/// The [Overlay] disables tickers for entries hidden behind an opaque route,
+/// so [TickerMode] turning back on marks that return, whether the route was
+/// popped (including the pageless routes the flows push), removed, or
+/// replaced by `go`. Dialogs are not opaque and rebuilds do not toggle it.
+class AnnouncementCarousel extends StatefulWidget {
   const AnnouncementCarousel({super.key});
+
+  @override
+  State<AnnouncementCarousel> createState() => _AnnouncementCarouselState();
+}
+
+class _AnnouncementCarouselState extends State<AnnouncementCarousel> {
+  ValueListenable<TickerModeData>? _visibility;
+  bool _wasHidden = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final visibility = TickerMode.getValuesNotifier(context);
+    if (identical(visibility, _visibility)) return;
+    _visibility?.removeListener(_onVisibilityChanged);
+    _visibility = visibility..addListener(_onVisibilityChanged);
+    _wasHidden = !visibility.value.enabled;
+  }
+
+  void _onVisibilityChanged() {
+    if (!mounted) return;
+    final visible = _visibility?.value.enabled ?? false;
+    if (!visible) {
+      _wasHidden = true;
+    } else if (_wasHidden) {
+      _wasHidden = false;
+      context.read<AnnouncementsCubit>().refresh();
+    }
+  }
+
+  @override
+  void dispose() {
+    _visibility?.removeListener(_onVisibilityChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +109,7 @@ class _CarouselBody extends StatelessWidget {
   void _onTap(BuildContext context, Announcement announcement) {
     switch (announcement.action) {
       case NavigateAction():
-        context.pushNamed(announcement.route.name);
+        announcement.open(context);
       case NoAction():
         break;
     }
@@ -83,7 +127,7 @@ class _CarouselBody extends StatelessWidget {
           _onTap(context, announcement);
         }
       case AnnouncementDismissChoice.dismiss:
-        await cubit.dismiss(announcement.id);
+        await cubit.dismiss(announcement);
       case null:
         break;
     }
@@ -95,6 +139,9 @@ class _CarouselBody extends StatelessWidget {
       children: [
         for (final announcement in announcements)
           AnnouncementCard(
+            key: announcement.stableKey == null
+                ? null
+                : ValueKey(announcement.stableKey),
             announcement: announcement,
             onTap: () => _onTap(context, announcement),
             onDismiss: () => _onDismiss(context, announcement),

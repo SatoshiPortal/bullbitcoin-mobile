@@ -4,7 +4,8 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -73,7 +74,7 @@ class _Screen extends StatelessWidget {
                             context,
                             iconColor: context.appColors.primary,
                           ),
-                      if (state.lastEncryptedBackup != null ||
+                      if (state.hasEncryptedBackup ||
                           state.lastPhysicalBackup != null)
                         const _TestBackupButton(),
                       items
@@ -83,8 +84,7 @@ class _Screen extends StatelessWidget {
                             iconColor: context.appColors.secondary,
                             textColor: context.appColors.secondary,
                           ),
-                      if (state.lastEncryptedBackup != null)
-                        const _ViewVaultKeyButton(),
+                      if (state.hasEncryptedBackup) const _ViewVaultKeyButton(),
                       for (final id in backupSettingsDataItemOrder)
                         items.byId(id).buildTile(context),
                     ],
@@ -106,7 +106,11 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) => BullSettingsEntryItem(
     icon: Icons.vpn_key,
     title: context.loc.backupSettingsViewVaultKey,
-    onTap: () => const RecoverBullFacade().openViewVaultKey(context),
+    onTap: () async {
+      final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
+      if (confirmed != true || !context.mounted) return;
+      openRecoverBullFlow(context, flow: RecoverBullFlow.viewVaultKey);
+    },
   );
 }
 

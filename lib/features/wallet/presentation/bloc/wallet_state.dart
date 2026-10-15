@@ -22,6 +22,7 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isSpFeatureEnabled,
     @Default(false) bool isSpWalletLoading,
     @Default(false) bool backupWarningDismissed,
+    @Default(false) bool backupNeeded,
     @Default(false) bool isOnLegacyStorage,
     @Default(false) bool legacyStorageWarningDismissed,
   }) = _WalletState;
@@ -58,12 +59,7 @@ sealed class WalletState with _$WalletState {
       (showSpWallet ? spBalanceSat : 0);
 
   bool hasNoBackup() {
-    final defaultWallets = wallets.where((wallet) => wallet.isDefault);
-    return defaultWallets.isNotEmpty &&
-        defaultWallets.any(
-          (wallet) =>
-              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
-        );
+    return backupNeeded;
   }
 
   bool showBackupWarning() {

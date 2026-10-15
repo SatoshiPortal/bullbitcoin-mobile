@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/announcements/domain/announcements_failure.da
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_catalog.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/has_legacy_encrypted_vault_to_recreate_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 /// Orchestrates which announcements are currently visible on the home carousel.
@@ -15,8 +16,13 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 class GetVisibleAnnouncementsUsecase {
   final AnnouncementDismissalRepository _dismissalRepository;
   final SwapFacade _swapFacade;
+  final HasLegacyEncryptedVaultToRecreateUsecase? _hasLegacyEncryptedVault;
 
-  GetVisibleAnnouncementsUsecase(this._dismissalRepository, this._swapFacade);
+  GetVisibleAnnouncementsUsecase(
+    this._dismissalRepository,
+    this._swapFacade, {
+    this._hasLegacyEncryptedVault,
+  });
 
   Future<Result<List<Announcement>, AnnouncementsFailure>> execute() async {
     try {
@@ -24,6 +30,8 @@ class GetVisibleAnnouncementsUsecase {
 
       final signals = AnnouncementSignals(
         isAppUpdateRequired: _swapFacade.isAppUpdateRequired,
+        hasLegacyEncryptedVaultToRecreate:
+            await _hasLegacyEncryptedVault?.execute() ?? false,
       );
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};
       final now = DateTime.now().toUtc();

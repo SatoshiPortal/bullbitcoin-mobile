@@ -1,0 +1,191 @@
+import '../../domain/recoverbull_navigation_port.dart';
+import 'dart:async';
+
+import '../../presentation/bloc.dart';
+import '../../domain/recoverbull_failure.dart';
+import '../../presentation/recoverbull_failure_l10n.dart';
+import './password_input_page.dart';
+import './test_completed_page.dart';
+import './view_vault_key_page.dart';
+import '../widgets/key_server_status_widget.dart';
+import '../../router/flow_type.dart';
+import '../../l10n/context_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
+
+class FetchVaultKeyPage extends StatefulWidget {
+  final _SecretSubmission _submission;
+
+  FetchVaultKeyPage({
+    super.key,
+    required String input,
+    required InputType inputType,
+  }) : _submission = _SecretSubmission(input, inputType);
+
+  @override
+  State<FetchVaultKeyPage> createState() => _FetchVaultKeyPageState();
+}
+
+class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
+  bool _hasNavigatedAway = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget._submission.submit(context.read<RecoverBullBloc>());
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant FetchVaultKeyPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget._submission, widget._submission)) {
+      oldWidget._submission.discard();
+      widget._submission.discard();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget._submission.discard();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final route = ModalRoute.of(context);
+    if (route != null && route.isCurrent && _hasNavigatedAway) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BullScaffold(
+      appBar: BullTopBar.appBar(
+        title: context.loc.recoverbullFetchVaultKey,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: KeyServerStatusWidget(),
+          ),
+        ],
+      ),
+      body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
+        listenWhen: (previous, current) =>
+            previous.failure != current.failure ||
+            current.vaultKey != null && previous.vaultKey != current.vaultKey ||
+            previous.isFlowFinished != current.isFlowFinished,
+        listener: (context, state) {
+          if (state.failure != null) {
+            if (state.failure is ExternalTorProxyUnavailableFailure) {
+              final navigation = context.read<RecoverBullNavigationPort>();
+              context.read<RecoverBullBloc>().add(const OnClearError());
+              Navigator.of(context).pop();
+              navigation.openTorSettings();
+              return;
+            }
+            BullSnackBar.show(
+              context,
+              message: state.failure!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
+            Navigator.of(context).pop();
+          }
+          if (state.flow == RecoverBullFlow.recoverVault &&
+              state.isFlowFinished) {
+            _hasNavigatedAway = true;
+            context.read<RecoverBullNavigationPort>().openWalletHome();
+            return;
+          }
+          if (state.flow == RecoverBullFlow.testVault && state.isFlowFinished) {
+            if (_hasNavigatedAway) return;
+            _hasNavigatedAway = true;
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TestCompletedPage(),
+              ),
+            );
+            return;
+          }
+          // The bloc publishes the key only once it has decrypted the vault.
+          if (state.vaultKey != null) {
+            if (_hasNavigatedAway) return;
+            switch (state.flow) {
+              case RecoverBullFlow.viewVaultKey:
+                _hasNavigatedAway = true;
+                final bloc = context.read<RecoverBullBloc>();
+                unawaited(
+                  Navigator.of(context)
+                      .push<void>(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ViewVaultKeyPage(vaultKey: state.vaultKey!),
+                        ),
+                      )
+                      .whenComplete(() {
+                        if (!bloc.isClosed) bloc.add(const OnVaultKeyHidden());
+                      }),
+                );
+              case RecoverBullFlow.testVault:
+                break;
+              case RecoverBullFlow.recoverVault:
+                // Recover flow finishes via isFlowFinished above; this branch
+                // intentionally no-ops so we don't navigate before persistence.
+                break;
+              case RecoverBullFlow.secureVault:
+                break; // should not fetch anything
+              case RecoverBullFlow.settings:
+                throw UnimplementedError();
+            }
+          }
+        },
+        builder: (context, state) {
+          return SafeArea(
+            child: state.isLoading
+                ? Center(
+                    child: BullProgressScreen(
+                      isLoading: true,
+                      title: context.loc.recoverbullFetchingVaultKey,
+                      description:
+                          context.loc.recoverbullConnectedTorCheckingServer,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Owns the route handoff only until its first mounted frame. No secret getter.
+final class _SecretSubmission {
+  String? _input;
+  final InputType type;
+
+  _SecretSubmission(this._input, this.type);
+
+  void submit(RecoverBullBloc bloc) {
+    final input = _input;
+    _input = null;
+    if (input == null || bloc.isClosed) return;
+    switch (type) {
+      case InputType.pin || InputType.password:
+        bloc.add(OnVaultPasswordSet(password: input));
+      case InputType.vaultKey:
+        bloc.add(OnVaultDecryption(vaultKey: input));
+    }
+  }
+
+  void discard() => _input = null;
+}

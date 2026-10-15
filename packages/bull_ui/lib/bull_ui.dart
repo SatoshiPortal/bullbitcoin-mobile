@@ -45,6 +45,7 @@ export 'package:flutter/widgets.dart'
         HitTestBehavior,
         IconData,
         IntrinsicHeight,
+        InheritedWidget,
         Key,
         LayoutBuilder,
         ListView,
@@ -97,6 +98,7 @@ export 'package:flutter/widgets.dart' show FocusNode;
 export 'src/layout/gap.dart' show Gap;
 
 // Theme.
+export 'src/assets/bull_assets.dart';
 export 'src/theme/bull_icon.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';
@@ -166,3 +168,58 @@ export 'src/overlays/bull_bottom_sheet.dart';
 export 'src/overlays/bull_dialog.dart';
 export 'src/overlays/bull_instructions_sheet.dart';
 export 'src/overlays/bull_picker_sheet.dart';
+
+// Additional layout and chrome primitives used by extracted feature flows.
+export 'package:flutter/widgets.dart'
+    show
+        AlwaysStoppedAnimation,
+        AnimatedBuilder,
+        AnimatedSwitcher,
+        Animation,
+        AnimationController,
+        AppLifecycleListener,
+        BackdropFilter,
+        BoxFit,
+        CurvedAnimation,
+        ExcludeSemantics,
+        FilterQuality,
+        GlobalKey,
+        Image,
+        LinearGradient,
+        Offset,
+        RichText,
+        ScaleTransition,
+        Semantics,
+        SingleTickerProviderStateMixin,
+        TextSpan,
+        Transform,
+        Tween,
+        WidgetSpan,
+        WidgetBuilder,
+        ConnectionState,
+        FutureBuilder,
+        NavigatorState,
+        NavigatorObserver,
+        Route,
+        PopScope;
+export 'package:flutter/material.dart'
+    show
+        AutovalidateMode,
+        CircularProgressIndicator,
+        Form,
+        FormState,
+        Icon,
+        IconButton,
+        Icons,
+        Ink,
+        InkWell,
+        Material,
+        MaterialLocalizations,
+        MaterialPageRoute,
+        MediaQuery,
+        ModalRoute,
+        VisualDensity;
+
+export 'src/feedback/bull_progress_screen.dart';
+export 'src/feedback/bull_status_screen.dart';
+export 'src/chrome/bull_backup_success_screen.dart';

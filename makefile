@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze gen build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -62,10 +62,12 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 bull-ui-check:
-	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@echo "🧱 bull_ui import boundary (migrated feature UI imports only package:bull_ui)"
+	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui features/recoverbull/lib/src/ui features/recoverbull/lib/src/google_drive/ui; then echo "migrated feature UI must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-checks: analyze bull-ui-check fix-check format-check unit-test
+gen: build-runner translations
+
+checks: gen analyze bull-ui-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -80,16 +82,17 @@ pr-governance-test:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
-	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
+	@fvm dart run build_runner build --workspace --force-jit
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --delete-conflicting-outputs --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
+	@fvm dart run build_runner watch --workspace --force-jit
 
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
+	@(cd features/logs && fvm flutter gen-l10n)
+	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -104,6 +107,7 @@ drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
+	cd features/recoverbull && fvm dart run drift_dev make-migrations
 
 ios-pod-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
@@ -408,6 +412,12 @@ unit-test:
 				( cd "$$p" && fvm dart test --reporter=compact ); \
 			fi; \
 		fi; \
+		done
+	@set -e; for p in features/*/; do \
+		if [ -d "$${p}test" ]; then \
+			echo "🏃‍ running $${p}test"; \
+			( cd "$$p" && fvm flutter test --reporter=compact ); \
+		fi; \
 	done
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
@@ -418,7 +428,7 @@ unit-test:
 # integration_test/` does). all_test.dart is a generated, gitignored artifact —
 # tools/gen_all_test.dart regenerates it from disk below, so adding a test file
 # needs no manual wiring.
-integration-test:
+integration-test: build-runner translations
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
