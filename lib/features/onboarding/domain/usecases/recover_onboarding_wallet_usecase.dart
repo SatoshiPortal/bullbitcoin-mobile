@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_use
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class RecoverOnboardingWalletUsecase {
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
@@ -23,8 +24,8 @@ class RecoverOnboardingWalletUsecase {
       await _createDefaultWalletsUsecase.execute(mnemonicWords: mnemonicWords);
     } catch (e, st) {
       log.severe(
-        message: 'Onboarding: wallet recovery failed',
-        error: e,
+        message: 'Onboarding: wallet recovery failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingWalletSetupFailure());

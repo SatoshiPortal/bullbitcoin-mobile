@@ -39,11 +39,13 @@ class VerifyPhysicalBackupUsecase {
           ).every((element) => element);
       return Ok(matches);
     } on Object catch (e, st) {
-      // warning, not severe: severe forwards the exception to the crash
-      // reporter (see Logger.severe), and this is the seed read path — the
-      // driver's message is not guaranteed to be free of the value it failed
-      // on, so it must not leave the device. warning stays local.
-      log.warning('Failed to verify the physical backup', error: e, trace: st);
+      // Type only: on the seed read path the message may quote the value it
+      // failed on, and every level but INFO is written to the shareable log.
+      log.warning(
+        'Failed to verify the physical backup',
+        error: e.runtimeType,
+        trace: st,
+      );
       // The failure carries NO logMessage on purpose. It is stored in bloc
       //  state, and this is the seed read path: the thrown reason comes
       //  straight from the secure-storage driver and is not guaranteed to be

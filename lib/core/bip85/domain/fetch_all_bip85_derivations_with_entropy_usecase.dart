@@ -11,6 +11,7 @@ import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:meta/meta.dart';
 import 'package:convert/convert.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
@@ -72,8 +73,9 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       }
     } catch (e, st) {
       log.severe(
-        message: 'FetchAllBip85DerivationsWithEntropyUsecase failed',
-        error: e,
+        message:
+            'FetchAllBip85DerivationsWithEntropyUsecase failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
       // Only the runtime type: this block wraps xprv derivation, so an

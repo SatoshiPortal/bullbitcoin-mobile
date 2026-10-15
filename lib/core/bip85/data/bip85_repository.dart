@@ -6,6 +6,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class Bip85Repository {
   final Bip85Datasource _datasource;
@@ -29,11 +30,11 @@ class Bip85Repository {
       return Ok(result);
     } catch (e, st) {
       log.severe(
-        message: 'Bip85Repository.deriveHex failed',
-        error: e,
+        message: 'Bip85Repository.deriveHex failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85DerivationFailure(e.toString()));
+      return Err(Bip85DerivationFailure('derivation: ${errorType(e)}'));
     }
   }
 
@@ -55,11 +56,11 @@ class Bip85Repository {
       return Ok(result);
     } catch (e, st) {
       log.severe(
-        message: 'Bip85Repository.deriveMnemonic failed',
-        error: e,
+        message: 'Bip85Repository.deriveMnemonic failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(Bip85DerivationFailure(e.toString()));
+      return Err(Bip85DerivationFailure('derivation: ${errorType(e)}'));
     }
   }
 

@@ -12,6 +12,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;
@@ -108,8 +109,16 @@ class CreateEncryptedVaultUsecase {
           )
           .map((vault) => (vault: vault, vaultKey: backupKey));
     } catch (e, st) {
-      log.severe(message: 'createEncryptedVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(
+        message: 'createEncryptedVault failed (${errorType(e)})',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(
+        RecoverBullUnexpectedCoreFailure(
+          'createEncryptedVault: ${errorType(e)}',
+        ),
+      );
     }
   }
 }

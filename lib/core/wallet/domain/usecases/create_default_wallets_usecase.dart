@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
@@ -114,7 +115,7 @@ class CreateDefaultWalletsUsecase {
     } on CreateDefaultWalletsException {
       rethrow;
     } catch (e) {
-      throw CreateDefaultWalletsException(e.toString());
+      throw CreateDefaultWalletsException('wallet creation: ${errorType(e)}');
     }
   }
 }

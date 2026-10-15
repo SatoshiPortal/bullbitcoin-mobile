@@ -3,6 +3,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class CheckDuplicateMnemonicUsecase {
   final SeedRepository _seedRepository;
@@ -25,11 +26,13 @@ class CheckDuplicateMnemonicUsecase {
       return const Ok(null);
     } catch (e, st) {
       log.severe(
-        message: 'Duplicate mnemonic check failed',
-        error: e,
+        message: 'Duplicate mnemonic check failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+      return Err(
+        ImportMnemonicUnexpectedFailure('duplicate check: ${errorType(e)}'),
+      );
     }
   }
 }

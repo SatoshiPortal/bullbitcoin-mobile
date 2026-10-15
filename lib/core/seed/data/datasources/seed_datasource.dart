@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 
+// Logs error types only: a parse error quotes the seed it failed on.
 class SeedDatasource {
   final KeyValueStorageDatasource<String> _secureStorage;
 
@@ -91,15 +93,16 @@ class SeedDatasource {
             milliseconds: initialDelay.inMilliseconds * (1 << attempt),
           );
           log.fine(
-            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: $e, retrying in ${delay.inMilliseconds}ms',
+            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: ${errorType(e)}, retrying in ${delay.inMilliseconds}ms',
           );
           await Future.delayed(delay);
           continue;
         }
 
         log.severe(
-          message: 'Failed to read seed after $maxRetries attempts',
-          error: e,
+          message:
+              'Failed to read seed after $maxRetries attempts (${errorType(e)})',
+          error: e.runtimeType,
           trace: StackTrace.current,
         );
         throw SeedNotFoundException(

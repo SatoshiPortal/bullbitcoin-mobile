@@ -3,10 +3,12 @@ import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
+// Logs error types only: a parse error quotes the mnemonic it failed on.
 class SeedRepository {
   final SeedDatasource _source;
 
@@ -28,8 +30,8 @@ class SeedRepository {
       return seed;
     } catch (e, stackTrace) {
       log.severe(
-        message: 'Failed to create seed from mnemonic',
-        error: e,
+        message: 'Failed to create seed from mnemonic (${errorType(e)})',
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -43,8 +45,8 @@ class SeedRepository {
       return model.toEntity();
     } catch (e, stackTrace) {
       log.severe(
-        message: 'Failed to create seed from bytes',
-        error: e,
+        message: 'Failed to create seed from bytes (${errorType(e)})',
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -59,8 +61,8 @@ class SeedRepository {
       return entity;
     } catch (e, stackTrace) {
       log.severe(
-        message: 'Failed to get seed with fingerprint',
-        error: e,
+        message: 'Failed to get seed with fingerprint (${errorType(e)})',
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -128,11 +130,11 @@ class SeedRepository {
       return Ok(await compute(convertToMnemonicSeedsInIsolate, models));
     } catch (e, st) {
       log.severe(
-        message: 'Failed to get all mnemonic seeds',
-        error: e,
+        message: 'Failed to get all mnemonic seeds (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SeedFetchFailure(e.toString()));
+      return Err(SeedFetchFailure('seed read: ${errorType(e)}'));
     }
   }
 }

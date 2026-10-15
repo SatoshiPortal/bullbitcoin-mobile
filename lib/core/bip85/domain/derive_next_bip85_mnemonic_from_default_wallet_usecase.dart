@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
@@ -77,8 +78,9 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       }
     } catch (e, st) {
       log.severe(
-        message: 'DeriveNextBip85MnemonicFromDefaultWalletUsecase failed',
-        error: e,
+        message:
+            'DeriveNextBip85MnemonicFromDefaultWalletUsecase failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
       return Err(Bip85UnexpectedFailure('derivation: ${e.runtimeType}'));

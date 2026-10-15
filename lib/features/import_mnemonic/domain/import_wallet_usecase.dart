@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class ImportWalletUsecase {
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
@@ -89,8 +90,12 @@ class ImportWalletUsecase {
           );
         }
       }
-      log.severe(message: 'Import wallet failed', error: e, trace: st);
-      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+      log.severe(
+        message: 'Import wallet failed (${errorType(e)})',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(ImportMnemonicUnexpectedFailure('import: ${errorType(e)}'));
     }
   }
 }

@@ -156,7 +156,7 @@ void main() {
     );
 
     test(
-      'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
+      'returns Err(ImportMnemonicUnexpectedFailure) on exception — only its type in logMessage',
       () async {
         when(
           () => checkDuplicate.execute(
@@ -176,10 +176,11 @@ void main() {
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         final failure = (result as Err).failure;
         expect(failure, isA<ImportMnemonicUnexpectedFailure>());
-        expect(
-          (failure as ImportMnemonicUnexpectedFailure).logMessage,
-          contains('settings unavailable'),
-        );
+        // The text of an error on the mnemonic path can quote the words.
+        final logMessage =
+            (failure as ImportMnemonicUnexpectedFailure).logMessage;
+        expect(logMessage, contains('_Exception'));
+        expect(logMessage, isNot(contains('settings unavailable')));
       },
     );
   });

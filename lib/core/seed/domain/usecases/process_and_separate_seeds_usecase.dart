@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class ProcessAndSeparateSeedsUsecase {
   ProcessAndSeparateSeedsUsecase();
@@ -48,8 +49,8 @@ class ProcessAndSeparateSeedsUsecase {
       );
     } catch (e) {
       log.severe(
-        message: 'Failed to process and separate seeds',
-        error: e,
+        message: 'Failed to process and separate seeds (${errorType(e)})',
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
       rethrow;

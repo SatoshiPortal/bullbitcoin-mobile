@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
@@ -28,8 +29,8 @@ class CheckForExistingDefaultWalletsUsecase {
       return const Err(AppStartupKeychainLockedFailure());
     } on Object catch (e, st) {
       log.severe(
-        message: 'Default wallet check failed at startup',
-        error: e,
+        message: 'Default wallet check failed at startup (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(AppStartupWalletCheckFailure());
@@ -115,8 +116,9 @@ class CheckForExistingDefaultWalletsUsecase {
         }
       } catch (e, stackTrace) {
         log.severe(
-          message: 'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
-          error: e,
+          message:
+              'CheckForExistingDefaultWalletsUsecase: legacy heal failed (${errorType(e)})',
+          error: e.runtimeType,
           trace: stackTrace,
         );
       }
@@ -130,8 +132,8 @@ class CheckForExistingDefaultWalletsUsecase {
           log.fine('FINE: Seed Found');
         } catch (e) {
           log.severe(
-            message: 'Seed not found for default wallet ',
-            error: e,
+            message: 'Seed not found for default wallet (${errorType(e)})',
+            error: e.runtimeType,
             trace: StackTrace.current,
           );
           rethrow;

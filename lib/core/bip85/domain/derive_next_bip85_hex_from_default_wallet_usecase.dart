@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/error_type.dart';
 
 class DeriveNextBip85HexFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
@@ -75,8 +76,9 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
       }
     } catch (e, st) {
       log.severe(
-        message: 'DeriveNextBip85HexFromDefaultWalletUsecase failed',
-        error: e,
+        message:
+            'DeriveNextBip85HexFromDefaultWalletUsecase failed (${errorType(e)})',
+        error: e.runtimeType,
         trace: st,
       );
       return Err(Bip85UnexpectedFailure('derivation: ${e.runtimeType}'));
