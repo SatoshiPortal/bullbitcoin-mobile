@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 class ScanQrPage extends StatelessWidget {
   const ScanQrPage({super.key});
@@ -56,7 +56,7 @@ class ScanQrPage extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: BBText(
+                    child: BullText(
                       '${state.bbqr.parts.length} / ${state.bbqr.options!.total}',
                       style: context.font.labelMedium,
                       color: context.appColors.onPrimary,

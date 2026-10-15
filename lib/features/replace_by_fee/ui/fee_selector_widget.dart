@@ -2,10 +2,9 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class BumpFeeSelectorWidget extends StatelessWidget {
   const BumpFeeSelectorWidget({
@@ -112,17 +111,17 @@ class _FastestTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: .stretch,
                   children: [
-                    BBText(
+                    BullText(
                       context.loc.replaceByFeeFastestTitle,
                       style: context.font.headlineLarge,
                     ),
                     const Gap(4),
-                    BBText(
+                    BullText(
                       context.loc.replaceByFeeFastestDescription,
                       style: context.font.labelMedium,
                     ),
                     const Gap(2),
-                    BBText(
+                    BullText(
                       context.loc.replaceByFeeFeeRateDisplay(
                         fastestFeeRate.feeRate.satPerVbyte.toStringAsFixed(1),
                       ),

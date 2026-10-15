@@ -1,13 +1,10 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
@@ -18,10 +15,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullBottomSheet,
+        BullButton,
         BullCountdown,
         BullFadingLinearProgress,
         BullScrollableColumn,
         BullShimmerLine,
+        BullSnackBar,
         BullSwitch,
         Gap;
 
@@ -336,7 +336,7 @@ class _FeePriorityRow extends StatelessWidget {
       onTap: canEditFees
           ? () async {
               final bloc = context.read<PayBloc>();
-              final selected = await BlurredBottomSheet.show<String>(
+              final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
                   viewState: bloc,
@@ -423,7 +423,10 @@ class _DetailRow extends StatelessWidget {
                                   Clipboard.setData(
                                     ClipboardData(text: copyValue!),
                                   );
-                                  SnackBarUtils.showCopiedSnackBar(context);
+                                  BullSnackBar.show(
+                                    context,
+                                    message: context.loc.copiedToClipboard,
+                                  );
                                 },
                                 child: Icon(
                                   Icons.copy,
@@ -500,11 +503,11 @@ class _BottomButtons extends StatelessWidget {
       children: [
         const _PayError(),
         if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
+          BullButton.big(
             label: context.loc.payAdvancedSettings,
             disabled: isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
-              BlurredBottomSheet.show(
+              BullBottomSheet.show(
                 context: context,
                 child: BlocProvider.value(
                   value: context.read<PayBloc>(),
@@ -519,7 +522,7 @@ class _BottomButtons extends StatelessWidget {
           ),
           const Gap(16),
         ],
-        BBButton.big(
+        BullButton.big(
           label: context.loc.payContinue,
           disabled: isConfirmingPayment || isPayinBroadcast,
           onPressed: onContinuePressed,
