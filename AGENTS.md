@@ -241,6 +241,7 @@ This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold thes
 - **Block capture on secret screens** — `no_screenshot` plus exclusion from the semantics/accessibility tree.
 - **Validate at the domain boundary.** Addresses, amounts, descriptors are value objects that reject invalid input at construction (rule #9) — never trust a raw string deeper in.
 - When a change touches key material, signing, or backup/recovery, **say so explicitly in the PR** so it gets the right review.
+- **Network privacy is scoped on purpose.** Tor covers only RecoverBull, custom Bitcoin Electrum `.onion` servers and the validation of a custom `.onion` mempool server; other traffic, including clearnet Electrum, goes direct, and a device-wide VPN is how users hide their IP. Read [docs/SECURE_DEVELOPMENT.md](docs/SECURE_DEVELOPMENT.md) "Network privacy model" before reporting or changing a routing behaviour.
 
 ## Don'ts (the short list)
 

@@ -30,6 +30,43 @@ It focuses on the loss-of-funds and privacy risks that are realistic given this 
   Its display, storage, and any cloud-backup integration are the highest-value targets in the app and deserve the most scrutiny in review.
 - **Local device compromise.** A rooted/jailbroken device, a malicious keyboard, or a malicious accessibility service already running on the device sit outside what an app-layer mitigation can fully prevent; the goal here is to raise the cost of casual or automated harvesting, not to defend against a fully compromised device.
 
+## Network privacy model (by design)
+
+The app does not try to hide the user's IP address from every server it talks to.
+Tor protects a small, explicit set of traffic; hiding the IP for everything else is the job of a device-wide VPN such as Orbot in VPN mode, as the Tor settings screen tells the user.
+This scope was narrowed on purpose in August 2026 (#2719), and tests pin it (`test/core_test/electrum/electrum_servers_adapter_test.dart`, "keeps Bitcoin clearnet direct with an enabled external proxy").
+
+| Traffic | Route |
+|---|---|
+| RecoverBull key server | Tor: embedded, or the user's local SOCKS5 proxy (Orbot's SOCKS port) |
+| Custom Bitcoin Electrum `.onion` server | Tor: embedded or local SOCKS5 proxy |
+| Custom mempool `.onion` server, when it is validated | Embedded Tor only, even with the local SOCKS5 proxy configured |
+| Bitcoin Electrum clearnet servers, default or custom | Direct, even with the local SOCKS5 proxy configured |
+| Liquid Electrum | Direct; a Liquid `.onion` server is skipped, never contacted |
+| RecoverBull vault on Google Drive | Direct |
+| Payjoin | Direct to third-party OHTTP relays; the payjoin directory only sees the relay |
+| Lightning address and LNURL resolution | Direct, to the recipient's domain |
+| Silent Payments backend (BlindBit and its Electrum server) | Direct |
+| Fee estimation, exchange API, websocket and webviews, Boltz and the swap API, prices, Sentry (consent-gated) | Direct |
+
+The per-network `ElectrumSettings.socks5` column still takes precedence in the Electrum adapter, but no UI writes it any more, so it is empty in practice.
+
+What reviewers and audit agents should not report as a vulnerability:
+
+- A server seeing the user's IP address, or clearnet traffic not going through the SOCKS proxy, for traffic listed as direct above.
+- DNS queries or IP exposure that a device-wide VPN would hide.
+
+What still is a finding:
+
+- Traffic the table or the UI says goes through Tor that actually goes direct.
+- An `.onion` hostname resolved outside Tor on a path that claims a Tor route; the Electrum socket connector refuses this on purpose.
+- A custom server silently replaced by a Bull default; custom servers never fall back (see `ElectrumServersPort`).
+- Identifiers of the user's own servers (URLs, hosts) written to the shareable log or sent to Sentry.
+
+Known open findings: the Electrum and mempool server storage datasources still log server URLs at FINE, which reaches the shareable log; a `.onion` host happens to be redacted, a clearnet one is not.
+
+Known limitation, not a design choice: fee estimation fetches a custom mempool server directly, so a `.onion` mempool server fails to return fees unless a device-wide VPN routes `.onion` traffic, and under such a VPN embedded Tor may not bootstrap, so the server cannot be validated either; in practice a `.onion` mempool server is not usable for fee estimation today.
+
 ## Secure development rules (applicable today)
 
 These rules are already enforced by code review and the architecture rules in [AGENTS.md](../AGENTS.md), not by a dedicated security gate — see "Current enforcement status" below for what that means in practice.
