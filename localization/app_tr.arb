@@ -11824,7 +11824,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 işlem ({currency})} other{{count} işlem ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Yükleme durumunuz yüklenemedi. Lütfen tekrar deneyin.",
   "recipientsTypeConfidentialSepa": "Gizli SEPA",
-  "recipientsTypeConfidentialSepa": "Gizli SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
   "recipientsErrorEuResidencyRequired": "Gizli SEPA'yı etkinleştirmek için Avrupa Birliği'nde ikamet ediyor olmanız gerekir.",
   "recipientsConfidentialSepaActivatingTitle": "Alıcı etkinleştiriliyor",

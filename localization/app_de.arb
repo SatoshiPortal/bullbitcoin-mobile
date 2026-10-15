@@ -5047,7 +5047,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 Trade ({currency})} other{{count} Trades ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Ihr Upload-Status konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
   "recipientsTypeConfidentialSepa": "Vertrauliches SEPA",
-  "recipientsTypeConfidentialSepa": "Vertrauliches SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Sie haben nicht die erforderlichen Berechtigungen, um auf diese Finanzierungsoption zuzugreifen. Entweder ist Ihr KYC unzureichend oder diese Option ist für Ihr Konto nicht verfügbar",
   "recipientsErrorEuResidencyRequired": "Sie müssen in der Europäischen Union ansässig sein, um vertrauliches SEPA zu aktivieren.",
   "recipientsConfidentialSepaActivatingTitle": "Empfänger wird aktiviert",

@@ -3752,7 +3752,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 გარიგება ({currency})} other{{count} გარიგება ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "თქვენი ატვირთვის სტატუსის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",
-  "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი",
   "recipientsErrorEuResidencyRequired": "კონფიდენციალური SEPA-ს გასააქტიურებლად უნდა იყოთ ევროკავშირის რეზიდენტი.",
   "recipientsConfidentialSepaActivatingTitle": "მიმღების გააქტიურება",
