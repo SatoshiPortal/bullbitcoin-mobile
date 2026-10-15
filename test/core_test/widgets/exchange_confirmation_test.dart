@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_send_payment_screen.dart';
@@ -106,7 +105,7 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.byType(BullFadingLinearProgress), findsNothing);
         expect(
-          tester.widget<BBButton>(find.byType(BBButton).last).disabled,
+          tester.widget<BullButton>(find.byType(BullButton).last).disabled,
           isTrue,
         );
 
@@ -174,8 +173,8 @@ void main() {
           tester.widget<AddressViewer>(find.byType(AddressViewer)).data,
           address,
         );
-        final action = find.byType(BBButton).last;
-        expect(tester.widget<BBButton>(action).disabled, isFalse);
+        final action = find.byType(BullButton).last;
+        expect(tester.widget<BullButton>(action).disabled, isFalse);
         final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
         expect(scaffold.bottomNavigationBar, isNotNull);
         expect(tester.getRect(action).bottom, lessThanOrEqualTo(600));
@@ -185,7 +184,7 @@ void main() {
         sellStates.add(sellState);
         payStates.add(payState);
         await tester.pump();
-        expect(find.byType(BBButton), findsNothing);
+        expect(find.byType(BullButton), findsNothing);
         expect(find.byType(BullAsyncStatus), findsOneWidget);
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.byType(BullFadingLinearProgress), findsOneWidget);

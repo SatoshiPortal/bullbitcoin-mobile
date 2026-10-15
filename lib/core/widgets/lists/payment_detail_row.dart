@@ -58,7 +58,8 @@ class PaymentDetailRow extends StatelessWidget {
       displayValue: text,
       displayWidget: display,
       copyValue: isAddress ? null : copyValue,
-      onCopied: () => BullSnackBar.show(context, message: context.loc.copiedToClipboard),
+      onCopied: () =>
+          BullSnackBar.show(context, message: context.loc.copiedToClipboard),
     );
   }
 }

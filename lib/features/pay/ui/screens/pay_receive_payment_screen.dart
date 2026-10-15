@@ -17,7 +17,8 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullCountdown, BullSnackBar, BullText, BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullCountdown, BullSnackBar, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
@@ -96,7 +97,15 @@ class PayReceivePaymentScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: BullTopBar(title: '', titleWidget: Image.asset(Assets.logos.bbLogoSmall.path, height: 32, width: 32), onBack: context.pop),
+          flexibleSpace: BullTopBar(
+            title: '',
+            titleWidget: Image.asset(
+              Assets.logos.bbLogoSmall.path,
+              height: 32,
+              width: 32,
+            ),
+            onBack: context.pop,
+          ),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -231,7 +240,10 @@ class PayReceivePaymentScreen extends StatelessWidget {
                           Clipboard.setData(
                             ClipboardData(text: bip21InvoiceData),
                           );
-                          BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                          BullSnackBar.show(
+                            context,
+                            message: context.loc.copiedToClipboard,
+                          );
                         }
                       },
                       bgColor: context.appColors.transparent,
@@ -303,7 +315,10 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: copyValue));
-                      BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                      BullSnackBar.show(
+                        context,
+                        message: context.loc.copiedToClipboard,
+                      );
                     },
                     child: Icon(
                       Icons.copy,

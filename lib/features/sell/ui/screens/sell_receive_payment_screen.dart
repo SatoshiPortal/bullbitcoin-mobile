@@ -15,7 +15,15 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullCountdown, BullShimmerLine, BullSnackBar, BullText, BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButton,
+        BullCountdown,
+        BullShimmerLine,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -72,7 +80,11 @@ class SellReceivePaymentScreen extends StatelessWidget {
           automaticallyImplyLeading: false,
           flexibleSpace: BullTopBar(
             title: '',
-            titleWidget: Image.asset(Assets.logos.bbLogoSmall.path, height: 32, width: 32),
+            titleWidget: Image.asset(
+              Assets.logos.bbLogoSmall.path,
+              height: 32,
+              width: 32,
+            ),
             onBack: () {
               Navigator.of(context).pop();
             },
@@ -210,7 +222,10 @@ class SellReceivePaymentScreen extends StatelessWidget {
                           Clipboard.setData(
                             ClipboardData(text: bip21InvoiceData),
                           );
-                          BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                          BullSnackBar.show(
+                            context,
+                            message: context.loc.copiedToClipboard,
+                          );
                         }
                       },
                       bgColor: context.appColors.transparent,
@@ -282,7 +297,10 @@ class SellReceivePaymentScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: copyValue));
-                      BullSnackBar.show(context, message: context.loc.copiedToClipboard);
+                      BullSnackBar.show(
+                        context,
+                        message: context.loc.copiedToClipboard,
+                      );
                     },
                     child: Icon(
                       Icons.copy,

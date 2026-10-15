@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullFadingLinearProgress;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,7 +75,7 @@ void main() {
 
       final amountFields = find.byType(BuyAmountInputFields);
       final continueButton = find.byWidgetPredicate(
-        (widget) => widget is BBButton && widget.label == 'Continue',
+        (widget) => widget is BullButton && widget.label == 'Continue',
       );
       final amountRect = tester.getRect(amountFields);
       final buttonRect = tester.getRect(continueButton);
@@ -90,7 +89,7 @@ void main() {
       expect(find.byType(BullFadingLinearProgress), findsNothing);
       expect(tester.getRect(amountFields), amountRect);
       expect(tester.getRect(continueButton), buttonRect);
-      expect(tester.widget<BBButton>(continueButton).disabled, isTrue);
+      expect(tester.widget<BullButton>(continueButton).disabled, isTrue);
       await tester.tap(continueButton);
       verifyNever(() => bloc.add(any()));
 
@@ -101,7 +100,7 @@ void main() {
       expect(find.byType(BullFadingLinearProgress), findsNothing);
       expect(tester.getRect(amountFields), amountRect);
       expect(tester.getRect(continueButton), buttonRect);
-      expect(tester.widget<BBButton>(continueButton).disabled, isFalse);
+      expect(tester.widget<BullButton>(continueButton).disabled, isFalse);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );

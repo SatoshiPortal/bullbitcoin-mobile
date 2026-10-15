@@ -13,7 +13,14 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAsyncStatus, BullBottomSheet, BullButton, BullCountdown, BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullBottomSheet,
+        BullButton,
+        BullCountdown,
+        BullSwitch,
+        Gap;
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});

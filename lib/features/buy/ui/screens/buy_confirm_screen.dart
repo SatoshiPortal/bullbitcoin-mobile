@@ -11,7 +11,14 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAsyncStatus, BullButton, BullCountdown, BullShimmerLine, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullButton,
+        BullCountdown,
+        BullShimmerLine,
+        BullText,
+        Gap;
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});

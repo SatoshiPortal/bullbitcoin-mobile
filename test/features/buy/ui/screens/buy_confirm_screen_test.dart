@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
@@ -17,7 +16,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCountdown, BullShimmerLine;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullCountdown, BullShimmerLine;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,8 +96,8 @@ void main() {
     expect(find.byType(BullShimmerLine), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(find.byType(BullCountdown), findsNothing);
-    expect(tester.widget<BBButton>(find.byType(BBButton)).disabled, isTrue);
-    await tester.tap(find.byType(BBButton));
+    expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
+    await tester.tap(find.byType(BullButton));
     verifyNever(() => screen.bloc.add(any()));
 
     final order = _MockBuyOrder();
@@ -117,8 +117,11 @@ void main() {
     expect(find.text('50,000 sats'), findsOneWidget);
     expect(find.text('100.00 CAD'), findsWidgets);
     expect(find.byType(BullCountdown), findsOneWidget);
-    expect(tester.widget<BBButton>(find.byType(BBButton)).disabled, isFalse);
-    await tester.tap(find.byType(BBButton));
+    expect(
+      tester.widget<BullButton>(find.byType(BullButton)).disabled,
+      isFalse,
+    );
+    await tester.tap(find.byType(BullButton));
     verify(() => screen.bloc.add(const BuyEvent.confirmOrder())).called(1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -145,7 +148,10 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('private diagnostic'), findsNothing);
-      expect(tester.widget<BBButton>(find.byType(BBButton)).disabled, isTrue);
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        isTrue,
+      );
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
@@ -235,7 +241,7 @@ void main() {
       );
       await tester.pump();
       await tester.tap(
-        find.byWidgetPredicate((w) => w is BBButton && w.label == 'Continue'),
+        find.byWidgetPredicate((w) => w is BullButton && w.label == 'Continue'),
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -244,10 +250,10 @@ void main() {
       expect(state.buyOrder, isNull);
       expect(
         tester
-            .widget<BBButton>(
+            .widget<BullButton>(
               find.descendant(
                 of: find.byType(BuyConfirmScreen),
-                matching: find.byType(BBButton),
+                matching: find.byType(BullButton),
               ),
             )
             .disabled,
