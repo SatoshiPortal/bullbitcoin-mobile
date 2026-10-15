@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:flutter/material.dart';
 
 enum BullAsyncStatusState { hidden, inProgress, succeeded, fallback }
@@ -17,6 +18,18 @@ class BullAsyncStatus extends StatelessWidget {
     required this.textStyle,
   });
 
+  const BullAsyncStatus.progress({
+    super.key,
+    required String label,
+    required Color color,
+    required this.textStyle,
+  }) : state = BullAsyncStatusState.inProgress,
+       inProgressLabel = label,
+       succeededLabel = '',
+       fallbackLabel = '',
+       inProgressColor = color,
+       successColor = color;
+
   final BullAsyncStatusState state;
   final String inProgressLabel;
   final String succeededLabel;
@@ -29,23 +42,28 @@ class BullAsyncStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state) {
       BullAsyncStatusState.hidden => const SizedBox.shrink(),
-      BullAsyncStatusState.inProgress => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 14,
-            height: 14,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: inProgressColor,
+      BullAsyncStatusState.inProgress => Semantics(
+        liveRegion: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              inProgressLabel,
+              textAlign: TextAlign.center,
+              style: textStyle?.copyWith(color: inProgressColor),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            inProgressLabel,
-            style: textStyle?.copyWith(color: inProgressColor),
-          ),
-        ],
+            if (!MediaQuery.disableAnimationsOf(context)) ...[
+              const SizedBox(height: 8),
+              const ExcludeSemantics(
+                child: BullShimmerLine(
+                  width: 160,
+                  height: 4,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
       BullAsyncStatusState.succeeded => Text(
         succeededLabel,
