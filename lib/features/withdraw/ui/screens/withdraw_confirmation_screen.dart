@@ -114,6 +114,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return context.loc.withdrawConfirmAccount;
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return context.loc.withdrawConfirmIban;
       case RecipientType.speiClabeMxn:
         return context.loc.withdrawConfirmClabe;
@@ -149,6 +150,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;

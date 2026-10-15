@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:dio/dio.dart';
@@ -376,12 +377,15 @@ class BullbitcoinApiDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
   }) async {
     final params = <String, dynamic>{
       'fiatAmount': fiatAmount,
       'recipientId': recipientId,
+      if (paymentProcessor != null)
+        'paymentProcessor': _sepaPaymentProcessorValue(paymentProcessor),
       if (securityQuestion != null && securityAnswer != null)
         'paymentProcessorData': {
           'securityQuestion': securityQuestion,
@@ -809,6 +813,12 @@ class _OrderLimit {
   }
 }
 
+String _sepaPaymentProcessorValue(SepaPaymentProcessor processor) =>
+    switch (processor) {
+      SepaPaymentProcessor.regular => 'REGULAR_SEPA',
+      SepaPaymentProcessor.confidential => 'CONFIDENTIAL_SEPA',
+    };
+
 /// Translates a JSON-RPC `error` object from the orders api into a typed
 /// exception. Always throws: an error response must never fall through to
 /// parsing `result`.
@@ -826,6 +836,11 @@ Never _throwOrderApiError(dynamic error, String contextMessage) {
   final errorMap = error is Map ? error : const <dynamic, dynamic>{};
   final data = errorMap['data'];
   final dataMap = data is Map ? data : const <dynamic, dynamic>{};
+
+  final apiError = dataMap['apiError'];
+  if (apiError is Map && apiError['code'] == 'ERR_ORD_CSRCP400') {
+    throw const BullBitcoinApiConfidentialSepaNotActivatedException();
+  }
 
   final limits = <_OrderLimit>[];
   final reasons = dataMap['reasons'];

@@ -1,9 +1,12 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -188,5 +191,66 @@ void main() {
         isNot(contains('Montreal')),
       ),
     );
+  });
+
+  group('SEPA payment processor', () {
+    setUpAll(() => registerFallbackValue(SepaPaymentProcessor.regular));
+
+    void stubPlace(Future<WithdrawOrder> Function() answer) {
+      when(
+        () => mainnetRepository.placeWithdrawalOrder(
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          paymentProcessor: any(named: 'paymentProcessor'),
+        ),
+      ).thenAnswer((_) => answer());
+    }
+
+    SepaPaymentProcessor? sentProcessor() =>
+        verify(
+              () => mainnetRepository.placeWithdrawalOrder(
+                fiatAmount: any(named: 'fiatAmount'),
+                recipientId: any(named: 'recipientId'),
+                paymentProcessor: captureAny(named: 'paymentProcessor'),
+              ),
+            ).captured.single
+            as SepaPaymentProcessor?;
+
+    for (final (type, processor) in [
+      (RecipientType.sepaEur, SepaPaymentProcessor.regular),
+      (RecipientType.confidentialSepaEur, SepaPaymentProcessor.confidential),
+      (RecipientType.speiClabeMxn, null),
+    ]) {
+      test('a ${type.name} withdrawal sends $processor', () async {
+        stubPlace(() async => _MockWithdrawOrder());
+
+        _ok(
+          await usecase.execute(
+            fiatAmount: 100,
+            recipientId: 'recipient-1',
+            recipientType: type,
+          ),
+        );
+
+        expect(sentProcessor(), processor);
+      });
+    }
+
+    test('an inactive virtual payee is its own failure', () async {
+      stubPlace(
+        () async =>
+            throw const BullBitcoinApiConfidentialSepaNotActivatedException(),
+      );
+
+      final failure = _err(
+        await usecase.execute(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          recipientType: RecipientType.confidentialSepaEur,
+        ),
+      );
+
+      expect(failure, isA<WithdrawConfidentialSepaNotActivatedFailure>());
+    });
   });
 }
