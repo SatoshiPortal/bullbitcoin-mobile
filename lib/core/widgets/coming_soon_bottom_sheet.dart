@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullButton;
 
 class ComingSoonBottomSheet extends StatelessWidget {
   final String description;
@@ -22,7 +21,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
     String? icon,
     void Function()? onDismissed,
   }) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: ComingSoonBottomSheet(
         description:
@@ -83,7 +82,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
-              BBButton.big(
+              BullButton.big(
                 label: 'OK',
                 onPressed: () {
                   Navigator.of(context).pop();

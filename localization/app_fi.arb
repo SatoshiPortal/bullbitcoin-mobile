@@ -4861,5 +4861,6 @@
   "recipientsVirtualIbanDetailsDescription": "Rahoita tiliäsi yksityisesti käyttämällä henkilökohtaista virtuaalista IBAN-tiliä omalla nimelläsi. Talletus näkyy maksuna itsellesi, eikä siirtokoodia tarvita.",
   "recipientsVirtualIbanBankAddress": "Pankin osoite",
   "recipientsVirtualIbanBankAddressHelp": "Virallinen pankin osoite siltä varalta, että pankkisi vaatii sitä.",
-  "recipientsConfidentialSepaNameMustMatchHint": "Pankkisi ja virtuaalisten IBAN-tiliesi nimien on vastattava toisiaan, tai siirrot palautetaan automaattisesti."
+  "recipientsConfidentialSepaNameMustMatchHint": "Pankkisi ja virtuaalisten IBAN-tiliesi nimien on vastattava toisiaan, tai siirrot palautetaan automaattisesti.",
+  "copiedToClipboard": "Kopioitu leikepöydälle"
 }

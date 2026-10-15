@@ -325,7 +325,7 @@ void main() {
     ) async {
       // Pre-debounce state: user just typed, no preview has been built.
       // The widget never invents a sat count — only the rate is shown
-      // (in the preview row's BBText). Match the rate unit string to
+      // (in the preview row's BullText). Match the rate unit string to
       // disambiguate from the TextFormField's EditableText also
       // containing "0.5".
       await pumpTile(tester);

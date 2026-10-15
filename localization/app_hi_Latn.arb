@@ -12243,5 +12243,6 @@
   "recipientsVirtualIbanDetailsDescription": "Apne naam par ek personal virtual IBAN se apne account mein privately paise jama karein. Deposit khud ko kiye gaye payment ki tarah dikhega, kisi transfer code ki zaroorat nahin.",
   "recipientsVirtualIbanBankAddress": "Bank ka pata",
   "recipientsVirtualIbanBankAddressHelp": "Bank ka official pata, agar aapka bank maange.",
-  "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge."
+  "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge.",
+  "copiedToClipboard": "Clipboard par copy kiya gaya"
 }

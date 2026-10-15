@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText;
 
 class TranslationWarningBottomSheet extends StatelessWidget {
   const TranslationWarningBottomSheet({super.key});
@@ -18,7 +17,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
     if (_hasBeenShown) return Future.value();
     _hasBeenShown = true;
 
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: const TranslationWarningBottomSheet(),
     );
@@ -62,7 +61,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
                 color: context.appColors.primary,
               ),
               SizedBox(height: gapM),
-              BBText(
+              BullText(
                 context.loc.translationWarningTitle,
                 style: context.font.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -70,7 +69,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: gapS),
-              BBText(
+              BullText(
                 context.loc.translationWarningDescription,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
@@ -81,7 +80,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: gapL),
 
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.translationWarningContributeButton,
                 onPressed: () async {
                   Navigator.of(context).pop();

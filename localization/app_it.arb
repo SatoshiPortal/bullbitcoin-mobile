@@ -4873,5 +4873,6 @@
   "recipientsVirtualIbanDetailsDescription": "Finanzia il tuo conto in modo privato utilizzando un IBAN virtuale personale a tuo nome. Il deposito apparirà come un pagamento a te stesso, senza codice di trasferimento richiesto.",
   "recipientsVirtualIbanBankAddress": "Indirizzo della banca",
   "recipientsVirtualIbanBankAddressHelp": "L'indirizzo ufficiale della banca, nel caso sia richiesto dalla tua banca.",
-  "recipientsConfidentialSepaNameMustMatchHint": "I nomi devono corrispondere tra la tua banca e l'IBAN virtuale oppure i trasferimenti verranno restituiti automaticamente."
+  "recipientsConfidentialSepaNameMustMatchHint": "I nomi devono corrispondere tra la tua banca e l'IBAN virtuale oppure i trasferimenti verranno restituiti automaticamente.",
+  "copiedToClipboard": "Copiato negli appunti"
 }

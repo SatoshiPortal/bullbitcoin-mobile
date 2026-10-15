@@ -5,10 +5,8 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
@@ -104,7 +102,7 @@ class _CommonCoinSelectionBottomSheetState
             alignment: Alignment.center,
             children: [
               Center(
-                child: BBText(
+                child: BullText(
                   "Select amount",
                   style: context.font.headlineMedium?.copyWith(
                     color: context.appColors.secondary,
@@ -122,7 +120,7 @@ class _CommonCoinSelectionBottomSheetState
             ],
           ),
           const Gap(32),
-          BBText(
+          BullText(
             selectedUtxoTotal,
             style: context.font.displaySmall?.copyWith(
               color: context.appColors.secondary,
@@ -130,7 +128,7 @@ class _CommonCoinSelectionBottomSheetState
           ),
           if (selectedFiatEquivalent != null) ...[
             const Gap(4),
-            BBText(
+            BullText(
               '~$selectedFiatEquivalent',
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.onSurfaceVariant,
@@ -138,7 +136,7 @@ class _CommonCoinSelectionBottomSheetState
             ),
           ],
           const Gap(8),
-          BBText(
+          BullText(
             'Amount requested: $amountToSend',
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -146,7 +144,7 @@ class _CommonCoinSelectionBottomSheetState
           ),
           if (!isAmountSufficient) ...[
             const Gap(8),
-            BBText(
+            BullText(
               'Selected amount is insufficient',
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.error,
@@ -174,7 +172,7 @@ class _CommonCoinSelectionBottomSheetState
             shrinkWrap: true,
           ),
           const Gap(24),
-          BBButton.big(
+          BullButton.big(
             label: "Done",
             onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
                 ? _onDonePressed
@@ -252,7 +250,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
-                        BBText(
+                        BullText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.onSurface,
@@ -270,7 +268,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  BBText(
+                  BullText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -282,7 +280,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      BBText(
+                      BullText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
@@ -295,13 +293,13 @@ class CommonCoinSelectTile extends StatelessWidget {
                           color: context.appColors.onSurface,
                         ),
                       ),
-                      BBText(
+                      BullText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),
-                      BBText(
+                      BullText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
                           color: context.appColors.onSurface,

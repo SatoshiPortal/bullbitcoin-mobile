@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/transaction_day_label.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:flutter/material.dart';
 
 /// Items grouped by day, each group under its day label.
@@ -52,7 +51,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 errorMessage!,
                 maxLines: 2,
                 textAlign: .center,
@@ -70,7 +69,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 loadingMessage,
                 maxLines: 2,
                 textAlign: .center,
@@ -88,7 +87,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
           child: Column(
             children: [
               const Gap(16),
-              BBText(
+              BullText(
                 emptyMessage,
                 maxLines: 2,
                 textAlign: .center,
@@ -114,7 +113,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
         return Column(
           crossAxisAlignment: .start,
           children: [
-            BBText(
+            BullText(
               dayLabel?.call(context, entry.key) ??
                   transactionDayLabel(context, date),
               style: context.font.titleSmall?.copyWith(

@@ -12048,5 +12048,6 @@
   "recipientsVirtualIbanDetailsDescription": "अपने नाम पर एक निजी वर्चुअल IBAN से अपने खाते में गोपनीय रूप से पैसे जमा करें। जमा राशि खुद को किए गए भुगतान के रूप में दिखेगी, किसी ट्रांसफ़र कोड की ज़रूरत नहीं।",
   "recipientsVirtualIbanBankAddress": "बैंक का पता",
   "recipientsVirtualIbanBankAddressHelp": "बैंक का आधिकारिक पता, अगर आपका बैंक माँगे।",
-  "recipientsConfidentialSepaNameMustMatchHint": "आपके बैंक और वर्चुअल IBAN खातों के नाम मेल खाने चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिए जाएँगे।"
+  "recipientsConfidentialSepaNameMustMatchHint": "आपके बैंक और वर्चुअल IBAN खातों के नाम मेल खाने चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिए जाएँगे।",
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
 }
