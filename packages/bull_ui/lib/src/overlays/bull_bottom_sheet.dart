@@ -2,10 +2,11 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Modal bottom sheet — duplicated from `core/widgets/bottom_sheet/x.dart`.
+/// Modal bottom sheet.
 ///
-/// Use [BullBottomSheet.show] to present a sheet with app-consistent chrome
-/// (16px top corners per the design, scrim, safe area).
+/// Use [BullBottomSheet.show] to present a sheet with app-consistent chrome:
+/// the app background, 8px top corners with a hairline border, a light scrim
+/// and the safe area.
 class BullBottomSheet extends StatelessWidget {
   const BullBottomSheet({super.key, required this.child});
 
@@ -25,15 +26,16 @@ class BullBottomSheet extends StatelessWidget {
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
       useSafeArea: true,
-      backgroundColor: colors.surface,
+      backgroundColor: colors.background,
       barrierColor: colors.surface.withAlpha(100),
       // The sheet owns the shape and clips its content to it, so a child's
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(BullRadius.lg),
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(BullRadius.sm),
         ),
+        side: BorderSide(color: colors.secondaryFixedDim),
       ),
       builder: (_) => BullBottomSheet(child: child),
     );
