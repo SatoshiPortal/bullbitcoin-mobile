@@ -325,4 +325,126 @@ void main() {
       },
     );
   });
+
+  group('SEPA rows in a recipient list', () {
+    Map<String, dynamic> sepa(
+      String id, {
+      bool isOwner = true,
+      bool isCorporate = false,
+      String? virtualPayeeStatus,
+    }) => {
+      'recipientId': id,
+      'userId': 'user-1',
+      'userNbr': 1,
+      'isArchived': false,
+      'createdAt': '2026-10-01T00:00:00.000Z',
+      'updatedAt': '2026-10-01T00:00:00.000Z',
+      'recipientTypeFiat': 'SEPA_EUR',
+      'isOwner': isOwner,
+      'iban': 'FR7630006000011234567890189',
+      'isCorporate': isCorporate,
+      if (isCorporate) 'corporateName': 'Bull Bitcoin',
+      if (!isCorporate) 'firstname': 'Satoshi',
+      if (!isCorporate) 'lastname': 'Nakamoto',
+      'virtualPayeeStatus': ?virtualPayeeStatus,
+    };
+
+    void stubList(List<Map<String, dynamic>> elements) => stub(
+      _response({
+        'result': {'elements': elements, 'totalElements': elements.length},
+      }),
+    );
+
+    Future<List<(String, RecipientType)>> rows(
+      List<RecipientType>? recipientTypes,
+    ) async {
+      final result = await gateway.listRecipients(
+        isTestnet: true,
+        recipientTypes: recipientTypes,
+      );
+      return switch (result) {
+        Ok(:final value) => [
+          for (final r in value.recipients) (r.recipientId, r.type),
+        ],
+        Err() => fail('expected a recipient list'),
+      };
+    }
+
+    test('both SEPA types are requested from the api as one type', () async {
+      stubList([]);
+
+      await rows([RecipientType.sepaEur, RecipientType.confidentialSepaEur]);
+
+      final request =
+          verify(
+                () => dio.post<dynamic>(
+                  any(),
+                  data: captureAny(named: 'data'),
+                  options: any(named: 'options'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
+      final params = request['params'] as Map<String, dynamic>;
+      expect(params['filters'], {
+        'recipientTypeFiat': ['SEPA_EUR'],
+      });
+    });
+
+    test('a list of all types shows each SEPA recipient once', () async {
+      stubList([sepa('a', virtualPayeeStatus: 'ACTIVE'), sepa('b')]);
+
+      expect(await rows(null), [
+        ('a', RecipientType.sepaEur),
+        ('b', RecipientType.sepaEur),
+      ]);
+      expect(
+        await rows([RecipientType.sepaEur, RecipientType.confidentialSepaEur]),
+        [('a', RecipientType.sepaEur), ('b', RecipientType.sepaEur)],
+      );
+    });
+
+    test('a regular SEPA list shows the regular rows', () async {
+      stubList([sepa('a', virtualPayeeStatus: 'ACTIVE')]);
+
+      expect(await rows([RecipientType.sepaEur]), [
+        ('a', RecipientType.sepaEur),
+      ]);
+    });
+
+    test('a Confidential SEPA list shows the confidential rows', () async {
+      stubList([
+        sepa('active', virtualPayeeStatus: 'ACTIVE'),
+        sepa('pending', virtualPayeeStatus: 'CREATED'),
+        sepa('eligible'),
+      ]);
+
+      expect(await rows([RecipientType.confidentialSepaEur]), [
+        ('active', RecipientType.confidentialSepaEur),
+        ('pending', RecipientType.confidentialSepaEur),
+        ('eligible', RecipientType.confidentialSepaEur),
+      ]);
+    });
+
+    test(
+      'a Confidential SEPA list leaves out recipients that cannot be activated',
+      () async {
+        stubList([
+          sepa('corporate', isCorporate: true),
+          sepa('other', isOwner: false),
+        ]);
+
+        expect(await rows([RecipientType.confidentialSepaEur]), isEmpty);
+      },
+    );
+
+    test('a Confidential SEPA list keeps an existing virtual payee', () async {
+      stubList([
+        sepa('corporate', isCorporate: true, virtualPayeeStatus: 'ACTIVE'),
+      ]);
+
+      expect(await rows([RecipientType.confidentialSepaEur]), [
+        ('corporate', RecipientType.confidentialSepaEur),
+      ]);
+    });
+  });
 }

@@ -17,6 +17,10 @@ extension RecipientsFailureL10n on RecipientsFailure {
     RecipientsCadBillerSearchFailure() =>
       context.loc.recipientsErrorBillerSearchFailed,
     RecipientsNetworkFailure() => context.loc.recipientsErrorNetwork,
+    RecipientsVirtualIbanNotAvailableFailure() =>
+      context.loc.recipientsErrorVirtualIbanNotAvailable,
+    RecipientsEuResidencyRequiredFailure() =>
+      context.loc.recipientsErrorEuResidencyRequired,
     // Deliberately does NOT say the save failed: it succeeded, and a message
     // that implies otherwise invites a retry and a duplicate recipient.
     RecipientsSavedButNotSelectedFailure() =>

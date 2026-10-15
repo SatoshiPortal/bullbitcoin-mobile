@@ -1,15 +1,22 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/exchange_preferences.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/secure_file_upload.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart';
 
 /// The kind of text the exchange API and the SDKs put in an exception: a
 /// sentence plus an identifier that must never be rendered.
@@ -22,6 +29,25 @@ class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
 class _MockUploadKycDocument extends Mock implements UploadKycDocumentUsecase {}
+
+class _MockExchangeFacade extends Mock implements ExchangeFacade {}
+
+UserSummary _summary({List<String> groups = const []}) => UserSummary(
+  userNumber: 7,
+  userId: 'u-42',
+  groups: groups,
+  profile: const UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+  email: 'sat@example.com',
+  balances: const [],
+  language: 'FR',
+  currency: 'EUR',
+  dca: const UserDca(isActive: false),
+  autoBuy: const UserAutoBuy(
+    isActive: false,
+    addresses: UserAutoBuyAddresses(),
+  ),
+  emailNotificationsEnabled: false,
+);
 
 /// Answers the picker with a fixed outcome.
 class _StubPicker implements DocumentPickerPort {
@@ -80,17 +106,227 @@ void main() {
     });
   });
 
-  group('GetExchangeSettingsAccountUsecase', () {
+  group('GetAccountInfoUsecase', () {
+    test('maps the user summary to the account info', () async {
+      final core = _MockGetUserSummary();
+      when(
+        core.execute,
+      ).thenAnswer((_) async => _summary(groups: ['KYC_LIGHT_VERIFICATION']));
+
+      final result = await GetAccountInfoUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final info = (result as Ok<AccountInfo, ExchangeSettingsFailure>).value;
+      expect(info.userNumber, 7);
+      expect(info.email, 'sat@example.com');
+      expect(info.firstName, 'Sat');
+      expect(info.lastName, 'Oshi');
+      expect(info.verificationLevel, VerificationLevel.light);
+    });
+
+    test('the highest KYC group wins', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenAnswer(
+        (_) async => _summary(
+          groups: ['KYC_LIMITED_VERIFICATION', 'KYC_IDENTITY_VERIFIED'],
+        ),
+      );
+
+      final result = await GetAccountInfoUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      expect(
+        (result as Ok<AccountInfo, ExchangeSettingsFailure>)
+            .value
+            .verificationLevel,
+        VerificationLevel.identityVerified,
+      );
+    });
+
+    test('no KYC group means not verified', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenAnswer((_) async => _summary());
+
+      final result = await GetAccountInfoUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      expect(
+        (result as Ok<AccountInfo, ExchangeSettingsFailure>)
+            .value
+            .verificationLevel,
+        VerificationLevel.notVerified,
+      );
+    });
+
     test('a throwing core use-case becomes a sanitized failure', () async {
       final core = _MockGetUserSummary();
       when(core.execute).thenThrow(Exception(_rawReason));
 
-      final result = await GetExchangeSettingsAccountUsecase(
+      final result = await GetAccountInfoUsecase(
         getExchangeUserSummaryUsecase: core,
       ).execute();
 
       final failure = (result as Err).failure as ExchangeSettingsFailure;
       expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
+      _expectSanitized(failure);
+    });
+  });
+
+  group('GetExchangePreferencesUsecase', () {
+    test('maps the user summary to the preferences', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenAnswer((_) async => _summary());
+
+      final result = await GetExchangePreferencesUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final preferences =
+          (result as Ok<ExchangePreferences, ExchangeSettingsFailure>).value;
+      expect(preferences.language, 'FR');
+      expect(preferences.currency, 'EUR');
+      expect(preferences.emailNotificationsEnabled, isFalse);
+    });
+
+    test('a throwing core use-case becomes a sanitized failure', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenThrow(Exception(_rawReason));
+
+      final result = await GetExchangePreferencesUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final failure = (result as Err).failure as ExchangeSettingsFailure;
+      expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
+      _expectSanitized(failure);
+    });
+  });
+
+  group('UpdateExchangePreferencesUsecase', () {
+    const preferences = ExchangePreferences(
+      language: 'FR',
+      currency: 'EUR',
+      emailNotificationsEnabled: true,
+    );
+
+    void stubSave(_MockExchangeFacade facade, Result<void, ExchangeFailure> r) {
+      when(
+        () => facade.savePreferences(
+          language: any(named: 'language'),
+          currency: any(named: 'currency'),
+          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+        ),
+      ).thenAnswer((_) async => r);
+    }
+
+    test('passes the edited preferences to the exchange', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Ok(null));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect(result, isA<Ok<void, ExchangeSettingsFailure>>());
+      verify(
+        () => facade.savePreferences(
+          language: 'FR',
+          currency: 'EUR',
+          emailNotificationsEnabled: true,
+        ),
+      ).called(1);
+    });
+
+    test('a network failure stays a network failure', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Err(ExchangeNetworkFailure('offline')));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect((result as Err).failure, isA<ExchangeSettingsNetworkFailure>());
+    });
+
+    test('a missing session stays a not-authenticated failure', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Err(ExchangeNotAuthenticatedFailure('expired')));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect(
+        (result as Err).failure,
+        isA<ExchangeSettingsNotAuthenticatedFailure>(),
+      );
+    });
+
+    test('any other exchange failure becomes a save failure', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Err(ExchangePreferencesSaveFailure('rejected')));
+
+      final result = await UpdateExchangePreferencesUsecase(
+        exchangeFacade: facade,
+      ).execute(preferences);
+
+      expect(
+        (result as Err).failure,
+        isA<ExchangeSettingsPreferencesSaveFailure>(),
+      );
+    });
+  });
+
+  group('GetSecureFileUploadStatusUsecase', () {
+    test('maps the user summary to the upload status', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenAnswer(
+        (_) async => const UserSummary(
+          userNumber: 1,
+          userId: 'u-42',
+          groups: [],
+          profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+          email: 'sat@example.com',
+          balances: [],
+          dca: UserDca(isActive: false),
+          autoBuy: UserAutoBuy(
+            isActive: false,
+            addresses: UserAutoBuyAddresses(),
+          ),
+          kycDocumentStatus: UserKycDocumentStatus(
+            secureFileUpload: KycDocumentStatus.underReview,
+            documents: UserKycDocuments(
+              id: KycDocumentStatus.accepted,
+              proofOfResidence: KycDocumentStatus.accepted,
+              selfie: KycDocumentStatus.accepted,
+            ),
+          ),
+        ),
+      );
+
+      final result = await GetSecureFileUploadStatusUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final upload =
+          (result as Ok<SecureFileUpload, ExchangeSettingsFailure>).value;
+      expect(upload.userId, 'u-42');
+      expect(upload.status, KycDocumentStatus.underReview);
+    });
+
+    test('a throwing core use-case becomes a sanitized failure', () async {
+      final core = _MockGetUserSummary();
+      when(core.execute).thenThrow(Exception(_rawReason));
+
+      final result = await GetSecureFileUploadStatusUsecase(
+        getExchangeUserSummaryUsecase: core,
+      ).execute();
+
+      final failure = (result as Err).failure as ExchangeSettingsFailure;
+      expect(failure, isA<ExchangeSettingsUploadStatusUnavailableFailure>());
       _expectSanitized(failure);
     });
   });

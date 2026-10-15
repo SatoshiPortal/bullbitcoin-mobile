@@ -20,6 +20,7 @@ final _everyFailure = <WithdrawFailure>[
     currency: 'CAD',
     logMessage: _rawReason,
   ),
+  const WithdrawConfidentialSepaNotActivatedFailure(_rawReason),
   const WithdrawUnexpectedFailure(_rawReason),
 ];
 

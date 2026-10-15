@@ -84,7 +84,10 @@ void main() {
     confirmWithdrawOrderUsecase: confirmOrder,
   );
 
-  setUpAll(() => registerFallbackValue(_interacSecurityDetails));
+  setUpAll(() {
+    registerFallbackValue(_interacSecurityDetails);
+    registerFallbackValue(RecipientType.sepaEur);
+  });
 
   setUp(() {
     loadContext = _MockLoadWithdrawContextUsecase();
@@ -170,6 +173,7 @@ void main() {
         () => createOrder.execute(
           fiatAmount: any(named: 'fiatAmount'),
           recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
         ),
       ).thenAnswer(
         (_) async =>
@@ -229,6 +233,193 @@ void main() {
                 isNull,
               ),
         ),
+      );
+    });
+  });
+
+  group('Confidential SEPA', () {
+    const confidential = RecipientSelection(
+      id: 'recipient-1',
+      type: RecipientType.confidentialSepaEur,
+      iban: 'FR7630006000011234567890189',
+    );
+    final order = _MockWithdrawOrder();
+
+    WithdrawRecipientInputState recipientInput() => WithdrawRecipientInputState(
+      userSummary: _userSummary,
+      amount: FiatAmount(100),
+      currency: FiatCurrency.eur,
+    );
+
+    void stubOrder(
+      Result<CreateWithdrawOrderResult, WithdrawFailure> Function() result,
+    ) {
+      when(
+        () => createOrder.execute(
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          recipientType: any(named: 'recipientType'),
+        ),
+      ).thenAnswer((_) async => result());
+    }
+
+    final placed = Ok<CreateWithdrawOrderResult, WithdrawFailure>(
+      CreateWithdrawOrderResult(order: order, interacSecurityDetails: null),
+    );
+    const notActivated = Err<CreateWithdrawOrderResult, WithdrawFailure>(
+      WithdrawConfidentialSepaNotActivatedFailure(),
+    );
+
+    test(
+      'a recipient that is not active is sent to activation first',
+      () async {
+        final bloc = build()..seed(recipientInput());
+
+        bloc.add(
+          const WithdrawEvent.recipientSelected(confidential, isNew: false),
+        );
+        await pumpEventQueue();
+
+        expect(
+          bloc.state,
+          isA<WithdrawRecipientInputState>().having(
+            (s) => s.recipientToActivate,
+            'recipientToActivate',
+            confidential,
+          ),
+        );
+        verifyNever(
+          () => createOrder.execute(
+            fiatAmount: any(named: 'fiatAmount'),
+            recipientId: any(named: 'recipientId'),
+            recipientType: any(named: 'recipientType'),
+          ),
+        );
+      },
+    );
+
+    test('an activated recipient is withdrawn to confidentially', () async {
+      stubOrder(() => placed);
+      final bloc = build()..seed(recipientInput());
+      bloc.add(
+        const WithdrawEvent.recipientSelected(confidential, isNew: false),
+      );
+      await pumpEventQueue();
+
+      bloc.add(const WithdrawEvent.virtualPayeeActivated());
+      await pumpEventQueue();
+
+      expect(bloc.state, isA<WithdrawConfirmationState>());
+      verify(
+        () => createOrder.execute(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          recipientType: RecipientType.confidentialSepaEur,
+        ),
+      ).called(1);
+    });
+
+    test('the user can withdraw through regular SEPA instead', () async {
+      stubOrder(() => placed);
+      final bloc = build()..seed(recipientInput());
+      bloc.add(
+        const WithdrawEvent.recipientSelected(confidential, isNew: false),
+      );
+      await pumpEventQueue();
+
+      bloc.add(const WithdrawEvent.regularSepaChosen());
+      await pumpEventQueue();
+
+      expect(
+        bloc.state,
+        isA<WithdrawConfirmationState>().having(
+          (s) => s.recipient.type,
+          'recipient type',
+          RecipientType.sepaEur,
+        ),
+      );
+      verify(
+        () => createOrder.execute(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          recipientType: RecipientType.sepaEur,
+        ),
+      ).called(1);
+    });
+
+    test('closing activation without a choice returns to the list', () async {
+      final bloc = build()..seed(recipientInput());
+      bloc.add(
+        const WithdrawEvent.recipientSelected(confidential, isNew: false),
+      );
+      await pumpEventQueue();
+
+      bloc.add(const WithdrawEvent.virtualPayeeActivationDismissed());
+      await pumpEventQueue();
+
+      expect(
+        bloc.state,
+        isA<WithdrawRecipientInputState>().having(
+          (s) => s.recipientToActivate,
+          'recipientToActivate',
+          isNull,
+        ),
+      );
+    });
+
+    test('a refused order for an active recipient offers activation', () async {
+      stubOrder(() => notActivated);
+      final bloc = build()..seed(recipientInput());
+
+      bloc.add(
+        WithdrawEvent.recipientSelected(
+          confidential.asVirtualPayeeActive(),
+          isNew: false,
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(
+        bloc.state,
+        isA<WithdrawRecipientInputState>().having(
+          (s) => s.recipientToActivate?.id,
+          'recipientToActivate',
+          'recipient-1',
+        ),
+      );
+    });
+
+    test('a second refusal after activation shows the failure', () async {
+      stubOrder(() => notActivated);
+      final bloc = build()..seed(recipientInput());
+      bloc.add(
+        const WithdrawEvent.recipientSelected(confidential, isNew: false),
+      );
+      await pumpEventQueue();
+
+      bloc.add(const WithdrawEvent.virtualPayeeActivated());
+      await pumpEventQueue();
+
+      expect(
+        bloc.state,
+        isA<WithdrawRecipientInputState>()
+            .having(
+              (s) => s.selectedRecipientFailure,
+              'selectedRecipientFailure',
+              isA<WithdrawConfidentialSepaNotActivatedFailure>(),
+            )
+            .having(
+              (s) => s.recipientToActivate,
+              'recipientToActivate',
+              isNull,
+            ),
+      );
+    });
+
+    test('euro withdrawals can use Confidential SEPA', () {
+      expect(
+        recipientInput().recipientTypes,
+        containsAll([RecipientType.sepaEur, RecipientType.confidentialSepaEur]),
       );
     });
   });

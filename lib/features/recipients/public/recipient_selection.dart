@@ -20,6 +20,7 @@ final class RecipientSelection {
     this.phoneNumber,
     this.debitcard,
     this.bankAccount,
+    this.isVirtualPayeeActive = false,
   });
 
   final String id;
@@ -39,9 +40,59 @@ final class RecipientSelection {
   final String? phoneNumber;
   final String? debitcard;
   final String? bankAccount;
+  final bool isVirtualPayeeActive;
 
   bool get requiresInteracSecurityDetails =>
       type == RecipientType.interacEmailCad;
+
+  /// A Confidential SEPA payout needs the recipient's virtual payee to be
+  /// active.
+  bool get requiresVirtualPayeeActivation =>
+      type == RecipientType.confidentialSepaEur && !isVirtualPayeeActive;
+
+  /// The same account, paid through regular SEPA.
+  RecipientSelection asRegularSepa() => RecipientSelection(
+    id: id,
+    type: type == RecipientType.confidentialSepaEur
+        ? RecipientType.sepaEur
+        : type,
+    displayName: displayName,
+    email: email,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
+    payeeName: payeeName,
+    payeeCode: payeeCode,
+    payeeAccountNumber: payeeAccountNumber,
+    institutionNumber: institutionNumber,
+    transitNumber: transitNumber,
+    accountNumber: accountNumber,
+    iban: iban,
+    clabe: clabe,
+    phoneNumber: phoneNumber,
+    debitcard: debitcard,
+    bankAccount: bankAccount,
+  );
+
+  RecipientSelection asVirtualPayeeActive() => RecipientSelection(
+    id: id,
+    type: type,
+    displayName: displayName,
+    email: email,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
+    payeeName: payeeName,
+    payeeCode: payeeCode,
+    payeeAccountNumber: payeeAccountNumber,
+    institutionNumber: institutionNumber,
+    transitNumber: transitNumber,
+    accountNumber: accountNumber,
+    iban: iban,
+    clabe: clabe,
+    phoneNumber: phoneNumber,
+    debitcard: debitcard,
+    bankAccount: bankAccount,
+    isVirtualPayeeActive: true,
+  );
 
   @override
   String toString() => 'RecipientSelection(id: $id, type: $type)';

@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_environment_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
@@ -76,6 +78,11 @@ class FundExchangeLocator {
       ),
     );
 
+    locator.registerFactory<GetConfidentialSepaFundingAvailabilityUsecase>(
+      () => GetConfidentialSepaFundingAvailabilityUsecase(
+        locator<RecipientsFacade>(),
+      ),
+    );
     locator.registerFactory<OpenFundingPaymentLinkUsecase>(
       () => OpenFundingPaymentLinkUsecase(
         externalLink: locator<ExternalLinkPort>(),
@@ -94,6 +101,8 @@ class FundExchangeLocator {
         registerResponsibilityConsentUsecase:
             locator<RegisterResponsibilityConsentUsecase>(),
         openFundingPaymentLinkUsecase: locator<OpenFundingPaymentLinkUsecase>(),
+        getConfidentialSepaFundingAvailabilityUsecase:
+            locator<GetConfidentialSepaFundingAvailabilityUsecase>(),
       ),
     );
   }

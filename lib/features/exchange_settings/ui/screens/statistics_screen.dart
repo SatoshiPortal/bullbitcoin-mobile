@@ -1,25 +1,22 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class ExchangeStatisticsScreen extends StatefulWidget {
-  const ExchangeStatisticsScreen({super.key});
+class StatisticsScreen extends StatefulWidget {
+  const StatisticsScreen({super.key});
 
   @override
-  State<ExchangeStatisticsScreen> createState() =>
-      _ExchangeStatisticsScreenState();
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
+class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
@@ -28,12 +25,11 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.background,
+    return BullScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.exchangeStatisticsTitle,
           onBack: () => context.pop(),
         ),
@@ -47,11 +43,11 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 
     return Column(
       children: [
-        if (state.isLoading)
-          LinearProgressIndicator(
-            backgroundColor: context.appColors.surface,
-            color: context.appColors.primary,
-          ),
+        BullFadingLinearProgress(
+          trigger: state.isLoading,
+          backgroundColor: context.bull.surface,
+          foregroundColor: context.bull.primary,
+        ),
         Expanded(child: _buildContent(context, state)),
       ],
     );
@@ -67,18 +63,18 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BBText(
+            BullText(
               state.failure!.toTranslated(context),
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.error,
               ),
             ),
-            const SizedBox(height: 16),
-            BBButton.big(
+            const Gap(BullSpacing.md),
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () => context.read<StatisticsCubit>().loadStatistics(),
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
+              bgColor: context.bull.onSurface,
+              textColor: context.bull.surface,
             ),
           ],
         ),
@@ -87,10 +83,10 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 
     if (!state.hasStats) {
       return Center(
-        child: BBText(
+        child: BullText(
           context.loc.exchangeStatisticsNoData,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.outline,
+          style: context.bullText.bodyMedium?.copyWith(
+            color: context.bull.outline,
           ),
         ),
       );
@@ -99,23 +95,23 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(BullSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (state.asOf != null) ...[
-                BBText(
+                BullText(
                   context.loc.exchangeStatisticsAsOf(
                     DateFormat('MMM d, yyyy HH:mm').format(state.asOf!),
                   ),
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.outline,
+                  style: context.bullText.bodySmall?.copyWith(
+                    color: context.bull.outline,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const Gap(BullSpacing.md),
               ],
               _OrderStatsSection(state: state),
-              const SizedBox(height: 24),
+              const Gap(BullSpacing.lg),
               if (state.billerStats != null && state.billerStats!.hasStats)
                 _BillerStatsSection(state: state),
             ],
@@ -131,30 +127,48 @@ class _OrderStatsSection extends StatelessWidget {
 
   final StatisticsState state;
 
+  List<String> _tradeCounts(
+    BuildContext context,
+    List<AmountByCurrencyCode> counts,
+  ) {
+    if (counts.isEmpty) {
+      return [context.loc.exchangeStatisticsTradeCountValue(0)];
+    }
+
+    return counts
+        .map(
+          (c) => context.loc.exchangeStatisticsTradeCountByCurrency(
+            c.value.toInt(),
+            c.currency,
+          ),
+        )
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
+        BullText(
           context.loc.exchangeStatisticsOrderStats,
-          style: context.font.headlineMedium?.copyWith(
-            color: context.appColors.onSurface,
+          style: context.bullText.headlineMedium?.copyWith(
+            color: context.bull.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 16),
-        _StatCard(
+        const Gap(BullSpacing.md),
+        _MultiValueStatCard(
           title: context.loc.exchangeStatisticsBuySellRatio,
           description: context.loc.exchangeStatisticsBuySellRatioDesc,
-          value: state.orderStats?.buySellRatio ?? '',
+          values: [state.orderStats?.buySellRatio ?? ''],
           icon: Icons.compare_arrows,
         ),
-        const SizedBox(height: 12),
+        const Gap(BullSpacing.sm),
         _StatSectionCard(
           title: context.loc.exchangeStatisticsBuyStats,
           icon: Icons.arrow_downward,
-          iconColor: Colors.green,
+          iconColor: context.bull.success,
           stats: [
             _StatRow(
               label: context.loc.exchangeStatisticsVolume,
@@ -163,7 +177,7 @@ class _OrderStatsSection extends StatelessWidget {
             ),
             _StatRow(
               label: context.loc.exchangeStatisticsTradeCount,
-              values: state.formattedBuyTradeCount,
+              values: _tradeCounts(context, state.buyTradeCounts),
               description: context.loc.exchangeStatisticsBuyTradeCountDesc,
             ),
             _StatRow(
@@ -173,11 +187,11 @@ class _OrderStatsSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const Gap(BullSpacing.sm),
         _StatSectionCard(
           title: context.loc.exchangeStatisticsSellStats,
           icon: Icons.arrow_upward,
-          iconColor: Colors.red,
+          iconColor: context.bull.error,
           stats: [
             _StatRow(
               label: context.loc.exchangeStatisticsVolume,
@@ -186,7 +200,7 @@ class _OrderStatsSection extends StatelessWidget {
             ),
             _StatRow(
               label: context.loc.exchangeStatisticsTradeCount,
-              values: state.formattedSellTradeCount,
+              values: _tradeCounts(context, state.sellTradeCounts),
               description: context.loc.exchangeStatisticsSellTradeCountDesc,
             ),
             _StatRow(
@@ -196,7 +210,7 @@ class _OrderStatsSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const Gap(BullSpacing.sm),
         _MultiValueStatCard(
           title: context.loc.exchangeStatisticsTotalVolume,
           description: context.loc.exchangeStatisticsTotalVolumeDesc,
@@ -204,6 +218,35 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.trending_up,
         ),
       ],
+    );
+  }
+}
+
+class _StatisticsCard extends StatelessWidget {
+  const _StatisticsCard({required this.child, this.margin});
+
+  final Widget child;
+  final EdgeInsetsGeometry? margin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: margin,
+      padding: const EdgeInsets.all(BullSpacing.md),
+      decoration: BoxDecoration(
+        color: context.bull.surface,
+        borderRadius: BorderRadius.circular(BullRadius.sm),
+        boxShadow: [
+          BoxShadow(
+            color: context.bull.overlay.withValues(alpha: 0.05),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }
@@ -218,7 +261,7 @@ class _StatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: BullSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -226,19 +269,19 @@ class _StatRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   label,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
+                  style: context.bullText.bodyMedium?.copyWith(
+                    color: context.bull.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 if (description != null) ...[
-                  const SizedBox(height: 2),
-                  BBText(
+                  const Gap(2),
+                  BullText(
                     description!,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
+                    style: context.bullText.bodySmall?.copyWith(
+                      color: context.bull.textMuted,
                       fontSize: 11,
                     ),
                   ),
@@ -246,99 +289,20 @@ class _StatRow extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          const Gap(BullSpacing.md),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: values
                 .map(
-                  (value) => BBText(
+                  (value) => BullText(
                     value,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurface,
+                    style: context.bullText.bodyMedium?.copyWith(
+                      color: context.bull.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 )
                 .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    this.description,
-  });
-
-  final String title;
-  final String value;
-  final IconData icon;
-  final String? description;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.overlay.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: context.appColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: context.appColors.primary, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText(
-                  title,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.textMuted,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                BBText(
-                  value,
-                  style: context.font.headlineSmall?.copyWith(
-                    color: context.appColors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (description != null) ...[
-                  const SizedBox(height: 6),
-                  BBText(
-                    description!,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ],
-            ),
           ),
         ],
       ),
@@ -361,59 +325,45 @@ class _MultiValueStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.overlay.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return _StatisticsCard(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: context.appColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: context.bull.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(BullRadius.sm),
             ),
-            child: Icon(icon, color: context.appColors.primary, size: 24),
+            child: Icon(icon, color: context.bull.primary, size: 24),
           ),
-          const SizedBox(width: 16),
+          const Gap(BullSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   title,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.textMuted,
+                  style: context.bullText.bodySmall?.copyWith(
+                    color: context.bull.textMuted,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const Gap(BullSpacing.xxs),
                 ...values.map(
-                  (value) => BBText(
+                  (value) => BullText(
                     value,
-                    style: context.font.headlineSmall?.copyWith(
-                      color: context.appColors.onSurface,
+                    style: context.bullText.headlineSmall?.copyWith(
+                      color: context.bull.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 if (description != null) ...[
-                  const SizedBox(height: 6),
-                  BBText(
+                  const Gap(6),
+                  BullText(
                     description!,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
+                    style: context.bullText.bodySmall?.copyWith(
+                      color: context.bull.textMuted,
                       fontSize: 11,
                     ),
                   ),
@@ -442,40 +392,26 @@ class _StatSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.overlay.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return _StatisticsCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(icon, color: iconColor, size: 20),
-              const SizedBox(width: 8),
-              BBText(
+              const Gap(BullSpacing.xs),
+              BullText(
                 title,
-                style: context.font.labelLarge?.copyWith(
-                  color: context.appColors.onSurface,
+                style: context.bullText.labelLarge?.copyWith(
+                  color: context.bull.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const Gap(BullSpacing.sm),
           const Divider(height: 1),
-          const SizedBox(height: 12),
+          const Gap(BullSpacing.sm),
           ...stats,
         ],
       ),
@@ -496,21 +432,21 @@ class _BillerStatsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
+        BullText(
           context.loc.exchangeStatisticsBillerStats,
-          style: context.font.headlineMedium?.copyWith(
-            color: context.appColors.onSurface,
+          style: context.bullText.headlineMedium?.copyWith(
+            color: context.bull.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
         if (billerStats.currency.isNotEmpty)
-          BBText(
+          BullText(
             context.loc.exchangeStatisticsCurrency(billerStats.currency),
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.textMuted,
+            style: context.bullText.bodySmall?.copyWith(
+              color: context.bull.textMuted,
             ),
           ),
-        const SizedBox(height: 16),
+        const Gap(BullSpacing.md),
         ...state.formattedBillerStats.map(
           (stat) => _BillerStatCard(stat: stat),
         ),
@@ -526,33 +462,19 @@ class _BillerStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.overlay.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return _StatisticsCard(
+      margin: const EdgeInsets.only(bottom: BullSpacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
+          BullText(
             stat.displayName,
-            style: context.font.labelLarge?.copyWith(
-              color: context.appColors.onSurface,
+            style: context.bullText.labelLarge?.copyWith(
+              color: context.bull.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
+          const Gap(BullSpacing.sm),
           Row(
             children: [
               Expanded(
@@ -580,17 +502,17 @@ class _BillerStatCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
+        BullText(
           label,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.textMuted,
+          style: context.bullText.bodySmall?.copyWith(
+            color: context.bull.textMuted,
           ),
         ),
-        const SizedBox(height: 4),
-        BBText(
+        const Gap(BullSpacing.xxs),
+        BullText(
           value,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.onSurface,
+          style: context.bullText.bodyMedium?.copyWith(
+            color: context.bull.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),

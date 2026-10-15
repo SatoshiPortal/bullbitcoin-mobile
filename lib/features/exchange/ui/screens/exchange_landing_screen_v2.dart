@@ -3,15 +3,15 @@ import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ExchangeLandingScreenV2 extends StatelessWidget {
-  const ExchangeLandingScreenV2({super.key});
+  final VoidCallback onExit;
+
+  const ExchangeLandingScreenV2({required this.onExit, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +22,14 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
 
         // Navigate to the wallet home screen when the user wants to exit the
         // exchange landing screen.
-        context.goNamed(WalletRoute.walletHome.name);
+        onExit();
       },
       child: Scaffold(
         backgroundColor: context.appColors.surface,
         appBar: AppBar(
           leading: BackButton(
             color: context.appColors.onSurface,
-            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+            onPressed: onExit,
           ),
         ),
         extendBodyBehindAppBar: true,

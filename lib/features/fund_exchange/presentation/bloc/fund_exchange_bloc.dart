@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
@@ -26,6 +27,8 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   final RegisterResponsibilityConsentUsecase
   _registerResponsibilityConsentUsecase;
   final OpenFundingPaymentLinkUsecase _openFundingPaymentLinkUsecase;
+  final GetConfidentialSepaFundingAvailabilityUsecase
+  _getConfidentialSepaFundingAvailabilityUsecase;
 
   FundExchangeBloc({
     required this._getFundExchangeUserSummaryUsecase,
@@ -33,6 +36,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     required this._listFundingInstitutionsUsecase,
     required this._registerResponsibilityConsentUsecase,
     required this._openFundingPaymentLinkUsecase,
+    required this._getConfidentialSepaFundingAvailabilityUsecase,
   }) : super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeFundingInstitutionsRequested>(
@@ -59,6 +63,13 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         // default rather than blocking on a summary it can do without. The
         // use-case has already logged it.
         break;
+    }
+
+    // Not surfaced: without an answer the method is simply not offered.
+    if (await _getConfidentialSepaFundingAvailabilityUsecase.execute() case Ok(
+      :final value,
+    )) {
+      emit(state.copyWith(isConfidentialSepaAvailable: value));
     }
 
     emit(state.copyWith(isStarted: true));

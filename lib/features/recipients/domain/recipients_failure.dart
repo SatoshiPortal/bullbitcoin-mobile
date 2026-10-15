@@ -57,6 +57,17 @@ final class RecipientsInvalidSecurityDetailsFailure extends RecipientsFailure {
   const RecipientsInvalidSecurityDetailsFailure([super.logMessage]);
 }
 
+/// The user's account cannot get a virtual IBAN: their KYC is insufficient
+/// or Confidential SEPA is not offered to them.
+final class RecipientsVirtualIbanNotAvailableFailure extends RecipientsFailure {
+  const RecipientsVirtualIbanNotAvailableFailure([super.logMessage]);
+}
+
+/// A virtual IBAN is only issued to residents of the European Union.
+final class RecipientsEuResidencyRequiredFailure extends RecipientsFailure {
+  const RecipientsEuResidencyRequiredFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class RecipientsUnexpectedFailure extends RecipientsFailure {

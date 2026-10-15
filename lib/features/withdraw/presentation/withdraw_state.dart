@@ -13,6 +13,10 @@ sealed class WithdrawState with _$WithdrawState {
     @Default(false) bool isCreatingWithdrawOrder,
     WithdrawFailure? newRecipientFailure,
     WithdrawFailure? selectedRecipientFailure,
+
+    /// A Confidential SEPA recipient whose virtual payee must be activated
+    /// before the order can be created.
+    RecipientSelection? recipientToActivate,
   }) = WithdrawRecipientInputState;
   const factory WithdrawState.paymentDetailsInput({
     required UserSummary userSummary,
@@ -43,12 +47,19 @@ sealed class WithdrawState with _$WithdrawState {
       amountInput: (userSummary) => userSummary.currency != null
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,
-      recipientInput: (_, _, currency, _, _, _) => currency,
+      recipientInput: (_, _, currency, _, _, _, _) => currency,
       paymentDetailsInput: (_, _, currency, _, _, _) => currency,
       confirmation: (_, _, currency, _, _, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
   }
+
+  /// Euro withdrawals can also go through Confidential SEPA; the recipients
+  /// feature hides it from users who cannot use it.
+  List<RecipientType> get recipientTypes => [
+    ...RecipientType.typesForCurrency(currency.code),
+    if (currency == FiatCurrency.eur) RecipientType.confidentialSepaEur,
+  ];
 
   WithdrawAmountInputState? get cleanAmountInputState {
     return whenOrNull(
@@ -62,6 +73,7 @@ sealed class WithdrawState with _$WithdrawState {
             isCreatingWithdrawOrder,
             newRecipientFailure,
             selectedRecipientFailure,
+            recipientToActivate,
           ) => WithdrawAmountInputState(userSummary: userSummary),
       paymentDetailsInput:
           (userSummary, amount, currency, recipient, isCreating, failure) =>
@@ -91,6 +103,7 @@ sealed class WithdrawState with _$WithdrawState {
             isCreatingWithdrawOrder,
             newRecipientFailure,
             selectedRecipientFailure,
+            recipientToActivate,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,

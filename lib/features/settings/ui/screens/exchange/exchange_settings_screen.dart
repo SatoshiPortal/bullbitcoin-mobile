@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -51,7 +52,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeAccountInfo.name,
+                          ExchangeSettingsRoute.accountInfo.name,
                         );
                       }
                     },
@@ -112,7 +113,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeAppSettings.name,
+                          ExchangeSettingsRoute.preferences.name,
                         );
                       }
                     },
@@ -125,7 +126,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeFileUpload.name,
+                          ExchangeSettingsRoute.secureFileUpload.name,
                         );
                       }
                     },
@@ -138,7 +139,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         NotLoggedInBottomSheet.show(context);
                       } else {
                         context.pushNamed(
-                          SettingsRoute.exchangeStatistics.name,
+                          ExchangeSettingsRoute.exchangeStatistics.name,
                         );
                       }
                     },

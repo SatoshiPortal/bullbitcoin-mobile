@@ -92,7 +92,8 @@ class RecipientsListTile extends StatelessWidget {
                 value:
                     '${recipient.institutionNumber ?? ''}-${recipient.transitNumber ?? ''}-${recipient.accountNumber ?? ''}',
               ),
-              RecipientType.sepaEur => _InfoRow(
+              RecipientType.sepaEur ||
+              RecipientType.confidentialSepaEur => _InfoRow(
                 label: context.loc.recipientsFieldIban,
                 value: recipient.iban,
               ),

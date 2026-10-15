@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -194,6 +195,8 @@ class SepaEurDetails extends RecipientDetails {
   final String? lastname;
   @override
   final String? corporateName;
+  final SepaVirtualPayeeStatus virtualPayeeStatus;
+  final bool isConfidential;
 
   const SepaEurDetails._({
     super.label,
@@ -204,6 +207,8 @@ class SepaEurDetails extends RecipientDetails {
     this.firstname,
     this.lastname,
     this.corporateName,
+    this.virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    this.isConfidential = false,
   });
 
   factory SepaEurDetails.create({
@@ -215,6 +220,8 @@ class SepaEurDetails extends RecipientDetails {
     String? firstname,
     String? lastname,
     String? corporateName,
+    SepaVirtualPayeeStatus virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    bool isConfidential = false,
   }) {
     if (iban.trim().isEmpty) {
       throw ArgumentError('IBAN cannot be empty');
@@ -243,11 +250,39 @@ class SepaEurDetails extends RecipientDetails {
       firstname: firstname?.trim(),
       lastname: lastname?.trim(),
       corporateName: corporateName?.trim(),
+      virtualPayeeStatus: virtualPayeeStatus,
+      isConfidential: isConfidential,
     );
   }
 
+  bool get hasVirtualPayee => virtualPayeeStatus.exists;
+  bool get isVirtualPayeeActive => virtualPayeeStatus.isActive;
+
+  /// The API activates a virtual payee only for an individual recipient that
+  /// the user owns.
+  bool get canActivateVirtualPayee =>
+      isOwner == true &&
+      !isCorporate &&
+      (firstname?.isNotEmpty ?? false) &&
+      (lastname?.isNotEmpty ?? false);
+
+  SepaEurDetails asConfidential() => SepaEurDetails._(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    iban: iban,
+    isCorporate: isCorporate,
+    firstname: firstname,
+    lastname: lastname,
+    corporateName: corporateName,
+    virtualPayeeStatus: virtualPayeeStatus,
+    isConfidential: true,
+  );
+
   @override
-  RecipientType get type => RecipientType.sepaEur;
+  RecipientType get type => isConfidential
+      ? RecipientType.confidentialSepaEur
+      : RecipientType.sepaEur;
 }
 
 // ── SPEI (MXN)
