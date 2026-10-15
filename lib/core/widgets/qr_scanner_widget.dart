@@ -25,12 +25,6 @@ class _ScannerState extends State<QrScannerWidget> {
   String _progressText = '';
 
   @override
-  void dispose() {
-    super.dispose();
-    zx.stopCameraProcessing();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
