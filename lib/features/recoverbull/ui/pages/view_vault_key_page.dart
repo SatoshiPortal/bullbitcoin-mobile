@@ -13,7 +13,7 @@ class ViewVaultKeyPage extends StatefulWidget {
 }
 
 // The vault key decrypts the backup, so the page blocks screen capture like
-// the mnemonic screens.
+// the mnemonic screens, and a copied key does not stay on the clipboard.
 class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
     with PrivacyScreen {
   @override
@@ -47,6 +47,7 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
                 maxLines: 1,
 
                 clipboardText: vaultKey,
+                clearClipboardAfter: const Duration(seconds: 30),
                 overflow: .clip,
                 modalContent: vaultKey
                     .replaceAllMapped(
