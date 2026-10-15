@@ -165,7 +165,9 @@ jobs:
     if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
     name: Static checks and unit tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # A normal run takes 22-29 min (build_runner and unit tests dominate), so
+    # 30 min cancelled healthy runs on a slow runner.
+    timeout-minutes: 45
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
