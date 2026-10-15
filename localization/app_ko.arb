@@ -11861,5 +11861,6 @@
   "recipientsVirtualIbanShowDetails": "내 가상 IBAN 정보 보기",
   "recipientsVirtualIbanDetailsDescription": "본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 입금은 본인에게 보낸 결제로 표시되며 송금 코드가 필요하지 않습니다.",
   "recipientsVirtualIbanBankAddress": "은행 주소",
-  "recipientsVirtualIbanBankAddressHelp": "은행에서 요구하는 경우 사용할 공식 은행 주소입니다."
+  "recipientsVirtualIbanBankAddressHelp": "은행에서 요구하는 경우 사용할 공식 은행 주소입니다.",
+  "recipientsConfidentialSepaNameMustMatchHint": "은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다."
 }

@@ -189,6 +189,7 @@ class RecipientsLocator {
             locator<GetPreferredJurisdictionUsecase>(),
         getConfidentialSepaAvailabilityUsecase:
             locator<GetConfidentialSepaAvailabilityUsecase>(),
+        getAccountOwnerNameUsecase: locator<GetAccountOwnerNameUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),

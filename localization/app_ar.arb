@@ -11864,5 +11864,6 @@
   "recipientsVirtualIbanShowDetails": "عرض تفاصيل رقم IBAN الافتراضي",
   "recipientsVirtualIbanDetailsDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. سيظهر الإيداع كدفعة إلى نفسك، دون الحاجة إلى رمز تحويل.",
   "recipientsVirtualIbanBankAddress": "عنوان المصرف",
-  "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك."
+  "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك.",
+  "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا."
 }

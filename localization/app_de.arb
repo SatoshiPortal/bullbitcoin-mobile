@@ -5084,5 +5084,6 @@
   "recipientsVirtualIbanShowDetails": "Details meiner virtuellen IBAN anzeigen",
   "recipientsVirtualIbanDetailsDescription": "Zahlen Sie privat auf Ihr Konto ein – mit einer persönlichen virtuellen IBAN auf Ihren eigenen Namen. Die Einzahlung erscheint als Zahlung an Sie selbst, ohne dass ein Überweisungscode erforderlich ist.",
   "recipientsVirtualIbanBankAddress": "Bankadresse",
-  "recipientsVirtualIbanBankAddressHelp": "Die offizielle Bankadresse, falls Ihre Bank diese benötigt."
+  "recipientsVirtualIbanBankAddressHelp": "Die offizielle Bankadresse, falls Ihre Bank diese benötigt.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Die Namen Ihres Bankkontos und Ihres virtuellen IBAN-Kontos müssen übereinstimmen, sonst werden Überweisungen automatisch zurückgesendet."
 }

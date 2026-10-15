@@ -3678,5 +3678,6 @@
   "recipientsVirtualIbanShowDetails": "Onyesha maelezo ya IBAN pepe yangu",
   "recipientsVirtualIbanDetailsDescription": "Weka pesa kwenye akaunti yako kwa faragha ukitumia IBAN pepe ya kibinafsi kwa jina lako. Amana itaonekana kama malipo kwako mwenyewe, bila msimbo wa uhamisho.",
   "recipientsVirtualIbanBankAddress": "Anwani ya benki",
-  "recipientsVirtualIbanBankAddressHelp": "Anwani rasmi ya benki, ikiwa benki yako itaiomba."
+  "recipientsVirtualIbanBankAddressHelp": "Anwani rasmi ya benki, ikiwa benki yako itaiomba.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Majina kwenye benki yako na akaunti ya IBAN pepe lazima yalingane, la sivyo uhamisho utarudishwa kiotomatiki."
 }

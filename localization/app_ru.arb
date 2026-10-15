@@ -4879,5 +4879,6 @@
   "recipientsVirtualIbanShowDetails": "Показать реквизиты моего виртуального IBAN",
   "recipientsVirtualIbanDetailsDescription": "Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Пополнение будет выглядеть как платёж самому себе, без кода перевода.",
   "recipientsVirtualIbanBankAddress": "Адрес банка",
-  "recipientsVirtualIbanBankAddressHelp": "Официальный адрес банка, если ваш банк его запросит."
+  "recipientsVirtualIbanBankAddressHelp": "Официальный адрес банка, если ваш банк его запросит.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Имена в вашем банке и в виртуальном IBAN должны совпадать, иначе переводы будут автоматически возвращены."
 }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner_name.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
@@ -33,9 +34,11 @@ void main() {
     events = StreamController<_Event>.broadcast();
     watch = _MockWatchVirtualIbanUsecase();
     final ownerName = _MockGetAccountOwnerNameUsecase();
-    when(
-      () => ownerName.execute(),
-    ).thenAnswer((_) async => const Ok('Satoshi Nakamoto'));
+    when(() => ownerName.execute()).thenAnswer(
+      (_) async => const Ok(
+        AccountOwnerName(firstName: 'Satoshi', lastName: 'Nakamoto'),
+      ),
+    );
     when(
       () => watch.execute(createIfAbsent: any(named: 'createIfAbsent')),
     ).thenAnswer((_) => events.stream);

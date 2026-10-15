@@ -4873,5 +4873,6 @@
   "recipientsVirtualIbanShowDetails": "显示我的虚拟 IBAN 详情",
   "recipientsVirtualIbanDetailsDescription": "使用以您本人名义开设的个人虚拟 IBAN 私密地为账户充值。存款将显示为付款给您本人，无需转账代码。",
   "recipientsVirtualIbanBankAddress": "银行地址",
-  "recipientsVirtualIbanBankAddressHelp": "银行的官方地址，以备您的银行要求时使用。"
+  "recipientsVirtualIbanBankAddressHelp": "银行的官方地址，以备您的银行要求时使用。",
+  "recipientsConfidentialSepaNameMustMatchHint": "您的银行账户与虚拟 IBAN 账户的姓名必须一致，否则转账将被自动退回。"
 }

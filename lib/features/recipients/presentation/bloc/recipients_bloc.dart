@@ -9,7 +9,9 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_preferred
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner_name.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
@@ -31,6 +33,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     this._onRecipientSelectedHook,
     required this._getPreferredJurisdictionUsecase,
     required this._getConfidentialSepaAvailabilityUsecase,
+    required this._getAccountOwnerNameUsecase,
     required this._addRecipientUsecase,
     required this._getRecipientsUsecase,
     required this._checkSinpeUsecase,
@@ -77,6 +80,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   final GetPreferredJurisdictionUsecase _getPreferredJurisdictionUsecase;
   final GetConfidentialSepaAvailabilityUsecase
   _getConfidentialSepaAvailabilityUsecase;
+  final GetAccountOwnerNameUsecase _getAccountOwnerNameUsecase;
 
   Future<void> _onStarted(
     RecipientsStarted event,
@@ -95,6 +99,19 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
               },
         ),
       );
+      if (state.confidentialSepaAvailability !=
+          ConfidentialSepaAvailability.unavailable) {
+        // Not surfaced as a failure: the form cannot be sent without a name.
+        emit(
+          state.copyWith(
+            accountOwnerName: switch (await _getAccountOwnerNameUsecase
+                .execute()) {
+              Ok(:final value) => value,
+              Err() => null,
+            },
+          ),
+        );
+      }
     }
 
     final jurisdictions = state.availableJurisdictions;

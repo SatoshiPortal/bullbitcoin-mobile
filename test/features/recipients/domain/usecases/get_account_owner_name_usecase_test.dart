@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner_name.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -19,7 +20,7 @@ void main() {
       (_) async => const UserSummary(
         userNumber: 1,
         groups: [],
-        profile: UserProfile(firstName: 'Satoshi', lastName: 'Nakamoto'),
+        profile: UserProfile(firstName: 'Mary Ann ', lastName: 'Smith'),
         email: 'satoshi@example.com',
         balances: [],
         currency: 'EUR',
@@ -33,7 +34,10 @@ void main() {
 
     final result = await GetAccountOwnerNameUsecase(summary).execute();
 
-    expect((result as Ok<String, RecipientsFailure>).value, 'Satoshi Nakamoto');
+    final name = (result as Ok<AccountOwnerName, RecipientsFailure>).value;
+    expect(name.firstName, 'Mary Ann');
+    expect(name.lastName, 'Smith');
+    expect(name.fullName, 'Mary Ann Smith');
   });
 
   test('an unreadable user summary is a failure', () async {
@@ -42,7 +46,7 @@ void main() {
     final result = await GetAccountOwnerNameUsecase(summary).execute();
 
     expect(
-      (result as Err<String, RecipientsFailure>).failure,
+      (result as Err<AccountOwnerName, RecipientsFailure>).failure,
       isA<RecipientsUnexpectedFailure>(),
     );
   });

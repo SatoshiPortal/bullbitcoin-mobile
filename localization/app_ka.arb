@@ -3789,5 +3789,6 @@
   "recipientsVirtualIbanShowDetails": "ჩემი ვირტუალური IBAN-ის დეტალების ჩვენება",
   "recipientsVirtualIbanDetailsDescription": "შეავსეთ ანგარიში კონფიდენციალურად თქვენს სახელზე გაცემული პირადი ვირტუალური IBAN-ით. შენატანი გამოჩნდება როგორც გადახდა საკუთარ თავზე, გადარიცხვის კოდის გარეშე.",
   "recipientsVirtualIbanBankAddress": "ბანკის მისამართი",
-  "recipientsVirtualIbanBankAddressHelp": "ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს."
+  "recipientsVirtualIbanBankAddressHelp": "ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს.",
+  "recipientsConfidentialSepaNameMustMatchHint": "თქვენი ბანკისა და ვირტუალური IBAN ანგარიშების სახელები უნდა ემთხვეოდეს, წინააღმდეგ შემთხვევაში გადარიცხვები ავტომატურად დაბრუნდება."
 }

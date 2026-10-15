@@ -3666,5 +3666,6 @@
   "recipientsVirtualIbanShowDetails": "Ցույց տալ իմ վիրտուալ IBAN-ի տվյալները",
   "recipientsVirtualIbanDetailsDescription": "Համալրեք ձեր հաշիվը գաղտնի՝ ձեր անունով անձնական վիրտուալ IBAN-ով։ Մուտքը կերևա որպես վճարում ինքներդ ձեզ, առանց փոխանցման կոդի։",
   "recipientsVirtualIbanBankAddress": "Բանկի հասցեն",
-  "recipientsVirtualIbanBankAddressHelp": "Բանկի պաշտոնական հասցեն, եթե ձեր բանկը այն պահանջի։"
+  "recipientsVirtualIbanBankAddressHelp": "Բանկի պաշտոնական հասցեն, եթե ձեր բանկը այն պահանջի։",
+  "recipientsConfidentialSepaNameMustMatchHint": "Ձեր բանկային և վիրտուալ IBAN հաշիվների անունները պետք է համընկնեն, հակառակ դեպքում փոխանցումները ավտոմատ կվերադարձվեն։"
 }

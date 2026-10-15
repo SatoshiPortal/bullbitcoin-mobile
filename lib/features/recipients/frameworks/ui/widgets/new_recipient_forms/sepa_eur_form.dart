@@ -14,7 +14,8 @@ class SepaEurForm extends StatefulWidget {
   final String? hookError;
 
   /// Confidential SEPA only pays the user's own individual account, so the
-  /// corporate and ownership choices are hidden.
+  /// corporate and ownership choices are hidden and the name is the account
+  /// owner's.
   final bool isConfidential;
 
   @override
@@ -61,12 +62,21 @@ class SepaEurFormState extends State<SepaEurForm> {
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
+      final ownerName = context.read<RecipientsBloc>().state.accountOwnerName;
       final formData = SepaEurFormDataModel(
         iban: _iban,
         isCorporate: _isCorporate,
         isOwner: _isMyAccount,
-        firstname: _isCorporate ? null : _firstname,
-        lastname: _isCorporate ? null : _lastname,
+        firstname: _isCorporate
+            ? null
+            : widget.isConfidential
+            ? ownerName?.firstName
+            : _firstname,
+        lastname: _isCorporate
+            ? null
+            : widget.isConfidential
+            ? ownerName?.lastName
+            : _lastname,
         corporateName: _isCorporate ? _corporateName : null,
         label: _label.isEmpty ? null : _label,
         isConfidential: widget.isConfidential,
@@ -92,7 +102,9 @@ class SepaEurFormState extends State<SepaEurForm> {
             autofocus: true,
             textInputAction: .next,
             onFieldSubmitted: (_) {
-              if (_isCorporate) {
+              if (widget.isConfidential) {
+                _labelFocusNode.requestFocus();
+              } else if (_isCorporate) {
                 _corporateNameFocusNode.requestFocus();
               } else {
                 _firstnameFocusNode.requestFocus();
@@ -128,7 +140,10 @@ class SepaEurFormState extends State<SepaEurForm> {
               controlAffinity: .leading,
             ),
           const Gap(12.0),
-          if (!_isCorporate) ...[
+          if (widget.isConfidential) ...[
+            const _AccountOwnerNameField(),
+            const Gap(12.0),
+          ] else if (!_isCorporate) ...[
             BBTextFormField(
               labelText: context.loc.recipientsFieldFirstName,
               hintText: context.loc.recipientsFieldFirstNameHint,
@@ -239,6 +254,53 @@ class SepaEurFormState extends State<SepaEurForm> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AccountOwnerNameField extends StatefulWidget {
+  const _AccountOwnerNameField();
+
+  @override
+  State<_AccountOwnerNameField> createState() => _AccountOwnerNameFieldState();
+}
+
+class _AccountOwnerNameFieldState extends State<_AccountOwnerNameField> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fullName = context.select(
+      (RecipientsBloc bloc) => bloc.state.accountOwnerName?.fullName ?? '',
+    );
+    if (_controller.text != fullName) _controller.text = fullName;
+
+    return Column(
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
+      children: [
+        BBTextFormField(
+          labelText: context.loc.recipientsVirtualIbanAccountOwnerName,
+          controller: _controller,
+          disabled: true,
+          validator: (v) => (v == null || v.trim().isEmpty)
+              ? context.loc.recipientsValidationFieldRequired
+              : null,
+        ),
+        const Gap(8.0),
+        Text(
+          context.loc.recipientsConfidentialSepaNameMustMatchHint,
+          style: context.font.bodySmall?.copyWith(
+            color: context.appColors.outline,
+          ),
+        ),
+      ],
     );
   }
 }

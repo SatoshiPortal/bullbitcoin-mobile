@@ -11861,5 +11861,6 @@
   "recipientsVirtualIbanShowDetails": "Zobrazit údaje mého virtuálního IBAN",
   "recipientsVirtualIbanDetailsDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Vklad se zobrazí jako platba sobě samému, bez kódu převodu.",
   "recipientsVirtualIbanBankAddress": "Adresa banky",
-  "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje."
+  "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny."
 }

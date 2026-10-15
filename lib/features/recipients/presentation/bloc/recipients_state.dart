@@ -7,6 +7,7 @@ sealed class RecipientsState with _$RecipientsState {
     String? jurisdictionFilter,
     @Default(ConfidentialSepaAvailability.unavailable)
     ConfidentialSepaAvailability confidentialSepaAvailability,
+    AccountOwnerName? accountOwnerName,
     @Default(RecipientType.sepaEur) RecipientType sepaType,
     @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,

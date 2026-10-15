@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner_name.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_preferred_jurisdiction_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
@@ -27,6 +29,9 @@ class _MockListCadBillers extends Mock implements ListCadBillersUsecase {}
 
 class _MockGetConfidentialSepaAvailability extends Mock
     implements GetConfidentialSepaAvailabilityUsecase {}
+
+class _MockGetAccountOwnerName extends Mock
+    implements GetAccountOwnerNameUsecase {}
 
 class _MockGetPreferredJurisdiction extends Mock
     implements GetPreferredJurisdictionUsecase {}
@@ -62,6 +67,7 @@ void main() {
   late _MockListCadBillers listCadBillers;
   late _MockGetPreferredJurisdiction getPreferredJurisdiction;
   late _MockGetConfidentialSepaAvailability getConfidentialSepaAvailability;
+  late _MockGetAccountOwnerName getAccountOwnerName;
 
   setUp(() {
     getRecipients = _MockGetRecipients();
@@ -70,6 +76,7 @@ void main() {
     listCadBillers = _MockListCadBillers();
     getPreferredJurisdiction = _MockGetPreferredJurisdiction();
     getConfidentialSepaAvailability = _MockGetConfidentialSepaAvailability();
+    getAccountOwnerName = _MockGetAccountOwnerName();
     registerFallbackValue(GetRecipientsParams());
     registerFallbackValue(
       AddRecipientParams(recipientDetails: _formData().toDto()),
@@ -84,6 +91,10 @@ void main() {
     when(
       () => getRecipients.execute(any()),
     ).thenAnswer((_) async => const Err(RecipientsLoadFailure()));
+    when(() => getAccountOwnerName.execute()).thenAnswer(
+      (_) async =>
+          const Ok(AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith')),
+    );
   });
 
   RecipientsBloc buildBloc({
@@ -94,6 +105,7 @@ void main() {
     onRecipientSelectedHook: hook,
     getPreferredJurisdictionUsecase: getPreferredJurisdiction,
     getConfidentialSepaAvailabilityUsecase: getConfidentialSepaAvailability,
+    getAccountOwnerNameUsecase: getAccountOwnerName,
     addRecipientUsecase: addRecipient,
     getRecipientsUsecase: getRecipients,
     checkSinpeUsecase: checkSinpe,
@@ -141,6 +153,22 @@ void main() {
         bloc.state.selectableRecipientTypes,
         contains(RecipientType.confidentialSepaEur),
       );
+    });
+
+    test('loads the account owner name for an eligible user', () async {
+      final bloc = await startWith(ConfidentialSepaAvailability.ready);
+
+      expect(
+        bloc.state.accountOwnerName,
+        const AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith'),
+      );
+    });
+
+    test('does not load the account owner name for a user who cannot use '
+        'it', () async {
+      await startWith(ConfidentialSepaAvailability.unavailable);
+
+      verifyNever(() => getAccountOwnerName.execute());
     });
 
     test('is ready once the virtual IBAN is activated', () async {

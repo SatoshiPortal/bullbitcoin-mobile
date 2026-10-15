@@ -4909,5 +4909,6 @@
   "recipientsVirtualIbanShowDetails": "Mostrar os detalhes do meu IBAN virtual",
   "recipientsVirtualIbanDetailsDescription": "Financie a sua conta de forma privada com um IBAN virtual pessoal em seu nome. O depósito aparecerá como um pagamento a si próprio, sem código de transferência.",
   "recipientsVirtualIbanBankAddress": "Morada do banco",
-  "recipientsVirtualIbanBankAddressHelp": "A morada oficial do banco, caso o seu banco a peça."
+  "recipientsVirtualIbanBankAddressHelp": "A morada oficial do banco, caso o seu banco a peça.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual têm de corresponder, caso contrário as transferências serão devolvidas automaticamente."
 }

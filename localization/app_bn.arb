@@ -12065,5 +12065,6 @@
   "recipientsVirtualIbanShowDetails": "আমার ভার্চুয়াল IBAN-এর বিবরণ দেখান",
   "recipientsVirtualIbanDetailsDescription": "আপনার নিজের নামে একটি ব্যক্তিগত ভার্চুয়াল IBAN ব্যবহার করে গোপনে অ্যাকাউন্টে অর্থ জমা করুন। জমাটি নিজের কাছে পেমেন্ট হিসেবে দেখাবে, কোনো ট্রান্সফার কোড লাগবে না।",
   "recipientsVirtualIbanBankAddress": "ব্যাংকের ঠিকানা",
-  "recipientsVirtualIbanBankAddressHelp": "ব্যাংকের অফিসিয়াল ঠিকানা, যদি আপনার ব্যাংক চায়।"
+  "recipientsVirtualIbanBankAddressHelp": "ব্যাংকের অফিসিয়াল ঠিকানা, যদি আপনার ব্যাংক চায়।",
+  "recipientsConfidentialSepaNameMustMatchHint": "আপনার ব্যাংক এবং ভার্চুয়াল IBAN অ্যাকাউন্টের নাম মিলতে হবে, না হলে ট্রান্সফার স্বয়ংক্রিয়ভাবে ফেরত পাঠানো হবে।"
 }

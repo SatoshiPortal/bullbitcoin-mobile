@@ -11861,5 +11861,6 @@
   "recipientsVirtualIbanShowDetails": "Εμφάνιση στοιχείων του εικονικού μου IBAN",
   "recipientsVirtualIbanDetailsDescription": "Χρηματοδοτήστε τον λογαριασμό σας ιδιωτικά με ένα προσωπικό εικονικό IBAN στο όνομά σας. Η κατάθεση θα εμφανίζεται ως πληρωμή στον εαυτό σας, χωρίς κωδικό μεταφοράς.",
   "recipientsVirtualIbanBankAddress": "Διεύθυνση τράπεζας",
-  "recipientsVirtualIbanBankAddressHelp": "Η επίσημη διεύθυνση της τράπεζας, σε περίπτωση που τη ζητήσει η τράπεζά σας."
+  "recipientsVirtualIbanBankAddressHelp": "Η επίσημη διεύθυνση της τράπεζας, σε περίπτωση που τη ζητήσει η τράπεζά σας.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα."
 }

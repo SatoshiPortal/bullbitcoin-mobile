@@ -15647,5 +15647,9 @@
   "recipientsVirtualIbanBankAddressHelp": "The official bank address, in case your bank asks for it.",
   "@recipientsVirtualIbanBankAddressHelp": {
     "description": "Explains when the bank address of the virtual IBAN is needed"
+  },
+  "recipientsConfidentialSepaNameMustMatchHint": "Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.",
+  "@recipientsConfidentialSepaNameMustMatchHint": {
+    "description": "Hint under the read-only account owner name on the Confidential SEPA recipient form"
   }
 }

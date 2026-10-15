@@ -11861,5 +11861,6 @@
   "recipientsVirtualIbanShowDetails": "Sanal IBAN bilgilerimi göster",
   "recipientsVirtualIbanDetailsDescription": "Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Yatırım, transfer kodu gerekmeden kendinize yapılmış bir ödeme olarak görünür.",
   "recipientsVirtualIbanBankAddress": "Banka adresi",
-  "recipientsVirtualIbanBankAddressHelp": "Bankanız isterse diye resmi banka adresi."
+  "recipientsVirtualIbanBankAddressHelp": "Bankanız isterse diye resmi banka adresi.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir."
 }

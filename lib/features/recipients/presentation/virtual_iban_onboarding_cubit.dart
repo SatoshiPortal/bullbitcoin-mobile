@@ -26,7 +26,7 @@ class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
     switch (await _getAccountOwnerNameUsecase.execute()) {
       case Ok(:final value):
         if (isClosed) return;
-        emit(state.copyWith(accountOwnerName: value));
+        emit(state.copyWith(accountOwnerName: value.fullName));
         await _watch(createIfAbsent: false);
       case Err(:final failure):
         if (isClosed) return;
