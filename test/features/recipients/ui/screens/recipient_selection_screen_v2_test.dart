@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/recipient_selection_screen_v2.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';

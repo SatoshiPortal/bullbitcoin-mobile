@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

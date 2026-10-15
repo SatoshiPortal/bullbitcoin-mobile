@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

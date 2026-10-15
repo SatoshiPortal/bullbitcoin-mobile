@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_currency_dropdown.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_send_payment_screen.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_ui/bull_ui.dart';
