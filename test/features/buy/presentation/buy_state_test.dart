@@ -40,6 +40,41 @@ void main() {
   });
 
   group('BuyState Payjoin choice', () {
+    test('requires at least 50000 sats for an exchange Payjoin', () {
+      final state = BuyState(
+        userSummary: userSummary,
+        selectedWallet: bitcoinWallet,
+        payjoinGloballyEnabled: true,
+        isFiatCurrencyInput: false,
+        bitcoinUnit: BitcoinUnit.sats,
+        amountInput: '49999',
+      );
+
+      expect(state.shouldUsePayjoin, isFalse);
+      expect(state.copyWith(amountInput: '50000').shouldUsePayjoin, isTrue);
+      expect(state.copyWith(amountInput: '50001').shouldUsePayjoin, isTrue);
+      expect(
+        state
+            .copyWith(
+              isFiatCurrencyInput: true,
+              amountInput: '49.99',
+              exchangeRate: 100000,
+            )
+            .shouldUsePayjoin,
+        isFalse,
+      );
+      expect(
+        state
+            .copyWith(
+              isFiatCurrencyInput: true,
+              amountInput: '50',
+              exchangeRate: 100000,
+            )
+            .shouldUsePayjoin,
+        isTrue,
+      );
+    });
+
     test(
       'offers Payjoin only when both gates and a Bitcoin wallet are set',
       () {

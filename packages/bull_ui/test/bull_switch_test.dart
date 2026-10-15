@@ -76,5 +76,49 @@ void main() {
 
       expect(pumpedSwitch(tester).onChanged, isNull);
     });
+
+    testWidgets('explains a disabled switch when tapped without toggling it', (
+      tester,
+    ) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSwitch(
+            value: false,
+            onChanged: null,
+            onDisabledTap: () => taps++,
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Switch));
+      await tester.pump();
+
+      expect(taps, 1);
+      expect(pumpedSwitch(tester).value, isFalse);
+      expect(pumpedSwitch(tester).onChanged, isNull);
+    });
+
+    testWidgets('does not explain a switch that can be toggled', (
+      tester,
+    ) async {
+      var taps = 0;
+      bool? changed;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSwitch(
+            value: false,
+            onChanged: (value) => changed = value,
+            onDisabledTap: () => taps++,
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Switch));
+      await tester.pump();
+
+      expect(changed, isTrue);
+      expect(taps, 0);
+    });
   });
 }

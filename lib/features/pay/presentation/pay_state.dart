@@ -254,6 +254,12 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
 }
 
 extension PayPaymentStateX on PayPaymentState {
+  bool get isPayjoinAmountAllowed => PayjoinPolicy.allowsExchangeAmount(
+    ConvertAmount.btcToSats(payOrder.payinAmount),
+  );
+
+  bool get shouldUsePayjoin => isPayjoinEnabled && isPayjoinAmountAllowed;
+
   PaySuccessState toSuccessState({required FiatPaymentOrder payOrder}) {
     return PaySuccessState(payOrder: payOrder);
   }

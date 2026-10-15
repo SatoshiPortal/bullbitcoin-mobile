@@ -113,6 +113,19 @@ void main() {
         isFalse,
       );
       expect(expiresAt.isAfter(after.add(const Duration(minutes: 6))), isFalse);
+
+      clearInteractions(receiver);
+      final smallOrder = await usecase.execute(
+        toAddress: 'tb1qexampleaddress',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        isLiquid: false,
+        isOwner: true,
+        payjoinWalletId: 'wallet-1',
+        payjoinAmountSat: 49999,
+      );
+      expect(smallOrder, isA<Ok<BuyOrder, BuyFailure>>());
+      verifyNever(() => receiver.start(any()));
     },
   );
 }

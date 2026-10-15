@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinPolicy;
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
@@ -346,7 +347,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }
 
   void _onPayjoinToggled(_BuyPayjoinToggled event, Emitter<BuyState> emit) {
-    emit(state.copyWith(isPayjoinEnabled: event.enabled));
+    emit(
+      state.copyWith(
+        isPayjoinEnabled: event.enabled && state.isPayjoinAmountAllowed,
+      ),
+    );
   }
 
   Future<void> _cancelAbandonedPayjoin(BuyOrder? order) async {

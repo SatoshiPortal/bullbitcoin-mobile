@@ -17,6 +17,8 @@ enum PayjoinAction {
 }
 
 final class PayjoinPolicy {
+  static const minimumExchangeAmountSat = 50000;
+
   static final minimumAllowedAmount = Sats.fromInt(1000);
   static final maximumAllowedAmount = Sats.fromInt(21000000);
   static const minimumSessionLifetime = Duration(minutes: 1);
@@ -80,6 +82,10 @@ final class PayjoinPolicy {
     minimumAmount: Sats.fromInt(10000),
     sessionLifetime: maximumSessionLifetime,
   );
+
+  /// Exchange orders below this amount use a regular Bitcoin transaction.
+  static bool allowsExchangeAmount(int? amountSat) =>
+      amountSat != null && amountSat >= minimumExchangeAmountSat;
 
   bool allows(PayjoinAction action) => switch (action) {
     PayjoinAction.send => sendEnabled,

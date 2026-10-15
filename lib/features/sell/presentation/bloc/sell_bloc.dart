@@ -33,7 +33,11 @@ import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
-    show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
+    show
+        PayjoinPolicy,
+        PayjoinSenderSession,
+        PayjoinSession,
+        PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -741,7 +745,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           'windowSec=${payjoinWindow ?? 0}',
         );
 
-        if (sellPaymentState.isPayjoinEnabled &&
+        if (sellPaymentState.shouldUsePayjoin &&
             payjoinBip21 != null &&
             payjoinWindow != null) {
           log.info('Sell Payjoin sender creation started');
@@ -1081,7 +1085,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
     if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
       return;
     }
-    emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
+    emit(
+      paymentState.copyWith(
+        isPayjoinEnabled: event.enabled && paymentState.isPayjoinAmountAllowed,
+      ),
+    );
   }
 
   Future<void> _onPollOrderStatus(

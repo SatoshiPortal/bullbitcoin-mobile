@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -123,7 +124,11 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
       (BuyBloc bloc) => bloc.state.canOfferPayjoin,
     );
     final isPayjoinEnabled = context.select(
-      (BuyBloc bloc) => bloc.state.isPayjoinEnabled,
+      (BuyBloc bloc) => bloc.state.shouldUsePayjoin,
+    );
+
+    final isPayjoinAmountAllowed = context.select(
+      (BuyBloc bloc) => bloc.state.isPayjoinAmountAllowed,
     );
 
     return Scaffold(
@@ -163,10 +168,16 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                     ),
                     BullSwitch(
                       value: isPayjoinEnabled,
-                      onChanged: isCreatingOrder
+                      onChanged: isCreatingOrder || !isPayjoinAmountAllowed
                           ? null
                           : (enabled) => context.read<BuyBloc>().add(
                               BuyEvent.payjoinToggled(enabled),
+                            ),
+                      onDisabledTap: isCreatingOrder
+                          ? null
+                          : () => SnackBarUtils.showSnackBar(
+                              context,
+                              context.loc.payjoinExchangeMinimumAmount,
                             ),
                     ),
                   ],

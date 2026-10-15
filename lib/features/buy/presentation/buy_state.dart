@@ -123,7 +123,10 @@ sealed class BuyState with _$BuyState {
       selectedWallet?.network.isBitcoin == true;
 
   bool get shouldUsePayjoin =>
-      canOfferPayjoin && isPayjoinEnabled && amountSat != null;
+      canOfferPayjoin && isPayjoinEnabled && isPayjoinAmountAllowed;
+
+  bool get isPayjoinAmountAllowed =>
+      PayjoinPolicy.allowsExchangeAmount(amountSat);
 
   bool get canCreateOrder {
     return isPositiveAmount && hasDestination;

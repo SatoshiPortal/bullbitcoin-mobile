@@ -3,6 +3,15 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('exchange minimum is inclusive and independent of receive settings', () {
+    expect(PayjoinPolicy.allowsExchangeAmount(null), isFalse);
+    expect(PayjoinPolicy.allowsExchangeAmount(0), isFalse);
+    expect(PayjoinPolicy.allowsExchangeAmount(49999), isFalse);
+    expect(PayjoinPolicy.allowsExchangeAmount(50000), isTrue);
+    expect(PayjoinPolicy.allowsExchangeAmount(50001), isTrue);
+    expect(PayjoinPolicy.defaults().minimumAmount, Sats.fromInt(10000));
+  });
+
   test('defaults keep user payjoins off and exchange payjoins on', () {
     final policy = PayjoinPolicy.defaults();
 

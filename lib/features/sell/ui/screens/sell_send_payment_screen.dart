@@ -54,7 +54,13 @@ class SellSendPaymentScreen extends StatelessWidget {
     );
     final isPayjoinEnabled = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).isPayjoinEnabled
+          ? (bloc.state as SellPaymentState).shouldUsePayjoin
+          : false,
+    );
+
+    final isPayjoinAmountAllowed = context.select(
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).isPayjoinAmountAllowed
           : false,
     );
 
@@ -187,7 +193,8 @@ class SellSendPaymentScreen extends StatelessWidget {
             ),
             if (wallet != null &&
                 !wallet.isLiquid &&
-                order?.payjoinBip21 != null)
+                order != null &&
+                (!isPayjoinAmountAllowed || order.payjoinBip21 != null))
               Row(
                 children: [
                   Expanded(
@@ -198,10 +205,16 @@ class SellSendPaymentScreen extends StatelessWidget {
                   ),
                   BullSwitch(
                     value: isPayjoinEnabled,
-                    onChanged: isConfirmingPayment
+                    onChanged: isConfirmingPayment || !isPayjoinAmountAllowed
                         ? null
                         : (enabled) => context.read<SellBloc>().add(
                             SellEvent.payjoinToggled(enabled),
+                          ),
+                    onDisabledTap: isConfirmingPayment
+                        ? null
+                        : () => SnackBarUtils.showSnackBar(
+                            context,
+                            context.loc.payjoinExchangeMinimumAmount,
                           ),
                   ),
                 ],
