@@ -1,4 +1,5 @@
-import 'package:bull_ui/src/feedback/bull_shimmer.dart';
+import 'package:bull_ui/src/feedback/bull_fading_linear_progress.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
 enum BullAsyncStatusState { hidden, inProgress, succeeded, fallback }
@@ -54,11 +55,15 @@ class BullAsyncStatus extends StatelessWidget {
             ),
             if (!MediaQuery.disableAnimationsOf(context)) ...[
               const SizedBox(height: 8),
-              const ExcludeSemantics(
-                child: BullShimmerLine(
+              ExcludeSemantics(
+                child: SizedBox(
                   width: 160,
-                  height: 4,
-                  padding: EdgeInsets.zero,
+                  child: BullFadingLinearProgress(
+                    trigger: true,
+                    height: 4,
+                    foregroundColor: context.bull.primary,
+                    backgroundColor: context.bull.transparent,
+                  ),
                 ),
               ),
             ],

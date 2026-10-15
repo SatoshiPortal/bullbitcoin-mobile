@@ -7,7 +7,7 @@ import 'test_app.dart';
 void main() {
   for (final reducedMotion in [false, true]) {
     testWidgets(
-      'progress uses one shimmer and respects reduced motion $reducedMotion',
+      'progress uses the themed linear indicator and respects reduced motion $reducedMotion',
       (tester) async {
         await tester.pumpWidget(
           wrapWithTheme(
@@ -22,8 +22,16 @@ void main() {
           ),
         );
         expect(find.text('Sending payment'), findsOneWidget);
+        expect(find.byType(BullShimmerLine), findsNothing);
+        if (!reducedMotion) {
+          final indicator = tester.widget<BullFadingLinearProgress>(
+            find.byType(BullFadingLinearProgress),
+          );
+          expect(indicator.foregroundColor, testBullTheme.primary);
+          expect(indicator.backgroundColor, testBullTheme.transparent);
+        }
         expect(
-          find.byType(BullShimmerLine),
+          find.byType(BullFadingLinearProgress),
           reducedMotion ? findsNothing : findsOneWidget,
         );
       },

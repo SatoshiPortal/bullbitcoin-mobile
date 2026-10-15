@@ -188,8 +188,8 @@ void main() {
         expect(find.byType(BBButton), findsNothing);
         expect(find.byType(BullAsyncStatus), findsOneWidget);
         expect(find.byType(CircularProgressIndicator), findsNothing);
-        expect(find.byType(BullFadingLinearProgress), findsNothing);
-        expect(find.byType(BullShimmerLine), findsOneWidget);
+        expect(find.byType(BullFadingLinearProgress), findsOneWidget);
+        expect(find.byType(BullShimmerLine), findsNothing);
         await tester.pumpWidget(const SizedBox.shrink());
       },
     );
