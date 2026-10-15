@@ -223,11 +223,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     if (code == 429) {
       final requestedAt = e.requestedAt;
       final cooldown = e.cooldownInMinutes;
-      final retryIn = (requestedAt != null && cooldown != null)
-          ? requestedAt
-                .add(Duration(minutes: cooldown))
-                .difference(DateTime.now())
-          : null;
+      // Retry-After is relative, so it does not depend on the device clock
+      // agreeing with the server's. The body fields are a fallback for
+      // servers that do not send the header.
+      final retryIn =
+          e.retryAfter ??
+          ((requestedAt != null && cooldown != null)
+              ? requestedAt
+                    .add(Duration(minutes: cooldown))
+                    .difference(DateTime.now())
+              : null);
       return KeyServerRateLimitedFailure(
         retryIn: retryIn,
         logMessage: e.toString(),

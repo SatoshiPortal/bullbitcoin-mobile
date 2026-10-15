@@ -85,6 +85,44 @@ void main() {
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNull);
     });
 
+    test('429 with only Retry-After -> retryIn from the header', () async {
+      stubFetchThrows(
+        recoverbull.KeyServerRateLimitedException(
+          code: 429,
+          retryAfter: const Duration(seconds: 30),
+        ),
+      );
+
+      final result = await fetch();
+
+      final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
+      expect(
+        (failure as KeyServerRateLimitedFailure).retryIn,
+        const Duration(seconds: 30),
+      );
+    });
+
+    test('429 with body and Retry-After -> the header wins', () async {
+      // The body would give a cooldown computed against the device clock;
+      // the header is relative and does not depend on clock skew.
+      stubFetchThrows(
+        recoverbull.KeyServerRateLimitedException(
+          code: 429,
+          requestedAt: DateTime.now().toUtc(),
+          cooldownInMinutes: 60,
+          retryAfter: const Duration(seconds: 30),
+        ),
+      );
+
+      final result = await fetch();
+
+      final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
+      expect(
+        (failure as KeyServerRateLimitedFailure).retryIn,
+        const Duration(seconds: 30),
+      );
+    });
+
     test('other 4xx -> KeyServerRejectedFailure', () async {
       stubFetchThrows(recoverbull.KeyServerException(code: 403));
 
