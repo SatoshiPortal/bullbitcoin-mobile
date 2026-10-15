@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
@@ -55,6 +57,174 @@ class _MockLabelCompletedBuyOrderUsecase extends Mock
     implements LabelCompletedBuyOrderUsecase {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(const FiatAmount(100)));
+
+  group('order preparation', () {
+    late _SeedableBuyBloc bloc;
+    late _MockCreateBuyOrderUsecase create;
+    late _MockCancelAbandonedBuyPayjoinUsecase cancel;
+    late _MockLoadBuyContextUsecase load;
+
+    Future<Result<BuyOrder, BuyFailure>> createCall() => create.execute(
+      toAddress: 'tb1qtest',
+      orderAmount: any(named: 'orderAmount'),
+      currency: FiatCurrency.cad,
+      isLiquid: false,
+      isOwner: true,
+      payjoinWalletId: null,
+      payjoinAmountSat: null,
+    );
+
+    setUp(() {
+      create = _MockCreateBuyOrderUsecase();
+      cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+      load = _MockLoadBuyContextUsecase();
+      when(
+        () => cancel.execute(any()),
+      ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
+      when(
+        () => load.satsToCurrency(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => const Ok<double, BuyFailure>(100000));
+      bloc = _SeedableBuyBloc(
+        loadBuyContextUsecase: load,
+        confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+        createBuyOrderUsecase: create,
+        refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        cancelAbandonedBuyPayjoinUsecase: cancel,
+        getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+        labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      );
+      bloc.seed(
+        const BuyState(
+          amountInput: '100',
+          currencyInput: 'CAD',
+          exchangeRate: 100000,
+          bitcoinAddressInput: 'tb1qtest',
+        ),
+      );
+    });
+    tearDown(() async {
+      if (!bloc.isClosed) await bloc.close();
+    });
+
+    test(
+      'starts loading before cleanup and keeps the submitted input snapshot',
+      () async {
+        final cleanup = Completer<Result<void, BuyFailure>>();
+        when(() => cancel.execute(null)).thenAnswer((_) => cleanup.future);
+        final response = Completer<Result<BuyOrder, BuyFailure>>();
+        when(createCall).thenAnswer((_) => response.future);
+        final loading = bloc.stream.firstWhere((s) => s.isCreatingOrder);
+        bloc.add(const BuyEvent.createOrder());
+        await loading;
+        verifyNever(createCall);
+        bloc.add(const BuyEvent.amountInputChanged('200'));
+        await Future<void>.delayed(Duration.zero);
+        cleanup.complete(const Ok(null));
+        await untilCalled(createCall);
+        final amount =
+            verify(
+                  () => create.execute(
+                    toAddress: 'tb1qtest',
+                    orderAmount: captureAny(named: 'orderAmount'),
+                    currency: FiatCurrency.cad,
+                    isLiquid: false,
+                    isOwner: true,
+                    payjoinWalletId: null,
+                    payjoinAmountSat: null,
+                  ),
+                ).captured.single
+                as FiatAmount;
+        expect(amount.amount, 100);
+        final ready = bloc.stream.firstWhere(
+          (s) => s.buyOrder != null && !s.isCreatingOrder,
+        );
+        response.complete(Ok(_MockBuyOrder()));
+        await ready;
+      },
+    );
+
+    test(
+      'ignores a second create event while the API response is pending',
+      () async {
+        final response = Completer<Result<BuyOrder, BuyFailure>>();
+        when(createCall).thenAnswer((_) => response.future);
+        bloc.add(const BuyEvent.createOrder());
+        await untilCalled(createCall);
+        bloc.add(const BuyEvent.createOrder());
+        await Future<void>.delayed(Duration.zero);
+        verify(createCall).called(1);
+        final ready = bloc.stream.firstWhere(
+          (s) => s.buyOrder != null && !s.isCreatingOrder,
+        );
+        response.complete(Ok(_MockBuyOrder()));
+        await ready;
+      },
+    );
+
+    test(
+      'creation failure is visible on confirmation without an order',
+      () async {
+        const failure = BuyUnexpectedFailure('internal diagnostic');
+        when(createCall).thenAnswer((_) async => const Err(failure));
+        final failed = bloc.stream.firstWhere(
+          (s) => s.failure != null && !s.isCreatingOrder,
+        );
+        bloc.add(const BuyEvent.createOrder());
+        final state = await failed;
+        expect(state.buyOrder, isNull);
+        expect(state.confirmFailure, failure);
+      },
+    );
+
+    test(
+      'back and a new attempt discard the old response and clean its receiver',
+      () async {
+        final first = Completer<Result<BuyOrder, BuyFailure>>();
+        final second = Completer<Result<BuyOrder, BuyFailure>>();
+        var calls = 0;
+        when(
+          createCall,
+        ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+        bloc.add(const BuyEvent.createOrder());
+        await untilCalled(createCall);
+        final abandoned = bloc.stream.firstWhere((s) => !s.isCreatingOrder);
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        await abandoned;
+        bloc.add(const BuyEvent.createOrder());
+        await untilCalled(createCall);
+        final newOrder = _MockBuyOrder();
+        final ready = bloc.stream.firstWhere(
+          (s) => identical(s.buyOrder, newOrder) && !s.isCreatingOrder,
+        );
+        second.complete(Ok(newOrder));
+        await ready;
+        final oldOrder = _MockBuyOrder();
+        first.complete(Ok(oldOrder));
+        await untilCalled(() => cancel.execute(oldOrder));
+        expect(bloc.state.buyOrder, same(newOrder));
+        expect(bloc.state.isCreatingOrder, isFalse);
+      },
+    );
+
+    test(
+      'closing during creation cleans a late order without publishing it',
+      () async {
+        final response = Completer<Result<BuyOrder, BuyFailure>>();
+        when(createCall).thenAnswer((_) => response.future);
+        bloc.add(const BuyEvent.createOrder());
+        await untilCalled(createCall);
+        final closing = bloc.close();
+        final order = _MockBuyOrder();
+        response.complete(Ok(order));
+        await closing;
+        await untilCalled(() => cancel.execute(order));
+        expect(bloc.state.buyOrder, isNull);
+      },
+    );
+  });
+
   test(
     'closing the Buy flow cleans up its current unconfirmed order',
     () async {

@@ -125,10 +125,10 @@ void main() {
   group('BuyState failure slots', () {
     const failure = BuyUnexpectedFailure('raw reason');
 
-    test('the input and confirm slots split on whether an order exists', () {
+    test('confirmation can show a creation failure before an order exists', () {
       const beforeOrder = BuyState(failure: failure);
       expect(beforeOrder.inputFailure, failure);
-      expect(beforeOrder.confirmFailure, isNull);
+      expect(beforeOrder.confirmFailure, failure);
 
       final withOrder = beforeOrder.copyWith(buyOrder: _MockBuyOrder());
       expect(withOrder.inputFailure, isNull);

@@ -21,7 +21,7 @@ void main() {
   setUpAll(() => registerFallbackValue(const BuyEvent.createOrder()));
 
   testWidgets(
-    'order creation shows a linear indicator without moving the form',
+    'order creation does not show a progress bar on the input screen',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -87,14 +87,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(
-        tester
-            .widget<BullFadingLinearProgress>(
-              find.byType(BullFadingLinearProgress),
-            )
-            .trigger,
-        isTrue,
-      );
+      expect(find.byType(BullFadingLinearProgress), findsNothing);
       expect(tester.getRect(amountFields), amountRect);
       expect(tester.getRect(continueButton), buttonRect);
       expect(tester.widget<BBButton>(continueButton).disabled, isTrue);
@@ -105,14 +98,7 @@ void main() {
       states.add(state);
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
-      expect(
-        tester
-            .widget<BullFadingLinearProgress>(
-              find.byType(BullFadingLinearProgress),
-            )
-            .trigger,
-        isFalse,
-      );
+      expect(find.byType(BullFadingLinearProgress), findsNothing);
       expect(tester.getRect(amountFields), amountRect);
       expect(tester.getRect(continueButton), buttonRect);
       expect(tester.widget<BBButton>(continueButton).disabled, isFalse);

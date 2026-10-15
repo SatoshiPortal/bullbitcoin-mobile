@@ -1,12 +1,8 @@
+import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
@@ -15,77 +11,8 @@ import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullInfoCard,
-        BullFadingLinearProgress,
-        BullScrollableColumn,
-        BullShimmerLine,
-        BullSwitch,
-        Gap;
+    show BullButton, BullInfoCard, BullScrollableColumn, BullShimmerLine, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
-
-/// Renders whichever error the order creation failed with. Amount limits get
-/// the amount appended, everything else falls back to its translation so that
-/// the Continue button is never silently dead.
-class _CreateOrderError extends StatelessWidget {
-  const _CreateOrderError({required this.error});
-
-  final BuyFailure error;
-
-  @override
-  Widget build(BuildContext context) {
-    final errorStyle = context.font.bodyMedium?.copyWith(
-      color: context.appColors.error,
-    );
-
-    final (String label, double amount, String currency)? limit =
-        switch (error) {
-          BuyBelowMinAmountFailure(:final minAmount, :final currency) => (
-            context.loc.buyInputMinAmountError,
-            minAmount,
-            currency,
-          ),
-          BuyAboveMaxAmountFailure(:final maxAmount, :final currency) => (
-            context.loc.buyInputMaxAmountError,
-            maxAmount,
-            currency,
-          ),
-          _ => null,
-        };
-
-    if (limit == null) {
-      return Center(
-        child: Text(
-          error.toTranslated(context),
-          style: errorStyle,
-          textAlign: .center,
-        ),
-      );
-    }
-
-    final (label, amount, currency) = limit;
-    // The api denominates a limit either in fiat or in bitcoin; only the latter
-    // can be shown in the user's bitcoin unit.
-    final isBitcoinLimit = currency == 'BTC' || currency == 'LBTC';
-    return Row(
-      mainAxisAlignment: .center,
-      children: [
-        Text(label, style: errorStyle),
-        const Gap(4),
-        if (isBitcoinLimit)
-          CurrencyText(
-            ConvertAmount.btcToSats(amount),
-            showFiat: false,
-            style: errorStyle,
-            overrideHideAmounts: true,
-          )
-        else
-          Text(FormatAmount.fiat(amount, currency), style: errorStyle),
-      ],
-    );
-  }
-}
 
 class BuyInputScreen extends StatefulWidget {
   const BuyInputScreen({super.key});
@@ -145,15 +72,6 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
               )
             : null,
         title: Text(context.loc.buyInputTitle),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: BullFadingLinearProgress(
-            height: 3,
-            trigger: isCreatingOrder,
-            backgroundColor: context.appColors.onPrimary,
-            foregroundColor: context.appColors.primary,
-          ),
-        ),
       ),
       body: SafeArea(
         child: BBKeyboardActions(
@@ -198,7 +116,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                 mainAxisSize: .min,
                 children: [
                   if (createOrderError != null)
-                    _CreateOrderError(error: createOrderError),
+                    BuyOrderFailureMessage(error: createOrderError),
 
                   const Gap(16),
                   if (isStarted) ...[
