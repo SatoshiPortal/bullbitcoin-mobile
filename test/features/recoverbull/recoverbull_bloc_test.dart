@@ -1080,5 +1080,126 @@ void main() {
         expect(bloc.isClosed, isTrue);
       },
     );
+
+    test('a Tor drop after the vault is saved still stores the key', () async {
+      final states = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      final vault = _MockEncryptedVault();
+      when(() => vault.toFile()).thenReturn('{}');
+      when(() => vault.filename).thenReturn('vault.json');
+      final saving = Completer<Result<Null, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => createVault.execute(),
+      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(
+        () => saveFile.execute(
+          content: any(named: 'content'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) => saving.future);
+      when(
+        () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      addTearDown(states.close);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(
+        const OnVaultCreation(
+          provider: VaultProvider.customLocation,
+          password: 'pw',
+        ),
+      );
+      await pumpEventQueue();
+      // The file picker backgrounds the app, which is when embedded Tor flaps.
+      states.add(const TorStopped(TorSource.embedded));
+      await pumpEventQueue();
+      expect(closed, 1);
+      saving.complete(const Ok(null));
+      await pumpEventQueue();
+
+      // The file exists, so the key must reach the server through a fresh route rather than be dropped silently.
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.vault, vault);
+      verify(
+        () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+      ).called(1);
+    });
+
+    test(
+      'reusing the retained route keeps an in-flight check result',
+      () async {
+        final pending = Completer<Result<bool, core.RecoverBullCoreFailure>>();
+        final route = routeAt(41001, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(route));
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) => pending.future);
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        pending.complete(const Ok(true));
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        verify(() => ensureRecoverBullTorSession.execute()).called(1);
+        verify(() => checkConnection.execute(route: route)).called(1);
+      },
+    );
+
+    test(
+      'a failed check releases the route and the retry acquires a fresh one',
+      () async {
+        var firstClosed = 0;
+        final first = routeAt(41001, () async => firstClosed++);
+        final second = routeAt(41002, () async {});
+        var acquisitions = 0;
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+        when(
+          () => checkConnection.execute(route: first),
+        ).thenAnswer((_) async => const Ok(false));
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
+        expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
+        expect(firstClosed, 1);
+
+        // What the connecting page's Retry dispatches while Tor reads ready.
+        bloc.add(const OnServerCheck());
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        expect(acquisitions, 2);
+        verify(
+          () => checkConnection.execute(route: first),
+        ).called(ConnectToKeyServerUsecase.maxAttempts);
+        verify(() => checkConnection.execute(route: second)).called(1);
+      },
+    );
   });
 }
