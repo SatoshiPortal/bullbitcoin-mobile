@@ -18,6 +18,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullInfoCard,
+        BullFadingLinearProgress,
         BullScrollableColumn,
         BullShimmerLine,
         BullSwitch,
@@ -144,6 +145,15 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
               )
             : null,
         title: Text(context.loc.buyInputTitle),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BullFadingLinearProgress(
+            height: 3,
+            trigger: isCreatingOrder,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
+          ),
+        ),
       ),
       body: SafeArea(
         child: BBKeyboardActions(
@@ -187,8 +197,6 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
               Column(
                 mainAxisSize: .min,
                 children: [
-                  if (isCreatingOrder)
-                    const Center(child: CircularProgressIndicator()),
                   if (createOrderError != null)
                     _CreateOrderError(error: createOrderError),
 
