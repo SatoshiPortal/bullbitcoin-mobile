@@ -1,18 +1,18 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/interac_security_details.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 final class InteracSecurityDetailsRepositoryImpl
     implements InteracSecurityDetailsRepository {
-  final RecipientsGatewayPort _recipientsGateway;
+  final RecipientsRepository _recipientsRepository;
   final SettingsRepository _settingsRepository;
 
   const InteracSecurityDetailsRepositoryImpl(
-    this._recipientsGateway,
+    this._recipientsRepository,
     this._settingsRepository,
   );
 
@@ -21,7 +21,7 @@ final class InteracSecurityDetailsRepositoryImpl
     InteracSecurityDetails details,
   ) async {
     // The shared settings repository still throws, so this is the boundary
-    // for it. The gateway call below already returns a Result.
+    // for it. The repository call below already returns a Result.
     final bool isTestnet;
     try {
       isTestnet = (await _settingsRepository.fetch()).environment.isTestnet;
@@ -30,7 +30,7 @@ final class InteracSecurityDetailsRepositoryImpl
       return const Err(RecipientsUnexpectedFailure());
     }
 
-    return _recipientsGateway.updateInteracSecurityDetails(
+    return _recipientsRepository.updateInteracSecurityDetails(
       recipientId: details.recipientId,
       email: details.email,
       securityQuestion: details.securityQuestion,

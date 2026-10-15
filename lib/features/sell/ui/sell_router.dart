@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_external_wallet_network_selection_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_screen.dart';

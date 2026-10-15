@@ -1,17 +1,17 @@
-import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_details_input.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 
 /// Base class for form data from UI layer
 /// Each form submits its specific subtype
-/// Bloc receives base type and transforms to RecipientDetailsDto
+/// Bloc receives base type and transforms to RecipientDetailsInput
 sealed class RecipientFormDataModel {
   final String? label;
   final RecipientType type;
 
   const RecipientFormDataModel({required this.type, this.label});
 
-  /// Transform form data to application DTO
-  RecipientDetailsDto toDto();
+  /// Transform form data to domain input
+  RecipientDetailsInput toInput();
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -35,8 +35,8 @@ class InteracEmailCadFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.interacEmailCad);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       isOwner: isOwner,
       label: label,
@@ -61,8 +61,8 @@ class BillPaymentCadFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.billPaymentCad);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       payeeName: payeeName,
@@ -91,8 +91,8 @@ class BankTransferCadFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.bankTransferCad);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       isOwner: isOwner,
       label: label,
@@ -133,8 +133,8 @@ class SepaEurFormDataModel extends RecipientFormDataModel {
        );
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       isOwner: isOwner,
       label: label,
@@ -162,8 +162,8 @@ class SpeiClabeMxnFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.speiClabeMxn);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       clabe: clabe,
@@ -185,8 +185,8 @@ class SpeiSmsMxnFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.speiSmsMxn);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       institutionCode: institutionCode,
@@ -209,8 +209,8 @@ class SpeiCardMxnFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.speiCardMxn);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       institutionCode: institutionCode,
@@ -235,8 +235,8 @@ class SinpeIbanUsdFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.sinpeIbanUsd);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       iban: iban,
@@ -256,8 +256,8 @@ class SinpeIbanCrcFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.sinpeIbanCrc);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       iban: iban,
@@ -277,8 +277,8 @@ class SinpeMovilCrcFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.sinpeMovilCrc);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       phoneNumber: phoneNumber,
@@ -302,8 +302,8 @@ class BankAccountArgentinaFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.bankAccountArgentina);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       label: label,
       claveUniform: claveUniform,
@@ -334,8 +334,8 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.pseColombia);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       bankCode: bankCode,
       accountType: accountType,
@@ -363,8 +363,8 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
   }) : super(type: RecipientType.nequiColombia);
 
   @override
-  RecipientDetailsDto toDto() {
-    return RecipientDetailsDto(
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
       recipientType: type,
       phoneNumber: phoneNumber,
       documentType: documentType,
