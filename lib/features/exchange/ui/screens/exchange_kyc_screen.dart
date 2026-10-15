@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,11 +31,38 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   String? _basicAuthUsername;
   String? _basicAuthPassword;
 
+  bool _isLoadingConfiguration = true;
+  ExchangeFailure? _configurationFailure;
+
   @override
   void initState() {
     super.initState();
 
-    final settingsState = context.read<SettingsCubit>().state;
+    unawaited(_load());
+  }
+
+  Future<void> _retry() async {
+    setState(() {
+      _isLoadingConfiguration = true;
+      _configurationFailure = null;
+    });
+    await _load();
+  }
+
+  Future<void> _load() async {
+    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
+    if (!mounted) return;
+    final SettingsEntity settingsState;
+    switch (result) {
+      case Ok(:final value):
+        settingsState = value;
+      case Err(:final failure):
+        setState(() {
+          _isLoadingConfiguration = false;
+          _configurationFailure = failure;
+        });
+        return;
+    }
     final isTestnet = settingsState.environment == Environment.testnet;
     _bbKycUrl = isTestnet
         ? ApiServiceConstants.bbKycTestUrl
@@ -173,10 +205,25 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
         platformController.setAllowsBackForwardNavigationGestures(true);
       }
     }
+    setState(() => _isLoadingConfiguration = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingConfiguration) {
+      return const SafeArea(child: Center(child: CircularProgressIndicator()));
+    }
+    if (_configurationFailure case final failure?) {
+      return SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CloseButton(onPressed: context.pop),
+            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+          ],
+        ),
+      );
+    }
     return SafeArea(child: WebViewWidget(controller: _controller));
   }
 }

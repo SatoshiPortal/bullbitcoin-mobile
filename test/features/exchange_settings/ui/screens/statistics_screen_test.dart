@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
+import 'package:bb_mobile/features/exchange_settings/ui/screens/statistics_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,10 +29,7 @@ Future<StatisticsCubit> _pump(
   final router = GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const ExchangeStatisticsScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const StatisticsScreen()),
     ],
   );
   addTearDown(router.dispose);

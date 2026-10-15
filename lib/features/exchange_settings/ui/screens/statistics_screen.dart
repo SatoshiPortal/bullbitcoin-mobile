@@ -11,15 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class ExchangeStatisticsScreen extends StatefulWidget {
-  const ExchangeStatisticsScreen({super.key});
+class StatisticsScreen extends StatefulWidget {
+  const StatisticsScreen({super.key});
 
   @override
-  State<ExchangeStatisticsScreen> createState() =>
-      _ExchangeStatisticsScreenState();
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
+class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();

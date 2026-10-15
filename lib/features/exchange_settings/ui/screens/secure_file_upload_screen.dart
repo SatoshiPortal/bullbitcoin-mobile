@@ -2,20 +2,20 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ExchangeFileUploadScreen extends StatelessWidget {
-  const ExchangeFileUploadScreen({super.key});
+class SecureFileUploadScreen extends StatelessWidget {
+  const SecureFileUploadScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<FileUploadCubit, FileUploadState>(
+    return BlocListener<SecureFileUploadCubit, SecureFileUploadState>(
       listenWhen: (previous, current) =>
           (!previous.uploadComplete && current.uploadComplete),
       listener: (context, state) {
@@ -61,7 +61,7 @@ class _ErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final failure = context.select(
-      (FileUploadCubit cubit) => cubit.state.failure,
+      (SecureFileUploadCubit cubit) => cubit.state.failure,
     );
 
     if (failure == null) return const SizedBox.shrink();
@@ -90,7 +90,7 @@ class _ErrorMessage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.close, color: context.appColors.error, size: 18),
             onPressed: () {
-              context.read<FileUploadCubit>().clearError();
+              context.read<SecureFileUploadCubit>().clearError();
             },
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -107,7 +107,7 @@ class _UploadOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<FileUploadCubit>().state;
+    final state = context.watch<SecureFileUploadCubit>().state;
     final status = state.secureUploadStatus;
 
     // Allow interaction for upload and rejected statuses
@@ -177,7 +177,9 @@ class _UploadOptionCard extends StatelessWidget {
                         status: status,
                         isUploading: state.isUploading,
                         onPressed: () {
-                          context.read<FileUploadCubit>().pickAndUploadFile();
+                          context
+                              .read<SecureFileUploadCubit>()
+                              .pickAndUploadFile();
                         },
                       ),
                   ],
@@ -189,7 +191,7 @@ class _UploadOptionCard extends StatelessWidget {
                 _RejectedStatusWithReupload(
                   isUploading: state.isUploading,
                   onPressed: () {
-                    context.read<FileUploadCubit>().pickAndUploadFile();
+                    context.read<SecureFileUploadCubit>().pickAndUploadFile();
                   },
                 ),
               ],

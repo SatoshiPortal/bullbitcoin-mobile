@@ -8,6 +8,13 @@ extension ExchangeSettingsFailureL10n on ExchangeSettingsFailure {
       context.loc.exchangeSettingsErrorLoadingStatistics,
     ExchangeSettingsAccountUnavailableFailure() =>
       context.loc.exchangeSettingsErrorLoadingAccount,
+    ExchangeSettingsPreferencesSaveFailure() =>
+      context.loc.exchangeErrorSavingPreferences,
+    ExchangeSettingsNetworkFailure() => context.loc.exchangeErrorNetwork,
+    ExchangeSettingsNotAuthenticatedFailure() =>
+      context.loc.exchangeAuthErrorMessage,
+    ExchangeSettingsUploadStatusUnavailableFailure() =>
+      context.loc.exchangeSettingsErrorLoadingAccount,
     ExchangeSettingsDocumentAlreadySubmittedFailure() =>
       context.loc.exchangeSettingsErrorDocumentAlreadySubmitted,
     ExchangeSettingsDocumentEmptyFailure() =>

@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
@@ -175,7 +175,24 @@ class AppRouter {
             ),
           );
         },
-        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
+        routes: [
+          WalletRouter.walletHomeRoute,
+          ...ExchangeRouter.routes(
+            ExchangeRouterConfig(
+              isSuperuser: (context) =>
+                  context.read<SettingsCubit>().state.isSuperuser ?? false,
+              homePath: WalletRoute.walletHome.path,
+              buildHomeCards: () => [
+                locator<LimitOrdersFacade>().buildDashboardCard(),
+              ],
+              onHomeRefresh: () =>
+                  locator<LimitOrdersFacade>().refreshDashboard(),
+              onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+              onOpenSettings: (context) =>
+                  context.pushNamed(SettingsRoute.settings.name),
+            ),
+          ),
+        ],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,

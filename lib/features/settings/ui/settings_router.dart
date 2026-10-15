@@ -7,11 +7,8 @@ import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
@@ -21,16 +18,12 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
@@ -72,9 +65,8 @@ class SettingsRouter {
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
 
-        builder: (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
-          listenWhen: (previous, current) =>
-              !previous.notLoggedIn && current.notLoggedIn,
+        builder: (context, state) => ExchangeSessionListener(
+          listenWhen: (previous, current) => previous && !current,
           listener: (context, state) {
             // Redirect to landing page if the user logged out
             context.goNamed(ExchangeRoute.exchangeLanding.name);
@@ -83,37 +75,12 @@ class SettingsRouter {
         ),
       ),
       GoRoute(
-        name: SettingsRoute.exchangeAccountInfo.name,
-        path: SettingsRoute.exchangeAccountInfo.path,
-        builder: (context, state) => const ExchangeAccountInfoScreen(),
-      ),
-      GoRoute(
         name: SettingsRoute.exchangeSecurity.name,
         path: SettingsRoute.exchangeSecurity.path,
         builder: (context, state) => const ExchangeSecurityScreen(),
       ),
       DefaultWalletsRouter.route,
-      GoRoute(
-        name: SettingsRoute.exchangeAppSettings.name,
-        path: SettingsRoute.exchangeAppSettings.path,
-        builder: (context, state) => const ExchangeAppSettingsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeFileUpload.name,
-        path: SettingsRoute.exchangeFileUpload.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<FileUploadCubit>(),
-          child: const ExchangeFileUploadScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeStatistics.name,
-        path: SettingsRoute.exchangeStatistics.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<StatisticsCubit>(),
-          child: const ExchangeStatisticsScreen(),
-        ),
-      ),
+      ...ExchangeSettingsRouter.routes,
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,
         path: SettingsRoute.exchangeTransactions.path,

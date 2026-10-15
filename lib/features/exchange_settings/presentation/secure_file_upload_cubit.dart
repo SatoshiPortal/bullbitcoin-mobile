@@ -1,20 +1,20 @@
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_settings_account_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-class FileUploadCubit extends Cubit<FileUploadState> {
-  final GetExchangeSettingsAccountUsecase _getExchangeSettingsAccountUsecase;
+class SecureFileUploadCubit extends Cubit<SecureFileUploadState> {
+  final GetSecureFileUploadStatusUsecase _getSecureFileUploadStatusUsecase;
   final UploadExchangeDocumentUsecase _uploadExchangeDocumentUsecase;
 
-  FileUploadCubit({
-    required GetExchangeSettingsAccountUsecase getAccountUsecase,
+  SecureFileUploadCubit({
+    required GetSecureFileUploadStatusUsecase getUploadStatusUsecase,
     required UploadExchangeDocumentUsecase uploadDocumentUsecase,
-  }) : _getExchangeSettingsAccountUsecase = getAccountUsecase,
+  }) : _getSecureFileUploadStatusUsecase = getUploadStatusUsecase,
        _uploadExchangeDocumentUsecase = uploadDocumentUsecase,
-       super(const FileUploadState()) {
+       super(const SecureFileUploadState()) {
     _loadUserData();
   }
 
@@ -64,7 +64,7 @@ class FileUploadCubit extends Cubit<FileUploadState> {
   Future<void> _loadUserData() async {
     emit(state.copyWith(isLoadingUser: true, failure: null));
 
-    final result = await _getExchangeSettingsAccountUsecase.execute();
+    final result = await _getSecureFileUploadStatusUsecase.execute();
     if (isClosed) return;
 
     emit(switch (result) {
@@ -72,7 +72,7 @@ class FileUploadCubit extends Cubit<FileUploadState> {
         isLoadingUser: false,
         isUserDataLoaded: true,
         userId: value.userId,
-        secureFileUploadStatus: value.kycDocumentStatus?.secureFileUpload,
+        secureFileUploadStatus: value.status,
       ),
       Err(:final failure) => state.copyWith(
         isLoadingUser: false,
