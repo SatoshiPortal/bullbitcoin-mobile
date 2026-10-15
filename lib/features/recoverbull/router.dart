@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -72,7 +71,6 @@ class RecoverBullRouter {
           ),
           fetchVaultKeyFromServerUsecase:
               locator<FetchVaultKeyFromServerUsecase>(),
-          decryptVaultUsecase: locator<DecryptVaultUsecase>(),
           restoreVaultUsecase: locator<RestoreVaultUsecase>(),
           connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
           saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),

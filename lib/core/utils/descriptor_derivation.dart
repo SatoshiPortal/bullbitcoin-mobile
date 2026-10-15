@@ -1,62 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 
 class DescriptorDerivation {
-  static Future<String> derivePublicBitcoinDescriptorFromXpriv(
-    String xprv, {
-    required ScriptType scriptType,
-    required bool isTestnet,
-    bool isInternalKeychain = false,
-  }) async {
-    final secretKey = bdk.DescriptorSecretKey.fromString(privateKey: xprv);
-    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
-    final keychain = isInternalKeychain
-        ? bdk.KeychainKind.internal
-        : bdk.KeychainKind.external_;
-    bdk.Descriptor descriptor;
-
-    switch (scriptType) {
-      case ScriptType.bip84:
-        descriptor = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip49:
-        descriptor = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip44:
-        descriptor = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-    }
-
-    // `asString` returns the public descriptor.
-    return descriptor.toString();
-  }
-
-  static Future<String> derivePublicLiquidDescriptorFromMnemonic(
-    String mnemonic, {
-    required ScriptType scriptType,
-    required bool isTestnet,
-  }) async {
-    final lwk.Descriptor confidentialDescriptor =
-        await lwk.Descriptor.newConfidential(
-          network: isTestnet
-              ? lwk.LiquidNetwork.testnet
-              : lwk.LiquidNetwork.mainnet,
-          mnemonic: mnemonic,
-        );
-
-    return confidentialDescriptor.ctDescriptor;
-  }
-
   static Future<String> deriveBitcoinDescriptorFromXpub(
     String xpub, {
     required String fingerprint,

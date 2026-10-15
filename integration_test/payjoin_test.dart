@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -18,7 +18,7 @@ import 'package:bb_mobile/main.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide ScriptType;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +33,7 @@ Future<void> main({bool isInitialized = false}) async {
   }
 
   final walletRepository = locator<WalletRepository>();
-  final seedRepository = locator<SeedRepository>();
+  final secrets = locator<Secrets>();
   final addressRepository = locator<WalletAddressRepository>();
   final utxoRepository = locator<WalletUtxoRepository>();
   final receiverRole = locator<PayjoinReceiver>();
@@ -184,19 +184,25 @@ Future<void> main({bool isInitialized = false}) async {
       final enabled = await policy.setEnabled(true);
       if (enabled case Err(:final failure)) throw failure;
 
-      final receiverSeed = await seedRepository.createFromMnemonic(
-        mnemonicWords: receiverMnemonic!.split(' '),
-      );
-      final senderSeed = await seedRepository.createFromMnemonic(
-        mnemonicWords: senderMnemonic!.split(' '),
-      );
+      final receiverSecret = switch (await secrets.import(
+        words: receiverMnemonic!.split(' '),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
+      final senderSecret = switch (await secrets.import(
+        words: senderMnemonic!.split(' '),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
       receiverWallet = await walletRepository.createWallet(
-        seed: receiverSeed,
+        secret: receiverSecret,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );
       senderWallet = await walletRepository.createWallet(
-        seed: senderSeed,
+        secret: senderSecret,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );

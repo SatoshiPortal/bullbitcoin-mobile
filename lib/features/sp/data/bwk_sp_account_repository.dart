@@ -1,3 +1,4 @@
+import 'package:secrets/secrets.dart' show Secret;
 import 'package:primitives/primitives.dart';
 import 'dart:async';
 
@@ -164,9 +165,9 @@ class BwkSpAccountRepository
   }
 
   @override
-  Future<Result<void, SpFailure>> createFromMnemonic({
+  Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
-    required String mnemonic,
+    required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -179,13 +180,12 @@ class BwkSpAccountRepository
     if (hasSession) {
       return const Err(
         SpSessionBusy(
-          'createFromMnemonic called while a session is live; dispose first',
+          'createFromSecret called while a session is live; dispose first',
         ),
       );
     }
-    // This is the one call that carries the mnemonic across the FFI boundary.
-    // Its failures return fixed text with no error interpolation, so nothing
-    // derived from the argument can ever reach the logs.
+    // The account is opened inside package:secrets, which hands the words to
+    // bwk; this layer never holds them. Failures still return fixed text.
     final String dataDir;
     try {
       dataDir = await _files.dataDir();
@@ -204,9 +204,9 @@ class BwkSpAccountRepository
     await _files.clearStaleLocks();
     final checkpoint = SpConfig.headerCheckpoint(network);
     try {
-      await _ffi.createFromMnemonic(
+      await _ffi.createFromSecret(
         network: SpNetworkMapper.toFfi(network),
-        mnemonic: mnemonic,
+        secret: secret,
         blindbitUrl: blindbitUrl,
         electrumUrl: electrumUrl,
         dataDir: dataDir,
@@ -217,11 +217,11 @@ class BwkSpAccountRepository
             : SpHeaderCheckpointMapper.toFfi(checkpoint),
       );
     } catch (_) {
-      // Fixed text on purpose: see the mnemonic note above.
+      // Fixed text on purpose: see the note above.
       return const Err(SpUnexpected('SP account create failed'));
     }
     // Start the always-on taproot sub-account electrum listener so incoming txs
-    // are pushed without a manual scan. createFromMnemonic does not propagate the
+    // are pushed without a manual scan. createFromSecret does not propagate the
     // electrum URL into the sub-account, so set it first (mirrors the silent
     // wallet). The URL is non-empty by the SpBackendConfig invariant. Failures
     // here must not abort session setup.
@@ -478,7 +478,7 @@ class BwkSpAccountRepository
   }
 
   // Set up the Rust notification forwarding (init) + source listener exactly
-  // once per session. Called from createFromMnemonic so recording (and electrum
+  // once per session. Called from createFromSecret so recording (and electrum
   // pushes) flow as soon as a session exists, independent of any UI subscriber;
   // `init()` is taken-once per account, so doing it here avoids the double-init
   // ("receiver already taken") that broke recording. Each FFI notification is

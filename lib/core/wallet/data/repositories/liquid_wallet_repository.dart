@@ -1,22 +1,22 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 
 class LiquidWalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
+  final Secrets _secrets;
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
+    required this._secrets,
     required LwkWalletDatasource lwkWalletDatasource,
-  }) : _seed = seedDatasource,
-       _lwkWallet = lwkWalletDatasource;
+  }) : _lwkWallet = lwkWalletDatasource;
 
   Future<String> buildPset({
     required String walletId,
@@ -112,20 +112,25 @@ class LiquidWalletRepository {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+    // The mnemonic stays inside `secrets`: it builds the lwk wallet in a
+    // scratch directory it removes afterwards, signs, and returns only
+    // the signed PSET.
+    final fingerprint = metadata.seedFingerprint;
+    if (fingerprint == null) {
+      throw Exception('No secret for wallet: not a seed-derived wallet');
+    }
+    final secret = switch (await _secrets.fetch(fingerprint)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
+    };
 
-    final wallet =
-        WalletModel.privateLwk(
-              id: metadata.id,
-              mnemonic: mnemonic,
-              isTestnet: metadata.isTestnet,
-            )
-            as PrivateLwkWalletModel;
-    final signedPsbt = await _lwkWallet.signPset(wallet: wallet, pset);
-
-    return signedPsbt;
+    return switch (await secret.sign.pset(
+      pset,
+      network: metadata.network.liquid,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('Failed to sign PSET: $failure'),
+    };
   }
 
   Future<int> getAmountSentToAddress({

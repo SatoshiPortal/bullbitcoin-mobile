@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_se
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 class _MockSpFacade extends Mock implements SpFacade {}
 

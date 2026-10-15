@@ -6,8 +6,8 @@ import 'package:meta/meta.dart';
 /// The SP backend config (network + node URLs) bb-mobile persists itself.
 ///
 /// The FFI create path does not write a reloadable config file, so the session
-/// is reconstructed via `createFromMnemonic` from this stored config plus the
-/// wallet mnemonic (matching how the silent wallet rebuilds its account).
+/// is reconstructed via `createFromSecret` from this stored config plus the
+/// wallet's secret (matching how the silent wallet rebuilds its account).
 ///
 /// Pure domain entity: serialization lives in `data/SpBackendConfigModel`.
 ///

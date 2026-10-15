@@ -93,6 +93,12 @@ final class SpBroadcastUncertain extends SpFailure {
   const SpBroadcastUncertain([super.logMessage]);
 }
 
+/// The default wallet's seed has a BIP39 passphrase. bwk derives from the
+/// words alone, so the Silent Payments wallet would not be this seed's.
+final class SpPassphraseUnsupported extends SpFailure {
+  const SpPassphraseUnsupported([super.logMessage]);
+}
+
 /// Catch-all. [Failure.logMessage] is for logs ONLY and MUST never reach the
 /// UI; the presentation extension returns the shared generic string.
 final class SpUnexpected extends SpFailure {

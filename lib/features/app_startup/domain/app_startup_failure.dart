@@ -18,14 +18,29 @@ final class AppStartupWalletCheckFailure extends AppStartupFailure {
   const AppStartupWalletCheckFailure([super.logMessage]);
 }
 
-/// Whether this is a pre-v5 install could not be determined.
-final class AppStartupLegacyCheckFailure extends AppStartupFailure {
-  const AppStartupLegacyCheckFailure([super.logMessage]);
+/// A default wallet's metadata exists but the keystore, read in full, has no
+/// seed under its fingerprint. Never a locked keystore: that one is
+/// [AppStartupKeychainLockedFailure], transient, and waited out.
+///
+/// The way back is the user's backup: the failure screen offers to enter the
+/// recovery phrase again, which is checked against [masterFingerprint].
+final class AppStartupMissingDefaultSecretFailure extends AppStartupFailure {
+  /// The wallet whose seed is gone. A fingerprint, never material.
+  final String masterFingerprint;
+
+  const AppStartupMissingDefaultSecretFailure(this.masterFingerprint)
+    : super(masterFingerprint);
 }
 
-/// The legacy seeds could not be enumerated for the backup screen.
-final class AppStartupLegacySeedsFailure extends AppStartupFailure {
-  const AppStartupLegacySeedsFailure([super.logMessage]);
+/// The recovery phrase entered to restore a missing default secret belongs to
+/// another wallet.
+final class AppStartupRestoreMismatchFailure extends AppStartupFailure {
+  const AppStartupRestoreMismatchFailure([super.logMessage]);
+}
+
+/// The recovery phrase could not be stored again.
+final class AppStartupRestoreFailure extends AppStartupFailure {
+  const AppStartupRestoreFailure([super.logMessage]);
 }
 
 /// Clearing data left behind by a previous install failed.

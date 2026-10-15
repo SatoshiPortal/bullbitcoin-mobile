@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
-import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -266,10 +265,6 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        // Android initializes FSS10 lazily and may spend several seconds in a
-        // cold fsync. When no supported prior-install marker exists, start that
-        // local-only work during the wizard. Upgrade probes stay in Bull.init.
-        unawaited(StorageLocator.prewarmSecureStorage());
         // Wizard runs BEFORE `Bull.init` for everyone — fresh installs
         // and upgrades alike — so consent is collected before
         // migrations / Sentry init / Drift schema work fires off, and

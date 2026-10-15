@@ -497,29 +497,6 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<String> signPset(
-    String pset, {
-    required PrivateLwkWalletModel wallet,
-  }) async {
-    try {
-      final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
-      final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet
-            ? lwk.LiquidNetwork.testnet
-            : lwk.LiquidNetwork.mainnet,
-        pset: pset,
-        mnemonic: wallet.mnemonic,
-      );
-      return signedPset;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   Future<(int, int)> decodeAbsoluteFeesFromPset(String pset) async {
     try {
       final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
