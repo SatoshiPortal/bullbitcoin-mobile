@@ -171,26 +171,19 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     ) when _pendingRoutePreparation != null) {
       _pendingRouteFailureSource = source;
     }
+    // Only a terminal state retires the route. A diagnostic on Connecting is best-effort and often a directory refresh over a live SOCKS route, which the connecting page already rides out with a grace period.
+    // The generation and the key-server status are left alone: a check in flight reports its own failure, and recovery waits for the next user action. A background re-check writing `failure` here would pop the fetch page mid-fetch.
     final route = _flowRoute;
     final invalidated =
         next is tor.TorStopped ||
         next is tor.TorUninitialized ||
-        next is tor.TorUnavailable ||
-        next is tor.TorConnecting && next.diagnostic != null;
+        next is tor.TorUnavailable;
     if (route != null && invalidated) {
-      _routeGeneration++;
       _flowRoute = null;
       await _closeRoute(route);
       if (isClosed || _closingBloc) return;
     }
-    emit(
-      state.copyWith(
-        torConnection: next,
-        keyServerStatus: route != null && invalidated
-            ? KeyServerStatus.unknown
-            : state.keyServerStatus,
-      ),
-    );
+    emit(state.copyWith(torConnection: next));
 
     if (next is tor.TorReady &&
         state.keyServerStatus == KeyServerStatus.unknown &&

@@ -805,14 +805,46 @@ void main() {
         states.add(const TorStopped(TorSource.embedded));
         await pumpEventQueue();
         expect(firstClosed, 1);
+        // Readiness alone does not re-check in the background: a failure written here could pop a page the user is on.
         states.add(TorReady(second.route));
         await pumpEventQueue();
-        expect(acquisitions, 2);
-        verify(() => checkConnection.execute(route: second)).called(1);
+        expect(acquisitions, 1);
+        expect(bloc.state.failure, isNull);
+        verifyNever(() => checkConnection.execute(route: second));
         await states.close();
         await bloc.close();
       },
     );
+
+    test('a diagnostic while connecting keeps the route', () async {
+      final states = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(states.close);
+      addTearDown(bloc.close);
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      const blocked = TorConnecting(
+        source: TorSource.embedded,
+        progress: .42,
+        transport: TorTransport.direct,
+        diagnostic: TorDiagnostic.offline,
+      );
+      states.add(blocked);
+      await pumpEventQueue();
+
+      expect(bloc.state.torConnection, blocked);
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(closed, 0);
+    });
 
     test(
       'an old check cannot replace the result of a restarted route',
