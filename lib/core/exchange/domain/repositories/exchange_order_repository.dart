@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 abstract class ExchangeOrderRepository {
@@ -32,6 +33,7 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
   });

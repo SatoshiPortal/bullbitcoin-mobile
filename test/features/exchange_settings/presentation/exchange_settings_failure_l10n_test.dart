@@ -16,6 +16,10 @@ const _rawReason =
 const _everyFailure = <ExchangeSettingsFailure>[
   ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
   ExchangeSettingsAccountUnavailableFailure(_rawReason),
+  ExchangeSettingsPreferencesSaveFailure(_rawReason),
+  ExchangeSettingsNetworkFailure(_rawReason),
+  ExchangeSettingsNotAuthenticatedFailure(_rawReason),
+  ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
   ExchangeSettingsDocumentAlreadySubmittedFailure(_rawReason),
   ExchangeSettingsDocumentEmptyFailure(_rawReason),
   ExchangeSettingsDocumentTooLargeFailure(_rawReason),

@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +21,9 @@ import 'package:mocktail/mocktail.dart';
 class _MockGateway extends Mock implements RecipientsGatewayPort {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockSepaVirtualPayeeRepository extends Mock
+    implements SepaVirtualPayeeRepository {}
 
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
@@ -98,6 +102,7 @@ void main() {
       final result =
           await AddRecipientUsecase(
             recipientsGateway: gateway,
+            sepaVirtualPayeeRepository: _MockSepaVirtualPayeeRepository(),
             getRecipientsEnvironmentUsecase: environment,
           ).execute(
             AddRecipientParams(
@@ -190,6 +195,7 @@ void main() {
     // which is user-reachable, and used to hang the Continue button.
     final usecase = AddRecipientUsecase(
       recipientsGateway: gateway,
+      sepaVirtualPayeeRepository: _MockSepaVirtualPayeeRepository(),
       getRecipientsEnvironmentUsecase: environment,
     );
 

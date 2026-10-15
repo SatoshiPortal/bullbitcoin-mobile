@@ -25,8 +25,8 @@ abstract class StatisticsState with _$StatisticsState {
   List<String> get formattedBuyVolume =>
       _formatAmounts(orderStats?.bitcoinBuyVolume);
 
-  List<String> get formattedBuyTradeCount =>
-      _formatTradeCounts(orderStats?.bitcoinBuyTradeCount);
+  List<AmountByCurrencyCode> get buyTradeCounts =>
+      orderStats?.bitcoinBuyTradeCount ?? const [];
 
   List<String> get formattedAvgBuyPrice =>
       _formatAmounts(orderStats?.averageBitcoinBuyPrice);
@@ -35,8 +35,8 @@ abstract class StatisticsState with _$StatisticsState {
   List<String> get formattedSellVolume =>
       _formatAmounts(orderStats?.bitcoinSellVolume);
 
-  List<String> get formattedSellTradeCount =>
-      _formatTradeCounts(orderStats?.bitcoinSellTradeCount);
+  List<AmountByCurrencyCode> get sellTradeCounts =>
+      orderStats?.bitcoinSellTradeCount ?? const [];
 
   List<String> get formattedAvgSellPrice =>
       _formatAmounts(orderStats?.averageBitcoinSellPrice);
@@ -68,14 +68,6 @@ abstract class StatisticsState with _$StatisticsState {
     if (amounts == null || amounts.isEmpty) return ['0'];
 
     return amounts.map((a) => FormatAmount.fiat(a.value, a.currency)).toList();
-  }
-
-  List<String> _formatTradeCounts(List<AmountByCurrencyCode>? counts) {
-    if (counts == null || counts.isEmpty) return ['0 trades'];
-
-    return counts
-        .map((c) => '${c.value.toInt()} trades (${c.currency})')
-        .toList();
   }
 }
 

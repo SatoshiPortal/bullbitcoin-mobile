@@ -54,7 +54,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     final _ = await _watchExchangeNotificationsUsecase.reconnect();
   }
 
-  Future<void> fetchUserSummary({bool force = false}) async {
+  Future<void> fetchUserSummary() async {
     emit(state.copyWith(getUserSummaryFailure: null));
 
     final result = await _getExchangeAccountUsecase.execute();
@@ -65,20 +65,11 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         emit(state.copyWith(getUserSummaryFailure: failure));
         return;
       case Ok(:final value):
-        emit(
-          force
-              ? state.copyWith(
-                  userSummary: value,
-                  selectedLanguage: value.language,
-                  selectedCurrency: value.currency,
-                  selectedEmailNotifications: value.emailNotificationsEnabled,
-                )
-              : state.copyWith(userSummary: value),
-        );
+        emit(state.copyWith(userSummary: value));
     }
 
     // Not awaited: the banner is decorative, and callers that await this
-    // (login, stopDca, savePreferences) must not wait on it.
+    // (login, stopDca) must not wait on it.
     unawaited(loadAnnouncements());
   }
 
@@ -94,49 +85,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
 
     await fetchUserSummary();
-  }
-
-  void updateSelectedLanguage(String? language) {
-    emit(state.copyWith(selectedLanguage: language));
-  }
-
-  void updateSelectedCurrency(String? currency) {
-    emit(state.copyWith(selectedCurrency: currency));
-  }
-
-  void updateSelectedEmailNotifications(bool enabled) {
-    emit(state.copyWith(selectedEmailNotifications: enabled));
-  }
-
-  Future<void> savePreferences() async {
-    if (state.selectedLanguage == null && state.selectedCurrency == null) {
-      return;
-    }
-
-    emit(state.copyWith(isSaving: true, savePreferencesFailure: null));
-
-    // Only the fields this screen edits: the use-case fills the DCA and
-    // AutoBuy flags from a fresh summary, so stale state cannot clobber them.
-    final result = await _saveExchangePreferencesUsecase.execute(
-      language: state.selectedLanguage,
-      currency: state.selectedCurrency,
-      emailNotificationsEnabled: state.selectedEmailNotifications,
-    );
-    if (isClosed) return;
-
-    switch (result) {
-      case Err(:final failure):
-        emit(state.copyWith(isSaving: false, savePreferencesFailure: failure));
-        return;
-      case Ok():
-        emit(state.copyWith(isSaving: false));
-    }
-
-    await fetchUserSummary(force: true);
-  }
-
-  void clearSavePreferencesFailure() {
-    emit(state.copyWith(savePreferencesFailure: null));
   }
 
   void clearStopDcaFailure() {
@@ -193,14 +141,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     emit(
       state.copyWith(
         userSummary: null,
-        selectedLanguage: null,
-        selectedCurrency: null,
-        selectedEmailNotifications: null,
         // Every failure belonged to the session that just ended. Leaving one
         // behind would re-show its banner to whoever signs in next.
         getUserSummaryFailure: null,
         saveApiKeyFailure: null,
-        savePreferencesFailure: null,
         stopDcaFailure: null,
         logoutFailure: null,
       ),

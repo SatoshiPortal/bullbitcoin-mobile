@@ -30,6 +30,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? debitcard,
     bool? isOwner,
     String? bankAccount,
+    @Default(false) bool isVirtualPayeeActive,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
@@ -73,6 +74,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         return null;
 
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         if (name != null && name!.isNotEmpty) return name!;
         if (firstname != null && lastname != null) {
           return '$firstname $lastname';

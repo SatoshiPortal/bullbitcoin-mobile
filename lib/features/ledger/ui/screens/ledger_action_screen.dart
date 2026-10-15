@@ -11,15 +11,10 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
@@ -30,7 +25,16 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInstructionsSheet, BullSelectableList, BullSelectableListItem, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInstructionsSheet,
+        BullSelectableList,
+        BullSelectableListItem,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -97,7 +101,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: widget.action.getTitle(context),
           color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
@@ -110,9 +114,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             context.read<LedgerOperationCubit>().reset();
             _handleSuccess(context, state.result);
           } else if (state.isError) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              _getErrorMessage(context, state.failure),
+              message: _getErrorMessage(context, state.failure),
             );
           }
         },
@@ -143,13 +147,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       children: [
         _buildnIconsForState(context, state),
         const Gap(24),
-        BBText(
+        BullText(
           _getMainTextForState(context, state),
           textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
-        BBText(
+        BullText(
           _getSubTextForState(context, state),
           textAlign: .center,
           color: context.appColors.textMuted,
@@ -215,14 +219,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     return Column(
       children: [
         if (state.isInitial)
-          BBButton.big(
+          BullButton.big(
             onPressed: () => _startOperation(context),
             label: widget.action.getButtonText(context),
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
-          BBButton.big(
+          BullButton.big(
             onPressed: () => context.read<LedgerOperationCubit>().reset(),
             label: context.loc.ledgerButtonTryAgain,
             bgColor: context.appColors.primary,
@@ -230,7 +234,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           ),
           if (state.failure is LedgerPermissionDeniedFailure) ...[
             const Gap(16),
-            BBButton.big(
+            BullButton.big(
               onPressed: () => _openAppSettings(),
               label: context.loc.ledgerButtonManagePermissions,
               bgColor: context.appColors.onSurface,
@@ -240,7 +244,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         ],
         const Gap(16),
         if (state.isInitial || state.isError)
-          BBButton.small(
+          BullButton.small(
             label: context.loc.ledgerButtonNeedHelp,
             onPressed: () => _showInstructions(context),
             bgColor: context.appColors.surface,
@@ -258,7 +262,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
 
     return Column(
       children: [
-        BBText(
+        BullText(
           context.loc.ledgerVerifyAddressLabel,
           style: context.font.bodyMedium,
           color: context.appColors.textMuted,
@@ -289,7 +293,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   Widget _buildScriptTypeButton(BuildContext context) {
     return Column(
       children: [
-        BBText(
+        BullText(
           context.loc.ledgerWalletTypeLabel,
           style: context.font.bodyMedium,
           color: context.appColors.textMuted,
@@ -316,7 +320,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                   mainAxisAlignment: .spaceBetween,
                   children: [
                     Expanded(
-                      child: BBText(
+                      child: BullText(
                         _getScriptTypeDisplayName(context, _selectedScriptType),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: .w500,
@@ -374,7 +378,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       ),
     ];
 
-    final selected = await BlurredBottomSheet.show<String>(
+    final selected = await BullBottomSheet.show<String>(
       context: context,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -384,7 +388,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
               crossAxisAlignment: .stretch,
               children: [
                 const Gap(16),
-                BBText(
+                BullText(
                   context.loc.ledgerWalletTypeSelectTitle,
                   style: context.font.headlineMedium,
                 ),
@@ -564,9 +568,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case SignTransactionLedgerAction():
         context.pop(result);
       case VerifyAddressLedgerAction():
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          context.loc.ledgerSuccessAddressVerified,
+          message: context.loc.ledgerSuccessAddressVerified,
         );
         context.pop();
     }

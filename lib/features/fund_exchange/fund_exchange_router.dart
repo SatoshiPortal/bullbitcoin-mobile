@@ -17,6 +17,8 @@ import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +33,7 @@ enum FundExchangeRoute {
   fundExchangeCanadaPost('/fund-exchange-canada-post'),
   fundExchangeInstantSepa('/fund-exchange-instant-sepa'),
   fundExchangeRegularSepa('/fund-exchange-regular-sepa'),
+  fundExchangeConfidentialSepa('/fund-exchange-confidential-sepa'),
   fundExchangeSpeiTransfer('/fund-exchange-spei-transfer'),
   fundExchangeSinpe('/fund-exchange-sinpe'),
   fundExchangeCostaRicaIbanCrc('/fund-exchange-cr-iban-crc'),
@@ -169,6 +172,24 @@ class FundExchangeRouter {
     ),
     // Funding detail routes at top level so navigating to them with goNamed
     // does not rebuild the /fund-exchange parent route and re-trigger _onStarted.
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeConfidentialSepa.name,
+      path: FundExchangeRoute.fundExchangeConfidentialSepa.path,
+      builder: (context, state) {
+        final bloc = state.extra! as FundExchangeBloc;
+        return VirtualIbanFundingScreen(
+          onUseRegularSepa: () {
+            context.pop();
+            bloc.add(
+              const FundExchangeEvent.fundingDetailsRequested(
+                fundingMethod: RegularSepa(),
+              ),
+            );
+          },
+          onDone: () => context.goNamed(ExchangeRoute.exchangeHome.name),
+        );
+      },
+    ),
     GoRoute(
       name: FundExchangeRoute.fundExchangeEmailETransfer.name,
       path: FundExchangeRoute.fundExchangeEmailETransfer.path,

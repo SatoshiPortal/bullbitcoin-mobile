@@ -5,6 +5,10 @@ sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     String? preferredJurisdiction,
     String? jurisdictionFilter,
+    @Default(ConfidentialSepaAvailability.unavailable)
+    ConfidentialSepaAvailability confidentialSepaAvailability,
+    AccountOwnerName? accountOwnerName,
+    @Default(RecipientType.sepaEur) RecipientType sepaType,
     @Default('') String searchQuery,
     @Default(false) bool isLoadingRecipients,
     RecipientsFailure? failedToLoadRecipients,
@@ -37,8 +41,23 @@ sealed class RecipientsState with _$RecipientsState {
     return loadedPages * RecipientsBloc.pageSize < totalRecipients!;
   }
 
-  Set<RecipientType> get selectableRecipientTypes =>
-      allowedRecipientFilters.types.toSet();
+  Set<RecipientType> get selectableRecipientTypes => allowedRecipientFilters
+      .types
+      .where(
+        (type) =>
+            type != RecipientType.confidentialSepaEur ||
+            confidentialSepaAvailability !=
+                ConfidentialSepaAvailability.unavailable,
+      )
+      .toSet();
+
+  /// Regular and Confidential SEPA list the same accounts, so a list that
+  /// offers both shows one route at a time.
+  bool get canChooseSepaType =>
+      selectableRecipientTypes.contains(RecipientType.sepaEur) &&
+      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur) &&
+      (jurisdictionFilter == null ||
+          jurisdictionFilter == RecipientType.sepaEur.jurisdictionCode);
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 

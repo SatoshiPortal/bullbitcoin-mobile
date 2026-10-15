@@ -56,6 +56,7 @@ class RecipientSelectionScreen extends StatelessWidget {
       phoneNumber: recipient.phoneNumber,
       debitcard: recipient.debitcard,
       bankAccount: recipient.bankAccount,
+      isVirtualPayeeActive: recipient.isVirtualPayeeActive,
     );
   }
 }

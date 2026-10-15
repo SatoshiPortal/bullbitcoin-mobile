@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -535,6 +536,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
   }) async {
@@ -555,6 +557,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
         fiatAmount: fiatAmount,
         recipientId: recipientId,
+        paymentProcessor: paymentProcessor,
         securityQuestion: securityQuestion,
         securityAnswer: securityAnswer,
       );
@@ -565,6 +568,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on BullBitcoinApiMinAmountException {
       rethrow;
     } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
       rethrow;
     } on ApiKeyException {
       rethrow;

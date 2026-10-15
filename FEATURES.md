@@ -31,6 +31,8 @@ graph TB
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
+    EXCHANGE_SETTINGS[Exchange Settings]
+    EXCHANGE_SUPPORT_CHAT[Exchange Support Chat]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
     ADDRESS_MGMT[Address Management]
@@ -100,13 +102,30 @@ graph TB
     COINS --> WALLETS
     DCA --> RECEIVE
     SETTINGS --> DEFAULT_WALLETS
-    EXCHANGE --> SETTINGS
+    SETTINGS --> EXCHANGE
+    SETTINGS --> EXCHANGE_SETTINGS
+    EXCHANGE_SETTINGS --> EXCHANGE
     EXCHANGE --> AUTOBUY
-    EXCHANGE --> LIMIT_ORDERS
+    LIMIT_ORDERS --> EXCHANGE
+    EXCHANGE --> EXCHANGE_SUPPORT_CHAT
+    EXCHANGE --> BTC_PRICE
+    EXCHANGE --> DCA
+    EXCHANGE --> FUNDING
+    EXCHANGE --> TX_HISTORY
+    EXCHANGE --> WITHDRAWAL
+    SETTINGS --> EXCHANGE_SUPPORT_CHAT
+    WALLETS --> EXCHANGE_SUPPORT_CHAT
+    SWAPS --> EXCHANGE_SUPPORT_CHAT
+    DCA --> EXCHANGE
+    PAY --> EXCHANGE
+    TX_HISTORY --> EXCHANGE
+    WALLETS --> EXCHANGE
+    WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS --> DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING
     FEES --> NETWORK
     FUNDING --> EXCHANGE
+    FUNDING --> RECIPIENTS
     HW_WALLETS --> CORE
     LABELS --> CORE
     PAY --> RECIPIENTS
@@ -172,7 +191,7 @@ graph TB
 
     class CORE coreStyle
     class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -234,7 +253,7 @@ graph TB
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
-- **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
+- **Settings**: Used by Wallets, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 

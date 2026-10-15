@@ -11,15 +11,10 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_useca
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
 import 'package:bb_mobile/features/bitbox/presentation/bitbox_failure_l10n.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart';
@@ -30,7 +25,16 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInstructionsSheet, BullSelectableList, BullSelectableListItem, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInstructionsSheet,
+        BullSelectableList,
+        BullSelectableListItem,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -90,7 +94,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: widget.action.toTitle(context),
           color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
@@ -99,9 +103,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       body: BlocConsumer<BitBoxOperationCubit, BitBoxOperationState>(
         listener: (context, state) {
           if (state.isSuccess) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              widget.action.toSuccessText(context),
+              message: widget.action.toSuccessText(context),
             );
             if (widget.action == const BitBoxAction.importWallet()) {
               if (state.result is WatchOnlyWalletEntity &&
@@ -145,13 +149,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       children: [
         _buildIconsForState(context, state),
         const Gap(24),
-        BBText(
+        BullText(
           _getMainTextForState(context, state),
           textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
-        BBText(
+        BullText(
           _getSubTextForState(context, state),
           textAlign: .center,
           color: context.appColors.textMuted,
@@ -224,7 +228,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               ),
             ],
           ),
-          child: BBText(
+          child: BullText(
             state.result?.toString() ?? '',
             textAlign: .center,
             style: context.font.headlineMedium?.copyWith(
@@ -236,7 +240,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
         ),
         const Gap(20),
-        BBText(
+        BullText(
           context.loc.bitboxScreenWaitingConfirmation,
           textAlign: TextAlign.center,
           color: context.appColors.textMuted.withValues(alpha: 0.7),
@@ -285,7 +289,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
     return Column(
       children: [
-        BBText(
+        BullText(
           context.loc.bitboxScreenAddressToVerify,
           style: context.font.bodyMedium,
           color: context.appColors.textMuted.withValues(alpha: 0.8),
@@ -326,7 +330,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
         ),
         const Gap(12),
-        BBText(
+        BullText(
           context.loc.bitboxScreenVerifyOnDevice,
           style: context.font.bodySmall,
           color: context.appColors.textMuted.withValues(alpha: 0.6),
@@ -457,7 +461,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         constraints: const BoxConstraints(maxWidth: 420),
         child: Column(
           children: [
-            BBText(
+            BullText(
               context.loc.bitboxScreenWalletTypeLabel,
               style: context.font.bodyMedium,
               color: context.appColors.textMuted,
@@ -484,7 +488,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       mainAxisAlignment: .spaceBetween,
                       children: [
                         Expanded(
-                          child: BBText(
+                          child: BullText(
                             _getScriptTypeDisplayName(
                               context,
                               _selectedScriptType,
@@ -541,7 +545,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       ),
     ];
 
-    final selected = await BlurredBottomSheet.show<String>(
+    final selected = await BullBottomSheet.show<String>(
       context: context,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -551,7 +555,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               crossAxisAlignment: .stretch,
               children: [
                 const Gap(16),
-                BBText(
+                BullText(
                   context.loc.bitboxScreenSelectWalletType,
                   style: context.font.headlineMedium,
                 ),
@@ -615,14 +619,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     return Column(
       children: [
         if (state.isInitial)
-          BBButton.big(
+          BullButton.big(
             onPressed: () => _executeAction(context),
             label: widget.action.toButtonText(context),
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
-          BBButton.big(
+          BullButton.big(
             onPressed: () => context.read<BitBoxOperationCubit>().reset(),
             label: context.loc.bitboxScreenTryAgainButton,
             bgColor: context.appColors.primary,
@@ -630,7 +634,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
           if (state.failure case PermissionDeniedBitBoxFailure()) ...[
             const Gap(16),
-            BBButton.big(
+            BullButton.big(
               onPressed: () => _openAppSettings(),
               label: context.loc.bitboxScreenManagePermissionsButton,
               bgColor: context.appColors.onSurface,
@@ -640,7 +644,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         ],
         const Gap(16),
         if (state.isInitial || state.isError)
-          BBButton.small(
+          BullButton.small(
             label: context.loc.bitboxScreenNeedHelpButton,
             onPressed: () => _showInstructions(context),
             bgColor: context.appColors.surface,

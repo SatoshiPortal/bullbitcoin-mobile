@@ -10,10 +10,33 @@ final class ExchangeSettingsStatisticsUnavailableFailure
   const ExchangeSettingsStatisticsUnavailableFailure([super.logMessage]);
 }
 
-/// The account details backing the upload screen could not be retrieved.
+/// The exchange account details could not be retrieved.
 final class ExchangeSettingsAccountUnavailableFailure
     extends ExchangeSettingsFailure {
   const ExchangeSettingsAccountUnavailableFailure([super.logMessage]);
+}
+
+/// The exchange preferences could not be saved.
+final class ExchangeSettingsPreferencesSaveFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsPreferencesSaveFailure([super.logMessage]);
+}
+
+/// The exchange could not be reached.
+final class ExchangeSettingsNetworkFailure extends ExchangeSettingsFailure {
+  const ExchangeSettingsNetworkFailure([super.logMessage]);
+}
+
+/// The exchange session is missing or expired.
+final class ExchangeSettingsNotAuthenticatedFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsNotAuthenticatedFailure([super.logMessage]);
+}
+
+/// The secure file upload status could not be retrieved.
+final class ExchangeSettingsUploadStatusUnavailableFailure
+    extends ExchangeSettingsFailure {
+  const ExchangeSettingsUploadStatusUnavailableFailure([super.logMessage]);
 }
 
 /// A document has already been submitted, so no further upload is accepted.

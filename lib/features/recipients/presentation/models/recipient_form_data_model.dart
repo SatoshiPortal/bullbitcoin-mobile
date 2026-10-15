@@ -124,8 +124,13 @@ class SepaEurFormDataModel extends RecipientFormDataModel {
     this.firstname,
     this.lastname,
     this.corporateName,
+    bool isConfidential = false,
     super.label,
-  }) : super(type: RecipientType.sepaEur);
+  }) : super(
+         type: isConfidential
+             ? RecipientType.confidentialSepaEur
+             : RecipientType.sepaEur,
+       );
 
   @override
   RecipientDetailsDto toDto() {

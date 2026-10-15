@@ -39,6 +39,13 @@ final class WithdrawAboveMaxAmountFailure extends WithdrawFailure {
   }) : super(logMessage);
 }
 
+/// The API refused a Confidential SEPA withdrawal because the recipient's
+/// virtual payee is not active yet.
+final class WithdrawConfidentialSepaNotActivatedFailure
+    extends WithdrawFailure {
+  const WithdrawConfidentialSepaNotActivatedFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation
