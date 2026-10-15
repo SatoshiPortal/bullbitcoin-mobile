@@ -235,12 +235,6 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
 }
 
 extension SellPaymentStateX on SellPaymentState {
-  bool get isPayjoinAmountAllowed => PayjoinPolicy.allowsExchangeAmount(
-    ConvertAmount.btcToSats(sellOrder.payinAmount),
-  );
-
-  bool get shouldUsePayjoin => isPayjoinEnabled && isPayjoinAmountAllowed;
-
   /// The payin transaction is already broadcast, so preparing, signing and
   /// broadcasting again would risk paying the order twice.
   bool get isPayinBroadcast => payinBroadcastTxid != null;

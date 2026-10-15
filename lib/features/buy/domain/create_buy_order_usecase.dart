@@ -72,8 +72,7 @@ class CreateBuyOrderUsecase {
           !isLiquid &&
           payjoinEnabled &&
           payjoinWalletId != null &&
-          payjoinAmountSat != null &&
-          PayjoinPolicy.allowsExchangeAmount(payjoinAmountSat);
+          payjoinAmountSat != null;
 
       String? payjoinId;
       String? payjoinBip21;

@@ -40,39 +40,17 @@ void main() {
   });
 
   group('BuyState Payjoin choice', () {
-    test('requires at least 50000 sats for an exchange Payjoin', () {
+    test('keeps Payjoin enabled below 50000 sats', () {
       final state = BuyState(
         userSummary: userSummary,
         selectedWallet: bitcoinWallet,
         payjoinGloballyEnabled: true,
         isFiatCurrencyInput: false,
         bitcoinUnit: BitcoinUnit.sats,
-        amountInput: '49999',
+        amountInput: '10000',
       );
-
-      expect(state.shouldUsePayjoin, isFalse);
-      expect(state.copyWith(amountInput: '50000').shouldUsePayjoin, isTrue);
-      expect(state.copyWith(amountInput: '50001').shouldUsePayjoin, isTrue);
-      expect(
-        state
-            .copyWith(
-              isFiatCurrencyInput: true,
-              amountInput: '49.99',
-              exchangeRate: 100000,
-            )
-            .shouldUsePayjoin,
-        isFalse,
-      );
-      expect(
-        state
-            .copyWith(
-              isFiatCurrencyInput: true,
-              amountInput: '50',
-              exchangeRate: 100000,
-            )
-            .shouldUsePayjoin,
-        isTrue,
-      );
+      expect(state.shouldUsePayjoin, isTrue);
+      expect(state.copyWith(isPayjoinEnabled: false).shouldUsePayjoin, isFalse);
     });
 
     test(

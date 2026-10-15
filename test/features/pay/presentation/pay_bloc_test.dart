@@ -199,25 +199,6 @@ void main() {
         bitcoinTxSize: 110,
       );
 
-  test('pay Payjoin follows the current quote and preserves an opt-out', () {
-    final current = bloc.state as PayPaymentState;
-    for (final sats in [49999, 50000, 50001]) {
-      when(() => payOrder.payinAmount).thenReturn(sats / 100000000);
-      expect(current.shouldUsePayjoin, sats >= 50000);
-    }
-    expect(current.copyWith(isPayjoinEnabled: false).shouldUsePayjoin, isFalse);
-    when(() => payOrder.payinAmount).thenReturn(0.00049999);
-    expect(current.shouldUsePayjoin, isFalse);
-  });
-
-  test('cannot enable Payjoin for a bill payment below 50000 sats', () async {
-    when(() => payOrder.payinAmount).thenReturn(0.00049999);
-    bloc.add(const PayEvent.payjoinToggled(true));
-    await Future<void>.delayed(Duration.zero);
-
-    expect((bloc.state as PayPaymentState).isPayjoinEnabled, isFalse);
-  });
-
   setUpAll(() {
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
@@ -333,37 +314,6 @@ void main() {
   });
 
   tearDown(() => bloc.close());
-
-  test(
-    'pay below the minimum broadcasts normally despite an enabled preference',
-    () async {
-      when(() => payOrder.payinAmount).thenReturn(0.00049999);
-      when(() => payOrder.bip21URI).thenReturn(
-        'bitcoin:bc1q0000000000000000000000000000000000000'
-        '?amount=0.00049999&pj=https://payjo.in/session',
-      );
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
-      bloc.add(const PayEvent.sendPaymentConfirmed());
-      await untilCalled(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
-      ).timeout(const Duration(seconds: 2));
-      verifyNever(
-        () => sendWithPayjoin.execute(
-          walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
-          bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-          amountSat: any(named: 'amountSat'),
-          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-          expireAfterSec: any(named: 'expireAfterSec'),
-        ),
-      );
-      await Future<void>.delayed(const Duration(seconds: 6));
-    },
-    timeout: const Timeout(Duration(seconds: 15)),
-  );
 
   group('PayBloc — broadcast latch', () {
     test(
@@ -699,6 +649,14 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+    });
+
+    test('Payjoin can be enabled below 50000 sats', () async {
+      when(() => payOrder.payinAmount).thenReturn(0.0001);
+      bloc.seed(paymentState().copyWith(isPayjoinEnabled: false));
+      bloc.add(const PayEvent.payjoinToggled(true));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect((bloc.state as PayPaymentState).isPayjoinEnabled, isTrue);
     });
 
     test('Payjoin toggle is ignored while confirmation is in flight', () async {

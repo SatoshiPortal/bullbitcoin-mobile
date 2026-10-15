@@ -33,11 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
-    show
-        PayjoinPolicy,
-        PayjoinSenderSession,
-        PayjoinSession,
-        PayjoinSessionWindow;
+    show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart';
@@ -604,7 +600,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             payjoinBip21 == null || confirmationDeadline == null
             ? null
             : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
-        if (payPaymentState.shouldUsePayjoin &&
+        if (payPaymentState.isPayjoinEnabled &&
             payjoinWindow != null &&
             payjoinBip21 != null) {
           final PayjoinSenderSession payjoinSender;
@@ -775,11 +771,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
       return;
     }
-    emit(
-      paymentState.copyWith(
-        isPayjoinEnabled: event.enabled && paymentState.isPayjoinAmountAllowed,
-      ),
-    );
+    emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
   }
 
   // From Sell: Poll for order status

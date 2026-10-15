@@ -83,13 +83,7 @@ class PaySendPaymentScreen extends StatelessWidget {
     );
     final isPayjoinEnabled = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).shouldUsePayjoin
-          : false,
-    );
-
-    final isPayjoinAmountAllowed = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).isPayjoinAmountAllowed
+          ? (bloc.state as PayPaymentState).isPayjoinEnabled
           : false,
     );
 
@@ -245,8 +239,7 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             if (wallet != null &&
                 !wallet.isLiquid &&
-                order != null &&
-                (!isPayjoinAmountAllowed || order.payjoinBip21 != null))
+                order?.payjoinBip21 != null)
               Row(
                 children: [
                   Expanded(
@@ -257,19 +250,10 @@ class PaySendPaymentScreen extends StatelessWidget {
                   ),
                   BullSwitch(
                     value: isPayjoinEnabled,
-                    onChanged:
-                        isConfirmingPayment ||
-                            isPayinBroadcast ||
-                            !isPayjoinAmountAllowed
+                    onChanged: isConfirmingPayment || isPayinBroadcast
                         ? null
                         : (enabled) => context.read<PayBloc>().add(
                             PayEvent.payjoinToggled(enabled),
-                          ),
-                    onDisabledTap: isConfirmingPayment || isPayinBroadcast
-                        ? null
-                        : () => SnackBarUtils.showSnackBar(
-                            context,
-                            context.loc.payjoinExchangeMinimumAmount,
                           ),
                   ),
                 ],

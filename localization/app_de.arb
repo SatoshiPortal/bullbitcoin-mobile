@@ -5092,6 +5092,5 @@
   "settingsPayjoinExpireMinutesDescription": "Wie lange eine Payjoin-Sitzung geöffnet bleibt, bevor zu einer regulären Zahlung gewechselt wird.",
   "settingsPayjoinExpireMinutesRangeError": "Der Wert muss zwischen {min} und {max} Minuten liegen",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "Min.",
-  "payjoinExchangeMinimumAmount": "Der Mindestbetrag für Payjoin mit der Börse beträgt 50.000 sats."
+  "settingsPayjoinMinutesUnit": "Min."
 }

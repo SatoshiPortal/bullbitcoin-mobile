@@ -15683,9 +15683,5 @@
   "settingsPayjoinMinutesUnit": "min",
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
-  },
-  "payjoinExchangeMinimumAmount": "The minimum amount for Payjoin with the exchange is 50,000 sats.",
-  "@payjoinExchangeMinimumAmount": {
-    "description": "Snackbar shown when trying to enable Payjoin for an exchange buy, sell or bill payment below 50000 sats"
   }
 }

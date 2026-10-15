@@ -335,59 +335,6 @@ void main() {
 
   tearDown(() => bloc.close());
 
-  test(
-    'sell below the minimum broadcasts normally despite an enabled preference',
-    () async {
-      when(() => sellOrder.payinAmount).thenReturn(0.00049999);
-      when(() => sellOrder.bip21URI).thenReturn(
-        'bitcoin:bc1q0000000000000000000000000000000000000'
-        '?amount=0.00049999&pj=https://payjo.in/session',
-      );
-      when(
-        () => sellOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
-      bloc.add(const SellEvent.sendPaymentConfirmed());
-      await untilCalled(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
-      ).timeout(const Duration(seconds: 2));
-      verifyNever(
-        () => sendWithPayjoin.execute(
-          walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
-          bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-          amountSat: any(named: 'amountSat'),
-          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-          expireAfterSec: any(named: 'expireAfterSec'),
-        ),
-      );
-      await Future<void>.delayed(const Duration(seconds: 6));
-    },
-    timeout: const Timeout(Duration(seconds: 15)),
-  );
-
-  test('sell Payjoin follows the current quote and preserves an opt-out', () {
-    final current = bloc.state as SellPaymentState;
-    for (final sats in [49999, 50000, 50001]) {
-      when(() => sellOrder.payinAmount).thenReturn(sats / 100000000);
-      expect(current.shouldUsePayjoin, sats >= 50000);
-    }
-    expect(current.copyWith(isPayjoinEnabled: false).shouldUsePayjoin, isFalse);
-    when(() => sellOrder.payinAmount).thenReturn(0.00049999);
-    expect(current.shouldUsePayjoin, isFalse);
-  });
-
-  test('cannot enable Payjoin for a sell below 50000 sats', () async {
-    when(() => sellOrder.payinAmount).thenReturn(0.00049999);
-    bloc.add(const SellEvent.payjoinToggled(true));
-    await Future<void>.delayed(Duration.zero);
-
-    expect((bloc.state as SellPaymentState).isPayjoinEnabled, isFalse);
-  });
-
   group('SellBloc — broadcast latch', () {
     test('audit reproducer (H6): a wallet selection during confirmation '
         'is ignored', () async {
@@ -407,6 +354,16 @@ void main() {
             'onto a different order',
       );
       expect((bloc.state as SellPaymentState).isConfirmingPayment, isTrue);
+    });
+
+    test('Payjoin can be enabled below 50000 sats', () async {
+      when(() => sellOrder.payinAmount).thenReturn(0.0001);
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
+      );
+      bloc.add(const SellEvent.payjoinToggled(true));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect((bloc.state as SellPaymentState).isPayjoinEnabled, isTrue);
     });
 
     test('Payjoin toggle is ignored while confirmation is in flight', () async {

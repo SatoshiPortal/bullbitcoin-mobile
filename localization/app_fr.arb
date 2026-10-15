@@ -4959,6 +4959,5 @@
   "settingsPayjoinExpireMinutesDescription": "Durée pendant laquelle une session payjoin reste ouverte avant de basculer vers un paiement normal.",
   "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "min",
-  "payjoinExchangeMinimumAmount": "Le montant minimum pour Payjoin avec la plateforme est de 50 000 sats."
+  "settingsPayjoinMinutesUnit": "min"
 }

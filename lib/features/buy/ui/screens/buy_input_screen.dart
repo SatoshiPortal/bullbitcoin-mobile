@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
@@ -52,11 +51,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
       (BuyBloc bloc) => bloc.state.canOfferPayjoin,
     );
     final isPayjoinEnabled = context.select(
-      (BuyBloc bloc) => bloc.state.shouldUsePayjoin,
-    );
-
-    final isPayjoinAmountAllowed = context.select(
-      (BuyBloc bloc) => bloc.state.isPayjoinAmountAllowed,
+      (BuyBloc bloc) => bloc.state.isPayjoinEnabled,
     );
 
     return Scaffold(
@@ -96,16 +91,10 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                     ),
                     BullSwitch(
                       value: isPayjoinEnabled,
-                      onChanged: isCreatingOrder || !isPayjoinAmountAllowed
+                      onChanged: isCreatingOrder
                           ? null
                           : (enabled) => context.read<BuyBloc>().add(
                               BuyEvent.payjoinToggled(enabled),
-                            ),
-                      onDisabledTap: isCreatingOrder
-                          ? null
-                          : () => SnackBarUtils.showSnackBar(
-                              context,
-                              context.loc.payjoinExchangeMinimumAmount,
                             ),
                     ),
                   ],
