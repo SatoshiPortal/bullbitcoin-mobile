@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
@@ -9,7 +8,12 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_confirmation_detail_row.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, BullShimmerBox, Gap;
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullScrollableColumn,
+        BullShimmerBox,
+        Gap;
 
 class DcaConfirmationScreen extends StatelessWidget {
   const DcaConfirmationScreen({super.key});
@@ -106,7 +110,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               ),
               const Gap(16),
             ],
-            BBButton.big(
+            BullButton.big(
               label: context.loc.dcaConfirmContinue,
               disabled: confirmationState.isConfirmingDca,
               onPressed: () {
