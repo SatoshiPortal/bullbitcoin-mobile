@@ -3022,10 +3022,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "معاملات میراث",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "sellInsufficientBalance": "عدم تعادل کیف پول",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
@@ -4060,10 +4056,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "تنظیمات حساب Exchange Account Settings",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "حداکثر {maxFiles} فایل آپلود کنید. فرمت‌های مجاز: PDF، JPG، PNG، GIF، HEIC. حداکثر حجم هر فایل: ۱۰ مگابایت.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4354,10 +4346,6 @@
   "sellSendPaymentEurBalance": "یورو یورو تعادل تعادل تعادل",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "انتقال تکمیل شده",
   "@swapProgressCompleted": {
@@ -7141,10 +7129,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "معاملات میراث بزودی می آیند",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "اثبات آدرس",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7473,10 +7457,6 @@
   "sendConfirmSwap": "تایید تغییرات",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "دانلود زیرنویس فارسی فیلم Get Soon",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "مجموع حجم معاملات",
   "@exchangeStatisticsTotalVolume": {
@@ -9128,10 +9108,6 @@
   "payPayee": "پرداخت",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "این ویژگی به زودی می آید.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "فروش در پیشرفت ...",
   "@sellInProgress": {

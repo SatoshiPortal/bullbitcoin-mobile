@@ -2207,10 +2207,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "exchangeLegacyTransactionsTitle": "Transações Legadas",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
   "@coreScreensFeeDeductionExplanation": {
     "description": "Explanation text for fee deduction"
@@ -3647,10 +3643,6 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "exchangeAccountSettingsTitle": "Configurações da conta do Exchange",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "ledgerWalletTypeLabel": "Tipo de carteira:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"
@@ -4128,10 +4120,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
-  },
-  "exchangeAccountTitle": "Conta de troca",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "dcaConfirmNetworkLightning": "Luz",
   "@dcaConfirmNetworkLightning": {
@@ -6638,10 +6626,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "exchangeLegacyTransactionsComingSoon": "Transações Legadas - Em breve",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "bitboxScreenTryAgainButton": "Tente novamente",
   "@bitboxScreenTryAgainButton": {
     "description": "Button to retry failed action"
@@ -7036,10 +7020,6 @@
   "fundExchangeMethodEmailETransferSubtitle": "Método mais fácil e mais rápido (instant)",
   "@fundExchangeMethodEmailETransferSubtitle": {
     "description": "Subtitle for Email E-Transfer payment method"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Chegando em breve",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "withdrawConfirmAccount": "Conta",
   "@withdrawConfirmAccount": {
@@ -8262,10 +8242,6 @@
   "transactionSwapDescLnReceiveFailed": "Houve um problema com a tua troca. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
-  },
-  "exchangeAccountComingSoon": "Esta característica está chegando em breve.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "autoswapWarningSettingsLink": "Leve-me para configurações de auto-despertar",
   "@autoswapWarningSettingsLink": {

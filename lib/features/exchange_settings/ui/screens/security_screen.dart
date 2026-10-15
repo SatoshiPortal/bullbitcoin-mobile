@@ -1,26 +1,23 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class ExchangeSecurityScreen extends StatelessWidget {
-  const ExchangeSecurityScreen({super.key});
+  const ExchangeSecurityScreen({required this.isTestnet, super.key});
+
+  final bool isTestnet;
 
   void _openSecurityWebView(BuildContext context) {
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
     final baseUrl = isTestnet
         ? ApiServiceConstants.bbAuthTestUrl
         : ApiServiceConstants.bbAuthUrl;
