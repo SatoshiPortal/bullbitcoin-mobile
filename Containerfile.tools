@@ -18,8 +18,8 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Rust is pinned explicitly via RUST_VERSION. RUSTUP_TOOLCHAIN env (set below)
 # forces cargo/rustc invocations that respect it through this version. It does
-# NOT cover cargokit or bdk_dart's native-assets build hook, both of which
-# invoke `rustup run <toolchain>` directly — an explicit `rustup run` always
+# NOT cover cargokit or the bdk_dart and payjoin native-assets build hooks, all of
+# which invoke `rustup run <toolchain>` directly — an explicit `rustup run` always
 # wins over the env var. Those are covered separately below by a rustup shim
 # that rewrites the "stable" token to this pinned version, and by pre-installing
 # bdk_dart's own pinned channel (BDK_RUST_VERSION). This is essential for
@@ -168,6 +168,9 @@ RUN rustc --version && cargo --version
 # Default here is a fallback; the makefile passes --build-arg BDK_RUST_VERSION
 # from its own BDK_RUST_VERSION variable (the single source of truth, also used
 # by `make verify-rustc-pins`). Keep the two in sync if you edit either.
+# payjoin's native_toolchain_rust hook (payjoin-ffi/dart/native/rust-toolchain.toml)
+# uses the same channel today and relies on this pre-install; the makefile
+# refuses to build the image if PAYJOIN_RUST_VERSION diverges.
 ARG BDK_RUST_VERSION="1.85.1"
 RUN rustup toolchain install ${BDK_RUST_VERSION}
 RUN rustup component add --toolchain ${BDK_RUST_VERSION} clippy rustfmt
@@ -267,7 +270,7 @@ RUN fvm dart --disable-analytics
 # Wrap rustup with a thin shim that does two things before delegating to the
 # real binary.
 #
-# (1) Version pin. cargokit (payjoin_flutter, onion, bull_sdk's rust_builder)
+# (1) Version pin. cargokit (onion, bull_sdk's rust_builder)
 # hard-codes `rustup run stable cargo build` and `rustup toolchain install
 # stable` — its toolchain option is a fixed stable/beta/nightly enum, so it
 # cannot name a version. An explicit `rustup run stable` outranks both
@@ -277,8 +280,8 @@ RUN fvm dart --disable-analytics
 # up embedding rustc newer than RUST_VERSION. rustup >=1.28 forbids `rustup
 # toolchain link stable` (reserved channel name), so we cannot alias "stable"
 # to the pinned toolchain directory; instead the shim rewrites the argument
-# "stable" -> RUST_VERSION before calling the real rustup. bdk_dart's explicit
-# `rustup run 1.85.1` has no "stable" token and passes through untouched. The
+# "stable" -> RUST_VERSION before calling the real rustup. bdk_dart's and payjoin's
+# explicit `rustup run 1.85.1` has no "stable" token and passes through untouched. The
 # match is exact-equality per argument, so substrings like "stableish" and
 # args with spaces are preserved.
 #
