@@ -11824,7 +11824,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 συναλλαγή ({currency})} other{{count} συναλλαγές ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Δεν ήταν δυνατή η φόρτωση της κατάστασης της μεταφόρτωσής σας. Παρακαλώ δοκιμάστε ξανά.",
   "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
-  "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
   "recipientsErrorEuResidencyRequired": "Πρέπει να είστε κάτοικος της Ευρωπαϊκής Ένωσης για να ενεργοποιήσετε το εμπιστευτικό SEPA.",
   "recipientsConfidentialSepaActivatingTitle": "Ενεργοποίηση παραλήπτη",

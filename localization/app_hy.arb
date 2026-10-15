@@ -3629,7 +3629,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 գործարք ({currency})} other{{count} գործարք ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Չհաջողվեց բեռնել ձեր վերբեռնման կարգավիճակը։ Խնդրում ենք փորձել կրկին։",
   "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
-  "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",
   "recipientsErrorEuResidencyRequired": "Գաղտնի SEPA-ն ակտիվացնելու համար դուք պետք է լինեք Եվրոպական միության բնակիչ։",
   "recipientsConfidentialSepaActivatingTitle": "Ստացողի ակտիվացում",

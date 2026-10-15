@@ -12028,7 +12028,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1টি লেনদেন ({currency})} other{{count}টি লেনদেন ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "আপনার আপলোডের অবস্থা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
-  "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং অপশনে অ্যাক্সেস করার জন্য আপনার প্রয়োজনীয় অনুমতি নেই। হয় আপনার KYC অপর্যাপ্ত, নয়তো এই অপশন আপনার অ্যাকাউন্টের জন্য উপলব্ধ নয়",
   "recipientsErrorEuResidencyRequired": "গোপনীয় SEPA সক্রিয় করতে আপনাকে ইউরোপীয় ইউনিয়নের বাসিন্দা হতে হবে।",
   "recipientsConfidentialSepaActivatingTitle": "প্রাপক সক্রিয় করা হচ্ছে",

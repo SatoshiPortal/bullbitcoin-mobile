@@ -4836,7 +4836,6 @@
   "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 笔交易 ({currency})} other{{count} 笔交易 ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "无法加载您的上传状态。请重试。",
   "recipientsTypeConfidentialSepa": "保密 SEPA",
-  "recipientsTypeConfidentialSepa": "保密 SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "您没有访问此充值选项所需的权限。您的 KYC 可能不足，或此选项不适用于您的账户",
   "recipientsErrorEuResidencyRequired": "您需要是欧盟居民才能激活保密 SEPA。",
   "recipientsConfidentialSepaActivatingTitle": "正在激活收件人",
