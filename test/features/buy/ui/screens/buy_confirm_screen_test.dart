@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -35,8 +36,9 @@ void main() {
 
   Future<({BuyBloc bloc, void Function(BuyState) update})> pumpScreen(
     WidgetTester tester,
-    BuyState initial,
-  ) async {
+    BuyState initial, {
+    double textScale = 1,
+  }) async {
     final bloc = _MockBuyBloc();
     final settings = _MockSettingsCubit();
     final states = StreamController<BuyState>.broadcast();
@@ -57,6 +59,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child ?? const SizedBox.shrink(),
+        ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
@@ -258,6 +266,28 @@ void main() {
       update(state.copyWith(buyOrder: order));
       await tester.pump();
       expect(find.byType(BuyConfirmScreen), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets(
+    'headline expands for large text instead of clipping the amount',
+    (tester) async {
+      final order = _MockBuyOrder();
+      when(() => order.payinAmount).thenReturn(100);
+      when(() => order.payinCurrency).thenReturn('CAD');
+      when(() => order.payoutAmount).thenReturn(0.0005);
+      when(() => order.exchangeRateAmount).thenReturn(200000);
+      when(() => order.exchangeRateCurrency).thenReturn('CAD');
+      when(() => order.isLiquid).thenReturn(false);
+      when(() => order.confirmationDeadline).thenReturn(null);
+      await pumpScreen(tester, BuyState(buyOrder: order), textScale: 2);
+      final text = tester.renderObject<RenderParagraph>(
+        find.text('100.00 CAD').first,
+      );
+      expect(
+        text.size.height,
+        greaterThanOrEqualTo(text.getMaxIntrinsicHeight(text.size.width)),
+      );
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );

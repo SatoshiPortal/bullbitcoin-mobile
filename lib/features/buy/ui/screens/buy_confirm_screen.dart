@@ -87,8 +87,8 @@ class BuyConfirmScreen extends StatelessWidget {
                     ),
                   ),
                   const Gap(13),
-                  SizedBox(
-                    height: 56,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56),
                     child: Center(
                       child: switch (formattedPayInAmount) {
                         final String amount => BullText(
