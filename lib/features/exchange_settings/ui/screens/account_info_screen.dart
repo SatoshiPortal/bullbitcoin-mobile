@@ -1,15 +1,13 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/account_info_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/account_info_state.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
@@ -29,16 +27,22 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
   Widget build(BuildContext context) {
     final state = context.watch<AccountInfoCubit>().state;
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
+    return BullScaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BullTopBar(
+          title: context.loc.exchangeAccountInfoTitle,
+          onBack: () => context.pop(),
+        ),
+      ),
       body: Column(
         children: [
-          if (state.isLoading)
-            LinearProgressIndicator(
-              backgroundColor: context.appColors.surface,
-              color: context.appColors.primary,
-            ),
+          BullFadingLinearProgress(
+            trigger: state.isLoading,
+            backgroundColor: context.bull.surface,
+            foregroundColor: context.bull.primary,
+          ),
           Expanded(child: _buildContent(context, state)),
         ],
       ),
@@ -57,20 +61,20 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BBText(
+            BullText(
               state.failure?.toTranslated(context) ??
                   context.loc.exchangeAccountInfoLoadErrorMessage,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
+              style: context.bullText.bodyMedium?.copyWith(
+                color: context.bull.error,
               ),
             ),
-            const SizedBox(height: 16),
-            BBButton.big(
+            const Gap(BullSpacing.md),
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<AccountInfoCubit>().loadAccountInfo(),
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
+              bgColor: context.bull.onSurface,
+              textColor: context.bull.surface,
             ),
           ],
         ),
@@ -79,11 +83,11 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(BullSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 12),
+            const Gap(BullSpacing.sm),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoUserNumberLabel,
@@ -92,25 +96,25 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               copiedMessage:
                   context.loc.exchangeAccountInfoUserNumberCopiedMessage,
             ),
-            const SizedBox(height: 32),
+            const Gap(BullSpacing.xl),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoVerificationLevelLabel,
               _verificationLevelLabel(context, accountInfo.verificationLevel),
             ),
-            const SizedBox(height: 32),
+            const Gap(BullSpacing.xl),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoEmailLabel,
               accountInfo.email,
             ),
-            const SizedBox(height: 32),
+            const Gap(BullSpacing.xl),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoFirstNameLabel,
               accountInfo.firstName,
             ),
-            const SizedBox(height: 32),
+            const Gap(BullSpacing.xl),
             _buildInfoField(
               context,
               context.loc.exchangeAccountInfoLastNameLabel,
@@ -148,10 +152,10 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
       children: [
         Row(
           children: [
-            BBText(
+            BullText(
               label,
-              style: context.font.headlineMedium?.copyWith(
-                color: context.appColors.onSurfaceVariant,
+              style: context.bullText.headlineMedium?.copyWith(
+                color: context.bull.onSurfaceVariant,
                 fontWeight: .w500,
               ),
             ),
@@ -160,42 +164,42 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               Row(
                 mainAxisSize: .min,
                 children: [
-                  BBText(
+                  BullText(
                     value,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.secondary,
+                    style: context.bullText.bodyLarge?.copyWith(
+                      color: context.bull.secondary,
                       fontWeight: .w700,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const Gap(BullSpacing.xs),
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      SnackBarUtils.showSnackBar(context, copiedMessage ?? '');
+                      BullSnackBar.show(context, message: copiedMessage ?? '');
                     },
-                    child: Icon(
-                      Icons.copy,
+                    child: BullIcon(
+                      BullIcons.contentCopy,
                       size: 18,
-                      color: context.appColors.primary,
+                      color: context.bull.primary,
                     ),
                   ),
                 ],
               )
             else
-              BBText(
+              BullText(
                 value,
-                style: context.font.bodyLarge?.copyWith(
-                  color: context.appColors.secondary,
+                style: context.bullText.bodyLarge?.copyWith(
+                  color: context.bull.secondary,
                   fontWeight: .w700,
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        const Gap(BullSpacing.sm),
         Container(
           width: double.infinity,
           height: 1,
-          color: context.appColors.border,
+          color: context.bull.border,
         ),
       ],
     );

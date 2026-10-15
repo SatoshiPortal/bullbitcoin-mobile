@@ -3624,5 +3624,8 @@
   "settingsSearchTorKeywords": "proxy Tor|Orbot|định tuyến onion|Tor tích hợp|mạng riêng tư",
   "limitOrdersInsufficientBalance": "Số dư không đủ",
   "limitOrdersInsufficientBalanceMessage": "Bạn không có đủ số dư để tạo đơn hàng này.",
-  "limitOrdersFundAccount": "Nạp tiền vào tài khoản của bạn"
+  "limitOrdersFundAccount": "Nạp tiền vào tài khoản của bạn",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 giao dịch} other{{count} giao dịch}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 giao dịch ({currency})} other{{count} giao dịch ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Không thể tải trạng thái tải lên của bạn. Vui lòng thử lại."
 }

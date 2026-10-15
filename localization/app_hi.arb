@@ -12006,5 +12006,8 @@
   "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क",
   "limitOrdersInsufficientBalance": "अपर्याप्त संतुलन",
   "limitOrdersInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
-  "limitOrdersFundAccount": "अपने खाते को फंड करें"
+  "limitOrdersFundAccount": "अपने खाते को फंड करें",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 ट्रेड} other{{count} ट्रेड}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 ट्रेड ({currency})} other{{count} ट्रेड ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "आपके अपलोड की स्थिति लोड नहीं हो सकी। कृपया पुनः प्रयास करें।"
 }

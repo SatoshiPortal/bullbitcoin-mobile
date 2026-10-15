@@ -4867,5 +4867,8 @@
   "settingsSearchTorKeywords": "proxy Tor|Orbot|encaminhamento onion|Tor integrado|rede de privacidade",
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
-  "limitOrdersFundAccount": "Fina sua conta"
+  "limitOrdersFundAccount": "Fina sua conta",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 transação} other{{count} transações}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 transação ({currency})} other{{count} transações ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Não foi possível carregar o estado do seu envio. Por favor, tente novamente."
 }

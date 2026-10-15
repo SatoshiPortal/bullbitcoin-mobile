@@ -15470,5 +15470,30 @@
   "spHeaderValidationInvalidChainDetail": "This server does not follow the real Bitcoin chain. Switch to another Electrum server in the settings.",
   "@spHeaderValidationInvalidChainDetail": {
     "description": "SP header card detail when the Electrum server serves a chain that contradicts the built-in checkpoint; tells the user to change server"
+  },
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
+  "@exchangeStatisticsTradeCountValue": {
+    "description": "Number of trades on the exchange statistics screen when there are no trades per currency",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
+  "@exchangeStatisticsTradeCountByCurrency": {
+    "description": "Number of trades in one fiat currency on the exchange statistics screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeSettingsErrorLoadingUploadStatus": "Your upload status could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingUploadStatus": {
+    "description": "exchange_settings user-facing failure message when the secure file upload status cannot be loaded"
   }
 }

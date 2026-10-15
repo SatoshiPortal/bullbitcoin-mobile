@@ -4828,5 +4828,8 @@
   "settingsSearchTorKeywords": "proxy Tor|Orbot|enrutamiento onion|Tor integrado|red de privacidad",
   "limitOrdersInsufficientBalance": "Saldo insuficiente",
   "limitOrdersInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",
-  "limitOrdersFundAccount": "Financiar su cuenta"
+  "limitOrdersFundAccount": "Financiar su cuenta",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 operación} other{{count} operaciones}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 operación ({currency})} other{{count} operaciones ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "No se pudo cargar el estado de su carga. Por favor, inténtelo de nuevo."
 }

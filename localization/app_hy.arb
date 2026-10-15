@@ -3624,5 +3624,8 @@
   "settingsSearchTorKeywords": "Tor պրոքսի|Orbot|onion երթուղավորում|ներկառուցված Tor|գաղտնիության ցանց",
   "limitOrdersInsufficientBalance": "Անբավարար մնացորդ",
   "limitOrdersInsufficientBalanceMessage": "Այս պատվերը ստեղծելու համար բավարար մնացորդ չունեք։",
-  "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը"
+  "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 գործարք} other{{count} գործարք}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 գործարք ({currency})} other{{count} գործարք ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Չհաջողվեց բեռնել ձեր վերբեռնման կարգավիճակը։ Խնդրում ենք փորձել կրկին։"
 }

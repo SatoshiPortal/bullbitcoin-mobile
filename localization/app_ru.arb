@@ -4837,5 +4837,8 @@
   "settingsSearchTorKeywords": "Tor-прокси|Orbot|onion-маршрутизация|встроенный Tor|сеть конфиденциальности",
   "limitOrdersInsufficientBalance": "Недостаточный баланс",
   "limitOrdersInsufficientBalanceMessage": "У вас нет достаточного баланса для создания этого порядка.",
-  "limitOrdersFundAccount": "Фонд вашего счета"
+  "limitOrdersFundAccount": "Фонд вашего счета",
+  "exchangeStatisticsTradeCountValue": "{count, plural, one{{count} сделка} few{{count} сделки} many{{count} сделок} other{{count} сделки}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, one{{count} сделка ({currency})} few{{count} сделки ({currency})} many{{count} сделок ({currency})} other{{count} сделки ({currency})}}",
+  "exchangeSettingsErrorLoadingUploadStatus": "Не удалось загрузить статус вашей загрузки. Пожалуйста, попробуйте снова."
 }

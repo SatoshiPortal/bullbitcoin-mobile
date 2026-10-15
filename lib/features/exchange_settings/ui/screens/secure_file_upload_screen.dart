@@ -1,11 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_state.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,33 +17,27 @@ class SecureFileUploadScreen extends StatelessWidget {
           (!previous.uploadComplete && current.uploadComplete),
       listener: (context, state) {
         if (state.uploadComplete) {
-          SnackBarUtils.showSnackBar(
+          BullSnackBar.show(
             context,
-            context.loc.exchangeFileUploadSuccess,
+            message: context.loc.exchangeFileUploadSuccess,
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: context.appColors.background,
+      child: BullScaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             title: context.loc.exchangeFileUploadTitle,
             onBack: () => context.pop(),
           ),
         ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+            padding: const EdgeInsets.all(BullSpacing.md),
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Error message
-                const _ErrorMessage(),
-                // Upload option card (similar to BB-Exchange UploadOption)
-                const _UploadOptionCard(),
-              ],
+              children: [_ErrorMessage(), _UploadOptionCard()],
             ),
           ),
         ),
@@ -68,27 +59,31 @@ class _ErrorMessage extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: BullSpacing.md),
+      padding: const EdgeInsets.all(BullSpacing.sm),
       decoration: BoxDecoration(
-        color: context.appColors.error.withAlpha(26),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.appColors.error),
+        color: context.bull.error.withAlpha(26),
+        borderRadius: BorderRadius.circular(BullRadius.sm),
+        border: Border.all(color: context.bull.error),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: context.appColors.error, size: 20),
-          const SizedBox(width: 8),
+          BullIcon(BullIcons.errorOutline, color: context.bull.error, size: 20),
+          const Gap(BullSpacing.xs),
           Expanded(
-            child: BBText(
+            child: BullText(
               failure.toTranslated(context),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.error,
+              style: context.bullText.bodySmall?.copyWith(
+                color: context.bull.error,
               ),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.close, color: context.appColors.error, size: 18),
+            icon: BullIcon(
+              BullIcons.close,
+              color: context.bull.error,
+              size: 18,
+            ),
             onPressed: () {
               context.read<SecureFileUploadCubit>().clearError();
             },
@@ -101,7 +96,6 @@ class _ErrorMessage extends StatelessWidget {
   }
 }
 
-/// Upload option card similar to BB-Exchange UploadOption widget
 class _UploadOptionCard extends StatelessWidget {
   const _UploadOptionCard();
 
@@ -110,12 +104,10 @@ class _UploadOptionCard extends StatelessWidget {
     final state = context.watch<SecureFileUploadCubit>().state;
     final status = state.secureUploadStatus;
 
-    // Allow interaction for upload and rejected statuses
     final canInteract =
         status == SecureUploadStatus.upload ||
         status == SecureUploadStatus.rejected;
 
-    // Ignore interaction when uploading or when status doesn't allow uploads
     final shouldIgnore = state.isUploading || !canInteract;
 
     return IgnorePointer(
@@ -124,13 +116,13 @@ class _UploadOptionCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         opacity: shouldIgnore ? 0.5 : 1.0,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(BullSpacing.md),
           decoration: BoxDecoration(
-            color: context.appColors.surface,
+            color: context.bull.surface,
             border: Border.all(
-              color: context.appColors.outline.withValues(alpha: 0.3),
+              color: context.bull.outline.withValues(alpha: 0.3),
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(BullRadius.sm),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,33 +135,32 @@ class _UploadOptionCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        BBText(
+                        BullText(
                           context.loc.exchangeFileUploadDocumentTitle,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullText.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: context.appColors.onSurface,
+                            color: context.bull.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        BBText(
+                        const Gap(BullSpacing.xs),
+                        BullText(
                           context.loc.exchangeFileUploadInstructions,
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.appColors.textMuted,
+                          style: context.bullText.bodySmall?.copyWith(
+                            color: context.bull.textMuted,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Show button on right for non-rejected statuses
                   if (status != SecureUploadStatus.rejected) ...[
-                    const SizedBox(width: 16),
+                    const Gap(BullSpacing.md),
                     if (state.isLoadingUser)
                       SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: context.appColors.primary,
+                          color: context.bull.primary,
                         ),
                       )
                     else
@@ -185,9 +176,8 @@ class _UploadOptionCard extends StatelessWidget {
                   ],
                 ],
               ),
-              // Show rejected status and re-upload button below the text
               if (status == SecureUploadStatus.rejected) ...[
-                const SizedBox(height: 12),
+                const Gap(BullSpacing.sm),
                 _RejectedStatusWithReupload(
                   isUploading: state.isUploading,
                   onPressed: () {
@@ -203,7 +193,6 @@ class _UploadOptionCard extends StatelessWidget {
   }
 }
 
-/// Status button similar to BB-Exchange _KycUploadButton
 class _UploadStatusButton extends StatelessWidget {
   const _UploadStatusButton({
     required this.status,
@@ -221,12 +210,15 @@ class _UploadStatusButton extends StatelessWidget {
       case SecureUploadStatus.upload:
         return InkWell(
           onTap: isUploading ? null : onPressed,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(BullRadius.sm),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: BullSpacing.sm,
+              vertical: BullSpacing.xs,
+            ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: context.appColors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(BullRadius.sm),
+              color: context.bull.surfaceContainerHighest,
             ),
             child: isUploading
                 ? SizedBox(
@@ -234,7 +226,7 @@ class _UploadStatusButton extends StatelessWidget {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: context.appColors.primary,
+                      color: context.bull.primary,
                     ),
                   )
                 : Row(
@@ -244,14 +236,14 @@ class _UploadStatusButton extends StatelessWidget {
                       Icon(
                         Icons.upload_file,
                         size: 20,
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
-                      const SizedBox(width: 4),
-                      BBText(
+                      const Gap(BullSpacing.xxs),
+                      BullText(
                         context.loc.exchangeFileUploadButton,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullText.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: context.appColors.onSurface,
+                          color: context.bull.onSurface,
                         ),
                       ),
                     ],
@@ -261,47 +253,51 @@ class _UploadStatusButton extends StatelessWidget {
 
       case SecureUploadStatus.inReview:
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.sm,
+            vertical: BullSpacing.xs,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(BullRadius.sm),
             border: Border.all(
-              color: context.appColors.warning.withValues(alpha: 0.6),
+              color: context.bull.warning.withValues(alpha: 0.6),
               width: 1.5,
             ),
           ),
-          child: BBText(
+          child: BullText(
             context.loc.exchangeFileUploadStatusInReview,
-            style: context.font.labelMedium?.copyWith(
+            style: context.bullText.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: context.appColors.warning,
+              color: context.bull.warning,
             ),
           ),
         );
 
       case SecureUploadStatus.accepted:
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: context.appColors.success.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.sm,
+            vertical: BullSpacing.xs,
           ),
-          child: BBText(
+          decoration: BoxDecoration(
+            color: context.bull.success.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(BullRadius.sm),
+          ),
+          child: BullText(
             context.loc.exchangeFileUploadStatusAccepted,
-            style: context.font.labelMedium?.copyWith(
-              color: context.appColors.success,
+            style: context.bullText.labelMedium?.copyWith(
+              color: context.bull.success,
               fontWeight: FontWeight.w600,
             ),
           ),
         );
 
       case SecureUploadStatus.rejected:
-        // Handled separately in _RejectedStatusWithReupload
         return const SizedBox.shrink();
     }
   }
 }
 
-/// Widget showing rejected status with re-upload button below the text
 class _RejectedStatusWithReupload extends StatelessWidget {
   const _RejectedStatusWithReupload({
     required this.isUploading,
@@ -316,42 +312,46 @@ class _RejectedStatusWithReupload extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Rejected status indicator
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.xs,
+            vertical: BullSpacing.xxs,
+          ),
           decoration: BoxDecoration(
-            color: context.appColors.error.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(4),
+            color: context.bull.error.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(BullRadius.xs),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
+              BullIcon(
+                BullIcons.errorOutline,
                 size: 14,
-                color: context.appColors.error,
+                color: context.bull.error,
               ),
-              const SizedBox(width: 4),
-              BBText(
+              const Gap(BullSpacing.xxs),
+              BullText(
                 context.loc.exchangeFileUploadStatusRejectedBadge,
-                style: context.font.labelSmall?.copyWith(
+                style: context.bullText.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.appColors.error,
+                  color: context.bull.error,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        // Re-upload button
+        const Gap(BullSpacing.sm),
         InkWell(
           onTap: isUploading ? null : onPressed,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(BullRadius.sm),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: BullSpacing.md,
+              vertical: 10,
+            ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: context.appColors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(BullRadius.sm),
+              color: context.bull.surfaceContainerHighest,
             ),
             child: isUploading
                 ? SizedBox(
@@ -359,7 +359,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: context.appColors.primary,
+                      color: context.bull.primary,
                     ),
                   )
                 : Row(
@@ -368,14 +368,14 @@ class _RejectedStatusWithReupload extends StatelessWidget {
                       Icon(
                         Icons.upload_file,
                         size: 20,
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
-                      const SizedBox(width: 8),
-                      BBText(
+                      const Gap(BullSpacing.xs),
+                      BullText(
                         context.loc.exchangeFileUploadTapToReupload,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullText.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: context.appColors.onSurface,
+                          color: context.bull.onSurface,
                         ),
                       ),
                     ],
