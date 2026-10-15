@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAmountController, Gap;
 
 class PayAmountInputFields extends StatelessWidget {
   const PayAmountInputFields({
@@ -13,7 +13,7 @@ class PayAmountInputFields extends StatelessWidget {
     this.onFiatCurrencyChanged,
   });
 
-  final TextEditingController amountController;
+  final BullAmountController amountController;
   final FocusNode focusNode;
   final FiatCurrency fiatCurrency;
   final void Function(FiatCurrency fiatCurrency)? onFiatCurrencyChanged;

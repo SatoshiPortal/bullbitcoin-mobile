@@ -4,14 +4,12 @@ import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_am
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:intl/intl.dart';
 
 part 'bitcoin_price_bloc.freezed.dart';
 part 'bitcoin_price_event.dart';

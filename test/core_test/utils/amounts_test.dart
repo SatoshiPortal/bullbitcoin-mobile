@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -84,6 +85,45 @@ void main() {
       expect(FormatAmount.fiat(1000, 'USD'), '1,000.00 USD');
       expect(FormatAmount.fiat(1000.50, 'USD'), '1,000.50 USD');
       expect(FormatAmount.fiat(1234.56, 'EUR'), '1,234.56 EUR');
+    });
+
+    test('formatFiat keeps each currency\'s own decimal count', () {
+      // Unchanged from before: intl's per-currency digits already overrode
+      // the old `#,##0.00 ¤` pattern.
+      expect(FormatAmount.fiat(1234.5678, 'JPY'), '1,235 JPY');
+      expect(FormatAmount.fiat(1234.5678, 'BHD'), '1,234.568 BHD');
+      expect(FormatAmount.fiat(1234.5678, 'XYZ'), '1,234.57 XYZ');
+    });
+
+    test('formatFiat with simpleFormat', () {
+      expect(
+        FormatAmount.fiat(1234.56, 'USD', simpleFormat: true),
+        '\$1,234.56',
+      );
+      expect(FormatAmount.fiat(-0.5, 'USD', simpleFormat: true), '-\$0.50');
+    });
+
+    group('in French', () {
+      setUp(() => BullNumberFormat.useLanguage('fr'));
+      tearDown(() => BullNumberFormat.useLanguage('en'));
+
+      test('formatSats', () {
+        expect(FormatAmount.sats(1234567), '1\u00A0234\u00A0567 sats');
+      });
+
+      test('formatBtc', () {
+        expect(FormatAmount.btc(1.23456789), '1,23456789 BTC');
+        expect(FormatAmount.btc(0.09), '0,09000000 BTC');
+        expect(FormatAmount.btc(1.0), '1 BTC');
+      });
+
+      test('formatFiat', () {
+        expect(FormatAmount.fiat(7123.51, 'CAD'), '7\u00A0123,51 CAD');
+        expect(
+          FormatAmount.fiat(1234.56, 'USD', simpleFormat: true),
+          '\$1\u00A0234,56',
+        );
+      });
     });
   });
 }

@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat, Gap;
 
 class BuyAccelerateScreen extends StatelessWidget {
   const BuyAccelerateScreen({super.key});
@@ -36,7 +36,7 @@ class BuyAccelerateScreen extends StatelessWidget {
     );
     final relativeFee = fees?.fastest.value as double?;
     final formattedRelativeFee = relativeFee != null
-        ? '${relativeFee.toStringAsFixed(2)} sat/vB'
+        ? '${BullNumberFormat.decimal(relativeFee, minDecimals: 2)} sat/vB'
         : null;
     final absoluteFee = fees?.toAbsolute(140).fastest.value as int?;
     final bitcoinUnit = context.select(

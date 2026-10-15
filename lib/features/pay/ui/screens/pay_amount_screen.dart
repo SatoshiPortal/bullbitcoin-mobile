@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInputText, BullScrollableColumn, Gap;
+    show BullAmountController, BullInputText, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayAmountScreen extends StatefulWidget {
@@ -21,7 +21,7 @@ class PayAmountScreen extends StatefulWidget {
 
 class _PayAmountScreenState extends State<PayAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final TextEditingController _amountController = TextEditingController();
+  late final _amountController = BullAmountController();
   final FocusNode _amountNode = FocusNode();
   late final TextEditingController _descriptionController =
       TextEditingController();
@@ -35,7 +35,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
   }
 
   void _onAmountChanged() {
-    final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
+    final enteredAmount = double.tryParse(_amountController.amount) ?? 0.0;
     final newValue = context.read<PayBloc>().state.needsKycUpgrade(
       enteredAmount,
     );
@@ -57,7 +57,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
+    // final enteredAmount = double.tryParse(_amountController.amount) ?? 0.0;
     final currency = context.select((PayBloc bloc) => bloc.state.currency);
     // final needsKycUpgrade = context.select(
     //   (PayBloc bloc) => bloc.state.needsKycUpgrade(enteredAmount),
@@ -130,7 +130,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                         final bloc = context.read<PayBloc>();
                         bloc.add(
                           PayEvent.amountInputContinuePressed(
-                            amountInput: _amountController.text,
+                            amountInput: _amountController.amount,
                             fiatCurrency: bloc.state.currency,
                             paymentDescription: _descriptionController.text
                                 .trim(),

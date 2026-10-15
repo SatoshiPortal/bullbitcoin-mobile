@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:gif/gif.dart';
@@ -72,7 +73,7 @@ class SinpeReceiptCard extends StatelessWidget {
             Text(context.loc.paySinpeMonto, style: context.font.bodyMedium),
             const Gap(4),
             Text(
-              '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
+              FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
               style: context.font.headlineSmall?.copyWith(
                 color: context.appColors.secondary,
                 fontWeight: FontWeight.bold,

@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAmountInputFormatter, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountController, BullAmountInputFormatter, Gap;
 
 class PriceInput extends StatelessWidget {
   const PriceInput({
@@ -23,7 +24,7 @@ class PriceInput extends StatelessWidget {
   final String amountEquivalent;
   final List<String> availableCurrencies;
   final Function(String)? onCurrencyChanged;
-  final TextEditingController amountController;
+  final BullAmountController amountController;
   final String? error;
   final FocusNode? focusNode;
   final bool readOnly;

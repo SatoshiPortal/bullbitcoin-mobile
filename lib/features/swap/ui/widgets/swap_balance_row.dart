@@ -7,12 +7,12 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAmountController, Gap;
 
 class SwapBalanceRow extends StatelessWidget {
   const SwapBalanceRow({super.key, required this.amountController});
 
-  final TextEditingController amountController;
+  final BullAmountController amountController;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class SwapBalanceRow extends StatelessWidget {
             context.read<TransferBloc>().add(
               const TransferEvent.receiveExactAmountToggled(false),
             );
-            amountController.text = maxAmount.toString();
+            amountController.amount = maxAmount.toString();
           },
         ),
       ],

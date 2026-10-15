@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullNumberFormat, Gap;
 
 /// A reusable transaction confirm/review screen that displays transaction
 /// details before broadcasting.
@@ -266,7 +267,11 @@ class _SummarySection extends StatelessWidget {
             label: context.loc.coreScreensFeeRateLabel,
             child: BBText(
               context.loc.coreScreensFeeRateValue(
-                transaction.feeRate!.toStringAsFixed(1),
+                BullNumberFormat.decimal(
+                  transaction.feeRate!,
+                  minDecimals: 1,
+                  maxDecimals: 1,
+                ),
               ),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,

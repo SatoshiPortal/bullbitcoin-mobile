@@ -35,7 +35,7 @@ class CurrencyText extends StatelessWidget {
     String text = '';
 
     if (fiatAmount != null) {
-      text = '${fiatAmount!.toStringAsFixed(2)} $fiatCurrency';
+      text = FormatAmount.fiat(fiatAmount!, fiatCurrency ?? '').trim();
     } else if (showFiat) {
       final price = context.select(
         (BitcoinPriceBloc bloc) => bloc.state.calculateFiatPrice(satsAmount),

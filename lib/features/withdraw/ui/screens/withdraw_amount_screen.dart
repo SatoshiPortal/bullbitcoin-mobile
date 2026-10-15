@@ -12,7 +12,8 @@ import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.d
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountController, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class WithdrawAmountScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class WithdrawAmountScreen extends StatefulWidget {
 
 class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final TextEditingController _amountController = TextEditingController();
+  late final _amountController = BullAmountController();
   final FocusNode _amountNode = FocusNode();
   FiatCurrency? _fiatCurrency;
   late final StreamSubscription<WithdrawState> stateSubscription;
@@ -105,7 +106,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                   if (_formKey.currentState!.validate()) {
                     context.read<WithdrawBloc>().add(
                       WithdrawEvent.amountInputContinuePressed(
-                        amountInput: _amountController.text,
+                        amountInput: _amountController.amount,
                         fiatCurrency: _fiatCurrency!,
                       ),
                     );

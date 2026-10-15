@@ -849,12 +849,6 @@ sealed class Order with _$Order {
 }
 
 extension FiatPaymentOrderDisplayX on FiatPaymentOrder {
-  /// The fiat amount the recipient gets, e.g. "125.00 CAD". The currency code
-  /// is used as returned by the server, without going through
-  /// [FiatCurrency.fromCode], which throws on codes the app doesn't know yet.
-  String get payoutAmountToDisplay =>
-      '${payoutAmount.toStringAsFixed(2)} $payoutCurrency';
-
   /// The recipient as shown to the user. The server populates
   /// [beneficiaryName] for most payout processors, but not all (SINPE can
   /// legitimately have no owner name), so fall back to the label the user gave

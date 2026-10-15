@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
+import 'package:bull_ui/bull_ui.dart' show BullNumberFormat;
 
 /// Value shown on the "Fee Priority" row of the exchange confirmation screens
 /// (sell, pay) for the committed selection. Presets read as their tier name; a
@@ -32,7 +33,11 @@ String feeSelectionRowLabel(
 };
 
 /// Whole rates lose the decimals: "3 sats/vB" rather than "3.00 sats/vB".
-String _formattedRate(double satPerVbyte) =>
-    satPerVbyte == satPerVbyte.roundToDouble()
-    ? satPerVbyte.toStringAsFixed(0)
-    : satPerVbyte.toStringAsFixed(2);
+String _formattedRate(double satPerVbyte) {
+  final decimals = satPerVbyte == satPerVbyte.roundToDouble() ? 0 : 2;
+  return BullNumberFormat.decimal(
+    satPerVbyte,
+    minDecimals: decimals,
+    maxDecimals: decimals,
+  );
+}

@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_fie
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullAmountController;
 
 class SellAmountInputField extends StatelessWidget {
   const SellAmountInputField({
@@ -15,7 +16,7 @@ class SellAmountInputField extends StatelessWidget {
     required this._onIsFiatCurrencyInputChanged,
   });
 
-  final TextEditingController _amountController;
+  final BullAmountController _amountController;
   final FocusNode _focusNode;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;

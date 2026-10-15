@@ -3,10 +3,14 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
-import 'package:intl/intl.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAmountController,
+        BullAmountInputFormatter,
+        BullNumberFormat,
+        BullShimmerLine,
+        Gap;
 
 class BuyAmountInputFields extends StatefulWidget {
   const BuyAmountInputFields({super.key, required this.focusNode});
@@ -18,16 +22,16 @@ class BuyAmountInputFields extends StatefulWidget {
 }
 
 class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
-  late TextEditingController _amountController;
+  late BullAmountController _amountController;
 
   @override
   void initState() {
     // Initialize the controller with the amount input from state if available
     final amountInput = context.read<BuyBloc>().state.amountInput;
-    _amountController = TextEditingController(text: amountInput);
+    _amountController = BullAmountController(amount: amountInput);
     _amountController.addListener(() {
       context.read<BuyBloc>().add(
-        BuyEvent.amountInputChanged(_amountController.text),
+        BuyEvent.amountInputChanged(_amountController.amount),
       );
     });
 
@@ -92,24 +96,23 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters: amountInputDecimals > 0
-                              ? [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(
-                                      r'^\d+\.?\d{0,'
-                                      '$amountInputDecimals'
-                                      '}',
-                                    ),
-                                  ),
-                                ]
-                              : [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            BullAmountInputFormatter(
+                              isFiatCurrencyInput
+                                  ? currency.code
+                                  : bitcoinUnit.code,
+                              maxDecimals: amountInputDecimals,
+                            ),
+                          ],
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
-                            hintText: NumberFormat.decimalPatternDigits(
-                              decimalDigits: amountInputDecimals,
-                            ).format(0),
+                            hintText: BullNumberFormat.decimal(
+                              0,
+                              minDecimals: amountInputDecimals,
+                              maxDecimals: amountInputDecimals,
+                            ),
                             hintStyle: context.font.displaySmall?.copyWith(
                               color: context.appColors.onSurfaceVariant,
                             ),
@@ -186,7 +189,8 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                                 const BuyEvent.fiatCurrencyInputToggled(),
                               );
                             }
-                            _amountController.text = balance?.toString() ?? '0';
+                            _amountController.amount =
+                                balance?.toString() ?? '0';
                           },
                           child: Text(
                             context.loc.buyMax,

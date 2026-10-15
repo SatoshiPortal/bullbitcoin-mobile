@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullAmountController;
 
 class ReceiveAmountInput extends StatefulWidget {
   const ReceiveAmountInput({super.key, required this.focusNode});
@@ -15,16 +16,16 @@ class ReceiveAmountInput extends StatefulWidget {
 }
 
 class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
-  late final TextEditingController _amountController;
+  late final BullAmountController _amountController;
   late final VoidCallback _focusListener;
 
   @override
   void initState() {
     super.initState();
     final bloc = context.read<ReceiveBloc>();
-    _amountController = TextEditingController(text: bloc.state.inputAmount);
+    _amountController = BullAmountController(amount: bloc.state.inputAmount);
     _amountController.addListener(() {
-      final text = _amountController.text;
+      final text = _amountController.amount;
       if (text != bloc.state.inputAmount) {
         bloc.add(ReceiveAmountInputChanged(text));
       }

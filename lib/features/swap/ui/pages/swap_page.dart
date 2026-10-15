@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullSwitch, Gap;
+    show BullAmountController, BullFadingLinearProgress, BullSwitch, Gap;
 
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
@@ -33,7 +33,7 @@ class SwapPage extends StatefulWidget {
 
 class SwapPageState extends State<SwapPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _amountController = TextEditingController();
+  final _amountController = BullAmountController();
   final FocusNode _amountNode = FocusNode();
   int _amountSat = 0;
 
@@ -44,22 +44,22 @@ class SwapPageState extends State<SwapPage> {
     final bitcoinUnit = bloc.state.bitcoinUnit;
     final initialAmount = bloc.state.amount;
     if (initialAmount.isNotEmpty) {
-      _amountController.text = initialAmount;
+      _amountController.amount = initialAmount;
     }
     _amountController.addListener(() {
       // Keep the bloc in sync for programmatic changes too (Max button,
       // initial amount) — TextField.onChanged only fires for typing.
       context.read<TransferBloc>().add(
-        TransferEvent.amountChanged(_amountController.text),
+        TransferEvent.amountChanged(_amountController.amount),
       );
       // Keep the amount in satoshis updated so we can use it elsewhere to
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
       // and SwapFeesRow.
       setState(() {
         _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
+            ? int.tryParse(_amountController.amount) ?? 0
             : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
+                double.tryParse(_amountController.amount) ?? 0,
               );
       });
     });
@@ -77,8 +77,8 @@ class SwapPageState extends State<SwapPage> {
     return BlocListener<TransferBloc, TransferState>(
       listenWhen: (previous, current) => previous.amount != current.amount,
       listener: (context, state) {
-        if (state.amount != _amountController.text) {
-          _amountController.text = state.amount;
+        if (state.amount != _amountController.amount) {
+          _amountController.amount = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
             _amountSat = bitcoinUnit == BitcoinUnit.sats
@@ -370,7 +370,9 @@ class SwapPageState extends State<SwapPage> {
                               return;
                             }
                             context.read<TransferBloc>().add(
-                              TransferEvent.swapCreated(_amountController.text),
+                              TransferEvent.swapCreated(
+                                _amountController.amount,
+                              ),
                             );
                           },
                         );
