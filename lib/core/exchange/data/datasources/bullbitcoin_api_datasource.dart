@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:dio/dio.dart';
 
 class BullbitcoinApiDatasource {

@@ -4128,10 +4128,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Recipients - 곧 출시",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "ledgerWalletTypeLabel": "지갑 유형:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"
