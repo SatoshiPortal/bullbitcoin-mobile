@@ -520,8 +520,14 @@ class Logger {
       RegExp(r'\b(?:[0-9a-fA-F]{32,}|[A-Za-z0-9+/]{32,}={0,2})\b'),
       '[REDACTED]',
     );
+    // A run of 12 or more BIP39-sized words (3 to 8 letters), separated by
+    // spaces or by the quotes, commas and brackets of a JSON array or a freezed
+    // toString(). Unbounded so words before a mnemonic cannot push its tail out.
     value = value.replaceAll(
-      RegExp(r'\b(?:[a-z]+\s+){11,23}[a-z]+\b', caseSensitive: false),
+      RegExp(
+        r'''\b(?:[a-z]{3,8}[\s",\[\]]+){11,}[a-z]{3,8}\b''',
+        caseSensitive: false,
+      ),
       '[REDACTED]',
     );
     value = value.replaceAll(
