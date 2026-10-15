@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/buy/ui/widgets/buy_cubes_loader.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -131,7 +132,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                   const Gap(16),
                 ],
                 if (isAcceleratingOrder)
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: BuyCubesLoader())
                 else
                   BullButton.big(
                     label: context.loc.buyWaitForFreeWithdrawal,
