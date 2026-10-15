@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/labels/application/usecases/import_labels_fro
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/presentation/cubit.dart';
+import 'package:bb_mobile/features/labels/presentation/labels_file_picker.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,7 @@ class _MockExport extends Mock implements ExportLabelsUsecase {}
 
 class _MockImportFromFile extends Mock implements ImportLabelsFromFileUsecase {}
 
-class _MockFilePicker extends Mock implements FilePicker {}
+class _MockFilePicker extends Mock implements LabelsFilePicker {}
 
 const _path = '/tmp/picked/labels.jsonl';
 

@@ -40,7 +40,7 @@ Future<void> shareLogsAsFile(List<String> logs) async {
 
 /// Returns true if the file was saved, false if the user cancelled.
 Future<bool> exportLogsAsFile(List<String> logs) async {
-  final result = await FilePicker.platform.saveFile(
+  final result = await FilePicker.saveFile(
     bytes: utf8.encode(logs.join('\n')),
     fileName: _timestampedLogFileName(),
   );

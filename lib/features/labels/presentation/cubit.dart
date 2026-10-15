@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/labels/application/usecases/export_labels_use
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/features/labels/presentation/labels_file_picker.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,14 +15,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
   final ExportLabelsUsecase _exportLabelsUsecase;
   final ImportLabelsFromFileUsecase _importLabelsFromFileUsecase;
-  final FilePicker _filePicker;
+  final LabelsFilePicker _filePicker;
 
   Bip329LabelsCubit({
     required this._exportLabelsUsecase,
     required this._importLabelsFromFileUsecase,
-    FilePicker? filePicker,
-  }) : _filePicker = filePicker ?? FilePicker.platform,
-       super(const Bip329LabelsState.initial());
+    this._filePicker = const LabelsFilePicker(),
+  }) : super(const Bip329LabelsState.initial());
 
   Future<void> exportLabels(LabelFormat format) async {
     emit(const Bip329LabelsState.loading());

@@ -7,7 +7,7 @@ class FileStorageDatasource {
   FileStorageDatasource();
 
   Future<File> pickFile({List<String>? extensions}) async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       allowedExtensions: extensions,
       type: extensions != null ? FileType.custom : FileType.any,
     );
@@ -18,10 +18,7 @@ class FileStorageDatasource {
 
   Future<void> saveFile(String content, String filename) async {
     final bytes = utf8.encode(content);
-    final result = await FilePicker.platform.saveFile(
-      bytes: bytes,
-      fileName: filename,
-    );
+    final result = await FilePicker.saveFile(bytes: bytes, fileName: filename);
 
     if (result == null) throw FileStorageException('File not saved');
   }
