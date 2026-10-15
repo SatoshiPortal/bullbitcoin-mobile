@@ -164,6 +164,21 @@ void main() {
     expect(clipboard.text, isEmpty);
   });
 
+  testWidgets('keeps the vault key out of the accessibility tree', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(_app(const ViewVaultKeyPage(vaultKey: _vaultKey)));
+    expect(find.bySemanticsLabel(RegExp('a1b2c3')), findsNothing);
+
+    await tester.tap(find.byIcon(Icons.visibility_outlined));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel(RegExp('a1b2')), findsNothing);
+    // Not selectable, so it is only copied through the clearing buttons.
+    expect(find.byType(SelectableText), findsNothing);
+    semantics.dispose();
+  });
+
   testWidgets('CopyInput leaves the clipboard alone unless asked', (
     tester,
   ) async {

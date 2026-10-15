@@ -48,6 +48,7 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
 
                 clipboardText: vaultKey,
                 clearClipboardAfter: const Duration(seconds: 30),
+                secret: true,
                 overflow: .clip,
                 modalContent: vaultKey
                     .replaceAllMapped(

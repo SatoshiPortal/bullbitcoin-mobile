@@ -19,6 +19,7 @@ class CopyInput extends StatefulWidget {
     this.modalTitle,
     this.modalContent,
     this.clearClipboardAfter,
+    this.secret = false,
   });
 
   final String text;
@@ -33,6 +34,10 @@ class CopyInput extends StatefulWidget {
   // For secrets: clears the copied value after this delay, or when the widget
   // goes away, unless something else was copied since.
   final Duration? clearClipboardAfter;
+  // For secrets: keeps the shown and revealed value out of the accessibility
+  // tree, and the revealed value unselectable so it is only copied through the
+  // copy buttons.
+  final bool secret;
 
   @override
   State<CopyInput> createState() => _CopyInputState();
@@ -104,13 +109,16 @@ class _CopyInputState extends State<CopyInput> {
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: isValueLoading
                     ? const BullShimmerLine()
-                    : Text(
-                        text,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.secondary,
+                    : ExcludeSemantics(
+                        excluding: widget.secret,
+                        child: Text(
+                          text,
+                          style: context.font.bodyLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
+                          maxLines: maxLines,
+                          overflow: overflow,
                         ),
-                        maxLines: maxLines,
-                        overflow: overflow,
                       ),
               ),
             ),
@@ -159,10 +167,17 @@ class _CopyInputState extends State<CopyInput> {
             : null,
 
         content: SingleChildScrollView(
-          child: SelectableText(
-            modalContent ?? text,
-            style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
-          ),
+          child: widget.secret
+              ? ExcludeSemantics(
+                  child: Text(
+                    modalContent ?? text,
+                    style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+                  ),
+                )
+              : SelectableText(
+                  modalContent ?? text,
+                  style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+                ),
         ),
         actions: [
           if (canCopy)
