@@ -62,6 +62,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   Future<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>?
   _pendingRoutePreparation;
   RecoverBullTorRoute? _flowRoute;
+  int _routeBorrowers = 0;
+  RecoverBullTorRoute? _releaseAfterBorrow;
   tor.TorSource? _pendingRouteFailureSource;
   int _routeGeneration = 0;
   bool _closingBloc = false;
@@ -369,8 +371,30 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // A failed check cannot tell a dead SOCKS session from a server outage. Dropping the route makes the next check acquire a fresh one instead of retrying through a session that may be gone.
   Future<void> _releaseFlowRoute(RecoverBullTorRoute route) async {
     if (!identical(_flowRoute, route)) return;
+    if (_routeBorrowers > 0) {
+      // Each session is its own SOCKS listener: closing it now would fail the fetch or store running on it.
+      _releaseAfterBorrow = route;
+      return;
+    }
     _flowRoute = null;
     await _closeRoute(route);
+  }
+
+  // Runs a key-server call on the retained route, if any. A release requested meanwhile waits for the last borrower.
+  Future<T> _borrowRoute<T>(
+    Future<T> Function(RecoverBullTorRoute? route) call,
+  ) async {
+    _routeBorrowers++;
+    try {
+      return await call(_flowRoute);
+    } finally {
+      _routeBorrowers--;
+      final pending = _releaseAfterBorrow;
+      if (_routeBorrowers == 0 && pending != null) {
+        _releaseAfterBorrow = null;
+        await _releaseFlowRoute(pending);
+      }
+    }
   }
 
   Future<void> _onVaultPasswordSet(
@@ -496,8 +520,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           return;
       }
 
-      final checked = await _checkKeyServerConnectionUsecase.execute(
-        route: _flowRoute,
+      final checked = await _borrowRoute(
+        (route) => _checkKeyServerConnectionUsecase.execute(route: route),
       );
       if (!isCurrent()) return;
       switch (checked) {
@@ -540,11 +564,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
 
       if (!isCurrent()) return;
-      final keyStored = await _storeVaultKeyIntoServerUsecase.execute(
-        route: _flowRoute,
-        password: event.password,
-        vault: vault,
-        vaultKey: vaultKey,
+      final keyStored = await _borrowRoute(
+        (route) => _storeVaultKeyIntoServerUsecase.execute(
+          route: route,
+          password: event.password,
+          vault: vault,
+          vaultKey: vaultKey,
+        ),
       );
       if (!isCurrent()) return;
       if (keyStored case Err(:final failure)) {
@@ -572,11 +598,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       emit(state.copyWith(isLoading: true, vaultKey: null));
 
-      switch (await _fetchVaultKeyFromServerUsecase.execute(
-        route: _flowRoute,
-        vault: event.vault,
-        password: event.password,
-      )) {
+      final fetched = await _borrowRoute(
+        (route) => _fetchVaultKeyFromServerUsecase.execute(
+          route: route,
+          vault: event.vault,
+          password: event.password,
+        ),
+      );
+      switch (fetched) {
         case Ok(:final value):
           emit(state.copyWith(vaultKey: value));
           log.fine('Vault key fetched from server');

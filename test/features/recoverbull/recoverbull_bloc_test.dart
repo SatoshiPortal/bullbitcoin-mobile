@@ -816,6 +816,45 @@ void main() {
       },
     );
 
+    test('a failed check waits for a fetch borrowing the route', () async {
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      final vault = _MockEncryptedVault();
+      final fetching = Completer<Result<String, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => fetchKey.execute(vault: vault, password: 'pw', route: route),
+      ).thenAnswer((_) => fetching.future);
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(const OnVaultPasswordSet(password: 'pw'));
+      await pumpEventQueue();
+      // The status indicator in the app bar lets the user check mid-fetch.
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(false));
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
+      // The SOCKS listener stays up until the fetch returns.
+      expect(closed, 0);
+      fetching.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+      expect(closed, 1);
+    });
+
     test('a diagnostic while connecting keeps the route', () async {
       final states = StreamController<TorConnectionState>();
       when(() => watchTor.execute()).thenAnswer((_) => states.stream);
