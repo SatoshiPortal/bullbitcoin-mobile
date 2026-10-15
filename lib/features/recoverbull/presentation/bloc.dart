@@ -63,7 +63,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   _pendingRoutePreparation;
   RecoverBullTorRoute? _flowRoute;
   int _routeBorrowers = 0;
-  RecoverBullTorRoute? _releaseAfterBorrow;
+  final List<RecoverBullTorRoute> _routesToCloseAfterBorrow = [];
   tor.TorSource? _pendingRouteFailureSource;
   int _routeGeneration = 0;
   bool _closingBloc = false;
@@ -181,8 +181,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         next is tor.TorUninitialized ||
         next is tor.TorUnavailable;
     if (route != null && invalidated) {
-      _flowRoute = null;
-      await _closeRoute(route);
+      await _retireFlowRoute(route);
       if (isClosed || _closingBloc) return;
     }
     emit(state.copyWith(torConnection: next));
@@ -220,8 +219,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     emit(
       state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
     );
-    _flowRoute = null;
-    if (retained != null) await _closeRoute(retained);
+    if (retained != null) await _retireFlowRoute(retained);
     if (isClosed || _closingBloc) return;
     var restartEmbedded = event.restart;
     while (!isClosed && !_closingBloc && generation == _routeGeneration) {
@@ -371,16 +369,20 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // A failed check cannot tell a dead SOCKS session from a server outage. Dropping the route makes the next check acquire a fresh one instead of retrying through a session that may be gone.
   Future<void> _releaseFlowRoute(RecoverBullTorRoute route) async {
     if (!identical(_flowRoute, route)) return;
+    await _retireFlowRoute(route);
+  }
+
+  // The one way a route leaves the flow: nothing borrows it from now on, and its SOCKS listener closes once the last borrower returns, since closing it under a fetch or store would fail that call.
+  Future<void> _retireFlowRoute(RecoverBullTorRoute route) async {
+    if (identical(_flowRoute, route)) _flowRoute = null;
     if (_routeBorrowers > 0) {
-      // Each session is its own SOCKS listener: closing it now would fail the fetch or store running on it.
-      _releaseAfterBorrow = route;
+      _routesToCloseAfterBorrow.add(route);
       return;
     }
-    _flowRoute = null;
     await _closeRoute(route);
   }
 
-  // Runs a key-server call on the retained route, if any. A release requested meanwhile waits for the last borrower.
+  // Runs a key-server call on the retained route, if any.
   Future<T> _borrowRoute<T>(
     Future<T> Function(RecoverBullTorRoute? route) call,
   ) async {
@@ -389,10 +391,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       return await call(_flowRoute);
     } finally {
       _routeBorrowers--;
-      final pending = _releaseAfterBorrow;
-      if (_routeBorrowers == 0 && pending != null) {
-        _releaseAfterBorrow = null;
-        await _releaseFlowRoute(pending);
+      if (_routeBorrowers == 0) {
+        final pending = [..._routesToCloseAfterBorrow];
+        _routesToCloseAfterBorrow.clear();
+        for (final route in pending) {
+          await _closeRoute(route);
+        }
       }
     }
   }
