@@ -12066,5 +12066,7 @@
   "recipientsVirtualIbanBankAddress": "ব্যাংকের ঠিকানা",
   "recipientsVirtualIbanBankAddressHelp": "ব্যাংকের অফিসিয়াল ঠিকানা, যদি আপনার ব্যাংক চায়।",
   "recipientsConfidentialSepaNameMustMatchHint": "আপনার ব্যাংক এবং ভার্চুয়াল IBAN অ্যাকাউন্টের নাম মিলতে হবে, না হলে ট্রান্সফার স্বয়ংক্রিয়ভাবে ফেরত পাঠানো হবে।",
-  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে"
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
+  "recoverbullSettingsUrlNoPath": "শুধু ঠিকানাটি লিখুন, পাথ ছাড়া",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL-এ ব্যবহারকারীর নাম, পাসওয়ার্ড, কোয়েরি বা ফ্র্যাগমেন্ট থাকা যাবে না"
 }

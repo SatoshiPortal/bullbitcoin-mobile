@@ -4862,5 +4862,7 @@
   "recipientsVirtualIbanBankAddress": "Pankin osoite",
   "recipientsVirtualIbanBankAddressHelp": "Virallinen pankin osoite siltä varalta, että pankkisi vaatii sitä.",
   "recipientsConfidentialSepaNameMustMatchHint": "Pankkisi ja virtuaalisten IBAN-tiliesi nimien on vastattava toisiaan, tai siirrot palautetaan automaattisesti.",
-  "copiedToClipboard": "Kopioitu leikepöydälle"
+  "copiedToClipboard": "Kopioitu leikepöydälle",
+  "recoverbullSettingsUrlNoPath": "Syötä vain osoite ilman polkua",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL-osoite ei saa sisältää käyttäjänimeä, salasanaa, kyselyä tai fragmenttia"
 }

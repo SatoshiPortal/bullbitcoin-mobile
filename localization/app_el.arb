@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "Διεύθυνση τράπεζας",
   "recipientsVirtualIbanBankAddressHelp": "Η επίσημη διεύθυνση της τράπεζας, σε περίπτωση που τη ζητήσει η τράπεζά σας.",
   "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα.",
-  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο"
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
+  "recoverbullSettingsUrlNoPath": "Εισαγάγετε μόνο τη διεύθυνση, χωρίς διαδρομή",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "Το URL δεν πρέπει να περιέχει όνομα χρήστη, κωδικό, ερώτημα ή τμήμα"
 }

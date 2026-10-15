@@ -12244,5 +12244,7 @@
   "recipientsVirtualIbanBankAddress": "Bank ka pata",
   "recipientsVirtualIbanBankAddressHelp": "Bank ka official pata, agar aapka bank maange.",
   "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge.",
-  "copiedToClipboard": "Clipboard par copy kiya gaya"
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "recoverbullSettingsUrlNoPath": "Sirf address daalein, bina path ke",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL mein username, password, query ya fragment nahi hona chahiye"
 }

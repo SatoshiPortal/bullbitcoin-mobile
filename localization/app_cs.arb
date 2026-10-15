@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "Adresa banky",
   "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.",
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
-  "copiedToClipboard": "Zkopírováno do schránky"
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "recoverbullSettingsUrlNoPath": "Zadejte pouze adresu, bez cesty",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL nesmí obsahovat uživatelské jméno, heslo, dotaz ani fragment"
 }

@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "نشانی بانک",
   "recipientsVirtualIbanBankAddressHelp": "نشانی رسمی بانک، در صورتی که بانک شما آن را بخواهد.",
   "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
-  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "recoverbullSettingsUrlNoPath": "فقط آدرس را وارد کنید، بدون مسیر",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "آدرس نباید شامل نام کاربری، رمز عبور، کوئری یا فرگمنت باشد"
 }

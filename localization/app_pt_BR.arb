@@ -11874,5 +11874,7 @@
   "recipientsVirtualIbanBankAddress": "Endereço do banco",
   "recipientsVirtualIbanBankAddressHelp": "O endereço oficial do banco, caso seu banco solicite.",
   "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual precisam corresponder, caso contrário as transferências serão devolvidas automaticamente.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "recoverbullSettingsUrlNoPath": "Insira apenas o endereço, sem caminho",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "O URL não deve conter nome de usuário, senha, consulta ou fragmento"
 }

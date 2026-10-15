@@ -11865,5 +11865,7 @@
   "recipientsVirtualIbanBankAddress": "عنوان المصرف",
   "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك.",
   "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.",
-  "copiedToClipboard": "تم النسخ إلى الحافظة"
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "recoverbullSettingsUrlNoPath": "أدخل العنوان فقط، بدون مسار",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "يجب ألا يحتوي الرابط على اسم مستخدم أو كلمة مرور أو استعلام أو جزء"
 }

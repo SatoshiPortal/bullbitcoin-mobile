@@ -2,6 +2,10 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recoverbull/domain/key_server_url.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/recoverbull_failure_l10n.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -55,10 +59,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _saveUrl() async {
     if (!_formKey.currentState!.validate()) return;
+    final parsed = KeyServerUrl.parse(_urlController.text);
+    if (parsed is! Ok<KeyServerUrl, InvalidKeyServerUrlFailure>) return;
 
     setState(() => _isSaving = true);
     try {
-      final url = Uri.parse(_urlController.text);
+      final url = parsed.value.uri;
       await _storeUrlUsecase.execute(url);
       _originalUrl = url.toString();
       if (mounted) {
@@ -80,20 +86,11 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  String? _validateUrl(String? value) {
-    if (value == null || value.isEmpty) {
-      return context.loc.recoverbullSettingsUrlRequired;
-    }
-    final uri = Uri.tryParse(value);
-    if (uri == null) return context.loc.recoverbullSettingsUrlInvalid;
-    if (uri.scheme != 'http') {
-      return context.loc.recoverbullSettingsUrlMustBeHttp;
-    }
-    if (!uri.toString().endsWith('.onion')) {
-      return context.loc.recoverbullSettingsUrlMustBeOnion;
-    }
-    return null;
-  }
+  String? _validateUrl(String? value) =>
+      switch (KeyServerUrl.parse(value ?? '')) {
+        Ok() => null,
+        Err(:final failure) => failure.toTranslated(context),
+      };
 
   @override
   Widget build(BuildContext context) {

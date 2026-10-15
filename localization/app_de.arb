@@ -5085,5 +5085,7 @@
   "recipientsVirtualIbanBankAddress": "Bankadresse",
   "recipientsVirtualIbanBankAddressHelp": "Die offizielle Bankadresse, falls Ihre Bank diese benötigt.",
   "recipientsConfidentialSepaNameMustMatchHint": "Die Namen Ihres Bankkontos und Ihres virtuellen IBAN-Kontos müssen übereinstimmen, sonst werden Überweisungen automatisch zurückgesendet.",
-  "copiedToClipboard": "In die Zwischenablage kopiert"
+  "copiedToClipboard": "In die Zwischenablage kopiert",
+  "recoverbullSettingsUrlNoPath": "Nur die Adresse eingeben, ohne Pfad",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL darf keinen Benutzernamen, kein Passwort, keine Abfrage und kein Fragment enthalten"
 }

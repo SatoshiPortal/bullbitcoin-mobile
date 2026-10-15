@@ -9233,5 +9233,7 @@
   "recipientsVirtualIbanBankAddress": "বেংকৰ ঠিকনা",
   "recipientsVirtualIbanBankAddressHelp": "বেংকৰ চৰকাৰী ঠিকনা, যদি আপোনাৰ বেংকে বিচাৰে।",
   "recipientsConfidentialSepaNameMustMatchHint": "আপোনাৰ বেংক আৰু ভাৰ্চুৱেল IBAN একাউণ্টৰ নাম মিলিব লাগিব, নহ’লে স্থানান্তৰ স্বয়ংক্ৰিয়ভাৱে ঘূৰাই পঠিওৱা হ’ব।",
-  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "recoverbullSettingsUrlNoPath": "কেৱল ঠিকনাটো দিয়ক, পথ নোহোৱাকৈ",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL ত ব্যৱহাৰকাৰীৰ নাম, পাছৱৰ্ড, কুৱেৰী বা ফ্ৰেগমেণ্ট থাকিব নালাগে"
 }

@@ -3667,5 +3667,7 @@
   "recipientsVirtualIbanBankAddress": "Địa chỉ ngân hàng",
   "recipientsVirtualIbanBankAddressHelp": "Địa chỉ chính thức của ngân hàng, phòng khi ngân hàng của bạn yêu cầu.",
   "recipientsConfidentialSepaNameMustMatchHint": "Tên tại ngân hàng và tài khoản IBAN ảo của bạn phải khớp nhau, nếu không giao dịch chuyển sẽ bị hoàn lại tự động.",
-  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm"
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
+  "recoverbullSettingsUrlNoPath": "Chỉ nhập địa chỉ, không kèm đường dẫn",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL không được chứa tên người dùng, mật khẩu, truy vấn hoặc phân đoạn"
 }

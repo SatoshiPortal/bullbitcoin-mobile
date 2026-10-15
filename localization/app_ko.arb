@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "은행 주소",
   "recipientsVirtualIbanBankAddressHelp": "은행에서 요구하는 경우 사용할 공식 은행 주소입니다.",
   "recipientsConfidentialSepaNameMustMatchHint": "은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다.",
-  "copiedToClipboard": "클립보드에 복사되었습니다"
+  "copiedToClipboard": "클립보드에 복사되었습니다",
+  "recoverbullSettingsUrlNoPath": "경로 없이 주소만 입력하세요",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL에 사용자 이름, 비밀번호, 쿼리 또는 프래그먼트를 포함할 수 없습니다"
 }

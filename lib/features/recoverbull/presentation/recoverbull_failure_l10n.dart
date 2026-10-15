@@ -25,6 +25,18 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.recoverbullSelectBackupFileNotValidError,
     VaultRateLimitedFailure(:final retryIn) =>
       context.loc.recoverbullErrorRateLimited(_cooldown(context, retryIn)),
+    InvalidKeyServerUrlFailure(:final reason) => switch (reason) {
+      KeyServerUrlRejection.empty => context.loc.recoverbullSettingsUrlRequired,
+      KeyServerUrlRejection.invalid =>
+        context.loc.recoverbullSettingsUrlInvalid,
+      KeyServerUrlRejection.notHttp =>
+        context.loc.recoverbullSettingsUrlMustBeHttp,
+      KeyServerUrlRejection.notOnion =>
+        context.loc.recoverbullSettingsUrlMustBeOnion,
+      KeyServerUrlRejection.hasCredentialsQueryOrFragment =>
+        context.loc.recoverbullSettingsUrlNoCredentialsQueryOrFragment,
+      KeyServerUrlRejection.hasPath => context.loc.recoverbullSettingsUrlNoPath,
+    },
     RecoverBullUnexpectedFailure() => context.loc.recoverbullErrorUnexpected,
   };
 

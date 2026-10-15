@@ -3790,5 +3790,7 @@
   "recipientsVirtualIbanBankAddress": "ბანკის მისამართი",
   "recipientsVirtualIbanBankAddressHelp": "ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს.",
   "recipientsConfidentialSepaNameMustMatchHint": "თქვენი ბანკისა და ვირტუალური IBAN ანგარიშების სახელები უნდა ემთხვეოდეს, წინააღმდეგ შემთხვევაში გადარიცხვები ავტომატურად დაბრუნდება.",
-  "copiedToClipboard": "დაკოპირდა ბუფერში"
+  "copiedToClipboard": "დაკოპირდა ბუფერში",
+  "recoverbullSettingsUrlNoPath": "შეიყვანეთ მხოლოდ მისამართი, ბილიკის გარეშე",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL არ უნდა შეიცავდეს მომხმარებლის სახელს, პაროლს, მოთხოვნას ან ფრაგმენტს"
 }

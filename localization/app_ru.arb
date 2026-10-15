@@ -4880,5 +4880,7 @@
   "recipientsVirtualIbanBankAddress": "Адрес банка",
   "recipientsVirtualIbanBankAddressHelp": "Официальный адрес банка, если ваш банк его запросит.",
   "recipientsConfidentialSepaNameMustMatchHint": "Имена в вашем банке и в виртуальном IBAN должны совпадать, иначе переводы будут автоматически возвращены.",
-  "copiedToClipboard": "Скопировано в буфер обмена"
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "recoverbullSettingsUrlNoPath": "Введите только адрес, без пути",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL не должен содержать имя пользователя, пароль, запрос или фрагмент"
 }

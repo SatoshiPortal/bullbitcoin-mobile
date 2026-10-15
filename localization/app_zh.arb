@@ -4874,5 +4874,7 @@
   "recipientsVirtualIbanBankAddress": "银行地址",
   "recipientsVirtualIbanBankAddressHelp": "银行的官方地址，以备您的银行要求时使用。",
   "recipientsConfidentialSepaNameMustMatchHint": "您的银行账户与虚拟 IBAN 账户的姓名必须一致，否则转账将被自动退回。",
-  "copiedToClipboard": "已复制到剪贴板"
+  "copiedToClipboard": "已复制到剪贴板",
+  "recoverbullSettingsUrlNoPath": "只输入地址，不要包含路径",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL 不得包含用户名、密码、查询或片段"
 }

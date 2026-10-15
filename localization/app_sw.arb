@@ -3679,5 +3679,7 @@
   "recipientsVirtualIbanBankAddress": "Anwani ya benki",
   "recipientsVirtualIbanBankAddressHelp": "Anwani rasmi ya benki, ikiwa benki yako itaiomba.",
   "recipientsConfidentialSepaNameMustMatchHint": "Majina kwenye benki yako na akaunti ya IBAN pepe lazima yalingane, la sivyo uhamisho utarudishwa kiotomatiki.",
-  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili"
+  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili",
+  "recoverbullSettingsUrlNoPath": "Weka anwani pekee, bila njia",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL haipaswi kuwa na jina la mtumiaji, nenosiri, hoja au kipande"
 }

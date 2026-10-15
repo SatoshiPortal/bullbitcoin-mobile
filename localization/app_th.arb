@@ -11866,5 +11866,7 @@
   "recipientsVirtualIbanBankAddress": "ที่อยู่ธนาคาร",
   "recipientsVirtualIbanBankAddressHelp": "ที่อยู่อย่างเป็นทางการของธนาคาร ในกรณีที่ธนาคารของคุณขอ",
   "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
-  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "recoverbullSettingsUrlNoPath": "ป้อนเฉพาะที่อยู่ โดยไม่มีพาธ",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL ต้องไม่มีชื่อผู้ใช้ รหัสผ่าน คิวรี หรือแฟรกเมนต์"
 }

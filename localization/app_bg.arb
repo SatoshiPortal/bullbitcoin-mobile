@@ -9969,5 +9969,7 @@
   "recipientsVirtualIbanBankAddress": "Адрес на банката",
   "recipientsVirtualIbanBankAddressHelp": "Официалният адрес на банката, ако банката ви го изисква.",
   "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично.",
-  "copiedToClipboard": "Копирано в клипборда"
+  "copiedToClipboard": "Копирано в клипборда",
+  "recoverbullSettingsUrlNoPath": "Въведете само адреса, без път",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL не трябва да съдържа потребителско име, парола, заявка или фрагмент"
 }

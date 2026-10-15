@@ -68,6 +68,23 @@ final class VaultRateLimitedFailure extends RecoverBullFailure {
   const VaultRateLimitedFailure({required this.retryIn});
 }
 
+/// Why a custom key-server address was refused; see `KeyServerUrl`.
+enum KeyServerUrlRejection {
+  empty,
+  invalid,
+  notHttp,
+  notOnion,
+  hasCredentialsQueryOrFragment,
+  hasPath,
+}
+
+/// A custom key-server address the client would refuse, caught when it is entered rather than at the next connection.
+final class InvalidKeyServerUrlFailure extends RecoverBullFailure {
+  final KeyServerUrlRejection reason;
+
+  const InvalidKeyServerUrlFailure(this.reason);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class RecoverBullUnexpectedFailure extends RecoverBullFailure {

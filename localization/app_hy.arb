@@ -3667,5 +3667,7 @@
   "recipientsVirtualIbanBankAddress": "Բանկի հասցեն",
   "recipientsVirtualIbanBankAddressHelp": "Բանկի պաշտոնական հասցեն, եթե ձեր բանկը այն պահանջի։",
   "recipientsConfidentialSepaNameMustMatchHint": "Ձեր բանկային և վիրտուալ IBAN հաշիվների անունները պետք է համընկնեն, հակառակ դեպքում փոխանցումները ավտոմատ կվերադարձվեն։",
-  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին",
+  "recoverbullSettingsUrlNoPath": "Մուտքագրեք միայն հասցեն՝ առանց ուղու",
+  "recoverbullSettingsUrlNoCredentialsQueryOrFragment": "URL-ը չպետք է պարունակի օգտանուն, գաղտնաբառ, հարցում կամ հատված"
 }
