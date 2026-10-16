@@ -197,6 +197,7 @@ void main() {
 
   test('buildPsbt persists its revealed change address', () async {
     final datasource = BdkWalletDatasource();
+    addTearDown(datasource.dispose);
     expect(
       await datasource.getLastRevealedAddressIndex(
         wallet: walletModel,

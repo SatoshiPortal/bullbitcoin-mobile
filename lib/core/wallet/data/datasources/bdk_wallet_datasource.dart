@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:isolate';
 import 'dart:io' show File;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
@@ -22,6 +23,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
+
+part 'bdk_wallet_sync_worker.dart';
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -50,16 +53,22 @@ class BdkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
+  final Map<String, Future<_BdkSyncWorker>> _syncWorkers = {};
   final Map<String, Object> _completedDiscovery = {};
+  final Map<String, Timer> _workerIdleTimers = {};
   bool _disposed = false;
+  final Duration _idleWorkerTimeout;
+  final Future<void> Function(SendPort) _syncWorkerEntryPoint;
   final Set<String> _deletingWallets = {};
   final StreamController<String> _walletSyncStartedController;
   final StreamController<String> _walletSyncFinishedController;
 
-  BdkWalletDatasource()
-    : _activeSyncs = {},
-      _walletSyncStartedController = StreamController<String>.broadcast(),
-      _walletSyncFinishedController = StreamController<String>.broadcast();
+  BdkWalletDatasource({
+    this._idleWorkerTimeout = const Duration(minutes: 10),
+    this._syncWorkerEntryPoint = _runSyncWorker,
+  }) : _activeSyncs = {},
+       _walletSyncStartedController = StreamController<String>.broadcast(),
+       _walletSyncFinishedController = StreamController<String>.broadcast();
 
   Stream<String> get walletSyncStartedStream =>
       _walletSyncStartedController.stream;
@@ -97,6 +106,7 @@ class BdkWalletDatasource {
       throw StateError('Cannot sync a wallet being deleted');
     }
     final publicWallet = wallet as PublicBdkWalletModel;
+    _workerIdleTimers.remove(wallet.id)?.cancel();
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
         _walletSyncStartedController.add(wallet.id);
@@ -123,13 +133,59 @@ class BdkWalletDatasource {
           databasePath: databasePath,
           fullDiscovery: needsDiscovery,
         );
-        await compute(_performSync, params);
-        if (needsDiscovery) _completedDiscovery[wallet.id] = walletContext;
+        final workerFuture = _syncWorkers.putIfAbsent(
+          wallet.id,
+          () => _BdkSyncWorker.start(entryPoint: _syncWorkerEntryPoint),
+        );
+        try {
+          final worker = await workerFuture;
+          await worker.sync(params);
+          if (!_disposed && electrumServer.socks5?.isNotEmpty != true) {
+            _scheduleIdleRetirement(wallet.id, workerFuture);
+          }
+          if (needsDiscovery) {
+            _completedDiscovery[wallet.id] = walletContext;
+          }
+        } catch (error) {
+          log.fine('BDK sync attempt failed (${error.runtimeType})');
+          // A retry-zero client cannot reconnect a dead transport itself.
+          await _retireWorker(wallet.id);
+          rethrow;
+        } finally {
+          // The route owner closes proxy sessions after this operation.
+          if (electrumServer.socks5?.isNotEmpty == true) {
+            await _retireWorker(wallet.id);
+          }
+        }
       } finally {
         _walletSyncFinishedController.add(wallet.id);
         _activeSyncs.remove(wallet.id);
       }
     });
+  }
+
+  void _scheduleIdleRetirement(String walletId, Future<_BdkSyncWorker> worker) {
+    _workerIdleTimers.remove(walletId)?.cancel();
+    _workerIdleTimers[walletId] = Timer(_idleWorkerTimeout, () {
+      _workerIdleTimers.remove(walletId);
+      if (_activeSyncs.containsKey(walletId) ||
+          !identical(_syncWorkers[walletId], worker)) {
+        return;
+      }
+      unawaited(_retireWorker(walletId));
+    });
+  }
+
+  Future<void> _retireWorker(String walletId) async {
+    _workerIdleTimers.remove(walletId)?.cancel();
+    final future = _syncWorkers.remove(walletId);
+    if (future == null) return;
+    try {
+      final worker = await future;
+      await worker.close();
+    } on Exception {
+      // A failed startup future owns no live worker; startup releases it.
+    }
   }
 
   Future<bool> isMine(
@@ -806,16 +862,28 @@ class BdkWalletDatasource {
   }
 
   Future<void> delete({required WalletModel wallet}) async {
-    if (!_deletingWallets.add(wallet.id)) return;
+    if (!_deletingWallets.add(wallet.id)) {
+      throw StateError('Wallet deletion already in progress');
+    }
     try {
       try {
-        await _activeSyncs[wallet.id];
-      } on Exception {
-        // A failed sync must not prevent deleting the wallet.
+        final active = _activeSyncs[wallet.id];
+        if (active != null) {
+          try {
+            await active;
+          } on Exception {
+            // Recoverable sync failures must not prevent deletion.
+          }
+        }
       } finally {
-        _completedDiscovery.remove(wallet.id);
-        await BdkFacade.delete(wallet);
+        try {
+          await _retireWorker(wallet.id);
+        } finally {
+          _completedDiscovery.remove(wallet.id);
+          await BdkFacade.delete(wallet);
+        }
       }
+      log.fine('Deleted wallet ${wallet.id} BDK database');
     } finally {
       _deletingWallets.remove(wallet.id);
     }
@@ -823,22 +891,30 @@ class BdkWalletDatasource {
 
   Future<void> dispose() async {
     _disposed = true;
+    for (final timer in _workerIdleTimers.values) {
+      timer.cancel();
+    }
+    _workerIdleTimers.clear();
     try {
       await Future.wait(
         _activeSyncs.values.toList().map((future) async {
           try {
             await future;
           } on Exception {
-            // Release resources after recoverable sync failures.
+            // Finish releasing resources after recoverable sync failures.
           }
         }),
       );
     } finally {
-      _completedDiscovery.clear();
-      await Future.wait([
-        _walletSyncStartedController.close(),
-        _walletSyncFinishedController.close(),
-      ]);
+      try {
+        await Future.wait(_syncWorkers.keys.toList().map(_retireWorker));
+      } finally {
+        _completedDiscovery.clear();
+        await Future.wait([
+          _walletSyncStartedController.close(),
+          _walletSyncFinishedController.close(),
+        ]);
+      }
     }
   }
 
@@ -865,76 +941,6 @@ class BdkWalletDatasource {
         rootIsolateToken: ServicesBinding.rootIsolateToken!,
       ),
     );
-  }
-}
-
-class _SyncParams {
-  final String walletId;
-  final String externalDescriptor;
-  final String internalDescriptor;
-  final bool isTestnet;
-  final ElectrumConnection connection;
-  final String databasePath;
-  final bool fullDiscovery;
-
-  _SyncParams({
-    required this.walletId,
-    required this.externalDescriptor,
-    required this.internalDescriptor,
-    required this.isTestnet,
-    required this.connection,
-    required this.databasePath,
-    required this.fullDiscovery,
-  });
-}
-
-Future<void> _performSync(_SyncParams params) async {
-  final connection = params.connection;
-  final blockchain = _createElectrumClient(
-    url: connection.url,
-    socks5: connection.socks5,
-    timeout: connection.effectiveTimeout,
-    retry: connection.retry,
-    validateDomain: connection.validateDomain,
-  );
-  try {
-    final wallet = WalletModel.publicBdk(
-      id: params.walletId,
-      externalDescriptor: params.externalDescriptor,
-      internalDescriptor: params.internalDescriptor,
-      isTestnet: params.isTestnet,
-    );
-    final loaded = await BdkFacade.loadOrCreatePublicWallet(
-      wallet,
-      databasePath: params.databasePath,
-    );
-    final bdkWallet = loaded.wallet;
-    try {
-      final batchSize = _batchSizeFor(connection.stopGap);
-      final update = !params.fullDiscovery && !loaded.created
-          ? blockchain.sync_(
-              request: bdkWallet.startSyncWithRevealedSpks().build(),
-              batchSize: batchSize,
-              fetchPrevTxouts: true,
-            )
-          : blockchain.fullScan(
-              request: bdkWallet.startFullScan().build(),
-              stopGap: connection.stopGap,
-              batchSize: batchSize,
-              fetchPrevTxouts: true,
-            );
-      bdkWallet.applyUpdate(update: update);
-      final persister = bdk.Persister.newSqlite(path: params.databasePath);
-      try {
-        bdkWallet.persist(persister: persister);
-      } finally {
-        persister.dispose();
-      }
-    } finally {
-      bdkWallet.dispose();
-    }
-  } finally {
-    blockchain.dispose();
   }
 }
 

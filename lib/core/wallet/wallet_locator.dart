@@ -44,6 +44,7 @@ class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<BdkWalletDatasource>(
       () => BdkWalletDatasource(),
+      dispose: (datasource) => datasource.dispose(),
     );
     locator.registerLazySingleton<LwkWalletDatasource>(
       () => LwkWalletDatasource(),
