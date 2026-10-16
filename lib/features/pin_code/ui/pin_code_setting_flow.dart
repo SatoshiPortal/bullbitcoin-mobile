@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/pin_code_failure_l10n.dart';
@@ -14,6 +13,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 class PinCodeSettingFlow extends StatelessWidget {
   const PinCodeSettingFlow({super.key});
@@ -32,9 +32,9 @@ class PinCodeSettingFlow extends StatelessWidget {
             case PinCodeSettingStatus.failure:
               log.info('Pin Code Set Failed');
               if (state.failure != null) {
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  state.failure!.toTranslated(context),
+                  message: state.failure!.toTranslated(context),
                 );
               }
               context.pop();
@@ -43,9 +43,9 @@ class PinCodeSettingFlow extends StatelessWidget {
               context.pop();
             case PinCodeSettingStatus.backupRequired:
               log.warning('Backup required before setting PIN');
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                context.loc.pinCodeBackupRequiredWarning,
+                message: context.loc.pinCodeBackupRequiredWarning,
               );
               context.goNamed(WalletRoute.walletHome.name);
               context.pushNamed(SettingsRoute.backupSettings.name);

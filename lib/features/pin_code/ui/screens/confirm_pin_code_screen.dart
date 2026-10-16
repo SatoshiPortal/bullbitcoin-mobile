@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialPad, BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullDialPad, BullInputText, BullTopBar, Gap;
 
 class ConfirmPinCodeScreen extends StatelessWidget {
   const ConfirmPinCodeScreen({super.key});
@@ -27,7 +26,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             onBack: backHandler,
             title: context.loc.pinCodeAuthentication,
           ),
@@ -154,7 +153,7 @@ class _ConfirmButton extends StatelessWidget {
       child: BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
         selector: (state) => state.canConfirm,
         builder: (context, canConfirm) {
-          return BBButton.big(
+          return BullButton.big(
             label: context.loc.pinCodeConfirm,
             textStyle: context.font.headlineLarge,
             bgColor: canConfirm
