@@ -195,6 +195,34 @@ void main() {
     }
   });
 
+  test('buildPsbt persists its revealed change address', () async {
+    final datasource = BdkWalletDatasource();
+    expect(
+      await datasource.getLastRevealedAddressIndex(
+        wallet: walletModel,
+        isChange: true,
+      ),
+      -1,
+    );
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      address: _externalTestnetAddress,
+      amountSat: 25000,
+      networkFee: const NetworkFee.relativeSatPerKwu(1000),
+    );
+    final tx = bdk.Psbt(psbtBase64: psbt).extractTx();
+    expect(tx.output(), hasLength(2));
+    // This method reloads from SQLite: an index held only by the builder
+    // cannot satisfy a later revealed-script sync.
+    expect(
+      await datasource.getLastRevealedAddressIndex(
+        wallet: walletModel,
+        isChange: true,
+      ),
+      greaterThanOrEqualTo(0),
+    );
+  });
+
   test(
     'buildPsbt honors manual UTXO selection: a manually selected UTXO must '
     'be spendable even when every other UTXO is frozen/unspendable',

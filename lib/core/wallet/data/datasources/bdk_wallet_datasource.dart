@@ -341,6 +341,8 @@ class BdkWalletDatasource {
       throw InsufficientFundsException(e.errorMessage);
     }
 
+    // Keep builder-revealed change scripts available to later wallet syncs.
+    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
     return psbt.serialize();
   }
 
@@ -787,6 +789,7 @@ class BdkWalletDatasource {
       feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: feeRate.satPerKwu),
     );
     final psbt = tx.finish(wallet: bdkWallet);
+    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
     return psbt.serialize();
   }
 
