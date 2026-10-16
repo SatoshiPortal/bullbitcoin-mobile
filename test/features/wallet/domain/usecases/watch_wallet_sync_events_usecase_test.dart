@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_discovery_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -40,6 +41,7 @@ void main() {
     watchFinished = _MockWatchFinished();
     watchElectrum = _MockWatchElectrum();
     usecase = WatchWalletSyncEventsUsecase(
+      watchDiscovery: _silentDiscovery(),
       watchStarted: watchStarted,
       watchFinished: watchFinished,
       watchElectrum: watchElectrum,
@@ -114,4 +116,12 @@ void main() {
 
     expect((events.single as Ok).value, result);
   });
+}
+
+class _MockWatchDiscovery extends Mock implements WatchWalletDiscoveryUsecase {}
+
+WatchWalletDiscoveryUsecase _silentDiscovery() {
+  final watch = _MockWatchDiscovery();
+  when(watch.execute).thenAnswer((_) => const Stream<bool>.empty());
+  return watch;
 }

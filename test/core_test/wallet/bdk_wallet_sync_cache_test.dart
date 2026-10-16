@@ -456,6 +456,53 @@ void main() {
     },
   );
 
+  test(
+    'discovery activity replays to late observers and ignores incremental sync',
+    () async {
+      final events = <bool>[];
+      final subscription = datasource.discoveryInProgressStream.listen(
+        events.add,
+      );
+      addTearDown(subscription.cancel);
+      final gate = Completer<void>();
+      server.historyGate = gate;
+      final first = sync();
+      await server.historyStarted.future.timeout(const Duration(seconds: 10));
+      await pumpEventQueue();
+      expect(events, [false, true]);
+      expect(await datasource.discoveryInProgressStream.first, isTrue);
+      gate.complete();
+      await first;
+      await pumpEventQueue();
+      expect(events, [false, true, false]);
+      events.clear();
+      await sync();
+      await pumpEventQueue();
+      expect(events, isEmpty);
+
+      final database = File(await BdkFacade.databasePathFor(wallet.hexId));
+      await database.writeAsString('corrupt SQLite fixture', flush: true);
+      await sync();
+      await pumpEventQueue();
+      expect(events, [
+        true,
+        false,
+      ], reason: 'Worker-side database recovery is discovery too');
+    },
+  );
+
+  test('failed full discovery clears its activity indicator', () async {
+    final events = <bool>[];
+    final subscription = datasource.discoveryInProgressStream.listen(
+      events.add,
+    );
+    addTearDown(subscription.cancel);
+    server.failHistory = true;
+    await expectLater(sync(), throwsA(isA<Exception>()));
+    await pumpEventQueue();
+    expect(events, [false, true, false]);
+  });
+
   test('simultaneous syncs for the same wallet share one execution', () async {
     final gate = Completer<void>();
     server.historyGate = gate;

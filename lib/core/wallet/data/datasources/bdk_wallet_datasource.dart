@@ -56,6 +56,9 @@ class BdkWalletDatasource {
   final Map<String, Future<_BdkSyncWorker>> _syncWorkers = {};
   final Map<String, Object> _completedDiscovery = {};
   final Map<String, Timer> _workerIdleTimers = {};
+  final Set<String> _discoveringWallets = {};
+  final StreamController<bool> _discoveryController =
+      StreamController<bool>.broadcast();
   bool _disposed = false;
   final Duration _idleWorkerTimeout;
   final Future<void> Function(SendPort) _syncWorkerEntryPoint;
@@ -75,6 +78,25 @@ class BdkWalletDatasource {
 
   Stream<String> get walletSyncFinishedStream =>
       _walletSyncFinishedController.stream;
+
+  /// Replay current activity so a newly mounted home can observe an existing scan.
+  Stream<bool> get discoveryInProgressStream =>
+      Stream<bool>.multi((controller) {
+        final subscription = _discoveryController.stream.listen(
+          controller.add,
+          onError: controller.addError,
+          onDone: controller.close,
+        );
+        controller.add(_discoveringWallets.isNotEmpty);
+        controller.onCancel = subscription.cancel;
+      });
+
+  void _setDiscovering(String walletId, bool discovering) {
+    final changed = discovering
+        ? _discoveringWallets.add(walletId)
+        : _discoveringWallets.remove(walletId);
+    if (changed) _discoveryController.add(_discoveringWallets.isNotEmpty);
+  }
 
   bool isWalletSyncing({String? walletId}) => walletId == null
       ? _activeSyncs.isNotEmpty
@@ -139,7 +161,10 @@ class BdkWalletDatasource {
         );
         try {
           final worker = await workerFuture;
-          await worker.sync(params);
+          await worker.sync(
+            params,
+            onDiscoveryStarted: () => _setDiscovering(wallet.id, true),
+          );
           if (!_disposed && electrumServer.socks5?.isNotEmpty != true) {
             _scheduleIdleRetirement(wallet.id, workerFuture);
           }
@@ -158,6 +183,7 @@ class BdkWalletDatasource {
           }
         }
       } finally {
+        _setDiscovering(wallet.id, false);
         _walletSyncFinishedController.add(wallet.id);
         _activeSyncs.remove(wallet.id);
       }
@@ -913,6 +939,7 @@ class BdkWalletDatasource {
         await Future.wait([
           _walletSyncStartedController.close(),
           _walletSyncFinishedController.close(),
+          _discoveryController.close(),
         ]);
       }
     }

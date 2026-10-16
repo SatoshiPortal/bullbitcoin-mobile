@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_discovery_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'dart:async';
 
@@ -157,6 +158,7 @@ WalletBloc _makeBloc({
     // The real wrappers over the same mocks, so assertions on the
     // coordinator and watchers still hold.
     watchWalletSyncEventsUsecase: WatchWalletSyncEventsUsecase(
+      watchDiscovery: _silentDiscovery(),
       watchStarted: watchStarted,
       watchFinished: watchFinished,
       watchElectrum: watchElectrum,
@@ -670,4 +672,12 @@ void main() {
       await bloc.close();
     });
   });
+}
+
+class _MockWatchDiscovery extends Mock implements WatchWalletDiscoveryUsecase {}
+
+WatchWalletDiscoveryUsecase _silentDiscovery() {
+  final watch = _MockWatchDiscovery();
+  when(watch.execute).thenAnswer((_) => const Stream<bool>.empty());
+  return watch;
 }

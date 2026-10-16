@@ -53,6 +53,31 @@ void main() {
     verify(() => coordinator.sync(trigger: SyncTrigger.user)).called(1);
   });
 
+  test(
+    'forwards a Bitcoin-only request for the pull completion boundary',
+    () async {
+      when(
+        () => coordinator.sync(
+          trigger: SyncTrigger.user,
+          only: {SyncKind.bitcoin},
+        ),
+      ).thenAnswer((_) async {});
+      expect(
+        await usecase.execute(
+          trigger: SyncTrigger.user,
+          only: {SyncKind.bitcoin},
+        ),
+        isA<Ok<void, WalletFailure>>(),
+      );
+      verify(
+        () => coordinator.sync(
+          trigger: SyncTrigger.user,
+          only: {SyncKind.bitcoin},
+        ),
+      ).called(1);
+    },
+  );
+
   test('sanitizes a throwing sync round into WalletSyncFailure', () async {
     when(() => coordinator.sync(trigger: any(named: 'trigger'))).thenThrow(
       Exception('electrum.blockstream.info:50002 handshake failed: cert'),

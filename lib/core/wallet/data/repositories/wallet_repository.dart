@@ -58,6 +58,9 @@ class WalletRepository {
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
 
+  Stream<bool> get walletDiscoveryStream =>
+      _bdkWallet.discoveryInProgressStream.distinct();
+
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
 

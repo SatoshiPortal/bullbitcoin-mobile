@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -20,9 +21,10 @@ class SyncWalletsUsecase {
   @useResult
   Future<Result<void, WalletFailure>> execute({
     SyncTrigger trigger = SyncTrigger.automatic,
+    Set<SyncKind>? only,
   }) async {
     try {
-      await _syncCoordinator.sync(trigger: trigger);
+      await _syncCoordinator.sync(trigger: trigger, only: only);
       return const Ok(null);
     } catch (e, st) {
       log.warning('SyncWallets: sync round failed', error: e, trace: st);

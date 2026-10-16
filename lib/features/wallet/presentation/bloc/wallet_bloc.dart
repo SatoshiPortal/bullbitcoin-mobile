@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
@@ -48,6 +49,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted, transformer: restartable());
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
+    on<WalletRefreshRequested>((event, emit) async {
+      try {
+        await _onRefreshed(
+          const WalletRefreshed(trigger: SyncTrigger.user),
+          emit,
+          discoveryCompleted: event.discoveryCompleted,
+        );
+      } finally {
+        if (!event.discoveryCompleted.isCompleted) {
+          event.discoveryCompleted.complete();
+        }
+      }
+    });
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
@@ -57,6 +71,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<DismissBackupWarning>(_onDismissBackupWarning);
     on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
+    on<WalletDiscoveryChanged>(
+      (event, emit) => emit(state.copyWith(isDiscovering: event.isDiscovering)),
+    );
+    _discoverySubscription = _watchWalletSyncEventsUsecase.discovery().listen((
+      result,
+    ) {
+      switch (result) {
+        case Ok(:final value):
+          add(WalletDiscoveryChanged(value));
+        case Err(:final failure):
+          log.warning('Wallet discovery watcher: ${failure.logMessage}');
+      }
+    });
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -75,6 +102,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchSpWalletUsecase _watchSpWalletUsecase;
   final CheckSpFeatureGateForWalletUsecase _checkSpFeatureGateForWalletUsecase;
 
+  late final StreamSubscription _discoverySubscription;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _electrumSyncResultsSubscription;
@@ -87,6 +115,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   @override
   Future<void> close() {
+    _discoverySubscription.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _electrumSyncResultsSubscription?.cancel();
@@ -197,32 +226,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         });
   }
 
-  /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
-  /// refresh (so the data reload and `isRefreshing` transitions still happen)
-  /// and awaits the [SyncCoordinator] directly, so the returned future (and
-  /// therefore the RefreshIndicator spinner) resolves only once bitcoin and
-  /// liquid have both synced, rather than tracking the shared
-  /// `isRefreshing` flag (which a throttled background refresh can clear after
-  /// bitcoin alone). Awaiting the coordinator also bypasses the `droppable()`
-  /// event lane, so the gesture is never swallowed by an in-flight background
-  /// refresh.
-  ///
-  /// Never throws: a failed sync is already surfaced through [WalletState] by
-  /// [_onRefreshed] and logged (sanitized) by the coordinator, and a
-  /// RefreshIndicator callback must not complete with an error.
+  /// A gesture requests one Bitcoin discovery, independently of the droppable
+  /// automatic refresh lane. Its spinner ends with Bitcoin; Liquid and the
+  /// subsequent wallet reload may continue without extending that spinner.
   Future<void> refresh() async {
-    add(const WalletRefreshed(trigger: SyncTrigger.user));
-    // The result is dropped here because the event dispatched above runs the
-    // same sync and puts its failure into WalletState; this await exists only
-    // to hold the RefreshIndicator spinner, and its callback must not complete
-    // with an error.
-    final _ = await _syncWalletsUsecase.execute(trigger: SyncTrigger.user);
+    if (isClosed) return;
+    final discoveryCompleted = Completer<void>();
+    add(WalletRefreshRequested(discoveryCompleted));
+    await discoveryCompleted.future;
   }
 
   Future<void> _onRefreshed(
     WalletRefreshed event,
-    Emitter<WalletState> emit,
-  ) async {
+    Emitter<WalletState> emit, {
+    Completer<void>? discoveryCompleted,
+  }) async {
     emit(state.copyWith(isRefreshing: true));
 
     // The sync schedules bitcoin → liquid → swaps → sp sequentially with per-kind dedup,
@@ -234,11 +252,28 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // so the list stays correct and only the balances are stale. It is still
     // reported — a refresh that silently did nothing reads as a frozen screen.
     WalletFailure? syncFailure;
-    if (await _syncWalletsUsecase.execute(trigger: event.trigger) case Err(
-      :final failure,
-    )) {
-      log.warning('Wallet refresh sync: ${failure.logMessage}');
-      syncFailure = failure;
+    if (discoveryCompleted == null) {
+      if (await _syncWalletsUsecase.execute(trigger: event.trigger) case Err(
+        :final failure,
+      )) {
+        syncFailure = failure;
+      }
+    } else {
+      // Queue both kinds together, but let the gesture await only its Bitcoin round.
+      final bitcoin = _syncWalletsUsecase.execute(
+        trigger: SyncTrigger.user,
+        only: {SyncKind.bitcoin},
+      );
+      final liquid = _syncWalletsUsecase.execute(
+        trigger: SyncTrigger.user,
+        only: {SyncKind.liquid},
+      );
+      if (await bitcoin case Err(:final failure)) syncFailure = failure;
+      discoveryCompleted.complete();
+      if (await liquid case Err(:final failure)) syncFailure ??= failure;
+    }
+    if (syncFailure != null) {
+      log.warning('Wallet refresh sync: ${syncFailure.logMessage}');
     }
 
     final List<Wallet> wallets;

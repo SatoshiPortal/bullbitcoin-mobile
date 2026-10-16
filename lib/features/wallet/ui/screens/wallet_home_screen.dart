@@ -24,9 +24,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
   /// Height the pinned Receive/Send bar occupies
   static const double _bottomBarHeight = 52.0 + 16.0 * 2;
 
-  final GlobalKey<RefreshIndicatorState> _indicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-
   GoRouter? _router;
 
   @override
@@ -86,6 +83,9 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDiscovering = context.select(
+      (WalletBloc bloc) => bloc.state.isDiscovering,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {},
@@ -102,7 +102,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             ),
           ),
           BullPullableBody(
-            indicatorKey: _indicatorKey,
+            isRefreshing: isDiscovering,
             onRefresh: () {
               context.read<BitcoinPriceBloc>().add(const BitcoinPriceFetched());
               return context.read<WalletBloc>().refresh();

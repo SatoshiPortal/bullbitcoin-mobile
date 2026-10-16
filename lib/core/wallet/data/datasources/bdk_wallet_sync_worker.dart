@@ -36,6 +36,8 @@ class _SyncParams {
   );
 }
 
+class _DiscoveryStarted {}
+
 class _SyncSucceeded {}
 
 class BdkSyncException implements Exception {
@@ -82,6 +84,7 @@ class _BdkSyncWorker {
   final Completer<SendPort> _ready = Completer<SendPort>();
   final Completer<void> _exited = Completer<void>();
   Completer<void>? _pending;
+  void Function()? _onDiscoveryStarted;
   ({Object error, StackTrace trace})? _failure;
   Isolate? _isolate;
   bool _closed = false;
@@ -116,7 +119,10 @@ class _BdkSyncWorker {
     switch (event) {
       case SendPort():
         _ready.complete(event);
+      case _DiscoveryStarted():
+        _onDiscoveryStarted?.call();
       case _SyncSucceeded():
+        _onDiscoveryStarted = null;
         _pending?.complete();
         _pending = null;
       case _SyncFailed(
@@ -147,7 +153,10 @@ class _BdkSyncWorker {
     }
   }
 
-  Future<void> sync(_SyncParams params) async {
+  Future<void> sync(
+    _SyncParams params, {
+    required void Function() onDiscoveryStarted,
+  }) async {
     final port = await _ready.future;
     // A failure can arrive after the handshake but before a request is pending.
     final failure = _failure;
@@ -160,6 +169,7 @@ class _BdkSyncWorker {
     if (_pending != null) throw StateError('BDK sync already in progress');
     final pending = Completer<void>();
     _pending = pending;
+    _onDiscoveryStarted = onDiscoveryStarted;
     port.send(params);
     return pending.future;
   }
@@ -182,6 +192,7 @@ class _BdkSyncWorker {
   void _finish() {
     if (_closed) return;
     _closed = true;
+    _onDiscoveryStarted = null;
     _isolate?.kill(priority: Isolate.immediate);
     _events.close();
     _exited.complete();
@@ -226,7 +237,9 @@ Future<void> _runSyncWorker(SendPort replies) async {
         try {
           final batchSize = _batchSizeFor(connection.stopGap);
           // First sync and database recovery discover addresses; client replacement alone does not.
-          final update = !params.fullDiscovery && !loaded.created
+          final discover = params.fullDiscovery || loaded.created;
+          if (discover) replies.send(_DiscoveryStarted());
+          final update = !discover
               ? blockchain.sync_(
                   request: bdkWallet.startSyncWithRevealedSpks().build(),
                   batchSize: batchSize,
