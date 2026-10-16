@@ -8,9 +8,9 @@ class SyncWalletUsecase {
   SyncWalletUsecase({required WalletRepository walletRepository})
     : _wallet = walletRepository;
 
-  Future<void> execute(Wallet wallet) async {
+  Future<void> execute(Wallet wallet, {bool fullDiscovery = false}) async {
     try {
-      await _wallet.sync(wallet);
+      await _wallet.sync(wallet, fullDiscovery: fullDiscovery);
     } catch (e) {
       throw SyncWalletException('$e');
     }

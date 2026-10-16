@@ -24,9 +24,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
   /// Height the pinned Receive/Send bar occupies
   static const double _bottomBarHeight = 52.0 + 16.0 * 2;
 
-  final GlobalKey<RefreshIndicatorState> _indicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-
   GoRouter? _router;
 
   @override
@@ -40,12 +37,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       // mounted, is handled by the router listener below. The coordinator
       // throttles, so a redundant trigger is cheap.
       _refreshOnVisible();
-      // If a refresh was already in flight before this mount (e.g. the
-      // post-startup WalletStarted refresh), show the spinner over it so the
-      // user sees activity instead of landing on apparently-static data.
-      if (context.read<WalletBloc>().state.isRefreshing) {
-        _indicatorKey.currentState?.show();
-      }
     });
   }
 
@@ -92,87 +83,70 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<WalletBloc, WalletState>(
-          listenWhen: (previous, current) =>
-              !previous.isRefreshing && current.isRefreshing,
-          listener: (context, state) {
-            // A refresh just started (manual pull, post-activity dispatch,
-            // env change, etc.) — surface the spinner. RefreshIndicator.show()
-            // is a no-op if it's already running, so this is safe to combine
-            // with the initState path.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              _indicatorKey.currentState?.show();
-            });
-          },
-        ),
-      ],
-      child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {},
-        child: Stack(
-          children: [
-            // Black background visible only during iOS top overscroll
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: ColoredBox(
-                color: AppColors.dark.background,
-                child: const SizedBox(height: 300),
-              ),
+    final isDiscovering = context.select(
+      (WalletBloc bloc) => bloc.state.isDiscovering,
+    );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {},
+      child: Stack(
+        children: [
+          // Black background visible only during iOS top overscroll
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ColoredBox(
+              color: AppColors.dark.background,
+              child: const SizedBox(height: 300),
             ),
-            BullPullableBody(
-              indicatorKey: _indicatorKey,
-              onRefresh: () {
-                context.read<BitcoinPriceBloc>().add(
-                  const BitcoinPriceFetched(),
-                );
-                return context.read<WalletBloc>().refresh();
-              },
-              // Clearance for the bar pinned at the bottom of this Stack, so
-              // the last wallet card can be scrolled out from under it.
-              bottomInset:
-                  _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
-              slivers: [
-                // Pinned rather than scrolled away: the balance and the
-                // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
-                // scroll underneath.
-                const PinnedHeaderSliver(child: WalletHomeTopSection()),
-                const SliverToBoxAdapter(child: AnnouncementCarousel()),
-                const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: HomeConsolidationBanner()),
-                SliverToBoxAdapter(
-                  child: WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 16.0,
-                  ),
-                  child: WalletBottomButtons(),
+          ),
+          BullPullableBody(
+            isRefreshing: isDiscovering,
+            onRefresh: () {
+              context.read<BitcoinPriceBloc>().add(const BitcoinPriceFetched());
+              return context.read<WalletBloc>().refresh();
+            },
+            // Clearance for the bar pinned at the bottom of this Stack, so
+            // the last wallet card can be scrolled out from under it.
+            bottomInset:
+                _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
+            slivers: [
+              // Pinned rather than scrolled away: the balance and the
+              // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
+              // scroll underneath.
+              const PinnedHeaderSliver(child: WalletHomeTopSection()),
+              const SliverToBoxAdapter(child: AnnouncementCarousel()),
+              const SliverToBoxAdapter(child: HomeWarnings()),
+              const SliverToBoxAdapter(child: HomeConsolidationBanner()),
+              SliverToBoxAdapter(
+                child: WalletCards(
+                  onTap: (w) {
+                    context.pushNamed(
+                      WalletRoute.walletDetail.name,
+                      pathParameters: {'walletId': w.id},
+                    );
+                  },
                 ),
               ),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13.0,
+                  vertical: 16.0,
+                ),
+                child: WalletBottomButtons(),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

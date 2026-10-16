@@ -20,7 +20,19 @@ class BdkFacade {
     }
   }
 
-  static Future<bdk.Wallet> createPublicWallet(WalletModel walletModel) async {
+  static Future<bdk.Wallet> createPublicWallet(
+    WalletModel walletModel, {
+    String? databasePath,
+  }) async => (await loadOrCreatePublicWallet(
+    walletModel,
+    databasePath: databasePath,
+  )).wallet;
+
+  /// Reports creation so a sync can discover addresses after database recovery.
+  static Future<({bdk.Wallet wallet, bool created})> loadOrCreatePublicWallet(
+    WalletModel walletModel, {
+    String? databasePath,
+  }) async {
     if (walletModel is! PublicBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
@@ -43,14 +55,14 @@ class BdkFacade {
 
     // Get the database path based on the wallet's id for uniqueness and in hex
     // to ensure it's a valid filename
-    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbPath = databasePath ?? await databasePathFor(walletModel.hexId);
     final dbFile = File(dbPath);
 
+    bdk.Persister? persister;
     try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
-      // Use load if database (wallet) exists, otherwise create new
-      final wallet = await dbFile.exists()
+      final exists = await dbFile.exists();
+      final dbPersister = persister = bdk.Persister.newSqlite(path: dbPath);
+      final wallet = exists
           ? bdk.Wallet.load(
               descriptor: external,
               changeDescriptor: internal,
@@ -64,21 +76,29 @@ class BdkFacade {
               persister: dbPersister,
               lookahead: _lookahead,
             );
-
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
+      return (wallet: wallet, created: !exists);
+    } catch (_) {
+      // Preserve existing recovery behavior and report that discovery is needed.
+      persister?.dispose();
+      persister = null;
+      if (await dbFile.exists()) await dbFile.delete();
+      final recoveryPersister = bdk.Persister.newSqlite(path: dbPath);
+      try {
+        return (
+          wallet: bdk.Wallet(
+            descriptor: external,
+            changeDescriptor: internal,
+            network: network,
+            persister: recoveryPersister,
+            lookahead: _lookahead,
+          ),
+          created: true,
+        );
+      } finally {
+        recoveryPersister.dispose();
       }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: dbPersister,
-        lookahead: _lookahead,
-      );
+    } finally {
+      persister?.dispose();
     }
   }
 
@@ -141,7 +161,7 @@ class BdkFacade {
     }
 
     // Get the database path
-    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbPath = await databasePathFor(walletModel.hexId);
     final dbFile = File(dbPath);
 
     try {
@@ -185,19 +205,19 @@ class BdkFacade {
     bdk.Wallet bdkWallet,
     String walletIdHex,
   ) async {
-    final dbPath = await _getDbPath(walletIdHex);
+    final dbPath = await databasePathFor(walletIdHex);
     final persister = bdk.Persister.newSqlite(path: dbPath);
     bdkWallet.persist(persister: persister);
   }
 
-  static Future<String> _getDbPath(String walletIdHex) async {
+  static Future<String> databasePathFor(String walletIdHex) async {
     final dir = await getApplicationDocumentsDirectory();
     // Add since bdk_dart might not migrate old bdk_flutter db we suffix the db name with `_bdk_dart` to avoid conflicts
     return '${dir.path}/${'${walletIdHex}_bdk_dart'}';
   }
 
   static Future<void> delete(WalletModel walletModel) async {
-    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbPath = await databasePathFor(walletModel.hexId);
     final dbFile = File(dbPath);
 
     if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);

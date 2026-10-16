@@ -51,6 +51,7 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    final initialIndex = index;
     var labels = await _labelsFacade.fetchByReference(address);
 
     while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
@@ -68,6 +69,10 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
       labels = await _labelsFacade.fetchByReference(address);
+    }
+
+    if (walletModel is PublicBdkWalletModel && index > initialIndex) {
+      await _bdkWallet.revealReceiveAddressAtIndex(index, wallet: walletModel);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -120,6 +125,7 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    final initialIndex = index;
     var labels = await _labelsFacade.fetchByReference(address);
 
     while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
@@ -137,6 +143,10 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
       labels = await _labelsFacade.fetchByReference(address);
+    }
+
+    if (walletModel is PublicBdkWalletModel && index > initialIndex) {
+      await _bdkWallet.revealReceiveAddressAtIndex(index, wallet: walletModel);
     }
 
     final walletAddressModel = WalletAddressModel(

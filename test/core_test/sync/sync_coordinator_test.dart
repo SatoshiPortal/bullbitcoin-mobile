@@ -16,6 +16,22 @@ class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockSyncWallet extends Mock implements SyncWalletUsecase {}
 
+class _RecordingSyncWallet extends Mock implements SyncWalletUsecase {
+  final discoveries = <bool>[];
+  Future<void>? gate;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #execute) {
+      discoveries.add(invocation.namedArguments[#fullDiscovery] == true);
+      return gate ?? Future<void>.value();
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
+
+class _MockWallet extends Mock implements Wallet {}
+
 class _MockSyncSwaps extends Mock {
   Future<void> call();
 }
@@ -70,6 +86,238 @@ void main() {
     };
     return (bitcoin: bitcoin, liquid: liquid, sp: sp);
   }
+
+  test('manual discovery applies to bitcoin only', () async {
+    final recording = _RecordingSyncWallet();
+    final manual = SyncCoordinator(
+      getWalletsUsecase: getWallets,
+      syncWalletUsecase: recording,
+    );
+    addTearDown(manual.dispose);
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok([_MockWallet()]));
+
+    when(
+      () => getWallets.execute(onlyLiquid: true),
+    ).thenAnswer((_) async => Ok([_MockWallet()]));
+    await manual.sync(trigger: SyncTrigger.user);
+
+    expect(recording.discoveries, [true, false]);
+  });
+
+  test(
+    'manual discovery waits for its follow-up after an automatic sync',
+    () async {
+      final recording = _RecordingSyncWallet();
+      final automaticGate = Completer<void>();
+      final discoveryGate = Completer<void>();
+      recording.gate = automaticGate.future;
+      final manual = SyncCoordinator(
+        getWalletsUsecase: getWallets,
+        syncWalletUsecase: recording,
+      );
+      addTearDown(manual.dispose);
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([_MockWallet()]));
+      final automatic = manual.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      expect(recording.discoveries, [false]);
+      var manualDone = false;
+      final discovery = manual
+          .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+          .then((_) => manualDone = true);
+      recording.gate = discoveryGate.future;
+      automaticGate.complete();
+      await automatic;
+      await pumpEventQueue();
+
+      expect(recording.discoveries, [false, true]);
+      expect(manualDone, isFalse);
+      discoveryGate.complete();
+      await discovery;
+      expect(manualDone, isTrue);
+    },
+  );
+
+  test(
+    'manual discovery upgrades an automatic bitcoin sync still queued',
+    () async {
+      final recording = _RecordingSyncWallet();
+      final gate = Completer<void>();
+      final manual = SyncCoordinator(
+        getWalletsUsecase: getWallets,
+        syncWalletUsecase: recording,
+      );
+      addTearDown(manual.dispose);
+      when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+        await gate.future;
+        return const Ok<List<Wallet>, WalletFailure>([]);
+      });
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([_MockWallet()]));
+      final liquid = manual.sync(only: {SyncKind.liquid});
+      final automatic = manual.sync(only: {SyncKind.bitcoin});
+      final discovery = manual.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      gate.complete();
+      await Future.wait([liquid, automatic, discovery]);
+
+      expect(recording.discoveries, [true]);
+    },
+  );
+
+  test('concurrent manual discoveries join the running discovery', () async {
+    final recording = _RecordingSyncWallet();
+    final gate = Completer<void>();
+    recording.gate = gate.future;
+    final manual = SyncCoordinator(
+      getWalletsUsecase: getWallets,
+      syncWalletUsecase: recording,
+    );
+    addTearDown(manual.dispose);
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok([_MockWallet()]));
+    final first = manual.sync(
+      only: {SyncKind.bitcoin},
+      trigger: SyncTrigger.user,
+    );
+    await pumpEventQueue();
+    final second = manual.sync(
+      only: {SyncKind.bitcoin},
+      trigger: SyncTrigger.user,
+    );
+    gate.complete();
+    await Future.wait([first, second]);
+
+    expect(recording.discoveries, [true]);
+  });
+
+  for (final fails in [false, true]) {
+    test(
+      'two pulls wait for discovery after automatic sync (fails=$fails)',
+      () async {
+        final recording = _RecordingSyncWallet();
+        final automaticGate = Completer<void>();
+        final discoveryGate = Completer<void>();
+        recording.gate = automaticGate.future;
+        final manual = SyncCoordinator(
+          getWalletsUsecase: getWallets,
+          syncWalletUsecase: recording,
+        );
+        addTearDown(manual.dispose);
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([_MockWallet()]));
+        Object? failure;
+        var automaticDone = false;
+        final automatic = manual
+            .sync(only: {SyncKind.bitcoin})
+            .then(
+              (_) {
+                automaticDone = true;
+              },
+              onError: (Object error) {
+                failure = error;
+                automaticDone = true;
+              },
+            );
+        await pumpEventQueue();
+        var firstDone = false;
+        var secondDone = false;
+        final first = manual
+            .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+            .then((_) => firstDone = true);
+        final second = manual
+            .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+            .then((_) => secondDone = true);
+        var joinedDone = false;
+        final joined = manual
+            .sync(only: {SyncKind.bitcoin})
+            .then(
+              (_) {
+                joinedDone = true;
+              },
+              onError: (Object _) {
+                joinedDone = true;
+              },
+            );
+        recording.gate = discoveryGate.future;
+        if (fails) {
+          automaticGate.completeError(StateError('automatic failed'));
+        } else {
+          automaticGate.complete();
+        }
+        await automatic;
+        await joined;
+        await pumpEventQueue();
+        expect(automaticDone, isTrue);
+        expect(joinedDone, isTrue);
+        expect(failure, fails ? isA<SyncCoordinatorException>() : isNull);
+        expect(recording.discoveries, [false, true]);
+        expect(firstDone, isFalse);
+        expect(secondDone, isFalse);
+        discoveryGate.complete();
+        await Future.wait([first, second]);
+        expect(firstDone && secondDone, isTrue);
+        expect(recording.discoveries, [false, true]);
+      },
+    );
+  }
+
+  test('automatic sync joins a running pull and shares its failure', () async {
+    final recording = _RecordingSyncWallet();
+    final gate = Completer<void>();
+    recording.gate = gate.future;
+    final manual = SyncCoordinator(
+      getWalletsUsecase: getWallets,
+      syncWalletUsecase: recording,
+    );
+    addTearDown(manual.dispose);
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok([_MockWallet()]));
+    var firstDone = false;
+    var joinedDone = false;
+    final failures = <Object>[];
+    final first = manual
+        .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+        .then(
+          (_) {
+            firstDone = true;
+          },
+          onError: (Object error) {
+            failures.add(error);
+            firstDone = true;
+          },
+        );
+    await pumpEventQueue();
+    final joined = manual
+        .sync(only: {SyncKind.bitcoin})
+        .then(
+          (_) {
+            joinedDone = true;
+          },
+          onError: (Object error) {
+            failures.add(error);
+            joinedDone = true;
+          },
+        );
+    await pumpEventQueue();
+    expect(firstDone || joinedDone, isFalse);
+    expect(recording.discoveries, [true]);
+    gate.completeError(StateError('pull failed'));
+    await Future.wait([first, joined]);
+    expect(firstDone && joinedDone, isTrue);
+    expect(failures, everyElement(isA<SyncCoordinatorException>()));
+    expect(failures, hasLength(2));
+    expect(recording.discoveries, [true]);
+  });
 
   test('sync resolves only after every requested kind has settled', () async {
     final gates = wireGates();

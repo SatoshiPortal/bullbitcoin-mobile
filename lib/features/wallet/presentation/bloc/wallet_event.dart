@@ -74,3 +74,13 @@ class DismissLegacyStorageWarning extends WalletEvent {
 class VerifyBackupStatus extends WalletEvent {
   const VerifyBackupStatus();
 }
+
+class WalletDiscoveryChanged extends WalletEvent {
+  final bool isDiscovering;
+  const WalletDiscoveryChanged(this.isDiscovering);
+}
+
+class WalletRefreshRequested extends WalletEvent {
+  final Completer<void> discoveryCompleted;
+  const WalletRefreshRequested(this.discoveryCompleted);
+}

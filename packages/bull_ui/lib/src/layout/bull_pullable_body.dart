@@ -10,6 +10,7 @@ class BullPullableBody extends StatelessWidget {
   const BullPullableBody({
     super.key,
     this.indicatorKey,
+    this.isRefreshing = false,
     required this.onRefresh,
     required this.slivers,
     this.bottomChild,
@@ -19,6 +20,9 @@ class BullPullableBody extends StatelessWidget {
   /// Forwarded to the inner [BullRefreshIndicator]; use a
   /// `GlobalKey<RefreshIndicatorState>` to call `.show()` programmatically.
   final Key? indicatorKey;
+
+  /// Displays external refresh activity without invoking [onRefresh].
+  final bool isRefreshing;
 
   /// Invoked on pull-to-refresh.
   final RefreshCallback onRefresh;
@@ -37,6 +41,7 @@ class BullPullableBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BullRefreshIndicator(
       indicatorKey: indicatorKey,
+      isRefreshing: isRefreshing,
       onRefresh: onRefresh,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
