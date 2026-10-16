@@ -3,7 +3,7 @@ import 'package:custom_sliding_segmented_control/custom_sliding_segmented_contro
 import 'package:flutter/material.dart';
 
 // TODO: This should be moved to the shared widgets package and replace the
-// BBSegmentFull widget there, which is unneccessarily Stateful which causes
+// BullSegmented widget there, which is unneccessarily Stateful which causes
 // various problems that need hacks to work around.
 class BBSegmentedButton extends StatelessWidget {
   const BBSegmentedButton({

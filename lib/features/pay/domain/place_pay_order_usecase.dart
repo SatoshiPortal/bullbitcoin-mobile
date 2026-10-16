@@ -34,7 +34,7 @@ class PlacePayOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
-        Ok(:final value) => value.enabled,
+        Ok(:final value) => value.sellEnabled,
         Err() => false,
       };
       final isTestnet = settings.environment.isTestnet;

@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
@@ -75,7 +73,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            BBText(
+                            BullText(
                               context.loc.backupWarningTitle,
                               style: context.font.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -83,7 +81,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                               color: context.appColors.onSurface,
                             ),
                             const Gap(16),
-                            BBText(
+                            BullText(
                               context.loc.backupWarningDescription,
                               style: context.font.bodyMedium,
                               color: context.appColors.onSurface,
@@ -101,13 +99,13 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    BBText(
+                                    BullText(
                                       '•  ',
                                       style: context.font.bodyMedium,
                                       color: context.appColors.onSurface,
                                     ),
                                     Expanded(
-                                      child: BBText(
+                                      child: BullText(
                                         reason,
                                         style: context.font.bodyMedium,
                                         color: context.appColors.onSurface,
@@ -117,7 +115,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                                 ),
                               ),
                             const Gap(8),
-                            BBText(
+                            BullText(
                               context.loc.backupWarningNoRecovery,
                               style: context.font.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -129,7 +127,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                       ),
                     ),
                     const Gap(24),
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.backupWarningBackupNow,
                       onPressed: () {
                         context.pushNamed(
@@ -140,7 +138,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                       textColor: context.appColors.surface,
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.backupWarningBackupLater,
                       onPressed: () {
                         context.read<WalletBloc>().add(

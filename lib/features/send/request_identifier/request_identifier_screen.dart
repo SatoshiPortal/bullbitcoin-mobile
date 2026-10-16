@@ -1,16 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInputText, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class RequestIdentifierScreen extends StatelessWidget {
@@ -23,7 +21,7 @@ class RequestIdentifierScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.sendTitle,
           color: context.appColors.secondaryFixedDim,
           onBack: () => context.pop(),
@@ -71,7 +69,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                       mainAxisSize: .min,
                       children: [
                         const Gap(32),
-                        BBText(
+                        BullText(
                           context.loc.sendRecipientAddressOrInvoice,
                           style: context.font.bodyMedium,
                         ),
@@ -141,7 +139,7 @@ class RequestErrorWidget extends StatelessWidget {
     );
 
     if (failure != null) {
-      return BBText(
+      return BullText(
         failure.toTranslated(context),
         style: context.font.bodyMedium,
         color: context.appColors.error,
@@ -167,7 +165,7 @@ class ContinueButtonWidget extends StatelessWidget {
 
     final cubit = context.read<RequestIdentifierCubit>();
 
-    return BBButton.big(
+    return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,

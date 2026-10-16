@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 /// Mission / consent page body — text only. The Yes/No choice is
 /// rendered by [WizardScreen] in the bottom chrome (in place of the
@@ -27,11 +27,11 @@ class MissionStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(loc.wizardMissionBody1, style: bodyStyle),
+          BullText(loc.wizardMissionBody1, style: bodyStyle),
           SizedBox(height: vGapMd),
-          BBText(loc.wizardMissionBody2, style: bodyStyle),
+          BullText(loc.wizardMissionBody2, style: bodyStyle),
           SizedBox(height: vGapLg),
-          BBText(
+          BullText(
             loc.wizardMissionQuestion,
             style: context.font.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,

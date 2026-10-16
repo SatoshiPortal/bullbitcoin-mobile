@@ -50,34 +50,45 @@ sealed class BuyState with _$BuyState {
 
   double? get balance => balances[currencyInput];
 
-  int? get maxAmountSat => balance != null && exchangeRate > 0
-      ? ConvertAmount.btcToSats(balance! / exchangeRate)
-      : null;
+  int? get maxAmountSat {
+    final available = balance;
+    return available != null && exchangeRate > 0
+        ? ConvertAmount.btcToSats(available / exchangeRate)
+        : null;
+  }
 
-  double? get amount => isFiatCurrencyInput
-      ? _truncateToDecimals(
-          double.tryParse(amountInput.replaceAll(',', '.').trim()) ?? 0,
-          currency?.decimals ?? 2,
-        )
-      : amountBtc != null
-      ? _truncateToDecimals(amountBtc! * exchangeRate, currency?.decimals ?? 2)
-      : null;
+  double? get amount {
+    if (isFiatCurrencyInput) {
+      return _truncateToDecimals(
+        double.tryParse(amountInput.replaceAll(',', '.').trim()) ?? 0,
+        currency?.decimals ?? 2,
+      );
+    }
+    final btc = amountBtc;
+    return btc == null
+        ? null
+        : _truncateToDecimals(btc * exchangeRate, currency?.decimals ?? 2);
+  }
 
-  double? get amountBtc => isFiatCurrencyInput
-      ? amount != null && exchangeRate > 0
-            ? amount! / exchangeRate
-            : null
-      : bitcoinUnit == BitcoinUnit.btc
-      ? double.tryParse(amountInput.replaceAll(',', '.').trim())
-      : amountSat != null
-      ? amountSat! * 1e-8
-      : null;
+  double? get amountBtc {
+    if (isFiatCurrencyInput) {
+      final fiat = amount;
+      return fiat != null && exchangeRate > 0 ? fiat / exchangeRate : null;
+    }
+    if (bitcoinUnit == BitcoinUnit.btc) {
+      return double.tryParse(amountInput.replaceAll(',', '.').trim());
+    }
+    final sats = amountSat;
+    return sats == null ? null : sats * 1e-8;
+  }
 
-  int? get amountSat => !isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats
-      ? int.tryParse(amountInput.trim())
-      : amountBtc != null
-      ? ConvertAmount.btcToSats(amountBtc!)
-      : null;
+  int? get amountSat {
+    if (!isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats) {
+      return int.tryParse(amountInput.trim());
+    }
+    final btc = amountBtc;
+    return btc == null ? null : ConvertAmount.btcToSats(btc);
+  }
 
   FiatCurrency? get currency =>
       currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
@@ -87,29 +98,25 @@ sealed class BuyState with _$BuyState {
   }
 
   bool get showInsufficientBalanceError {
-    return balance != null &&
-        ((amount ?? 0) > balance! ||
-            maxAmountSat != null &&
-                amountSat != null &&
-                amountSat! > maxAmountSat!);
+    final available = balance;
+    if (available == null) return false;
+    final maximum = maxAmountSat;
+    final sats = amountSat;
+    return (amount ?? 0) > available ||
+        maximum != null && sats != null && sats > maximum;
   }
 
   bool get hasDestination {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
 
-  /// One slot per screen that renders a failure.
-  ///
-  /// The input, confirm and success screens share a single bloc, so within
-  /// that shell [buyOrder] is what tells them apart: nothing reaches the
-  /// confirm screen before an order exists, and the input screen is gone once
-  /// one does.
+  /// Input failures occur before order creation starts. Leaving confirmation
+  /// clears a creation failure before the input screen becomes active again.
   BuyFailure? get inputFailure => buyOrder == null ? failure : null;
 
-  /// The success screen shares this slot but deliberately renders nothing: its
-  /// only failure source is the 5s background payjoin poll, which the next tick
-  /// clears, and an error under a completed order would alarm for nothing.
-  BuyFailure? get confirmFailure => buyOrder == null ? null : failure;
+  /// Creation can fail before an order exists: confirmation renders that
+  /// failure as well as errors while refreshing or confirming a loaded order.
+  BuyFailure? get confirmFailure => failure;
 
   /// The accelerate routes each build their own bloc, so [buyOrder] says
   /// nothing about who a failure belongs to — it is still null while the entry

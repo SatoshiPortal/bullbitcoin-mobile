@@ -35,12 +35,17 @@ final class StartPayjoinReceiver {
   final Sats? amount;
   final DateTime? expiresAt;
 
+  /// The payout of a Bull Bitcoin exchange buy order: gated by the buy switch
+  /// instead of the receive switch.
+  final bool isTrade;
+
   StartPayjoinReceiver({
     required this.walletId,
     required this.network,
     required this.address,
     this.amount,
     this.expiresAt,
+    this.isTrade = false,
   }) {
     _requireNotBlank(walletId, 'walletId');
     _requireSupportedNetwork(network);

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
@@ -13,20 +12,27 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.da
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
-import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
-  const ExchangeHomeScreen({super.key});
+  final List<Widget> homeCards;
+  final VoidCallback onHomeRefresh;
+  final VoidCallback onOpenSettings;
+
+  const ExchangeHomeScreen({
+    required this.homeCards,
+    required this.onHomeRefresh,
+    required this.onOpenSettings,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +67,9 @@ class ExchangeHomeScreen extends StatelessWidget {
 
     return Stack(
       children: [
-        BBPullableBody(
+        BullPullableBody(
           onRefresh: () async {
-            locator<LimitOrdersFacade>().refreshDashboard();
+            onHomeRefresh();
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
@@ -112,8 +118,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           context.read<ExchangeCubit>().fetchUserSummary(),
                     ),
                     const Gap(12),
-                    locator<LimitOrdersFacade>().buildDashboardCard(),
-                    const Gap(12),
+                    for (final card in homeCards) ...[card, const Gap(12)],
                     if (!notLoggedIn) const AnnouncementBanner(),
                   ],
                 ),
@@ -253,8 +258,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         ),
                         const Gap(16),
                         InkWell(
-                          onTap: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
+                          onTap: onOpenSettings,
                           child: Image.asset(
                             Assets.icons.settingsLine.path,
                             width: 32,

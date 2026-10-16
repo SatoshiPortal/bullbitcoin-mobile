@@ -23,6 +23,7 @@ class _MockSellOrder extends Mock implements SellOrder {}
 
 void main() {
   late _MockExchangeOrderRepository mainnet;
+  late _MockPayjoinPolicy payjoinPolicy;
   late CreateSellOrderUsecase usecase;
 
   setUpAll(() {
@@ -38,7 +39,7 @@ void main() {
     when(() => settings.environment).thenReturn(Environment.mainnet);
     when(settingsRepository.fetch).thenAnswer((_) async => settings);
 
-    final payjoinPolicy = _MockPayjoinPolicy();
+    payjoinPolicy = _MockPayjoinPolicy();
     when(payjoinPolicy.load).thenAnswer(
       (_) async =>
           const Err<PayjoinPolicy, PayjoinFailure>(PayjoinStorageFailure()),
@@ -68,6 +69,56 @@ void main() {
       ),
     ).thenThrow(error);
   }
+
+  group('payjoin follows the sell switch only', () {
+    Future<bool> requestedPayjoin(PayjoinPolicy policy) async {
+      when(
+        payjoinPolicy.load,
+      ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
+      when(
+        () => mainnet.placeSellOrder(
+          orderAmount: any(named: 'orderAmount'),
+          currency: any(named: 'currency'),
+          network: any(named: 'network'),
+          usePayjoin: any(named: 'usePayjoin'),
+        ),
+      ).thenAnswer((_) async => _MockSellOrder());
+
+      final _ = await usecase.execute(
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        network: OrderBitcoinNetwork.bitcoin,
+        usePayjoin: true,
+      );
+
+      return verify(
+            () => mainnet.placeSellOrder(
+              orderAmount: any(named: 'orderAmount'),
+              currency: any(named: 'currency'),
+              network: any(named: 'network'),
+              usePayjoin: captureAny(named: 'usePayjoin'),
+            ),
+          ).captured.single
+          as bool;
+    }
+
+    test('on by default, with payments between users off', () async {
+      expect(await requestedPayjoin(PayjoinPolicy.defaults()), isTrue);
+    });
+
+    test('off when sell is off, even with the user switches on', () async {
+      expect(
+        await requestedPayjoin(
+          PayjoinPolicy.defaults().copyWith(
+            sendEnabled: true,
+            receiveEnabled: true,
+            sellEnabled: false,
+          ),
+        ),
+        isFalse,
+      );
+    });
+  });
 
   test('returns the placed order', () async {
     final order = _MockSellOrder();

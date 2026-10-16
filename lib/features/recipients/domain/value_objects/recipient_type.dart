@@ -8,6 +8,7 @@ enum RecipientType {
   bankTransferCad('BANK_TRANSFER_CAD'),
   // EUROPE
   sepaEur('SEPA_EUR'),
+  confidentialSepaEur('SEPA_EUR'),
   // MEXICO
   speiClabeMxn('SPEI_CLABE_MXN'),
   speiSmsMxn('SPEI_SMS_MXN'),
@@ -27,7 +28,7 @@ enum RecipientType {
 
   static RecipientType fromValue(String value) {
     return RecipientType.values.firstWhere(
-      (e) => e.value == value,
+      (e) => e.value == value && e != RecipientType.confidentialSepaEur,
       orElse: () => throw Exception('Unknown RecipientType: $value'),
     );
   }
@@ -39,6 +40,7 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CA';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return 'EU';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:
@@ -64,6 +66,7 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CAD';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return 'EUR';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:
@@ -83,8 +86,14 @@ enum RecipientType {
     }
   }
 
+  /// Confidential SEPA depends on the user's eligibility, so a flow must
+  /// request it explicitly.
+  static List<RecipientType> get standardTypes => RecipientType.values
+      .where((type) => type != RecipientType.confidentialSepaEur)
+      .toList();
+
   static Set<RecipientType> typesForCurrency(String currencyCode) {
-    return RecipientType.values
+    return standardTypes
         .where((type) => type.currencyCode == currencyCode)
         .toSet();
   }

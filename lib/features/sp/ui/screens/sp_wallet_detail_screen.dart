@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
@@ -21,7 +20,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -65,7 +64,7 @@ class SpWalletDetailScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: BBPullableBody(
+        child: BullPullableBody(
           onRefresh: cubit.pullToRefresh,
           slivers: [
             SliverToBoxAdapter(

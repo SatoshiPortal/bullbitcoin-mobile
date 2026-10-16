@@ -48,3 +48,10 @@ class BullBitcoinApiMaxAmountException extends BullException {
     required this.currency,
   }) : super('Maximum amount is $maxAmount $currency');
 }
+
+/// The API rejected a Confidential SEPA order because the recipient's virtual
+/// payee is not active yet. See [BullBitcoinApiMinAmountException] for why
+/// this lives here.
+class BullBitcoinApiConfidentialSepaNotActivatedException implements Exception {
+  const BullBitcoinApiConfidentialSepaNotActivatedException();
+}

@@ -3,8 +3,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
 
-/// Full-width sliding segmented control — duplicated from
-/// `core/widgets/segment/segmented_full.dart`. Used for sort/filter segments.
+/// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
   const BullSegmented({
     super.key,
@@ -39,12 +38,23 @@ class _BullSegmentedState extends State<BullSegmented> {
     selectedSegment = widget.initialValue ?? widget.items.first;
   }
 
+  // The sliding control moves its thumb when initialValue changes, so the
+  // label styling has to follow or the two disagree after a parent rebuild.
+  @override
+  void didUpdateWidget(covariant BullSegmented oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue ||
+        !widget.items.contains(selectedSegment)) {
+      selectedSegment = widget.initialValue ?? widget.items.first;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Center(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(BullRadius.xs),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
           initialValue: widget.initialValue ?? widget.items.first,
@@ -60,28 +70,27 @@ class _BullSegmentedState extends State<BullSegmented> {
           customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
             color: colors.textMuted.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(BullRadius.xs),
+            borderRadius: BorderRadius.circular(BullRadius.xxs),
           ),
           thumbDecoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(BullRadius.xs),
+            borderRadius: BorderRadius.circular(BullRadius.xxs),
           ),
           children: {
             for (final item in widget.items)
               item: Text(
                 item,
                 style: item == selectedSegment
-                    ? Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: colors.primary,
-                      )
+                    ? Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: colors.primary)
                     : widget.disabledItems.contains(item)
                     ? Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: colors.textMuted.withValues(alpha: 0.5),
+                        color: colors.outline.withValues(alpha: 0.5),
                       )
-                    : Theme.of(
-                        context,
-                      ).textTheme.labelMedium?.copyWith(color: colors.text),
+                    : Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: colors.secondary,
+                      ),
               ),
           },
         ),

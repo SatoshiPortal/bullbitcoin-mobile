@@ -1,14 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar, Gap;
 
 class BroadcastPayjoinOriginalTxButton extends StatefulWidget {
   final PayjoinSession payjoin;
@@ -76,7 +74,7 @@ class _BroadcastPayjoinOriginalTxButtonState
     );
     return Column(
       children: [
-        BBButton.big(
+        BullButton.big(
           label: isSender
               ? context.loc.transactionPayjoinSendWithout
               : context.loc.receivePaymentNormally,
@@ -87,9 +85,9 @@ class _BroadcastPayjoinOriginalTxButtonState
                 .read<TransactionDetailsCubit>()
                 .broadcastPayjoinOriginalTx();
             if (started) {
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                context.loc.transactionPayjoinFallbackProcessing,
+                message: context.loc.transactionPayjoinFallbackProcessing,
               );
             }
           },

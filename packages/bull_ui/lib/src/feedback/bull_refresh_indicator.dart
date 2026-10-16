@@ -14,7 +14,7 @@ class _PullToRefreshScrollBehavior extends MaterialScrollBehavior {
   };
 }
 
-/// Pull-to-refresh wrapper — duplicated from `core/widgets/bb_refresh_indicator.dart`.
+/// Pull-to-refresh wrapper.
 ///
 /// Centers the spinner vertically so it never overlaps the top bar. The [child]
 /// must be a single scrollable that fills the viewport so the gesture is

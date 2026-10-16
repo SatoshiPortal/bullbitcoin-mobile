@@ -17,4 +17,9 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     required bool saveAsDefault,
   }) = WithdrawInteracSecurityDetailsSubmitted;
   const factory WithdrawEvent.confirmed() = WithdrawConfirmed;
+  const factory WithdrawEvent.virtualPayeeActivated() =
+      WithdrawVirtualPayeeActivated;
+  const factory WithdrawEvent.regularSepaChosen() = WithdrawRegularSepaChosen;
+  const factory WithdrawEvent.virtualPayeeActivationDismissed() =
+      WithdrawVirtualPayeeActivationDismissed;
 }

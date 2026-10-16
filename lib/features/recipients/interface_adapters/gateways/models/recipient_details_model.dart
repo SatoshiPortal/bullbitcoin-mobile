@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
+import 'package:bb_mobile/features/recipients/data/models/sepa_virtual_payee_model.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -38,6 +39,8 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? firstname,
     String? lastname,
     String? corporateName,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeToJson: false) String? virtualPayeeStatus,
     String? clabe,
     String? institutionCode,
     String? phone,
@@ -105,7 +108,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
 
-      RecipientType.sepaEur => () {
+      RecipientType.sepaEur || RecipientType.confidentialSepaEur => () {
         final d = details as SepaEurDetails;
         return RecipientDetailsModel(
           recipientTypeFiat: type.value,
@@ -261,6 +264,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       firstname: firstname,
       lastname: lastname,
       corporateName: corporateName,
+      virtualPayeeStatus: sepaVirtualPayeeStatusFromApi(virtualPayeeStatus),
       clabe: clabe,
       institutionCode: institutionCode,
       phone: phone,

@@ -25,6 +25,8 @@ extension WithdrawFailureL10n on WithdrawFailure {
     // never fit to show a user. The copy stays actionable — "try again or
     // contact support" — rather than a bare "something went wrong", matching
     // `buyUnexpectedError` and `sellUnexpectedError`.
+    WithdrawConfidentialSepaNotActivatedFailure() =>
+      context.loc.withdrawConfidentialSepaNotActivatedError,
     WithdrawUnexpectedFailure() => context.loc.withdrawUnexpectedError,
   };
 }

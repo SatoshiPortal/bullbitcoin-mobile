@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_account_cop_form.dart';
@@ -19,9 +19,11 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipien
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_sms_mxn_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_selector.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class NewRecipientTab extends StatefulWidget {
   const NewRecipientTab({this.hookError, super.key});
@@ -62,9 +64,36 @@ class NewRecipientTabState extends State<NewRecipientTab> {
     super.dispose();
   }
 
+  Future<void> _onTypeSelected(RecipientType type) async {
+    setState(() => _selectedRecipientType = type);
+    final bloc = context.read<RecipientsBloc>();
+    if (type != RecipientType.confidentialSepaEur ||
+        bloc.state.confidentialSepaAvailability !=
+            ConfidentialSepaAvailability.needsVirtualIban) {
+      return;
+    }
+
+    final next = await Navigator.of(context).push<RecipientType>(
+      MaterialPageRoute(
+        builder: (onboardingContext) => VirtualIbanOnboardingScreen(
+          onActivated: () => Navigator.of(
+            onboardingContext,
+          ).pop(RecipientType.confidentialSepaEur),
+          onUseRegularSepa: () =>
+              Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (next == RecipientType.confidentialSepaEur) {
+      bloc.add(const RecipientsEvent.virtualIbanActivated());
+    }
+    setState(() => _selectedRecipientType = next);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ScrollableColumn(
+    return BullScrollableColumn(
       // Padding is already handled by the parent widget
       padding: EdgeInsets.zero,
       crossAxisAlignment: .start,
@@ -93,11 +122,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
         RecipientTypeSelector(
           selectedJurisdiction: _selectedJurisdiction,
           selectedType: _selectedRecipientType,
-          onTypeSelected: (newType) {
-            setState(() {
-              _selectedRecipientType = newType;
-            });
-          },
+          onTypeSelected: _onTypeSelected,
         ),
         const Gap(16.0),
         switch (_selectedRecipientType) {
@@ -145,6 +170,10 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
           RecipientType.nequiColombia => NequiCopForm(
             hookError: widget.hookError,
+          ),
+          RecipientType.confidentialSepaEur => SepaEurForm(
+            hookError: widget.hookError,
+            isConfidential: true,
           ),
           null => const SizedBox.shrink(),
         },

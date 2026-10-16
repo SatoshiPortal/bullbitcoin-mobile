@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/provider_cart.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class RecoverbullVaultProviderSelector extends StatelessWidget {
   final void Function(VaultProvider provider) onProviderSelected;
@@ -21,7 +20,7 @@ class RecoverbullVaultProviderSelector extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         if (description != null) ...[
-          BBText(description!, style: context.font.bodySmall),
+          BullText(description!, style: context.font.bodySmall),
           const Gap(20),
         ],
         for (final provider in VaultProvider.values.where(

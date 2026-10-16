@@ -1,26 +1,30 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDialog;
 
 class ExchangeAuthScreen extends StatefulWidget {
-  const ExchangeAuthScreen({super.key});
+  final VoidCallback onExit;
+
+  const ExchangeAuthScreen({required this.onExit, super.key});
 
   @override
   State<ExchangeAuthScreen> createState() => _ExchangeAuthScreenState();
@@ -35,11 +39,38 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   bool _isGeneratingApiKey = false;
   bool _isClosing = false;
 
+  bool _isLoadingConfiguration = true;
+  ExchangeFailure? _configurationFailure;
+
   @override
   void initState() {
     super.initState();
 
-    final settingsState = context.read<SettingsCubit>().state;
+    unawaited(_load());
+  }
+
+  Future<void> _retry() async {
+    setState(() {
+      _isLoadingConfiguration = true;
+      _configurationFailure = null;
+    });
+    await _load();
+  }
+
+  Future<void> _load() async {
+    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
+    if (!mounted) return;
+    final SettingsEntity settingsState;
+    switch (result) {
+      case Ok(:final value):
+        settingsState = value;
+      case Err(:final failure):
+        setState(() {
+          _isLoadingConfiguration = false;
+          _configurationFailure = failure;
+        });
+        return;
+    }
     final isTestnet = settingsState.environment == Environment.testnet;
     _bbAuthUrl = isTestnet
         ? ApiServiceConstants.bbAuthTestUrl
@@ -58,7 +89,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             if (!_isClosing && mounted) {
               _isClosing = true;
               // Navigate immediately
-              context.goNamed(WalletRoute.walletHome.name);
+              widget.onExit();
             }
           }
         },
@@ -243,10 +274,25 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
         platformController.setAllowsBackForwardNavigationGestures(true);
       }
     }
+    setState(() => _isLoadingConfiguration = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingConfiguration) {
+      return const SafeArea(child: Center(child: CircularProgressIndicator()));
+    }
+    if (_configurationFailure case final failure?) {
+      return SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CloseButton(onPressed: widget.onExit),
+            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+          ],
+        ),
+      );
+    }
     return SafeArea(
       child: _isGeneratingApiKey
           ? const Center(child: CircularProgressIndicator())
@@ -315,7 +361,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     await _controller.reload();
 
     if (!mounted) return;
-    await BlurredDialog.show(
+    await BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),

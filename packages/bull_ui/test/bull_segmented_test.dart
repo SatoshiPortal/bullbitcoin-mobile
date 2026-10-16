@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -38,6 +39,62 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(selected, isNull);
+    });
+
+    // Regression: the copy rounded every corner to BullRadius.xs, doubling the
+    // radius of the original and making the control visibly rounder than the
+    // rest of the design system.
+    testWidgets('clips to the design-system corner radius', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSegmented(items: const {'All', 'Frozen'}, onSelected: (_) {}),
+        ),
+      );
+
+      final clip = tester.widget<ClipRRect>(find.byType(ClipRRect).first);
+      expect(clip.borderRadius, BorderRadius.circular(BullRadius.xxs));
+    });
+
+    // Regression: the copy greyed disabled labels with textMuted instead of
+    // outline, rendering them darker than the original in light mode.
+    testWidgets('greys a disabled label with the outline token', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSegmented(
+            items: const {'All', 'Frozen'},
+            disabledItems: const {'Frozen'},
+            onSelected: (_) {},
+          ),
+        ),
+      );
+
+      final label = tester.widget<Text>(find.text('Frozen'));
+      expect(label.style?.color, testBullTheme.outline.withValues(alpha: 0.5));
+    });
+
+    testWidgets('restyles the selected label when initialValue changes', (
+      tester,
+    ) async {
+      Widget build(String initialValue) => wrapWithTheme(
+        BullSegmented(
+          items: const {'All', 'Frozen'},
+          initialValue: initialValue,
+          onSelected: (_) {},
+        ),
+      );
+      Color? colorOf(String label) =>
+          tester.widget<Text>(find.text(label)).style?.color;
+
+      await tester.pumpWidget(build('All'));
+      expect(colorOf('All'), testBullTheme.primary);
+
+      await tester.pumpWidget(build('Frozen'));
+      await tester.pumpAndSettle();
+
+      expect(colorOf('Frozen'), testBullTheme.primary);
+      expect(colorOf('All'), isNot(testBullTheme.primary));
     });
   });
 }

@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class WarningBottomSheet extends StatelessWidget {
@@ -27,7 +25,7 @@ class WarningBottomSheet extends StatelessWidget {
     required String confirmLabel,
     required VoidCallback onConfirm,
   }) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: WarningBottomSheet(
         title: title,
@@ -51,20 +49,20 @@ class WarningBottomSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BBText(
+              BullText(
                 title,
                 style: context.font.headlineMedium,
                 color: context.appColors.onSurface,
               ),
               const Gap(16),
-              BBText(
+              BullText(
                 message,
                 style: context.font.bodyMedium,
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.center,
               ),
               const Gap(16),
-              BBButton.big(
+              BullButton.big(
                 label: confirmLabel,
                 onPressed: () {
                   onConfirm();

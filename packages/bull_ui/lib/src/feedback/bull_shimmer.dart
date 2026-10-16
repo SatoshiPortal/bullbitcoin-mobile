@@ -2,7 +2,10 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-/// Shimmering skeleton box — duplicated from `core/widgets/loading/loading_box_content.dart`.
+/// Shimmering skeleton box.
+///
+/// The box sits in a start-aligned, shrink-wrapped column so a fixed [width]
+/// is kept even when the parent stretches its children.
 class BullShimmerBox extends StatelessWidget {
   const BullShimmerBox({
     super.key,
@@ -28,21 +31,30 @@ class BullShimmerBox extends StatelessWidget {
       highlightColor: colors.shimmerHighlight,
       child: Padding(
         padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Container(
-          width: width ?? double.infinity,
-          height: height,
-          margin: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: colors.surface,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: width ?? double.infinity,
+              height: height,
+              margin: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+                color: colors.surface,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Shimmering skeleton line — duplicated from `core/widgets/loading/loading_line_content.dart`.
+/// Shimmering skeleton line.
+///
+/// Like [BullShimmerBox], a fixed [width] is kept even inside a stretching
+/// parent.
 class BullShimmerLine extends StatelessWidget {
   const BullShimmerLine({
     super.key,
@@ -68,7 +80,13 @@ class BullShimmerLine extends StatelessWidget {
       highlightColor: colors.shimmerHighlight,
       child: Padding(
         padding: padding,
-        child: Container(width: width, height: height, color: colors.surface),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(width: width, height: height, color: colors.surface),
+          ],
+        ),
       ),
     );
   }

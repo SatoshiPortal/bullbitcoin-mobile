@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
@@ -19,7 +16,8 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_restricted_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullShimmerBox, BullShimmerLine, Gap;
 
 class FundExchangeMethodSelectionScreen extends StatefulWidget {
   const FundExchangeMethodSelectionScreen({super.key});
@@ -95,7 +93,7 @@ class _FundExchangeMethodSelectionScreenState
         title: Text(context.loc.fundExchangeTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
+          child: BullFadingLinearProgress(
             height: 3,
             trigger: isLoadingFundingDetails || isLoadingFundingInstitutions,
             backgroundColor: context.appColors.surface,
@@ -137,7 +135,7 @@ class _FundExchangeMethodSelectionScreenState
                   ),
                   const Gap(24.0),
                   if (jurisdiction == null)
-                    const LoadingLineContent(height: 56)
+                    const BullShimmerLine(height: 56)
                   else
                     FundExchangeJurisdictionDropdown(
                       initialValue: jurisdiction!,
@@ -156,7 +154,7 @@ class _FundExchangeMethodSelectionScreenState
                     ),
                   const Gap(24.0),
                   if (jurisdiction == null)
-                    const LoadingBoxContent(height: 200)
+                    const BullShimmerBox(height: 200)
                   else
                     switch (jurisdiction!) {
                       FundingJurisdiction.canada =>

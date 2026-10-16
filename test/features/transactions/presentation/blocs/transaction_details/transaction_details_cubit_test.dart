@@ -1512,6 +1512,35 @@ void main() {
       expectResolvedTxIds('payout-txid');
     });
 
+    test(
+      'shows an order with a txid before its wallet transaction exists',
+      () async {
+        final order = _buyOrder(bitcoinTransactionId: 'payout-txid');
+        when(
+          () => getOrder.execute('order-1'),
+        ).thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
+        when(() => getTransactionsByTxId.execute('payout-txid')).thenAnswer(
+          (_) async => Ok<List<Transaction>, TransactionFailure>([
+            Transaction(order: order),
+          ]),
+        );
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+
+        await cubit.initByOrderId('order-1');
+
+        expect(cubit.state.transaction?.order, order);
+        expect(cubit.state.isLoading, isFalse);
+        expect(cubit.state.hasLoadError, isFalse);
+        verifyNever(
+          () => watchWalletTransactionByTxId.execute(
+            txId: any(named: 'txId'),
+            walletId: any(named: 'walletId'),
+          ),
+        );
+      },
+    );
+
     test('falls back to order-only details when no txid is known', () async {
       final order = _buyOrder();
       when(

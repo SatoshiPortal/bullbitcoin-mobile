@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
@@ -8,11 +7,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -24,7 +19,14 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart'
 import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBottomSheet,
+        BullButton,
+        BullFadingLinearProgress,
+        BullInfoCard,
+        BullSwitch,
+        Gap;
 
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
@@ -95,7 +97,7 @@ class SwapPageState extends State<SwapPage> {
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<TransferBloc, TransferState, bool>(
               selector: (state) => state.isStarting || state.isCreatingSwap,
-              builder: (context, isLoading) => FadingLinearProgress(
+              builder: (context, isLoading) => BullFadingLinearProgress(
                 height: 3,
                 trigger: isLoading,
                 backgroundColor: context.appColors.onPrimary,
@@ -116,7 +118,7 @@ class SwapPageState extends State<SwapPage> {
                   crossAxisAlignment: .start,
                   children: [
                     const Gap(12),
-                    InfoCard(
+                    BullInfoCard(
                       description: context.loc.swapInfoDescription,
                       tagColor: context.appColors.inverseSurface,
                       bgColor: context.appColors.inverseSurface.withValues(
@@ -141,7 +143,7 @@ class SwapPageState extends State<SwapPage> {
                         BlocSelector<TransferBloc, TransferState, bool>(
                           selector: (state) => state.sendToExternal,
                           builder: (context, sendToExternal) {
-                            return BBSwitch(
+                            return BullSwitch(
                               value: sendToExternal,
                               onChanged: (value) {
                                 context.read<TransferBloc>().add(
@@ -300,7 +302,7 @@ class SwapPageState extends State<SwapPage> {
                                   builder: (context, selected) {
                                     final (receiveExactAmount, isMaxSelected) =
                                         selected;
-                                    return BBSwitch(
+                                    return BullSwitch(
                                       value: receiveExactAmount,
                                       // Max drains the wallet; an exact
                                       // receivable amount can't be honored.
@@ -332,14 +334,14 @@ class SwapPageState extends State<SwapPage> {
                         return Column(
                           crossAxisAlignment: .stretch,
                           children: [
-                            BBButton.big(
+                            BullButton.big(
                               label: context.loc.sendAdvancedOptions,
                               bgColor: context.appColors.transparent,
                               textColor: context.appColors.secondary,
                               outlined: true,
                               borderColor: context.appColors.secondary,
                               onPressed: () {
-                                BlurredBottomSheet.show(
+                                BullBottomSheet.show(
                                   context: context,
                                   child: BlocProvider.value(
                                     value: context.read<TransferBloc>(),
@@ -361,7 +363,7 @@ class SwapPageState extends State<SwapPage> {
                           state.continueClicked ||
                           state.hasAmountError,
                       builder: (context, disabled) {
-                        return BBButton.big(
+                        return BullButton.big(
                           label: context.loc.swapContinueButton,
                           bgColor: context.appColors.secondary,
                           textColor: context.appColors.onSecondary,

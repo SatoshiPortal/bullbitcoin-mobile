@@ -5,13 +5,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/nfc_payload_parser.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/nfc_scanner_widget.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullSnackBar, BullText;
 
 enum _NfcOperation { read, write }
 
@@ -107,7 +106,7 @@ class NfcBottomSheet {
     }
 
     T? result;
-    await BlurredBottomSheet.show<void>(
+    await BullBottomSheet.show<void>(
       context: context,
       isDismissible: true,
       child: Builder(
@@ -123,7 +122,7 @@ class NfcBottomSheet {
             ),
             child: Column(
               children: [
-                BBText(
+                BullText(
                   title,
                   style: sheetContext.font.headlineSmall,
                   color: sheetContext.appColors.text,
@@ -257,7 +256,7 @@ class NfcBottomSheet {
       NFCAvailability.not_supported => context.loc.nfcNotAvailable,
       NFCAvailability.available => context.loc.nfcNotAvailable,
     };
-    SnackBarUtils.showSnackBar(context, message);
+    BullSnackBar.show(context, message: message);
   }
 
   static void _handleNfcError(
@@ -273,13 +272,13 @@ class NfcBottomSheet {
         : _isNfcReadInterrupted(error)
         ? context.loc.nfcConnectionLost
         : context.loc.nfcError(error.toString());
-    SnackBarUtils.showSnackBar(context, message);
+    BullSnackBar.show(context, message: message);
   }
 
   static void _showInvalidDataError(BuildContext context) {
     log.warning('NFC tag contained no supported payload');
     if (!context.mounted) return;
-    SnackBarUtils.showSnackBar(context, context.loc.nfcInvalidData);
+    BullSnackBar.show(context, message: context.loc.nfcInvalidData);
   }
 
   static bool _isUserCancelled(Object error) =>

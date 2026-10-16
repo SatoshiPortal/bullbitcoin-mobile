@@ -66,6 +66,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<SellWalletSelected>(_onWalletSelected);
+    on<SellPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
     on<SellSendPaymentConfirmed>(
@@ -104,6 +105,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
   StreamSubscription<Result<PayjoinSession, SellFailure>>? _payjoinSubscription;
   String? _activePayjoinSessionId;
@@ -191,6 +193,18 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
   }
 
+  void _onPaymentPreparationAbandoned(
+    SellPaymentPreparationAbandoned event,
+    Emitter<SellState> emit,
+  ) {
+    if (_hasPaymentInFlight) return;
+    ++_paymentPreparationGeneration;
+    _bitcoinPreviewEpoch++;
+    _stopPolling();
+    final selection = state.toCleanWalletSelectionState;
+    if (selection != null) emit(selection);
+  }
+
   Future<void> _onWalletSelected(
     SellWalletSelected event,
     Emitter<SellState> emit,
@@ -199,7 +213,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // transaction pays the CURRENT order, and a new order built on top of an
     // active payjoin session inherits its resolution (cross-order latch —
     // the new order would show a success screen without ever being paid).
-    if (_hasPaymentInFlight) return;
+    if (_hasPaymentInFlight ||
+        (state is SellPreparingPaymentState &&
+            (state as SellPreparingPaymentState).error == null)) {
+      return;
+    }
 
     int absoluteFees = 0;
     double exchangeRateEstimate = 0.0;
@@ -222,17 +240,25 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
       return;
     }
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
+    final generation = ++_paymentPreparationGeneration;
+    bool isCurrent() =>
+        generation == _paymentPreparationGeneration && !emit.isDone;
+    final preparing = SellPreparingPaymentState(
+      input: walletSelectionState,
+      selectedWallet: event.wallet,
+    );
+    emit(preparing);
     try {
       int requiredAmountSat;
       final rateResult = await _loadSellContextUsecase.satsToCurrency(
         currencyCode: walletSelectionState.fiatCurrency.code,
       );
+      if (!isCurrent()) return;
       switch (rateResult) {
         case Ok(:final value):
           exchangeRateEstimate = value;
         case Err(:final failure):
-          emit(walletSelectionState.copyWith(error: failure));
+          emit(preparing.copyWith(error: failure));
           return;
       }
 
@@ -249,8 +275,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
       }
 
       if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+        if (!isCurrent()) return;
         emit(
-          walletSelectionState.copyWith(
+          preparing.copyWith(
             error: SellInsufficientBalanceFailure(
               requiredAmountSat: requiredAmountSat,
             ),
@@ -264,11 +291,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
         index: 0,
       );
       final WalletAddress dummyAddressForFeeCalculation;
+      if (!isCurrent()) return;
       switch (addressResult) {
         case Ok(:final value):
           dummyAddressForFeeCalculation = value;
         case Err(:final failure):
-          emit(walletSelectionState.copyWith(error: failure));
+          emit(preparing.copyWith(error: failure));
           return;
       }
 
@@ -281,32 +309,35 @@ class SellBloc extends Bloc<SellEvent, SellState>
           feeRate: const RelativeFee(25),
         );
         final String pset;
+        if (!isCurrent()) return;
         switch (psetResult) {
           case Ok(:final value):
             pset = value;
           case Err(:final failure):
-            emit(walletSelectionState.copyWith(error: failure));
+            emit(preparing.copyWith(error: failure));
             return;
         }
         final feesResult = await _calculateSellLiquidFeesUsecase.execute(
           pset: pset,
         );
+        if (!isCurrent()) return;
         switch (feesResult) {
           case Ok(:final value):
             absoluteFees = value;
           case Err(:final failure):
-            emit(walletSelectionState.copyWith(error: failure));
+            emit(preparing.copyWith(error: failure));
             return;
         }
       } else {
         final feeOptions = await _loadSellContextUsecase.networkFees(
           isLiquid: false,
         );
+        if (!isCurrent()) return;
         switch (feeOptions) {
           case Ok(:final value):
             bitcoinFees = value;
           case Err(:final failure):
-            emit(walletSelectionState.copyWith(error: failure));
+            emit(preparing.copyWith(error: failure));
             return;
         }
         // Fastest is the default selection, so the estimate shown on arrival
@@ -318,11 +349,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
           networkFee: bitcoinFees.fastest,
         );
         final PreparedSellBitcoinPayin preparedSend;
+        if (!isCurrent()) return;
         switch (preparedResult) {
           case Ok(:final value):
             preparedSend = value;
           case Err(:final failure):
-            emit(walletSelectionState.copyWith(error: failure));
+            emit(preparing.copyWith(error: failure));
             return;
         }
         bitcoinTxSize = preparedSend.txSize;
@@ -335,14 +367,15 @@ class SellBloc extends Bloc<SellEvent, SellState>
         error: e,
         trace: st,
       );
+      if (!isCurrent()) return;
       emit(
-        walletSelectionState.copyWith(
+        preparing.copyWith(
           error: SellUnexpectedFailure('Failed to prepare transaction: $e'),
         ),
       );
       return;
     }
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
+    if (!isCurrent()) return;
     try {
       final orderResult = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
@@ -360,16 +393,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
             walletSelectionState.userSummary.payjoinReceiveEnabled,
       );
       final SellOrder createdSellOrder;
+      if (!isCurrent()) return;
       switch (orderResult) {
         case Ok(:final value):
           createdSellOrder = value;
         case Err(:final failure):
-          emit(
-            walletSelectionState.copyWith(
-              isCreatingSellOrder: false,
-              error: failure,
-            ),
-          );
+          emit(preparing.copyWith(error: failure));
           return;
       }
 
@@ -378,13 +407,15 @@ class SellBloc extends Bloc<SellEvent, SellState>
           walletId: event.wallet.id,
         );
         final List<WalletUtxo> utxos;
+        if (!isCurrent()) return;
         switch (utxosResult) {
           case Ok(:final value):
             utxos = value;
           case Err(:final failure):
-            emit(walletSelectionState.copyWith(error: failure));
+            emit(preparing.copyWith(error: failure));
             return;
         }
+        if (!isCurrent()) return;
         emit(
           walletSelectionState.toSendPaymentState(
             selectedWallet: event.wallet,
@@ -397,6 +428,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           ),
         );
       } else {
+        if (!isCurrent()) return;
         emit(
           walletSelectionState.toSendPaymentState(
             selectedWallet: event.wallet,
@@ -406,6 +438,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           ),
         );
       }
+      if (!isCurrent()) return;
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -413,15 +446,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
         error: e,
         trace: st,
       );
-      emit(walletSelectionState.copyWith(error: SellUnexpectedFailure('$e')));
-    } finally {
-      if (state is SellWalletSelectionState) {
-        emit(
-          (state as SellWalletSelectionState).copyWith(
-            isCreatingSellOrder: false,
-          ),
-        );
-      }
+      if (!isCurrent()) return;
+      emit(preparing.copyWith(error: SellUnexpectedFailure('$e')));
     }
   }
 
@@ -431,7 +457,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
   ) async {
     // Same guard as _onWalletSelected: switching the network rebuilds the
     // order, which must never happen while a payment is in flight.
-    if (_hasPaymentInFlight) return;
+    if (_hasPaymentInFlight ||
+        (state is SellPreparingPaymentState &&
+            (state as SellPreparingPaymentState).error == null)) {
+      return;
+    }
 
     // We should be on a SellWalletSelection or SellPaymentState and return
     //  to a clean SellWalletSelectionState state
@@ -443,7 +473,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
       return;
     }
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
+    final generation = ++_paymentPreparationGeneration;
+    bool isCurrent() =>
+        generation == _paymentPreparationGeneration && !emit.isDone;
+    final preparing = SellPreparingPaymentState(
+      input: walletSelectionState,
+      selectedWallet: null,
+    );
+    emit(preparing);
 
     try {
       final orderResult = await _createSellOrderUsecase.execute(
@@ -452,25 +489,23 @@ class SellBloc extends Bloc<SellEvent, SellState>
         network: event.network,
       );
       final SellOrder createdSellOrder;
+      if (!isCurrent()) return;
       switch (orderResult) {
         case Ok(:final value):
           createdSellOrder = value;
         case Err(:final failure):
-          emit(
-            walletSelectionState.copyWith(
-              isCreatingSellOrder: false,
-              error: failure,
-            ),
-          );
+          emit(preparing.copyWith(error: failure));
           return;
       }
 
       // Proceed to confirmation state
+      if (!isCurrent()) return;
       emit(
         walletSelectionState.toReceivePaymentState(
           createdSellOrder: createdSellOrder,
         ),
       );
+      if (!isCurrent()) return;
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -478,15 +513,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
         error: e,
         trace: st,
       );
-      emit(walletSelectionState.copyWith(error: SellUnexpectedFailure('$e')));
-    } finally {
-      if (state is SellWalletSelectionState) {
-        emit(
-          (state as SellWalletSelectionState).copyWith(
-            isCreatingSellOrder: false,
-          ),
-        );
-      }
+      if (!isCurrent()) return;
+      emit(preparing.copyWith(error: SellUnexpectedFailure('$e')));
     }
   }
 
@@ -1725,6 +1753,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
   @override
   Future<void> close() async {
+    ++_paymentPreparationGeneration;
     _stopPolling();
     await _payjoinSubscription?.cancel();
     return super.close();

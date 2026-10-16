@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 class TxsFilterItem extends StatelessWidget {
   const TxsFilterItem({
@@ -31,7 +31,7 @@ class TxsFilterItem extends StatelessWidget {
                 : context.appColors.border,
           ),
         ),
-        child: BBText(
+        child: BullText(
           title,
           style: context.font.bodyMedium?.copyWith(
             color: isSelected

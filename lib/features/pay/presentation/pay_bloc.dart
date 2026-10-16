@@ -68,6 +68,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<PayWalletSelected>(_onWalletSelected);
+    on<PayPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<PayOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
     on<PaySendPaymentConfirmed>(
@@ -110,6 +111,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final GetPayjoinUsecase _getPayjoinUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
   bool _isOrderRequestInFlight = false;
   String? _pendingOrderStatusUpdateId;
@@ -222,6 +224,18 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }
 
   // From Sell: Select internal wallet, calculate fees, create pay order
+  void _onPaymentPreparationAbandoned(
+    PayPaymentPreparationAbandoned event,
+    Emitter<PayState> emit,
+  ) {
+    if (_hasPaymentInFlight) return;
+    ++_paymentPreparationGeneration;
+    _bitcoinPreviewEpoch++;
+    _stopPolling();
+    final selection = state.cleanWalletSelectionState;
+    if (selection != null) emit(selection);
+  }
+
   Future<void> _onWalletSelected(
     PayWalletSelected event,
     Emitter<PayState> emit,
@@ -230,7 +244,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // transaction pays the CURRENT order, and a new order built on top of an
     // active payjoin session inherits its resolution (cross-order latch —
     // the new order would show a success screen without ever being paid).
-    if (_hasPaymentInFlight) return;
+    if (_hasPaymentInFlight ||
+        (state is PayPreparingPaymentState &&
+            (state as PayPreparingPaymentState).error == null)) {
+      return;
+    }
 
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
@@ -241,7 +259,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    final generation = ++_paymentPreparationGeneration;
+    bool isCurrent() =>
+        generation == _paymentPreparationGeneration && !emit.isDone;
+    final preparing = PayPreparingPaymentState(
+      input: walletSelectionState,
+      selectedWallet: event.wallet,
+    );
+    emit(preparing);
 
     // This builds a brand-new payment state, with its own order, wallet and
     // empty preview cache. A preview still in flight for the previous one would
@@ -256,18 +281,15 @@ class PayBloc extends Bloc<PayEvent, PayState>
       currencyCode: walletSelectionState.currency.code,
     )) {
       case Err(:final failure):
-        emit(
-          walletSelectionState.copyWith(
-            error: failure,
-            isCreatingPayOrder: false,
-          ),
-        );
+        if (!isCurrent()) return;
+        emit(preparing.copyWith(error: failure));
         return;
       case Ok(:final value):
+        if (!isCurrent()) return;
         estimate = value;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    if (!isCurrent()) return;
 
     final FiatPaymentOrder createdPayOrder;
     switch (await _placePayOrderUsecase.execute(
@@ -282,18 +304,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
           walletSelectionState.userSummary.payjoinReceiveEnabled,
     )) {
       case Err(:final failure):
-        emit(
-          walletSelectionState.copyWith(
-            error: failure,
-            isCreatingPayOrder: false,
-          ),
-        );
+        if (!isCurrent()) return;
+        emit(preparing.copyWith(error: failure));
         return;
       case Ok(:final value):
+        if (!isCurrent()) return;
         createdPayOrder = value;
     }
 
     if (event.wallet.isLiquid) {
+      if (!isCurrent()) return;
       emit(
         walletSelectionState.toSendPaymentState(
           selectedWallet: event.wallet,
@@ -302,6 +322,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           exchangeRateEstimate: estimate.exchangeRateEstimate,
         ),
       );
+      if (!isCurrent()) return;
       _startPolling();
       return;
     }
@@ -316,12 +337,15 @@ class PayBloc extends Bloc<PayEvent, PayState>
       walletId: event.wallet.id,
     )) {
       case Ok(:final value):
+        if (!isCurrent()) return;
         utxos = value;
       case Err(:final failure):
+        if (!isCurrent()) return;
         utxos = const [];
         utxosFailure = failure;
     }
 
+    if (!isCurrent()) return;
     emit(
       walletSelectionState.toSendPaymentState(
         selectedWallet: event.wallet,
@@ -334,6 +358,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
         error: utxosFailure,
       ),
     );
+    if (!isCurrent()) return;
     _startPolling();
   }
 
@@ -344,7 +369,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
   ) async {
     // Same guard as _onWalletSelected: switching the network rebuilds the
     // order, which must never happen while a payment is in flight.
-    if (_hasPaymentInFlight) return;
+    if (_hasPaymentInFlight ||
+        (state is PayPreparingPaymentState &&
+            (state as PayPreparingPaymentState).error == null)) {
+      return;
+    }
 
     // We should be on a PayWalletSelection state here
     final walletSelectionState = state.cleanWalletSelectionState;
@@ -356,7 +385,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
+    final generation = ++_paymentPreparationGeneration;
+    bool isCurrent() =>
+        generation == _paymentPreparationGeneration && !emit.isDone;
+    final preparing = PayPreparingPaymentState(
+      input: walletSelectionState,
+      selectedWallet: null,
+    );
+    emit(preparing);
 
     switch (await _placePayOrderUsecase.execute(
       orderAmount: walletSelectionState.amount,
@@ -365,14 +401,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
       paymentDescription: walletSelectionState.paymentDescription,
     )) {
       case Err(:final failure):
-        emit(
-          walletSelectionState.copyWith(
-            error: failure,
-            isCreatingPayOrder: false,
-          ),
-        );
+        if (!isCurrent()) return;
+        emit(preparing.copyWith(error: failure));
       case Ok(:final value):
+        if (!isCurrent()) return;
         emit(walletSelectionState.toReceivePaymentState(payOrder: value));
+        if (!isCurrent()) return;
         _startPolling();
     }
   }
@@ -1454,6 +1488,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
   @override
   Future<void> close() async {
+    ++_paymentPreparationGeneration;
     _stopPolling();
     await _payjoinSubscription?.cancel();
     return super.close();

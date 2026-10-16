@@ -2,10 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
@@ -26,7 +22,13 @@ import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullShimmerLine,
+        BullSnackBar,
+        Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
@@ -99,7 +101,7 @@ class TransactionDetailsScreen extends StatelessWidget {
       errorContent: hasLoadError ? const _LoadErrorContent() : null,
       appBarBottom: PreferredSize(
         preferredSize: const Size.fromHeight(3.0),
-        child: FadingLinearProgress(
+        child: BullFadingLinearProgress(
           trigger: isBroadcastingPayjoinOriginalTx,
           backgroundColor: context.appColors.onPrimary,
           foregroundColor: context.appColors.primary,
@@ -146,7 +148,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 OrderPaymentMethod.sinpe &&
             (tx.order! as FiatPaymentOrder).payoutCurrency == 'CRC') ...[
           const Gap(16),
-          BBButton.big(
+          BullButton.big(
             label: context.loc.payViewReceipt,
             onPressed: () {
               showSinpeReceiptBottomSheet(
@@ -162,9 +164,9 @@ class TransactionDetailsScreen extends StatelessWidget {
       footer: [
         if (payjoin != null) BroadcastPayjoinOriginalTxButton(payjoin: payjoin),
         if (isLoading)
-          const LoadingLineContent(height: 40)
+          const BullShimmerLine(height: 40)
         else
-          BBButton.big(
+          BullButton.big(
             label: context.loc.transactionDetailAddNote,
             disabled:
                 walletTransaction == null ||
@@ -182,9 +184,9 @@ class TransactionDetailsScreen extends StatelessWidget {
               final result = await cubit.saveTransactionLabel(saved);
               if (result case Err(:final failure)) {
                 if (context.mounted) {
-                  SnackBarUtils.showSnackBar(
+                  BullSnackBar.show(
                     context,
-                    failure.toTranslated(context),
+                    message: failure.toTranslated(context),
                   );
                 }
               }
@@ -202,7 +204,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             wallet?.signsLocally == true &&
             tx?.txId != null &&
             tx?.isSwap != true)
-          BBButton.big(
+          BullButton.big(
             label: context.loc.transactionDetailAccelerate,
             onPressed: () {
               context.pushNamed(
@@ -240,7 +242,7 @@ class _LoadErrorContent extends StatelessWidget {
               style: context.font.bodyMedium,
             ),
             const Gap(16),
-            BBButton.small(
+            BullButton.small(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<TransactionDetailsCubit>().refresh(),

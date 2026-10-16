@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:bb_mobile/features/status_check/presentation/status_check_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, BullText;
 
 class ServiceStatusPage extends StatefulWidget {
   const ServiceStatusPage({super.key});
@@ -37,7 +36,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           final serviceStatus = state.serviceStatus;
           final cubit = context.read<ServiceStatusCubit>();
 
-          return BBPullableBody(
+          return BullPullableBody(
             indicatorKey: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
             slivers: [
@@ -49,7 +48,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     if (state.failure != null) ...[
-                      BBText(
+                      BullText(
                         state.failure!.toTranslated(context),
                         style: context.font.bodyMedium,
                         color: context.appColors.error,
@@ -80,7 +79,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                       mainAxisAlignment: .center,
                       children: [
                         if (serviceStatus.lastChecked != null)
-                          BBText(
+                          BullText(
                             context.loc.statusCheckLastChecked(
                               _formatDateTime(serviceStatus.lastChecked!),
                             ),
@@ -95,7 +94,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                       Row(
                         mainAxisAlignment: .center,
                         children: [
-                          BBText(
+                          BullText(
                             context.loc.statusCheckResultsMayBeOutdated,
                             style: context.font.bodySmall,
                             color: context.appColors.warning,
@@ -136,13 +135,13 @@ class _ServiceStatusItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        BBText(
+        BullText(
           service.name,
           style: context.font.bodyMedium,
           color: context.appColors.onSurface,
         ),
         const Spacer(),
-        BBText(
+        BullText(
           _getStatusText(context),
           style: context.font.bodySmall,
           color: context.appColors.onSurfaceVariant,

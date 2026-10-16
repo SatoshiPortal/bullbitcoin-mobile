@@ -72,6 +72,57 @@ void main() {
   );
 
   group('PlacePayOrderUsecase', () {
+    // A bill payment pays the exchange like a sell order does.
+    Future<bool> requestedPayjoin(PayjoinPolicy policy) async {
+      when(
+        payjoinPolicy.load,
+      ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
+      when(
+        () => mainnet.placePayOrder(
+          orderAmount: any(named: 'orderAmount'),
+          recipientId: any(named: 'recipientId'),
+          network: any(named: 'network'),
+          paymentDescription: any(named: 'paymentDescription'),
+          usePayjoin: any(named: 'usePayjoin'),
+        ),
+      ).thenAnswer((_) async => _MockPayOrder());
+
+      final _ = await buildPlace().execute(
+        orderAmount: const FiatAmount(100),
+        recipientId: 'recipient-1',
+        network: OrderBitcoinNetwork.bitcoin,
+        usePayjoin: true,
+      );
+
+      return verify(
+            () => mainnet.placePayOrder(
+              orderAmount: any(named: 'orderAmount'),
+              recipientId: any(named: 'recipientId'),
+              network: any(named: 'network'),
+              paymentDescription: any(named: 'paymentDescription'),
+              usePayjoin: captureAny(named: 'usePayjoin'),
+            ),
+          ).captured.single
+          as bool;
+    }
+
+    test('payjoin is on by default, with payments between users off', () async {
+      expect(await requestedPayjoin(PayjoinPolicy.defaults()), isTrue);
+    });
+
+    test('payjoin follows the sell switch, not the user switches', () async {
+      expect(
+        await requestedPayjoin(
+          PayjoinPolicy.defaults().copyWith(
+            sendEnabled: true,
+            receiveEnabled: true,
+            sellEnabled: false,
+          ),
+        ),
+        isFalse,
+      );
+    });
+
     test(
       'an expired session is a typed failure, not a thrown exception',
       () async {

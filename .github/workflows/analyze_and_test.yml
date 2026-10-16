@@ -165,7 +165,9 @@ jobs:
     if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
     name: Static checks and unit tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # A normal run takes 22-29 min (build_runner and unit tests dominate), so
+    # 30 min cancelled healthy runs on a slow runner.
+    timeout-minutes: 45
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -302,6 +304,9 @@ jobs:
           # delivery gate on PRs to main, rather than for every develop PR in a
           # stack, and can still be run manually for an arbitrary branch.
           RUN_FUNDED_PAYJOIN_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
+          # Same gate for the RecoverBull restore test, which depends on the
+          # production key server being reachable over Tor.
+          RUN_LIVE_KEYSERVER_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
           SCCACHE_GHA_ENABLED: "true"
           RUSTC_WRAPPER: sccache
           # sccache cannot cache incremental compilation artifacts; disabling

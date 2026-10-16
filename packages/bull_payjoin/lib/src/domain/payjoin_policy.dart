@@ -1,17 +1,54 @@
 import 'package:primitives/primitives.dart';
 
+/// What the user is doing when a payjoin would apply. Each action has its own
+/// switch in [PayjoinPolicy].
+enum PayjoinAction {
+  /// Paying another user's payjoin request.
+  send,
+
+  /// Receiving from another user.
+  receive,
+
+  /// Receiving the payout of a Bull Bitcoin exchange buy order.
+  buy,
+
+  /// Paying the Bull Bitcoin exchange: sell and bill-payment orders.
+  sell,
+}
+
 final class PayjoinPolicy {
   static final minimumAllowedAmount = Sats.fromInt(1000);
   static final maximumAllowedAmount = Sats.fromInt(21000000);
   static const minimumSessionLifetime = Duration(minutes: 1);
   static const maximumSessionLifetime = Duration(hours: 24);
 
-  final bool enabled;
+  /// Off by default: a user counterparty learns one of our UTXOs.
+  final bool sendEnabled;
+
+  /// Off by default and behind the disclaimer: the receiver carries the
+  /// economic exposure (fee contribution, UTXO probing).
+  final bool receiveEnabled;
+
+  /// On by default, without the disclaimer: the exchange is the trusted
+  /// counterparty to the trade. Still a disclosure: as the receiver, the
+  /// wallet contributes an input, so the exchange learns one more UTXO linked
+  /// to the user's account. The minimum amount bounds probing through small
+  /// orders.
+  final bool buyEnabled;
+
+  /// On by default: as the sender, the wallet's inputs are already in the
+  /// original transaction the exchange receives, so the payjoin reveals
+  /// nothing new to it.
+  final bool sellEnabled;
+
   final Sats minimumAmount;
   final Duration sessionLifetime;
 
   PayjoinPolicy({
-    required this.enabled,
+    required this.sendEnabled,
+    required this.receiveEnabled,
+    required this.buyEnabled,
+    required this.sellEnabled,
     required this.minimumAmount,
     required this.sessionLifetime,
   }) {
@@ -36,17 +73,44 @@ final class PayjoinPolicy {
   }
 
   factory PayjoinPolicy.defaults() => PayjoinPolicy(
-    enabled: false,
+    sendEnabled: false,
+    receiveEnabled: false,
+    buyEnabled: true,
+    sellEnabled: true,
     minimumAmount: Sats.fromInt(10000),
     sessionLifetime: maximumSessionLifetime,
   );
 
+  bool allows(PayjoinAction action) => switch (action) {
+    PayjoinAction.send => sendEnabled,
+    PayjoinAction.receive => receiveEnabled,
+    PayjoinAction.buy => buyEnabled,
+    PayjoinAction.sell => sellEnabled,
+  };
+
+  /// Whether any switch keeps the payjoin relays in use.
+  bool get anyEnabled => PayjoinAction.values.any(allows);
+
+  PayjoinPolicy withAction(PayjoinAction action, {required bool enabled}) =>
+      copyWith(
+        sendEnabled: action == PayjoinAction.send ? enabled : null,
+        receiveEnabled: action == PayjoinAction.receive ? enabled : null,
+        buyEnabled: action == PayjoinAction.buy ? enabled : null,
+        sellEnabled: action == PayjoinAction.sell ? enabled : null,
+      );
+
   PayjoinPolicy copyWith({
-    bool? enabled,
+    bool? sendEnabled,
+    bool? receiveEnabled,
+    bool? buyEnabled,
+    bool? sellEnabled,
     Sats? minimumAmount,
     Duration? sessionLifetime,
   }) => PayjoinPolicy(
-    enabled: enabled ?? this.enabled,
+    sendEnabled: sendEnabled ?? this.sendEnabled,
+    receiveEnabled: receiveEnabled ?? this.receiveEnabled,
+    buyEnabled: buyEnabled ?? this.buyEnabled,
+    sellEnabled: sellEnabled ?? this.sellEnabled,
     minimumAmount: minimumAmount ?? this.minimumAmount,
     sessionLifetime: sessionLifetime ?? this.sessionLifetime,
   );

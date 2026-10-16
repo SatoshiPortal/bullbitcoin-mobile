@@ -13,6 +13,9 @@ void main() {
 
     expect(policy.minimumAmount, PayjoinPolicy.defaults().minimumAmount);
     expect(policy.sessionLifetime, PayjoinPolicy.defaults().sessionLifetime);
-    expect(policy.enabled, isFalse);
+    expect(policy.receiveEnabled, isFalse);
+    expect(policy.sendEnabled, isFalse);
+    expect(policy.buyEnabled, isFalse);
+    expect(policy.sellEnabled, isFalse);
   });
 }

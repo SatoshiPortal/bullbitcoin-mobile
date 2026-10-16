@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
@@ -7,12 +8,14 @@ import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_details_
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart' show SizedBox;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum WithdrawRoute {
   withdraw('/withdraw'),
   withdrawRecipients('/withdraw/recipients'),
+  withdrawConfidentialSepaActivation('/withdraw/confidential-sepa-activation'),
   withdrawPaymentDetails('/withdraw/payment-details'),
   withdrawConfirmation('/withdraw/confirmation'),
   withdrawSuccess('/withdraw/success');
@@ -21,6 +24,8 @@ enum WithdrawRoute {
 
   const WithdrawRoute(this.path);
 }
+
+enum _VirtualPayeeActivationChoice { activated, regularSepa }
 
 class WithdrawRouter {
   static final route = GoRoute(
@@ -37,6 +42,28 @@ class WithdrawRouter {
             locator<WithdrawBloc>()..add(const WithdrawEvent.started()),
         child: MultiBlocListener(
           listeners: [
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen: (previous, current) =>
+                  current is WithdrawRecipientInputState &&
+                  current.recipientToActivate != null &&
+                  (previous is! WithdrawRecipientInputState ||
+                      previous.recipientToActivate == null),
+              listener: (context, state) async {
+                final bloc = context.read<WithdrawBloc>();
+                final choice = await context
+                    .pushNamed<_VirtualPayeeActivationChoice>(
+                      WithdrawRoute.withdrawConfidentialSepaActivation.name,
+                      extra: bloc,
+                    );
+                bloc.add(switch (choice) {
+                  _VirtualPayeeActivationChoice.activated =>
+                    const WithdrawEvent.virtualPayeeActivated(),
+                  _VirtualPayeeActivationChoice.regularSepa =>
+                    const WithdrawEvent.regularSepaChosen(),
+                  null => const WithdrawEvent.virtualPayeeActivationDismissed(),
+                });
+              },
+            ),
             BlocListener<WithdrawBloc, WithdrawState>(
               listenWhen: (previous, current) =>
                   previous is WithdrawAmountInputState &&
@@ -84,6 +111,26 @@ class WithdrawRouter {
           return BlocProvider.value(
             value: bloc,
             child: const WithdrawRecipientsScreen(),
+          );
+        },
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawConfidentialSepaActivation.path,
+        name: WithdrawRoute.withdrawConfidentialSepaActivation.name,
+        builder: (context, state) {
+          final bloc = state.extra! as WithdrawBloc;
+          final recipient = switch (bloc.state) {
+            WithdrawRecipientInputState(:final recipientToActivate?) =>
+              recipientToActivate,
+            _ => null,
+          };
+          if (recipient == null) return const SizedBox.shrink();
+          return SepaVirtualPayeeActivationScreen(
+            recipientId: recipient.id,
+            onActivated: () =>
+                context.pop(_VirtualPayeeActivationChoice.activated),
+            onUseRegularSepa: () =>
+                context.pop(_VirtualPayeeActivationChoice.regularSepa),
           );
         },
       ),

@@ -17,4 +17,8 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsCadBillersSearched;
   const factory RecipientsEvent.selected(RecipientViewModel recipient) =
       RecipientsSelected;
+  const factory RecipientsEvent.virtualIbanActivated() =
+      RecipientsVirtualIbanActivated;
+  const factory RecipientsEvent.sepaTypeChanged(RecipientType sepaType) =
+      RecipientsSepaTypeChanged;
 }

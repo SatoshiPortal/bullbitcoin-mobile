@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullText, Gap;
 
 class OrderSwapStatusDescription extends StatelessWidget {
   final OrderSwapRecord orderSwap;
@@ -54,7 +52,7 @@ class OrderSwapStatusDescription extends StatelessWidget {
                         : context.appColors.secondary,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     isChainSwap
                         ? context.loc.transactionSwapStatusTransferStatus
                         : context.loc.transactionSwapStatusSwapStatus,
@@ -68,7 +66,7 @@ class OrderSwapStatusDescription extends StatelessWidget {
                 ],
               ),
               const Gap(8),
-              BBText(
+              BullText(
                 _description(context, isChainSwap: isChainSwap),
                 style: context.font.bodySmall?.copyWith(
                   color: failedOrExpired
@@ -85,7 +83,7 @@ class OrderSwapStatusDescription extends StatelessWidget {
         ],
         if (!orderSwap.localStatus.isTerminal) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: isChainSwap
                 ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
                       '${context.loc.transactionSwapOpenWithin24h}'

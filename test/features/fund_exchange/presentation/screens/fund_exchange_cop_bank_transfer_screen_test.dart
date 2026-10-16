@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -94,6 +95,7 @@ FundExchangeBloc _blocWith(ExternalLinkPort link) {
     openFundingPaymentLinkUsecase: OpenFundingPaymentLinkUsecase(
       externalLink: link,
     ),
+    getConfidentialSepaFundingAvailabilityUsecase: _NoConfidentialSepa(),
   );
 }
 
@@ -143,6 +145,12 @@ Future<void> _pumpLoaded(WidgetTester tester, ExternalLinkPort link) async {
 BBButton _openButton(WidgetTester tester) => tester
     .widgetList<BBButton>(find.byType(BBButton))
     .firstWhere((b) => b.iconData == Icons.open_in_new);
+
+class _NoConfidentialSepa
+    implements GetConfidentialSepaFundingAvailabilityUsecase {
+  @override
+  Future<Result<bool, FundExchangeFailure>> execute() async => const Ok(false);
+}
 
 void main() {
   testWidgets('the open button is enabled once the link has loaded', (

@@ -83,6 +83,10 @@ When a request would break these rules, explain why and propose a compliant alte
 
 When you **work in** a feature, file, or folder that already violates these rules (legacy, a drifted hexagonal module, a leaked boundary), don't silently work around it and don't quietly copy it. **Flag it and offer a fix:** name the specific rule it breaks and propose a **scoped refactoring** to bring it into line — as its **own** atomic commit/PR, separate from the task at hand. Then let the developer decide: take it now, defer it, or skip it. Never fold an opportunistic refactor into an unrelated change (that breaks atomic commits). This is the "leave it cleaner than you found it" rule from [ARCHITECTURE.md](ARCHITECTURE.md)'s intro, kept compatible with atomic commits — surface the opportunity, don't force it.
 
+## Null safety
+
+Never introduce the postfix non-null assertion operator (`value!`). A missing value must be handled explicitly: promote a checked local variable, use pattern matching, return a typed failure, or render the loading, unavailable, or error state. Do not replace an assertion with an unchecked cast or a fabricated default that hides missing data. When touching an existing assertion, check the lifecycle and asynchronous paths that can invalidate its assumption; cover a recoverable missing value with a regression test. This rule concerns non-null assertions, not boolean negation (`!condition`) or inequality (`!=`).
+
 ## Naming conventions
 
 Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most of these; the rules below reflect what the dominant code already does. Where two conventions exist, the recommendation is the more common one — migrate toward it, don't replicate the minority.

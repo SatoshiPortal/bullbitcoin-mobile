@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
@@ -17,6 +15,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar;
 
 /// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
@@ -91,7 +90,7 @@ class _WizardScreenState extends State<WizardScreen> {
         duration: _pageDuration,
         curve: _pageCurve,
       );
-      SnackBarUtils.showSnackBar(context, context.loc.wizardMissionRequired);
+      BullSnackBar.show(context, message: context.loc.wizardMissionRequired);
       return;
     }
     context.read<WizardBloc>().add(const WizardEvent.completed());
@@ -215,7 +214,7 @@ class _WizardScreenState extends State<WizardScreen> {
                               else
                                 SizedBox(
                                   width: double.infinity,
-                                  child: BBButton.big(
+                                  child: BullButton.big(
                                     label: isLast
                                         ? context.loc.getStartedButton
                                         : context.loc.wizardNextButton,

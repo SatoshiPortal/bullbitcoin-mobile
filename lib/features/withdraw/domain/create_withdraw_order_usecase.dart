@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -33,6 +34,7 @@ class CreateWithdrawOrderUsecase {
   Future<Result<CreateWithdrawOrderResult, WithdrawFailure>> execute({
     required double fiatAmount,
     required String recipientId,
+    RecipientType? recipientType,
     String? recipientEmail,
     String? securityQuestion,
     String? securityAnswer,
@@ -59,6 +61,12 @@ class CreateWithdrawOrderUsecase {
       final order = await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
+        paymentProcessor: switch (recipientType) {
+          RecipientType.sepaEur => SepaPaymentProcessor.regular,
+          RecipientType.confidentialSepaEur =>
+            SepaPaymentProcessor.confidential,
+          _ => null,
+        },
         securityQuestion: interacSecurityDetails?.securityQuestion,
         securityAnswer: interacSecurityDetails?.securityAnswer,
       );
@@ -97,6 +105,9 @@ class CreateWithdrawOrderUsecase {
           logMessage: e.message,
         ),
       );
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      log.info('Withdrawal refused: the virtual payee is not active yet');
+      return const Err(WithdrawConfidentialSepaNotActivatedFailure());
     } catch (_, st) {
       // The raw error is deliberately dropped: the request can carry the
       // Interac security answer, which must never reach diagnostics.

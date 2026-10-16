@@ -30,6 +30,8 @@ final _everyFailure = <RecipientsFailure>[
   const RecipientsSelectionFailure(_rawReason),
   const RecipientsSavedButNotSelectedFailure(_rawReason),
   const RecipientsInvalidSecurityDetailsFailure(_rawReason),
+  const RecipientsVirtualIbanNotAvailableFailure(_rawReason),
+  const RecipientsEuResidencyRequiredFailure(_rawReason),
   const RecipientsUnexpectedFailure(_rawReason),
 ];
 

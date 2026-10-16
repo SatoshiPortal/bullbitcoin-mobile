@@ -1,14 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullRefreshIndicator, BullShimmerBox, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -118,12 +120,43 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             );
           },
         ),
+        BlocBuilder<RecipientsBloc, RecipientsState>(
+          buildWhen: (previous, current) =>
+              previous.canChooseSepaType != current.canChooseSepaType ||
+              previous.sepaType != current.sepaType,
+          builder: (context, state) {
+            if (!state.canChooseSepaType) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: BBSegmentedButton(
+                items: {
+                  RecipientType.sepaEur.name,
+                  RecipientType.confidentialSepaEur.name,
+                },
+                labels: {
+                  RecipientType.sepaEur.name: context.loc.recipientsTypeSepa,
+                  RecipientType.confidentialSepaEur.name:
+                      context.loc.recipientsTypeConfidentialSepa,
+                },
+                selected: state.sepaType.name,
+                onChanged: (value) {
+                  context.read<RecipientsBloc>().add(
+                    RecipientsEvent.sepaTypeChanged(
+                      RecipientType.values.byName(value),
+                    ),
+                  );
+                  setState(() => _selectedRecipient = null);
+                },
+              ),
+            );
+          },
+        ),
         const Gap(16.0),
         Expanded(
           child: BlocBuilder<RecipientsBloc, RecipientsState>(
             builder: (context, state) {
               final recipients = state.selectableRecipients ?? const [];
-              return BBRefreshIndicator(
+              return BullRefreshIndicator(
                 onRefresh: _onRefresh,
                 child: _buildListContent(state, recipients),
               );
@@ -177,7 +210,14 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   ) {
     if (recipients.isEmpty) {
       if (state.isLoadingRecipients) {
-        return const Center(child: CircularProgressIndicator());
+        return ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+            BullShimmerBox(height: 112, padding: EdgeInsets.zero),
+          ],
+        );
       }
 
       // Translated from the failure rather than one static string:
