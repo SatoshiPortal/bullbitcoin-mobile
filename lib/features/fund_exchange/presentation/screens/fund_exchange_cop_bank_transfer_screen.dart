@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
@@ -9,7 +7,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 
 class FundExchangeCopBankTransferScreen extends StatelessWidget {
   const FundExchangeCopBankTransferScreen({super.key});
@@ -43,12 +41,12 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                   const FundExchangeDetailsErrorCard(),
                   const Gap(24.0),
                 ] else ...[
-                  BBText(
+                  BullText(
                     context.loc.fundExchangeCopRedirectMessage,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const Gap(24.0),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.fundExchangeCopOpenPaymentLink,
                     iconData: Icons.open_in_new,
                     // Disabled while a launch is in flight, so a double tap

@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
   const FundExchangeOnlineBillPaymentScreen({super.key});
@@ -33,12 +32,12 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
-              BBText(
+              BullText(
                 context.loc.fundExchangeOnlineBillPaymentTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
-              BBText(
+              BullText(
                 context.loc.fundExchangeOnlineBillPaymentDescription,
                 style: theme.textTheme.headlineSmall,
               ),
