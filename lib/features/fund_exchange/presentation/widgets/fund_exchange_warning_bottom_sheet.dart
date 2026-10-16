@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullFadingLinearProgress, BullText, Gap;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -98,13 +97,13 @@ class _FundExchangeWarningBottomSheetState
                   ),
                 ),
                 const Gap(8.0),
-                BBText(
+                BullText(
                   context.loc.fundExchangeWarningTitle,
                   style: theme.textTheme.displaySmall,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4.0),
-                BBText(
+                BullText(
                   context.loc.fundExchangeWarningDescription,
                   style: theme.textTheme.headlineSmall,
                   textAlign: TextAlign.center,
@@ -146,7 +145,7 @@ class _FundExchangeWarningBottomSheetState
                           _hasConfirmedNoCoercion = value;
                         });
                       },
-                title: BBText(
+                title: BullText(
                   context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
@@ -154,7 +153,7 @@ class _FundExchangeWarningBottomSheetState
               ),
               const Gap(16.0),
               if (_submitConsentFailure != null) ...[
-                BBText(
+                BullText(
                   // Through the sealed extension, not a hardcoded key, so the
                   // sheet cannot drift from the failure's own message.
                   _submitConsentFailure!.toTranslated(context),
@@ -164,7 +163,7 @@ class _FundExchangeWarningBottomSheetState
                 ),
                 const Gap(8.0),
               ],
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.fundExchangeContinueButton,
                 disabled: !_hasConfirmedNoCoercion || _isLoading,
                 onPressed: () {

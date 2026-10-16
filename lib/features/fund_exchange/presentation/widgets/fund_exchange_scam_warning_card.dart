@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class FundExchangeScamWarningCard extends StatelessWidget {
   const FundExchangeScamWarningCard({super.key});
@@ -15,7 +14,7 @@ class FundExchangeScamWarningCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BBText(
+            BullText(
               context.loc.fundExchangeWarningTacticsTitle,
               style: theme.textTheme.headlineSmall,
             ),
@@ -28,7 +27,7 @@ class FundExchangeScamWarningCard extends StatelessWidget {
                   children: [
                     Text('• ', style: theme.textTheme.bodyMedium),
                     Expanded(
-                      child: BBText(item, style: theme.textTheme.bodyMedium),
+                      child: BullText(item, style: theme.textTheme.bodyMedium),
                     ),
                   ],
                 ),

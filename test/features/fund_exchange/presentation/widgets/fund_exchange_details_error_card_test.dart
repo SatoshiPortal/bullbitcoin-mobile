@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
@@ -19,6 +18,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
@@ -79,7 +79,7 @@ class _UnusedExternalLink implements ExternalLinkPort {
       throw UnimplementedError();
 }
 
-Future<InfoCard> _pumpCard(
+Future<BullInfoCard> _pumpCard(
   WidgetTester tester,
   FundExchangeBloc bloc, {
   bool triggerFailure = true,
@@ -106,7 +106,7 @@ Future<InfoCard> _pumpCard(
   );
   await tester.pumpAndSettle();
 
-  return tester.widget<InfoCard>(find.byType(InfoCard));
+  return tester.widget<BullInfoCard>(find.byType(BullInfoCard));
 }
 
 class _NoConfidentialSepa
