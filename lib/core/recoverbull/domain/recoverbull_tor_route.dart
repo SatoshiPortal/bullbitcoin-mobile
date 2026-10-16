@@ -1,6 +1,6 @@
 import 'package:bull_tor/tor.dart';
 
-/// The SOCKS route one key-server call travels through.
+/// The SOCKS route used to reach the key server.
 ///
 /// Deliberately not a [TorSession]: that type carries a [TorTransport], which
 /// only describes how *embedded* Tor reached the network. An external proxy such

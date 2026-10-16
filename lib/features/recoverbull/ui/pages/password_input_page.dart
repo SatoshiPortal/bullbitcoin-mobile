@@ -95,7 +95,14 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             flexibleSpace: BullTopBar(
-              onBack: () => context.pop(),
+              onBack: () {
+                final navigator = Navigator.of(context);
+                if (navigator.canPop()) {
+                  navigator.pop();
+                } else {
+                  context.pop();
+                }
+              },
               title: title,
             ),
             actions: const [
