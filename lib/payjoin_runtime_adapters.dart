@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -65,25 +66,60 @@ final class AppPayjoinFeesAdapter implements PayjoinFeesPort {
 final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   final WalletRepository _wallets;
   final WalletTransactionRepository _transactions;
+  final BdkBitcoinBlockchainDatasource _blockchain;
+  final ElectrumServersPort _servers;
 
-  const AppPayjoinTransactionAdapter(this._wallets, this._transactions);
+  const AppPayjoinTransactionAdapter(
+    this._wallets,
+    this._transactions,
+    this._blockchain,
+    this._servers,
+  );
 
   @override
   Stream<void> watchWallet(String walletId) => _wallets.walletSyncFinishedStream
       .where((wallet) => wallet.id == walletId);
 
+  /// A refreshed lookup asks the Electrum server about this one transaction
+  /// instead of syncing the whole wallet, which takes 15 to 120 seconds
+  /// over Tor and delayed every payjoin outcome by as much.
   @override
   Future<bool> isTransactionVisible({
     required String walletId,
     required String transactionId,
     bool refresh = false,
   }) async {
-    return await _transactions.getWalletTransaction(
+    final isKnownLocally =
+        await _transactions.getWalletTransaction(
           transactionId,
           walletId: walletId,
-          sync: refresh,
         ) !=
         null;
+    if (isKnownLocally || !refresh) return isKnownLocally;
+
+    final wallet = (await _wallets.getWallet(walletId)).fold(
+      (wallet) => wallet,
+      (failure) =>
+          throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
+    );
+    final isKnownRemotely = await _servers.runWithFallback<bool>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: wallet.isTestnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.isTransactionKnown(transactionId, connection: connection),
+    );
+    if (isKnownRemotely) {
+      // Let the wallet catch up so balances and history show the transaction
+      // the payjoin session is about to report.
+      unawaited(
+        refreshWallet(walletId).catchError((Object e) {
+          log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
+        }),
+      );
+    }
+    return isKnownRemotely;
   }
 
   @override
@@ -127,19 +163,24 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
     }
     final message =
         'Payjoin ${event.code.name}'
-        '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}';
+        '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}'
+        '${event.error == null ? '' : ' ${event.error.runtimeType}'}';
     switch (event.level) {
       case PayjoinLogLevel.debug || PayjoinLogLevel.info:
         log.info(message);
       case PayjoinLogLevel.warning:
+        // Foreign exception text can contain transaction IDs, payment URIs
+        // or custom server URLs. Keep only its type and the structured code.
         log.warning(message);
       case PayjoinLogLevel.severe:
-        // The engine's own error when it gave us one: Sentry groups on it, so
-        // substituting a synthetic error would file every failure of a given
-        // code under one signature and hide the cause.
+        // Sentry must not receive arbitrary exception text either. Group by
+        // structured code and cause type, retaining the original stack.
         log.severe(
           message: message,
-          error: event.error ?? StateError('Payjoin engine ${event.code.name}'),
+          error: Exception(
+            'Payjoin ${event.code.name}'
+            '${event.error == null ? '' : ' ${event.error.runtimeType}'}',
+          ),
           trace: event.trace ?? StackTrace.current,
         );
     }

@@ -13,7 +13,7 @@ abstract final class PayjoinConstants {
   }
 
   static const directoryUrl = 'https://payjo.in';
-  static const directoryPollingInterval = 5;
+  static const directoryPollingInterval = 3;
   static const defaultExpireAfterSec = 60 * 60 * 24;
   static const defaultMinAmountSat = 10000;
 

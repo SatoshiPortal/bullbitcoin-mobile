@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -27,6 +28,66 @@ PayjoinSenderSession _session(PayjoinStatus status) => PayjoinSenderSession(
 );
 
 void main() {
+  test('fallback verification failures reach the inline button error', () {
+    const failure = TransactionPayjoinVerificationFailure(
+      'preflight unavailable',
+    );
+    final state = TransactionDetailsState(
+      transaction: Transaction(payjoin: _session(PayjoinStatus.requested)),
+      failure: failure,
+    );
+    expect(state.payjoinBroadcastFailure, same(failure));
+    expect(state.loadFailure, isNull);
+  });
+
+  testWidgets('receiver details waits for the shared deadline then refreshes', (
+    tester,
+  ) async {
+    final cubit = _MockTransactionDetailsCubit();
+    final session = PayjoinReceiverSession(
+      status: PayjoinStatus.proposed,
+      id: '0123456789abcdef',
+      network: BitcoinNetwork.testnet,
+      walletId: 'wallet',
+      createdAt: DateTime(2026),
+      expiresAt: DateTime(2027),
+      payjoinUri: 'bitcoin:address',
+      hasOriginalTransaction: true,
+      hasProposal: true,
+      fallbackAvailableAt: DateTime.now().add(const Duration(seconds: 60)),
+    );
+    final state = TransactionDetailsState(
+      transaction: Transaction(payjoin: session),
+    );
+    when(() => cubit.state).thenReturn(state);
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    var available = false;
+    when(
+      () => cubit.canBroadcastPayjoinOriginalTx(),
+    ).thenAnswer((_) async => available);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<TransactionDetailsCubit>.value(
+          value: cubit,
+          child: Scaffold(
+            body: BroadcastPayjoinOriginalTxButton(payjoin: session),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Receive payment normally'), findsNothing);
+    verify(() => cubit.canBroadcastPayjoinOriginalTx()).called(1);
+    available = true;
+    await tester.pump(const Duration(seconds: 61));
+    await tester.pump();
+    expect(find.text('Receive payment normally'), findsOneWidget);
+    verify(() => cubit.canBroadcastPayjoinOriginalTx()).called(1);
+  });
+
   testWidgets('shows processing feedback then hides when payjoin aborts', (
     tester,
   ) async {
