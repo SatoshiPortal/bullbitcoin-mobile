@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -160,64 +160,167 @@ void main() {
 
   // A brute-force on a stolen backup file shows only in the server's public
   // attempts snapshot, so the flows that open an existing vault read it.
+  // A brute-force on a stolen backup file shows only in the server's public
+  // attempts snapshot, so the flows that open an existing vault read it on
+  // the flow's verified route.
   group('vault attempts check', () {
+    late StreamController<TorConnectionState> torStates;
+    late RecoverBullTorRoute verifiedRoute;
+
+    setUp(() {
+      torStates = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => torStates.stream);
+      verifiedRoute = RecoverBullTorRoute(
+        TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41007),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        ),
+        () async {},
+      );
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer((_) async => Ok(verifiedRoute));
+      when(
+        () => checkConnection.execute(route: verifiedRoute),
+      ).thenAnswer((_) async => const Ok(true));
+    });
+
+    tearDown(() => torStates.close());
+
     void stubAttempts(
-      Result<VaultAttempts, core.RecoverBullCoreFailure> answer,
+      Future<Result<VaultAttempts, core.RecoverBullCoreFailure>> Function(
+        EncryptedVault vault,
+      )
+      answer,
     ) {
       when(
         () => checkAttempts.execute(
           vault: any(named: 'vault'),
           route: any(named: 'route'),
         ),
-      ).thenAnswer((_) async => answer);
+      ).thenAnswer(
+        (invocation) =>
+            answer(invocation.namedArguments[#vault] as EncryptedVault),
+      );
     }
 
-    Future<RecoverBullBloc> selectVault(
-      RecoverBullFlow flow,
-      EncryptedVault vault,
-    ) async {
+    Future<void> goOnline(RecoverBullBloc bloc) async {
+      torStates.add(TorReady(verifiedRoute.route));
+      await pumpEventQueue();
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+    }
+
+    Future<void> selectVault(RecoverBullBloc bloc, EncryptedVault vault) async {
       when(() => pickVault.execute()).thenAnswer((_) async => Ok(vault));
-      final bloc = buildBloc(flow: flow);
       bloc.add(const OnVaultSelection(provider: VaultProvider.customLocation));
       await pumpEventQueue();
-      return bloc;
     }
 
-    test('a selected vault reports its failed attempts', () async {
-      stubAttempts(const Ok(VaultAttempts(failedAttempts: 2)));
+    test('a vault selected on a verified route reports its attempts', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 2)));
       final vault = _MockEncryptedVault();
+      final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+      await goOnline(bloc);
 
-      final bloc = await selectVault(RecoverBullFlow.testVault, vault);
+      await selectVault(bloc, vault);
 
       verify(
-        () => checkAttempts.execute(
-          vault: vault,
-          route: any(named: 'route'),
-        ),
+        () => checkAttempts.execute(vault: vault, route: verifiedRoute),
       ).called(1);
       expect(bloc.state.vaultAttempts?.failedAttempts, 2);
       await bloc.close();
     });
 
-    test('an unreadable snapshot stays unknown and blocks nothing', () async {
-      stubAttempts(const Err(core.KeyServerUnavailableFailure()));
-
-      final bloc = await selectVault(
-        RecoverBullFlow.recoverVault,
-        _MockEncryptedVault(),
+    test('a preselected vault is checked once the server is online', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final vault = _MockEncryptedVault();
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      await pumpEventQueue();
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
       );
 
-      expect(bloc.state.vault, isNotNull);
+      await goOnline(bloc);
+
+      verify(
+        () => checkAttempts.execute(vault: vault, route: verifiedRoute),
+      ).called(1);
+      expect(bloc.state.vaultAttempts?.failedAttempts, 1);
+      await bloc.close();
+    });
+
+    test('a vault selected while offline waits for the server', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+
+      await selectVault(bloc, _MockEncryptedVault());
+
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      );
+      expect(bloc.state.vaultAttempts, isNull);
+      await bloc.close();
+    });
+
+    test(
+      'a vault picked during a read never gets the previous count',
+      () async {
+        final first = _MockEncryptedVault();
+        final second = _MockEncryptedVault();
+        final firstRead =
+            Completer<Result<VaultAttempts, core.RecoverBullCoreFailure>>();
+        stubAttempts(
+          (vault) => identical(vault, first)
+              ? firstRead.future
+              : Future.value(const Ok(VaultAttempts(failedAttempts: 2))),
+        );
+        final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+        await goOnline(bloc);
+
+        await selectVault(bloc, first);
+        await selectVault(bloc, second);
+        firstRead.complete(const Ok(VaultAttempts(failedAttempts: 9)));
+        await pumpEventQueue();
+
+        expect(bloc.state.vault, same(second));
+        expect(bloc.state.vaultAttempts?.failedAttempts, 2);
+        await bloc.close();
+      },
+    );
+
+    test('an unreadable snapshot stays unknown and blocks nothing', () async {
+      stubAttempts((_) async => const Err(core.KeyServerUnavailableFailure()));
+      final vault = _MockEncryptedVault();
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      await goOnline(bloc);
+
+      await selectVault(bloc, vault);
+
+      expect(bloc.state.vault, same(vault));
       expect(bloc.state.vaultAttempts, isNull);
       expect(bloc.state.failure, isNull);
       await bloc.close();
     });
 
     test('creating a vault never reads the snapshot', () async {
-      final bloc = await selectVault(
-        RecoverBullFlow.secureVault,
-        _MockEncryptedVault(),
-      );
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      await goOnline(bloc);
+
+      await selectVault(bloc, _MockEncryptedVault());
 
       verifyNever(
         () => checkAttempts.execute(

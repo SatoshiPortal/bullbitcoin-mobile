@@ -104,7 +104,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       _onTorConnectionChanged,
       transformer: sequential(),
     );
-    on<OnVaultAttemptsCheck>(_onVaultAttemptsCheck, transformer: droppable());
+    // A newly selected vault replaces an in-flight check of the previous one.
+    on<OnVaultAttemptsCheck>(_onVaultAttemptsCheck, transformer: restartable());
 
     // Tor readiness is pushed, so follow it for as long as this flow is open.
     // Taking a single snapshot in `_onServerCheck` reported whatever the status
@@ -509,8 +510,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault selected');
       // Before any PIN is typed, so the count is not the user's own from this
-      // screen.
-      if (state.vault != null && state.flow != RecoverBullFlow.secureVault) {
+      // screen. Only on a verified route: while the server is not online, the
+      // server check dispatches it once it is, instead of a second Tor session
+      // bootstrapping next to the flow's route.
+      if (state.vault != null &&
+          state.flow != RecoverBullFlow.secureVault &&
+          state.keyServerStatus == KeyServerStatus.online) {
         add(const OnVaultAttemptsCheck());
       }
     } finally {
@@ -736,7 +741,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     );
     switch (checked) {
       case Ok(:final value):
-        if (isClosed || _closingBloc) return;
+        // The user may have picked another vault while the snapshot was read;
+        // this count belongs to the vault it was read for.
+        if (isClosed || _closingBloc || !identical(state.vault, vault)) return;
         emit(state.copyWith(vaultAttempts: value));
       case Err(:final failure):
         // Advisory: an unreadable snapshot must never block a recovery.
