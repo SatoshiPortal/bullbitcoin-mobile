@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:meta/meta.dart';
@@ -25,6 +26,15 @@ abstract interface class RecoverBullRepository {
     String password,
     String salt,
     String vaultKey,
+    TorProxyEndpoint endpoint,
+  );
+
+  /// Reads the server's public attempts snapshot for [identifier]. It never
+  /// sends the identifier: the snapshot is published for everyone and matched
+  /// locally by hash.
+  @useResult
+  Future<Result<VaultAttempts, RecoverBullCoreFailure>> fetchVaultAttempts(
+    String identifier,
     TorProxyEndpoint endpoint,
   );
 

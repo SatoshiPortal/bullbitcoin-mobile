@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -64,6 +66,8 @@ class _MockWatchTorConnection extends Mock
 
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
 
+class _MockCheckAttempts extends Mock implements CheckVaultAttemptsUsecase {}
+
 void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
@@ -80,6 +84,7 @@ void main() {
   late _MockFetchLatestDrive fetchLatestDrive;
   late _MockUpdateLatest updateLatest;
   late _MockWatchTorConnection watchTor;
+  late _MockCheckAttempts checkAttempts;
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
@@ -112,10 +117,18 @@ void main() {
     when(
       () => watchTor.execute(),
     ).thenAnswer((_) => const Stream<TorConnectionState>.empty());
+    checkAttempts = _MockCheckAttempts();
+    when(
+      () => checkAttempts.execute(
+        vault: any(named: 'vault'),
+        route: any(named: 'route'),
+      ),
+    ).thenAnswer((_) async => const Ok(VaultAttempts.none()));
   });
 
   // No event is auto-dispatched, so unstubbed mocks stay untouched unless a
-  // test drives the matching flow — the Tor subscription above excepted.
+  // test drives the matching flow — the Tor subscription and, with a
+  // preselected vault, the attempts check above excepted.
   RecoverBullBloc buildBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -133,6 +146,7 @@ void main() {
       wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
+    checkVaultAttemptsUsecase: checkAttempts,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
@@ -143,6 +157,180 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  // A brute-force on a stolen backup file shows only in the server's public
+  // attempts snapshot, so the flows that open an existing vault read it.
+  // A brute-force on a stolen backup file shows only in the server's public
+  // attempts snapshot, so the flows that open an existing vault read it on
+  // the flow's verified route.
+  group('vault attempts check', () {
+    late StreamController<TorConnectionState> torStates;
+    late RecoverBullTorRoute verifiedRoute;
+
+    setUp(() {
+      torStates = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => torStates.stream);
+      verifiedRoute = RecoverBullTorRoute(
+        TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41007),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        ),
+        () async {},
+      );
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer((_) async => Ok(verifiedRoute));
+      when(
+        () => checkConnection.execute(route: verifiedRoute),
+      ).thenAnswer((_) async => const Ok(true));
+    });
+
+    tearDown(() => torStates.close());
+
+    void stubAttempts(
+      Future<Result<VaultAttempts, core.RecoverBullCoreFailure>> Function(
+        EncryptedVault vault,
+      )
+      answer,
+    ) {
+      when(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      ).thenAnswer(
+        (invocation) =>
+            answer(invocation.namedArguments[#vault] as EncryptedVault),
+      );
+    }
+
+    Future<void> goOnline(RecoverBullBloc bloc) async {
+      torStates.add(TorReady(verifiedRoute.route));
+      await pumpEventQueue();
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+    }
+
+    Future<void> selectVault(RecoverBullBloc bloc, EncryptedVault vault) async {
+      when(() => pickVault.execute()).thenAnswer((_) async => Ok(vault));
+      bloc.add(const OnVaultSelection(provider: VaultProvider.customLocation));
+      await pumpEventQueue();
+    }
+
+    test('a vault selected on a verified route reports its attempts', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 2)));
+      final vault = _MockEncryptedVault();
+      final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+      await goOnline(bloc);
+
+      await selectVault(bloc, vault);
+
+      verify(
+        () => checkAttempts.execute(vault: vault, route: verifiedRoute),
+      ).called(1);
+      expect(bloc.state.vaultAttempts?.failedAttempts, 2);
+      await bloc.close();
+    });
+
+    test('a preselected vault is checked once the server is online', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final vault = _MockEncryptedVault();
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      await pumpEventQueue();
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      );
+
+      await goOnline(bloc);
+
+      verify(
+        () => checkAttempts.execute(vault: vault, route: verifiedRoute),
+      ).called(1);
+      expect(bloc.state.vaultAttempts?.failedAttempts, 1);
+      await bloc.close();
+    });
+
+    test('a vault selected while offline waits for the server', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+
+      await selectVault(bloc, _MockEncryptedVault());
+
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      );
+      expect(bloc.state.vaultAttempts, isNull);
+      await bloc.close();
+    });
+
+    test(
+      'a vault picked during a read never gets the previous count',
+      () async {
+        final first = _MockEncryptedVault();
+        final second = _MockEncryptedVault();
+        final firstRead =
+            Completer<Result<VaultAttempts, core.RecoverBullCoreFailure>>();
+        stubAttempts(
+          (vault) => identical(vault, first)
+              ? firstRead.future
+              : Future.value(const Ok(VaultAttempts(failedAttempts: 2))),
+        );
+        final bloc = buildBloc(flow: RecoverBullFlow.testVault);
+        await goOnline(bloc);
+
+        await selectVault(bloc, first);
+        await selectVault(bloc, second);
+        firstRead.complete(const Ok(VaultAttempts(failedAttempts: 9)));
+        await pumpEventQueue();
+
+        expect(bloc.state.vault, same(second));
+        expect(bloc.state.vaultAttempts?.failedAttempts, 2);
+        await bloc.close();
+      },
+    );
+
+    test('an unreadable snapshot stays unknown and blocks nothing', () async {
+      stubAttempts((_) async => const Err(core.KeyServerUnavailableFailure()));
+      final vault = _MockEncryptedVault();
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      await goOnline(bloc);
+
+      await selectVault(bloc, vault);
+
+      expect(bloc.state.vault, same(vault));
+      expect(bloc.state.vaultAttempts, isNull);
+      expect(bloc.state.failure, isNull);
+      await bloc.close();
+    });
+
+    test('creating a vault never reads the snapshot', () async {
+      stubAttempts((_) async => const Ok(VaultAttempts(failedAttempts: 1)));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      await goOnline(bloc);
+
+      await selectVault(bloc, _MockEncryptedVault());
+
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      );
+      await bloc.close();
+    });
+  });
 
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '
@@ -351,6 +539,13 @@ void main() {
           evidence: TorReadinessEvidence.embeddedBootstrap,
           transport: TorTransport.direct,
         );
+        final verified = RecoverBullTorRoute(route, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(verified));
+        when(
+          () => checkConnection.execute(route: verified),
+        ).thenAnswer((_) async => const Ok(true));
 
         states.add(
           const TorConnecting(
@@ -397,6 +592,13 @@ void main() {
         evidence: TorReadinessEvidence.embeddedBootstrap,
         transport: TorTransport.direct,
       );
+      final verified = RecoverBullTorRoute(route, () async {});
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(verified));
+      when(
+        () => checkConnection.execute(route: verified),
+      ).thenAnswer((_) async => const Ok(true));
       states.add(TorReady(route));
       await pumpEventQueue();
       states.add(
@@ -532,5 +734,769 @@ void main() {
       await states.close();
       await bloc.close();
     });
+  });
+  group('flow-scoped Tor route', () {
+    RecoverBullTorRoute routeAt(int port, Future<void> Function() close) =>
+        RecoverBullTorRoute(
+          TorRoute(
+            source: TorSource.embedded,
+            endpoint: TorProxyEndpoint(host: '127.0.0.1', port: port),
+            evidence: TorReadinessEvidence.embeddedBootstrap,
+            transport: TorTransport.direct,
+          ),
+          close,
+        );
+
+    test('retains the checked route until the flow closes', () async {
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(closed, 0);
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      verify(() => checkConnection.execute(route: route)).called(1);
+      await bloc.close();
+      expect(closed, 1);
+    });
+
+    test(
+      'readiness during initialization does not acquire a competing route',
+      () async {
+        final pending =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) => pending.future);
+        final route = routeAt(41001, () async {});
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        states.add(TorReady(route.route));
+        await pumpEventQueue();
+        pending.complete(Ok(route));
+        await pumpEventQueue();
+
+        verify(() => ensureRecoverBullTorSession.execute()).called(1);
+        verify(() => checkConnection.execute(route: route)).called(1);
+        await states.close();
+        await bloc.close();
+      },
+    );
+
+    test(
+      'a restart releases the old route and checks the replacement',
+      () async {
+        var firstClosed = 0;
+        var secondClosed = 0;
+        final first = routeAt(41001, () async => firstClosed++);
+        final second = routeAt(41002, () async => secondClosed++);
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(first));
+        when(
+          () => ensureRecoverBullTorSession.execute(restartEmbedded: true),
+        ).thenAnswer((_) async => Ok(second));
+        when(
+          () => checkConnection.execute(route: first),
+        ).thenAnswer((_) async => const Ok(true));
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization(restart: true));
+        await pumpEventQueue();
+
+        expect(firstClosed, 1);
+        expect(secondClosed, 0);
+        verify(() => checkConnection.execute(route: second)).called(1);
+        await bloc.close();
+        expect(secondClosed, 1);
+      },
+    );
+
+    test('separate flows retain separate isolated routes', () async {
+      var firstClosed = 0;
+      var secondClosed = 0;
+      final first = routeAt(41001, () async => firstClosed++);
+      final second = routeAt(41002, () async => secondClosed++);
+      var acquisitions = 0;
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+      when(
+        () => checkConnection.execute(route: first),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => checkConnection.execute(route: second),
+      ).thenAnswer((_) async => const Ok(true));
+      final firstFlow = buildBloc(flow: RecoverBullFlow.recoverVault);
+      final secondFlow = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(firstFlow.close);
+      addTearDown(secondFlow.close);
+
+      firstFlow.add(const OnTorInitialization());
+      secondFlow.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(acquisitions, 2);
+      expect(firstClosed, 0);
+      expect(secondClosed, 0);
+      await firstFlow.close();
+      expect(firstClosed, 1);
+      expect(secondClosed, 0);
+      await secondFlow.close();
+      expect(secondClosed, 1);
+    });
+
+    test(
+      'recovery fetch borrows the route that passed the server check',
+      () async {
+        final route = routeAt(41001, () async {});
+        final vault = _MockEncryptedVault();
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(route));
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(true));
+        when(
+          () => fetchKey.execute(vault: vault, password: 'pw', route: route),
+        ).thenAnswer(
+          (_) async => const Err(core.KeyServerUnavailableFailure()),
+        );
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+
+        verify(
+          () => fetchKey.execute(vault: vault, password: 'pw', route: route),
+        ).called(1);
+        verify(() => ensureRecoverBullTorSession.execute()).called(1);
+        await bloc.close();
+      },
+    );
+
+    test('backup preflight and store borrow the checked route', () async {
+      final route = routeAt(41001, () async {});
+      final vault = _MockEncryptedVault();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => createVault.execute(),
+      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(
+        () => connectDrive.execute(),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => saveDrive.execute(vault),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () => storeKey.execute(
+          password: 'pw',
+          vault: vault,
+          vaultKey: 'key',
+          route: route,
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(
+        const OnVaultCreation(
+          provider: VaultProvider.googleDrive,
+          password: 'pw',
+        ),
+      );
+      await pumpEventQueue();
+
+      verify(() => checkConnection.execute(route: route)).called(2);
+      verify(
+        () => storeKey.execute(
+          password: 'pw',
+          vault: vault,
+          vaultKey: 'key',
+          route: route,
+        ),
+      ).called(1);
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      await bloc.close();
+    });
+
+    test(
+      'terminal Tor loss retires the route but a directory refresh does not',
+      () async {
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        var firstClosed = 0;
+        final first = routeAt(41001, () async => firstClosed++);
+        final second = routeAt(41002, () async {});
+        var acquisitions = 0;
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+        when(
+          () => checkConnection.execute(route: first),
+        ).thenAnswer((_) async => const Ok(true));
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        states.add(
+          const TorConnecting(
+            source: TorSource.embedded,
+            progress: .9,
+            transport: TorTransport.direct,
+          ),
+        );
+        await pumpEventQueue();
+        expect(firstClosed, 0);
+        states.add(const TorStopped(TorSource.embedded));
+        await pumpEventQueue();
+        expect(firstClosed, 1);
+        // Readiness alone does not re-check in the background: a failure written here could pop a page the user is on.
+        states.add(TorReady(second.route));
+        await pumpEventQueue();
+        expect(acquisitions, 1);
+        expect(bloc.state.failure, isNull);
+        verifyNever(() => checkConnection.execute(route: second));
+        await states.close();
+        await bloc.close();
+      },
+    );
+
+    test('a failed check waits for a fetch borrowing the route', () async {
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      final vault = _MockEncryptedVault();
+      final fetching = Completer<Result<String, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => fetchKey.execute(vault: vault, password: 'pw', route: route),
+      ).thenAnswer((_) => fetching.future);
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(const OnVaultPasswordSet(password: 'pw'));
+      await pumpEventQueue();
+      // The status indicator in the app bar lets the user check mid-fetch.
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(false));
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
+      // The SOCKS listener stays up until the fetch returns.
+      expect(closed, 0);
+      fetching.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+      expect(closed, 1);
+    });
+
+    test('a Tor stop waits for a fetch borrowing the route', () async {
+      final states = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      final vault = _MockEncryptedVault();
+      final fetching = Completer<Result<String, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => fetchKey.execute(vault: vault, password: 'pw', route: route),
+      ).thenAnswer((_) => fetching.future);
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      addTearDown(states.close);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(const OnVaultPasswordSet(password: 'pw'));
+      await pumpEventQueue();
+      states.add(const TorStopped(TorSource.embedded));
+      await pumpEventQueue();
+
+      // Same policy as a failed check: the listener outlives the call on it.
+      expect(bloc.state.torConnection, isA<TorStopped>());
+      expect(closed, 0);
+      fetching.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+      expect(closed, 1);
+    });
+
+    test('a diagnostic while connecting keeps the route', () async {
+      final states = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(states.close);
+      addTearDown(bloc.close);
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      const blocked = TorConnecting(
+        source: TorSource.embedded,
+        progress: .42,
+        transport: TorTransport.direct,
+        diagnostic: TorDiagnostic.offline,
+      );
+      states.add(blocked);
+      await pumpEventQueue();
+
+      expect(bloc.state.torConnection, blocked);
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(closed, 0);
+    });
+
+    test(
+      'an old check cannot replace the result of a restarted route',
+      () async {
+        final pending = Completer<Result<bool, core.RecoverBullCoreFailure>>();
+        final first = routeAt(41001, () async {});
+        final second = routeAt(41002, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(first));
+        when(
+          () => ensureRecoverBullTorSession.execute(restartEmbedded: true),
+        ).thenAnswer((_) async => Ok(second));
+        when(
+          () => checkConnection.execute(route: first),
+        ).thenAnswer((_) => pending.future);
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization(restart: true));
+        await pumpEventQueue();
+        pending.complete(const Ok(false));
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        verify(() => checkConnection.execute(route: second)).called(1);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'initial Stopped during bootstrap does not invalidate its acquisition',
+      () async {
+        final pending =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) => pending.future);
+        var closed = 0;
+        final route = routeAt(41001, () async => closed++);
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+        addTearDown(states.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        states.add(const TorStopped(TorSource.embedded));
+        await pumpEventQueue();
+        pending.complete(Ok(route));
+        await pumpEventQueue();
+
+        expect(bloc.state.torConnection, isA<TorReady>());
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        expect(closed, 0);
+        verify(() => checkConnection.execute(route: route)).called(1);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'terminal failure invalidates an acquisition still in flight',
+      () async {
+        final pending =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) => pending.future);
+        var closed = 0;
+        final route = routeAt(41001, () async => closed++);
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+        addTearDown(states.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        const unavailable = TorUnavailable(
+          source: TorSource.embedded,
+          failure: TorBootstrapFailure('bootstrap failed'),
+        );
+        states.add(unavailable);
+        await pumpEventQueue();
+        pending.complete(Ok(route));
+        await pumpEventQueue();
+
+        expect(bloc.state.torConnection, unavailable);
+        expect(closed, 1);
+        verifyNever(() => checkConnection.execute(route: route));
+        await bloc.close();
+      },
+    );
+
+    test(
+      'readiness during a failed acquisition resumes with a fresh route',
+      () async {
+        final pending =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        var firstClosed = 0;
+        var secondClosed = 0;
+        final first = routeAt(41001, () async => firstClosed++);
+        final second = routeAt(41002, () async => secondClosed++);
+        var acquisitions = 0;
+        when(() => ensureRecoverBullTorSession.execute()).thenAnswer((_) {
+          acquisitions++;
+          return acquisitions == 1 ? pending.future : Future.value(Ok(second));
+        });
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(states.close);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        states.add(
+          const TorUnavailable(
+            source: TorSource.embedded,
+            failure: TorBootstrapFailure('bootstrap failed'),
+          ),
+        );
+        await pumpEventQueue();
+        states.add(TorReady(second.route));
+        await pumpEventQueue();
+        expect(acquisitions, 1);
+
+        pending.complete(Ok(first));
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        expect(
+          bloc.state.torConnection,
+          isA<TorReady>().having((state) => state.route, 'route', second.route),
+        );
+        expect(acquisitions, 2);
+        expect(firstClosed, 1);
+        expect(secondClosed, 0);
+        verifyNever(() => checkConnection.execute(route: first));
+        verify(() => checkConnection.execute(route: second)).called(1);
+      },
+    );
+
+    for (final pendingPhase in ['preflight', 'picker']) {
+      test(
+        'disposal during backup $pendingPhase never starts key storage',
+        () async {
+          final preflight =
+              Completer<Result<bool, core.RecoverBullCoreFailure>>();
+          final picker = Completer<Result<Null, core.RecoverBullCoreFailure>>();
+          var closed = 0;
+          final route = routeAt(41001, () async => closed++);
+          final vault = _MockEncryptedVault();
+          when(() => vault.toFile()).thenReturn('vault');
+          when(() => vault.filename).thenReturn('backup.json');
+          when(
+            () => ensureRecoverBullTorSession.execute(),
+          ).thenAnswer((_) async => Ok(route));
+          when(
+            () => checkConnection.execute(route: route),
+          ).thenAnswer((_) async => const Ok(true));
+          when(
+            () => createVault.execute(),
+          ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+          when(
+            () => saveFile.execute(content: 'vault', filename: 'backup.json'),
+          ).thenAnswer((_) => picker.future);
+          when(
+            () =>
+                storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+          ).thenAnswer((_) async => const Ok(null));
+          when(
+            () => storeKey.execute(
+              password: 'pw',
+              vault: vault,
+              vaultKey: 'key',
+              route: route,
+            ),
+          ).thenAnswer((_) async => const Ok(null));
+          final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+          addTearDown(bloc.close);
+          bloc.add(const OnTorInitialization());
+          await pumpEventQueue();
+          if (pendingPhase == 'preflight') {
+            when(
+              () => checkConnection.execute(),
+            ).thenAnswer((_) => preflight.future);
+            when(
+              () => checkConnection.execute(route: route),
+            ).thenAnswer((_) => preflight.future);
+          }
+          bloc.add(
+            const OnVaultCreation(
+              provider: VaultProvider.customLocation,
+              password: 'pw',
+            ),
+          );
+          await pumpEventQueue();
+
+          final closing = bloc.close();
+          await pumpEventQueue();
+          preflight.complete(const Ok(true));
+          picker.complete(const Ok(null));
+          await closing;
+
+          verifyNever(
+            () =>
+                storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+          );
+          verifyNever(
+            () => storeKey.execute(
+              password: 'pw',
+              vault: vault,
+              vaultKey: 'key',
+              route: route,
+            ),
+          );
+          verify(() => ensureRecoverBullTorSession.execute()).called(1);
+          expect(closed, 1);
+          expect(bloc.isClosed, isTrue);
+        },
+      );
+    }
+
+    test(
+      'late acquisition cleanup failure does not prevent flow disposal',
+      () async {
+        final pending =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) => pending.future);
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        final closing = bloc.close();
+        pending.complete(
+          Ok(routeAt(41001, () async => throw Exception('close failed'))),
+        );
+        await expectLater(closing, completes);
+        expect(bloc.isClosed, isTrue);
+      },
+    );
+
+    test('a Tor drop after the vault is saved still stores the key', () async {
+      final states = StreamController<TorConnectionState>();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      final vault = _MockEncryptedVault();
+      when(() => vault.toFile()).thenReturn('{}');
+      when(() => vault.filename).thenReturn('vault.json');
+      final saving = Completer<Result<Null, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      when(
+        () => createVault.execute(),
+      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(
+        () => saveFile.execute(
+          content: any(named: 'content'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) => saving.future);
+      when(
+        () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      addTearDown(states.close);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(
+        const OnVaultCreation(
+          provider: VaultProvider.customLocation,
+          password: 'pw',
+        ),
+      );
+      await pumpEventQueue();
+      // The file picker backgrounds the app, which is when embedded Tor flaps.
+      states.add(const TorStopped(TorSource.embedded));
+      await pumpEventQueue();
+      expect(closed, 1);
+      saving.complete(const Ok(null));
+      await pumpEventQueue();
+
+      // The file exists, so the key must reach the server through a fresh route rather than be dropped silently.
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.vault, vault);
+      verify(
+        () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+      ).called(1);
+    });
+
+    test(
+      'reusing the retained route keeps an in-flight check result',
+      () async {
+        final pending = Completer<Result<bool, core.RecoverBullCoreFailure>>();
+        final route = routeAt(41001, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(route));
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) => pending.future);
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        pending.complete(const Ok(true));
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        verify(() => ensureRecoverBullTorSession.execute()).called(1);
+        verify(() => checkConnection.execute(route: route)).called(1);
+      },
+    );
+
+    test(
+      'a failed check releases the route and the retry acquires a fresh one',
+      () async {
+        var firstClosed = 0;
+        final first = routeAt(41001, () async => firstClosed++);
+        final second = routeAt(41002, () async {});
+        var acquisitions = 0;
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+        when(
+          () => checkConnection.execute(route: first),
+        ).thenAnswer((_) async => const Ok(false));
+        when(
+          () => checkConnection.execute(route: second),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
+        expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
+        expect(firstClosed, 1);
+
+        // What the connecting page's Retry dispatches while Tor reads ready.
+        bloc.add(const OnServerCheck());
+        await pumpEventQueue();
+
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        expect(acquisitions, 2);
+        verify(
+          () => checkConnection.execute(route: first),
+        ).called(ConnectToKeyServerUsecase.maxAttempts);
+        verify(() => checkConnection.execute(route: second)).called(1);
+      },
+    );
   });
 }

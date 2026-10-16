@@ -276,4 +276,64 @@ void main() {
       );
     });
   });
+
+  // The snapshot lists every identifier the server tracks, by the SHA-256 of
+  // its raw bytes, so the identifier itself never leaves the device.
+  group('RecoverBullRepository.fetchVaultAttempts', () {
+    // SHA-256 of the 32 bytes 0x00..0x00.
+    const zeroIdHash =
+        '66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925';
+    final zeroId = '00' * 32;
+
+    void stubSnapshot(Map<String, dynamic> snapshot) {
+      when(
+        () => remote.attempts(endpoint: any(named: 'endpoint')),
+      ).thenAnswer((_) async => snapshot);
+    }
+
+    test('finds the vault by the hash of its identifier', () async {
+      stubSnapshot({
+        'version': 1,
+        'entries': [
+          {'id_hash': 'ff' * 32, 'failed_attempts': 9},
+          {'id_hash': zeroIdHash, 'failed_attempts': 2, 'total_attempts': 3},
+        ],
+      });
+
+      final result = await repository.fetchVaultAttempts(zeroId, endpoint);
+
+      expect((result as Ok).value.failedAttempts, 2);
+    });
+
+    test('a vault absent from the snapshot had no attempts', () async {
+      stubSnapshot({
+        'version': 1,
+        'entries': [
+          {'id_hash': 'ff' * 32, 'failed_attempts': 9},
+        ],
+      });
+
+      final result = await repository.fetchVaultAttempts(zeroId, endpoint);
+
+      expect((result as Ok).value.hasFailedAttempts, isFalse);
+    });
+
+    test('an unreachable server maps to KeyServerUnavailableFailure', () async {
+      when(
+        () => remote.attempts(endpoint: any(named: 'endpoint')),
+      ).thenThrow(const SocketException('unreachable'));
+
+      final result = await repository.fetchVaultAttempts(zeroId, endpoint);
+
+      expect((result as Err).failure, isA<KeyServerUnavailableFailure>());
+    });
+
+    test('a malformed snapshot is unexpected, never quiet', () async {
+      stubSnapshot({'version': 1});
+
+      final result = await repository.fetchVaultAttempts(zeroId, endpoint);
+
+      expect((result as Err).failure, isA<RecoverBullUnexpectedCoreFailure>());
+    });
+  });
 }

@@ -61,6 +61,11 @@ class _OnTorConnectionChanged extends RecoverBullEvent {
   const _OnTorConnectionChanged(this.state);
 }
 
+/// Reads the key server's attempts snapshot for the selected vault.
+class OnVaultAttemptsCheck extends RecoverBullEvent {
+  const OnVaultAttemptsCheck();
+}
+
 class OnClearError extends RecoverBullEvent {
   const OnClearError();
 }
