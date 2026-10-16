@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -56,29 +57,37 @@ class RecoverBullRemoteDatasource {
     }
   }
 
+  /// A hung onion circuit must not keep the flow's route borrowed for an
+  /// advisory read. Matches the server's own bound on its sensitive routes.
+  static const _attemptsTimeout = Duration(seconds: 30);
+
   /// The server's public attempts snapshot, decoded but not interpreted.
   ///
-  /// The pinned client has no call for it. The snapshot is always gzip, which
-  /// [HttpClient] inflates on its own.
+  /// The pinned client has no call for it. The snapshot is always sent with
+  /// `Content-Encoding: gzip`, which [HttpClient] inflates on its own.
   Future<Map<String, dynamic>> attempts({
     required TorProxyEndpoint endpoint,
   }) async {
     final client = _torHttpClientFactory.create(endpoint);
     try {
       final url = await _recoverbullSettingsDatasource.fetch();
-      final request = await client.getUrl(url.replace(path: '/attempts'));
-      final response = await request.close();
-      final body = await response.transform(utf8.decoder).join();
-      if (response.statusCode != 200) {
-        throw KeyServerException(
-          code: response.statusCode,
-          message: 'attempts snapshot unavailable',
-        );
-      }
-      return json.decode(body) as Map<String, dynamic>;
+      return await _readAttempts(client, url).timeout(_attemptsTimeout);
     } finally {
       client.close(force: true);
     }
+  }
+
+  Future<Map<String, dynamic>> _readAttempts(HttpClient client, Uri url) async {
+    final request = await client.getUrl(url.replace(path: '/attempts'));
+    final response = await request.close();
+    final body = await response.transform(utf8.decoder).join();
+    if (response.statusCode != 200) {
+      throw KeyServerException(
+        code: response.statusCode,
+        message: 'attempts snapshot unavailable',
+      );
+    }
+    return json.decode(body) as Map<String, dynamic>;
   }
 
   Future<List<int>> fetch(
