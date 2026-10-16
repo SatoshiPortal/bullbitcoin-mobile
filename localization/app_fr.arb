@@ -4960,5 +4960,6 @@
   "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
   "settingsPayjoinSatsUnit": "sats",
   "settingsPayjoinMinutesUnit": "min",
-  "recoverbullDurationHoursMinutes": "{hours} h {minutes} min"
+  "recoverbullDurationHoursMinutes": "{hours} h {minutes} min",
+  "recoverbullVaultAttemptsWarning": "Cette sauvegarde a reçu récemment {count} tentatives de PIN ou de mot de passe erronées. Si elles ne viennent pas de vous, quelqu’un d’autre a peut-être votre fichier de sauvegarde : créez une nouvelle sauvegarde chiffrée."
 }

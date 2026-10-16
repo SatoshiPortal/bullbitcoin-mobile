@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
@@ -155,6 +156,12 @@ class RecoverbullLocator {
 
     locator.registerFactory<FetchVaultKeyFromServerUsecase>(
       () => FetchVaultKeyFromServerUsecase(
+        locator<RecoverBullRepository>(),
+        locator<EnsureRecoverBullTorSessionUsecase>(),
+      ),
+    );
+    locator.registerFactory<CheckVaultAttemptsUsecase>(
+      () => CheckVaultAttemptsUsecase(
         locator<RecoverBullRepository>(),
         locator<EnsureRecoverBullTorSessionUsecase>(),
       ),

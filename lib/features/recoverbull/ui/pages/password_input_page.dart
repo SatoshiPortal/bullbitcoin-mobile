@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDialPad, BullText, BullTopBar, Gap;
+    show BullButton, BullDialPad, BullInfoCard, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -132,6 +132,17 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       ),
                     ),
                   ),
+                  if (state.flow != RecoverBullFlow.secureVault &&
+                      (state.vaultAttempts?.hasFailedAttempts ?? false)) ...[
+                    const Gap(8),
+                    BullInfoCard(
+                      description: context.loc.recoverbullVaultAttemptsWarning(
+                        state.vaultAttempts!.failedAttempts.toString(),
+                      ),
+                      tagColor: context.appColors.warning,
+                      bgColor: context.appColors.warningContainer,
+                    ),
+                  ],
                   const Gap(12),
                   BullText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty

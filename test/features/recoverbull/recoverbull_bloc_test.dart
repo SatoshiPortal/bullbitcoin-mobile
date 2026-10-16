@@ -9,6 +9,8 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -64,6 +66,8 @@ class _MockWatchTorConnection extends Mock
 
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
 
+class _MockCheckAttempts extends Mock implements CheckVaultAttemptsUsecase {}
+
 void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
@@ -80,6 +84,7 @@ void main() {
   late _MockFetchLatestDrive fetchLatestDrive;
   late _MockUpdateLatest updateLatest;
   late _MockWatchTorConnection watchTor;
+  late _MockCheckAttempts checkAttempts;
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
@@ -112,10 +117,18 @@ void main() {
     when(
       () => watchTor.execute(),
     ).thenAnswer((_) => const Stream<TorConnectionState>.empty());
+    checkAttempts = _MockCheckAttempts();
+    when(
+      () => checkAttempts.execute(
+        vault: any(named: 'vault'),
+        route: any(named: 'route'),
+      ),
+    ).thenAnswer((_) async => const Ok(VaultAttempts.none()));
   });
 
   // No event is auto-dispatched, so unstubbed mocks stay untouched unless a
-  // test drives the matching flow — the Tor subscription above excepted.
+  // test drives the matching flow — the Tor subscription and, with a
+  // preselected vault, the attempts check above excepted.
   RecoverBullBloc buildBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -133,6 +146,7 @@ void main() {
       wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
+    checkVaultAttemptsUsecase: checkAttempts,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
     connectToGoogleDriveUsecase: connectDrive,
@@ -143,6 +157,77 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  // A brute-force on a stolen backup file shows only in the server's public
+  // attempts snapshot, so the flows that open an existing vault read it.
+  group('vault attempts check', () {
+    void stubAttempts(
+      Result<VaultAttempts, core.RecoverBullCoreFailure> answer,
+    ) {
+      when(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      ).thenAnswer((_) async => answer);
+    }
+
+    Future<RecoverBullBloc> selectVault(
+      RecoverBullFlow flow,
+      EncryptedVault vault,
+    ) async {
+      when(() => pickVault.execute()).thenAnswer((_) async => Ok(vault));
+      final bloc = buildBloc(flow: flow);
+      bloc.add(const OnVaultSelection(provider: VaultProvider.customLocation));
+      await pumpEventQueue();
+      return bloc;
+    }
+
+    test('a selected vault reports its failed attempts', () async {
+      stubAttempts(const Ok(VaultAttempts(failedAttempts: 2)));
+      final vault = _MockEncryptedVault();
+
+      final bloc = await selectVault(RecoverBullFlow.testVault, vault);
+
+      verify(
+        () => checkAttempts.execute(
+          vault: vault,
+          route: any(named: 'route'),
+        ),
+      ).called(1);
+      expect(bloc.state.vaultAttempts?.failedAttempts, 2);
+      await bloc.close();
+    });
+
+    test('an unreadable snapshot stays unknown and blocks nothing', () async {
+      stubAttempts(const Err(core.KeyServerUnavailableFailure()));
+
+      final bloc = await selectVault(
+        RecoverBullFlow.recoverVault,
+        _MockEncryptedVault(),
+      );
+
+      expect(bloc.state.vault, isNotNull);
+      expect(bloc.state.vaultAttempts, isNull);
+      expect(bloc.state.failure, isNull);
+      await bloc.close();
+    });
+
+    test('creating a vault never reads the snapshot', () async {
+      final bloc = await selectVault(
+        RecoverBullFlow.secureVault,
+        _MockEncryptedVault(),
+      );
+
+      verifyNever(
+        () => checkAttempts.execute(
+          vault: any(named: 'vault'),
+          route: any(named: 'route'),
+        ),
+      );
+      await bloc.close();
+    });
+  });
 
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '

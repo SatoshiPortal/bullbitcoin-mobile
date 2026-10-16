@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -49,6 +51,31 @@ class RecoverBullRemoteDatasource {
         trace: StackTrace.current,
       );
       rethrow;
+    } finally {
+      client.close(force: true);
+    }
+  }
+
+  /// The server's public attempts snapshot, decoded but not interpreted.
+  ///
+  /// The pinned client has no call for it. The snapshot is always gzip, which
+  /// [HttpClient] inflates on its own.
+  Future<Map<String, dynamic>> attempts({
+    required TorProxyEndpoint endpoint,
+  }) async {
+    final client = _torHttpClientFactory.create(endpoint);
+    try {
+      final url = await _recoverbullSettingsDatasource.fetch();
+      final request = await client.getUrl(url.replace(path: '/attempts'));
+      final response = await request.close();
+      final body = await response.transform(utf8.decoder).join();
+      if (response.statusCode != 200) {
+        throw KeyServerException(
+          code: response.statusCode,
+          message: 'attempts snapshot unavailable',
+        );
+      }
+      return json.decode(body) as Map<String, dynamic>;
     } finally {
       client.close(force: true);
     }
