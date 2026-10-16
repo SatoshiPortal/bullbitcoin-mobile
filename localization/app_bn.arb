@@ -2430,10 +2430,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "লেগাসি লেনদেনসমূহ",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "এই সতর্কীকরণটি আর দেখাবেন না।",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3647,10 +3643,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "এক্সচেঞ্জ অ্যাকাউন্ট সেটিংস",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "সর্বোচ্চ {maxFiles}টি ফাইল আপলোড করুন। অনুমোদিত ফরম্যাট: PDF, JPG, PNG, GIF, HEIC। সর্বোচ্চ ফাইল আকার: প্রতি ফাইল 10MB।",
   "@exchangeFileUploadInstructionsWithParams": {
     "placeholders": {
@@ -3965,10 +3957,6 @@
   "sellSendPaymentEurBalance": "EUR ব্যালেন্স",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "এক্সচেঞ্জ অ্যাকাউন্ট",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "ট্রান্সফার সম্পন্ন",
   "@swapProgressCompleted": {
@@ -7218,10 +7206,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "লেগাসি লেনদেনসমূহ - শীঘ্রই আসছে",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "ঠিকানা প্রমাণপত্র",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7622,10 +7606,6 @@
   "sendConfirmSwap": "বদল নিশ্চিত করুন",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "লগ আউট - শীঘ্রই আসছে",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "মোট ট্রেডিং ভলিউম",
   "@exchangeStatisticsTotalVolume": {
@@ -9544,10 +9524,6 @@
   "payPayee": "প্রাপক",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "এই ফিচার শীঘ্রই আসছে।",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "বিক্রয় চলছে...",
   "@sellInProgress": {
