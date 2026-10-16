@@ -7,8 +7,7 @@ import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayWalletSelectionScreen extends StatelessWidget {
@@ -24,9 +23,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
       );
     });
     final isCreatingPayOrder = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayWalletSelectionState &&
-          (bloc.state as PayWalletSelectionState).isCreatingPayOrder,
+      (PayBloc bloc) => bloc.state is PayPreparingPaymentState,
     );
 
     final currency = context.select((PayBloc bloc) => bloc.state.currency);
@@ -36,12 +33,6 @@ class PayWalletSelectionScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            BullFadingLinearProgress(
-              height: 3,
-              trigger: isCreatingPayOrder,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
             Expanded(
               child: BullScrollableColumn(
                 children: [

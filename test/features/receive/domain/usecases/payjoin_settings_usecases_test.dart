@@ -18,8 +18,8 @@ void main() {
   group('GetReceivePayjoinPolicyUsecase', () {
     test('returns the policy on success', () async {
       final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinPolicy()).thenAnswer(
-        (_) => Stream.value((enabled: true, minimumAmountSat: 10000)),
+      when(() => settings.watchPayjoinReceivePolicy()).thenAnswer(
+        (_) => Stream.value((receiveEnabled: true, minimumAmountSat: 10000)),
       );
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -35,7 +35,7 @@ void main() {
         'never escape into the bloc', () async {
       final settings = _MockSettingsFacade();
       when(
-        () => settings.watchPayjoinPolicy(),
+        () => settings.watchPayjoinReceivePolicy(),
       ).thenAnswer((_) => const Stream.empty());
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -56,7 +56,7 @@ void main() {
         'logMessage only', () async {
       final settings = _MockSettingsFacade();
       when(
-        () => settings.watchPayjoinPolicy(),
+        () => settings.watchPayjoinReceivePolicy(),
       ).thenAnswer((_) => Stream.error(StateError(_rawReason)));
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -76,7 +76,7 @@ void main() {
         'UI never translates a foreign failure type', () async {
       final settings = _MockSettingsFacade();
       when(
-        () => settings.setPayjoinEnabled(
+        () => settings.setPayjoinReceiveEnabled(
           any(),
           requestConsent: any(named: 'requestConsent'),
         ),
@@ -102,7 +102,7 @@ void main() {
     test('forwards the persisted value on success', () async {
       final settings = _MockSettingsFacade();
       when(
-        () => settings.setPayjoinEnabled(
+        () => settings.setPayjoinReceiveEnabled(
           any(),
           requestConsent: any(named: 'requestConsent'),
         ),

@@ -142,8 +142,11 @@ void main() {
       Err(:final failure) => throw failure,
     };
     final defaults = PayjoinPolicy.defaults();
-    expect(loaded.enabled, defaults.enabled);
-    expect(loaded.enabled, isFalse);
+    expect(loaded.receiveEnabled, defaults.receiveEnabled);
+    expect(loaded.receiveEnabled, isFalse);
+    expect(loaded.sendEnabled, isFalse);
+    expect(loaded.buyEnabled, isTrue);
+    expect(loaded.sellEnabled, isTrue);
     expect(loaded.minimumAmount.value, defaults.minimumAmount.value);
     expect(loaded.sessionLifetime, defaults.sessionLifetime);
 

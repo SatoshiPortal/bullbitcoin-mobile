@@ -6,6 +6,9 @@ import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclai
 import 'package:bull_payjoin/bull_payjoin.dart' as payjoin;
 import 'package:meta/meta.dart';
 
+/// Turns one payjoin action on or off. Only receiving from users asks for
+/// consent first: the receiver is the one exposing a UTXO and contributing
+/// fees.
 class SetPayjoinEnabledUsecase {
   final payjoin.PayjoinPolicyAccess _policy;
   final GetPayjoinDisclaimerShownUsecase _getPayjoinDisclaimerShownUsecase;
@@ -19,11 +22,12 @@ class SetPayjoinEnabledUsecase {
 
   @useResult
   Future<Result<bool, SettingsFailure>> execute(
+    payjoin.PayjoinAction action,
     bool enabled, {
     required Future<bool> Function() requestConsent,
   }) async {
-    if (!enabled) {
-      return _persist(false);
+    if (!enabled || action != payjoin.PayjoinAction.receive) {
+      return _persist(action, enabled);
     }
 
     final shownResult = await _getPayjoinDisclaimerShownUsecase.execute();
@@ -44,7 +48,7 @@ class SetPayjoinEnabledUsecase {
           }
           if (!consentGranted) return const Ok(false);
 
-          final persistResult = await _persist(true);
+          final persistResult = await _persist(action, true);
           if (persistResult case Err(:final failure)) return Err(failure);
 
           final markResult = await _markPayjoinDisclaimerShownUsecase.execute();
@@ -60,13 +64,16 @@ class SetPayjoinEnabledUsecase {
         }
     }
 
-    return _persist(true);
+    return _persist(action, true);
   }
 
   @useResult
-  Future<Result<bool, SettingsFailure>> _persist(bool enabled) async {
+  Future<Result<bool, SettingsFailure>> _persist(
+    payjoin.PayjoinAction action,
+    bool enabled,
+  ) async {
     try {
-      final result = await _policy.setEnabled(enabled);
+      final result = await _policy.setActionEnabled(action, enabled: enabled);
       return switch (result) {
         Ok() => Ok(enabled),
         Err() => const Err(
@@ -81,7 +88,7 @@ class SetPayjoinEnabledUsecase {
         trace: st,
       );
       return Err(
-        SettingsUnexpectedFailure('setEnabled threw: ${e.runtimeType}'),
+        SettingsUnexpectedFailure('setActionEnabled threw: ${e.runtimeType}'),
       );
     }
   }

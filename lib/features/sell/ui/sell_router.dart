@@ -56,8 +56,8 @@ class SellRouter {
             path: SellRoute.sellWalletSelection.path,
             builder: (context, state) => BlocListener<SellBloc, SellState>(
               listenWhen: (previous, current) =>
-                  previous is SellWalletSelectionState &&
-                  current is SellPaymentState &&
+                  current is SellPreparingPaymentState &&
+                  previous is! SellPreparingPaymentState &&
                   current.selectedWallet != null,
               listener: (context, state) {
                 context.pushNamed(SellRoute.sellSendPayment.name);
@@ -82,8 +82,8 @@ class SellRouter {
             path: SellRoute.sellExternalWalletNetworkSelection.path,
             builder: (context, state) => BlocListener<SellBloc, SellState>(
               listenWhen: (previous, current) =>
-                  previous is SellWalletSelectionState &&
-                  current is SellPaymentState &&
+                  current is SellPreparingPaymentState &&
+                  previous is! SellPreparingPaymentState &&
                   current.selectedWallet == null,
               listener: (context, state) {
                 context.pushNamed(

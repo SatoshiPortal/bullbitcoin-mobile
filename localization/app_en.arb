@@ -10248,12 +10248,12 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "sellSendingPayment": "Sending payment…",
-  "@sellSendingPayment": {
+  "exchangeSendingPayment": "Sending payment…",
+  "@exchangeSendingPayment": {
     "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
   },
-  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
-  "@sellPaymentSentRefreshingOrder": {
+  "exchangePaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@exchangePaymentSentRefreshingOrder": {
     "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
   "sellSendPaymentAboveMax": "You are trying to sell above the maximum amount that can be sold with this wallet.",
@@ -13243,10 +13243,6 @@
   "@settingsPayjoinAdvancedTitle": {
     "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
-  "settingsPayjoinEnabledLabel": "Payjoin enabled",
-  "@settingsPayjoinEnabledLabel": {
-    "description": "Label next to the global payjoin enable/disable switch"
-  },
   "settingsPayjoinMinAmountTitle": "Minimum amount",
   "@settingsPayjoinMinAmountTitle": {
     "description": "Title of the payjoin minimum receive amount field"
@@ -13270,22 +13266,6 @@
   "settingsPayjoinExpireTitle": "Session expiry",
   "@settingsPayjoinExpireTitle": {
     "description": "Title of the payjoin session expiry field"
-  },
-  "settingsPayjoinExpireDescription": "How long a payjoin session stays open, in seconds, before falling back to a normal payment.",
-  "@settingsPayjoinExpireDescription": {
-    "description": "Explanation under the payjoin session expiry field"
-  },
-  "settingsPayjoinExpireRangeError": "Must be between {min} and {max} seconds",
-  "@settingsPayjoinExpireRangeError": {
-    "description": "Validation error when the payjoin session expiry is out of bounds",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
   },
   "settingsPayjoinServersTitle": "Servers",
   "@settingsPayjoinServersTitle": {
@@ -15655,5 +15635,53 @@
   "copiedToClipboard": "Copied to clipboard",
   "@copiedToClipboard": {
     "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "settingsPayjoinUsersSection": "With other users",
+  "@settingsPayjoinUsersSection": {
+    "description": "Payjoin settings section grouping the switches for payments between users"
+  },
+  "settingsPayjoinSendLabel": "Send",
+  "@settingsPayjoinSendLabel": {
+    "description": "Payjoin switch for paying another user"
+  },
+  "settingsPayjoinReceiveLabel": "Receive",
+  "@settingsPayjoinReceiveLabel": {
+    "description": "Payjoin switch for receiving from another user"
+  },
+  "settingsPayjoinExchangeSection": "With the Bull Bitcoin exchange",
+  "@settingsPayjoinExchangeSection": {
+    "description": "Payjoin settings section grouping the switches for exchange orders"
+  },
+  "settingsPayjoinBuyLabel": "Buy",
+  "@settingsPayjoinBuyLabel": {
+    "description": "Payjoin switch for receiving the payout of a buy order"
+  },
+  "settingsPayjoinSellLabel": "Sell and pay bills",
+  "@settingsPayjoinSellLabel": {
+    "description": "Payjoin switch for paying sell and bill-payment orders"
+  },
+  "settingsPayjoinExpireMinutesDescription": "How long a payjoin session stays open before falling back to a normal payment.",
+  "@settingsPayjoinExpireMinutesDescription": {
+    "description": "Explanation next to the payjoin session expiry field, entered in minutes"
+  },
+  "settingsPayjoinExpireMinutesRangeError": "Must be between {min} and {max} minutes",
+  "@settingsPayjoinExpireMinutesRangeError": {
+    "description": "Validation error when the payjoin session expiry, in minutes, is out of bounds",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinSatsUnit": "sats",
+  "@settingsPayjoinSatsUnit": {
+    "description": "Unit shown inside the payjoin minimum amount field"
+  },
+  "settingsPayjoinMinutesUnit": "min",
+  "@settingsPayjoinMinutesUnit": {
+    "description": "Unit shown inside the payjoin session expiry field"
   }
 }

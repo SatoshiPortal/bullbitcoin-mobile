@@ -108,8 +108,11 @@ void main() {
 
     final policy = await database.select(database.payjoinPolicies).getSingle();
     final defaults = PayjoinPolicy.defaults();
-    expect(policy.enabled, defaults.enabled);
-    expect(policy.enabled, isFalse);
+    expect(policy.receiveEnabled, defaults.receiveEnabled);
+    expect(policy.receiveEnabled, isFalse);
+    expect(policy.sendEnabled, isFalse);
+    expect(policy.buyEnabled, isTrue);
+    expect(policy.sellEnabled, isTrue);
     expect(policy.minimumAmountSat, defaults.minimumAmount.value.toInt());
     expect(policy.sessionLifetimeSeconds, defaults.sessionLifetime.inSeconds);
   });
@@ -138,7 +141,7 @@ void main() {
     await importLegacyPayjoinData(database, source);
     await database
         .update(database.payjoinPolicies)
-        .write(const PayjoinPoliciesCompanion(enabled: Value(false)));
+        .write(const PayjoinPoliciesCompanion(receiveEnabled: Value(false)));
     source.snapshot = PayjoinLegacySnapshot(
       sourceSchemaVersion: 14,
       senders: const [],
@@ -148,7 +151,7 @@ void main() {
     await importLegacyPayjoinData(database, source);
 
     final policy = await database.select(database.payjoinPolicies).getSingle();
-    expect(policy.enabled, isFalse);
+    expect(policy.receiveEnabled, isFalse);
     expect(source.reads, 1);
   });
 

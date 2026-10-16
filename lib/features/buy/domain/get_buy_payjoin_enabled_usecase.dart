@@ -13,7 +13,7 @@ class GetBuyPayjoinEnabledUsecase {
   Future<Result<bool, BuyFailure>> execute() async {
     switch (await _policy.load()) {
       case Ok(:final value):
-        return Ok(value.enabled);
+        return Ok(value.buyEnabled);
       case Err(:final failure):
         log.warning(
           'Could not read the Payjoin policy',

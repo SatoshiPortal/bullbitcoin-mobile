@@ -82,9 +82,9 @@ class PayRouter {
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
               listenWhen: (previous, current) =>
-                  previous is PayWalletSelectionState &&
-                  current is PayPaymentState &&
-                  current.isInternalWallet,
+                  current is PayPreparingPaymentState &&
+                  previous is! PayPreparingPaymentState &&
+                  current.selectedWallet != null,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.paySendPayment.name,
@@ -105,9 +105,9 @@ class PayRouter {
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
               listenWhen: (previous, current) =>
-                  previous is PayWalletSelectionState &&
-                  current is PayPaymentState &&
-                  current.isExternalWallet,
+                  current is PayPreparingPaymentState &&
+                  previous is! PayPreparingPaymentState &&
+                  current.selectedWallet == null,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.payReceivePayment.name,

@@ -43,7 +43,7 @@ class BuyRouter {
           builder: (context, state) {
             return BlocListener<BuyBloc, BuyState>(
               listenWhen: (previous, current) =>
-                  previous.buyOrder == null && current.buyOrder != null,
+                  !previous.isCreatingOrder && current.isCreatingOrder,
               listener: (context, state) {
                 context.pushNamed(BuyRoute.buyConfirmation.name);
               },

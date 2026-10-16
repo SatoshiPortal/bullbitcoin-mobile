@@ -107,9 +107,10 @@ final class _UnavailablePayjoinPolicy implements PayjoinPolicyAccess {
   Future<Result<PayjoinPolicy, PayjoinFailure>> load() async => Err(_failure);
 
   @override
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(
-    bool enabled,
-  ) async => Err(_failure);
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  }) async => Err(_failure);
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(

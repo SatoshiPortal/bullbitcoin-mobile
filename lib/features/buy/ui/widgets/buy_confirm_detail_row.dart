@@ -55,7 +55,14 @@ class BuyConfirmDetailRow extends StatelessWidget {
                   color: context.appColors.onSurfaceVariant,
                 ),
               ),
-              (null, false) => const BullShimmerLine(),
+              (null, false) => const Align(
+                alignment: Alignment.centerRight,
+                child: BullShimmerLine(
+                  width: 120,
+                  height: 14,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
             },
           ),
         ],

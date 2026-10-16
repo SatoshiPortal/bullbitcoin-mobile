@@ -42,12 +42,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuySelectedWalletChanged>(_onSelectedWalletChanged);
     on<_BuyBitcoinAddressInputChanged>(_onBitcoinAddressInputChanged);
     on<_BuyCreateOrder>(_onCreateOrder);
+    on<_BuyOrderCreationAbandoned>(_onOrderCreationAbandoned);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
     on<_BuyPayjoinToggled>(_onPayjoinToggled);
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
     on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
+
+  int _orderCreationGeneration = 0;
 
   final LoadBuyContextUsecase _loadBuyContextUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
@@ -186,31 +189,44 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyCreateOrder event,
     Emitter<BuyState> emit,
   ) async {
-    try {
-      await _cancelAbandonedPayjoin(state.buyOrder);
-      // Clear any previous exceptions and reset the buy order so that we create
-      //  a new one on every Continue button press as the data may have changed.
-      emit(
-        state.copyWith(isCreatingOrder: true, buyOrder: null, failure: null),
-      );
+    if (state.isCreatingOrder || state.isConfirmingOrder) return;
+    final input = state;
+    final fiatAmount = input.amount;
+    final bitcoinAmount = input.amountBtc;
+    final currency = input.currency;
+    if (!input.canCreateOrder ||
+        fiatAmount == null ||
+        bitcoinAmount == null ||
+        currency == null) {
+      return;
+    }
 
-      final wallet = state.selectedWallet;
+    final generation = ++_orderCreationGeneration;
+    bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
+    // Navigation starts with this emission, before cleanup, address lookup or
+    // the exchange request. The confirmation screen owns the pending result.
+    emit(state.copyWith(isCreatingOrder: true, buyOrder: null, failure: null));
+    try {
+      await _cancelAbandonedPayjoin(input.buyOrder);
+      if (!isCurrent()) return;
+      final wallet = input.selectedWallet;
       String toAddress;
       if (wallet != null) {
         // If a wallet is selected, fetch the receive address for it.
         final addressResult = await _loadBuyContextUsecase.receiveAddress(
           walletId: wallet.id,
         );
+        if (!isCurrent()) return;
         switch (addressResult) {
           case Ok(:final value):
             toAddress = value.address;
           case Err(:final failure):
-            emit(state.copyWith(failure: failure));
+            emit(state.copyWith(failure: failure, isCreatingOrder: false));
             return;
         }
       } else {
         // If no wallet is selected, use the bitcoin address input.
-        toAddress = state.bitcoinAddressInput;
+        toAddress = input.bitcoinAddressInput;
       }
       // A payjoin payout needs a wallet of ours, on-chain, plus a rough amount
       // — the exchange rejects a payjoin URI without one and replaces it with
@@ -219,42 +235,74 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // endpoint can revise it afterwards. Everything else (an external
       // address, Liquid, an account outside the pilot) keeps placing the order
       // exactly as before.
-      final usePayjoin = state.shouldUsePayjoin;
+      final usePayjoin = input.shouldUsePayjoin;
 
       final orderResult = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
-        orderAmount: state.isFiatCurrencyInput
-            ? FiatAmount(state.amount!)
-            : BitcoinAmount(state.amountBtc!),
-        currency: state.currency!,
-        isLiquid: state.selectedWallet?.network.isLiquid == true,
+        orderAmount: input.isFiatCurrencyInput
+            ? FiatAmount(fiatAmount)
+            : BitcoinAmount(bitcoinAmount),
+        currency: currency,
+        isLiquid: wallet?.network.isLiquid == true,
         isOwner: true,
-        payjoinWalletId: usePayjoin ? wallet!.id : null,
-        payjoinAmountSat: usePayjoin ? state.amountSat : null,
+        payjoinWalletId: usePayjoin ? wallet?.id : null,
+        payjoinAmountSat: usePayjoin ? input.amountSat : null,
       );
 
+      if (!isCurrent()) {
+        if (orderResult case Ok(:final value)) {
+          await _cancelAbandonedPayjoin(value);
+        }
+        return;
+      }
       switch (orderResult) {
         case Ok(:final value):
           emit(state.copyWith(buyOrder: value));
         case Err(:final failure):
           // Already logged at the boundary.
-          emit(state.copyWith(failure: failure));
+          emit(state.copyWith(failure: failure, isCreatingOrder: false));
           // Refresh the exchange rate so the user can adjust the amount, in
           // case the amount was the reason for the failure.
-          await _refreshExchangeRate(emit);
+          await _refreshExchangeRate(emit, generation);
       }
     } finally {
-      emit(state.copyWith(isCreatingOrder: false));
+      if (isCurrent()) emit(state.copyWith(isCreatingOrder: false));
     }
+  }
+
+  Future<void> _onOrderCreationAbandoned(
+    _BuyOrderCreationAbandoned event,
+    Emitter<BuyState> emit,
+  ) async {
+    if (state.isConfirmingOrder || state.buyOrder?.isPayinCompleted == true) {
+      return;
+    }
+    final abandonedOrder = state.buyOrder;
+    ++_orderCreationGeneration;
+    emit(
+      state.copyWith(
+        isCreatingOrder: false,
+        isRefreshingOrder: false,
+        buyOrder: null,
+        failure: null,
+      ),
+    );
+    await _cancelAbandonedPayjoin(abandonedOrder);
   }
 
   /// Re-reads the rate after a failed order so the amount field shows a current
   /// number. Best-effort: a failure here must not replace the failure the user
   /// is being shown.
-  Future<void> _refreshExchangeRate(Emitter<BuyState> emit) async {
+  Future<void> _refreshExchangeRate(
+    Emitter<BuyState> emit,
+    int generation,
+  ) async {
+    final currency = state.currency;
+    if (currency == null) return;
     final rate = await _loadBuyContextUsecase.satsToCurrency(
-      currencyCode: state.currency!.code,
+      currencyCode: currency.code,
     );
+    if (emit.isDone || generation != _orderCreationGeneration) return;
     if (rate case Ok(:final value)) {
       emit(state.copyWith(exchangeRate: value));
     }
@@ -273,12 +321,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
 
+    final generation = _orderCreationGeneration;
+    bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
     try {
       emit(state.copyWith(isRefreshingOrder: true, failure: null));
 
       final refreshResult = await _refreshBuyOrderUsecase.execute(
         orderId: orderId,
       );
+      if (!isCurrent()) return;
       final BuyOrder refreshedOrder;
       switch (refreshResult) {
         case Ok(:final value):
@@ -302,9 +353,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         log.info('Buy order completed without privileged labels');
       }
 
+      if (!isCurrent()) return;
       emit(state.copyWith(buyOrder: order));
     } finally {
-      emit(state.copyWith(isRefreshingOrder: false));
+      if (isCurrent()) emit(state.copyWith(isRefreshingOrder: false));
     }
   }
 
@@ -312,6 +364,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyConfirmOrder event,
     Emitter<BuyState> emit,
   ) async {
+    if (state.isCreatingOrder ||
+        state.isRefreshingOrder ||
+        state.isConfirmingOrder) {
+      return;
+    }
     final orderId = state.buyOrder?.orderId;
     if (orderId == null) {
       log.severe(
@@ -358,6 +415,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
   @override
   Future<void> close() async {
+    ++_orderCreationGeneration;
     await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();
   }

@@ -139,6 +139,25 @@ void main() {
       );
     });
 
+    for (final currency in ['BTC', 'LBTC']) {
+      testWidgets('$currency amount bounds retain satoshi precision', (
+        tester,
+      ) async {
+        final minimum = await _translate(
+          tester,
+          PayBelowMinAmountFailure(minAmount: 0.0001, currency: currency),
+        );
+        final maximum = await _translate(
+          tester,
+          PayAboveMaxAmountFailure(maxAmount: 0.0002, currency: currency),
+        );
+
+        expect(minimum, contains('10,000 sats'));
+        expect(maximum, contains('20,000 sats'));
+        expect(minimum, isNot(contains('0.00 BTC')));
+      });
+    }
+
     testWidgets('the bound is formatted, and still leaks nothing', (
       tester,
     ) async {

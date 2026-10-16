@@ -165,10 +165,10 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatusInfo> _checkPayjoinService() async {
-    // Payjoin is opt-in: when it's disabled in settings the OHTTP relay is
-    //  not in use, so report `disabled` (not `offline`/red) — probing a
-    //  relay the user isn't relying on and painting the whole status page
-    //  red for it is misleading.
+    // When every payjoin switch is off the OHTTP relay is not in use, so
+    //  report `disabled` (not `offline`/red) — probing a relay the user isn't
+    //  relying on and painting the whole status page red for it is
+    //  misleading.
     final policyResult = await _payjoinPolicy.load();
     final policy = switch (policyResult) {
       Ok(:final value) => value,
@@ -181,7 +181,7 @@ class CheckAllServiceStatusUsecase {
         lastChecked: DateTime.now(),
       );
     }
-    if (!policy.enabled) {
+    if (!policy.anyEnabled) {
       return ServiceStatusInfo(
         status: ServiceStatus.disabled,
         name: 'Payjoin',

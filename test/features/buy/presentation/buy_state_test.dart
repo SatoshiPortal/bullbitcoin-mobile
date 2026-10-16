@@ -40,6 +40,19 @@ void main() {
   });
 
   group('BuyState Payjoin choice', () {
+    test('keeps Payjoin enabled below 50000 sats', () {
+      final state = BuyState(
+        userSummary: userSummary,
+        selectedWallet: bitcoinWallet,
+        payjoinGloballyEnabled: true,
+        isFiatCurrencyInput: false,
+        bitcoinUnit: BitcoinUnit.sats,
+        amountInput: '10000',
+      );
+      expect(state.shouldUsePayjoin, isTrue);
+      expect(state.copyWith(isPayjoinEnabled: false).shouldUsePayjoin, isFalse);
+    });
+
     test(
       'offers Payjoin only when both gates and a Bitcoin wallet are set',
       () {
@@ -90,10 +103,10 @@ void main() {
   group('BuyState failure slots', () {
     const failure = BuyUnexpectedFailure('raw reason');
 
-    test('the input and confirm slots split on whether an order exists', () {
+    test('confirmation can show a creation failure before an order exists', () {
       const beforeOrder = BuyState(failure: failure);
       expect(beforeOrder.inputFailure, failure);
-      expect(beforeOrder.confirmFailure, isNull);
+      expect(beforeOrder.confirmFailure, failure);
 
       final withOrder = beforeOrder.copyWith(buyOrder: _MockBuyOrder());
       expect(withOrder.inputFailure, isNull);

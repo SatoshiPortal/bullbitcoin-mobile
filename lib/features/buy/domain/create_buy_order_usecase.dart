@@ -65,7 +65,7 @@ class CreateBuyOrderUsecase {
 
       final policyResult = await _payjoinPolicy.load();
       final payjoinEnabled = switch (policyResult) {
-        Ok(:final value) => value.enabled,
+        Ok(:final value) => value.buyEnabled,
         Err() => false,
       };
       final wantsPayjoin =
@@ -86,6 +86,7 @@ class CreateBuyOrderUsecase {
                   : BitcoinNetwork.mainnet,
               address: toAddress,
               amount: Sats.fromInt(payjoinAmountSat),
+              isTrade: true,
               // The exchange gives up five minutes after creating the order.
               // This receiver starts before that request, so request one
               // additional minute to cover setup and network latency. The

@@ -62,7 +62,10 @@ abstract interface class PayjoinPolicyAccess {
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watch();
 
   @useResult
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled);
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  });
 
   @useResult
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);

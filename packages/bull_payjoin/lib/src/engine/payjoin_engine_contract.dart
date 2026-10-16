@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_payjoin/src/domain/payjoin_failure.dart';
+import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -26,6 +27,7 @@ abstract class PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isTrade = false,
   });
   Future<PayjoinSender> createPayjoinSender({
     required String walletId,
@@ -52,8 +54,14 @@ abstract class PayjoinRepository {
   /// Does nothing when the session is unknown or already terminal.
   Future<void> cancelReceiver(String payjoinId);
 
-  /// Stops receivers that have not committed a proposal yet.
-  Future<void> disableReceivers();
+  /// Stops the receivers [policy] does not permit that have not committed a
+  /// proposal yet: a buy order payout survives turning off receiving from
+  /// users, and the other way round.
+  Future<void> settleReceiversNotPermittedBy(PayjoinPolicy policy);
+
+  /// Stops every receiver that has not committed a proposal yet, whatever the
+  /// policy. Backs the public disableAll().
+  Future<void> settleAllReceivers();
 
   /// Resumes polling/watching for every unfinished payjoin session left over
   /// from a previous app run. The foreground composition root calls this
