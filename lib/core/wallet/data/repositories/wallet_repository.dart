@@ -561,7 +561,7 @@ class WalletRepository {
     return balance;
   }
 
-  Future<void> sync(Wallet wallet) async {
+  Future<void> sync(Wallet wallet, {bool fullDiscovery = false}) async {
     final walletModel = WalletModel.fromMetadata(
       WalletMetadataModel(
         id: wallet.id,
@@ -577,10 +577,13 @@ class WalletRepository {
         signer: Signer.fromEntity(wallet.signer),
       ),
     );
-    await _syncWallet(walletModel);
+    await _syncWallet(walletModel, fullDiscovery: fullDiscovery);
   }
 
-  Future<void> _syncWallet(WalletModel wallet) async {
+  Future<void> _syncWallet(
+    WalletModel wallet, {
+    bool fullDiscovery = false,
+  }) async {
     final isLiquid = wallet is PublicLwkWalletModel;
     final network = ElectrumServerNetwork.fromEnvironment(
       isTestnet: wallet.isTestnet,
@@ -594,7 +597,11 @@ class WalletRepository {
           if (isLiquid) {
             await _lwkWallet.sync(wallet: wallet, electrumServer: connection);
           } else {
-            await _bdkWallet.sync(wallet: wallet, electrumServer: connection);
+            await _bdkWallet.sync(
+              wallet: wallet,
+              electrumServer: connection,
+              fullDiscovery: fullDiscovery,
+            );
           }
         },
       );

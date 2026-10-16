@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:io' show File;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -49,6 +50,9 @@ class BdkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
+  final Map<String, Object> _completedDiscovery = {};
+  bool _disposed = false;
+  final Set<String> _deletingWallets = {};
   final StreamController<String> _walletSyncStartedController;
   final StreamController<String> _walletSyncFinishedController;
 
@@ -86,52 +90,43 @@ class BdkWalletDatasource {
   Future<void> sync({
     required WalletModel wallet,
     required ElectrumConnection electrumServer,
+    bool fullDiscovery = false,
   }) {
-    // putIfAbsent ensures only one sync starts for each wallet ID,
-    //  all others await the same Future.
-    // TODO: if needed, add these debugPrint to a filterable logger.debug
-    // TODO: to avoid spamming the terminal with recurring prints
-    // debugPrint('Sync requested for wallet: ${wallet.id}');
+    if (_disposed) throw StateError('BDK datasource is disposed');
+    if (_deletingWallets.contains(wallet.id)) {
+      throw StateError('Cannot sync a wallet being deleted');
+    }
+    final publicWallet = wallet as PublicBdkWalletModel;
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
-        // debugPrint('New sync started for wallet: ${wallet.id}');
-        // Notify that the wallet is syncing through a stream for other
-        // parts of the app to listen to so they can show a syncing indicator
         _walletSyncStartedController.add(wallet.id);
-
-        // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-
-        await compute(
-          _performFullScan,
-          _SyncParams(
-            walletId: wallet.id,
-            externalDescriptor:
-                (wallet as PublicBdkWalletModel).externalDescriptor,
-            internalDescriptor: wallet.internalDescriptor,
-            isTestnet: wallet.isTestnet,
-            electrumUrl: electrumServer.url,
-            electrumSocks5: electrumServer.socks5,
-            electrumStopGap: electrumServer.stopGap,
-            electrumTimeout: electrumServer.effectiveTimeout,
-            electrumRetry: electrumServer.retry,
-            electrumValidateDomain: electrumServer.validateDomain,
-            walletHexId: wallet.hexId,
-            rootIsolateToken: ServicesBinding.rootIsolateToken!,
-          ),
+        final databasePath = await BdkFacade.databasePathFor(wallet.hexId);
+        final walletContext = (
+          wallet.id,
+          publicWallet.externalDescriptor,
+          publicWallet.internalDescriptor,
+          wallet.isTestnet,
+          databasePath,
+          electrumServer.stopGap,
         );
-        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
-      } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
-        rethrow;
+        final needsDiscovery =
+            fullDiscovery ||
+            _completedDiscovery[wallet.id] != walletContext ||
+            !await File(databasePath).exists();
+        final params = _SyncParams(
+          walletId: wallet.id,
+          externalDescriptor: publicWallet.externalDescriptor,
+          internalDescriptor: publicWallet.internalDescriptor,
+          isTestnet: wallet.isTestnet,
+          connection: electrumServer,
+          databasePath: databasePath,
+          fullDiscovery: needsDiscovery,
+        );
+        await compute(_performSync, params);
+        if (needsDiscovery) _completedDiscovery[wallet.id] = walletContext;
       } finally {
-        // Notify that the wallet has been synced through a stream for other
-        // parts of the app to listen to
         _walletSyncFinishedController.add(wallet.id);
-        // Remove the sync so future syncs can be triggered
-        // Do not await this, as it is not necessary and can cause deadlocks
-        // since it returns the Future from the map.
-        // ignore: unawaited_futures
         _activeSyncs.remove(wallet.id);
       }
     });
@@ -811,8 +806,40 @@ class BdkWalletDatasource {
   }
 
   Future<void> delete({required WalletModel wallet}) async {
-    await BdkFacade.delete(wallet);
-    log.fine('Deleted wallet ${wallet.id} BDK database');
+    if (!_deletingWallets.add(wallet.id)) return;
+    try {
+      try {
+        await _activeSyncs[wallet.id];
+      } on Exception {
+        // A failed sync must not prevent deleting the wallet.
+      } finally {
+        _completedDiscovery.remove(wallet.id);
+        await BdkFacade.delete(wallet);
+      }
+    } finally {
+      _deletingWallets.remove(wallet.id);
+    }
+  }
+
+  Future<void> dispose() async {
+    _disposed = true;
+    try {
+      await Future.wait(
+        _activeSyncs.values.toList().map((future) async {
+          try {
+            await future;
+          } on Exception {
+            // Release resources after recoverable sync failures.
+          }
+        }),
+      );
+    } finally {
+      _completedDiscovery.clear();
+      await Future.wait([
+        _walletSyncStartedController.close(),
+        _walletSyncFinishedController.close(),
+      ]);
+    }
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
@@ -841,77 +868,74 @@ class BdkWalletDatasource {
   }
 }
 
-// Top-level function for isolate execution
 class _SyncParams {
   final String walletId;
   final String externalDescriptor;
   final String internalDescriptor;
   final bool isTestnet;
-  final String electrumUrl;
-  final String? electrumSocks5;
-  final int electrumStopGap;
-  final int electrumTimeout;
-  final int electrumRetry;
-  final bool electrumValidateDomain;
-  final String walletHexId;
-  final RootIsolateToken rootIsolateToken;
+  final ElectrumConnection connection;
+  final String databasePath;
+  final bool fullDiscovery;
 
   _SyncParams({
     required this.walletId,
     required this.externalDescriptor,
     required this.internalDescriptor,
     required this.isTestnet,
-    required this.electrumUrl,
-    required this.electrumSocks5,
-    required this.electrumStopGap,
-    required this.electrumTimeout,
-    required this.electrumRetry,
-    required this.electrumValidateDomain,
-    required this.walletHexId,
-    required this.rootIsolateToken,
+    required this.connection,
+    required this.databasePath,
+    required this.fullDiscovery,
   });
 }
 
-Future<void> _performFullScan(_SyncParams params) async {
-  // Initialize the binary messenger for platform channel access in isolate
-  // Needed for things like getting the database path from BdkFacade which
-  // uses path_provider under the hood
-  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
-
-  // Recreate wallet model in the isolate
-  final wallet = WalletModel.publicBdk(
-    id: params.walletId,
-    externalDescriptor: params.externalDescriptor,
-    internalDescriptor: params.internalDescriptor,
-    isTestnet: params.isTestnet,
-  );
-
-  final bdkWallet = await BdkFacade.createWallet(wallet);
+Future<void> _performSync(_SyncParams params) async {
+  final connection = params.connection;
   final blockchain = _createElectrumClient(
-    url: params.electrumUrl,
-    socks5: params.electrumSocks5,
-    timeout: params.electrumTimeout,
-    retry: params.electrumRetry,
-    validateDomain: params.electrumValidateDomain,
+    url: connection.url,
+    socks5: connection.socks5,
+    timeout: connection.effectiveTimeout,
+    retry: connection.retry,
+    validateDomain: connection.validateDomain,
   );
   try {
-    final scanRequest = bdkWallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      request: scanRequest,
-      stopGap: params.electrumStopGap,
-      batchSize: _batchSizeFor(params.electrumStopGap),
-      fetchPrevTxouts: true,
+    final wallet = WalletModel.publicBdk(
+      id: params.walletId,
+      externalDescriptor: params.externalDescriptor,
+      internalDescriptor: params.internalDescriptor,
+      isTestnet: params.isTestnet,
     );
-    bdkWallet.applyUpdate(update: update);
-  } catch (e, st) {
-    log.warning(
-      'full_scan failed for wallet ${params.walletId}',
-      error: e,
-      trace: st,
+    final loaded = await BdkFacade.loadOrCreatePublicWallet(
+      wallet,
+      databasePath: params.databasePath,
     );
-    rethrow;
+    final bdkWallet = loaded.wallet;
+    try {
+      final batchSize = _batchSizeFor(connection.stopGap);
+      final update = !params.fullDiscovery && !loaded.created
+          ? blockchain.sync_(
+              request: bdkWallet.startSyncWithRevealedSpks().build(),
+              batchSize: batchSize,
+              fetchPrevTxouts: true,
+            )
+          : blockchain.fullScan(
+              request: bdkWallet.startFullScan().build(),
+              stopGap: connection.stopGap,
+              batchSize: batchSize,
+              fetchPrevTxouts: true,
+            );
+      bdkWallet.applyUpdate(update: update);
+      final persister = bdk.Persister.newSqlite(path: params.databasePath);
+      try {
+        bdkWallet.persist(persister: persister);
+      } finally {
+        persister.dispose();
+      }
+    } finally {
+      bdkWallet.dispose();
+    }
+  } finally {
+    blockchain.dispose();
   }
-  await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
 class FailedToSignPsbtException extends BullException {

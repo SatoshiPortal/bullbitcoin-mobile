@@ -16,7 +16,8 @@ import 'package:flutter/widgets.dart'
 ///
 /// Schedules per-kind sync work (bitcoin and liquid) so that:
 ///  - the same kind is **never** run concurrently — duplicate requests are
-///    dropped while one is queued or running;
+///    joined while queued or running; a manual discovery request arriving
+///    during an incremental Bitcoin sync queues one discovery round;
 ///  - different kinds are **queued** and executed sequentially in FIFO order
 ///    (matching the [SyncKind] enum declaration), avoiding concurrent writes
 ///    to the shared drift database, avoiding "database is locked" errors;
@@ -83,6 +84,11 @@ class SyncCoordinator {
 
   final Queue<SyncKind> _queue = Queue<SyncKind>();
   final Set<SyncKind> _enqueued = <SyncKind>{};
+  // A queued Bitcoin round may be upgraded by an explicit discovery request. Keep its
+  // waiters separate from a running incremental round it must follow.
+  final Set<SyncKind> _fullDiscovery = <SyncKind>{};
+  bool _runningFullDiscovery = false;
+  List<Completer<Object?>> _runningWaiters = [];
   SyncKind? _running;
   bool _draining = false;
   Future<void>? _activeDrain;
@@ -103,8 +109,8 @@ class SyncCoordinator {
   /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps → sp).
   ///
   /// Pass [SyncTrigger.user] to bypass the per-kind throttle; reserved for
-  /// explicit user gestures (pull-to-refresh). Default callers (route-aware
-  /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
+  /// explicit user gestures (pull-to-refresh), requesting full Bitcoin discovery. Default callers
+  /// (route-aware triggers, lifecycle resumption) use [SyncTrigger.automatic].
   ///
   /// Returns immediately if the app is not foreground-resumed or every
   /// requested kind was deduped/throttled. Throws [SyncCoordinatorException]
@@ -126,7 +132,14 @@ class SyncCoordinator {
       if (reason == null || reason == 'pending') {
         // Will run now, or is already running/queued — wait for it to settle.
         final completer = Completer<Object?>();
-        (_waiters[kind] ??= <Completer<Object?>>[]).add(completer);
+        if (_running == kind &&
+            !(trigger == SyncTrigger.user &&
+                kind == SyncKind.bitcoin &&
+                !_runningFullDiscovery)) {
+          _runningWaiters.add(completer);
+        } else {
+          (_waiters[kind] ??= <Completer<Object?>>[]).add(completer);
+        }
         waits[kind] = completer.future;
       } else {
         // 'gated' or 'throttled': this kind won't run, so don't await it.
@@ -186,7 +199,15 @@ class SyncCoordinator {
         return 'throttled';
       }
     }
-    if (_running == kind || _enqueued.contains(kind)) return 'pending';
+    final discovery = trigger == SyncTrigger.user && kind == SyncKind.bitcoin;
+    if (_enqueued.contains(kind)) {
+      if (discovery) _fullDiscovery.add(kind);
+      return 'pending';
+    }
+    if (_running == kind && (!discovery || _runningFullDiscovery)) {
+      return 'pending';
+    }
+    if (discovery) _fullDiscovery.add(kind);
     _enqueued.add(kind);
     _queue.add(kind);
     return null;
@@ -214,11 +235,17 @@ class SyncCoordinator {
         final kind = _queue.removeFirst();
         _enqueued.remove(kind);
         _running = kind;
+        _runningFullDiscovery = _fullDiscovery.remove(kind);
+        _runningWaiters = _waiters.remove(kind) ?? [];
+
         try {
           // A wallet read failure fails the round without being thrown: it is
           // settled as the error and, like a throw, never stamps
           // _lastSuccessAt.
-          final failure = await _runTask(kind);
+          final failure = await _runTask(
+            kind,
+            fullDiscovery: _runningFullDiscovery,
+          );
           if (failure != null) {
             _settle(kind, failure);
             continue;
@@ -231,6 +258,8 @@ class SyncCoordinator {
           _settle(kind, e);
         } finally {
           _running = null;
+          _runningFullDiscovery = false;
+          _runningWaiters = [];
         }
       }
     } finally {
@@ -238,12 +267,11 @@ class SyncCoordinator {
     }
   }
 
-  /// Completes (and clears) every waiter registered for [kind] with [error]
+  /// Completes every waiter for the running round of [kind] with [error]
   /// (null on success), waking any [sync] call awaiting that kind. The error
   /// is delivered as the completer's value, so awaiting a waiter never throws.
   void _settle(SyncKind kind, Object? error) {
-    final waiters = _waiters.remove(kind);
-    if (waiters == null) return;
+    final waiters = _runningWaiters;
     for (final completer in waiters) {
       if (!completer.isCompleted) completer.complete(error);
     }
@@ -258,12 +286,13 @@ class SyncCoordinator {
   /// count toward the throttle — suppressing the retries that would recover
   /// from a transient failure.
   Future<WalletFailure?> _syncAll(
-    Future<Result<List<Wallet>, WalletFailure>> read,
-  ) async {
+    Future<Result<List<Wallet>, WalletFailure>> read, {
+    bool fullDiscovery = false,
+  }) async {
     switch (await read) {
       case Ok(:final value):
         for (final wallet in value) {
-          await _syncWallet.execute(wallet);
+          await _syncWallet.execute(wallet, fullDiscovery: fullDiscovery);
         }
         return null;
       case Err(:final failure):
@@ -273,10 +302,16 @@ class SyncCoordinator {
 
   /// The wallet read failure that failed the round, or null. Any other failure
   /// is thrown, as before.
-  Future<WalletFailure?> _runTask(SyncKind kind) async {
+  Future<WalletFailure?> _runTask(
+    SyncKind kind, {
+    required bool fullDiscovery,
+  }) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        return _syncAll(_getWallets.execute(onlyBitcoin: true));
+        return _syncAll(
+          _getWallets.execute(onlyBitcoin: true),
+          fullDiscovery: fullDiscovery,
+        );
       case SyncKind.liquid:
         return _syncAll(_getWallets.execute(onlyLiquid: true));
       case SyncKind.swaps:
