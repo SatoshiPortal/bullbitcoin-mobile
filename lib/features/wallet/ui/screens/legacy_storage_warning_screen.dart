@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_important_callout.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_step_row.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 
 class LegacyStorageWarningScreen extends StatelessWidget {
   const LegacyStorageWarningScreen({
@@ -42,7 +40,7 @@ class LegacyStorageWarningScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBText(
+          BullText(
             loc.legacyStorageIntroDescription,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurface,
@@ -60,7 +58,7 @@ class LegacyStorageWarningScreen extends StatelessWidget {
                 : loc.legacyStorageHasBackupImportantBody,
           ),
           const Gap(10),
-          BBText(
+          BullText(
             hasNoBackup
                 ? loc.legacyStorageContinueFooterNoBackup
                 : loc.legacyStorageContinueFooterHasBackup,
@@ -72,14 +70,14 @@ class LegacyStorageWarningScreen extends StatelessWidget {
         ],
       ),
       primaryButton: hasNoBackup
-          ? BBButton.big(
+          ? BullButton.big(
               label: loc.legacyStorageBackupNowButton,
               onPressed: onBackupNow,
               bgColor: context.appColors.primary,
               textColor: context.appColors.onPrimary,
             )
           : null,
-      secondaryButton: BBButton.big(
+      secondaryButton: BullButton.big(
         label: hasNoBackup
             ? loc.legacyStorageRiskAckButton
             : loc.legacyStorageRiskAckButtonHasBackup,

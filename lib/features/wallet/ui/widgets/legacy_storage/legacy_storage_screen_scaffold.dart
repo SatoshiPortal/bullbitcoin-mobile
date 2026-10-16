@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_badge.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class LegacyStorageScreenScaffold extends StatelessWidget {
   const LegacyStorageScreenScaffold({
@@ -51,7 +50,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
                 child: LegacyStorageBadge(label: badgeLabel),
               ),
               const Gap(8),
-              BBText(
+              BullText(
                 title,
                 style: context.font.displaySmall?.copyWith(
                   fontFamily: 'Bebas Neue',

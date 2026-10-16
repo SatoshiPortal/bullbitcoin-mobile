@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullText, Gap;
 
 class SwapStatusDescription extends StatelessWidget {
   const SwapStatusDescription({required this.swap});
@@ -56,7 +54,7 @@ class SwapStatusDescription extends StatelessWidget {
                         : context.appColors.secondary,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     swap.status == SwapStatus.failed
                         ? (swap.isChainSwap
                               ? context.loc.transactionStatusTransferFailed
@@ -80,7 +78,7 @@ class SwapStatusDescription extends StatelessWidget {
                 ],
               ),
               const Gap(8),
-              BBText(
+              BullText(
                 _getSwapStatusDescription(context),
                 style: context.font.bodySmall?.copyWith(
                   color:
@@ -92,7 +90,7 @@ class SwapStatusDescription extends StatelessWidget {
               ),
               if (_getAdditionalInfo(context).isNotEmpty) ...[
                 const Gap(12),
-                BBText(
+                BullText(
                   _getAdditionalInfo(context),
                   style: context.font.bodySmall?.copyWith(
                     color:
@@ -109,7 +107,7 @@ class SwapStatusDescription extends StatelessWidget {
         ),
         if (shouldShowWarning) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: swap.isChainSwap
                 ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
                       '${context.loc.transactionSwapOpenWithin24h}'

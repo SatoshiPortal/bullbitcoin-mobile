@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -11,7 +9,8 @@ import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPullableBody, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -24,7 +23,7 @@ class TransactionsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        title: TopBar(
+        title: BullTopBar(
           title: context.loc.transactionTitle,
           onBack: () {
             context.pop();
@@ -64,7 +63,7 @@ class _Screen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: BBText(
+              child: BullText(
                 failure.toTranslated(context),
                 style: context.font.bodyLarge,
                 color: context.appColors.error,

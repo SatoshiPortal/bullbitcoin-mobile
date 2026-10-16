@@ -5,14 +5,17 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/labels/domain/note_violation_to_label_failure.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullFadingLinearProgress, Gap;
+    show
+        BullBorderedTile,
+        BullBottomSheet,
+        BullButton,
+        BullFadingLinearProgress,
+        BullText,
+        Gap;
 import 'package:go_router/go_router.dart';
 
 /// Shared bottom-sheet editor for user-entered annotations on payment
@@ -95,7 +98,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     String? disclosure,
     required bool allowEmpty,
   }) {
-    return BlurredBottomSheet.show<String>(
+    return BullBottomSheet.show<String>(
       context: context,
       child: LabelEntryBottomSheet._(
         title: title,
@@ -185,7 +188,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           Row(
             children: [
               const Spacer(),
-              BBText(
+              BullText(
                 widget.title,
                 style: context.font.headlineMedium,
                 color: context.appColors.secondary,
@@ -210,7 +213,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
                 ),
                 Gap(Device.screen.width * 0.02),
                 Expanded(
-                  child: BBText(
+                  child: BullText(
                     widget.disclosure!,
                     style: context.font.bodySmall,
                     color: context.appColors.onSurfaceVariant,
@@ -226,7 +229,7 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                BullText(
                   widget.title,
                   style: context.font.bodyLarge,
                   color: context.appColors.secondary,
@@ -259,14 +262,14 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
           ),
           if (_failure case final failure?) ...[
             Gap(tightGap),
-            BBText(
+            BullText(
               failure.toTranslated(context),
               style: context.font.bodySmall,
               color: context.appColors.error,
             ),
           ],
           Gap(gap),
-          BBButton.big(
+          BullButton.big(
             label: context.loc.receiveSave,
             disabled: !_canSave,
             onPressed: _save,

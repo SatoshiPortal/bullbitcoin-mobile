@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 
 class LegacyStorageAreYouSureScreen extends StatefulWidget {
   const LegacyStorageAreYouSureScreen({
@@ -40,18 +38,24 @@ class _LegacyStorageAreYouSureScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBText(loc.legacyStorageAreYouSureParagraphOne, style: bodyTextStyle),
+          BullText(
+            loc.legacyStorageAreYouSureParagraphOne,
+            style: bodyTextStyle,
+          ),
           const Gap(16),
-          BBText(loc.legacyStorageAreYouSureParagraphTwo, style: bodyTextStyle),
+          BullText(
+            loc.legacyStorageAreYouSureParagraphTwo,
+            style: bodyTextStyle,
+          ),
         ],
       ),
-      primaryButton: BBButton.big(
+      primaryButton: BullButton.big(
         label: loc.legacyStorageBackupNowButton,
         onPressed: widget.onBackupNow,
         bgColor: context.appColors.primary,
         textColor: context.appColors.onPrimary,
       ),
-      secondaryButton: BBButton.big(
+      secondaryButton: BullButton.big(
         label: loc.legacyStorageContinueWithoutBackupButton,
         onPressed: widget.onConfirmContinue,
         disabled: !_accepted,
@@ -101,7 +105,7 @@ class _AcceptRisksRow extends StatelessWidget {
           ),
           const Gap(12),
           Expanded(
-            child: BBText(
+            child: BullText(
               label,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
