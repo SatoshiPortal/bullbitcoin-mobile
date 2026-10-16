@@ -629,6 +629,23 @@ class BdkWalletDatasource {
     return index;
   }
 
+  /// Persist receive scripts selected after skipping reserved addresses.
+  Future<void> revealReceiveAddressAtIndex(
+    int index, {
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    try {
+      bdkWallet.revealAddressesTo(
+        keychain: bdk.KeychainKind.external_,
+        index: index,
+      );
+      await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
+    } finally {
+      bdkWallet.dispose();
+    }
+  }
+
   Future<String> getAddressByIndex(
     int index, {
     required WalletModel wallet,
