@@ -4961,5 +4961,5 @@
   "settingsPayjoinSatsUnit": "sats",
   "settingsPayjoinMinutesUnit": "min",
   "recoverbullDurationHoursMinutes": "{hours} h {minutes} min",
-  "recoverbullVaultAttemptsWarning": "Cette sauvegarde a reçu récemment {count} tentatives de PIN ou de mot de passe erronées. Si elles ne viennent pas de vous, quelqu’un d’autre a peut-être votre fichier de sauvegarde : créez une nouvelle sauvegarde chiffrée."
+  "recoverbullVaultAttemptsWarning": "{count, plural, =1{Cette sauvegarde a reçu récemment 1 tentative de PIN ou de mot de passe erronée. Si elle ne vient pas de vous, quelqu’un d’autre a peut-être votre fichier de sauvegarde : créez une nouvelle sauvegarde chiffrée.} other{Cette sauvegarde a reçu récemment {count} tentatives de PIN ou de mot de passe erronées. Si elles ne viennent pas de vous, quelqu’un d’autre a peut-être votre fichier de sauvegarde : créez une nouvelle sauvegarde chiffrée.}}"
 }

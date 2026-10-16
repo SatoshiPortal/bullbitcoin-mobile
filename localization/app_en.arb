@@ -15696,12 +15696,12 @@
       }
     }
   },
-  "recoverbullVaultAttemptsWarning": "This backup received {count} wrong PIN or password attempts recently. If they were not yours, someone else may have your backup file: create a new encrypted backup.",
+  "recoverbullVaultAttemptsWarning": "{count, plural, =1{This backup received 1 wrong PIN or password attempt recently. If it was not yours, someone else may have your backup file: create a new encrypted backup.} other{This backup received {count} wrong PIN or password attempts recently. If they were not yours, someone else may have your backup file: create a new encrypted backup.}}",
   "@recoverbullVaultAttemptsWarning": {
     "description": "Warning on the PIN screen when the key server saw wrong PIN or password attempts for the selected vault, which may be a brute-force on a stolen backup file",
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
       }
     }
   }

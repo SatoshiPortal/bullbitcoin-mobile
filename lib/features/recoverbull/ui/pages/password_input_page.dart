@@ -132,12 +132,13 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       ),
                     ),
                   ),
-                  if (state.flow != RecoverBullFlow.secureVault &&
-                      (state.vaultAttempts?.hasFailedAttempts ?? false)) ...[
+                  if (state.vaultAttempts case final attempts?
+                      when state.flow != RecoverBullFlow.secureVault &&
+                          attempts.hasFailedAttempts) ...[
                     const Gap(8),
                     BullInfoCard(
                       description: context.loc.recoverbullVaultAttemptsWarning(
-                        state.vaultAttempts!.failedAttempts.toString(),
+                        attempts.failedAttempts,
                       ),
                       tagColor: context.appColors.warning,
                       bgColor: context.appColors.warningContainer,
