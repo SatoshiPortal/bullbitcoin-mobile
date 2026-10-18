@@ -7,10 +7,12 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
+import 'package:crypto/crypto.dart' show sha256;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import 'package:socks5_proxy/exceptions.dart';
 import 'package:bull_tor/tor.dart';
@@ -124,6 +126,46 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return const Err(
         RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<VaultAttempts, RecoverBullCoreFailure>> fetchVaultAttempts(
+    String identifier,
+    TorProxyEndpoint endpoint,
+  ) async {
+    try {
+      final snapshot = await _remoteDatasource.attempts(endpoint: endpoint);
+      // The server publishes each identifier as the SHA-256 of its raw bytes.
+      final idHash = sha256
+          .convert(convert.hex.decode(_normalizeHex(identifier)))
+          .toString();
+      final entries = (snapshot['entries'] as List)
+          .cast<Map<String, dynamic>>();
+      for (final entry in entries) {
+        if (entry['id_hash'] == idHash) {
+          return Ok(
+            VaultAttempts(failedAttempts: entry['failed_attempts'] as int),
+          );
+        }
+      }
+      return const Ok(VaultAttempts.none());
+    } on recoverbull.KeyServerException catch (e, st) {
+      log.warning('fetchVaultAttempts failed', error: e, trace: st);
+      return Err(_mapKeyServer(e));
+    } catch (e, st) {
+      log.warning('fetchVaultAttempts failed', error: e, trace: st);
+      if (e is SocksClientException ||
+          e is SocketException ||
+          e is TimeoutException ||
+          e is HttpException) {
+        return const Err(
+          KeyServerUnavailableFailure('Key server connection failed'),
+        );
+      }
+      return const Err(
+        RecoverBullUnexpectedCoreFailure('Attempts snapshot unreadable'),
       );
     }
   }

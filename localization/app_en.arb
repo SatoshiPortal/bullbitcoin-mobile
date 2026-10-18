@@ -15683,5 +15683,26 @@
   "settingsPayjoinMinutesUnit": "min",
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
+  },
+  "recoverbullDurationHoursMinutes": "{hours} h {minutes} min",
+  "@recoverbullDurationHoursMinutes": {
+    "description": "Compact duration of at least one hour, shown in the key server rate-limit message (e.g. 23 h 18 min)",
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullVaultAttemptsWarning": "{count, plural, =1{This backup received 1 wrong PIN or password attempt recently. If it was not yours, someone else may have your backup file: create a new encrypted backup.} other{This backup received {count} wrong PIN or password attempts recently. If they were not yours, someone else may have your backup file: create a new encrypted backup.}}",
+  "@recoverbullVaultAttemptsWarning": {
+    "description": "Warning on the PIN screen when the key server saw wrong PIN or password attempts for the selected vault, which may be a brute-force on a stolen backup file",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

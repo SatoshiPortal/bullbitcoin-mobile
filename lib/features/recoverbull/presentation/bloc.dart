@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_attempts.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_vault_attempts_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -49,6 +51,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   /// need more than one try.
   final ConnectToKeyServerUsecase _connectToKeyServerUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
+  final CheckVaultAttemptsUsecase _checkVaultAttemptsUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
@@ -78,6 +81,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
     required this._fetchVaultKeyFromServerUsecase,
+    required this._checkVaultAttemptsUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
     required this._connectToGoogleDriveUsecase,
@@ -100,6 +104,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       _onTorConnectionChanged,
       transformer: sequential(),
     );
+    // A newly selected vault replaces an in-flight check of the previous one.
+    on<OnVaultAttemptsCheck>(_onVaultAttemptsCheck, transformer: restartable());
 
     // Tor readiness is pushed, so follow it for as long as this flow is open.
     // Taking a single snapshot in `_onServerCheck` reported whatever the status
@@ -343,6 +349,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           // the readiness stream is the only thing that knows, and the screen
           // latches it.
           emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+          // On the verified route, before any PIN is typed, so the count is
+          // not the user's own from this screen.
+          if (state.vault != null &&
+              state.flow != RecoverBullFlow.secureVault &&
+              state.vaultAttempts == null) {
+            add(const OnVaultAttemptsCheck());
+          }
       }
     } catch (e) {
       if (isClosed || _closingBloc || generation != _routeGeneration) return;
@@ -481,14 +494,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           }
           switch (await _fetchLatestGoogleDriveVaultUsecase.execute()) {
             case Ok(:final value):
-              emit(state.copyWith(vault: value));
+              emit(state.copyWith(vault: value, vaultAttempts: null));
             case Err(:final failure):
               emit(state.copyWith(failure: _selectFailure(failure)));
           }
         case VaultProvider.customLocation:
           switch (await _pickVaultUsecase.execute()) {
             case Ok(:final value):
-              emit(state.copyWith(vault: value));
+              emit(state.copyWith(vault: value, vaultAttempts: null));
             case Err(:final failure):
               emit(state.copyWith(failure: _selectFailure(failure)));
           }
@@ -496,6 +509,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           log.warning('iCloud, not supported yet');
       }
       log.fine('Vault selected');
+      // Before any PIN is typed, so the count is not the user's own from this
+      // screen. Only on a verified route: while the server is not online, the
+      // server check dispatches it once it is, instead of a second Tor session
+      // bootstrapping next to the flow's route.
+      if (state.vault != null &&
+          state.flow != RecoverBullFlow.secureVault &&
+          state.keyServerStatus == KeyServerStatus.online) {
+        add(const OnVaultAttemptsCheck());
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -705,6 +727,27 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             isLoading: false,
           ),
         );
+    }
+  }
+
+  Future<void> _onVaultAttemptsCheck(
+    OnVaultAttemptsCheck event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    final vault = state.vault;
+    if (vault == null) return;
+    final checked = await _borrowRoute(
+      (route) => _checkVaultAttemptsUsecase.execute(vault: vault, route: route),
+    );
+    switch (checked) {
+      case Ok(:final value):
+        // The user may have picked another vault while the snapshot was read;
+        // this count belongs to the vault it was read for.
+        if (isClosed || _closingBloc || !identical(state.vault, vault)) return;
+        emit(state.copyWith(vaultAttempts: value));
+      case Err(:final failure):
+        // Advisory: an unreadable snapshot must never block a recovery.
+        log.warning('vault attempts unknown: ${failure.runtimeType}');
     }
   }
 

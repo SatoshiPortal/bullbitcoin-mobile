@@ -33,6 +33,10 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(0) int keyServerAttempts,
     @Default(false) bool isFlowFinished,
 
+    /// Wrong PINs or passwords the key server saw for [vault] during its
+    /// cooldown window; null while unknown.
+    @Default(null) VaultAttempts? vaultAttempts,
+
     /// The full readiness snapshot, not just the coarse status.
     ///
     /// The screen needs `fraction` for progress and `blockage` to say *why*
