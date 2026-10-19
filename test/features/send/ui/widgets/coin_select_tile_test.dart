@@ -107,4 +107,29 @@ void main() {
 
     expect(find.text('6 confirmations'), findsOneWidget);
   });
+
+  testWidgets('shows Liquid confirmation status without a keychain label', (
+    tester,
+  ) async {
+    final liquid = LiquidWalletUtxo(
+      walletId: 'liquid',
+      txId: 'tx',
+      vout: 0,
+      scriptPubkey: '',
+      amountSat: BigInt.from(10000),
+      standardAddress: 'tex1own',
+      confidentialAddress: 'tlq1own',
+      blockHeight: 100,
+    );
+    await pumpTile(tester, selected: true, onTap: () {}, coin: liquid);
+    expect(find.text('Confirmed'), findsOneWidget);
+    expect(find.text('Receive'), findsNothing);
+    await pumpTile(
+      tester,
+      selected: true,
+      onTap: () {},
+      coin: liquid.copyWith(blockHeight: null),
+    );
+    expect(find.text('Unconfirmed'), findsOneWidget);
+  });
 }
