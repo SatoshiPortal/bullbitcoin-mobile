@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
@@ -10,7 +8,8 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullSnackBar, BullSwitch, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings: one switch per action, payments with other users
@@ -47,7 +46,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
         'Failed to update Payjoin from settings: ${failure.logMessage}',
       );
       if (mounted) {
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        BullSnackBar.show(context, message: failure.toTranslated(context));
       }
     });
 
@@ -63,7 +62,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     );
     return Row(
       children: [
-        Expanded(child: BBText(label, style: context.font.bodyLarge)),
+        Expanded(child: BullText(label, style: context.font.bodyLarge)),
         BullSwitch(
           value: isEnabled,
           onChanged: _updating || !isLoaded
@@ -74,7 +73,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     );
   }
 
-  Widget _sectionTitle(String title) => BBText(
+  Widget _sectionTitle(String title) => BullText(
     title,
     style: context.font.titleSmall,
     color: context.appColors.secondary,
@@ -123,7 +122,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: BBText(
+                      child: BullText(
                         context.loc.settingsPayjoinDisclaimerRowLabel,
                         style: context.font.bodyLarge,
                       ),
@@ -141,7 +140,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: BBText(
+                        child: BullText(
                           context.loc.settingsPayjoinAdvancedTitle,
                           style: context.font.bodyLarge,
                         ),

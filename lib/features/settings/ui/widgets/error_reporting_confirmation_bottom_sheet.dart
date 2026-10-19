@@ -1,18 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullSnackBar, BullText;
 
 class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
   const ErrorReportingConfirmationBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show(
       context: context,
       child: const ErrorReportingConfirmationBottomSheet(),
     );
@@ -46,7 +44,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                   color: context.appColors.primary,
                 ),
                 const SizedBox(height: 16),
-                BBText(
+                BullText(
                   context.loc.errorReportingProgramTitle,
                   style: context.font.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -99,7 +97,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: BBButton.big(
+                      child: BullButton.big(
                         label: context.loc.errorReportingCancelButton,
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -111,16 +109,16 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: BBButton.big(
+                      child: BullButton.big(
                         label: context.loc.errorReportingAcceptButton,
                         onPressed: () {
                           context.read<SettingsCubit>().toggleErrorReporting(
                             true,
                           );
                           Navigator.of(context).pop();
-                          SnackBarUtils.showSnackBar(
+                          BullSnackBar.show(
                             context,
-                            context.loc.errorReportingRestartSnackbar,
+                            message: context.loc.errorReportingRestartSnackbar,
                           );
                         },
                         bgColor: context.appColors.primary,

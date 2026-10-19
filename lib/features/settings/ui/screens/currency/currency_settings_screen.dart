@@ -1,15 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullText, BullTopBar;
 
 class CurrencySettingsScreen extends StatelessWidget {
   const CurrencySettingsScreen({super.key});
@@ -29,7 +28,7 @@ class CurrencySettingsScreen extends StatelessWidget {
       required List<String> availableCurrencies,
       required String selected,
     }) async {
-      final c = await BlurredBottomSheet.show<String?>(
+      final c = await BullBottomSheet.show<String?>(
         context: context,
         child: CurrencyBottomSheet(
           availableCurrencies: availableCurrencies,
@@ -44,7 +43,7 @@ class CurrencySettingsScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
+        flexibleSpace: BullTopBar(
           title: context.loc.settingsCurrencyTitle,
           color: context.appColors.background,
           onBack: context.pop,
@@ -62,7 +61,7 @@ class CurrencySettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: context.appColors.transparent,
-                  title: BBText(
+                  title: BullText(
                     context.loc.satsBitcoinUnitSettingsLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
@@ -75,7 +74,7 @@ class CurrencySettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: context.appColors.transparent,
-                  title: BBText(
+                  title: BullText(
                     context.loc.currencySettingsDefaultFiatCurrencyLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
