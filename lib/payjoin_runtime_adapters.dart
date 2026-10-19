@@ -111,14 +111,37 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       (failure) =>
           throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
     );
-    final isKnownRemotely = await _servers.runWithFallback<bool>(
-      network: ElectrumServerNetwork.fromEnvironment(
-        isTestnet: wallet.isTestnet,
-        isLiquid: false,
-      ),
-      operation: (connection) =>
-          _blockchain.isTransactionKnown(transactionId, connection: connection),
-    );
+    final bool isKnownRemotely;
+    try {
+      isKnownRemotely = await _servers.runWithFallback<bool>(
+        network: ElectrumServerNetwork.fromEnvironment(
+          isTestnet: wallet.isTestnet,
+          isLiquid: false,
+        ),
+        operation: (connection) => _blockchain.isTransactionKnown(
+          transactionId,
+          connection: connection,
+        ),
+        // Another server would word its reply the same way; surface it.
+        isTransient: (e) =>
+            e is Exception && e is! UnrecognizedElectrumReplyException,
+      );
+    } on UnrecognizedElectrumReplyException {
+      // A server we cannot classify (Electrum Personal Server, bitcoind
+      // without txindex): take the slow road of a script-based wallet sync
+      // and read the wallet copy, instead of failing every lookup. A sync
+      // can join a pass that started before the broadcast, so an absence is
+      // only trusted after a second pass.
+      for (var pass = 1; pass <= 2; pass++) {
+        final transaction = await _transactions.getWalletTransaction(
+          transactionId,
+          walletId: walletId,
+          sync: true,
+        );
+        if (transaction != null) return true;
+      }
+      return false;
+    }
     if (isKnownRemotely) {
       // Let the wallet catch up so balances and history show the transaction
       // the payjoin session is about to report.

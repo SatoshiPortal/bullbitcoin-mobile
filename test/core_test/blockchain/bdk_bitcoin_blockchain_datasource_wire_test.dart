@@ -172,19 +172,23 @@ void main() {
 
     for (final message in [
       'No such mempool transaction. Use -txindex or provide a block hash',
+      'txid not found',
       'excessive resource usage',
     ]) {
-      test('the protocol error "$message" propagates', () async {
-        final server = await serve(error: message);
-        await expectLater(
-          datasource.isTransactionKnown(
-            requested,
-            connection: server.connection,
-          ),
-          throwsA(isA<bdk.ProtocolElectrumException>()),
-        );
-        expect(server.queries, 1);
-      });
+      test(
+        'the unclassified reply "$message" is neither absent nor visible',
+        () async {
+          final server = await serve(error: message);
+          await expectLater(
+            datasource.isTransactionKnown(
+              requested,
+              connection: server.connection,
+            ),
+            throwsA(isA<UnrecognizedElectrumReplyException>()),
+          );
+          expect(server.queries, 1);
+        },
+      );
     }
   });
 }

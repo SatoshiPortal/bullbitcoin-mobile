@@ -4,6 +4,19 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 
+/// The server answered the transaction lookup with a protocol error we do not
+/// classify: neither a recognized "unknown transaction" reply nor a transport
+/// failure. Electrum Personal Server and bitcoind without txindex word their
+/// replies differently, so callers may fall back to a script-based sync.
+class UnrecognizedElectrumReplyException implements Exception {
+  final String reply;
+
+  const UnrecognizedElectrumReplyException(this.reply);
+
+  @override
+  String toString() => 'UnrecognizedElectrumReplyException';
+}
+
 class BdkBitcoinBlockchainDatasource {
   const BdkBitcoinBlockchainDatasource();
 
@@ -88,7 +101,7 @@ class BdkBitcoinBlockchainDatasource {
         return true;
       } on bdk.ProtocolElectrumException catch (error) {
         if (isUnknownTransactionReply(error.errorMessage)) return false;
-        rethrow;
+        throw UnrecognizedElectrumReplyException(error.errorMessage);
       } finally {
         client.dispose();
       }

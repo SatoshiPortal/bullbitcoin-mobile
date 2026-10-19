@@ -1,6 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -25,6 +26,8 @@ class _MockBlockchain extends Mock implements BdkBitcoinBlockchainDatasource {}
 
 class _MockWallet extends Mock implements Wallet {}
 
+/// One server; like the real runner, a transient failure ends up wrapped and
+/// a permanent one is rethrown as is.
 class _FakeServers implements ElectrumServersPort {
   ElectrumServerNetwork? network;
 
@@ -33,9 +36,16 @@ class _FakeServers implements ElectrumServersPort {
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
-  }) {
+  }) async {
     this.network = network;
-    return operation(_connection);
+    try {
+      return await operation(_connection);
+    } catch (e) {
+      if (isTransient != null && !isTransient(e)) rethrow;
+      throw AllElectrumServersFailedException([
+        ElectrumServerAttempt(url: _connection.url, isCustom: false, error: e),
+      ]);
+    }
   }
 }
 
@@ -316,6 +326,43 @@ void main() {
     expect(visible, isFalse);
     verifyNever(() => wallets.getWallet(_walletId, sync: true));
   });
+
+  for (final present in [true, false]) {
+    test('falls back to a wallet sync when the reply is unclassified '
+        '(transaction ${present ? 'present' : 'absent'})', () async {
+      when(
+        () => blockchain.isTransactionKnown(
+          _txId,
+          connection: any(named: 'connection'),
+        ),
+      ).thenThrow(const UnrecognizedElectrumReplyException('txid not found'));
+      when(
+        () => transactions.getWalletTransaction(
+          _txId,
+          walletId: _walletId,
+          sync: true,
+        ),
+      ).thenAnswer((_) async => present ? _transaction() : null);
+
+      final visible = await adapter.isTransactionVisible(
+        walletId: _walletId,
+        transactionId: _txId,
+        refresh: true,
+      );
+
+      expect(visible, present);
+      // An absence is only trusted after a second pass: the first sync can
+      // have joined a pass that started before the broadcast.
+      verify(
+        () => transactions.getWalletTransaction(
+          _txId,
+          walletId: _walletId,
+          sync: true,
+        ),
+      ).called(present ? 1 : 2);
+      verifyNever(() => wallets.getWallet(_walletId, sync: true));
+    });
+  }
 
   test('propagates a server failure instead of answering absent', () async {
     when(
