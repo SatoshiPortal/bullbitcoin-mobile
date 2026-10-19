@@ -83,19 +83,23 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   /// A refreshed lookup asks the Electrum server about this one transaction
   /// instead of syncing the whole wallet, which takes 15 to 120 seconds
   /// over Tor and delayed every payjoin outcome by as much.
+  ///
+  /// The wallet's own copy only answers a non-refreshed lookup: a pending
+  /// transaction the wallet saw earlier can since have been evicted or
+  /// replaced, and the engine settles sessions on this answer.
   @override
   Future<bool> isTransactionVisible({
     required String walletId,
     required String transactionId,
     bool refresh = false,
   }) async {
-    final isKnownLocally =
-        await _transactions.getWalletTransaction(
-          transactionId,
-          walletId: walletId,
-        ) !=
-        null;
-    if (isKnownLocally || !refresh) return isKnownLocally;
+    if (!refresh) {
+      return await _transactions.getWalletTransaction(
+            transactionId,
+            walletId: walletId,
+          ) !=
+          null;
+    }
 
     final wallet = (await _wallets.getWallet(walletId)).fold(
       (wallet) => wallet,

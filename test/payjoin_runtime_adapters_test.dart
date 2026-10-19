@@ -123,7 +123,7 @@ void main() {
     expect(reportedError, isNot(contains('0123456789abcdef')));
   });
 
-  test('answers from the wallet without asking the server', () async {
+  test('answers from the wallet when no refresh is asked', () async {
     when(
       () => transactions.getWalletTransaction(_txId, walletId: _walletId),
     ).thenAnswer((_) async => _transaction());
@@ -131,7 +131,6 @@ void main() {
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
       transactionId: _txId,
-      refresh: true,
     );
 
     expect(visible, isTrue);
@@ -141,6 +140,32 @@ void main() {
         connection: any(named: 'connection'),
       ),
     );
+  });
+
+  test('a refresh trusts the server over a pending wallet copy', () async {
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async => _transaction());
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => false);
+
+    final visible = await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+
+    expect(visible, isFalse);
+    verify(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).called(1);
   });
 
   test('stays local when no refresh is asked', () async {
