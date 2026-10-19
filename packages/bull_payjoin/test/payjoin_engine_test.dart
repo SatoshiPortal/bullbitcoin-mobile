@@ -584,14 +584,15 @@ void main() {
       requests.add(model);
       await proposed.timeout(const Duration(seconds: 5));
       final until = engine.receiverFallbackAvailableAt(model.id);
-      expect(until, isNotNull);
+      if (until == null) fail('no sender wait recorded for the session');
       expect(
-        until!.difference(DateTime.now()).inSeconds,
+        until.difference(DateTime.now()).inSeconds,
         inInclusiveRange(58, 60),
       );
       expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
       final fresh = await engine.getPayjoinById(model.id);
-      final result = await engine.tryBroadcastOriginalTransaction(fresh!);
+      if (fresh == null) fail('the proposed session is not persisted');
+      final result = await engine.tryBroadcastOriginalTransaction(fresh);
       expect(
         (result as Err<internal.Payjoin, PayjoinFailure>).failure,
         isA<PayjoinFallbackUnavailableFailure>(),
@@ -699,15 +700,16 @@ void main() {
   test(
     'a failed visibility check never attempts a fallback broadcast',
     () async {
+      const originalTxId = 'original-tx';
       final model = receiver(
         originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: 'original-tx',
+        originalTransactionId: originalTxId,
       );
       await local.storeReceiver(model);
       when(
         () => transactions.isTransactionVisible(
           walletId: model.walletId,
-          transactionId: model.originalTxId!,
+          transactionId: originalTxId,
           refresh: true,
         ),
       ).thenThrow(Exception('server unreachable'));
