@@ -38,4 +38,40 @@ void main() {
 
     expect(undone, 1);
   });
+
+  testWidgets('BullSnackBar.showIn shows the message in the given overlay', (
+    tester,
+  ) async {
+    final overlayKey = GlobalKey<OverlayState>();
+
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Overlay(
+          key: overlayKey,
+          initialEntries: [
+            OverlayEntry(builder: (_) => const SizedBox.shrink()),
+          ],
+        ),
+      ),
+    );
+
+    final overlay = overlayKey.currentState;
+    expect(overlay, isNotNull);
+    if (overlay == null) return;
+
+    BullSnackBar.showIn(overlay, message: 'Save failed');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      find.descendant(
+        of: find.byKey(overlayKey),
+        matching: find.text('Save failed'),
+      ),
+      findsOneWidget,
+    );
+
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
+  });
 }

@@ -48,7 +48,21 @@ class BullSnackBar {
     _show(context, content);
   }
 
+  /// Show a message toast in a given [overlay], for callers whose own context
+  /// sits *above* the app's `Overlay` — an app-wide listener mounted next to
+  /// its provider rather than on a route, for instance.
+  ///
+  /// [overlay]'s context sits below `MaterialApp`, so the theme resolves
+  /// through it even when the caller's context cannot reach one.
+  static void showIn(OverlayState overlay, {required String message}) {
+    _showIn(overlay, _BullSnackBarContent(message: message));
+  }
+
   static void _show(BuildContext context, Widget content) {
+    _showIn(Overlay.of(context, rootOverlay: true), content);
+  }
+
+  static void _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
     _entry = OverlayEntry(
       builder: (_) => Positioned(
@@ -68,7 +82,7 @@ class BullSnackBar {
         ),
       ),
     );
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    overlay.insert(_entry!);
     _scheduleAutoDismiss();
   }
 
