@@ -652,6 +652,28 @@ void main() {
     expect((await local.fetchSender(posted.id))?.sender, posted.sender);
   });
 
+  test('a new sender replaces any poll a resume armed meanwhile', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+
+    await engine.createPayjoinSender(
+      walletId: posted.walletId,
+      isTestnet: true,
+      bip21: posted.id,
+      originalPsbt: posted.originalPsbt,
+      amountSat: posted.amountSat,
+      networkFeesSatPerVb: 1,
+    );
+
+    // A resume during the POST can arm a poll on the stored pre-POST row,
+    // and starting a polled id is a no-op: the creation must replace it.
+    verifyInOrder([
+      () => pdk.stopPolling(posted.id),
+      () => pdk.startListeningForProposal(posted),
+    ]);
+  });
+
   test('a failed post-POST update still polls the posted session', () async {
     final gated = await useGatedLocal();
     final prePost = sender().copyWith(sender: '["pre-post"]');
@@ -1089,6 +1111,13 @@ void main() {
         amountSat: retried.amountSat,
         networkFeesSatPerVb: 1,
       );
+
+      // Same id as the first attempt: starting a polled id is a no-op, so the
+      // retry must replace the old poll explicitly before arming its own.
+      verifyInOrder([
+        () => pdk.stopPolling(retried.id),
+        () => pdk.startListeningForProposal(retried),
+      ]);
 
       // The new original lands on-chain (the receiver broadcasts it, as
       // BIP78's fallback allows). The retried session must converge to

@@ -356,6 +356,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _localPayjoinDatasource.updateSenderSessionState(model);
     } finally {
+      // Starting a polled id is a no-op, so replace whatever poll this id may
+      // already hold: one the expired attempt of a retry left (a retry reuses
+      // the payment's BIP21 URI as id), or one a resume armed during the POST
+      // on the stored pre-POST row, which would otherwise stay stale until
+      // the expiry. Only the poll is stopped, not the watchers, which keep an
+      // expired attempt's original under watch on purpose.
+      _pdkPayjoinDatasource.stopPolling(model.id);
       _pdkPayjoinDatasource.startListeningForProposal(model);
     }
 
