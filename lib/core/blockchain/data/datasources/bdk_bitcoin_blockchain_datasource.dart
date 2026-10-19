@@ -68,9 +68,23 @@ class BdkBitcoinBlockchainDatasource {
         client = buildClient();
       }
       try {
-        // Only existence matters: unlike fetchTx, the raw call avoids
-        // constructing a decoded Transaction and its associated FFI handle.
-        client.transactionGetRaw(txid: bdk.Txid.fromString(hex: txId));
+        // The reply settles payjoin sessions, so "no error" is not enough:
+        // the bytes must deserialize and hash to the requested id, or an
+        // empty, truncated or unrelated reply would count as visible.
+        final raw = client.transactionGetRaw(
+          txid: bdk.Txid.fromString(hex: txId),
+        );
+        final transaction = bdk.Transaction(transactionBytes: raw);
+        try {
+          final actual = transaction.computeTxid().toString();
+          if (actual != txId.toLowerCase()) {
+            throw FormatException(
+              'Electrum returned transaction $actual for $txId',
+            );
+          }
+        } finally {
+          transaction.dispose();
+        }
         return true;
       } on bdk.ProtocolElectrumException catch (error) {
         if (isUnknownTransactionReply(error.errorMessage)) return false;
