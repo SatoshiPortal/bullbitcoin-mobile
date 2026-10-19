@@ -46,10 +46,9 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
           current.failure is ReceivePayjoinSettingFailure &&
           previous.failure != current.failure,
       listener: (context, state) {
-        BullSnackBar.show(
-          context,
-          message: state.failure!.toTranslated(context),
-        );
+        if (state.failure case final failure?) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+        }
       },
       child: Padding(
         padding: EdgeInsets.only(top: topGap / 2),
