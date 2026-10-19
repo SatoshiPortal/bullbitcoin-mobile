@@ -10,6 +10,7 @@ import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
     show PayjoinLogCode, PayjoinLogRole;
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+import 'package:bull_payjoin/src/engine/directory_poller.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
@@ -43,17 +44,13 @@ class PdkPayjoinDatasource {
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
   final StreamController<PayjoinSenderModel> _proposalSentController;
   final StreamController<PayjoinModel> _expiredController;
+  final DateTime Function() _now;
 
-  // Per-session polling timers keyed by session id
-  final Map<String, Timer> _receiverTimers = {};
-  final Map<String, Timer> _senderTimers = {};
-
-  // In-flight guards: Timer.periodic doesn't await its async callback, so a
-  // slow poll (e.g. an unresponsive OHTTP relay) could otherwise overlap with
-  // the next tick and process the same session twice — double-emitting the
-  // request/proposal and cancelling the payjoin downstream.
-  final Set<String> _receiverPollsInFlight = {};
-  final Set<String> _senderPollsInFlight = {};
+  late final DirectoryPoller<PayjoinReceiverModel> _receiverPolls =
+      DirectoryPoller(now: _now);
+  late final DirectoryPoller<PayjoinSenderModel> _senderPolls = DirectoryPoller(
+    now: _now,
+  );
 
   // Servers whose last request failed, per role (keyed by the failure code):
   // one that stays down is warned about once, not on every poll.
@@ -67,6 +64,7 @@ class PdkPayjoinDatasource {
     required this._dio,
     required this._log,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
+    this._now = DateTime.now,
   }) : _servers = servers ?? PayjoinConstants.serverUrls,
        _random = random ?? Random.secure(),
        _fetchOhttpKeys = ohttpKeysFetcher,
@@ -92,31 +90,23 @@ class PdkPayjoinDatasource {
   /// (observed live: a redundant second broadcast of the original
   /// transaction a minute after the session had already resolved).
   void stopPolling(String payjoinId) {
-    _receiverTimers.remove(payjoinId)?.cancel();
-    _senderTimers.remove(payjoinId)?.cancel();
+    _receiverPolls.stop(payjoinId);
+    _senderPolls.stop(payjoinId);
   }
 
   /// Cancels every polling timer and closes the event streams. Individual
-  /// poll timers self-cancel on success/expiry, but a session that never
-  /// resolves (a relay permanently down) would otherwise leave a
-  /// [Timer.periodic] firing forever plus three unclosed broadcast
-  /// controllers. The production singleton lives for the whole app session,
+  /// poll timers stop re-arming on success/expiry, but a session that never
+  /// resolves (a relay permanently down) would otherwise keep re-arming its
+  /// poll forever plus leave three unclosed broadcast controllers. The
+  /// production singleton lives for the whole app session,
   /// but tests (and any future teardown) need a clean exit; the repository's
   /// own dispose delegates here. Idempotent: a second call is a no-op (closing
   /// an already-closed controller would otherwise throw).
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
-    for (final timer in _receiverTimers.values) {
-      timer.cancel();
-    }
-    _receiverTimers.clear();
-    for (final timer in _senderTimers.values) {
-      timer.cancel();
-    }
-    _senderTimers.clear();
-    _receiverPollsInFlight.clear();
-    _senderPollsInFlight.clear();
+    _receiverPolls.dispose();
+    _senderPolls.dispose();
     await _payjoinRequestedController.close();
     await _proposalSentController.close();
     await _expiredController.close();
@@ -274,9 +264,7 @@ class PdkPayjoinDatasource {
   ) {
     if (_failingServers.add((failure, _hostKey(server)))) {
       _log.warning(code: failure, server: server, error: error);
-    } else {
-      _log.info(code: failure, server: server);
-    }
+    } else {}
   }
 
   /// Logs that [server] answered again in the role whose [failure] it had.
@@ -888,35 +876,40 @@ class PdkPayjoinDatasource {
     );
   }
 
+  /// Starts polling the directory for the sender's request.
   void startListeningForRequest(PayjoinReceiverModel payjoin) {
-    _receiverTimers[payjoin.id]?.cancel();
-    _receiverTimers[payjoin.id] = Timer.periodic(
-      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-      (timer) => _pollReceiverOnce(payjoin, timer),
+    _receiverPolls.start(
+      id: payjoin.id,
+      expiresAt: _expiryOf(payjoin),
+      poll: (cancelToken) => _pollReceiverOnce(payjoin, cancelToken),
+      onFound: _payjoinRequestedController.add,
+      onExpired: () =>
+          _expiredController.add(payjoin.copyWith(isExpired: true)),
     );
   }
 
+  /// Starts polling the directory for the receiver's proposal.
   void startListeningForProposal(PayjoinSenderModel payjoin) {
-    _senderTimers[payjoin.id]?.cancel();
-    _senderTimers[payjoin.id] = Timer.periodic(
-      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-      (timer) => _pollSenderOnce(payjoin, timer),
+    _senderPolls.start(
+      id: payjoin.id,
+      expiresAt: _expiryOf(payjoin),
+      poll: (cancelToken) => _pollSenderOnce(payjoin, cancelToken),
+      onFound: _proposalSentController.add,
+      onExpired: () =>
+          _expiredController.add(payjoin.copyWith(isExpired: true)),
     );
   }
 
-  Future<void> _pollReceiverOnce(
+  static DateTime _expiryOf(PayjoinModel payjoin) =>
+      DateTime.fromMillisecondsSinceEpoch(payjoin.expiresAt * 1000);
+
+  /// One directory poll for [receiverModel]. Finds the sender's request, or
+  /// says why it did not; never throws.
+  Future<DirectoryPollResult<PayjoinReceiverModel>> _pollReceiverOnce(
     PayjoinReceiverModel receiverModel,
-    Timer timer,
+    CancelToken cancelToken,
   ) async {
-    if (!_receiverPollsInFlight.add(receiverModel.id)) return;
     try {
-      // Local expiry backstop: don't rely solely on the PDK surfacing an
-      // "expired" error — bound polling by the session's own expiry time.
-      if (receiverModel.isExpiryTimePassed) {
-        throw PayjoinExpiredException(
-          'Payjoin receiver ${receiverModel.id} expiry time passed',
-        );
-      }
       final persister = InMemoryJsonReceiverSessionPersister.fromJson(
         receiverModel.receiver,
         log: _log,
@@ -930,15 +923,18 @@ class PdkPayjoinDatasource {
         }
         rethrow;
       }
-      if (state is! InitializedReceiveSession) return;
+      if (state is! InitializedReceiveSession) {
+        return const DirectoryPollResult(DirectoryPollOutcome.stale);
+      }
 
       final unchecked = await _getUncheckedOriginalPayload(
         state.inner,
         persister,
         receiverModel,
+        cancelToken,
       );
       if (unchecked == null) {
-        return;
+        return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
       final maybeInputsOwned = unchecked.assumeInteractiveReceiver().save(
@@ -950,48 +946,33 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      final updatedModel = receiverModel.copyWith(
-        receiver: persister.toJson(),
-        originalTxBytes: originalTxBytes,
-        originalTxId: originalTx.txid,
-        amountSat: amountSat,
+
+      return DirectoryPollResult.found(
+        receiverModel.copyWith(
+          receiver: persister.toJson(),
+          originalTxBytes: originalTxBytes,
+          originalTxId: originalTx.txid,
+          amountSat: amountSat,
+        ),
       );
-      // Only stop polling and emit once all fallible work has succeeded: a
-      // throw above leaves the timer armed so the next tick retries. Skip
-      // the emit if this session's polling was stopped in the meantime.
-      if (!timer.isActive) return;
-      timer.cancel();
-      _receiverTimers.remove(receiverModel.id);
-      _payjoinRequestedController.add(updatedModel);
     } on PayjoinExpiredException {
-      if (!timer.isActive) return;
-      timer.cancel();
-      _receiverTimers.remove(receiverModel.id);
-      _expiredController.add(receiverModel.copyWith(isExpired: true));
+      return const DirectoryPollResult(DirectoryPollOutcome.expired);
     } catch (_) {
-      // Retry transient polling failures on the next timer tick.
-    } finally {
-      _receiverPollsInFlight.remove(receiverModel.id);
+      if (cancelToken.isCancelled) {
+        return const DirectoryPollResult(DirectoryPollOutcome.expired);
+      }
+
+      return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
 
-  Future<void> _pollSenderOnce(
+  /// One directory poll for [senderModel]. Finds the receiver's proposal, or
+  /// says why it did not; never throws.
+  Future<DirectoryPollResult<PayjoinSenderModel>> _pollSenderOnce(
     PayjoinSenderModel senderModel,
-    Timer timer,
+    CancelToken cancelToken,
   ) async {
-    // logRef, never the raw id in log lines/exception messages: a sender id
-    //  is the full BIP21 URI (address+amount+endpoint). The raw id is still
-    //  used as the internal map key below, which never reaches a log.
-    final senderLogRef = Payjoin.logRefForId(senderModel.id);
-    if (!_senderPollsInFlight.add(senderModel.id)) return;
     try {
-      // Local expiry backstop: don't rely solely on the PDK surfacing an
-      // "expired" error — bound polling by the session's own expiry time.
-      if (senderModel.isExpiryTimePassed) {
-        throw PayjoinExpiredException(
-          'Payjoin sender $senderLogRef expiry time passed',
-        );
-      }
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
         senderModel.sender,
         log: _log,
@@ -1005,37 +986,36 @@ class PdkPayjoinDatasource {
         }
         rethrow;
       }
-      if (state is! PollingForProposalSendSession) return;
+      if (state is! PollingForProposalSendSession) {
+        return const DirectoryPollResult(DirectoryPollOutcome.stale);
+      }
 
       final proposalPsbt = await _getProposalPsbt(
         state.inner,
         persister,
         senderModel,
+        cancelToken,
       );
-      if (proposalPsbt == null) return;
+      if (proposalPsbt == null) {
+        return const DirectoryPollResult(DirectoryPollOutcome.empty);
+      }
 
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
-      final updatedModel = senderModel.copyWith(
-        sender: persister.toJson(),
-        proposalPsbt: proposalPsbt,
-        txId: txId,
+      return DirectoryPollResult.found(
+        senderModel.copyWith(
+          sender: persister.toJson(),
+          proposalPsbt: proposalPsbt,
+          txId: txId,
+        ),
       );
-      // Only stop polling and emit once all fallible work has succeeded: a
-      // throw above leaves the timer armed so the next tick retries. Skip
-      // the emit if this session's polling was stopped in the meantime.
-      if (!timer.isActive) return;
-      timer.cancel();
-      _senderTimers.remove(senderModel.id);
-      _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException {
-      if (!timer.isActive) return;
-      timer.cancel();
-      _senderTimers.remove(senderModel.id);
-      _expiredController.add(senderModel.copyWith(isExpired: true));
+      return const DirectoryPollResult(DirectoryPollOutcome.expired);
     } catch (_) {
-      // Retry transient polling failures on the next timer tick.
-    } finally {
-      _senderPollsInFlight.remove(senderModel.id);
+      if (cancelToken.isCancelled) {
+        return const DirectoryPollResult(DirectoryPollOutcome.expired);
+      }
+
+      return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
 
@@ -1043,6 +1023,7 @@ class PdkPayjoinDatasource {
     Initialized initialized,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
+    CancelToken cancelToken,
   ) async {
     try {
       return await _throughSessionRelays(receiverModel.pjUri, (relay) async {
@@ -1053,6 +1034,7 @@ class PdkPayjoinDatasource {
             poll.request.url,
             poll.request.body,
             poll.request.contentType,
+            cancelToken: cancelToken,
           );
           final outcome = initialized
               .processResponse(body: body, ctx: poll.clientResponse)
@@ -1082,6 +1064,7 @@ class PdkPayjoinDatasource {
     PollingForProposal polling,
     InMemoryJsonSenderSessionPersister persister,
     PayjoinSenderModel senderModel,
+    CancelToken cancelToken,
   ) async {
     try {
       return await _throughSessionRelays(senderModel.uri, (relay) async {
@@ -1092,6 +1075,7 @@ class PdkPayjoinDatasource {
             poll.request.url,
             poll.request.body,
             poll.request.contentType,
+            cancelToken: cancelToken,
           );
           final outcome = polling
               .processResponse(response: body, ohttpCtx: poll.ohttpCtx)
@@ -1131,8 +1115,9 @@ class PdkPayjoinDatasource {
     Dio dio,
     String url,
     Uint8List body,
-    String contentType,
-  ) async {
+    String contentType, {
+    CancelToken? cancelToken,
+  }) async {
     final response = await dio.post<List<int>>(
       url,
       data: body,
@@ -1143,6 +1128,7 @@ class PdkPayjoinDatasource {
         // which would expose the client's IP outside the OHTTP tunnel.
         followRedirects: false,
       ),
+      cancelToken: cancelToken,
     );
     return Uint8List.fromList(response.data ?? const []);
   }
