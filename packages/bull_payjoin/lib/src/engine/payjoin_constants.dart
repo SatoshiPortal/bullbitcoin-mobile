@@ -13,7 +13,6 @@ abstract final class PayjoinConstants {
   }
 
   static const directoryUrl = 'https://payjo.in';
-  static const directoryPollingInterval = 5;
   // Directory polls follow payjoin-cli. The first poll goes out as soon as
   // the session is stored, and a poll that comes back empty is followed by
   // the next one right away, because the directory itself holds an empty
