@@ -46,10 +46,13 @@ class PdkPayjoinDatasource {
   final StreamController<PayjoinModel> _expiredController;
   final DateTime Function() _now;
 
+  // Monotonic clock the pollers measure poll durations with.
+  final Stopwatch _clock = Stopwatch()..start();
   late final DirectoryPoller<PayjoinReceiverModel> _receiverPolls =
-      DirectoryPoller(now: _now);
+      DirectoryPoller(now: _now, elapsed: () => _clock.elapsed);
   late final DirectoryPoller<PayjoinSenderModel> _senderPolls = DirectoryPoller(
     now: _now,
+    elapsed: () => _clock.elapsed,
   );
 
   // Servers whose last request failed, per role (keyed by the failure code):
@@ -876,7 +879,8 @@ class PdkPayjoinDatasource {
     );
   }
 
-  /// Starts polling the directory for the sender's request.
+  /// Starts polling the directory for the sender's request. A session that
+  /// is already polled is left as it is; [stopPolling] it first to replace it.
   void startListeningForRequest(PayjoinReceiverModel payjoin) {
     _receiverPolls.start(
       id: payjoin.id,
@@ -888,7 +892,9 @@ class PdkPayjoinDatasource {
     );
   }
 
-  /// Starts polling the directory for the receiver's proposal.
+  /// Starts polling the directory for the receiver's proposal. A session
+  /// that is already polled is left as it is; [stopPolling] it first to
+  /// replace it.
   void startListeningForProposal(PayjoinSenderModel payjoin) {
     _senderPolls.start(
       id: payjoin.id,

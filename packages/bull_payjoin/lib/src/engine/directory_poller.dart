@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:dio/dio.dart';
 
-/// What one directory poll found, which decides what the poller does next.
+/// What one directory poll found, which decides when the next one goes out.
 enum DirectoryPollOutcome {
   /// The request or proposal arrived; polling stops and it is handed on.
   found,
 
-  /// The directory answered that nothing is there yet.
+  /// The directory held the poll and answered that nothing is there yet.
   empty,
 
   /// A relay or protocol error; nothing is known about the mailbox.
@@ -19,7 +19,7 @@ enum DirectoryPollOutcome {
   expired,
 
   /// The session is no longer in the state this poll serves (another path
-  /// moved it on).
+  /// moved it on); polling stops.
   stale,
 }
 
@@ -35,36 +35,56 @@ final class DirectoryPollResult<T extends Object> {
     : outcome = DirectoryPollOutcome.found;
 }
 
-/// One directory poll of a session; the poll passes [cancelToken] to its
-/// requests.
+/// One directory poll of a session. [cancelToken] is cancelled when the
+/// session ends while the poll is in flight, at its expiry or on [stop] or
+/// [dispose]; the poll passes it to its requests. Once it is cancelled the
+/// poller drops whatever the poll returns.
 typedef DirectoryPoll<T extends Object> =
     Future<DirectoryPollResult<T>> Function(CancelToken cancelToken);
 
 /// Schedules the directory polls of one kind of session, keyed by session id.
 ///
-/// Each session is polled on a fixed interval until a poll finds something or
-/// the session's expiry passes. A tick that comes while the previous poll of
-/// the session is still running is skipped.
+/// The schedule is payjoin-cli's: the first poll goes out at once, and the
+/// next one follows a reply right away. The directory holds an empty GET for
+/// up to 30 s (BIP 77), so the client adds no wait of its own. The one bound
+/// is a minimum spacing between the starts of two polls of a session: a reply
+/// the directory held satisfies it on its own, an empty reply that came back
+/// early waits out the rest, and a failed poll waits it in full.
+///
+/// Each session also has a deadline of its own, independent of its polls: at
+/// the session's expiry the poll in flight is cancelled, the next one is not
+/// sent, and the expiry is handed on, once. The engine broadcasts the fallback
+/// at that moment, so it must not depend on a poll being due.
 final class DirectoryPoller<T extends Object> {
   final DateTime Function() _now;
-  final Duration _interval;
+  final Duration Function() _elapsed;
+  final Duration _minSpacing;
   final Map<String, _PolledSession<T>> _sessions = {};
 
-  // A slow poll (an unresponsive OHTTP relay) could otherwise overlap with the
-  // next tick and hand the same request or proposal on twice.
-  final Set<String> _inFlight = {};
+  // Completes when the poll in flight for a session id ends. A replacement
+  // session waits for it, so two polls of one id never run at once and the
+  // same request or proposal cannot be handed on twice.
+  final Map<String, Future<void>> _inFlight = {};
+
+  bool _disposed = false;
 
   /// [now] reads the wall clock the session expiries are expressed in.
+  /// [elapsed] reads a monotonic clock, used to measure how long a poll took.
   DirectoryPoller({
     required this._now,
-    this._interval = const Duration(
-      seconds: PayjoinConstants.directoryPollingInterval,
+    required this._elapsed,
+    this._minSpacing = const Duration(
+      seconds: PayjoinConstants.directoryMinPollSpacingSec,
     ),
   });
 
   /// Starts polling session [id] with [poll] until it finds something, its
-  /// expiry at [expiresAt] passes, or [stop] is called. Starting a session
-  /// that is already polled replaces it.
+  /// expiry at [expiresAt] passes, or [stop] is called.
+  ///
+  /// Starting a session that is already polled leaves it as it is: the app
+  /// resumes every open session each time it returns to the foreground, and
+  /// that must neither abandon a held request nor cut a wait short. To
+  /// replace a session, [stop] it first.
   void start({
     required String id,
     required DateTime expiresAt,
@@ -72,7 +92,7 @@ final class DirectoryPoller<T extends Object> {
     required void Function(T value) onFound,
     required void Function() onExpired,
   }) {
-    _sessions.remove(id)?.timer?.cancel();
+    if (_disposed || _sessions.containsKey(id)) return;
     final session = _PolledSession<T>(
       expiresAt: expiresAt,
       poll: poll,
@@ -80,49 +100,116 @@ final class DirectoryPoller<T extends Object> {
       onExpired: onExpired,
     );
     _sessions[id] = session;
-    session.timer = Timer.periodic(_interval, (_) => _tick(id, session));
+    final remaining = expiresAt.difference(_now());
+    session.deadline = Timer(
+      remaining.isNegative ? Duration.zero : remaining,
+      () => _expire(id, session),
+    );
+    _arm(id, session, Duration.zero);
   }
 
-  /// Stops polling session [id]. A poll still in flight has its outcome
-  /// dropped.
-  void stop(String id) => _sessions.remove(id)?.timer?.cancel();
+  /// Stops polling session [id]. A poll still in flight is cancelled and its
+  /// outcome dropped.
+  void stop(String id) => _sessions.remove(id)?.end();
 
-  /// Stops every session.
+  /// Stops every session, cancels every poll in flight, and refuses new ones.
   void dispose() {
+    _disposed = true;
     for (final session in _sessions.values) {
-      session.timer?.cancel();
+      session.end();
     }
     _sessions.clear();
-    _inFlight.clear();
   }
 
-  Future<void> _tick(String id, _PolledSession<T> session) async {
-    if (!_inFlight.add(id)) return;
-    final DirectoryPollResult<T> result;
-    try {
-      result = _now().isAfter(session.expiresAt)
-          ? DirectoryPollResult<T>(DirectoryPollOutcome.expired)
-          : await session.poll(CancelToken());
-    } catch (_) {
-      return;
-    } finally {
-      _inFlight.remove(id);
-    }
+  void _arm(String id, _PolledSession<T> session, Duration delay) {
+    session.next = Timer(delay, () => _run(id, session));
+  }
+
+  /// Ends session [id] at its expiry, provided [session] still owns it.
+  void _expire(String id, _PolledSession<T> session) {
+    if (!identical(_sessions[id], session)) return;
+    _sessions.remove(id);
+    session.end();
+    session.onExpired();
+  }
+
+  Future<void> _run(String id, _PolledSession<T> session) async {
+    final (result, took) = await _pollOnce(id, session);
     // Stopped or restarted while this poll ran: the new owner decides.
     if (!identical(_sessions[id], session)) return;
+    // The expiry wins over anything the poll returned at or after it, even
+    // when the poll's completion ran before the deadline timer.
+    if (_hasExpired(session)) return _expire(id, session);
     switch (result.outcome) {
       case DirectoryPollOutcome.found:
         _sessions.remove(id);
-        session.timer?.cancel();
+        session.end();
         if (result.value case final value?) session.onFound(value);
       case DirectoryPollOutcome.expired:
-        _sessions.remove(id);
-        session.timer?.cancel();
-        session.onExpired();
-      case DirectoryPollOutcome.empty:
-      case DirectoryPollOutcome.failed:
+        _expire(id, session);
       case DirectoryPollOutcome.stale:
+        // Nothing left to poll for, but the session keeps its deadline: the
+        // engine still has to settle it at its expiry.
         break;
+      case DirectoryPollOutcome.failed:
+        _arm(id, session, _minSpacing);
+      case DirectoryPollOutcome.empty:
+        _arm(
+          id,
+          session,
+          took < _minSpacing ? _minSpacing - took : Duration.zero,
+        );
+    }
+  }
+
+  bool _hasExpired(_PolledSession<T> session) =>
+      !session.expiresAt.isAfter(_now());
+
+  /// Runs one poll of [session] and returns its result with how long the
+  /// poll itself took, waiting for a replaced session's poll to unwind first.
+  Future<(DirectoryPollResult<T>, Duration)> _pollOnce(
+    String id,
+    _PolledSession<T> session,
+  ) async {
+    final expired = DirectoryPollResult<T>(DirectoryPollOutcome.expired);
+    // A poll of a replaced session may still be draining: its request was
+    // cancelled, so this waits only for it to unwind.
+    for (
+      var previous = _inFlight[id];
+      previous != null;
+      previous = _inFlight[id]
+    ) {
+      await previous;
+    }
+    // Replaced again while waiting: the newer session polls instead.
+    if (!identical(_sessions[id], session)) {
+      return (
+        DirectoryPollResult<T>(DirectoryPollOutcome.failed),
+        Duration.zero,
+      );
+    }
+    if (_hasExpired(session)) return (expired, Duration.zero);
+    final done = Completer<void>();
+    _inFlight[id] = done.future;
+    final cancelToken = CancelToken();
+    session.activeToken = cancelToken;
+    final started = _elapsed();
+    try {
+      final result = await session.poll(cancelToken);
+      return (result, _elapsed() - started);
+    } catch (_) {
+      return (
+        DirectoryPollResult<T>(
+          cancelToken.isCancelled
+              ? DirectoryPollOutcome.expired
+              : DirectoryPollOutcome.failed,
+        ),
+        _elapsed() - started,
+      );
+    } finally {
+      session.activeToken = null;
+      _inFlight.remove(id);
+      done.complete();
     }
   }
 }
@@ -133,8 +220,14 @@ final class _PolledSession<T extends Object> {
   final void Function(T value) onFound;
   final void Function() onExpired;
 
-  /// Fires every interval until the session is settled or stopped.
-  Timer? timer;
+  /// The session's next poll, while it waits.
+  Timer? next;
+
+  /// Fires at the session's expiry, whatever the polls are doing.
+  Timer? deadline;
+
+  /// The token of the poll in flight, if any.
+  CancelToken? activeToken;
 
   _PolledSession({
     required this.expiresAt,
@@ -142,4 +235,11 @@ final class _PolledSession<T extends Object> {
     required this.onFound,
     required this.onExpired,
   });
+
+  /// Cancels the session's timers and its poll in flight.
+  void end() {
+    next?.cancel();
+    deadline?.cancel();
+    activeToken?.cancel('payjoin session ended');
+  }
 }
