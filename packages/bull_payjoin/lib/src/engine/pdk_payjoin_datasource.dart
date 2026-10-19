@@ -187,14 +187,10 @@ class PdkPayjoinDatasource {
               )
               as PayjoinReceiverModel;
 
-      // Start listening for a payjoin request from the sender. This starts
-      // polling before the repository persists `model` to the local DB
-      // (PayjoinRepositoryImpl.createPayjoinReceiver awaits this call, then
-      // stores the result) — benign today since the first tick is a full
-      // directoryPollingInterval away, giving the upsert plenty of time, but
-      // fragile enough to flag: don't start polling any earlier than this.
-      startListeningForRequest(model);
-
+      // The directory poll is not started here: the engine arms it once the
+      // session row is persisted and the policy re-check has passed, the way
+      // payjoin-cli saves a session before driving it. A request found by a
+      // poll must always land on a stored row.
       return model;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
@@ -269,15 +265,10 @@ class PdkPayjoinDatasource {
     // pre-POST state is what the write-ahead needed, but the proposal poll
     // below replays `sender` and only proceeds on PollingForProposal.
     // Refresh the model to the post-POST state or the poll never advances.
-    final postedModel = model.copyWith(sender: persister.toJson());
-
-    // Start listening for a payjoin proposal from the receiver. The session
-    // row is already persisted, so a proposal arriving immediately still
-    // finds it.
-    startListeningForProposal(postedModel);
-    _log.info('[sender poll] started for $senderLogRef');
-
-    return postedModel;
+    // The proposal poll is not started here: the engine arms it once the
+    // row carries this post-POST state, so a proposal found by the first
+    // poll replays against a row that is already in PollingForProposal.
+    return model.copyWith(sender: persister.toJson());
   }
 
   Future<void> postOriginalProposal(
