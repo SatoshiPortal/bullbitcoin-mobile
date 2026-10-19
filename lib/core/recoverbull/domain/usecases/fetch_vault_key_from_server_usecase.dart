@@ -18,7 +18,9 @@ class FetchVaultKeyFromServerUsecase {
   Future<Result<String, RecoverBullCoreFailure>> execute({
     required EncryptedVault vault,
     required String password,
+    RecoverBullTorRoute? route,
   }) async {
+    if (route != null) return _fetch(vault, password, route, ownsRoute: false);
     final session = await _ensureTorSessionUsecase.execute();
     return switch (session) {
       Ok(:final value) => _fetch(vault, password, value),
@@ -29,8 +31,9 @@ class FetchVaultKeyFromServerUsecase {
   Future<Result<String, RecoverBullCoreFailure>> _fetch(
     EncryptedVault vault,
     String password,
-    RecoverBullTorRoute session,
-  ) async {
+    RecoverBullTorRoute session, {
+    bool ownsRoute = true,
+  }) async {
     try {
       return await _recoverBullRepository.fetchVaultKey(
         vault.id,
@@ -43,7 +46,7 @@ class FetchVaultKeyFromServerUsecase {
       // escape a `finally` would break the `Result` contract and, worse, discard
       // a vault key this call already retrieved.
       try {
-        await session.close();
+        if (ownsRoute) await session.close();
       } catch (e, st) {
         log.warning(
           'closing the RecoverBull Tor session failed',

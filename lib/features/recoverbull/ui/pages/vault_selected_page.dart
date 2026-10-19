@@ -4,9 +4,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
+import 'package:bull_tor/tor.dart' show TorReady;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -85,10 +88,24 @@ class VaultSelectedPage extends StatelessWidget {
               ),
               child: BullButton.big(
                 label: context.loc.recoverbullDecryptVault,
-                onPressed: () => context.pushNamed(
-                  RecoverBullRoute.recoverbullFlows.name,
-                  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
-                ),
+                onPressed: () {
+                  final state = context.read<RecoverBullBloc>().state;
+                  if (state.flow == flow &&
+                      state.vault == vault &&
+                      state.torConnection is TorReady &&
+                      state.keyServerStatus == KeyServerStatus.online) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const PasswordInputPage(),
+                      ),
+                    );
+                    return;
+                  }
+                  context.pushNamed(
+                    RecoverBullRoute.recoverbullFlows.name,
+                    extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+                  );
+                },
                 bgColor: context.appColors.onSurface,
                 textColor: context.appColors.surface,
               ),
