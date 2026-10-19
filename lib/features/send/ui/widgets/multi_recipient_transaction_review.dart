@@ -16,6 +16,7 @@ class MultiRecipientTransactionReview extends StatelessWidget {
   final Widget Function(int amountSat) amountBuilder;
   final VoidCallback? onFeePriorityTap;
   final Widget? feeWarning;
+  final Widget? selectedCoinsDetails;
 
   const MultiRecipientTransactionReview({
     super.key,
@@ -28,6 +29,7 @@ class MultiRecipientTransactionReview extends StatelessWidget {
     required this.amountBuilder,
     required this.onFeePriorityTap,
     required this.feeWarning,
+    this.selectedCoinsDetails,
   });
 
   Widget _divider(BuildContext context) =>
@@ -85,6 +87,10 @@ class MultiRecipientTransactionReview extends StatelessWidget {
                 textAlign: TextAlign.end,
               ),
             ),
+            _divider(context),
+          ],
+          if (selectedCoinsDetails case final details?) ...[
+            SendInfoRow(title: context.loc.sendCoinControl, details: details),
             _divider(context),
           ],
           SendInfoRow(
