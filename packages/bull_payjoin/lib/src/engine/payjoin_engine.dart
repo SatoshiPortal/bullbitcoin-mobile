@@ -289,9 +289,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           role: api.PayjoinLogRole.receiver,
           sessionRef: receiver.logRef,
         );
+        _pdkPayjoinDatasource.startListeningForRequest(model);
         return receiver;
       } catch (_) {
-        _pdkPayjoinDatasource.stopPolling(model.id);
         if (stored && !settled) {
           // The row is still idle while this session lock is held. If another
           // path already settled it, the conditional delete is a no-op.
@@ -363,8 +363,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
     // pre-POST one. Bring the row to the live state so a resume replays
-    // PollingForProposal instead of stalling on the pre-POST state.
-    await _localPayjoinDatasource.updateSenderSessionState(model);
+    // PollingForProposal instead of stalling on the pre-POST state, then
+    // start polling the directory for the receiver's proposal. The poll is
+    // armed even if the row update fails: the original is already on the
+    // directory, the poll replays the in-memory posted model, and the
+    // proposal it finds is what brings the row back in line.
+    try {
+      await _localPayjoinDatasource.updateSenderSessionState(model);
+    } finally {
+      _pdkPayjoinDatasource.startListeningForProposal(model);
+    }
 
     // On a retry, a broadcast watcher left on the superseded attempt's payjoin
     // stays armed on purpose: if that payjoin lands, the payment is made, and
