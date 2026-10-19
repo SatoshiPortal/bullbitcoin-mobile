@@ -17,6 +17,8 @@ abstract class BitcoinFeePreviewSlot with _$BitcoinFeePreviewSlot {
     int? feeSat,
     String? unsignedPsbt,
     int? txSize,
+    @Default([]) List<int> recipientAmountsSat,
+    bool? isToSelf,
   }) = _BitcoinFeePreviewSlot;
   const BitcoinFeePreviewSlot._();
 

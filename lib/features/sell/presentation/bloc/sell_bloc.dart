@@ -8,10 +8,11 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
@@ -344,8 +345,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // is the estimate for the tier the payin would be built at.
         final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
           walletId: event.wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: requiredAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: dummyAddressForFeeCalculation.address,
+              amountSat: Sats.fromInt(requiredAmountSat),
+            ),
+          ],
           networkFee: bitcoinFees.fastest,
         );
         final PreparedSellBitcoinPayin preparedSend;
@@ -710,8 +715,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
         final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
           walletId: wallet.id,
-          address: sellPaymentState.sellOrder.bitcoinAddress!,
-          amountSat: payinAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: sellPaymentState.sellOrder.bitcoinAddress!,
+              amountSat: Sats.fromInt(payinAmountSat),
+            ),
+          ],
           networkFee: networkFee,
           selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
               ? sellPaymentState.selectedUtxos
@@ -1421,8 +1430,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
         final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
           walletId: wallet.id,
-          address: address,
-          amountSat: payinAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: address,
+              amountSat: Sats.fromInt(payinAmountSat),
+            ),
+          ],
           networkFee: networkFee,
           selectedInputs: repriced.selectedUtxos.isNotEmpty
               ? repriced.selectedUtxos
@@ -1635,12 +1648,17 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: wallet.id,
-      address: address,
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.sellOrder.payinAmount),
+          ),
+        ),
+      ],
       networkFee: event.fee,
-      amountSat: ConvertAmount.btcToSats(current.sellOrder.payinAmount),
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1682,11 +1700,16 @@ class SellBloc extends Bloc<SellEvent, SellState>
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: wallet.id,
-      address: address,
-      amountSat: ConvertAmount.btcToSats(current.sellOrder.payinAmount),
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.sellOrder.payinAmount),
+          ),
+        ),
+      ],
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;

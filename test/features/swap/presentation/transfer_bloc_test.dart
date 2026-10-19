@@ -53,8 +53,16 @@ import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+
+typedef _PreparedBitcoinSend = ({
+  String unsignedPsbt,
+  int txSize,
+  bool isToSelf,
+  List<Sats> recipientAmountsSat,
+});
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -230,10 +238,8 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: source.id,
-          address: any(named: 'address'),
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: true,
         ),
@@ -265,10 +271,8 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: [selected],
           replaceByFee: true,
         ),
@@ -341,10 +345,8 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: [selected],
           replaceByFee: true,
         ),
@@ -450,15 +452,18 @@ void main() {
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
-        address: 'tb1qreceive',
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: true,
         selectedInputs: [selected],
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+      (_) async => (
+        unsignedPsbt: 'psbt',
+        txSize: 100,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(28800)],
+      ),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -478,10 +483,8 @@ void main() {
     verify(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
-        address: 'tb1qreceive',
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: true,
         selectedInputs: [selected],
         replaceByFee: true,
       ),
@@ -509,15 +512,18 @@ void main() {
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
-        address: 'tb1qreceive',
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: true,
         selectedInputs: [selected],
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+      (_) async => (
+        unsignedPsbt: 'psbt',
+        txSize: 100,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(28800)],
+      ),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -563,15 +569,18 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          amountSat: any(named: 'amountSat'),
-          drain: true,
           selectedInputs: [selected],
           replaceByFee: true,
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+        (_) async => (
+          unsignedPsbt: 'psbt',
+          txSize: 100,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(0)],
+        ),
       );
       when(
         () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -613,10 +622,8 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          amountSat: 1000,
-          drain: false,
           selectedInputs: [unavailableSelection],
           replaceByFee: true,
         ),
@@ -771,15 +778,12 @@ void main() {
     'an in-flight old amount rebuild cannot repopulate signedPsbt after amountChanged',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      final prepareCompleter = Completer<_PreparedBitcoinSend>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: true,
         ),
@@ -805,6 +809,7 @@ void main() {
         unsignedPsbt: 'old-unsigned-psbt',
         txSize: 100,
         isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
       ));
       await pumpEventQueue();
 
@@ -823,15 +828,12 @@ void main() {
     'an in-flight swap creation cannot repopulate signedPsbt after amountChanged',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      final prepareCompleter = Completer<_PreparedBitcoinSend>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: true,
         ),
@@ -865,6 +867,7 @@ void main() {
         unsignedPsbt: 'old-unsigned-psbt',
         txSize: 100,
         isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
       ));
       await pumpEventQueue();
 
@@ -877,17 +880,14 @@ void main() {
     'an in-flight swap creation cannot repopulate after destination wallet changes',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      final prepareCompleter = Completer<_PreparedBitcoinSend>();
       final destination = _destinationWallet();
       final replacementDestination = _destinationWallet(id: 'wallet-3');
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: true,
         ),
@@ -917,6 +917,7 @@ void main() {
         unsignedPsbt: 'old-unsigned-psbt',
         txSize: 100,
         isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
       ));
       await pumpEventQueue();
 
@@ -938,15 +939,12 @@ void main() {
     () async {
       final selected = _bitcoinUtxo('selected-tx');
       final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      final prepareCompleter = Completer<_PreparedBitcoinSend>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'tb1qreceive',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: [selected],
           replaceByFee: true,
         ),
@@ -978,6 +976,7 @@ void main() {
         unsignedPsbt: 'unsigned-psbt',
         txSize: 100,
         isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
       ));
       await bloc.stream.firstWhere(
         (state) => state.signedPsbt == 'signed-psbt',
@@ -1033,16 +1032,18 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'payin-address',
-          amountSat: 1000,
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: false,
         ),
       ).thenAnswer(
-        (_) async =>
-            (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
+        (_) async => (
+          unsignedPsbt: 'new-unsigned-psbt',
+          txSize: 100,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        ),
       );
       when(
         () => verifyChain.execute(
@@ -1101,16 +1102,18 @@ void main() {
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
-        address: 'payin-address',
-        amountSat: 1000,
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: false,
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: false,
       ),
     ).thenAnswer(
-      (_) async =>
-          (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
+      (_) async => (
+        unsignedPsbt: 'new-unsigned-psbt',
+        txSize: 100,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(1000)],
+      ),
     );
     when(
       () => verifyChain.execute(

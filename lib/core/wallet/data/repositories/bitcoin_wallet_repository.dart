@@ -7,14 +7,17 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -34,10 +37,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   @override
   Future<String> buildPsbt({
     required String walletId,
-    required String address,
-    int? amountSat,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
     bool selectedOnly = false,
@@ -115,10 +116,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
-      address: address,
-      amountSat: amountSat,
+      recipients: recipients.map(_recipientModelFromEntity).toList(),
       networkFee: networkFee,
-      drain: drain,
       // An empty merged list is equivalent to null for the datasource
       // (it gates on isNotEmpty), so always pass the merge.
       unspendable: mergedUnspendable,
@@ -171,8 +170,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   }
 
   @override
-  Future<bool> isAddressOfWallet(
-    String address, {
+  Future<bool> areAddressesOfWallet(
+    List<String> addresses, {
     required String walletId,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -194,12 +193,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isAddressMine(
-      address,
+    final areFromWallet = await _bdkWallet.areAddressesMine(
+      addresses,
       wallet: wallet,
     );
 
-    return isFromWallet;
+    return areFromWallet;
   }
 
   @override
@@ -212,6 +211,36 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
     return feeAbsolute;
   }
+
+  @override
+  Future<List<Sats>> getRecipientAmounts({
+    required String psbt,
+    required List<BitcoinTransactionRecipient> recipients,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    final amounts = await _bdkWallet.getRecipientAmounts(
+      psbt,
+      recipients.map(_recipientModelFromEntity).toList(),
+      isTestnet: metadata.isTestnet,
+    );
+    return amounts.map(Sats.fromInt).toList();
+  }
+
+  BitcoinTransactionRecipientModel _recipientModelFromEntity(
+    BitcoinTransactionRecipient recipient,
+  ) => recipient.receivesRemainder
+      ? BitcoinTransactionRecipientModel.remainder(address: recipient.address)
+      : BitcoinTransactionRecipientModel.fixed(
+          address: recipient.address,
+          fixedAmountSat: recipient.amountSat!.value.toInt(),
+        );
 
   Future<int> getAmountSentToAddress({
     required String psbt,
