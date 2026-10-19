@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullLabeledTextInput, Gap;
 import 'package:flutter/material.dart';
 
 /// A backend (blindbit/electrum) URL field with an inline "Test connection"
@@ -52,7 +52,7 @@ class SpBackendUrlField extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            BBButton.small(
+            BullButton.small(
               compact: true,
               label: context.loc.spTestButton,
               onPressed: onTest,

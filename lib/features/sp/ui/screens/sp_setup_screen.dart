@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
@@ -12,6 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 class SpSetupScreen extends StatelessWidget {
   const SpSetupScreen({super.key, required this.successRedirectPath});
@@ -79,7 +79,7 @@ class SpSetupScreen extends StatelessWidget {
                       onChanged: cubit.setScanStart,
                       isBusy: state.isCreating,
                     ),
-                    submit: BBButton.big(
+                    submit: BullButton.big(
                       onPressed: cubit.create,
                       label: context.loc.spCreateButton,
                       bgColor: context.appColors.primary,

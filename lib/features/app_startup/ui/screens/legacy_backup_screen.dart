@@ -2,13 +2,12 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/app_startup/domain/legacy_seed.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/get_legacy_seeds_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -55,13 +54,13 @@ class _LegacyBackupScreenState extends State<LegacyBackupScreen>
                   color: context.appColors.error,
                 ),
                 const Gap(16),
-                BBText(
+                BullText(
                   context.loc.legacyBackupTitle,
                   style: context.font.headlineLarge,
                   textAlign: .center,
                 ),
                 const Gap(16),
-                BBText(
+                BullText(
                   context.loc.legacyBackupMessage,
                   style: context.font.bodyMedium,
                   textAlign: .center,
@@ -127,7 +126,7 @@ class _SealedLegacySeedsBackupState extends State<_SealedLegacySeedsBackup> {
               value: _confirmed,
               onChanged: (value) => setState(() => _confirmed = value ?? false),
               controlAffinity: .leading,
-              title: BBText(
+              title: BullText(
                 context.loc.legacyBackupConfirm,
                 style: context.font.bodyMedium,
               ),
@@ -143,12 +142,12 @@ class _SealedLegacySeedsBackupState extends State<_SealedLegacySeedsBackup> {
                 ),
                 child: Column(
                   children: [
-                    BBText(
+                    BullText(
                       context.loc.legacyBackupReinstallTitle,
                       style: context.font.headlineMedium,
                     ),
                     const Gap(8),
-                    BBText(
+                    BullText(
                       context.loc.legacyBackupReinstallMessage,
                       style: context.font.bodyMedium,
                     ),
@@ -172,7 +171,7 @@ class _ContactSupportCard extends StatelessWidget {
     // could strand funds, so point to support instead.
     return Column(
       children: [
-        BBText(
+        BullText(
           context.loc.legacyBackupNoSeedsMessage,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
@@ -186,7 +185,7 @@ class _ContactSupportCard extends StatelessWidget {
             // ignore: deprecated_member_use
             launchUrl(url, mode: LaunchMode.externalApplication);
           },
-          child: BBText(
+          child: BullText(
             context.loc.appStartupContactSupportButton,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.primary,
@@ -217,13 +216,13 @@ class _LegacySeedCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            BBText(
+            BullText(
               context.loc.legacyBackupWalletLabel,
               style: context.font.labelSmall?.copyWith(
                 color: context.appColors.secondary,
               ),
             ),
-            BBText(seed.fingerprint, style: context.font.bodySmall),
+            BullText(seed.fingerprint, style: context.font.bodySmall),
             const Gap(16),
             _WordsGrid(words: seed.words),
             if (seed.passphrases.isNotEmpty) ...[
@@ -237,7 +236,7 @@ class _LegacySeedCard extends StatelessWidget {
                       color: context.appColors.secondary,
                     ),
                     const Gap(8),
-                    BBText(
+                    BullText(
                       context.loc.legacyBackupPassphraseLabel,
                       style: context.font.labelSmall?.copyWith(
                         color: context.appColors.secondary,
@@ -246,7 +245,7 @@ class _LegacySeedCard extends StatelessWidget {
                   ],
                 ),
                 const Gap(4),
-                BBText(passphrase, style: context.font.bodyMedium),
+                BullText(passphrase, style: context.font.bodyMedium),
                 const Gap(8),
               ],
             ],
@@ -286,7 +285,7 @@ class _WordsGrid extends StatelessWidget {
                     children: [
                       SizedBox(
                         width: 24,
-                        child: BBText(
+                        child: BullText(
                           '${i + 1}.',
                           style: context.font.bodySmall?.copyWith(
                             color: context.appColors.secondary,
@@ -296,7 +295,7 @@ class _WordsGrid extends StatelessWidget {
                       ),
                       const Gap(8),
                       Expanded(
-                        child: BBText(
+                        child: BullText(
                           words[i],
                           style: context.font.bodyMedium?.copyWith(
                             fontWeight: .w600,

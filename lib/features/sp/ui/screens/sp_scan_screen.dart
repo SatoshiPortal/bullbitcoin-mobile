@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInputText, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -375,7 +374,7 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   runSpacing: 4,
                   children: [
                     for (final t in ticks)
-                      BBButton.small(
+                      BullButton.small(
                         compact: true,
                         label: t.label,
                         onPressed: () => _setHeight(t.height),
@@ -570,7 +569,7 @@ class _BottomAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-      child: BBButton.big(
+      child: BullButton.big(
         label: label,
         onPressed: onPressed,
         bgColor: bgColor ?? context.appColors.secondary,
