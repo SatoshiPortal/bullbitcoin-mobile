@@ -64,17 +64,22 @@ final class AppPayjoinFeesAdapter implements PayjoinFeesPort {
 }
 
 final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
+  static const _reconcileAttempts = 3;
+
   final WalletRepository _wallets;
   final WalletTransactionRepository _transactions;
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _servers;
+  // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
+  final Duration reconcileDelay;
 
   const AppPayjoinTransactionAdapter(
     this._wallets,
     this._transactions,
     this._blockchain,
-    this._servers,
-  );
+    this._servers, {
+    this.reconcileDelay = const Duration(seconds: 5),
+  });
 
   @override
   Stream<void> watchWallet(String walletId) => _wallets.walletSyncFinishedStream
@@ -117,19 +122,41 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     if (isKnownRemotely) {
       // Let the wallet catch up so balances and history show the transaction
       // the payjoin session is about to report.
-      unawaited(
-        refreshWallet(walletId).catchError((Object e) {
-          log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
-        }),
-      );
+      unawaited(_reconcileWallet(walletId, transactionId));
     }
     return isKnownRemotely;
+  }
+
+  /// Syncs until the wallet holds [transactionId], a few times at most: one
+  /// sync can fail, or join a pass that started before the transaction was
+  /// broadcast and so miss it. The session outcome never waits on this.
+  Future<void> _reconcileWallet(String walletId, String transactionId) async {
+    for (var attempt = 1; attempt <= _reconcileAttempts; attempt++) {
+      if (attempt > 1) await Future<void>.delayed(reconcileDelay * attempt);
+      try {
+        await refreshWallet(walletId);
+        final transaction = await _transactions.getWalletTransaction(
+          transactionId,
+          walletId: walletId,
+        );
+        if (transaction != null) return;
+      } catch (e) {
+        // Nobody awaits this: a throw here would be an unhandled error.
+        log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
+      }
+    }
+    log.warning('Payjoin wallet did not catch up with a settled transaction');
   }
 
   @override
   Future<void> refreshWallet(String walletId) async {
     // Refresh only: the caller wants the side-effecting sync, not the wallet.
-    final _ = await _wallets.getWallet(walletId, sync: true);
+    (await _wallets.getWallet(walletId, sync: true)).fold(
+      (_) {},
+      (failure) => throw Exception(
+        'Payjoin wallet refresh failed: ${failure.runtimeType}',
+      ),
+    );
   }
 }
 

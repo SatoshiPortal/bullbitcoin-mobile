@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -56,6 +57,7 @@ void main() {
   late _MockWalletTransactionRepository transactions;
   late _MockBlockchain blockchain;
   late _FakeServers servers;
+  late _MockWallet wallet;
   late AppPayjoinTransactionAdapter adapter;
 
   setUpAll(() {
@@ -73,9 +75,10 @@ void main() {
       transactions,
       blockchain,
       servers,
+      reconcileDelay: Duration.zero,
     );
 
-    final wallet = _MockWallet();
+    wallet = _MockWallet();
     when(() => wallet.isTestnet).thenReturn(true);
     when(
       () => wallets.getWallet(_walletId, sync: any(named: 'sync')),
@@ -190,6 +193,14 @@ void main() {
         connection: any(named: 'connection'),
       ),
     ).thenAnswer((_) async => true);
+    var synced = false;
+    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
+      synced = true;
+      return Ok(wallet);
+    });
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async => synced ? _transaction() : null);
 
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -207,7 +218,85 @@ void main() {
       ),
     );
     // The wallet catches up in the background.
+    await pumpEventQueue();
     verify(() => wallets.getWallet(_walletId, sync: true)).called(1);
+  });
+
+  test('syncs again when the wallet fails or misses the transaction', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => true);
+    var syncs = 0;
+    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
+      syncs++;
+      return syncs == 1 ? const Err(WalletStorageFailure('busy')) : Ok(wallet);
+    });
+    // The second sync joined a pass that started before the broadcast.
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async => syncs >= 3 ? _transaction() : null);
+
+    await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+    await pumpEventQueue();
+
+    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+  });
+
+  test('stops reconciling after a few failed syncs', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => wallets.getWallet(_walletId, sync: true),
+    ).thenAnswer((_) async => const Err(WalletStorageFailure('busy')));
+
+    await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+    await pumpEventQueue();
+
+    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+  });
+
+  test('a failing wallet read does not end the reconciliation', () async {
+    when(
+      () => blockchain.isTransactionKnown(
+        _txId,
+        connection: any(named: 'connection'),
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => wallets.getWallet(_walletId, sync: true),
+    ).thenAnswer((_) async => Ok(wallet));
+    var reads = 0;
+    when(
+      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
+    ).thenAnswer((_) async {
+      reads++;
+      if (reads == 1) throw Exception('database locked');
+      return _transaction();
+    });
+
+    await adapter.isTransactionVisible(
+      walletId: _walletId,
+      transactionId: _txId,
+      refresh: true,
+    );
+    await pumpEventQueue();
+
+    verify(() => wallets.getWallet(_walletId, sync: true)).called(2);
   });
 
   test('reports an unknown transaction without syncing the wallet', () async {
