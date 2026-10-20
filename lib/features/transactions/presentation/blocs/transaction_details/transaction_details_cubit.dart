@@ -1051,10 +1051,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<bool> canBroadcastPayjoinOriginalTx() async {
+  @useResult
+  Future<Result<bool, TransactionFailure>> canBroadcastPayjoinOriginalTx() {
     final payjoin = state.payjoin;
-    return payjoin != null &&
-        await _broadcastOriginalTransactionUsecase.canExecute(payjoin);
+    if (payjoin == null) return Future.value(const Ok(false));
+    return _broadcastOriginalTransactionUsecase.canExecute(payjoin);
   }
 
   Future<void> _resolveBroadcastTransaction(PayjoinSession payjoin) async {

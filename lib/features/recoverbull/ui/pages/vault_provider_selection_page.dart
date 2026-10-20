@@ -41,15 +41,17 @@ class VaultProviderSelectionPage extends StatelessWidget {
       ),
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
         listenWhen: (previous, current) =>
-            previous.failure != current.failure ||
+            current.failure != null && previous.failure != current.failure ||
             current.vault != null && previous.vault != current.vault,
         listener: (context, state) {
+          if (ModalRoute.of(context)?.isCurrent != true) return;
           if (state.failure != null) {
             BullSnackBar.show(
               context,
               message: state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
+            return;
           }
 
           if (state.vault != null && state.vaultProvider != null) {

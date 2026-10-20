@@ -183,4 +183,16 @@ void main() {
 
     expect(await future, isA<Ok<bool, RecoverBullCoreFailure>>());
   });
+  test('borrows a verified route without reacquiring or closing it', () async {
+    when(
+      () => checkConnection.execute(route: route),
+    ).thenAnswer((_) async => const Ok(true));
+
+    final result = await usecase.execute(onAttempt: attempts.add, route: route);
+
+    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
+    verify(() => checkConnection.execute(route: route)).called(1);
+    verifyNever(() => ensureSession.execute());
+    expect(closeCount, 0);
+  });
 }
