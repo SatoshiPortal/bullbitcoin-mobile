@@ -250,4 +250,40 @@ void main() {
       verify(() => cancelAbandonedPayjoin.execute(order)).called(1);
     },
   );
+
+  test('overlapping order refreshes send one request', () async {
+    final refresh = _MockRefreshBuyOrderUsecase();
+    final cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+    when(
+      () => cancel.execute(any()),
+    ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
+    final order = _MockBuyOrder();
+    when(() => order.orderId).thenReturn('order-1');
+    final response = Completer<Result<BuyOrder, BuyFailure>>();
+    when(
+      () => refresh.execute(orderId: 'order-1'),
+    ).thenAnswer((_) => response.future);
+    final bloc = _SeedableBuyBloc(
+      loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
+      confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+      createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+      refreshBuyOrderUsecase: refresh,
+      accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+      cancelAbandonedBuyPayjoinUsecase: cancel,
+      getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+      labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+    );
+    addTearDown(bloc.close);
+    bloc.seed(BuyState(buyOrder: order));
+
+    // The confirmation countdown and the success screen poll both ask for a
+    // refresh; while one is in flight the others learn nothing new.
+    for (var i = 0; i < 3; i++) {
+      bloc.add(const BuyEvent.refreshOrder());
+    }
+    await Future<void>.delayed(Duration.zero);
+
+    verify(() => refresh.execute(orderId: 'order-1')).called(1);
+    response.complete(const Err(BuyUnexpectedFailure('stop here')));
+  });
 }

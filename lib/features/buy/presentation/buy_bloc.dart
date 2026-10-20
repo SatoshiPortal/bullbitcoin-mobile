@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart';
@@ -43,7 +44,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyBitcoinAddressInputChanged>(_onBitcoinAddressInputChanged);
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyOrderCreationAbandoned>(_onOrderCreationAbandoned);
-    on<_BuyRefreshOrder>(_onRefreshOrder);
+    // A refresh in flight already brings the latest order: later requests
+    // from the countdown or the success poll would only add load.
+    on<_BuyRefreshOrder>(_onRefreshOrder, transformer: droppable());
     on<_BuyConfirmOrder>(_onConfirmOrder);
     on<_BuyPayjoinToggled>(_onPayjoinToggled);
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
