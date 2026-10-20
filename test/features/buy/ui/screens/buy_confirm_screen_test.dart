@@ -101,6 +101,7 @@ void main() {
     verifyNever(() => screen.bloc.add(any()));
 
     final order = _MockBuyOrder();
+    when(() => order.orderId).thenReturn('order-1');
     when(() => order.payinAmount).thenReturn(100);
     when(() => order.payinCurrency).thenReturn('CAD');
     when(() => order.payoutAmount).thenReturn(0.0005);
@@ -123,6 +124,40 @@ void main() {
     );
     await tester.tap(find.byType(BullButton));
     verify(() => screen.bloc.add(const BuyEvent.confirmOrder())).called(1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('an expired quote asks for one refresh, not one per refresh', (
+    tester,
+  ) async {
+    final order = _MockBuyOrder();
+    when(() => order.orderId).thenReturn('order-1');
+    when(() => order.payinAmount).thenReturn(100);
+    when(() => order.payinCurrency).thenReturn('CAD');
+    when(() => order.payoutAmount).thenReturn(0.0005);
+    when(() => order.exchangeRateAmount).thenReturn(200000);
+    when(() => order.exchangeRateCurrency).thenReturn('CAD');
+    when(() => order.isLiquid).thenReturn(false);
+    when(() => order.isPayinCompleted).thenReturn(false);
+    when(
+      () => order.confirmationDeadline,
+    ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+    final screen = await pumpScreen(tester, BuyState(buyOrder: order));
+
+    // Each refresh flips the loading flag on and off. The quote stays expired,
+    // so nothing new is learned and nothing may trigger another request: this
+    // loop ran at HTTP speed under a covered success screen and drew 429s.
+    // The mocked bloc delivers each state on the next frame, hence two pumps.
+    for (var i = 0; i < 3; i++) {
+      screen.update(BuyState(buyOrder: order, isRefreshingOrder: true));
+      await tester.pump();
+      await tester.pump();
+      screen.update(BuyState(buyOrder: order));
+      await tester.pump();
+      await tester.pump();
+    }
+
+    verify(() => screen.bloc.add(const BuyEvent.refreshOrder())).called(1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -269,6 +304,7 @@ void main() {
       expect(find.byType(BuyConfirmScreen), findsNothing);
       // The result cannot itself open confirmation: only starting creation does.
       final order = _MockBuyOrder();
+      when(() => order.orderId).thenReturn('order-1');
       update(state.copyWith(buyOrder: order));
       await tester.pump();
       expect(find.byType(BuyConfirmScreen), findsNothing);
@@ -279,6 +315,7 @@ void main() {
     'headline expands for large text instead of clipping the amount',
     (tester) async {
       final order = _MockBuyOrder();
+      when(() => order.orderId).thenReturn('order-1');
       when(() => order.payinAmount).thenReturn(100);
       when(() => order.payinCurrency).thenReturn('CAD');
       when(() => order.payoutAmount).thenReturn(0.0005);

@@ -148,34 +148,37 @@ class BuyConfirmScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
-                if (isLoading)
+                // The countdown keeps its place while a refresh is in flight:
+                // remounting it on an expired quote fires its timeout again,
+                // and each refresh then asked for the next one.
+                if (buyOrder != null)
+                  Visibility(
+                    visible: !isConfirmingOrder,
+                    maintainState: true,
+                    child: Row(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Text(
+                          context.loc.buyConfirmAwaitingConfirmation,
+                          style: context.font.bodyMedium?.copyWith(
+                            fontWeight: .w500,
+                            color: context.appColors.outline,
+                          ),
+                        ),
+                        const Gap(4),
+                        if (buyOrder.confirmationDeadline case final deadline?)
+                          _QuoteCountdown(
+                            orderId: buyOrder.orderId,
+                            deadline: deadline,
+                          ),
+                      ],
+                    ),
+                  )
+                else if (isLoading)
                   const BullShimmerLine(
                     width: 160,
                     height: 14,
                     padding: EdgeInsets.zero,
-                  )
-                else if (buyOrder != null && !isConfirmingOrder)
-                  Row(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Text(
-                        context.loc.buyConfirmAwaitingConfirmation,
-                        style: context.font.bodyMedium?.copyWith(
-                          fontWeight: .w500,
-                          color: context.appColors.outline,
-                        ),
-                      ),
-                      const Gap(4),
-                      if (buyOrder.confirmationDeadline case final deadline?)
-                        BullCountdown(
-                          until: deadline,
-                          onTimeout: () {
-                            context.read<BuyBloc>().add(
-                              const BuyEvent.refreshOrder(),
-                            );
-                          },
-                        ),
-                    ],
                   ),
                 if (confirmFailure != null) ...[
                   const Gap(16),
@@ -211,4 +214,39 @@ class BuyConfirmScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Asks for a fresh quote once per expired deadline of the order on screen.
+class _QuoteCountdown extends StatefulWidget {
+  const _QuoteCountdown({required this.orderId, required this.deadline});
+
+  final String orderId;
+  final DateTime deadline;
+
+  @override
+  State<_QuoteCountdown> createState() => _QuoteCountdownState();
+}
+
+class _QuoteCountdownState extends State<_QuoteCountdown> {
+  (String, DateTime)? _refreshedFor;
+
+  void _onTimeout() {
+    final bloc = context.read<BuyBloc>();
+    final state = bloc.state;
+    final key = (widget.orderId, widget.deadline);
+    // A confirmed purchase has no quote left to refresh, and a refresh already
+    // in flight will bring the latest order anyway.
+    if (_refreshedFor == key ||
+        state.isConfirmingOrder ||
+        state.isRefreshingOrder ||
+        state.buyOrder?.isPayinCompleted == true) {
+      return;
+    }
+    _refreshedFor = key;
+    bloc.add(const BuyEvent.refreshOrder());
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BullCountdown(until: widget.deadline, onTimeout: _onTimeout);
 }
