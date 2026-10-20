@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
+import 'package:bb_mobile/features/coins/presentation/coins_failure_l10n.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_selection_bar.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_summary_bar.dart';
@@ -21,12 +22,12 @@ class CoinsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<CoinsCubit, CoinsState>(
       listenWhen: (prev, curr) =>
-          prev.error != curr.error && curr.error != null,
+          prev.failure != curr.failure && curr.failure != null,
       listener: (context, state) {
-        final error = state.error;
-        if (error != null) {
-          BullSnackBar.show(context, message: error.toTranslated(context));
-          context.read<CoinsCubit>().clearError();
+        final failure = state.failure;
+        if (failure != null) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+          context.read<CoinsCubit>().clearFailure();
         }
       },
       builder: (context, state) {
@@ -63,6 +64,10 @@ class CoinsScreen extends StatelessWidget {
                   ),
                   anyUnfrozen: state.anySelectedUnfrozen,
                   anyFrozen: state.anySelectedFrozen,
+                  onSweep: () => context.pop({
+                    for (final utxo in state.selectedUtxos)
+                      (txId: utxo.txId, vout: utxo.vout),
+                  }),
                   onFreeze: () => _confirmFreeze(context, state),
                   onUnfreeze: () => _unfreeze(
                     context,
@@ -622,7 +627,7 @@ class _ErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              state.error?.toTranslated(context) ??
+              state.failure?.toTranslated(context) ??
                   context.loc.coinsErrorUnexpected,
               textAlign: TextAlign.center,
               style: context.bullText.bodyMedium?.copyWith(

@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -39,6 +40,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -95,6 +97,14 @@ class BitcoinWalletRepository implements BitcoinSendPort {
           (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
         )
         .toList();
+    if (selectedOnly &&
+        (selected == null ||
+            selected.isEmpty ||
+            spendableSelected!.length != selected.length)) {
+      throw SelectedInputsUnavailableException(
+        'One or more selected inputs are unavailable',
+      );
+    }
     if (selected != null &&
         selected.isNotEmpty &&
         spendableSelected!.length != selected.length) {
@@ -115,6 +125,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       selected: spendableSelected
           ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
           .toList(),
+      selectedOnly: selectedOnly,
       // Default to RBF-enabled, matching both the datasource default and
       // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
       // RBF for any caller omitting the flag — harmless while

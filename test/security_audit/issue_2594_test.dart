@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 // Regression test for the fix.
 void main() {
   group('Security audit #2594 stale MAX state', () {
-    test('request updates do not reset sendMax before drain construction', () {
+    test('request updates clear stale MAX outside selected-coin sweeps', () {
       final source = File(
         'lib/features/send/presentation/bloc/send_cubit.dart',
       ).readAsStringSync();
@@ -16,7 +16,7 @@ void main() {
         source.indexOf('Future<void> continueOnAddressConfirmed'),
       );
       expect(requestHandlers, contains('paymentRequest: paymentRequest'));
-      expect(requestHandlers, contains('sendMax: false'));
+      expect(requestHandlers, contains('sendMax: state.isSweep'));
       expect(source, contains('drain: state.sendMax'));
       expect(
         source,

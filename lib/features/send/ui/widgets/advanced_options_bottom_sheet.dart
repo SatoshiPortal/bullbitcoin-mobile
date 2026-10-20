@@ -16,6 +16,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
     final isRBFEnabled = context.select(
       (SendCubit cubit) => cubit.state.replaceByFee,
     );
+    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -62,27 +63,29 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(24),
-          ListTile(
-            title: BullText(
-              context.loc.sendSelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
-              color: context.appColors.secondary,
+          if (!isSweep) ...[
+            ListTile(
+              title: BullText(
+                context.loc.sendSelectCoinsManually,
+                style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
+                color: context.appColors.secondary,
+              ),
+              trailing: Icon(
+                Icons.arrow_forward,
+                color: context.appColors.secondary,
+              ),
+              onTap: () {
+                BullBottomSheet.show(
+                  context: context,
+                  child: BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const CoinSelectionBottomSheet(),
+                  ),
+                );
+              },
             ),
-            trailing: Icon(
-              Icons.arrow_forward,
-              color: context.appColors.secondary,
-            ),
-            onTap: () {
-              BullBottomSheet.show(
-                context: context,
-                child: BlocProvider.value(
-                  value: context.read<SendCubit>(),
-                  child: const CoinSelectionBottomSheet(),
-                ),
-              );
-            },
-          ),
-          const Gap(24),
+            const Gap(24),
+          ],
           BullButton.big(
             label: context.loc.sendDone,
             onPressed: context.pop,

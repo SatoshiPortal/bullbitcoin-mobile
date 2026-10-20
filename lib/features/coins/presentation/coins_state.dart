@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/coins/domain/coins_error.dart';
+import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,7 +20,7 @@ abstract class CoinsState with _$CoinsState {
     @Default(false) bool selecting,
     @Default({}) Set<String> selectedOutpoints,
     @Default(false) bool syncing,
-    CoinsError? error,
+    CoinsFailure? failure,
   }) = _CoinsState;
 
   const CoinsState._();

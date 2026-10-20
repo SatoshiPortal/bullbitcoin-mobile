@@ -7,8 +7,13 @@ import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
 class OpenTheCameraWidget extends StatelessWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
+  final bool disabled;
 
-  const OpenTheCameraWidget({super.key, required this.onScannedPaymentRequest});
+  const OpenTheCameraWidget({
+    super.key,
+    required this.onScannedPaymentRequest,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +40,7 @@ class OpenTheCameraWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 52),
             child: BullButton.small(
               outlined: true,
+              disabled: disabled,
               onPressed: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
