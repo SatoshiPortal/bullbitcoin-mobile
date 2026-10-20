@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/cards/payin_past_deadline_notice.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -24,6 +23,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
+        BullReferenceNotice,
         BullSwitch,
         Gap;
 
@@ -85,7 +85,7 @@ class SellSendPaymentScreen extends StatelessWidget {
       canPop: canLeave && !isPayinPastDeadline,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && isPayinPastDeadline) {
-          leavePastDeadlinePayin(context);
+          _leavePastDeadlinePayin(context);
           return;
         }
         if (didPop) {
@@ -421,9 +421,12 @@ class _BottomButtons extends StatelessWidget {
           const Gap(16),
         ],
         if (pastDeadlineTxid != null)
-          PayinPastDeadlineNotice(
-            transactionId: pastDeadlineTxid,
-            onLeave: () => leavePastDeadlinePayin(context),
+          BullReferenceNotice(
+            message: context.loc.exchangePaymentSentPastDeadline,
+            reference: pastDeadlineTxid,
+            copiedMessage: context.loc.copiedToClipboard,
+            actionLabel: context.loc.exchangePaymentSentLeave,
+            onAction: () => _leavePastDeadlinePayin(context),
           )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
@@ -476,5 +479,5 @@ class _SellError extends StatelessWidget {
 
 /// Leaves the flow for good: the bloc that holds the paid order's latch goes
 /// with it, so a new order can be started from scratch.
-void leavePastDeadlinePayin(BuildContext context) =>
+void _leavePastDeadlinePayin(BuildContext context) =>
     context.goNamed(WalletRoute.walletHome.name);
