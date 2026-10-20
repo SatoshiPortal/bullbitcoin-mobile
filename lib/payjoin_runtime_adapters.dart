@@ -205,6 +205,8 @@ final class AppPayjoinLabelsAdapter implements PayjoinLabelsPort {
 }
 
 final class AppPayjoinLogAdapter implements PayjoinLogPort {
+  static const _displayedSessionRefLength = 7;
+
   const AppPayjoinLogAdapter();
 
   @override
@@ -231,9 +233,8 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
     }
   }
 
-  /// Reads on its own in an exported log: who, what, which session, and the
-  /// cause reduced to its type. Foreign exception text can contain
-  /// transaction IDs, payment URIs or custom server URLs, so it never appears.
+  /// Shows the role and a short correlation prefix before the event description; the structured event retains its full reference.
+  /// Foreign exception text can contain transaction IDs, payment URIs or custom server URLs, so it never appears.
   static String _describe(PayjoinLogEvent event) {
     final role = event.role;
     final sessionRef = event.sessionRef;
@@ -241,8 +242,9 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
     return [
       'Payjoin',
       ?role?.name,
+      if (sessionRef != null)
+        sessionRef.substring(0, _displayedSessionRefLength),
       '${event.code.name}: ${event.code.description}',
-      if (sessionRef != null) 'ref=$sessionRef',
       if (error != null) 'cause=${_describeCause(error)}',
     ].join(' ');
   }

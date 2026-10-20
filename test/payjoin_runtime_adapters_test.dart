@@ -114,7 +114,7 @@ void main() {
     const sessionRef = '0123456789abcdef';
     final request = RequestOptions(path: 'https://private-relay/x');
 
-    for (final event in [
+    final events = [
       PayjoinLogEvent(
         level: PayjoinLogLevel.info,
         code: PayjoinLogCode.lifecycle,
@@ -152,9 +152,11 @@ void main() {
         error: Exception('bitcoin:private-address?pj=https://private-relay'),
         trace: StackTrace.fromString('payjoin-trace'),
       ),
-    ]) {
+    ];
+    for (final event in events) {
       adapter.write(event);
     }
+    expect(events.map((event) => event.sessionRef), everyElement(sessionRef));
 
     final rows = (await log.readLogs())
         .map((line) => line.split('\t'))
@@ -166,30 +168,27 @@ void main() {
     expect(rows.map((row) => row.skip(1).toList()).toList(), [
       [
         'FINE',
-        'Payjoin sender sessionStarted: Session created and stored '
-            'ref=0123456789abcdef',
+        'Payjoin sender 0123456 sessionStarted: Session created and stored',
         '',
         '',
       ],
       [
         'FINE',
-        'Payjoin receiver proposalSent: Payjoin proposal sent to the sender '
-            'ref=0123456789abcdef',
+        'Payjoin receiver 0123456 proposalSent: Payjoin proposal sent to the sender',
         '',
         '',
       ],
       [
         'WARNING',
-        'Payjoin sender relayFailure: Payjoin directory request failed through '
-            'every OHTTP relay ref=0123456789abcdef '
-            'cause=DioException.badResponse(403)',
+        'Payjoin sender 0123456 relayFailure: Payjoin directory request failed '
+            'through every OHTTP relay cause=DioException.badResponse(403)',
         '',
         '',
       ],
       [
         'SEVERE',
-        'Payjoin receiver storageFailure: Payjoin storage failed '
-            'ref=0123456789abcdef cause=_Exception',
+        'Payjoin receiver 0123456 storageFailure: Payjoin storage failed '
+            'cause=_Exception',
         'Exception: Payjoin storageFailure _Exception',
         'payjoin-trace',
       ],
@@ -217,7 +216,7 @@ void main() {
 
     final lines = await log.readLogs();
     expect(
-      lines.where((line) => line.contains('0123456789abcdef')),
+      lines.where((line) => line.contains('0123456')),
       hasLength(1),
       reason: 'an exported log must show how a payjoin attempt progressed',
     );
@@ -245,9 +244,7 @@ void main() {
       );
 
       expect(
-        (await log.readLogs()).where(
-          (line) => line.contains('0123456789abcdef'),
-        ),
+        (await log.readLogs()).where((line) => line.contains('0123456')),
         isEmpty,
         reason:
             'persistence follows the wallet log level, never the event code',
@@ -297,8 +294,7 @@ void main() {
 
     expect(
       verify(() => logger.fine(captureAny())).captured.single,
-      'Payjoin sender proposalReceived: Payjoin proposal received from the '
-      'receiver ref=0123456789abcdef',
+      'Payjoin sender 0123456 proposalReceived: Payjoin proposal received from the receiver',
     );
   });
 
@@ -374,8 +370,7 @@ void main() {
     final warning = verify(() => logger.warning(captureAny())).captured.single;
     expect(
       warning,
-      'Payjoin watchFailure: Transaction watch failed '
-      'ref=0123456789abcdef cause=_Exception',
+      'Payjoin 0123456 watchFailure: Transaction watch failed cause=_Exception',
     );
     final errors = verify(
       () => logger.severe(
@@ -389,7 +384,7 @@ void main() {
     expect(reportedError, isNot(contains('private-address')));
     expect(reportedError, isNot(contains('private-server')));
     expect(reportedError, isNot(contains('raw-transaction-id')));
-    expect(reportedError, isNot(contains('0123456789abcdef')));
+    expect(reportedError, isNot(contains('0123456')));
   });
 
   test('answers from the wallet when no refresh is asked', () async {
