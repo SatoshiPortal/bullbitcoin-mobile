@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/cards/payin_past_deadline_notice.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -11,8 +12,10 @@ import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAsyncStatus,
@@ -92,9 +95,28 @@ class PaySendPaymentScreen extends StatelessWidget {
         _ => null,
       },
     );
+    final canLeave = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        final PayPaymentState s => s.canLeavePaymentScreen,
+        _ => !isConfirmingPayment,
+      },
+    );
+    final isPayinPastDeadline = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final isPayinPastDeadline) => isPayinPastDeadline,
+        _ => false,
+      },
+    );
     return PopScope<Object?>(
-      canPop: !isConfirmingPayment && !isPayinBroadcast,
+      // Back on a payin reported past its deadline leaves the whole flow, like
+      // the Leave button: popping to the wallet selection would land on a flow
+      // still latched to the paid order.
+      canPop: canLeave && !isPayinPastDeadline,
       onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && isPayinPastDeadline) {
+          leavePastDeadlinePayin(context);
+          return;
+        }
         if (didPop) {
           context.read<PayBloc>().add(
             const PayEvent.paymentPreparationAbandoned(),
@@ -449,6 +471,16 @@ class _BottomButtons extends StatelessWidget {
     final isReady = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState,
     );
+    final pastDeadlineTxid = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(
+          isPayinPastDeadline: true,
+          :final payinBroadcastTxid?,
+        ) =>
+          payinBroadcastTxid,
+        _ => null,
+      },
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -476,7 +508,12 @@ class _BottomButtons extends StatelessWidget {
           ),
           const Gap(16),
         ],
-        if (isConfirmingPayment || isPayinBroadcast)
+        if (pastDeadlineTxid != null)
+          PayinPastDeadlineNotice(
+            transactionId: pastDeadlineTxid,
+            onLeave: () => leavePastDeadlinePayin(context),
+          )
+        else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
             label: isPayinBroadcast
                 ? context.loc.exchangePaymentSentRefreshingOrder
@@ -524,3 +561,8 @@ class _PayError extends StatelessWidget {
     );
   }
 }
+
+/// Leaves the flow for good: the bloc that holds the paid order's latch goes
+/// with it, so a new order can be started from scratch.
+void leavePastDeadlinePayin(BuildContext context) =>
+    context.goNamed(ExchangeRoute.exchangeHome.name);

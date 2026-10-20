@@ -228,6 +228,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayPaymentPreparationAbandoned event,
     Emitter<PayState> emit,
   ) {
+    // Leaving a payin the exchange reported late: the screen that would show a
+    // late credit is gone, so stop polling for one. The broadcast latch stays.
+    final current = _currentPaymentState;
+    if (current != null && current.isPayinPastDeadline) {
+      _stopPolling();
+      emit(current.copyWith(isPolling: false));
+      return;
+    }
     if (_hasPaymentInFlight) return;
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
@@ -886,6 +894,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
               .copyWith(payOrder: latestOrder, isPolling: false)
               .toSuccessState(payOrder: latestOrder),
         );
+      } else if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
       } else {
         emit(current.copyWith(payOrder: latestOrder, isPolling: true));
       }
@@ -1169,14 +1179,25 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // the confirming state and let the poll take the order to success when
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
+    // The read took seconds: settle only the order still on screen, from the
+    // state as it is now rather than as it was before the request.
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.payOrder.orderId != paymentState.payOrder.orderId) {
+      return;
+    }
+
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
         payinStatus != OrderPayinStatus.completed) {
+      if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
+      }
       return;
     }
 
-    emit(paymentState.toSuccessState(payOrder: latestOrder));
+    emit(current.toSuccessState(payOrder: latestOrder));
   }
 
   void _emitSendPaymentError(Emitter<PayState> emit, PayFailure error) {
@@ -1495,10 +1516,46 @@ class PayBloc extends Bloc<PayEvent, PayState>
     return deadline != null && !deadline.isAfter(DateTime.now());
   }
 
+  /// The exchange's own verdict that the payment deadline passed with no payin
+  /// seen. Whether a late payin can still be credited is the exchange's call,
+  /// so the screen keeps watching instead of failing the order.
+  static bool _isPastDeadline(FiatPaymentOrder order) =>
+      (order.orderStatus == OrderStatus.expired ||
+          order.orderStatus == OrderStatus.orderExpired) &&
+      (order.payinStatus == OrderPayinStatus.notStarted ||
+          order.payinStatus == OrderPayinStatus.awaitingPayment);
+
+  void _reportPayinPastDeadline(
+    Emitter<PayState> emit,
+    PayPaymentState current,
+    FiatPaymentOrder latestOrder,
+  ) {
+    if (!current.isPayinPastDeadline) {
+      log.warning(
+        // Kept short and punctuated: a long run of lowercase words is
+        // redacted from exported logs as a possible mnemonic.
+        'Pay payin broadcast; exchange reports order past deadline: '
+        'status=${latestOrder.orderStatus.name}, '
+        'payin=${latestOrder.payinStatus.name}',
+      );
+      // Still watched, in case the exchange credits it late, but no longer at
+      // the pace of a payment expected within seconds.
+      _startPolling(interval: const Duration(seconds: 30));
+    }
+    emit(
+      current.copyWith(
+        payOrder: latestOrder,
+        isConfirmingPayment: false,
+        isPayinPastDeadline: true,
+        isPolling: true,
+      ),
+    );
+  }
+
   // From Sell: Manage polling timer
-  void _startPolling() {
+  void _startPolling({Duration interval = const Duration(seconds: 5)}) {
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _pollingTimer = Timer.periodic(interval, (timer) {
       add(const PayEvent.pollOrderStatus());
     });
   }
