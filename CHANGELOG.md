@@ -8,6 +8,33 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## [6.15.0] - 2026-10-19
+
+### New Features
+
+- **Confidential SEPA**: added recipient creation, virtual IBAN onboarding and activation, and a choice between Regular and Confidential SEPA for recipients and withdrawals. Eligible non-corporate EU accounts can also activate a virtual IBAN and view deposit details to fund their exchange account, subject to account permissions. ([#2982](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2982))
+- **Payjoin controls per action**: Send, Receive, Buy, and Sell/pay bills now have separate switches. Exchange Buy and Sell/pay bills default to on; payments between users default to off, with the receiving disclaimer retained. Each exchange order can still opt out individually. Advanced settings use compact digit-only fields, with minimum amounts in sats and session expiry in minutes. ([#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
+
+### Reliability And UX
+
+- Payjoin outcomes are detected through targeted transaction lookups instead of waiting for a full wallet sync; balances and history then catch up in the background. Servers without a usable transaction lookup fall back to wallet synchronization. ([#2977](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2977), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
+- After a Payjoin proposal is sent, the receiver waits 60 seconds before being offered “Receive payment normally”, giving the sender time to broadcast. The wait is shared across Receive and transaction details; fallback checks settle sessions when a payment is already visible and retry transient verification failures. ([#2977](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2977), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
+- Encrypted-vault backup and recovery reuse the verified Tor key-server connection throughout the flow, avoiding repeated connections when saving or decrypting a vault and preserving the connected flow across screens. ([#2985](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2985), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
+- Buy confirmations open while quotes load, display loading feedback above the form, and accommodate larger text. Buy orders appear in transaction details before wallet synchronization completes; recipient pickers and payment confirmations show loading placeholders. ([#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
+- Bill-payment amount-limit messages preserve the precision of exchange limits. ([#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
+- Exchange sign-in and identity-verification screens now offer an exit when their web view fails. ([#2972](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2972))
+- Updated German translations. ([#2979](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2979))
+
+### Security And Privacy
+
+- Payjoin transaction lookups validate that the server's response decodes to the requested transaction. Engine warnings use structured diagnostic codes and sanitized causes to keep payment URIs, transaction IDs, and custom server URLs out of logs and Sentry. ([#2977](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2977), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
+
+### Internal Improvements
+
+- Consolidated shared interface components in `bull_ui` across wallet setup and history, sending, exchange, network settings, backup, and PIN flows. Restored component behavior during the migration, including fee-rate precision limits, disabled PIN input during lockout or verification, bottom-sheet layout, and selection controls. Notifications now use a frosted top toast, and pending operations use shared loading feedback. ([#2845](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2845), [#2851](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2851), [#2859](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2859), [#2860](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2860), [#2861](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2861), [#2865](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2865), [#2866](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2866), [#2867](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2867), [#2870](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2870), [#2871](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2871), [#2874](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2874), [#2875](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2875), [#2883](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2883), [#2884](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2884), [#2972](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2972), [#2973](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2973), [#2975](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2975), [#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
+
+---
+
 ## [6.14.0] - 2026-10-04
 
 ### Updates In Build 224
