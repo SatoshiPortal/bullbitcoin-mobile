@@ -29,6 +29,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -79,7 +80,16 @@ class _MockPreviewBitcoinFeePresets extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
-class _MockPayOrder extends Mock implements FiatPaymentOrder {}
+class _MockLogger extends Mock implements Logger {}
+
+class _MockPayOrder extends Mock implements FiatPaymentOrder {
+  // Read only by the order-progress log line; no test drives them.
+  @override
+  OrderStatus get orderStatus => OrderStatus.inProgress;
+
+  @override
+  OrderPayjoinOutcome get payjoinOutcome => OrderPayjoinOutcome.none;
+}
 
 /// The confirmation path only ever runs from a [PayPaymentState] that earlier
 /// events built up. Seeding it directly keeps this test to the send path and
@@ -814,6 +824,74 @@ void main() {
       await pumpEventQueue();
 
       expect(requestCount, 2);
+    });
+
+    test('a payment settled without a recorded proposal says so in the '
+        'log', () async {
+      final previousLogger = log;
+      final logger = _MockLogger();
+      log = logger;
+      addTearDown(() => log = previousLogger);
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      PayjoinSenderSession session(PayjoinStatus status) =>
+          PayjoinSenderSession(
+            status: status,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          );
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PayjoinSenderSession, PayFailure>(
+          session(PayjoinStatus.requested),
+        ),
+      );
+      when(() => watchPayjoin.execute(bip21)).thenAnswer(
+        (_) => Stream.value(
+          Ok<PayjoinSession, PayFailure>(session(PayjoinStatus.aborted)),
+        ),
+      );
+      bloc.seed(paymentState());
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.isPayinBroadcast,
+      );
+
+      final warnings = verify(
+        () => logger.warning(
+          captureAny(),
+          error: any(named: 'error'),
+          trace: any(named: 'trace'),
+        ),
+      ).captured.whereType<String>();
+      expect(
+        warnings.where(
+          (line) =>
+              line.contains('without a recorded proposal') &&
+              line.contains('status=aborted'),
+        ),
+        hasLength(1),
+      );
     });
 
     test('absolute custom fees pass their actual rate to Payjoin', () async {

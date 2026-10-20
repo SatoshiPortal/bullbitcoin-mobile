@@ -762,17 +762,17 @@ class SellBloc extends Bloc<SellEvent, SellState>
             payjoinBip21 == null || confirmationDeadline == null
             ? null
             : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
-        log.info(
+        log.fine(
           'Sell Payjoin confirmation: '
           'toggle=${sellPaymentState.isPayjoinEnabled}, '
           'bip21Present=${payjoinBip21 != null}, '
-          'windowSec=${payjoinWindow ?? 0}',
+          'windowSec=${payjoinWindow?.inSeconds ?? 0}',
         );
 
         if (sellPaymentState.isPayjoinEnabled &&
             payjoinBip21 != null &&
             payjoinWindow != null) {
-          log.info('Sell Payjoin sender creation started');
+          log.fine('Sell Payjoin sender creation started');
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
             isTestnet: wallet.network.isTestnet,
@@ -818,7 +818,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
               );
               payjoinSender = persisted;
           }
-          log.info(
+          log.fine(
             'Sell Payjoin sender active: ${payjoinSender.logRef}, '
             'status=${payjoinSender.status.name}',
           );
@@ -844,7 +844,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             ),
           );
         } else {
-          log.info(
+          log.fine(
             'Sell Payjoin skipped; broadcasting plain transaction: '
             'toggle=${sellPaymentState.isPayjoinEnabled}, '
             'bip21Present=${payjoinBip21 != null}, '
@@ -964,6 +964,19 @@ class SellBloc extends Bloc<SellEvent, SellState>
   ) async {
     final session = event.session;
     if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+    if (session.hasProposal) {
+      log.fine(
+        'Sell Payjoin session resolved: ${session.logRef}, '
+        'status=${session.status.name}',
+      );
+    } else {
+      // Only what this device recorded: a poll failing on every relay looks
+      // the same as a counterparty that never answered.
+      log.warning(
+        'Sell Payjoin resolved without a recorded proposal: '
+        '${session.logRef}, status=${session.status.name}',
+      );
+    }
 
     // `expired` is terminal but settles nothing: the package released this
     // session's inputs and stopped re-broadcasting it, so the user may confirm
@@ -1065,6 +1078,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // the confirming state and let the poll take the order to success when
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
+    log.fine('Sell order after payin: ${_orderProgress(latestOrder)}');
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
@@ -1199,6 +1213,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
       }
 
+      if (_orderProgress(latestOrder) != _orderProgress(current.sellOrder)) {
+        log.fine('Sell order polled: ${_orderProgress(latestOrder)}');
+      }
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -1759,3 +1776,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     return super.close();
   }
 }
+
+/// The exchange's view of an order while the screen waits on it: without it a
+/// shared log cannot tell a payin the exchange never saw from one it rejected.
+String _orderProgress(Order order) =>
+    'status=${order.orderStatus.name}, payin=${order.payinStatus.name}, '
+    'payjoin=${order.payjoinOutcome.name}';

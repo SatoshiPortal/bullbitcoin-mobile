@@ -634,6 +634,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
             payjoinBip21 == null || confirmationDeadline == null
             ? null
             : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+        log.fine(
+          'Pay Payjoin confirmation: '
+          'toggle=${payPaymentState.isPayjoinEnabled}, '
+          'bip21Present=${payjoinBip21 != null}, '
+          'windowSec=${payjoinWindow?.inSeconds ?? 0}',
+        );
         if (payPaymentState.isPayjoinEnabled &&
             payjoinWindow != null &&
             payjoinBip21 != null) {
@@ -674,12 +680,17 @@ class PayBloc extends Bloc<PayEvent, PayState>
               );
               payjoinSender = persisted;
           }
+          log.fine(
+            'Pay Payjoin sender active: ${payjoinSender.logRef}, '
+            'status=${payjoinSender.status.name}',
+          );
           _watchPayjoin(
             payjoinSender.id,
             orderId: payPaymentState.payOrder.orderId,
           );
           waitingForPayjoin = true;
         } else {
+          log.fine('Pay Payjoin skipped; broadcasting plain transaction');
           final ({String signedPsbt, int txSize}) signedTx;
           switch (await _signPayPayinUsecase.bitcoin(
             psbt: preparedSend.unsignedPsbt,
@@ -754,6 +765,19 @@ class PayBloc extends Bloc<PayEvent, PayState>
   ) async {
     final session = event.session;
     if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+    if (session.hasProposal) {
+      log.fine(
+        'Pay Payjoin session resolved: ${session.logRef}, '
+        'status=${session.status.name}',
+      );
+    } else {
+      // Only what this device recorded: a poll failing on every relay looks
+      // the same as a counterparty that never answered.
+      log.warning(
+        'Pay Payjoin resolved without a recorded proposal: '
+        '${session.logRef}, status=${session.status.name}',
+      );
+    }
 
     final subscription = _payjoinSubscription;
     _payjoinSubscription = null;
@@ -858,6 +882,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
         return;
       }
 
+      if (_orderProgress(latestOrder) != _orderProgress(current.payOrder)) {
+        log.fine('Pay order polled: ${_orderProgress(latestOrder)}');
+      }
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -1152,6 +1179,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // the confirming state and let the poll take the order to success when
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
+    log.fine('Pay order after payin: ${_orderProgress(latestOrder)}');
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
@@ -1494,3 +1522,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     return super.close();
   }
 }
+
+/// The exchange's view of an order while the screen waits on it: without it a
+/// shared log cannot tell a payin the exchange never saw from one it rejected.
+String _orderProgress(Order order) =>
+    'status=${order.orderStatus.name}, payin=${order.payinStatus.name}, '
+    'payjoin=${order.payjoinOutcome.name}';

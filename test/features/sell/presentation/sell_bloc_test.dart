@@ -30,6 +30,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Ok, Result, Sats;
@@ -75,7 +76,16 @@ class _MockLabelCompletedSellOrderUsecase extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
-class _MockSellOrder extends Mock implements SellOrder {}
+class _MockLogger extends Mock implements Logger {}
+
+class _MockSellOrder extends Mock implements SellOrder {
+  // Read only by the order-progress log line; no test drives them.
+  @override
+  OrderStatus get orderStatus => OrderStatus.inProgress;
+
+  @override
+  OrderPayjoinOutcome get payjoinOutcome => OrderPayjoinOutcome.none;
+}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -655,6 +665,79 @@ void main() {
         // txid the sale must carry — not the original it replaced.
         expect((settled as SellPaymentState).payinBroadcastTxid, payjoinTxid);
         await bloc.stream.firstWhere((state) => state is SellSuccessState);
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test(
+      'a sale settled without a recorded proposal says so in the log',
+      () async {
+        final previousLogger = log;
+        final logger = _MockLogger();
+        log = logger;
+        addTearDown(() => log = previousLogger);
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+        PayjoinSenderSession session(PayjoinStatus status) =>
+            PayjoinSenderSession(
+              status: status,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            );
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(
+            session(PayjoinStatus.requested),
+          ),
+        );
+        when(() => watchPayjoin.execute(bip21)).thenAnswer(
+          (_) => Stream.value(
+            Ok<PayjoinSession, SellFailure>(session(PayjoinStatus.aborted)),
+          ),
+        );
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is SellPaymentState && state.isPayinBroadcast,
+        );
+
+        final warnings = verify(
+          () => logger.warning(
+            captureAny(),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        ).captured.whereType<String>();
+        expect(
+          warnings.where(
+            (line) =>
+                line.contains('without a recorded proposal') &&
+                line.contains('status=aborted'),
+          ),
+          hasLength(1),
+          reason: 'a support log must show the payjoin never got a proposal',
+        );
+        // Local absence is all the app knows; it must not blame the exchange.
+        expect(warnings.join(), isNot(contains('never answered')));
       },
       timeout: const Timeout(Duration(seconds: 20)),
     );

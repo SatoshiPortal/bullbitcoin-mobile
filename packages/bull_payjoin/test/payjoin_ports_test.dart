@@ -5,7 +5,7 @@ void main() {
   test('log events reject raw session identifiers', () {
     expect(
       () => PayjoinLogEvent(
-        level: PayjoinLogLevel.info,
+        level: PayjoinLogLevel.fine,
         code: PayjoinLogCode.sessionStarted,
         sessionRef: 'bitcoin:address?amount=1',
       ),
@@ -30,7 +30,7 @@ void main() {
   test('log events accept privacy-safe session references', () {
     expect(
       PayjoinLogEvent(
-        level: PayjoinLogLevel.info,
+        level: PayjoinLogLevel.fine,
         code: PayjoinLogCode.sessionStarted,
         sessionRef: '0123456789abcdef',
       ).sessionRef,

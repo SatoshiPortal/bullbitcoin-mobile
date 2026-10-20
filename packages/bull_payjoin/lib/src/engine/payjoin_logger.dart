@@ -11,17 +11,34 @@ final class PayjoinLogger {
 
   const PayjoinLogger(this._port);
 
-  void info(
-    String _, {
-    PayjoinLogCode code = PayjoinLogCode.lifecycle,
+  /// Routine activity at the wallet's non-persisted INFO level, such as one poll of many.
+  void info({
+    required PayjoinLogCode code,
+    PayjoinLogRole? role,
     String? sessionRef,
   }) {
-    _write(PayjoinLogLevel.info, code, sessionRef: sessionRef);
+    _write(PayjoinLogLevel.info, code, role: role, sessionRef: sessionRef);
   }
 
-  void warning(
-    String _, {
+  /// A persisted FINE milestone with an explicit, stable code.
+  void fine({
+    required PayjoinLogCode code,
+    PayjoinLogRole? role,
+    String? sessionRef,
+    Object? error,
+  }) {
+    _write(
+      PayjoinLogLevel.fine,
+      code,
+      role: role,
+      sessionRef: sessionRef,
+      error: error,
+    );
+  }
+
+  void warning({
     PayjoinLogCode code = PayjoinLogCode.lifecycle,
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -29,6 +46,7 @@ final class PayjoinLogger {
     _write(
       PayjoinLogLevel.warning,
       code,
+      role: role,
       sessionRef: sessionRef,
       error: error,
       trace: trace,
@@ -36,8 +54,8 @@ final class PayjoinLogger {
   }
 
   void severe({
-    required String message,
     required PayjoinLogCode code,
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -45,19 +63,19 @@ final class PayjoinLogger {
     _write(
       PayjoinLogLevel.severe,
       code,
+      role: role,
       sessionRef: sessionRef,
       error: error,
       trace: trace,
     );
   }
 
-  /// The free-form message is deliberately dropped: call sites compose it, so
-  /// it is the one field that could carry a BIP21 URI or a raw txid into the
-  /// host's logs. [error] and [trace] are forwarded instead — they are the
-  /// diagnosis, and neither is composed here.
+  /// Events carry structured metadata only; the host renders [PayjoinLogCode.description].
+  /// [error] and [trace] are forwarded for diagnosis; the host must sanitize the cause rather than logging foreign exception text verbatim.
   void _write(
     PayjoinLogLevel level,
     PayjoinLogCode code, {
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -66,6 +84,7 @@ final class PayjoinLogger {
       PayjoinLogEvent(
         level: level,
         code: code,
+        role: role,
         sessionRef: _safeSessionRef(sessionRef),
         error: error,
         trace: trace,
