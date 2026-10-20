@@ -48,6 +48,8 @@ abstract final class PayjoinSetup {
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),
+          locator<BdkBitcoinBlockchainDatasource>(),
+          locator<ElectrumServersPort>(),
         ),
         labels: AppPayjoinLabelsAdapter(locator<LabelsFacade>()),
         legacyData: PayjoinLegacyDataAdapter(database),

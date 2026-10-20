@@ -203,7 +203,7 @@ void main() {
       invocation,
     ) async {
       final payjoin = invocation.positionalArguments.single as PayjoinSession;
-      return payjoin.canManuallyBroadcastOriginal;
+      return Ok(payjoin.canManuallyBroadcastOriginal);
     });
 
     when(
@@ -795,7 +795,10 @@ void main() {
         addTearDown(cubit.close);
         await cubit.initByPayjoinId(payjoin.uri);
 
-        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+        expect(
+          (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+          isFalse,
+        );
 
         expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
@@ -814,7 +817,10 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+      expect(
+        (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+        isFalse,
+      );
 
       expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
@@ -834,7 +840,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
 
       final completed = _sender(status: PayjoinStatus.aborted);
       when(() => broadcastOriginalTransaction.execute(any())).thenAnswer(
@@ -863,7 +869,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
 
       expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
       await pumpEventQueue();
@@ -937,7 +943,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.id);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
       expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
       await pumpEventQueue();
 
@@ -1220,7 +1226,10 @@ void main() {
         PayjoinStatus.completed,
       );
       expect(cubit.state.payjoin, completed);
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+      expect(
+        (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+        isFalse,
+      );
     });
 
     test('stays on payjoin-session data while nothing is broadcast, without '
@@ -1376,7 +1385,7 @@ void main() {
         expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isTrue);
         when(
           () => broadcastOriginalTransaction.canExecute(completedViaFallback),
-        ).thenAnswer((_) async => false);
+        ).thenAnswer((_) async => const Ok(false));
 
         payjoinEvents.add(completedViaFallback);
         await pumpEventQueue();
@@ -1385,7 +1394,10 @@ void main() {
         // the fallback transaction to appear in the wallet transaction list.
         expect(cubit.state.payjoin?.isAborted, isTrue);
         expect(cubit.state.payjoin?.isOngoing, isFalse);
-        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+        expect(
+          (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+          isFalse,
+        );
       },
     );
 
