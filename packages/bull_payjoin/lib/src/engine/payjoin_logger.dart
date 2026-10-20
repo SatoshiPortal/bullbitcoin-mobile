@@ -11,26 +11,27 @@ final class PayjoinLogger {
 
   const PayjoinLogger(this._port);
 
-  /// Routine activity a host may drop, such as one poll of many.
-  /// The host may omit it from persisted diagnostics; the free-form argument is dropped like other text.
-  void debug(String _, {PayjoinLogRole? role, String? sessionRef}) {
+  /// Routine activity at the wallet's non-persisted INFO level, such as one poll of many.
+  /// The free-form argument is dropped like other text.
+  void info(String _, {PayjoinLogRole? role, String? sessionRef}) {
     _write(
-      PayjoinLogLevel.debug,
+      PayjoinLogLevel.info,
       PayjoinLogCode.lifecycle,
       role: role,
       sessionRef: sessionRef,
     );
   }
 
-  void info(
+  /// A persisted FINE milestone with an explicit, stable code.
+  void fine(
     String _, {
-    PayjoinLogCode code = PayjoinLogCode.lifecycle,
+    required PayjoinLogCode code,
     PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
   }) {
     _write(
-      PayjoinLogLevel.info,
+      PayjoinLogLevel.fine,
       code,
       role: role,
       sessionRef: sessionRef,

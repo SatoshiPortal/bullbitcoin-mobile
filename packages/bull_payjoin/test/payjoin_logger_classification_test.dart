@@ -12,6 +12,24 @@ final class _CaptureLogPort implements PayjoinLogPort {
 }
 
 void main() {
+  test('routine traces and persisted milestones use the wallet levels', () {
+    final port = _CaptureLogPort();
+    final logger = PayjoinLogger(port);
+
+    logger.info('Routine poll');
+    expect(port.event?.level, PayjoinLogLevel.info);
+    expect(port.event?.code, PayjoinLogCode.lifecycle);
+
+    logger.fine(
+      'Session started',
+      code: PayjoinLogCode.sessionStarted,
+      role: PayjoinLogRole.sender,
+    );
+    expect(port.event?.level, PayjoinLogLevel.fine);
+    expect(port.event?.code, PayjoinLogCode.sessionStarted);
+    expect(port.event?.role, PayjoinLogRole.sender);
+  });
+
   test('a proposal persistence failure keeps its storage classification', () {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);

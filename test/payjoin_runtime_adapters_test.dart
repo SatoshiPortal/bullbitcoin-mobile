@@ -114,7 +114,7 @@ void main() {
 
     adapter.write(
       PayjoinLogEvent(
-        level: PayjoinLogLevel.info,
+        level: PayjoinLogLevel.fine,
         code: PayjoinLogCode.sessionStarted,
         sessionRef: '0123456789abcdef',
       ),
@@ -128,6 +128,38 @@ void main() {
     );
   });
 
+  test(
+    'INFO events stay out of the export even with a milestone code',
+    () async {
+      final previousLogger = log;
+      final directory = await Directory.systemTemp.createTemp('payjoin_info');
+      addTearDown(() async {
+        log = previousLogger;
+        await directory.delete(recursive: true);
+      });
+      log = Logger.replace(directory: directory);
+      await log.ensureLogsExist(writeDiagnosticContext: false);
+
+      const AppPayjoinLogAdapter().write(
+        PayjoinLogEvent(
+          level: PayjoinLogLevel.info,
+          code: PayjoinLogCode.sessionStarted,
+          role: PayjoinLogRole.sender,
+          sessionRef: '0123456789abcdef',
+        ),
+      );
+
+      expect(
+        (await log.readLogs()).where(
+          (line) => line.contains('0123456789abcdef'),
+        ),
+        isEmpty,
+        reason:
+            'persistence follows the wallet log level, never the event code',
+      );
+    },
+  );
+
   test('polling chatter stays out of the exported log file', () async {
     final previousLogger = log;
     final directory = await Directory.systemTemp.createTemp('payjoin_logs');
@@ -139,13 +171,6 @@ void main() {
     await log.ensureLogsExist(writeDiagnosticContext: false);
     const adapter = AppPayjoinLogAdapter();
 
-    adapter.write(
-      PayjoinLogEvent(
-        level: PayjoinLogLevel.debug,
-        code: PayjoinLogCode.lifecycle,
-        sessionRef: '0123456789abcdef',
-      ),
-    );
     adapter.write(
       PayjoinLogEvent(
         level: PayjoinLogLevel.info,
@@ -168,7 +193,7 @@ void main() {
 
     const AppPayjoinLogAdapter().write(
       PayjoinLogEvent(
-        level: PayjoinLogLevel.info,
+        level: PayjoinLogLevel.fine,
         code: PayjoinLogCode.proposalReceived,
         role: PayjoinLogRole.sender,
         sessionRef: '0123456789abcdef',

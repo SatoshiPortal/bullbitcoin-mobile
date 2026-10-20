@@ -245,7 +245,7 @@ void main() {
       );
 
       final started = logs.withCode(PayjoinLogCode.sessionStarted).single;
-      expect(started.level, PayjoinLogLevel.info);
+      expect(started.level, PayjoinLogLevel.fine);
       expect(started.role, PayjoinLogRole.receiver);
       expect(started.sessionRef, '0123456789abcdef');
     });
@@ -266,7 +266,7 @@ void main() {
       await engine.tryBroadcastOriginalTransaction(model.toEntity());
 
       final fallback = logs.withCode(PayjoinLogCode.fallbackBroadcast).single;
-      expect(fallback.level, PayjoinLogLevel.info);
+      expect(fallback.level, PayjoinLogLevel.fine);
       expect(fallback.role, PayjoinLogRole.receiver);
       expect(logs.withCode(PayjoinLogCode.sessionCompleted), isEmpty);
     });

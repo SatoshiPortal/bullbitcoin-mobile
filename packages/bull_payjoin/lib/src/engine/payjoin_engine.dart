@@ -287,7 +287,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         }
 
         final receiver = model.toEntity() as PayjoinReceiver;
-        _log.info(
+        _log.fine(
           'Payjoin receiver started',
           code: api.PayjoinLogCode.sessionStarted,
           role: api.PayjoinLogRole.receiver,
@@ -376,7 +376,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       originalTxId: model.originalTxId,
     );
     final sender = model.toEntity() as PayjoinSender;
-    _log.info(
+    _log.fine(
       'Payjoin sender started',
       code: api.PayjoinLogCode.sessionStarted,
       role: api.PayjoinLogRole.sender,
@@ -551,7 +551,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             fresh.originalTxBytes == null && fresh.proposalPsbt == null;
         final settled = await _settleReceiverAfterDisable(fresh);
         if (wasIdle) {
-          _log.info(
+          _log.fine(
             'Payjoin receiver cancelled',
             code: api.PayjoinLogCode.sessionCancelled,
             role: api.PayjoinLogRole.receiver,
@@ -709,7 +709,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21
       // URI and a raw txid identifies the payment on-chain — both off-limits
       // in logs (user-shareable / pasted into issues).
-      _log.info(
+      _log.fine(
         'Original transaction broadcasted for payjoin ${payjoin.logRef}',
         code: api.PayjoinLogCode.fallbackBroadcast,
         role: _roleOf(payjoin),
@@ -825,7 +825,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // in "requested" until the app restarts.
     PayjoinReceiver? result;
     try {
-      _log.info(
+      _log.fine(
         'Processing payjoin request',
         code: api.PayjoinLogCode.requestReceived,
         role: api.PayjoinLogRole.receiver,
@@ -1023,7 +1023,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (!recorded) return;
 
     final payjoin = payjoinModel.toEntity() as PayjoinSender;
-    _log.info(
+    _log.fine(
       'Processing payjoin proposal for ${payjoin.logRef}',
       code: api.PayjoinLogCode.proposalReceived,
       role: api.PayjoinLogRole.sender,
@@ -1042,7 +1042,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             : primitives.BitcoinNetwork.mainnet,
         psbt: payjoin.proposalPsbt!,
       );
-      _log.info(
+      _log.fine(
         'Payjoin proposal signed for ${payjoin.logRef}',
         code: api.PayjoinLogCode.proposalSigned,
         role: api.PayjoinLogRole.sender,
@@ -1058,7 +1058,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21 URI
       //  and a raw txid identifies the payment on-chain — both off-limits in
       //  logs.
-      _log.info(
+      _log.fine(
         'Payjoin proposal broadcasted for ${payjoin.logRef}',
         code: api.PayjoinLogCode.payjoinBroadcast,
         role: api.PayjoinLogRole.sender,
@@ -1203,7 +1203,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         api.PayjoinLogCode.expiredWithoutOriginal,
       _ => api.PayjoinLogCode.expiredMidNegotiation,
     };
-    _log.info(
+    _log.fine(
       'Payjoin session expired',
       code: expiryCode,
       role: _roleOf(freshModel),
@@ -1503,7 +1503,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumeOne(PayjoinModel model) async {
-    _log.info(
+    _log.fine(
       'Payjoin session resumed',
       code: api.PayjoinLogCode.sessionResumed,
       role: _roleOf(model),
@@ -2162,7 +2162,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
     final completed = completedModel.toEntity();
     _payjoinStreamController.add(completed);
-    _log.info(
+    _log.fine(
       'Payjoin ${completed.logRef} completed on broadcast',
       code: api.PayjoinLogCode.sessionCompleted,
       role: _roleOf(completed),
@@ -2216,7 +2216,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     _syncWalletAfterBroadcast(abortedModel.walletId);
     final abortedEntity = abortedModel.toEntity();
     _payjoinStreamController.add(abortedEntity);
-    _log.info(
+    _log.fine(
       'Payjoin ${abortedEntity.logRef} resolved via the original '
       'transaction observed on-chain (fallback, not necessarily broadcast '
       'by this device)',

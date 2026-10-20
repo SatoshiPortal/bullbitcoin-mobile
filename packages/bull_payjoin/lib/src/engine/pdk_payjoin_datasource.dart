@@ -119,7 +119,7 @@ class PdkPayjoinDatasource {
         );
         return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
-        _log.debug('OHTTP key fetch failed');
+        _log.info('OHTTP key fetch failed');
         continue;
       }
     }
@@ -215,7 +215,7 @@ class PdkPayjoinDatasource {
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
-    _log.debug('[sender] creating $senderLogRef with expirySec=$expirySec');
+    _log.info('[sender] creating $senderLogRef with expirySec=$expirySec');
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -264,7 +264,7 @@ class PdkPayjoinDatasource {
     await persistBeforePost(model);
 
     await postOriginalProposal(withReplyKey, persister);
-    _log.info(
+    _log.fine(
       '[sender] original proposal posted for $senderLogRef',
       code: PayjoinLogCode.originalPosted,
       role: PayjoinLogRole.sender,
@@ -282,7 +282,7 @@ class PdkPayjoinDatasource {
     // row is already persisted, so a proposal arriving immediately still
     // finds it.
     startListeningForProposal(postedModel);
-    _log.debug('[sender poll] started for $senderLogRef');
+    _log.info('[sender poll] started for $senderLogRef');
 
     return postedModel;
   }
@@ -308,7 +308,7 @@ class PdkPayjoinDatasource {
         posted = true;
         break;
       } catch (e) {
-        _log.debug('Sender proposal relay failed');
+        _log.info('Sender proposal relay failed');
         lastError = e;
         continue;
       }
@@ -359,7 +359,7 @@ class PdkPayjoinDatasource {
       txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
     );
 
-    _log.info(
+    _log.fine(
       'Payjoin request processed and proposal sent',
       code: PayjoinLogCode.proposalSent,
       role: PayjoinLogRole.receiver,
@@ -410,7 +410,7 @@ class PdkPayjoinDatasource {
     if (pendingFallback == null) {
       // The session was already terminal (e.g. a race with another decline
       // path) — nothing further to persist, but not an error either.
-      _log.debug(
+      _log.info(
         'Payjoin receiver ${receiverModel.id} was already resolved when '
         'declining below minimum',
       );
@@ -689,7 +689,7 @@ class PdkPayjoinDatasource {
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
       } catch (e) {
-        _log.debug('Receiver proposal relay failed');
+        _log.info('Receiver proposal relay failed');
         lastError = e;
         continue;
       }

@@ -211,15 +211,9 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
   void write(PayjoinLogEvent event) {
     final message = _describe(event);
     switch (event.level) {
-      case PayjoinLogLevel.debug:
-        // Per-poll and per-relay chatter: debug output only, never the
-        // exported file, which a few minutes of polling would flood.
-        log.info(message);
-      case PayjoinLogLevel.info when event.code == PayjoinLogCode.lifecycle:
-        log.info(message);
       case PayjoinLogLevel.info:
-        // A session milestone: the exported file must keep it, or a shared
-        // log cannot tell how far an attempt went before it fell back.
+        log.info(message);
+      case PayjoinLogLevel.fine:
         log.fine(message);
       case PayjoinLogLevel.warning:
         log.warning(message);

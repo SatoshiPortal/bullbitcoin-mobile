@@ -232,10 +232,10 @@ final class PayjoinLegacyReceiver {
   });
 }
 
-/// Event intent, independent of the host logger's persistence-level names.
-/// Each host chooses persistence and reporting for routine debug activity, informational milestones, warnings and severe failures.
+/// The same level names and intent as the wallet logger; the host owns delivery and reporting.
+/// INFO is for routine traces, FINE for persisted milestones, WARNING for recoverable failures, and SEVERE for reportable faults.
 /// Hosts must sanitize causes before forwarding them to logs or reporters.
-enum PayjoinLogLevel { debug, info, warning, severe }
+enum PayjoinLogLevel { info, fine, warning, severe }
 
 /// Which side of the protocol an event is about: the wallet paying (sender)
 /// or the wallet being paid (receiver).
