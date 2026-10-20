@@ -32,6 +32,7 @@ final _everyFailure = <SellFailure>[
   ),
   const SellFeeBelowRelayFloorFailure(_rawReason),
   const SellFeesUnavailableFailure(_rawReason),
+  const SellQuoteExpiredFailure(_rawReason),
   const SellUnexpectedFailure(_rawReason),
 ];
 

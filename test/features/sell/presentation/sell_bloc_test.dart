@@ -984,6 +984,25 @@ void main() {
     expect(state.error, isNotNull);
   });
 
+  group('SellBloc — order deadline', () {
+    test('a quote past its deadline is never paid', () async {
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
+      );
+      when(
+        () => sellOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(
+        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      );
+      expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
+    });
+  });
+
   group('SellBloc — deposit address pinning', () {
     /// A refresh response whose deposit address differs from the one the
     /// order was created with. Stands in for a compromised backend or a
