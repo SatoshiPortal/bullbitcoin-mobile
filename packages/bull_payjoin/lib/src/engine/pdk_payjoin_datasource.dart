@@ -119,7 +119,6 @@ class PdkPayjoinDatasource {
         );
         return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
-        _log.info();
         continue;
       }
     }
@@ -215,7 +214,6 @@ class PdkPayjoinDatasource {
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
-    _log.info();
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -281,7 +279,6 @@ class PdkPayjoinDatasource {
     // row is already persisted, so a proposal arriving immediately still
     // finds it.
     startListeningForProposal(postedModel);
-    _log.info();
 
     return postedModel;
   }
@@ -307,7 +304,6 @@ class PdkPayjoinDatasource {
         posted = true;
         break;
       } catch (e) {
-        _log.info();
         lastError = e;
         continue;
       }
@@ -407,7 +403,6 @@ class PdkPayjoinDatasource {
     if (pendingFallback == null) {
       // The session was already terminal (e.g. a race with another decline
       // path) — nothing further to persist, but not an error either.
-      _log.info();
       return persister.toJson();
     }
 
@@ -683,7 +678,6 @@ class PdkPayjoinDatasource {
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
       } catch (e) {
-        _log.info();
         lastError = e;
         continue;
       }
@@ -755,7 +749,6 @@ class PdkPayjoinDatasource {
     Timer timer,
   ) async {
     if (!_receiverPollsInFlight.add(receiverModel.id)) return;
-    _log.info();
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -784,7 +777,6 @@ class PdkPayjoinDatasource {
         persister,
       );
       if (unchecked == null) {
-        _log.info();
         return;
       }
 
@@ -797,7 +789,6 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      _log.info();
       final updatedModel = receiverModel.copyWith(
         receiver: persister.toJson(),
         originalTxBytes: originalTxBytes,
@@ -812,13 +803,12 @@ class PdkPayjoinDatasource {
       _receiverTimers.remove(receiverModel.id);
       _payjoinRequestedController.add(updatedModel);
     } on PayjoinExpiredException {
-      _log.info();
       if (!timer.isActive) return;
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _expiredController.add(receiverModel.copyWith(isExpired: true));
     } catch (_) {
-      _log.info();
+      // Retry transient polling failures on the next timer tick.
     } finally {
       _receiverPollsInFlight.remove(receiverModel.id);
     }
@@ -833,7 +823,6 @@ class PdkPayjoinDatasource {
     //  used as the internal map key below, which never reaches a log.
     final senderLogRef = Payjoin.logRefForId(senderModel.id);
     if (!_senderPollsInFlight.add(senderModel.id)) return;
-    _log.info();
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -860,7 +849,6 @@ class PdkPayjoinDatasource {
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
       if (proposalPsbt == null) return;
 
-      _log.info();
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
@@ -875,13 +863,12 @@ class PdkPayjoinDatasource {
       _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException {
-      _log.info();
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
     } catch (_) {
-      _log.info();
+      // Retry transient polling failures on the next timer tick.
     } finally {
       _senderPollsInFlight.remove(senderModel.id);
     }
@@ -910,11 +897,9 @@ class PdkPayjoinDatasource {
         if (_isExpiredString(e)) {
           throw PayjoinExpiredException('Payjoin receiver expired: $e');
         }
-        _log.info();
         lastError = e;
         continue;
       } catch (e) {
-        _log.info();
         lastError = e;
         continue;
       }
@@ -948,11 +933,9 @@ class PdkPayjoinDatasource {
         if (_isExpiredString(e)) {
           throw PayjoinExpiredException('Payjoin sender expired: $e');
         }
-        _log.info();
         lastError = e;
         continue;
       } catch (e) {
-        _log.info();
         lastError = e;
         continue;
       }

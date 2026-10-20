@@ -12,13 +12,12 @@ final class PayjoinLogger {
   const PayjoinLogger(this._port);
 
   /// Routine activity at the wallet's non-persisted INFO level, such as one poll of many.
-  void info({PayjoinLogRole? role, String? sessionRef}) {
-    _write(
-      PayjoinLogLevel.info,
-      PayjoinLogCode.lifecycle,
-      role: role,
-      sessionRef: sessionRef,
-    );
+  void info({
+    required PayjoinLogCode code,
+    PayjoinLogRole? role,
+    String? sessionRef,
+  }) {
+    _write(PayjoinLogLevel.info, code, role: role, sessionRef: sessionRef);
   }
 
   /// A persisted FINE milestone with an explicit, stable code.

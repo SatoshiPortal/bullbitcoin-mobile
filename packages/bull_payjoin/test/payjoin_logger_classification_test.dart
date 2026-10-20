@@ -16,9 +16,15 @@ void main() {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);
 
-    logger.info();
+    logger.info(
+      code: PayjoinLogCode.sessionResumed,
+      role: PayjoinLogRole.sender,
+      sessionRef: '0123456789abcdef',
+    );
     expect(port.event?.level, PayjoinLogLevel.info);
-    expect(port.event?.code, PayjoinLogCode.lifecycle);
+    expect(port.event?.code, PayjoinLogCode.sessionResumed);
+    expect(port.event?.role, PayjoinLogRole.sender);
+    expect(port.event?.sessionRef, '0123456789abcdef');
 
     logger.fine(
       code: PayjoinLogCode.sessionStarted,
