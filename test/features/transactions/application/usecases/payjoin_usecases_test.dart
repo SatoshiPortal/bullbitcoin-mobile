@@ -183,19 +183,39 @@ void main() {
       expect(failure.logMessage, isNot(contains('bad-txns')));
     });
 
+    test('canExecute keeps a failed check apart from "not eligible"', () async {
+      final session = _session();
+      when(() => sender.canBroadcastOriginal(session.id)).thenAnswer(
+        (_) async => const Err<bool, PayjoinFailure>(
+          PayjoinUnavailableFailure('could not verify'),
+        ),
+      );
+
+      final result = await BroadcastOriginalTransactionUsecase(
+        sender,
+      ).canExecute(session);
+
+      expect(
+        (result as bb.Err).failure,
+        isA<TransactionPayjoinVerificationFailure>(),
+      );
+    });
+
     test(
-      'canExecute reports false rather than propagating a failure',
+      'canExecute settles an unavailable fallback as not eligible',
       () async {
         final session = _session();
         when(() => sender.canBroadcastOriginal(session.id)).thenAnswer(
-          (_) async =>
-              const Err<bool, PayjoinFailure>(PayjoinStorageFailure('locked')),
+          (_) async => const Err<bool, PayjoinFailure>(
+            PayjoinFallbackUnavailableFailure('resolved'),
+          ),
         );
 
-        expect(
-          await BroadcastOriginalTransactionUsecase(sender).canExecute(session),
-          isFalse,
-        );
+        final result = await BroadcastOriginalTransactionUsecase(
+          sender,
+        ).canExecute(session);
+
+        expect((result as bb.Ok).value, isFalse);
       },
     );
   });
