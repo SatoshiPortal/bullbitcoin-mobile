@@ -101,6 +101,101 @@ void main() {
     ).thenAnswer((_) async => null);
   });
 
+  test('structured events preserve the exported TSV contract', () async {
+    final previousLogger = log;
+    final directory = await Directory.systemTemp.createTemp('payjoin_tsv');
+    addTearDown(() async {
+      await log.flush();
+      log = previousLogger;
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(directory: directory);
+    const adapter = AppPayjoinLogAdapter();
+    const sessionRef = '0123456789abcdef';
+    final request = RequestOptions(path: 'https://private-relay/x');
+
+    for (final event in [
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.info,
+        code: PayjoinLogCode.lifecycle,
+        role: PayjoinLogRole.sender,
+        sessionRef: sessionRef,
+      ),
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.fine,
+        code: PayjoinLogCode.sessionStarted,
+        role: PayjoinLogRole.sender,
+        sessionRef: sessionRef,
+      ),
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.fine,
+        code: PayjoinLogCode.proposalSent,
+        role: PayjoinLogRole.receiver,
+        sessionRef: sessionRef,
+      ),
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.relayFailure,
+        role: PayjoinLogRole.sender,
+        sessionRef: sessionRef,
+        error: DioException(
+          requestOptions: request,
+          response: Response<void>(requestOptions: request, statusCode: 403),
+          type: DioExceptionType.badResponse,
+        ),
+      ),
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.severe,
+        code: PayjoinLogCode.storageFailure,
+        role: PayjoinLogRole.receiver,
+        sessionRef: sessionRef,
+        error: Exception('bitcoin:private-address?pj=https://private-relay'),
+        trace: StackTrace.fromString('payjoin-trace'),
+      ),
+    ]) {
+      adapter.write(event);
+    }
+
+    final rows = (await log.readLogs())
+        .map((line) => line.split('\t'))
+        .toList();
+    for (final row in rows) {
+      expect(row, hasLength(5));
+      expect(DateTime.tryParse(row.first), isNotNull);
+    }
+    expect(rows.map((row) => row.skip(1).toList()).toList(), [
+      [
+        'FINE',
+        'Payjoin sender sessionStarted: Session created and stored '
+            'ref=0123456789abcdef',
+        '',
+        '',
+      ],
+      [
+        'FINE',
+        'Payjoin receiver proposalSent: Payjoin proposal sent to the sender '
+            'ref=0123456789abcdef',
+        '',
+        '',
+      ],
+      [
+        'WARNING',
+        'Payjoin sender relayFailure: Payjoin directory request failed through '
+            'every OHTTP relay ref=0123456789abcdef '
+            'cause=DioException.badResponse(403)',
+        '',
+        '',
+      ],
+      [
+        'SEVERE',
+        'Payjoin receiver storageFailure: Payjoin storage failed '
+            'ref=0123456789abcdef cause=_Exception',
+        'Exception: Payjoin storageFailure _Exception',
+        'payjoin-trace',
+      ],
+    ]);
+  });
+
   test('session milestones reach the exported log file', () async {
     final previousLogger = log;
     final directory = await Directory.systemTemp.createTemp('payjoin_logs');

@@ -88,7 +88,6 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     // a post-open throw is an IO/disk problem or a bug — a fresh file would
     // not help and would needlessly discard readable payjoin history.
     payjoinLog.severe(
-      message: 'Could not open or migrate Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -114,7 +113,6 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
     return database;
   } catch (error, trace) {
     payjoinLog.severe(
-      message: 'Could not open Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -143,7 +141,6 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
     }
   } catch (error, trace) {
     payjoinLog.severe(
-      message: 'Could not quarantine unreadable Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -151,7 +148,6 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
     return null;
   }
   payjoinLog.warning(
-    '',
     code: PayjoinLogCode.migrationFailure,
     error: StateError(
       'Moved unreadable Payjoin database aside and reopened a fresh one; '
@@ -274,7 +270,6 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       signed = await _engineWalletSign(request);
     } catch (error, trace) {
       _log.warning(
-        'Payjoin sender could not sign the original',
         code: PayjoinLogCode.signingFailure,
         role: PayjoinLogRole.sender,
         error: error,
@@ -297,7 +292,6 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       // The failure handed back is deliberately generic; without this the
       // cause of a payment falling back to a plain transaction is lost.
       _log.warning(
-        'Payjoin sender start failed',
         code: PayjoinLogCode.sessionStartFailed,
         role: PayjoinLogRole.sender,
         error: error,
@@ -346,7 +340,6 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       return Ok(_toSession(session) as PayjoinReceiverSession);
     } catch (error, trace) {
       _log.warning(
-        'Payjoin receiver start failed',
         code: PayjoinLogCode.sessionStartFailed,
         role: PayjoinLogRole.receiver,
         error: error,

@@ -16,12 +16,11 @@ void main() {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);
 
-    logger.info('Routine poll');
+    logger.info();
     expect(port.event?.level, PayjoinLogLevel.info);
     expect(port.event?.code, PayjoinLogCode.lifecycle);
 
     logger.fine(
-      'Session started',
       code: PayjoinLogCode.sessionStarted,
       role: PayjoinLogRole.sender,
     );
@@ -35,7 +34,6 @@ void main() {
     final logger = PayjoinLogger(port);
 
     logger.severe(
-      message: 'Payjoin proposal was sent but persistence failed',
       code: PayjoinLogCode.storageFailure,
       sessionRef: 'raw-session-id',
       error: StateError('write failed'),
@@ -45,28 +43,26 @@ void main() {
     expect(
       port.event?.code,
       PayjoinLogCode.storageFailure,
-      reason: 'all severe events currently collapse to lifecycle',
+      reason: 'a storage failure must stay distinguishable from other faults',
     );
     expect(port.event?.sessionRef, matches(RegExp(r'^[0-9a-f]{16}$')));
     expect(port.event?.sessionRef, isNot('raw-session-id'));
   });
 
-  test('the logger forwards the cause and drops the composed message', () {
+  test('the logger forwards structured cause and trace metadata', () {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);
     final cause = StateError('write failed');
+    final trace = StackTrace.current;
 
     logger.severe(
-      message: 'Payjoin proposal for bitcoin:tb1qaddress?amount=1 failed',
       code: PayjoinLogCode.storageFailure,
       error: cause,
-      trace: StackTrace.current,
+      trace: trace,
     );
 
-    // The cause is what makes a failure diagnosable; the message is the one
-    // field a call site composes, so it never leaves the package.
     expect(port.event?.error, same(cause));
-    expect(port.event?.trace, isNotNull);
+    expect(port.event?.trace, same(trace));
   });
 
   test('a warning keeps its cause too', () {
@@ -74,7 +70,7 @@ void main() {
     final logger = PayjoinLogger(port);
     final cause = StateError('relay timed out');
 
-    logger.warning('', code: PayjoinLogCode.relayFailure, error: cause);
+    logger.warning(code: PayjoinLogCode.relayFailure, error: cause);
 
     expect(port.event?.error, same(cause));
   });

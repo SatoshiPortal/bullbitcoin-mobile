@@ -119,7 +119,7 @@ class PdkPayjoinDatasource {
         );
         return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
-        _log.info('OHTTP key fetch failed');
+        _log.info();
         continue;
       }
     }
@@ -215,7 +215,7 @@ class PdkPayjoinDatasource {
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
-    _log.info('[sender] creating $senderLogRef with expirySec=$expirySec');
+    _log.info();
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -265,7 +265,6 @@ class PdkPayjoinDatasource {
 
     await postOriginalProposal(withReplyKey, persister);
     _log.fine(
-      '[sender] original proposal posted for $senderLogRef',
       code: PayjoinLogCode.originalPosted,
       role: PayjoinLogRole.sender,
       sessionRef: senderLogRef,
@@ -282,7 +281,7 @@ class PdkPayjoinDatasource {
     // row is already persisted, so a proposal arriving immediately still
     // finds it.
     startListeningForProposal(postedModel);
-    _log.info('[sender poll] started for $senderLogRef');
+    _log.info();
 
     return postedModel;
   }
@@ -308,14 +307,13 @@ class PdkPayjoinDatasource {
         posted = true;
         break;
       } catch (e) {
-        _log.info('Sender proposal relay failed');
+        _log.info();
         lastError = e;
         continue;
       }
     }
     if (!posted) {
       _log.warning(
-        'Failed to post original PSBT to any OHTTP relay',
         code: PayjoinLogCode.relayFailure,
         role: PayjoinLogRole.sender,
         error: lastError,
@@ -360,7 +358,6 @@ class PdkPayjoinDatasource {
     );
 
     _log.fine(
-      'Payjoin request processed and proposal sent',
       code: PayjoinLogCode.proposalSent,
       role: PayjoinLogRole.receiver,
       sessionRef: receiverModel.id,
@@ -410,10 +407,7 @@ class PdkPayjoinDatasource {
     if (pendingFallback == null) {
       // The session was already terminal (e.g. a race with another decline
       // path) — nothing further to persist, but not an error either.
-      _log.info(
-        'Payjoin receiver ${receiverModel.id} was already resolved when '
-        'declining below minimum',
-      );
+      _log.info();
       return persister.toJson();
     }
 
@@ -689,13 +683,12 @@ class PdkPayjoinDatasource {
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
       } catch (e) {
-        _log.info('Receiver proposal relay failed');
+        _log.info();
         lastError = e;
         continue;
       }
     }
     _log.warning(
-      'Failed to post payjoin proposal to any OHTTP relay',
       code: PayjoinLogCode.relayFailure,
       role: PayjoinLogRole.receiver,
       error: lastError,
@@ -762,7 +755,7 @@ class PdkPayjoinDatasource {
     Timer timer,
   ) async {
     if (!_receiverPollsInFlight.add(receiverModel.id)) return;
-    _log.info('Receiver poll started');
+    _log.info();
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -791,7 +784,7 @@ class PdkPayjoinDatasource {
         persister,
       );
       if (unchecked == null) {
-        _log.info('Receiver request not ready');
+        _log.info();
         return;
       }
 
@@ -804,7 +797,7 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      _log.info('Receiver request found');
+      _log.info();
       final updatedModel = receiverModel.copyWith(
         receiver: persister.toJson(),
         originalTxBytes: originalTxBytes,
@@ -818,14 +811,14 @@ class PdkPayjoinDatasource {
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _payjoinRequestedController.add(updatedModel);
-    } on PayjoinExpiredException catch (e) {
-      _log.info('[receiver poll] expired for ${receiverModel.id}: $e');
+    } on PayjoinExpiredException {
+      _log.info();
       if (!timer.isActive) return;
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _expiredController.add(receiverModel.copyWith(isExpired: true));
-    } catch (e) {
-      _log.info('[receiver poll] ${receiverModel.id}: $e');
+    } catch (_) {
+      _log.info();
     } finally {
       _receiverPollsInFlight.remove(receiverModel.id);
     }
@@ -840,7 +833,7 @@ class PdkPayjoinDatasource {
     //  used as the internal map key below, which never reaches a log.
     final senderLogRef = Payjoin.logRefForId(senderModel.id);
     if (!_senderPollsInFlight.add(senderModel.id)) return;
-    _log.info('Sender poll started');
+    _log.info();
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -867,7 +860,7 @@ class PdkPayjoinDatasource {
       final proposalPsbt = await _getProposalPsbt(state.inner, persister);
       if (proposalPsbt == null) return;
 
-      _log.info('[sender poll] proposal found for $senderLogRef');
+      _log.info();
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
@@ -881,14 +874,14 @@ class PdkPayjoinDatasource {
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
-    } on PayjoinExpiredException catch (e) {
-      _log.info('[sender poll] expired for $senderLogRef: $e');
+    } on PayjoinExpiredException {
+      _log.info();
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
-    } catch (e) {
-      _log.info('[sender poll] $senderLogRef: $e');
+    } catch (_) {
+      _log.info();
     } finally {
       _senderPollsInFlight.remove(senderModel.id);
     }
@@ -917,11 +910,11 @@ class PdkPayjoinDatasource {
         if (_isExpiredString(e)) {
           throw PayjoinExpiredException('Payjoin receiver expired: $e');
         }
-        _log.info('Receiver poll request creation failed');
+        _log.info();
         lastError = e;
         continue;
       } catch (e) {
-        _log.info('Receiver relay poll failed');
+        _log.info();
         lastError = e;
         continue;
       }
@@ -955,11 +948,11 @@ class PdkPayjoinDatasource {
         if (_isExpiredString(e)) {
           throw PayjoinExpiredException('Payjoin sender expired: $e');
         }
-        _log.info('Sender poll request creation failed');
+        _log.info();
         lastError = e;
         continue;
       } catch (e) {
-        _log.info('Sender relay poll failed');
+        _log.info();
         lastError = e;
         continue;
       }
@@ -1127,14 +1120,9 @@ List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
       // replayReceiverEventLog on every poll tick.
       return List<String>.from(decoded);
     }
-    log.warning(
-      'Persisted payjoin session event log is not a list; starting empty',
-    );
+    log.warning();
   } catch (e) {
-    log.warning(
-      'Failed to decode persisted payjoin session event log: $e',
-      error: e,
-    );
+    log.warning(error: e);
   }
   return const [];
 }

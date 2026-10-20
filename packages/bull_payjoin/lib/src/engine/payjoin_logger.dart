@@ -12,8 +12,7 @@ final class PayjoinLogger {
   const PayjoinLogger(this._port);
 
   /// Routine activity at the wallet's non-persisted INFO level, such as one poll of many.
-  /// The free-form argument is dropped like other text.
-  void info(String _, {PayjoinLogRole? role, String? sessionRef}) {
+  void info({PayjoinLogRole? role, String? sessionRef}) {
     _write(
       PayjoinLogLevel.info,
       PayjoinLogCode.lifecycle,
@@ -23,8 +22,7 @@ final class PayjoinLogger {
   }
 
   /// A persisted FINE milestone with an explicit, stable code.
-  void fine(
-    String _, {
+  void fine({
     required PayjoinLogCode code,
     PayjoinLogRole? role,
     String? sessionRef,
@@ -39,8 +37,7 @@ final class PayjoinLogger {
     );
   }
 
-  void warning(
-    String _, {
+  void warning({
     PayjoinLogCode code = PayjoinLogCode.lifecycle,
     PayjoinLogRole? role,
     String? sessionRef,
@@ -58,7 +55,6 @@ final class PayjoinLogger {
   }
 
   void severe({
-    required String message,
     required PayjoinLogCode code,
     PayjoinLogRole? role,
     String? sessionRef,
@@ -75,7 +71,7 @@ final class PayjoinLogger {
     );
   }
 
-  /// The free-form message is deliberately dropped: call sites compose it, so it could carry a BIP21 URI or a raw txid into the host's logs.
+  /// Events carry structured metadata only; the host renders [PayjoinLogCode.description].
   /// [error] and [trace] are forwarded for diagnosis; the host must sanitize the cause rather than logging foreign exception text verbatim.
   void _write(
     PayjoinLogLevel level,
