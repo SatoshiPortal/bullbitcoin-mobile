@@ -13,7 +13,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 ### New Features
 
 - **Confidential SEPA**: added recipient creation, virtual IBAN onboarding and activation, and a choice between Regular and Confidential SEPA for recipients and withdrawals. Eligible non-corporate EU accounts can also activate a virtual IBAN and view deposit details to fund their exchange account, subject to account permissions. ([#2982](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2982))
-- **Payjoin controls per action**: Send, Receive, Buy, and Sell/pay bills now have separate switches. Exchange Buy and Sell/pay bills default to on; payments between users default to off, with the receiving disclaimer retained. Each exchange order can still opt out individually. Advanced settings use compact digit-only fields, with minimum amounts in sats and session expiry in minutes. ([#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
+- **Payjoin controls per action**: Payjoin is on by default with the Bull Bitcoin exchange (Buy, Sell, and pay bills) and off by default with other users (Send and Receive), with separate switches for each action. When updating, your previous setting is preserved for Send and Receive. Each exchange order can still opt out individually. Advanced settings use compact digit-only fields, with minimum amounts in sats and session expiry in minutes. ([#2978](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2978))
 
 ### Reliability And UX
 
@@ -25,9 +25,9 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 - Exchange sign-in and identity-verification screens now offer an exit when their web view fails. ([#2972](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2972))
 - Updated German translations. ([#2979](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2979))
 
-### Security And Privacy
+### Privacy Trade-off
 
-- Payjoin transaction lookups validate that the server's response decodes to the requested transaction. Engine warnings use structured diagnostic codes and sanitized causes to keep payment URIs, transaction IDs, and custom server URLs out of logs and Sentry. ([#2977](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2977), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
+- **Faster Payjoin status updates, with a temporary privacy trade-off**: users of the default Electrum servers already reveal their wallet's addresses to those servers during synchronization. To detect Payjoin outcomes faster, the app now also queries the original and proposed transaction IDs before broadcast. A shared server observing both participants can therefore link their Payjoin sessions, even if negotiation fails and no transaction is broadcast. Tor hides IP addresses but does not prevent this correlation. The transaction ID alone does not reveal the original transaction's inputs or outputs unless it is later broadcast as a fallback. Users running their own Electrum server keep these lookups on their own infrastructure. ([#2977](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2977#issuecomment-6279805624), included through [#3002](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3002))
 
 ### Internal Improvements
 
