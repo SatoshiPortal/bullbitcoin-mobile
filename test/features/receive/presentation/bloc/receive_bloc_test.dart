@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
@@ -460,7 +461,7 @@ void main() {
         status: PayjoinStatus.proposed,
         originalTxBytes: Uint8List.fromList([1, 2, 3]),
         proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-        fallbackAvailableAt: DateTime.now().add(const Duration(seconds: 60)),
+        fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
       );
       when(
         () => broadcastOriginalTransaction.execute(any()),
@@ -488,7 +489,7 @@ void main() {
           status: PayjoinStatus.proposed,
           originalTxBytes: Uint8List.fromList([1, 2, 3]),
           proposalPsbt: 'proposal',
-          fallbackAvailableAt: DateTime.now().add(const Duration(seconds: 20)),
+          fallbackAvailableAt: clock.now().add(const Duration(seconds: 20)),
         );
         when(
           () => receiveWithPayjoin.execute(
@@ -521,9 +522,7 @@ void main() {
               status: PayjoinStatus.proposed,
               originalTxBytes: Uint8List.fromList([1, 2, 3]),
               proposalPsbt: 'proposal',
-              fallbackAvailableAt: DateTime.now().add(
-                const Duration(seconds: 60),
-              ),
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
             ),
           ),
         );
@@ -534,6 +533,38 @@ void main() {
         async.elapse(const Duration(seconds: 1));
         async.flushMicrotasks();
         expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        expect(bloc.state.canOfferPayjoinFallback, isTrue);
+        bloc.close();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('a timer that fires before the wall-clock deadline rearms', () {
+      fakeAsync((async) {
+        final bloc = buildBloc();
+        bloc.add(const ReceiveBitcoinStarted(null));
+        async.flushMicrotasks();
+        bloc.add(
+          ReceivePayjoinUpdated(
+            _receiver(
+              status: PayjoinStatus.proposed,
+              originalTxBytes: Uint8List.fromList([1, 2, 3]),
+              proposalPsbt: 'proposal',
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
+            ),
+          ),
+        );
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 50));
+        // The monotonic timer can run ahead of the wall clock.
+        bloc.add(const ReceivePayjoinSenderWaitElapsed('pj1'));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        expect(bloc.state.canOfferPayjoinFallback, isFalse);
+        async.elapse(const Duration(seconds: 10));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        expect(bloc.state.canOfferPayjoinFallback, isTrue);
         bloc.close();
         async.flushMicrotasks();
       });
@@ -554,7 +585,7 @@ void main() {
                 status: PayjoinStatus.proposed,
                 originalTxBytes: Uint8List.fromList([1, 2, 3]),
                 proposalPsbt: 'proposal',
-                fallbackAvailableAt: DateTime.now().add(
+                fallbackAvailableAt: clock.now().add(
                   const Duration(seconds: 60),
                 ),
               ),
@@ -589,9 +620,7 @@ void main() {
               status: PayjoinStatus.proposed,
               originalTxBytes: Uint8List.fromList([1, 2, 3]),
               proposalPsbt: 'proposal',
-              fallbackAvailableAt: DateTime.now().add(
-                const Duration(seconds: 60),
-              ),
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
             ),
           ),
         );

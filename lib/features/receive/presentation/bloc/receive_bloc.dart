@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:clock/clock.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -175,7 +176,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _payjoinSenderWaitTimer = null;
     final until = payjoin?.fallbackAvailableAt;
     if (payjoin == null || !payjoin.isOngoing || until == null) return false;
-    final remaining = until.difference(DateTime.now());
+    final remaining = until.difference(clock.now());
     if (remaining <= Duration.zero) return false;
     _payjoinSenderWaitTimer = Timer(remaining, () {
       if (!isClosed) add(ReceivePayjoinSenderWaitElapsed(payjoin.id));
@@ -1048,7 +1049,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) {
     if (event.sessionId != state.payjoin?.id) return;
     _payjoinSenderWaitTimer = null;
-    emit(state.copyWith(isWaitingForPayjoinSender: false));
+    // The timer runs on the monotonic clock while the deadline is wall time:
+    // if the wall clock has not reached it yet, this rearms for the rest.
+    emit(
+      state.copyWith(
+        isWaitingForPayjoinSender: _waitForPayjoinSender(state.payjoin),
+      ),
+    );
   }
 
   /// User tapped the payjoin toggle on the receive screen. Persists the new

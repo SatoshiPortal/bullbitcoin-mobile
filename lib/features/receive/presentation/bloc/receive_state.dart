@@ -293,7 +293,7 @@ abstract class ReceiveState with _$ReceiveState {
   /// the sender never does.
   bool get canOfferPayjoinFallback =>
       !isWaitingForPayjoinSender &&
-      (payjoin?.canManuallyBroadcastOriginal ?? false);
+      (payjoin?.canManuallyBroadcastOriginalAt(clock.now()) ?? false);
 
   /// True when the payjoin session resolved via the plain-broadcast fallback
   /// specifically because the sender's amount fell below the configured
