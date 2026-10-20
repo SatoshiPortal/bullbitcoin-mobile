@@ -81,6 +81,12 @@ final class SellQuoteExpiredFailure extends SellFailure {
   const SellQuoteExpiredFailure([super.logMessage]);
 }
 
+/// The lock lapsed and the bounded retries brought no usable quote back:
+/// every answer was lapsed too, or the requests failed. Nothing was paid.
+final class SellQuoteUnavailableFailure extends SellFailure {
+  const SellQuoteUnavailableFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

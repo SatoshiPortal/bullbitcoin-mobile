@@ -137,15 +137,10 @@ class SellSendPaymentScreen extends StatelessWidget {
                               color: context.appColors.outline,
                             ),
                           ),
+                          // Display only: the bloc refreshes the quote from
+                          // the order deadline itself.
                           if (order?.confirmationDeadline case final deadline?)
-                            BullCountdown(
-                              until: deadline,
-                              onTimeout: () {
-                                context.read<SellBloc>().add(
-                                  const SellEvent.orderRefreshTimePassed(),
-                                );
-                              },
-                            ),
+                            BullCountdown(until: deadline, onTimeout: () {}),
                         ],
                       ),
 

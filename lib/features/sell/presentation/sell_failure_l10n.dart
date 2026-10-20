@@ -17,6 +17,7 @@ extension SellFailureL10n on SellFailure {
     SellFeeBelowRelayFloorFailure() => context.loc.sellErrorFeeBelowRelayFloor,
     SellFeesUnavailableFailure() => context.loc.sellErrorFeesUnavailable,
     SellQuoteExpiredFailure() => context.loc.sellQuoteExpiredError,
+    SellQuoteUnavailableFailure() => context.loc.exchangeQuoteUnavailableError,
     // Never `logMessage`. That arm used to return the raw exception text —
     // "PrepareBitcoinSendException: ..." — straight to the payment screen.
     SellUnexpectedFailure() => context.loc.sellUnexpectedError,

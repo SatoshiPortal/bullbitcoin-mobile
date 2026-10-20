@@ -15699,5 +15699,9 @@
   "payQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
   "@payQuoteExpiredError": {
     "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Go back and start again.",
+  "@exchangeQuoteUnavailableError": {
+    "description": "Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid."
   }
 }

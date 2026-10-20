@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -68,7 +69,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
     on<SellWalletSelected>(_onWalletSelected);
     on<SellPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
-    on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
+    on<SellOrderRefreshTimePassed>(
+      _onOrderRefreshTimePassed,
+      transformer: droppable(), // One quote request on the wire at a time
+    );
+    on<SellQuoteRefreshGaveUp>(_onQuoteRefreshGaveUp);
     on<SellSendPaymentConfirmed>(
       _onSendPaymentConfirmed,
       transformer: droppable(), // Prevent multiple simultaneous confirmations
@@ -107,6 +112,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
+
+  /// Asks for a fresh quote when the order's price lock lapses, and keeps
+  /// asking at a bounded pace while the exchange hands back lapsed ones. The
+  /// countdown on screen is display only; this is the single trigger.
+  late final OrderDeadlineScheduler _quoteScheduler = OrderDeadlineScheduler(
+    onDue: () => add(const SellEvent.orderRefreshTimePassed()),
+    onGiveUp: () => add(const SellEvent.quoteRefreshGaveUp()),
+  );
   StreamSubscription<Result<PayjoinSession, SellFailure>>? _payjoinSubscription;
   String? _activePayjoinSessionId;
 
@@ -209,6 +222,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
     _stopPolling();
+    _quoteScheduler.cancel();
     final selection = state.toCleanWalletSelectionState;
     if (selection != null) emit(selection);
   }
@@ -447,6 +461,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         );
       }
       if (!isCurrent()) return;
+      _quoteScheduler.track(createdSellOrder.confirmationDeadline);
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -514,6 +529,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         ),
       );
       if (!isCurrent()) return;
+      _quoteScheduler.track(createdSellOrder.confirmationDeadline);
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -567,6 +583,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             return;
           }
           emit(currentOnFailure.copyWith(error: failure));
+          _quoteScheduler.refreshFailed();
           return;
       }
 
@@ -586,13 +603,32 @@ class SellBloc extends Bloc<SellEvent, SellState>
             ? refreshed
             : _clearedFeePreviews(refreshed),
       );
+      // A lapsed lock coming back is a retry, not a new quote: the scheduler
+      // paces it rather than asking again at the speed of the response.
+      _quoteScheduler.track(refreshedOrder.confirmationDeadline);
     } catch (e, st) {
       log.severe(
         message: 'Unexpected error while refreshing the sell order',
         error: e,
         trace: st,
       );
+      _quoteScheduler.refreshFailed();
     }
+  }
+
+  /// The retries ran out without a usable quote: say so instead of spinning.
+  /// Confirm stays live; a tap on a lapsed quote asks for a fresh one again.
+  void _onQuoteRefreshGaveUp(
+    SellQuoteRefreshGaveUp event,
+    Emitter<SellState> emit,
+  ) {
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.isConfirmingPayment ||
+        current.isPayinBroadcast) {
+      return;
+    }
+    emit(current.copyWith(error: const SellQuoteUnavailableFailure()));
   }
 
   Future<void> _onSendPaymentConfirmed(
@@ -1058,6 +1094,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
   }
 
   void _latchBroadcast(Emitter<SellState> emit, String txid) {
+    // The payin pays this quote; there is nothing left to refresh.
+    _quoteScheduler.cancel();
     final current = _currentPaymentState;
     if (current == null) return;
     emit(
@@ -1137,13 +1175,13 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
     emit(current.copyWith(error: error, isConfirmingPayment: false));
 
-    // Confirm is live again, but the price-lock countdown fires onTimeout only
-    // once. If the deadline elapsed during this failed attempt, the skip in
-    // _onOrderRefreshTimePassed dropped that one refresh and nothing else will
-    // ask for it, leaving the user retrying against a stale quote.
+    // Confirm is live again. If the lock lapsed during this failed attempt,
+    // the refresh the scheduler fired meanwhile was skipped as in flight, so
+    // ask now — unless a retry is already on its way.
     final confirmationDeadline = current.sellOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
-        !confirmationDeadline.isAfter(DateTime.now())) {
+        !confirmationDeadline.isAfter(DateTime.now()) &&
+        !_quoteScheduler.isPending) {
       add(const SellEvent.orderRefreshTimePassed());
     }
   }
@@ -1852,6 +1890,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   Future<void> close() async {
     ++_paymentPreparationGeneration;
     _stopPolling();
+    _quoteScheduler.dispose();
     await _payjoinSubscription?.cancel();
     return super.close();
   }

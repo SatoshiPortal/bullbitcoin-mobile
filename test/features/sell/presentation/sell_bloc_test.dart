@@ -29,6 +29,8 @@ import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -350,7 +352,11 @@ void main() {
     );
   });
 
-  tearDown(() => bloc.close());
+  // A test may have closed the bloc inside a fake-time zone; closing it again
+  // would wait on that zone forever.
+  tearDown(() async {
+    if (!bloc.isClosed) await bloc.close();
+  });
 
   group('Sell preparation lifecycle', () {
     test(
@@ -1072,6 +1078,147 @@ void main() {
     expect(state.payinBroadcastTxid, isNull);
     // The refresh must not erase why the send failed.
     expect(state.error, isNotNull);
+  });
+
+  group('SellBloc — quote refresh scheduling', () {
+    Future<Result<SellOrder, SellFailure>> refreshCall() =>
+        refreshSellOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        );
+
+    setUp(() {
+      when(
+        () => sellOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => Ok<SellOrder, SellFailure>(sellOrder));
+    });
+
+    // The scheduler's timers must be born inside the fake zone, so the bloc
+    // is rebuilt there from the state the outer setUp seeded.
+    Future<void> inFakeTime(void Function(FakeAsync) check) async {
+      final initial = bloc.state;
+      await bloc.close();
+      fakeAsync((time) {
+        bloc = _SeedableSellBloc(
+          loadSellContextUsecase: loadSellContext,
+          createSellOrderUsecase: _MockCreateSellOrder(),
+          refreshSellOrderUsecase: refreshSellOrder,
+          prepareSellBitcoinPayinUsecase: prepareSellBitcoinPayin,
+          prepareSellLiquidPayinUsecase: _MockPrepareSellLiquidPayin(),
+          signSellPayinUsecase: signSellPayin,
+          broadcastSellPayinUsecase: broadcastSellPayin,
+          sendWithPayjoinUsecase: sendWithPayjoin,
+          watchPayjoinUsecase: watchPayjoin,
+          getPayjoinUsecase: getPayjoin,
+          calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
+          loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
+          readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
+          labelsFacade: labelsFacade,
+          labelCompletedSellOrderUsecase: labelCompletedSellOrder,
+          previewBitcoinFeeUsecase: previewBitcoinFee,
+          previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
+        );
+        bloc.seed(initial);
+        try {
+          check(time);
+        } finally {
+          unawaited(bloc.close());
+          time.flushMicrotasks();
+        }
+      });
+    }
+
+    test('overlapping refresh requests send one call', () async {
+      final response = Completer<Result<SellOrder, SellFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      await pumpEventQueue();
+      verify(refreshCall).called(1);
+      response.complete(Ok(sellOrder));
+      await pumpEventQueue();
+    });
+
+    test('a lapsed quote coming back is retried after five seconds', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 4));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(seconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a failed refresh has a deferred successor', () {
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(SellUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a fresh lock is refreshed at its exact deadline', () {
+      // The countdown widget fires up to a second early; the bloc no longer
+      // listens to it and arms its own timer at the instant the lock lapses.
+      return inFakeTime((time) {
+        when(
+          () => sellOrder.confirmationDeadline,
+        ).thenReturn(clock.now().add(const Duration(milliseconds: 500)));
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(milliseconds: 499));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(milliseconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('retries stop with a typed failure once the budget is spent', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        // Six retries, five seconds apart, after the first lapsed answer.
+        time.elapse(const Duration(seconds: 30));
+        time.flushMicrotasks();
+        verify(refreshCall).called(7);
+        expect(
+          (bloc.state as SellPaymentState).error,
+          isA<SellQuoteUnavailableFailure>(),
+        );
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('leaving cancels the pending retry', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        bloc.add(const SellEvent.paymentPreparationAbandoned());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
   });
 
   group('SellBloc — payin past the order deadline', () {
