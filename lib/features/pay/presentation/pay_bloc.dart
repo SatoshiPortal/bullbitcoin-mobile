@@ -70,7 +70,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     on<PayWalletSelected>(_onWalletSelected);
     on<PayPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
-    on<PayOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
+    on<PayOrderRefreshTimePassed>(
+      _onOrderRefreshTimePassed,
+      transformer: droppable(),
+    );
     on<PaySendPaymentConfirmed>(
       _onSendPaymentConfirmed,
       transformer: droppable(),
@@ -112,6 +115,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
+  Timer? _quoteRetryTimer;
+  static const _quoteRetryDelay = Duration(seconds: 5);
   Timer? _pollingTimer;
   bool _isOrderRequestInFlight = false;
   String? _pendingOrderStatusUpdateId;
@@ -237,6 +242,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
     if (_hasPaymentInFlight) return;
+    _cancelQuoteRetry();
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
     _stopPolling();
@@ -267,6 +273,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
+    _cancelQuoteRetry();
     final generation = ++_paymentPreparationGeneration;
     bool isCurrent() =>
         generation == _paymentPreparationGeneration && !emit.isDone;
@@ -393,6 +400,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
+    _cancelQuoteRetry();
     final generation = ++_paymentPreparationGeneration;
     bool isCurrent() =>
         generation == _paymentPreparationGeneration && !emit.isDone;
@@ -423,6 +431,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PayOrderRefreshTimePassed event,
     Emitter<PayState> emit,
   ) async {
+    if (_quoteRetryTimer?.isActive ?? false) return;
     // We should be on a PayPaymentState
     final paymentState = _currentPaymentState;
     if (paymentState == null) {
@@ -437,29 +446,36 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    final result = await _refreshPayOrderUsecase.execute(
-      orderId: paymentState.payOrder.orderId,
-      expectedDepositAddress: paymentState.payOrder.toAddress,
-    );
+    try {
+      final result = await _refreshPayOrderUsecase.execute(
+        orderId: paymentState.payOrder.orderId,
+        expectedDepositAddress: paymentState.payOrder.toAddress,
+      );
 
-    // Re-read after the await: the payment may have started or been broadcast
-    // while the refresh was in flight, and neither may be disturbed.
-    final current = _currentPaymentState;
-    if (current == null) return;
-    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+      // Re-read after the await: the payment may have started or been broadcast
+      // while the refresh was in flight, and neither may be disturbed.
+      final current = _currentPaymentState;
+      if (current == null ||
+          current.payOrder.orderId != paymentState.payOrder.orderId) {
+        return;
+      }
+      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
 
-    switch (result) {
-      case Err(:final failure):
-        emit(current.copyWith(error: failure));
-      case Ok(:final value):
-        final refreshed = current.copyWith(payOrder: value);
-        // A new price lock moves the payin amount, which invalidates every
-        // preview built for the old one.
-        emit(
-          value.payinAmount == current.payOrder.payinAmount
-              ? refreshed
-              : _clearedFeePreviews(refreshed),
-        );
+      switch (result) {
+        case Err(:final failure):
+          emit(current.copyWith(error: failure));
+        case Ok(:final value):
+          final refreshed = current.copyWith(payOrder: value);
+          // A new price lock moves the payin amount, which invalidates every
+          // preview built for the old one.
+          emit(
+            value.payinAmount == current.payOrder.payinAmount
+                ? refreshed
+                : _clearedFeePreviews(refreshed),
+          );
+      }
+    } finally {
+      _scheduleQuoteRetry();
     }
   }
 
@@ -479,6 +495,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     if (payPaymentState.isPayinBroadcast) {
+      _cancelQuoteRetry();
       emit(payPaymentState.copyWith(isConfirmingPayment: true));
       await _completeAfterBroadcast(emit);
       return;
@@ -503,6 +520,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     emit(payPaymentState.copyWith(isConfirmingPayment: true));
+    _cancelQuoteRetry();
     var waitingForPayjoin = false;
     try {
       final wallet = payPaymentState.selectedWallet;
@@ -1141,6 +1159,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }
 
   void _latchBroadcast(Emitter<PayState> emit, String txid) {
+    _cancelQuoteRetry();
     final current = _currentPaymentState;
     if (current == null) return;
     emit(
@@ -1511,6 +1530,42 @@ class PayBloc extends Bloc<PayEvent, PayState>
   void selectFeeOption(FeeSelection selection) =>
       add(PayEvent.feeOptionSelected(selection));
 
+  void _cancelQuoteRetry() {
+    _quoteRetryTimer?.cancel();
+    _quoteRetryTimer = null;
+  }
+
+  void _scheduleQuoteRetry() {
+    _cancelQuoteRetry();
+    final current = _currentPaymentState;
+    final deadline = current?.payOrder.confirmationDeadline;
+    if (isClosed ||
+        current == null ||
+        current.isConfirmingPayment ||
+        current.isPayinBroadcast ||
+        _activePayjoinSessionId != null ||
+        deadline == null ||
+        deadline.isAfter(DateTime.now())) {
+      return;
+    }
+    final orderId = current.payOrder.orderId;
+    final generation = _paymentPreparationGeneration;
+    _quoteRetryTimer = Timer(_quoteRetryDelay, () {
+      _quoteRetryTimer = null;
+      final live = _currentPaymentState;
+      if (isClosed ||
+          generation != _paymentPreparationGeneration ||
+          live == null ||
+          live.payOrder.orderId != orderId ||
+          live.isConfirmingPayment ||
+          live.isPayinBroadcast ||
+          _activePayjoinSessionId != null) {
+        return;
+      }
+      add(const PayEvent.orderRefreshTimePassed());
+    });
+  }
+
   bool _isQuoteExpired(PayPaymentState paymentState) {
     final deadline = paymentState.payOrder.confirmationDeadline;
     return deadline != null && !deadline.isAfter(DateTime.now());
@@ -1561,12 +1616,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }
 
   void _stopPolling() {
+    _cancelQuoteRetry();
     _pollingTimer?.cancel();
     _pollingTimer = null;
   }
 
   @override
   Future<void> close() async {
+    _cancelQuoteRetry();
     ++_paymentPreparationGeneration;
     _stopPolling();
     await _payjoinSubscription?.cancel();

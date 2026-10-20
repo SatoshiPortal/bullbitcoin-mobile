@@ -68,7 +68,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
     on<SellWalletSelected>(_onWalletSelected);
     on<SellPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
-    on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
+    on<SellOrderRefreshTimePassed>(
+      _onOrderRefreshTimePassed,
+      transformer: droppable(),
+    );
     on<SellSendPaymentConfirmed>(
       _onSendPaymentConfirmed,
       transformer: droppable(), // Prevent multiple simultaneous confirmations
@@ -106,6 +109,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
+  Timer? _quoteRetryTimer;
+  static const _quoteRetryDelay = Duration(seconds: 5);
   Timer? _pollingTimer;
   StreamSubscription<Result<PayjoinSession, SellFailure>>? _payjoinSubscription;
   String? _activePayjoinSessionId;
@@ -206,6 +211,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       return;
     }
     if (_hasPaymentInFlight) return;
+    _cancelQuoteRetry();
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
     _stopPolling();
@@ -248,6 +254,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
       return;
     }
+    _cancelQuoteRetry();
     final generation = ++_paymentPreparationGeneration;
     bool isCurrent() =>
         generation == _paymentPreparationGeneration && !emit.isDone;
@@ -481,6 +488,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
       return;
     }
+    _cancelQuoteRetry();
     final generation = ++_paymentPreparationGeneration;
     bool isCurrent() =>
         generation == _paymentPreparationGeneration && !emit.isDone;
@@ -530,6 +538,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellOrderRefreshTimePassed event,
     Emitter<SellState> emit,
   ) async {
+    if (_quoteRetryTimer?.isActive ?? false) return;
     // We should be on a SellPaymentState
     final paymentState = _currentPaymentState;
     if (paymentState == null) {
@@ -561,7 +570,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // Same re-read as the success path: a refresh failure must not paint
           // an error over a confirmation that started while it was in flight.
           final currentOnFailure = _currentPaymentState;
-          if (currentOnFailure == null) return;
+          if (currentOnFailure == null ||
+              currentOnFailure.sellOrder.orderId !=
+                  paymentState.sellOrder.orderId) {
+            return;
+          }
           if (currentOnFailure.isConfirmingPayment ||
               currentOnFailure.isPayinBroadcast) {
             return;
@@ -573,7 +586,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
       // A confirmation may have started while the refresh was in flight, so
       // work from the current state instead of the snapshot above.
       final current = _currentPaymentState;
-      if (current == null) return;
+      if (current == null ||
+          current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+        return;
+      }
       if (current.isConfirmingPayment || current.isPayinBroadcast) return;
       // The error is kept: when this refresh was triggered by a failed send
       // (see _emitSendPaymentError) clearing it would erase the only
@@ -592,6 +608,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
         error: e,
         trace: st,
       );
+    } finally {
+      _scheduleQuoteRetry();
     }
   }
 
@@ -613,6 +631,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // pay the order a second time from different UTXOs, so only wait for the
     // order to catch up (#2522).
     if (sellPaymentState.isPayinBroadcast) {
+      _cancelQuoteRetry();
       emit(sellPaymentState.copyWith(isConfirmingPayment: true));
       try {
         await _completeAfterBroadcast(emit);
@@ -639,6 +658,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
 
     emit(sellPaymentState.copyWith(isConfirmingPayment: true));
+    _cancelQuoteRetry();
     var waitingForPayjoin = false;
     try {
       final wallet = sellPaymentState.selectedWallet;
@@ -1045,6 +1065,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   }
 
   void _latchBroadcast(Emitter<SellState> emit, String txid) {
+    _cancelQuoteRetry();
     final current = _currentPaymentState;
     if (current == null) return;
     emit(
@@ -1284,6 +1305,42 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
   }
 
+  void _cancelQuoteRetry() {
+    _quoteRetryTimer?.cancel();
+    _quoteRetryTimer = null;
+  }
+
+  void _scheduleQuoteRetry() {
+    _cancelQuoteRetry();
+    final current = _currentPaymentState;
+    final deadline = current?.sellOrder.confirmationDeadline;
+    if (isClosed ||
+        current == null ||
+        current.isConfirmingPayment ||
+        current.isPayinBroadcast ||
+        _activePayjoinSessionId != null ||
+        deadline == null ||
+        deadline.isAfter(DateTime.now())) {
+      return;
+    }
+    final orderId = current.sellOrder.orderId;
+    final generation = _paymentPreparationGeneration;
+    _quoteRetryTimer = Timer(_quoteRetryDelay, () {
+      _quoteRetryTimer = null;
+      final live = _currentPaymentState;
+      if (isClosed ||
+          generation != _paymentPreparationGeneration ||
+          live == null ||
+          live.sellOrder.orderId != orderId ||
+          live.isConfirmingPayment ||
+          live.isPayinBroadcast ||
+          _activePayjoinSessionId != null) {
+        return;
+      }
+      add(const SellEvent.orderRefreshTimePassed());
+    });
+  }
+
   bool _isQuoteExpired(SellPaymentState paymentState) {
     final deadline = paymentState.sellOrder.confirmationDeadline;
     return deadline != null && !deadline.isAfter(DateTime.now());
@@ -1333,6 +1390,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   }
 
   void _stopPolling() {
+    _cancelQuoteRetry();
     _pollingTimer?.cancel();
     _pollingTimer = null;
   }
@@ -1833,6 +1891,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
   @override
   Future<void> close() async {
+    _cancelQuoteRetry();
     ++_paymentPreparationGeneration;
     _stopPolling();
     await _payjoinSubscription?.cancel();
