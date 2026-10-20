@@ -11,17 +11,36 @@ final class PayjoinLogger {
 
   const PayjoinLogger(this._port);
 
+  /// Routine activity a host may drop, such as one poll of many.
+  void debug(String _, {PayjoinLogRole? role, String? sessionRef}) {
+    _write(
+      PayjoinLogLevel.debug,
+      PayjoinLogCode.lifecycle,
+      role: role,
+      sessionRef: sessionRef,
+    );
+  }
+
   void info(
     String _, {
     PayjoinLogCode code = PayjoinLogCode.lifecycle,
+    PayjoinLogRole? role,
     String? sessionRef,
+    Object? error,
   }) {
-    _write(PayjoinLogLevel.info, code, sessionRef: sessionRef);
+    _write(
+      PayjoinLogLevel.info,
+      code,
+      role: role,
+      sessionRef: sessionRef,
+      error: error,
+    );
   }
 
   void warning(
     String _, {
     PayjoinLogCode code = PayjoinLogCode.lifecycle,
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -29,6 +48,7 @@ final class PayjoinLogger {
     _write(
       PayjoinLogLevel.warning,
       code,
+      role: role,
       sessionRef: sessionRef,
       error: error,
       trace: trace,
@@ -38,6 +58,7 @@ final class PayjoinLogger {
   void severe({
     required String message,
     required PayjoinLogCode code,
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -45,6 +66,7 @@ final class PayjoinLogger {
     _write(
       PayjoinLogLevel.severe,
       code,
+      role: role,
       sessionRef: sessionRef,
       error: error,
       trace: trace,
@@ -58,6 +80,7 @@ final class PayjoinLogger {
   void _write(
     PayjoinLogLevel level,
     PayjoinLogCode code, {
+    PayjoinLogRole? role,
     String? sessionRef,
     Object? error,
     StackTrace? trace,
@@ -66,6 +89,7 @@ final class PayjoinLogger {
       PayjoinLogEvent(
         level: level,
         code: code,
+        role: role,
         sessionRef: _safeSessionRef(sessionRef),
         error: error,
         trace: trace,

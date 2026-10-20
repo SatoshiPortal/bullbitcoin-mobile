@@ -234,31 +234,55 @@ final class PayjoinLegacyReceiver {
 
 enum PayjoinLogLevel { debug, info, warning, severe }
 
+/// Which side of the protocol an event is about: the wallet paying (sender)
+/// or the wallet being paid (receiver).
+enum PayjoinLogRole { sender, receiver }
+
+/// What happened, as a fixed vocabulary.
+///
+/// The code is the whole message a host can show: call sites never compose
+/// text that leaves the package, so each code carries a [description] that
+/// reads on its own in an exported log.
 enum PayjoinLogCode {
-  lifecycle,
-  sessionStarted,
-  sessionResumed,
-  sessionCompleted,
-  sessionAborted,
-  sessionExpired,
-  relayFailure,
-  walletFailure,
-  signingFailure,
-  broadcastFailure,
-  storageFailure,
-  migrationFailure,
-  labelFailure,
-  watchFailure,
-  fallbackRejected,
-  requestAfterDisable,
-  requestBelowMinimum,
-  proposalSkipped,
-  conflictingBroadcast,
+  lifecycle('Routine engine activity'),
+  sessionStarted('Session created and stored'),
+  sessionResumed('Unfinished session resumed on startup'),
+  sessionCompleted('Payjoin transaction seen on the network'),
+  sessionAborted('Session ended without a payjoin'),
+  sessionExpired('Session expired before the counterparty answered'),
+  sessionCancelled('Session cancelled before any payment'),
+  sessionStartFailed('Session could not be started'),
+  originalPosted('Original transaction sent to the Payjoin directory'),
+  requestReceived('Original transaction received from the sender'),
+  proposalSent('Payjoin proposal sent to the sender'),
+  proposalReceived('Payjoin proposal received from the receiver'),
+  proposalSigned('Payjoin proposal signed'),
+  payjoinBroadcast('Payjoin transaction broadcast'),
+  fallbackBroadcast('Original transaction broadcast instead of a payjoin'),
+  fallbackObserved('Original transaction seen on the network instead'),
+  relayFailure('Payjoin directory unreachable through every OHTTP relay'),
+  walletFailure('Wallet operation failed'),
+  signingFailure('Signing failed'),
+  broadcastFailure('Broadcast failed'),
+  storageFailure('Payjoin storage failed'),
+  migrationFailure('Payjoin storage migration failed'),
+  labelFailure('Transaction labelling failed'),
+  watchFailure('Transaction watch failed'),
+  fallbackRejected('Original transaction broadcast refused'),
+  requestAfterDisable('Request arrived after Payjoin was disabled'),
+  requestBelowMinimum('Request below the Payjoin minimum amount'),
+  proposalSkipped('Proposal ignored: session already resolved'),
+  conflictingBroadcast('Payjoin broadcast after the original was seen');
+
+  final String description;
+
+  const PayjoinLogCode(this.description);
 }
 
 final class PayjoinLogEvent {
   final PayjoinLogLevel level;
   final PayjoinLogCode code;
+  final PayjoinLogRole? role;
   final String? sessionRef;
 
   /// What actually went wrong, for the host to report. Carried deliberately:
@@ -273,6 +297,7 @@ final class PayjoinLogEvent {
   PayjoinLogEvent({
     required this.level,
     required this.code,
+    this.role,
     this.sessionRef,
     this.error,
     this.trace,

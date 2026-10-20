@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
+    show PayjoinLogCode, PayjoinLogRole;
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
@@ -117,7 +119,7 @@ class PdkPayjoinDatasource {
         );
         return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
-        _log.info('OHTTP key fetch failed');
+        _log.debug('OHTTP key fetch failed');
         continue;
       }
     }
@@ -213,7 +215,7 @@ class PdkPayjoinDatasource {
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
-    _log.info('[sender] creating $senderLogRef with expirySec=$expirySec');
+    _log.debug('[sender] creating $senderLogRef with expirySec=$expirySec');
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -262,7 +264,12 @@ class PdkPayjoinDatasource {
     await persistBeforePost(model);
 
     await postOriginalProposal(withReplyKey, persister);
-    _log.info('[sender] original proposal posted for $senderLogRef');
+    _log.info(
+      '[sender] original proposal posted for $senderLogRef',
+      code: PayjoinLogCode.originalPosted,
+      role: PayjoinLogRole.sender,
+      sessionRef: senderLogRef,
+    );
 
     // The POST transitioned the session to PollingForProposal, but `model`
     // above still carries the PRE-POST session JSON (WithReplyKey) — that
@@ -275,7 +282,7 @@ class PdkPayjoinDatasource {
     // row is already persisted, so a proposal arriving immediately still
     // finds it.
     startListeningForProposal(postedModel);
-    _log.info('[sender poll] started for $senderLogRef');
+    _log.debug('[sender poll] started for $senderLogRef');
 
     return postedModel;
   }
@@ -301,7 +308,7 @@ class PdkPayjoinDatasource {
         posted = true;
         break;
       } catch (e) {
-        _log.info('Sender proposal relay failed');
+        _log.debug('Sender proposal relay failed');
         lastError = e;
         continue;
       }
@@ -309,6 +316,8 @@ class PdkPayjoinDatasource {
     if (!posted) {
       _log.warning(
         'Failed to post original PSBT to any OHTTP relay',
+        code: PayjoinLogCode.relayFailure,
+        role: PayjoinLogRole.sender,
         error: lastError,
       );
       throw SendCreationException(
@@ -351,7 +360,10 @@ class PdkPayjoinDatasource {
     );
 
     _log.info(
-      'Payjoin request processed and proposal sent for ${receiverModel.id}',
+      'Payjoin request processed and proposal sent',
+      code: PayjoinLogCode.proposalSent,
+      role: PayjoinLogRole.receiver,
+      sessionRef: receiverModel.id,
     );
 
     return updatedModel;
@@ -398,7 +410,7 @@ class PdkPayjoinDatasource {
     if (pendingFallback == null) {
       // The session was already terminal (e.g. a race with another decline
       // path) — nothing further to persist, but not an error either.
-      _log.info(
+      _log.debug(
         'Payjoin receiver ${receiverModel.id} was already resolved when '
         'declining below minimum',
       );
@@ -677,13 +689,15 @@ class PdkPayjoinDatasource {
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
       } catch (e) {
-        _log.info('Receiver proposal relay failed');
+        _log.debug('Receiver proposal relay failed');
         lastError = e;
         continue;
       }
     }
     _log.warning(
       'Failed to post payjoin proposal to any OHTTP relay',
+      code: PayjoinLogCode.relayFailure,
+      role: PayjoinLogRole.receiver,
       error: lastError,
     );
     throw PayjoinNotFoundException(
