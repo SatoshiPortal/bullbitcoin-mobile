@@ -232,6 +232,9 @@ final class PayjoinLegacyReceiver {
   });
 }
 
+/// Event intent, independent of the host logger's persistence-level names.
+/// Each host chooses persistence and reporting for routine debug activity, informational milestones, warnings and severe failures.
+/// Hosts must sanitize causes before forwarding them to logs or reporters.
 enum PayjoinLogLevel { debug, info, warning, severe }
 
 /// Which side of the protocol an event is about: the wallet paying (sender)
@@ -290,12 +293,9 @@ final class PayjoinLogEvent {
   final PayjoinLogRole? role;
   final String? sessionRef;
 
-  /// What actually went wrong, for the host to report. Carried deliberately:
-  /// without it a failure reaches the app as a bare [code], which collapses
-  /// every cause behind it into one signature — a locked database, a rejected
-  /// broadcast and a failed migration become indistinguishable in crash
-  /// reports. Unlike a free-form message this is not composed by the call
-  /// site, so it cannot smuggle a session identifier into the logs.
+  /// What actually went wrong, for the host to report.
+  /// Without it a failure reaches the app as a bare [code], which collapses every cause into one signature: a locked database, a rejected broadcast and a failed migration become indistinguishable in crash reports.
+  /// Foreign exception text can still contain payment or credential data: hosts must reduce the cause to safe type/status metadata, never forward its raw text to their logs or reporter.
   final Object? error;
   final StackTrace? trace;
 

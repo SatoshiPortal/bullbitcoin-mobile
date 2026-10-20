@@ -12,6 +12,7 @@ final class PayjoinLogger {
   const PayjoinLogger(this._port);
 
   /// Routine activity a host may drop, such as one poll of many.
+  /// The host may omit it from persisted diagnostics; the free-form argument is dropped like other text.
   void debug(String _, {PayjoinLogRole? role, String? sessionRef}) {
     _write(
       PayjoinLogLevel.debug,
@@ -73,10 +74,8 @@ final class PayjoinLogger {
     );
   }
 
-  /// The free-form message is deliberately dropped: call sites compose it, so
-  /// it is the one field that could carry a BIP21 URI or a raw txid into the
-  /// host's logs. [error] and [trace] are forwarded instead — they are the
-  /// diagnosis, and neither is composed here.
+  /// The free-form message is deliberately dropped: call sites compose it, so it could carry a BIP21 URI or a raw txid into the host's logs.
+  /// [error] and [trace] are forwarded for diagnosis; the host must sanitize the cause rather than logging foreign exception text verbatim.
   void _write(
     PayjoinLogLevel level,
     PayjoinLogCode code, {
