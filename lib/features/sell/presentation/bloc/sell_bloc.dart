@@ -197,6 +197,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellPaymentPreparationAbandoned event,
     Emitter<SellState> emit,
   ) {
+    // Leaving a payin the exchange reported late: the screen that would show a
+    // late credit is gone, so stop polling for one. The broadcast latch stays.
+    final current = _currentPaymentState;
+    if (current != null && current.isPayinPastDeadline) {
+      _stopPolling();
+      emit(current.copyWith(isPolling: false));
+      return;
+    }
     if (_hasPaymentInFlight) return;
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
@@ -1096,18 +1104,26 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
     log.fine('Sell order after payin: ${_orderProgress(latestOrder)}');
+    // The read took seconds: settle only the order still on screen, from the
+    // state as it is now rather than as it was before the request.
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+      return;
+    }
+
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
         payinStatus != OrderPayinStatus.completed) {
+      if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
+      }
       return;
     }
 
-    await _labelPayjoinSellTransaction(
-      latestOrder,
-      paymentState.selectedWallet?.id,
-    );
-    emit(paymentState.toSuccessState(sellOrder: latestOrder));
+    await _labelPayjoinSellTransaction(latestOrder, current.selectedWallet?.id);
+    emit(current.toSuccessState(sellOrder: latestOrder));
   }
 
   void _emitSendPaymentError(Emitter<SellState> emit, SellFailure error) {
@@ -1211,6 +1227,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
       final current = _currentPaymentState;
       if (current == null) return;
+      // The order on screen may have been replaced while this read was out.
+      if (current.sellOrder.orderId != sellPaymentState.sellOrder.orderId) {
+        return;
+      }
       if (!current.isPayinBroadcast) {
         // Fail closed: the polled order must still pay the address the user
         // confirmed, or polling stops and the order is refused.
@@ -1248,6 +1268,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
               .copyWith(sellOrder: latestOrder, isPolling: false)
               .toSuccessState(sellOrder: latestOrder),
         );
+      } else if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
       } else {
         // The fetch takes seconds and the poll runs for the life of the screen,
         // so it routinely spans the broadcast. Emitting the pre-await snapshot
@@ -1284,9 +1306,45 @@ class SellBloc extends Bloc<SellEvent, SellState>
     return deadline != null && !deadline.isAfter(DateTime.now());
   }
 
-  void _startPolling() {
+  /// The exchange's own verdict that the payment deadline passed with no payin
+  /// seen. Whether a late payin can still be credited is the exchange's call,
+  /// so the screen keeps watching instead of failing the order.
+  static bool _isPastDeadline(SellOrder order) =>
+      (order.orderStatus == OrderStatus.expired ||
+          order.orderStatus == OrderStatus.orderExpired) &&
+      (order.payinStatus == OrderPayinStatus.notStarted ||
+          order.payinStatus == OrderPayinStatus.awaitingPayment);
+
+  void _reportPayinPastDeadline(
+    Emitter<SellState> emit,
+    SellPaymentState current,
+    SellOrder latestOrder,
+  ) {
+    if (!current.isPayinPastDeadline) {
+      log.warning(
+        // Kept short and punctuated: a long run of lowercase words is
+        // redacted from exported logs as a possible mnemonic.
+        'Sell payin broadcast; exchange reports order past deadline: '
+        'status=${latestOrder.orderStatus.name}, '
+        'payin=${latestOrder.payinStatus.name}',
+      );
+      // Still watched, in case the exchange credits it late, but no longer at
+      // the pace of a payment expected within seconds.
+      _startPolling(interval: const Duration(seconds: 30));
+    }
+    emit(
+      current.copyWith(
+        sellOrder: latestOrder,
+        isConfirmingPayment: false,
+        isPayinPastDeadline: true,
+        isPolling: true,
+      ),
+    );
+  }
+
+  void _startPolling({Duration interval = const Duration(seconds: 5)}) {
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _pollingTimer = Timer.periodic(interval, (timer) {
       add(const SellEvent.pollOrderStatus());
     });
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -79,12 +80,18 @@ class _MockWallet extends Mock implements Wallet {}
 class _MockLogger extends Mock implements Logger {}
 
 class _MockSellOrder extends Mock implements SellOrder {
-  // Read only by the order-progress log line; no test drives them.
+  // Unstubbed, an order is in progress with no payjoin; tests can still stub
+  // either with `when`. The order-progress log line reads both.
   @override
-  OrderStatus get orderStatus => OrderStatus.inProgress;
+  OrderStatus get orderStatus =>
+      super.noSuchMethod(Invocation.getter(#orderStatus)) as OrderStatus? ??
+      OrderStatus.inProgress;
 
   @override
-  OrderPayjoinOutcome get payjoinOutcome => OrderPayjoinOutcome.none;
+  OrderPayjoinOutcome get payjoinOutcome =>
+      super.noSuchMethod(Invocation.getter(#payjoinOutcome))
+          as OrderPayjoinOutcome? ??
+      OrderPayjoinOutcome.none;
 }
 
 class _FakeNewLabel extends Fake implements NewLabel {}
@@ -1067,7 +1074,217 @@ void main() {
     expect(state.error, isNotNull);
   });
 
-  group('SellBloc — order deadline', () {
+  group('SellBloc — payin past the order deadline', () {
+    _MockSellOrder polled({
+      required OrderStatus status,
+      required OrderPayinStatus payin,
+    }) {
+      final order = _MockSellOrder();
+      when(() => order.orderId).thenReturn('order-1');
+      when(() => order.orderStatus).thenReturn(status);
+      when(() => order.payinStatus).thenReturn(payin);
+      when(
+        () => order.toAddress,
+      ).thenReturn('bc1q0000000000000000000000000000000000000');
+      return order;
+    }
+
+    void seedBroadcast() => bloc.seed(
+      (bloc.state as SellPaymentState).copyWith(
+        isConfirmingPayment: true,
+        payinBroadcastTxid: expectedTxid,
+      ),
+    );
+
+    test('an expired order after the payin lets the user leave without '
+        'paying again', () async {
+      seedBroadcast();
+      when(
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer(
+        (_) async => Ok<Order, SellFailure>(
+          polled(
+            status: OrderStatus.expired,
+            payin: OrderPayinStatus.notStarted,
+          ),
+        ),
+      );
+
+      expect((bloc.state as SellPaymentState).canLeavePaymentScreen, isFalse);
+      bloc.add(const SellEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      // Observed on testnet: the screen spun on "refreshing your order"
+      // forever, with back navigation blocked, for a payin the exchange had
+      // already reported as past its deadline.
+      final waiting = bloc.state as SellPaymentState;
+      expect(waiting.isConfirmingPayment, isFalse);
+      expect(waiting.payinBroadcastTxid, expectedTxid);
+      expect(waiting.canLeavePaymentScreen, isTrue);
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      verifyNever(
+        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      );
+    });
+
+    test('an old order poll cannot overwrite a replacement order', () async {
+      final poll = Completer<Result<Order, SellFailure>>();
+      when(
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => poll.future);
+      final replacementOrder = _MockSellOrder();
+      when(() => replacementOrder.orderId).thenReturn('order-2');
+      when(
+        () => replacementOrder.toAddress,
+      ).thenReturn('bc1q0000000000000000000000000000000000000');
+
+      bloc.add(const SellEvent.pollOrderStatus());
+      await untilCalled(() => loadSellContext.order(orderId: 'order-1'));
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(sellOrder: replacementOrder),
+      );
+      poll.complete(
+        Ok<Order, SellFailure>(
+          polled(
+            status: OrderStatus.expired,
+            payin: OrderPayinStatus.awaitingPayment,
+          ),
+        ),
+      );
+      await pumpEventQueue();
+
+      final state = bloc.state as SellPaymentState;
+      expect(state.sellOrder, same(replacementOrder));
+    });
+
+    test(
+      'a completion read for a replaced order cannot settle the new one',
+      () async {
+        seedBroadcast();
+        final read = Completer<Result<Order, SellFailure>>();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) => read.future);
+        final replacementOrder = _MockSellOrder();
+        when(() => replacementOrder.orderId).thenReturn('order-2');
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        await untilCalled(() => loadSellContext.order(orderId: 'order-1'));
+        bloc.seed(
+          (bloc.state as SellPaymentState).copyWith(
+            sellOrder: replacementOrder,
+          ),
+        );
+        read.complete(
+          Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.inProgress,
+              payin: OrderPayinStatus.inProgress,
+            ),
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(bloc.state, isA<SellPaymentState>());
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test(
+      'the past-deadline warning survives the exported log filter',
+      () async {
+        final previousLogger = log;
+        final directory = await Directory.systemTemp.createTemp('sell_logs');
+        addTearDown(() async {
+          log = previousLogger;
+          await directory.delete(recursive: true);
+        });
+        log = Logger.replace(directory: directory);
+        await log.ensureLogsExist(writeDiagnosticContext: false);
+        seedBroadcast();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async => Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.expired,
+              payin: OrderPayinStatus.notStarted,
+            ),
+          ),
+        );
+
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        // The logger redacts any long run of lowercase words as a possible
+        // mnemonic; on a phone this line came out as "[REDACTED]".
+        final lines = await log.readLogs();
+        expect(
+          lines.where((line) => line.contains('past deadline: status=expired')),
+          hasLength(1),
+        );
+      },
+    );
+
+    test(
+      'leaving a payin reported past its deadline stops watching it',
+      () async {
+        seedBroadcast();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async => Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.expired,
+              payin: OrderPayinStatus.notStarted,
+            ),
+          ),
+        );
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        // Leave pops the screen, which reports the preparation as abandoned.
+        bloc.add(const SellEvent.paymentPreparationAbandoned());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final left = bloc.state as SellPaymentState;
+        // No screen is left to show a late credit, so nothing polls for one.
+        expect(left.isPolling, isFalse);
+        // Still paid as far as this device knows: never paid again.
+        expect(left.payinBroadcastTxid, expectedTxid);
+      },
+    );
+
+    test(
+      'a payin the exchange accepts late still completes the sale',
+      () async {
+        seedBroadcast();
+        final expired = polled(
+          status: OrderStatus.expired,
+          payin: OrderPayinStatus.notStarted,
+        );
+        final accepted = polled(
+          status: OrderStatus.inProgress,
+          payin: OrderPayinStatus.inProgress,
+        );
+        var reads = 0;
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async =>
+              Ok<Order, SellFailure>(reads++ == 0 ? expired : accepted),
+        );
+
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        bloc.add(const SellEvent.pollOrderStatus());
+
+        await bloc.stream.firstWhere((state) => state is SellSuccessState);
+      },
+    );
+
     test('a quote past its deadline is never paid', () async {
       bloc.seed(
         (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
