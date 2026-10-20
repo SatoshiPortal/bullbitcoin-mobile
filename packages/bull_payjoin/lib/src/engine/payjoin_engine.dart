@@ -547,13 +547,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // decline and broadcast the sender's original when we already hold it,
         // leave a committed proposal to the sender — but scoped to one session
         // and driven by the user rather than by the setting.
+        final wasIdle =
+            fresh.originalTxBytes == null && fresh.proposalPsbt == null;
         final settled = await _settleReceiverAfterDisable(fresh);
-        _log.info(
-          'Payjoin receiver cancelled',
-          code: api.PayjoinLogCode.sessionCancelled,
-          role: api.PayjoinLogRole.receiver,
-          sessionRef: fresh.toEntity().logRef,
-        );
+        if (wasIdle) {
+          _log.info(
+            'Payjoin receiver cancelled',
+            code: api.PayjoinLogCode.sessionCancelled,
+            role: api.PayjoinLogRole.receiver,
+            sessionRef: fresh.toEntity().logRef,
+          );
+        }
         if (settled != null) _payjoinStreamController.add(settled);
       });
 

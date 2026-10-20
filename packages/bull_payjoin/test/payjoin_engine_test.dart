@@ -644,6 +644,41 @@ void main() {
     verify(() => pdk.stopPolling(model.id)).called(1);
   });
 
+  test('cancelling a committed proposal does not claim no payment', () async {
+    final model = receiver(proposalPsbt: 'cHNidP9wcm9wb3NhbA==');
+    await local.storeReceiver(model);
+
+    await engine.cancelReceiver(model.id);
+
+    expect(await local.fetchReceiver(model.id), isNotNull);
+    expect(logs.withCode(PayjoinLogCode.sessionCancelled), isEmpty);
+    expect(logs.withCode(PayjoinLogCode.fallbackBroadcast), isEmpty);
+  });
+
+  test(
+    'cancelling with an original logs its payment, not an idle cancellation',
+    () async {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+      );
+      await local.storeReceiver(model);
+      when(() => pdk.declineReceiverSession(model)).thenReturn(model.receiver);
+      when(
+        () => blockchain.broadcastTransaction(
+          network: BitcoinNetwork.testnet,
+          transaction: any(named: 'transaction'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await engine.cancelReceiver(model.id);
+
+      expect(logs.withCode(PayjoinLogCode.sessionCancelled), isEmpty);
+      expect(logs.withCode(PayjoinLogCode.fallbackBroadcast), hasLength(1));
+      expect((await local.fetchReceiver(model.id))?.isAborted, isTrue);
+    },
+  );
+
   test('duplicate sender is rejected before directory publication', () async {
     final model = sender();
     await local.storeSender(model);
