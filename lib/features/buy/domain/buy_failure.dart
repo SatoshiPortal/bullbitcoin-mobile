@@ -39,6 +39,12 @@ final class BuyAboveMaxAmountFailure extends BuyFailure {
   }) : super(logMessage);
 }
 
+/// The order's price lock lapsed and the bounded retries brought no usable
+/// quote back: every answer was lapsed too, or the requests failed.
+final class BuyQuoteUnavailableFailure extends BuyFailure {
+  const BuyQuoteUnavailableFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -58,6 +60,224 @@ class _MockLabelCompletedBuyOrderUsecase extends Mock
 
 void main() {
   setUpAll(() => registerFallbackValue(const FiatAmount(100)));
+
+  group('BuyBloc — quote refresh scheduling', () {
+    late _SeedableBuyBloc bloc;
+    late _MockRefreshBuyOrderUsecase refresh;
+    late _MockConfirmBuyOrderUsecase confirm;
+    late _MockCancelAbandonedBuyPayjoinUsecase cancel;
+    late _MockLabelCompletedBuyOrderUsecase labels;
+    late BuyOrder order;
+
+    setUpAll(() => registerFallbackValue(_MockBuyOrder()));
+
+    _SeedableBuyBloc build() => _SeedableBuyBloc(
+      loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
+      confirmBuyOrderUsecase: confirm,
+      createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+      refreshBuyOrderUsecase: refresh,
+      accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+      cancelAbandonedBuyPayjoinUsecase: cancel,
+      getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+      labelCompletedBuyOrderUsecase: labels,
+    );
+
+    Future<Result<BuyOrder, BuyFailure>> refreshCall() =>
+        refresh.execute(orderId: 'quote-order');
+
+    setUp(() {
+      refresh = _MockRefreshBuyOrderUsecase();
+      confirm = _MockConfirmBuyOrderUsecase();
+      cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+      labels = _MockLabelCompletedBuyOrderUsecase();
+      order = BuyOrder(
+        orderId: 'quote-order',
+        orderType: OrderType.buy,
+        message: OrderMessage(code: '', message: ''),
+        orderNumber: 1,
+        payinAmount: 100,
+        payinCurrency: 'CAD',
+        payoutAmount: 0.001,
+        payoutCurrency: 'BTC',
+        payinMethod: OrderPaymentMethod.cadBalance,
+        payoutMethod: OrderPaymentMethod.bitcoin,
+        orderStatus: OrderStatus.inProgress,
+        payinStatus: OrderPayinStatus.awaitingPayment,
+        payoutStatus: OrderPayoutStatus.notStarted,
+        confirmationDeadline: DateTime.now().subtract(
+          const Duration(minutes: 1),
+        ),
+        createdAt: DateTime.now(),
+        isTestnet: true,
+      );
+      when(() => cancel.execute(any())).thenAnswer((_) async => const Ok(null));
+      when(refreshCall).thenAnswer((_) async => Ok(order));
+      when(
+        () => labels.execute(order: any(named: 'order')),
+      ).thenAnswer((_) async => const Ok(null));
+      bloc = build();
+      bloc.seed(BuyState(buyOrder: order));
+    });
+
+    tearDown(() async {
+      if (!bloc.isClosed) await bloc.close();
+    });
+
+    // The scheduler's timers must be born inside the fake zone, so the bloc
+    // is rebuilt there from the state the outer setUp seeded.
+    Future<void> inFakeTime(void Function(FakeAsync) check) async {
+      final initial = bloc.state;
+      await bloc.close();
+      fakeAsync((time) {
+        bloc = build();
+        bloc.seed(initial);
+        try {
+          check(time);
+        } finally {
+          unawaited(bloc.close());
+          time.flushMicrotasks();
+        }
+      });
+    }
+
+    test('overlapping refresh requests send one call', () async {
+      final response = Completer<Result<BuyOrder, BuyFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const BuyEvent.refreshOrder());
+      bloc.add(const BuyEvent.refreshOrder());
+      await pumpEventQueue();
+      verify(refreshCall).called(1);
+      response.complete(Ok(order));
+      await pumpEventQueue();
+    });
+
+    test('a lapsed quote coming back is retried after five seconds', () {
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 4));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(seconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a failed refresh has a deferred successor', () {
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(BuyUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a fresh lock is refreshed at its exact deadline', () {
+      // The countdown widget fires up to a second early; the bloc no longer
+      // listens to it and arms its own timer at the instant the lock lapses.
+      return inFakeTime((time) {
+        when(refreshCall).thenAnswer(
+          (_) async => Ok(
+            order.copyWith(
+              confirmationDeadline: clock.now().add(
+                const Duration(milliseconds: 500),
+              ),
+            ),
+          ),
+        );
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(milliseconds: 499));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(milliseconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('retries stop with a typed failure once the budget is spent', () {
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        // Six retries, five seconds apart, after the first lapsed answer.
+        time.elapse(const Duration(seconds: 30));
+        time.flushMicrotasks();
+        verify(refreshCall).called(7);
+        expect(bloc.state.failure, isA<BuyQuoteUnavailableFailure>());
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('a failed confirmation refreshes a lapsed quote at once', () async {
+      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer(
+        (_) async => const Err(BuyUnexpectedFailure('confirmation failed')),
+      );
+      bloc.add(const BuyEvent.confirmOrder());
+      await pumpEventQueue();
+      verify(refreshCall).called(1);
+    });
+
+    test('a failed confirmation leaves a live lock to its deadline', () async {
+      bloc.seed(
+        BuyState(
+          buyOrder: order.copyWith(
+            confirmationDeadline: DateTime.now().add(
+              const Duration(minutes: 5),
+            ),
+          ),
+        ),
+      );
+      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer(
+        (_) async => const Err(BuyUnexpectedFailure('confirmation failed')),
+      );
+      bloc.add(const BuyEvent.confirmOrder());
+      await pumpEventQueue();
+      verifyNever(refreshCall);
+    });
+
+    test('a confirmed order is not refreshed for its lapsed quote', () {
+      when(
+        () => confirm.execute(orderId: 'quote-order'),
+      ).thenAnswer((_) async => Ok(order));
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.confirmOrder());
+        time.flushMicrotasks();
+        // A successful confirmation need not report payin completed yet.
+        expect(bloc.state.buyOrder?.isPayinCompleted, isFalse);
+        // The success screen still polls the order.
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('abandoning the order cancels the pending retry', () {
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+  });
 
   group('order preparation', () {
     late _SeedableBuyBloc bloc;
