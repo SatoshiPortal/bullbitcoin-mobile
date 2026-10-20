@@ -38,6 +38,11 @@ void main() {
         ),
       );
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      verifyNever(() => cubit.disconnectWebSocket());
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      verifyNever(() => cubit.reconnectWebSocket());
+      verifyNever(() => cubit.fetchUserSummary());
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
       verify(() => cubit.disconnectWebSocket()).called(1);

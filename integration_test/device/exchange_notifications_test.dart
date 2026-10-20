@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/data/services/exchange_notification_serv
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/foreground_lifecycle.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
@@ -87,11 +88,12 @@ Future<void> main() async {
       accepted++;
       socket.listen((_) {}, onDone: () => closed++);
     });
+    final foreground = ForegroundLifecycle(binding: binding);
     final datasource = ExchangeNotificationDatasource(
       baseUrl: 'http://127.0.0.1:${server.port}',
       apiKeyDatasource: keys,
       isTestnet: false,
-      isForeground: () => binding.lifecycleState == AppLifecycleState.resumed,
+      isForeground: () => foreground.isForeground,
     );
     final settings = _Settings();
     when(() => settings.fetch()).thenAnswer(
@@ -137,6 +139,7 @@ Future<void> main() async {
       },
     );
     addTearDown(() async {
+      foreground.dispose();
       observer.dispose();
       service.dispose();
       await cubit.close();
@@ -154,6 +157,16 @@ Future<void> main() async {
     await service.connect();
     expect(datasource.isConnected, isTrue);
     expect(accepted, 1);
+
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    expect(datasource.isConnected, isTrue);
+    final inactiveMessage = datasource.messageStream.first;
+    sockets.single.add('{"type":"balance"}');
+    expect(await inactiveMessage, {'type': 'balance'});
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    expect(accepted, 1);
+    verifyNever(() => cubit.fetchUserSummary());
 
     const externalLifecycle = bool.fromEnvironment('WS_EXTERNAL_LIFECYCLE');
     if (externalLifecycle) {

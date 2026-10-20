@@ -25,17 +25,17 @@ import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_messag
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/foreground_lifecycle.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 
 class ExchangeLocator {
-  static bool _isForeground() {
-    final state = WidgetsBinding.instance.lifecycleState;
-    return state == null || state == AppLifecycleState.resumed;
-  }
-
   static void registerDatasources(GetIt locator) {
+    // Observe every transition, even when no datasource is reading the gate.
+    locator.registerSingleton<ForegroundLifecycle>(
+      ForegroundLifecycle(),
+      dispose: (lifecycle) => lifecycle.dispose(),
+    );
     // BB Exchange API Key Storage
     locator.registerLazySingleton<BullbitcoinApiKeyDatasource>(
       () => BullbitcoinApiKeyDatasource(
@@ -105,7 +105,7 @@ class ExchangeLocator {
         baseUrl: ApiServiceConstants.bbApiUrl,
         apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: false,
-        isForeground: _isForeground,
+        isForeground: () => locator<ForegroundLifecycle>().isForeground,
       ),
       instanceName: 'mainnetExchangeNotificationDatasource',
     );
@@ -115,7 +115,7 @@ class ExchangeLocator {
         baseUrl: ApiServiceConstants.bbApiTestUrl,
         apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
-        isForeground: _isForeground,
+        isForeground: () => locator<ForegroundLifecycle>().isForeground,
       ),
       instanceName: 'testnetExchangeNotificationDatasource',
     );

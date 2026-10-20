@@ -1,15 +1,18 @@
+import 'package:bb_mobile/core/utils/foreground_lifecycle.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:flutter/material.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Listens to ExchangeCubit state changes and manages WebSocket connection lifecycle.
 ///
 /// - Connects WebSocket when user logs in (userSummary becomes non-null)
 /// - Disconnects WebSocket when user logs out (userSummary becomes null)
-/// - Suspends the socket whenever the app leaves foreground-resumed
+/// - Suspends the socket when the app becomes hidden, paused, or detached
 /// - Reconnects and catches up account state only after returning to resumed
+/// - Keeps the previous visibility during transient inactive states (dialogs,
+///   biometric prompts), avoiding reconnect and account-refresh churn
 ///
 /// For network changes (mainnet/testnet switch), call [ExchangeCubit.reconnectWebSocket]
 /// from the settings screen or wherever the network change is triggered.
@@ -38,7 +41,10 @@ class _ExchangeListenerState extends State<ExchangeListener> {
   void _onLifecycleChange(AppLifecycleState state) {
     log.fine('Exchange notifications lifecycle: ${state.name}');
     final wasForeground = _isForeground;
-    _isForeground = state == AppLifecycleState.resumed;
+    _isForeground = ForegroundLifecycle.nextState(
+      state,
+      wasForeground: wasForeground,
+    );
     if (!_isForeground) {
       if (wasForeground) context.read<ExchangeCubit>().disconnectWebSocket();
       return;
