@@ -229,6 +229,34 @@ void main() {
     });
   });
 
+  test('explicit disconnect starts a fresh retry round', () {
+    fakeAsync((time) {
+      unawaited(datasource.connect());
+      time.flushMicrotasks();
+      for (final seconds in [5, 10, 20, 40]) {
+        ready.last.completeError(const SocketException('offline'));
+        time.flushMicrotasks();
+        time.elapse(Duration(seconds: seconds));
+      }
+      ready.last.completeError(const SocketException('offline'));
+      time.flushMicrotasks();
+      datasource.disconnect();
+      time.elapse(const Duration(minutes: 2));
+      expect(ready, hasLength(5));
+
+      unawaited(datasource.connect());
+      time.flushMicrotasks();
+      ready.last.completeError(const SocketException('offline'));
+      time.flushMicrotasks();
+      time.elapse(const Duration(seconds: 4));
+      expect(ready, hasLength(6));
+      time.elapse(const Duration(seconds: 1));
+      expect(ready, hasLength(7));
+      ready.last.complete();
+      time.flushMicrotasks();
+    });
+  });
+
   test('a disposed datasource cannot reconnect', () async {
     datasource.dispose();
     await datasource.connect();

@@ -224,6 +224,7 @@ class ExchangeNotificationDatasource {
 
   void disconnect() {
     ++_generation;
+    _retrySeconds = 5;
     _isManuallyDisconnected = true;
     _isConnecting = false;
     _isConnected = false;
