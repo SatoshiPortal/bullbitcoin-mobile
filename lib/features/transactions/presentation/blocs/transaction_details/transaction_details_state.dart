@@ -32,11 +32,11 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
 
   /// The failure the broadcast action owns, so the button renders it inline
   /// and the UI never has to switch on a failure type itself.
-  TransactionPayjoinBroadcastFailure? get payjoinBroadcastFailure =>
-      switch (failure) {
-        final TransactionPayjoinBroadcastFailure f => f,
-        _ => null,
-      };
+  TransactionFailure? get payjoinBroadcastFailure => switch (failure) {
+    final TransactionPayjoinBroadcastFailure f => f,
+    final TransactionPayjoinVerificationFailure f => f,
+    _ => null,
+  };
 
   bool get isLoading => transaction == null && !hasLoadError;
 

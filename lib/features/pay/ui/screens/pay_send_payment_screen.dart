@@ -1,27 +1,26 @@
+import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullBottomSheet,
+        BullButton,
+        BullCountdown,
+        BullSwitch,
+        Gap;
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
@@ -65,9 +64,11 @@ class PaySendPaymentScreen extends StatelessWidget {
           (bloc.state as PayPaymentState).isPayinBroadcast,
     );
     final wallet = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).selectedWallet
-          : null,
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final selectedWallet) => selectedWallet,
+        PayPreparingPaymentState(:final selectedWallet) => selectedWallet,
+        _ => null,
+      },
     );
     final order = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
@@ -85,184 +86,231 @@ class PaySendPaymentScreen extends StatelessWidget {
           : false,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          Assets.logos.bbLogoSmall.path,
-          height: 32,
-          width: 32,
+    final preparationFailure = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPreparingPaymentState(:final error) => error,
+        _ => null,
+      },
+    );
+    return PopScope<Object?>(
+      canPop: !isConfirmingPayment && !isPayinBroadcast,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<PayBloc>().add(
+            const PayEvent.paymentPreparationAbandoned(),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Image.asset(
+            Assets.logos.bbLogoSmall.path,
+            height: 32,
+            width: 32,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: ScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          children: [
-            FadingLinearProgress(
-              height: 3,
-              trigger: isConfirmingPayment,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
-            const Gap(24.0),
-            Text(
-              context.loc.payConfirmPayment,
-              style: context.font.headlineMedium?.copyWith(
-                color: context.appColors.secondary,
-              ),
-            ),
-            const Gap(4.0),
-            Row(
-              mainAxisAlignment: .center,
-              children: [
-                Text(
-                  context.loc.payPriceRefreshIn,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.outline,
+        body: preparationFailure != null && order == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    preparationFailure.toTranslated(context),
+                    textAlign: TextAlign.center,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.error,
+                    ),
                   ),
                 ),
-                if (order?.confirmationDeadline case final deadline?)
-                  Countdown(
-                    until: deadline,
-                    onTimeout: () {
-                      context.read<PayBloc>().add(
-                        const PayEvent.orderRefreshTimePassed(),
-                      );
-                    },
-                  ),
-              ],
-            ),
-
-            const Gap(8.0),
-            _DetailRow(
-              title: context.loc.payOrderNumber,
-              value: order?.orderNumber.toString(),
-              copyValue: order?.orderNumber.toString(),
-            ),
-            // The payin goes to this address: showing it is the user's only
-            // way to notice if it ever changed under them.
-            _DetailRow(
-              title: context.loc.payDepositAddress,
-              value: order?.toAddress,
-              copyValue: order?.toAddress,
-            ),
-            if (order?.paymentDescription != null &&
-                order!.paymentDescription!.isNotEmpty)
-              _DetailRow(
-                title: context.loc.payPaymentDescription,
-                value: order.paymentDescription,
-              ),
-            _DetailRow(
-              title: context.loc.payRecipientType,
-              value: recipient != null
-                  ? switch (recipient.type) {
-                      // TODO: Use localization labels instead of hardcoded strings.
-                      // CANADA types
-                      RecipientType.interacEmailCad => 'Interac e-Transfer',
-                      RecipientType.billPaymentCad => 'Bill Payment',
-                      RecipientType.bankTransferCad => 'Bank Transfer',
-                      // EUROPE types
-                      RecipientType.sepaEur => 'SEPA Transfer',
-                      // MEXICO types
-                      RecipientType.speiClabeMxn => 'SPEI CLABE',
-                      RecipientType.speiSmsMxn => 'SPEI SMS',
-                      RecipientType.speiCardMxn => 'SPEI Card',
-                      // COSTA RICA types
-                      RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-                      RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-                      RecipientType.sinpeMovilCrc => 'SINPE Móvil',
-                      // ARGENTINA types
-                      RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
-                      RecipientType.pseColombia => 'Bank Account COP',
-                      RecipientType.nequiColombia => 'Nequi',
-                    }
-                  : null,
-            ),
-            _DetailRow(
-              title: context.loc.payRecipientName,
-              value: recipient?.displayName,
-            ),
-            _DetailRow(
-              title: context.loc.payRecipientDetails,
-              value: recipient != null
-                  ? _getRecipientInfoValue(recipient)
-                  : null,
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: context.loc.payPayinAmount,
-              value: order == null ? null : FormatAmount.btc(order.payinAmount),
-            ),
-            _DetailRow(
-              title: context.loc.payPayoutAmount,
-              value: order == null
-                  ? null
-                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
-            ),
-            _DetailRow(
-              title: context.loc.payExchangeRate,
-              value: order == null
-                  ? null
-                  : FormatAmount.fiat(
-                      order.exchangeRateAmount ??
-                          order.payoutAmount / order.payinAmount,
-                      order.exchangeRateCurrency ?? order.payoutCurrency,
-                    ),
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: context.loc.payPayFromWallet,
-              value:
-                  wallet?.label ??
-                  (wallet?.isDefault == true
-                      ? wallet?.isLiquid == true
-                            ? context.loc.payInstantPayments
-                            : context.loc.paySecureBitcoinWallet
-                      : ''),
-            ),
-            // Liquid payins pay the network minimum, so there is nothing to pick.
-            if (wallet != null && !wallet.isLiquid) const _FeePriorityRow(),
-            _DetailRow(
-              title: context.loc.payNetworkFees,
-              value: context.select((PayBloc bloc) {
-                final state = bloc.state;
-                if (state is PayPaymentState && state.absoluteFees != null) {
-                  return FormatAmount.btc(
-                    ConvertAmount.satsToBtc(state.absoluteFees!),
-                  );
-                }
-                return context.loc.payCalculating;
-              }),
-            ),
-            if (wallet != null &&
-                !wallet.isLiquid &&
-                order?.payjoinBip21 != null)
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.loc.payjoinUseToggle,
-                      style: context.font.bodyMedium,
-                    ),
-                  ),
-                  BBSwitch(
-                    value: isPayjoinEnabled,
-                    onChanged: isConfirmingPayment || isPayinBroadcast
-                        ? null
-                        : (enabled) => context.read<PayBloc>().add(
-                            PayEvent.payjoinToggled(enabled),
+              )
+            : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      const Gap(24.0),
+                      Text(
+                        context.loc.payConfirmPayment,
+                        style: context.font.headlineMedium?.copyWith(
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Text(
+                            context.loc.payPriceRefreshIn,
+                            style: context.font.bodyMedium?.copyWith(
+                              color: context.appColors.outline,
+                            ),
                           ),
+                          if (order?.confirmationDeadline case final deadline?)
+                            BullCountdown(
+                              until: deadline,
+                              onTimeout: () {
+                                context.read<PayBloc>().add(
+                                  const PayEvent.orderRefreshTimePassed(),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+
+                      const Gap(8.0),
+                      PaymentDetailRow(
+                        title: context.loc.payOrderNumber,
+                        value: order?.orderNumber.toString(),
+                        copyValue: order?.orderNumber.toString(),
+                      ),
+                      // The payin goes to this address: showing it is the user's only
+                      // way to notice if it ever changed under them.
+                      PaymentDetailRow(
+                        title: context.loc.payDepositAddress,
+                        isAddress: true,
+                        value: order?.toAddress,
+                        copyValue: order?.toAddress,
+                      ),
+                      if (order?.paymentDescription case final description?
+                          when description.isNotEmpty)
+                        PaymentDetailRow(
+                          title: context.loc.payPaymentDescription,
+                          value: description,
+                        ),
+                      PaymentDetailRow(
+                        title: context.loc.payRecipientType,
+                        value: recipient != null
+                            ? switch (recipient.type) {
+                                // TODO: Use localization labels instead of hardcoded strings.
+                                // CANADA types
+                                RecipientType.interacEmailCad =>
+                                  'Interac e-Transfer',
+                                RecipientType.billPaymentCad => 'Bill Payment',
+                                RecipientType.bankTransferCad =>
+                                  'Bank Transfer',
+                                // EUROPE types
+                                RecipientType.sepaEur => 'SEPA Transfer',
+                                RecipientType.confidentialSepaEur =>
+                                  context.loc.recipientsTypeConfidentialSepa,
+                                // MEXICO types
+                                RecipientType.speiClabeMxn => 'SPEI CLABE',
+                                RecipientType.speiSmsMxn => 'SPEI SMS',
+                                RecipientType.speiCardMxn => 'SPEI Card',
+                                // COSTA RICA types
+                                RecipientType.sinpeIbanUsd =>
+                                  'SINPE IBAN (USD)',
+                                RecipientType.sinpeIbanCrc =>
+                                  'SINPE IBAN (CRC)',
+                                RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+                                // ARGENTINA types
+                                RecipientType.bankAccountArgentina =>
+                                  'CBU/CVU Argentina',
+                                RecipientType.pseColombia => 'Bank Account COP',
+                                RecipientType.nequiColombia => 'Nequi',
+                              }
+                            : null,
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.payRecipientName,
+                        value: recipient?.displayName,
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.payRecipientDetails,
+                        value: recipient != null
+                            ? _getRecipientInfoValue(recipient)
+                            : null,
+                      ),
+                      const _Divider(),
+                      PaymentDetailRow(
+                        title: context.loc.payPayinAmount,
+                        value: order == null
+                            ? null
+                            : FormatAmount.btc(order.payinAmount),
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.payPayoutAmount,
+                        value: order == null
+                            ? null
+                            : FormatAmount.fiat(
+                                order.payoutAmount,
+                                order.payoutCurrency,
+                              ),
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.payExchangeRate,
+                        value: order == null
+                            ? null
+                            : FormatAmount.fiat(
+                                order.exchangeRateAmount ??
+                                    order.payoutAmount / order.payinAmount,
+                                order.exchangeRateCurrency ??
+                                    order.payoutCurrency,
+                              ),
+                      ),
+                      const _Divider(),
+                      PaymentDetailRow(
+                        title: context.loc.payPayFromWallet,
+                        value:
+                            wallet?.label ??
+                            (wallet?.isDefault == true
+                                ? wallet?.isLiquid == true
+                                      ? context.loc.payInstantPayments
+                                      : context.loc.paySecureBitcoinWallet
+                                : ''),
+                      ),
+                      // Liquid payins pay the network minimum, so there is nothing to pick.
+                      if (wallet != null && !wallet.isLiquid)
+                        const _FeePriorityRow(),
+                      PaymentDetailRow(
+                        title: context.loc.payNetworkFees,
+                        value: context.select((PayBloc bloc) {
+                          final state = bloc.state;
+                          if (state case PayPaymentState(
+                            absoluteFees: final fees?,
+                          )) {
+                            return FormatAmount.btc(
+                              ConvertAmount.satsToBtc(fees),
+                            );
+                          }
+                          return null;
+                        }),
+                      ),
+                      if (wallet != null &&
+                          !wallet.isLiquid &&
+                          order?.payjoinBip21 != null)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                context.loc.payjoinUseToggle,
+                                style: context.font.bodyMedium,
+                              ),
+                            ),
+                            BullSwitch(
+                              value: isPayjoinEnabled,
+                              onChanged: isConfirmingPayment || isPayinBroadcast
+                                  ? null
+                                  : (enabled) => context.read<PayBloc>().add(
+                                      PayEvent.payjoinToggled(enabled),
+                                    ),
+                            ),
+                          ],
+                        ),
+                      const Gap(24),
+                    ],
                   ),
-                ],
+                ),
               ),
-            const Spacer(),
-            _BottomButtons(
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+            child: _BottomButtons(
               onContinuePressed: () {
                 context.read<PayBloc>().add(
                   const PayEvent.sendPaymentConfirmed(),
                 );
               },
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -284,6 +332,7 @@ class PaySendPaymentScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
+      case RecipientType.confidentialSepaEur:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;
@@ -320,7 +369,7 @@ class _FeePriorityRow extends StatelessWidget {
       return (state.selectedFeeOption, state.customFee, state.canEditFees);
     });
 
-    return _DetailRow(
+    return PaymentDetailRow(
       title: context.loc.payFeePriority,
       value: feeSelectionRowLabel(
         context,
@@ -331,7 +380,7 @@ class _FeePriorityRow extends StatelessWidget {
       onTap: canEditFees
           ? () async {
               final bloc = context.read<PayBloc>();
-              final selected = await BlurredBottomSheet.show<String>(
+              final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
                   viewState: bloc,
@@ -364,102 +413,6 @@ class _FeePriorityRow extends StatelessWidget {
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  final String title;
-  final String? value;
-  final void Function()? onTap;
-  final String? copyValue;
-
-  const _DetailRow({
-    required this.title,
-    required this.value,
-    this.onTap,
-    this.copyValue,
-  }) : super();
-
-  @override
-  Widget build(BuildContext context) {
-    final valueColor = onTap == null
-        ? context.appColors.secondary
-        : context.appColors.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: value == null
-          ? const LoadingLineContent()
-          : Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                ),
-                Expanded(
-                  child: onTap == null
-                      ? Row(
-                          mainAxisAlignment: .end,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                value!,
-                                textAlign: .end,
-                                maxLines: 2,
-                                style: context.font.bodyMedium?.copyWith(
-                                  color: valueColor,
-                                ),
-                              ),
-                            ),
-                            if (copyValue != null) ...[
-                              const Gap(8),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: copyValue!),
-                                  );
-                                  SnackBarUtils.showCopiedSnackBar(context);
-                                },
-                                child: Icon(
-                                  Icons.copy,
-                                  color: context.appColors.primary,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                          ],
-                        )
-                      : GestureDetector(
-                          onTap: onTap,
-                          behavior: .opaque,
-                          child: Row(
-                            mainAxisAlignment: .end,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  value!,
-                                  textAlign: .end,
-                                  maxLines: 2,
-                                  style: context.font.bodyMedium?.copyWith(
-                                    color: valueColor,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: valueColor,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                ),
-              ],
-            ),
-    );
-  }
-}
-
 class _Divider extends StatelessWidget {
   const _Divider();
 
@@ -487,19 +440,28 @@ class _BottomButtons extends StatelessWidget {
           (bloc.state as PayPaymentState).isPayinBroadcast,
     );
     final wallet = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).selectedWallet
-          : null,
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final selectedWallet) => selectedWallet,
+        PayPreparingPaymentState(:final selectedWallet) => selectedWallet,
+        _ => null,
+      },
+    );
+    final isReady = context.select(
+      (PayBloc bloc) => bloc.state is PayPaymentState,
     );
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const _PayError(),
-        if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
+        if (wallet != null &&
+            !wallet.isLiquid &&
+            !isConfirmingPayment &&
+            !isPayinBroadcast) ...[
+          BullButton.big(
             label: context.loc.payAdvancedSettings,
-            disabled: isConfirmingPayment || isPayinBroadcast,
+            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
-              BlurredBottomSheet.show(
+              BullBottomSheet.show(
                 context: context,
                 child: BlocProvider.value(
                   value: context.read<PayBloc>(),
@@ -514,13 +476,22 @@ class _BottomButtons extends StatelessWidget {
           ),
           const Gap(16),
         ],
-        BBButton.big(
-          label: context.loc.payContinue,
-          disabled: isConfirmingPayment || isPayinBroadcast,
-          onPressed: onContinuePressed,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
-        ),
+        if (isConfirmingPayment || isPayinBroadcast)
+          BullAsyncStatus.progress(
+            label: isPayinBroadcast
+                ? context.loc.exchangePaymentSentRefreshingOrder
+                : context.loc.exchangeSendingPayment,
+            color: context.appColors.secondary,
+            textStyle: context.font.bodyMedium,
+          )
+        else
+          BullButton.big(
+            label: context.loc.payContinue,
+            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
+            onPressed: onContinuePressed,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          ),
       ],
     );
   }

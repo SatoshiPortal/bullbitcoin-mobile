@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_failure_l10n.dart';
@@ -23,9 +22,9 @@ class AnnouncementCarousel extends StatelessWidget {
       // Fires only when a new failure appears, not on every rebuild.
       listenWhen: (previous, current) =>
           current.failure != null && previous.failure != current.failure,
-      listener: (context, state) => SnackBarUtils.showSnackBar(
+      listener: (context, state) => BullSnackBar.show(
         context,
-        state.failure!.toTranslated(context),
+        message: state.failure!.toTranslated(context),
       ),
       // Narrow rebuild: only when the visible set changes.
       child:

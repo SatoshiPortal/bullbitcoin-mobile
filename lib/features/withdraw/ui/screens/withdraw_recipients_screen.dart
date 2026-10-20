@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
@@ -14,7 +13,7 @@ class WithdrawRecipientsScreen extends StatelessWidget {
       bloc: context.read<WithdrawBloc>(),
       builder: (context, state) {
         return RecipientSelectionScreen(
-          types: RecipientType.typesForCurrency(state.currency.code).toList(),
+          types: state.recipientTypes,
           isOwner: true,
           onRecipientSelected: (recipient, {required isNew}) async {
             context.read<WithdrawBloc>().add(

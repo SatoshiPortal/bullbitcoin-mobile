@@ -5,6 +5,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
@@ -33,6 +34,8 @@ void main() {
   late _MockBlockchainPort blockchain;
   late _MockTransactionPort transactions;
   late _MockLabelsPort labels;
+  late _MockWalletPort wallet;
+  late StreamController<PayjoinReceiverModel> requests;
   late PayjoinRepositoryImpl engine;
 
   setUpAll(() {
@@ -47,6 +50,7 @@ void main() {
     String? originalTransactionId,
     String? proposalPsbt,
     String? transactionId,
+    bool isTrade = false,
   }) =>
       PayjoinModel.receiver(
             id: id,
@@ -63,6 +67,7 @@ void main() {
             amountSat: 50000,
             proposalPsbt: proposalPsbt,
             txId: transactionId,
+            isTrade: isTrade,
           )
           as PayjoinReceiverModel;
 
@@ -118,7 +123,10 @@ void main() {
         .insert(
           const PayjoinPolicyRow(
             id: 1,
-            enabled: true,
+            receiveEnabled: true,
+            sendEnabled: true,
+            buyEnabled: true,
+            sellEnabled: true,
             minimumAmountSat: 10000,
             sessionLifetimeSeconds: 86400,
           ),
@@ -127,9 +135,9 @@ void main() {
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
     labels = _MockLabelsPort();
-    when(
-      () => pdk.requestsForReceivers,
-    ).thenAnswer((_) => const Stream.empty());
+    wallet = _MockWalletPort();
+    requests = StreamController<PayjoinReceiverModel>.broadcast();
+    when(() => pdk.requestsForReceivers).thenAnswer((_) => requests.stream);
     when(() => pdk.proposalsForSenders).thenAnswer((_) => const Stream.empty());
     when(() => pdk.expiredPayjoins).thenAnswer((_) => const Stream.empty());
     when(() => pdk.dispose()).thenAnswer((_) async {});
@@ -149,7 +157,7 @@ void main() {
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger.silent,
-      wallet: _MockWalletPort(),
+      wallet: wallet,
       blockchain: blockchain,
       transactions: transactions,
       policy: policy,
@@ -159,6 +167,7 @@ void main() {
 
   tearDown(() async {
     await engine.dispose();
+    await requests.close();
     await database.close();
   });
 
@@ -172,6 +181,7 @@ void main() {
         maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
         expireAfterSec: any(named: 'expireAfterSec'),
         amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
       ),
     ).thenAnswer((_) async => model);
 
@@ -209,8 +219,210 @@ void main() {
         maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
         expireAfterSec: any(named: 'expireAfterSec'),
         amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
       ),
     );
+  });
+
+  group('independent receive and buy switches', () {
+    test('a buy receiver starts with receiving off and buying on', () async {
+      // defaults(): receiving off, buying on — the shipped state.
+      await policy.save(PayjoinPolicy.defaults());
+      final model = receiver(isTrade: true);
+      when(
+        () => pdk.createReceiver(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          isTestnet: any(named: 'isTestnet'),
+          maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          amountSat: any(named: 'amountSat'),
+          isTrade: any(named: 'isTrade'),
+        ),
+      ).thenAnswer((_) async => model);
+
+      final created = await engine.createPayjoinReceiver(
+        walletId: model.walletId,
+        address: model.address,
+        isTestnet: true,
+        maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+        expireAfterSec: model.expireAfterSec,
+        amountSat: model.amountSat,
+        isTrade: true,
+      );
+
+      expect(created.id, model.id);
+      expect(await local.fetchReceiver(model.id), isNotNull);
+    });
+
+    test('a buy receiver fails closed when buying is off, even with '
+        'receiving on', () async {
+      await policy.save(
+        PayjoinPolicy.defaults().copyWith(
+          receiveEnabled: true,
+          buyEnabled: false,
+        ),
+      );
+
+      expect(
+        () => engine.createPayjoinReceiver(
+          walletId: 'wallet-1',
+          address: 'tb1qreceiver',
+          isTestnet: true,
+          maxFeeRateSatPerVb: BigInt.from(10000),
+          expireAfterSec: 3600,
+          isTrade: true,
+        ),
+        throwsStateError,
+      );
+    });
+
+    test(
+      'turning receiving off settles user receivers but keeps buy ones',
+      () async {
+        final regular = receiver(id: 'regular');
+        final trade = receiver(id: 'trade', isTrade: true);
+        await local.storeReceiver(regular);
+        await local.storeReceiver(trade);
+
+        final disabled = await policy.setActionEnabled(
+          PayjoinAction.receive,
+          enabled: false,
+        );
+        await engine.settleReceiversNotPermittedBy(disabled);
+
+        expect(await local.fetchReceiver(regular.id), isNull);
+        expect(await local.fetchReceiver(trade.id), isNotNull);
+      },
+    );
+
+    test(
+      'turning buying off settles buy receivers but keeps user ones',
+      () async {
+        final regular = receiver(id: 'regular');
+        final trade = receiver(id: 'trade', isTrade: true);
+        await local.storeReceiver(regular);
+        await local.storeReceiver(trade);
+
+        final disabled = await policy.setActionEnabled(
+          PayjoinAction.buy,
+          enabled: false,
+        );
+        await engine.settleReceiversNotPermittedBy(disabled);
+
+        expect(await local.fetchReceiver(regular.id), isNotNull);
+        expect(await local.fetchReceiver(trade.id), isNull);
+      },
+    );
+
+    test('settleAllReceivers ignores policy and settles everything', () async {
+      final regular = receiver(id: 'regular');
+      final trade = receiver(id: 'trade', isTrade: true);
+      await local.storeReceiver(regular);
+      await local.storeReceiver(trade);
+
+      await engine.settleAllReceivers();
+
+      expect(await local.fetchReceiver(regular.id), isNull);
+      expect(await local.fetchReceiver(trade.id), isNull);
+    });
+
+    test('startup resumes a buy receiver while receiving is off', () async {
+      final trade = receiver(id: 'trade', isTrade: true);
+      await local.storeReceiver(trade);
+      await policy.save(PayjoinPolicy.defaults());
+      when(() => pdk.startListeningForRequest(trade)).thenReturn(null);
+
+      await engine.resumePayjoinsOnStartup();
+
+      expect(await local.fetchReceiver(trade.id), isNotNull);
+      verify(() => pdk.startListeningForRequest(trade)).called(1);
+    });
+
+    test('startup removes an idle buy receiver while buying is off', () async {
+      final trade = receiver(id: 'trade', isTrade: true);
+      await local.storeReceiver(trade);
+      await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
+
+      await engine.resumePayjoinsOnStartup();
+
+      expect(await local.fetchReceiver(trade.id), isNull);
+      verifyNever(() => pdk.startListeningForRequest(trade));
+    });
+
+    group('a sender request arriving after a switch changed', () {
+      late StreamController<PayjoinReceiverModel> requests;
+
+      setUp(() async {
+        // The main setUp's engine listens to an empty request stream; replace
+        // it with one this group can feed.
+        await engine.dispose();
+        registerFallbackValue(receiver());
+        requests = StreamController<PayjoinReceiverModel>();
+        when(() => pdk.requestsForReceivers).thenAnswer((_) => requests.stream);
+        when(() => pdk.declineReceiverSession(any())).thenReturn('[]');
+        when(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        ).thenAnswer((_) async {});
+        final wallet = _MockWalletPort();
+        when(
+          () => wallet.spendableUtxos(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+          ),
+        ).thenAnswer((_) async => []);
+        engine = PayjoinRepositoryImpl(
+          localPayjoinDatasource: local,
+          pdkPayjoinDatasource: pdk,
+          log: PayjoinLogger.silent,
+          wallet: wallet,
+          blockchain: blockchain,
+          transactions: transactions,
+          policy: policy,
+          labels: labels,
+        );
+      });
+
+      tearDown(() => requests.close());
+
+      Future<void> deliverRequest(PayjoinReceiverModel stored) async {
+        await local.storeReceiver(stored);
+        requests.add(
+          stored.copyWith(
+            originalTxBytes: Uint8List.fromList([1, 2, 3]),
+            originalTxId: 'original-tx',
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+
+      test('a buy receiver declines and broadcasts the original once buying '
+          'is off', () async {
+        await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
+
+        await deliverRequest(receiver(id: 'trade', isTrade: true));
+
+        verify(() => pdk.declineReceiverSession(any())).called(1);
+        verify(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        ).called(1);
+        expect((await local.fetchReceiver('trade'))?.isAborted, isTrue);
+      });
+
+      test('a user receiver is not declined when only buying is off', () async {
+        await policy.setActionEnabled(PayjoinAction.buy, enabled: false);
+
+        await deliverRequest(receiver(id: 'regular'));
+
+        verifyNever(() => pdk.declineReceiverSession(any()));
+      });
+    });
   });
 
   test('cancel removes an idle receiver without broadcasting', () async {
@@ -267,7 +479,11 @@ void main() {
     await local.storeReceiver(idle);
     await local.storeReceiver(proposed);
 
-    await engine.disableReceivers();
+    final disabled = await policy.setActionEnabled(
+      PayjoinAction.receive,
+      enabled: false,
+    );
+    await engine.settleReceiversNotPermittedBy(disabled);
 
     expect(await local.fetchReceiver(idle.id), isNull);
     expect(await local.fetchReceiver(proposed.id), isNotNull);
@@ -293,6 +509,103 @@ void main() {
     expect(await local.fetchReceiver(model.id), isNull);
     verifyNever(() => pdk.startListeningForRequest(model));
   });
+
+  test(
+    'publishing a proposal gates manual fallback across fresh reads',
+    () async {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+      );
+      final proposal = model.copyWith(
+        proposalPsbt: 'proposal',
+        txId: 'payjoin-tx',
+      );
+      await local.storeReceiver(model);
+      registerFallbackValue(model);
+      registerFallbackValue(<PayjoinInputPairModel>[]);
+      registerFallbackValue((Outpoint _) => true);
+      registerFallbackValue((Uint8List _) => true);
+      registerFallbackValue((String psbt) => psbt);
+      when(
+        () => wallet.spendableUtxos(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async => [
+          PayjoinUtxo(
+            outpoint: (txId: 'wallet-utxo', vout: 0),
+            value: Sats.fromInt(100000),
+            scriptPubkey: Uint8List.fromList([0, 20]),
+            confirmed: true,
+          ),
+        ],
+      );
+      when(
+        () => wallet.createOwnershipChecker(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Uint8List _) => true,
+      );
+      when(
+        () => wallet.createOutpointOwnershipChecker(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (Outpoint _) => true,
+      );
+      when(
+        () => wallet.createPsbtProcessor(
+          walletId: model.walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (String psbt) => psbt,
+      );
+      when(
+        () => pdk.proposePayjoin(
+          receiverModel: any(named: 'receiverModel'),
+          ownsOutpoint: any(named: 'ownsOutpoint'),
+          hasReceiverOutput: any(named: 'hasReceiverOutput'),
+          inputPairs: any(named: 'inputPairs'),
+          processPsbt: any(named: 'processPsbt'),
+        ),
+      ).thenAnswer((_) async => proposal);
+      final proposed = engine.payjoinStream.firstWhere(
+        (session) => session.status == internal.PayjoinStatus.proposed,
+      );
+      requests.add(model);
+      await proposed.timeout(const Duration(seconds: 5));
+      final until = engine.receiverFallbackAvailableAt(model.id);
+      if (until == null) fail('no sender wait recorded for the session');
+      expect(
+        until.difference(DateTime.now()).inSeconds,
+        inInclusiveRange(58, 60),
+      );
+      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+      final fresh = await engine.getPayjoinById(model.id);
+      if (fresh == null) fail('the proposed session is not persisted');
+      final result = await engine.tryBroadcastOriginalTransaction(fresh);
+      expect(
+        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+        isA<PayjoinFallbackUnavailableFailure>(),
+      );
+      expect(engine.receiverFallbackAvailableAt(model.id), until);
+      verifyNever(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      );
+    },
+  );
 
   test('manual fallback can replace a proposal that is not visible', () async {
     final model = receiver(
@@ -384,7 +697,40 @@ void main() {
     expect(persisted?.isAborted, isFalse);
   });
 
-  test('manual fallback is unavailable when the original is visible', () async {
+  test(
+    'a failed visibility check never attempts a fallback broadcast',
+    () async {
+      const originalTxId = 'original-tx';
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: originalTxId,
+      );
+      await local.storeReceiver(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: originalTxId,
+          refresh: true,
+        ),
+      ).thenThrow(Exception('server unreachable'));
+      final result = await engine.tryBroadcastOriginalTransaction(
+        model.toEntity(),
+      );
+      expect(
+        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+        isA<PayjoinUnavailableFailure>(),
+      );
+      expect((await local.fetchReceiver(model.id))?.isAborted, isFalse);
+      verifyNever(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      );
+    },
+  );
+
+  test('manual fallback settles when the original is visible', () async {
     final model = receiver(
       originalTransaction: Uint8List.fromList([1, 2, 3]),
       originalTransactionId: 'original-tx',
@@ -403,10 +749,18 @@ void main() {
       model.toEntity(),
     );
 
-    expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
     expect(
-      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
-      isA<PayjoinFallbackUnavailableFailure>(),
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.isAborted,
+      isTrue,
+    );
+    final persisted = await local.fetchReceiver(model.id);
+    expect(persisted?.isAborted, isTrue);
+    expect(persisted?.txId, isNull);
+    verifyNever(
+      () => labels.labelTransaction(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
     );
     verifyNever(
       () => blockchain.broadcastTransaction(
@@ -431,6 +785,47 @@ void main() {
     ).thenAnswer((_) async => true);
 
     expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+  });
+
+  test('a manual fallback completes a payjoin already visible', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+      transactionId: 'payjoin-tx',
+    );
+    await local.storeReceiver(model);
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: 'payjoin-tx',
+        refresh: true,
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => labels.labelTransaction(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
+    ).thenAnswer((_) async {});
+
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    // The receiver is already paid: settle instead of reporting the fallback
+    // as unavailable and leaving the user waiting on a watcher.
+    expect(
+      (result as Ok<internal.Payjoin, PayjoinFailure>).value.isCompleted,
+      isTrue,
+    );
+    expect((await local.fetchReceiver(model.id))?.isCompleted, isTrue);
+    verifyNever(
+      () => blockchain.broadcastTransaction(
+        network: any(named: 'network'),
+        transaction: any(named: 'transaction'),
+      ),
+    );
   });
 
   group('an expired sender is terminal from our side', () {
@@ -551,7 +946,14 @@ void main() {
         ),
       ).thenThrow(StateError('electrum unavailable'));
 
-      await expectLater(engine.disableReceivers(), throwsStateError);
+      final disabled = await policy.setActionEnabled(
+        PayjoinAction.receive,
+        enabled: false,
+      );
+      await expectLater(
+        engine.settleReceiversNotPermittedBy(disabled),
+        throwsStateError,
+      );
 
       expect(
         await local.fetchReceiver(idle.id),

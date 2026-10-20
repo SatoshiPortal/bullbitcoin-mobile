@@ -15,7 +15,7 @@ class SetReceivePayjoinEnabledUsecase {
     bool enabled, {
     required Future<bool> Function() requestConsent,
   }) async {
-    final result = await _settingsFacade.setPayjoinEnabled(
+    final result = await _settingsFacade.setPayjoinReceiveEnabled(
       enabled,
       requestConsent: requestConsent,
     );

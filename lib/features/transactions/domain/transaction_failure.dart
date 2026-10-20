@@ -41,6 +41,11 @@ final class TransactionPayjoinFallbackUnavailableFailure
   const TransactionPayjoinFallbackUnavailableFailure([super.logMessage]);
 }
 
+/// Checking for a competing transaction failed before any broadcast.
+final class TransactionPayjoinVerificationFailure extends TransactionFailure {
+  const TransactionPayjoinVerificationFailure([super.logMessage]);
+}
+
 /// Re-broadcasting the payjoin original transaction failed.
 final class TransactionPayjoinBroadcastFailure extends TransactionFailure {
   const TransactionPayjoinBroadcastFailure([super.logMessage]);

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
+import 'payjoin_database.steps.dart';
+
 part 'payjoin_database.g.dart';
 
 @DataClassName('PayjoinSenderRow')
@@ -45,6 +47,10 @@ class PayjoinReceivers extends Table {
   BoolColumn get isExpired => boolean()();
   BoolColumn get isCompleted => boolean()();
   BoolColumn get isAborted => boolean()();
+  // A buy order payout from the Bull Bitcoin exchange, gated by the buy
+  // switch instead of the receive switch. Schema 1 rows were all created by
+  // the receive flow, hence the default.
+  BoolColumn get isTrade => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -53,7 +59,11 @@ class PayjoinReceivers extends Table {
 @DataClassName('PayjoinPolicyRow')
 class PayjoinPolicies extends Table {
   IntColumn get id => integer()();
-  BoolColumn get enabled => boolean()();
+  // Schema 1's single switch; it now governs receiving from users only.
+  BoolColumn get receiveEnabled => boolean().named('enabled')();
+  BoolColumn get sendEnabled => boolean().withDefault(const Constant(false))();
+  BoolColumn get buyEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get sellEnabled => boolean().withDefault(const Constant(true))();
   IntColumn get minimumAmountSat => integer()();
   IntColumn get sessionLifetimeSeconds => integer()();
 
@@ -83,7 +93,7 @@ class PayjoinMigrations extends Table {
   ],
 )
 final class PayjoinDatabase extends _$PayjoinDatabase {
-  static const schema = 1;
+  static const schema = 2;
 
   PayjoinDatabase._(super.executor);
 
@@ -105,4 +115,33 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   @override
   int get schemaVersion => schema;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: stepByStep(
+      from1To2: (m, schema) async {
+        await m.addColumn(
+          schema.payjoinReceivers,
+          schema.payjoinReceivers.isTrade,
+        );
+        await m.addColumn(
+          schema.payjoinPolicies,
+          schema.payjoinPolicies.sendEnabled,
+        );
+        await m.addColumn(
+          schema.payjoinPolicies,
+          schema.payjoinPolicies.buyEnabled,
+        );
+        await m.addColumn(
+          schema.payjoinPolicies,
+          schema.payjoinPolicies.sellEnabled,
+        );
+        // The single switch used to gate sending as well: a user who turned
+        // it on keeps payjoin on both sides of a payment with another user.
+        await customStatement(
+          'UPDATE payjoin_policies SET send_enabled = enabled',
+        );
+      },
+    ),
+  );
 }

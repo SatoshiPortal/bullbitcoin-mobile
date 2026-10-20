@@ -1,9 +1,11 @@
-import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullRefreshIndicator,
+        BullShimmerBox,
+        BullShimmerLine,
+        BullTransactionDirectionBadge,
+        Gap;
 import 'package:flutter/material.dart';
 
 class TransactionDetailsPage extends StatelessWidget {
@@ -66,20 +68,20 @@ class TransactionDetailsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     if (isLoading)
-                      const LoadingBoxContent(height: 72, width: 72)
+                      const BullShimmerBox(height: 72, width: 72)
                     else
-                      TransactionDirectionBadge(
+                      BullTransactionDirectionBadge(
                         isIncoming: isIncoming,
                         isSwap: isSwap,
                       ),
                     const Gap(24),
                     if (isLoading)
-                      const LoadingLineContent(width: 150)
+                      const BullShimmerLine(width: 150)
                     else
                       status,
                     ...afterStatus,
                     if (isLoading)
-                      const LoadingLineContent(
+                      const BullShimmerLine(
                         height: 24,
                         width: 200,
                         padding: EdgeInsets.zero,
@@ -89,7 +91,7 @@ class TransactionDetailsPage extends StatelessWidget {
                     const Gap(16),
                     ...beforeDetails,
                     if (isLoading)
-                      const LoadingBoxContent(height: 400)
+                      const BullShimmerBox(height: 400)
                     else
                       details,
                     ...afterDetails,
@@ -124,7 +126,7 @@ class TransactionDetailsPage extends StatelessWidget {
         body: SafeArea(
           child: onRefresh == null
               ? scroll
-              : BBRefreshIndicator(onRefresh: onRefresh!, child: scroll),
+              : BullRefreshIndicator(onRefresh: onRefresh!, child: scroll),
         ),
       ),
     );

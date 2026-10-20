@@ -2,14 +2,15 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
+import 'package:bull_tor/tor.dart' show TorReady;
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -41,7 +42,7 @@ class VaultSelectedPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            BBText(
+            BullText(
               context.loc.recoverbullVaultImportedSuccess,
               textAlign: .left,
               style: context.font.bodySmall,
@@ -56,9 +57,9 @@ class VaultSelectedPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBText(vault.id, style: context.font.headlineMedium),
+                  BullText(vault.id, style: context.font.headlineMedium),
                   const Gap(16),
-                  BBText(
+                  BullText(
                     DateFormat(
                       "yyyy-MMM-dd, HH:mm:ss",
                     ).format(vault.createdAt.toLocal()),
@@ -69,7 +70,7 @@ class VaultSelectedPage extends StatelessWidget {
             ),
             const Spacer(),
             if (provider == VaultProvider.googleDrive) ...[
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.recoverbullSeeMoreVaults,
                 onPressed: () => context.pushNamed(
                   RecoverBullGoogleDriveRoute.listDriveVaults.name,
@@ -85,12 +86,26 @@ class VaultSelectedPage extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
-              child: BBButton.big(
+              child: BullButton.big(
                 label: context.loc.recoverbullDecryptVault,
-                onPressed: () => context.pushNamed(
-                  RecoverBullRoute.recoverbullFlows.name,
-                  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
-                ),
+                onPressed: () {
+                  final state = context.read<RecoverBullBloc>().state;
+                  if (state.flow == flow &&
+                      state.vault == vault &&
+                      state.torConnection is TorReady &&
+                      state.keyServerStatus == KeyServerStatus.online) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const PasswordInputPage(),
+                      ),
+                    );
+                    return;
+                  }
+                  context.pushNamed(
+                    RecoverBullRoute.recoverbullFlows.name,
+                    extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+                  );
+                },
                 bgColor: context.appColors.onSurface,
                 textColor: context.appColors.surface,
               ),

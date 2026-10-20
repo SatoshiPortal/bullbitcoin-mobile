@@ -2,8 +2,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// A settings-list row: leading icon, title, trailing chevron — duplicated
-/// from `core/widgets/settings_entry_item.dart` (`SettingsEntryItem`).
+/// A settings-list row: leading icon, title, trailing chevron.
 ///
 /// When [isSuperUser] is true the icon is replaced with an admin glyph tinted
 /// brand red.
@@ -12,6 +11,7 @@ class BullSettingsEntryItem extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     this.onTap,
     this.iconColor,
     this.textColor,
@@ -25,6 +25,9 @@ class BullSettingsEntryItem extends StatelessWidget {
 
   /// Row title.
   final String title;
+
+  /// Optional secondary line rendered under [title].
+  final String? subtitle;
 
   /// Tap callback.
   final VoidCallback? onTap;
@@ -54,20 +57,29 @@ class BullSettingsEntryItem extends StatelessWidget {
 
     return ListTile(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(BullRadius.xs),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
       ),
-      tileColor: Colors.transparent,
+      tileColor: colors.transparent,
       contentPadding: contentPadding,
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: textColor ?? colors.onSurface,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyLarge?.copyWith(color: textColor ?? colors.onSurface),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            ),
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,
     );

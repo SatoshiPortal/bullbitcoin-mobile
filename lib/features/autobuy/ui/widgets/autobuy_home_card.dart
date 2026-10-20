@@ -1,12 +1,17 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSnackBar, BullSpacing, BullSwitch, Gap;
+    show
+        BullDialog,
+        BullShimmerLine,
+        BullSnackBar,
+        BullSpacing,
+        BullSwitch,
+        Gap;
 
 class AutoBuyHomeCard extends StatelessWidget {
   final bool isActive;
@@ -49,7 +54,7 @@ class AutoBuyHomeCard extends StatelessWidget {
                   ),
                 ),
                 if (state.isSaving)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     width: 48,
                     height: 24,
                     padding: EdgeInsets.zero,

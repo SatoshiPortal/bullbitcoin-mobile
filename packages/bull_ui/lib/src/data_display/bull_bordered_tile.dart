@@ -1,22 +1,21 @@
-import '../theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Bordered surface used across receive / send / labels flows — duplicated
-/// from `core/widgets/tiles/bordered_tappable_tile.dart`
-/// (`BorderedTappableTile`).
+/// Bordered surface used across receive / send / labels flows.
 ///
-/// Rounded rectangle with an [BullTheme.onSecondary] background, 8px radius and
-/// a [BullTheme.secondaryFixedDim] border. When [onTap]/[onLongPress] is set
-/// the whole surface shows an ink ripple; otherwise it is purely visual and
-/// nested interactive children keep gesture ownership.
+/// Rounded rectangle with an [BullTheme.onSecondary] background, a
+/// [BullRadius.xxs] radius and a [BullTheme.secondaryFixedDim] border. When
+/// [onTap]/[onLongPress] is set the whole surface shows an ink ripple;
+/// otherwise it is purely visual and nested interactive children keep gesture
+/// ownership.
 class BullBorderedTile extends StatelessWidget {
   const BullBorderedTile({
     super.key,
     this.onTap,
     this.onLongPress,
     required this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    this.padding = const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
     this.backgroundColor,
   });
 

@@ -10248,12 +10248,12 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "sellSendingPayment": "Sending payment…",
-  "@sellSendingPayment": {
+  "exchangeSendingPayment": "Sending payment…",
+  "@exchangeSendingPayment": {
     "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
   },
-  "sellPaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
-  "@sellPaymentSentRefreshingOrder": {
+  "exchangePaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@exchangePaymentSentRefreshingOrder": {
     "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
   },
   "sellSendPaymentAboveMax": "You are trying to sell above the maximum amount that can be sold with this wallet.",
@@ -13243,10 +13243,6 @@
   "@settingsPayjoinAdvancedTitle": {
     "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
-  "settingsPayjoinEnabledLabel": "Payjoin enabled",
-  "@settingsPayjoinEnabledLabel": {
-    "description": "Label next to the global payjoin enable/disable switch"
-  },
   "settingsPayjoinMinAmountTitle": "Minimum amount",
   "@settingsPayjoinMinAmountTitle": {
     "description": "Title of the payjoin minimum receive amount field"
@@ -13270,22 +13266,6 @@
   "settingsPayjoinExpireTitle": "Session expiry",
   "@settingsPayjoinExpireTitle": {
     "description": "Title of the payjoin session expiry field"
-  },
-  "settingsPayjoinExpireDescription": "How long a payjoin session stays open, in seconds, before falling back to a normal payment.",
-  "@settingsPayjoinExpireDescription": {
-    "description": "Explanation under the payjoin session expiry field"
-  },
-  "settingsPayjoinExpireRangeError": "Must be between {min} and {max} seconds",
-  "@settingsPayjoinExpireRangeError": {
-    "description": "Validation error when the payjoin session expiry is out of bounds",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
   },
   "settingsPayjoinServersTitle": "Servers",
   "@settingsPayjoinServersTitle": {
@@ -15470,5 +15450,238 @@
   "spHeaderValidationInvalidChainDetail": "This server does not follow the real Bitcoin chain. Switch to another Electrum server in the settings.",
   "@spHeaderValidationInvalidChainDetail": {
     "description": "SP header card detail when the Electrum server serves a chain that contradicts the built-in checkpoint; tells the user to change server"
+  },
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
+  "@exchangeStatisticsTradeCountValue": {
+    "description": "Number of trades on the exchange statistics screen when there are no trades per currency",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
+  "@exchangeStatisticsTradeCountByCurrency": {
+    "description": "Number of trades in one fiat currency on the exchange statistics screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeSettingsErrorLoadingUploadStatus": "Your upload status could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingUploadStatus": {
+    "description": "exchange_settings user-facing failure message when the secure file upload status cannot be loaded"
+  },
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "@recipientsTypeConfidentialSepa": {
+    "description": "Recipient type label for a Confidential SEPA recipient"
+  },
+  "recipientsErrorVirtualIbanNotAvailable": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@recipientsErrorVirtualIbanNotAvailable": {
+    "description": "Shown when the user cannot get a virtual IBAN because their KYC is insufficient or Confidential SEPA is not offered to them"
+  },
+  "recipientsErrorEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
+  "@recipientsErrorEuResidencyRequired": {
+    "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
+  },
+  "recipientsConfidentialSepaActivatingTitle": "Activating recipient",
+  "@recipientsConfidentialSepaActivatingTitle": {
+    "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This can take a few minutes.",
+  "@recipientsConfidentialSepaActivatingDescription": {
+    "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
+  "@recipientsConfidentialSepaNotActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This can take a few minutes. You can use Instant and Regular SEPA instead.",
+  "@recipientsConfidentialSepaNotActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaActivatedTitle": "Recipient activated",
+  "@recipientsConfidentialSepaActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaActivatedDescription": "Your recipient is now active for Confidential SEPA.",
+  "@recipientsConfidentialSepaActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
+  "@recipientsConfidentialSepaUseRegularSepa": {
+    "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
+  "@recipientsVirtualIbanIntroTitle": {
+    "description": "Title of the virtual IBAN onboarding screen"
+  },
+  "recipientsVirtualIbanNewBadge": "New",
+  "@recipientsVirtualIbanNewBadge": {
+    "description": "Badge that marks Confidential SEPA as a new feature"
+  },
+  "recipientsVirtualIbanIntroDescription": "Fund your account privately using a personal virtual IBAN in your own name. It's free.",
+  "@recipientsVirtualIbanIntroDescription": {
+    "description": "Explains what the virtual IBAN is on the onboarding screen"
+  },
+  "recipientsVirtualIbanIntroSelfTransfer": "When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.",
+  "@recipientsVirtualIbanIntroSelfTransfer": {
+    "description": "Bullet point: a deposit appears as a transfer to yourself"
+  },
+  "recipientsVirtualIbanIntroNoTransferCode": "No transfer code required.",
+  "@recipientsVirtualIbanIntroNoTransferCode": {
+    "description": "Bullet point: no transfer code is needed"
+  },
+  "recipientsVirtualIbanNameWarningTitle": "Important: Name Matching Required",
+  "@recipientsVirtualIbanNameWarningTitle": {
+    "description": "Title of the warning that the bank account name must match"
+  },
+  "recipientsVirtualIbanNameWarningDescription": "Bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically. Names don't match? Contact support.",
+  "@recipientsVirtualIbanNameWarningDescription": {
+    "description": "Warning that a transfer from a bank account with a different name is returned"
+  },
+  "recipientsVirtualIbanAccountOwnerName": "Account Owner Name",
+  "@recipientsVirtualIbanAccountOwnerName": {
+    "description": "Label above the name the virtual IBAN is issued in"
+  },
+  "recipientsVirtualIbanNameConfirmation": "I confirm the name matches my bank account(s)",
+  "@recipientsVirtualIbanNameConfirmation": {
+    "description": "Checkbox to confirm the name matches the user's bank accounts"
+  },
+  "recipientsVirtualIbanActivate": "Activate Confidential SEPA",
+  "@recipientsVirtualIbanActivate": {
+    "description": "Button that creates the virtual IBAN"
+  },
+  "recipientsVirtualIbanActivatingTitle": "Activating Confidential SEPA...",
+  "@recipientsVirtualIbanActivatingTitle": {
+    "description": "Title while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes.",
+  "@recipientsVirtualIbanActivatingDescription": {
+    "description": "Description while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatedTitle": "Confidential SEPA Activated",
+  "@recipientsVirtualIbanActivatedTitle": {
+    "description": "Title once the virtual IBAN is active"
+  },
+  "recipientsVirtualIbanActivatedDescription": "You can now use your personal virtual IBAN to withdraw money privately.",
+  "@recipientsVirtualIbanActivatedDescription": {
+    "description": "Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal"
+  },
+  "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
+  "@withdrawConfidentialSepaNotActivatedError": {
+    "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
+  },
+  "recipientsVirtualIbanCopied": "Copied to clipboard",
+  "@recipientsVirtualIbanCopied": {
+    "description": "Toast shown after copying a virtual IBAN detail"
+  },
+  "recipientsVirtualIbanDone": "Done",
+  "@recipientsVirtualIbanDone": {
+    "description": "Button that leaves the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "@recipientsVirtualIbanRecipientName": {
+    "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
+  },
+  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "@recipientsVirtualIbanIbanLabel": {
+    "description": "Label of the virtual IBAN account number"
+  },
+  "recipientsVirtualIbanCountry": "Bank account country",
+  "@recipientsVirtualIbanCountry": {
+    "description": "Label of the country of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanBic": "BIC code",
+  "@recipientsVirtualIbanBic": {
+    "description": "Label of the BIC code of the virtual IBAN account"
+  },
+  "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
+  "@fundExchangeMethodConfidentialSepa": {
+    "description": "Title of the Confidential SEPA funding method"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "A personal virtual IBAN to deposit money privately",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle of the Confidential SEPA funding method"
+  },
+  "recipientsVirtualIbanActivatedFundingDescription": "You can now use your personal virtual IBAN to deposit money privately.",
+  "@recipientsVirtualIbanActivatedFundingDescription": {
+    "description": "Description once the virtual IBAN is active, when started from funding"
+  },
+  "recipientsVirtualIbanShowDetails": "Show my virtual IBAN details",
+  "@recipientsVirtualIbanShowDetails": {
+    "description": "Button that shows the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanDetailsDescription": "Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.",
+  "@recipientsVirtualIbanDetailsDescription": {
+    "description": "Explains how to deposit with the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddress": "Bank address",
+  "@recipientsVirtualIbanBankAddress": {
+    "description": "Label of the address of the bank that holds the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddressHelp": "The official bank address, in case your bank asks for it.",
+  "@recipientsVirtualIbanBankAddressHelp": {
+    "description": "Explains when the bank address of the virtual IBAN is needed"
+  },
+  "recipientsConfidentialSepaNameMustMatchHint": "Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.",
+  "@recipientsConfidentialSepaNameMustMatchHint": {
+    "description": "Hint under the read-only account owner name on the Confidential SEPA recipient form"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "settingsPayjoinUsersSection": "With other users",
+  "@settingsPayjoinUsersSection": {
+    "description": "Payjoin settings section grouping the switches for payments between users"
+  },
+  "settingsPayjoinSendLabel": "Send",
+  "@settingsPayjoinSendLabel": {
+    "description": "Payjoin switch for paying another user"
+  },
+  "settingsPayjoinReceiveLabel": "Receive",
+  "@settingsPayjoinReceiveLabel": {
+    "description": "Payjoin switch for receiving from another user"
+  },
+  "settingsPayjoinExchangeSection": "With the Bull Bitcoin exchange",
+  "@settingsPayjoinExchangeSection": {
+    "description": "Payjoin settings section grouping the switches for exchange orders"
+  },
+  "settingsPayjoinBuyLabel": "Buy",
+  "@settingsPayjoinBuyLabel": {
+    "description": "Payjoin switch for receiving the payout of a buy order"
+  },
+  "settingsPayjoinSellLabel": "Sell and pay bills",
+  "@settingsPayjoinSellLabel": {
+    "description": "Payjoin switch for paying sell and bill-payment orders"
+  },
+  "settingsPayjoinExpireMinutesDescription": "How long a payjoin session stays open before falling back to a normal payment.",
+  "@settingsPayjoinExpireMinutesDescription": {
+    "description": "Explanation next to the payjoin session expiry field, entered in minutes"
+  },
+  "settingsPayjoinExpireMinutesRangeError": "Must be between {min} and {max} minutes",
+  "@settingsPayjoinExpireMinutesRangeError": {
+    "description": "Validation error when the payjoin session expiry, in minutes, is out of bounds",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPayjoinSatsUnit": "sats",
+  "@settingsPayjoinSatsUnit": {
+    "description": "Unit shown inside the payjoin minimum amount field"
+  },
+  "settingsPayjoinMinutesUnit": "min",
+  "@settingsPayjoinMinutesUnit": {
+    "description": "Unit shown inside the payjoin session expiry field"
   }
 }

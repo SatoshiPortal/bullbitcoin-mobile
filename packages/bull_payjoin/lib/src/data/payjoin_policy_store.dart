@@ -26,7 +26,10 @@ final class PayjoinPolicyStore {
       _database.payjoinPolicies,
     )..where((row) => row.id.equals(1))).write(
       PayjoinPoliciesCompanion(
-        enabled: Value(policy.enabled),
+        sendEnabled: Value(policy.sendEnabled),
+        receiveEnabled: Value(policy.receiveEnabled),
+        buyEnabled: Value(policy.buyEnabled),
+        sellEnabled: Value(policy.sellEnabled),
         minimumAmountSat: Value(policy.minimumAmount.value.toInt()),
         sessionLifetimeSeconds: Value(policy.sessionLifetime.inSeconds),
       ),
@@ -34,10 +37,19 @@ final class PayjoinPolicyStore {
     return policy;
   }
 
-  Future<PayjoinPolicy> setEnabled(bool enabled) async {
-    await (_database.update(_database.payjoinPolicies)
-          ..where((row) => row.id.equals(1)))
-        .write(PayjoinPoliciesCompanion(enabled: Value(enabled)));
+  Future<PayjoinPolicy> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  }) async {
+    final value = Value(enabled);
+    await (_database.update(
+      _database.payjoinPolicies,
+    )..where((row) => row.id.equals(1))).write(switch (action) {
+      PayjoinAction.send => PayjoinPoliciesCompanion(sendEnabled: value),
+      PayjoinAction.receive => PayjoinPoliciesCompanion(receiveEnabled: value),
+      PayjoinAction.buy => PayjoinPoliciesCompanion(buyEnabled: value),
+      PayjoinAction.sell => PayjoinPoliciesCompanion(sellEnabled: value),
+    });
     return load();
   }
 
@@ -63,7 +75,10 @@ final class PayjoinPolicyStore {
 
   PayjoinPolicy _toPolicy(PayjoinPolicyRow row) {
     return PayjoinPolicy(
-      enabled: row.enabled,
+      sendEnabled: row.sendEnabled,
+      receiveEnabled: row.receiveEnabled,
+      buyEnabled: row.buyEnabled,
+      sellEnabled: row.sellEnabled,
       minimumAmount: Sats.fromInt(row.minimumAmountSat),
       sessionLifetime: Duration(seconds: row.sessionLifetimeSeconds),
     );

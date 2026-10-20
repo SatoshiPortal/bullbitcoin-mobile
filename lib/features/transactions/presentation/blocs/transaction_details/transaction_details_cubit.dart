@@ -938,8 +938,16 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         Ok(:final value) => value,
         Err() => const <Transaction>[],
       };
-      if (txs.isNotEmpty) {
-        await initByWalletTxId(txId, walletId: txs.first.walletId);
+      for (final transaction in txs) {
+        // A matching exchange order can exist before its wallet transaction.
+        // Only delegate to wallet details when a local wallet is known.
+        final walletId =
+            transaction.walletTransaction?.walletId ??
+            transaction.swap?.walletId ??
+            transaction.orderSwap?.canonicalWalletId ??
+            transaction.payjoin?.walletId;
+        if (walletId == null) continue;
+        await initByWalletTxId(txId, walletId: walletId);
         return;
       }
     }
@@ -1043,10 +1051,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<bool> canBroadcastPayjoinOriginalTx() async {
+  @useResult
+  Future<Result<bool, TransactionFailure>> canBroadcastPayjoinOriginalTx() {
     final payjoin = state.payjoin;
-    return payjoin != null &&
-        await _broadcastOriginalTransactionUsecase.canExecute(payjoin);
+    if (payjoin == null) return Future.value(const Ok(false));
+    return _broadcastOriginalTransactionUsecase.canExecute(payjoin);
   }
 
   Future<void> _resolveBroadcastTransaction(PayjoinSession payjoin) async {

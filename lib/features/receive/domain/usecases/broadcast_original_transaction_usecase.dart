@@ -19,6 +19,8 @@ class BroadcastOriginalTransactionUsecase {
         return Ok(value);
       case Err(failure: PayjoinFallbackUnavailableFailure(:final logMessage)):
         return Err(ReceiveBroadcastOriginalTxUnavailableFailure(logMessage));
+      case Err(failure: PayjoinUnavailableFailure(:final logMessage)):
+        return Err(ReceiveBroadcastOriginalTxVerificationFailure(logMessage));
       case Err(:final failure):
         log.warning(
           'Failed to broadcast the original transaction: '

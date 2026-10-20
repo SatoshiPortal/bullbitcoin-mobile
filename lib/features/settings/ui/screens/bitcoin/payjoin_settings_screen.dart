@@ -1,24 +1,24 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 
-/// Payjoin settings (product decision 2026-07-25/26): deliberately minimal —
-/// the enable toggle, a row that re-opens the one-time disclaimer pop-up,
-/// and a row navigating to the advanced settings page (minimum amount,
-/// session expiry, servers). The disclaimer shows automatically exactly once
-/// the first time payjoin is enabled (see [PayjoinDisclaimerDialog]).
+/// Payjoin settings: one switch per action, payments with other users
+/// (off by default) and exchange orders (on by default), a row that re-opens
+/// the one-time disclaimer pop-up, and a row navigating to the advanced
+/// settings page (minimum amount, session expiry, servers). The disclaimer
+/// shows automatically the first time receiving from users is turned on (see
+/// [PayjoinDisclaimerDialog]).
 class PayjoinSettingsScreen extends StatefulWidget {
   const PayjoinSettingsScreen({super.key});
 
@@ -29,12 +29,13 @@ class PayjoinSettingsScreen extends StatefulWidget {
 class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
   bool _updating = false;
 
-  Future<void> _setPayjoinEnabled(bool enabled) async {
+  Future<void> _setPayjoinEnabled(PayjoinAction action, bool enabled) async {
     if (_updating) return;
     setState(() => _updating = true);
 
     final cubit = context.read<SettingsCubit>();
     final result = await cubit.togglePayjoinEnabled(
+      action,
       enabled,
       requestConsent: () async {
         if (!mounted) return false;
@@ -53,10 +54,36 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     if (mounted) setState(() => _updating = false);
   }
 
+  Widget _switchRow(String label, PayjoinAction action) {
+    final isEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isPayjoinEnabled(action),
+    );
+    final isLoaded = context.select(
+      (SettingsCubit cubit) => cubit.state.payjoinPolicy != null,
+    );
+    return Row(
+      children: [
+        Expanded(child: BBText(label, style: context.font.bodyLarge)),
+        BullSwitch(
+          value: isEnabled,
+          onChanged: _updating || !isLoaded
+              ? null
+              : (enabled) => _setPayjoinEnabled(action, enabled),
+        ),
+      ],
+    );
+  }
+
+  Widget _sectionTitle(String title) => BBText(
+    title,
+    style: context.font.titleSmall,
+    color: context.appColors.secondary,
+  );
+
   @override
   Widget build(BuildContext context) {
-    final isEnabled = context.select(
-      (SettingsCubit cubit) => cubit.state.isPayjoinEnabled,
+    final isAnyEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isAnyPayjoinEnabled,
     );
 
     return Scaffold(
@@ -67,22 +94,29 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: BBText(
-                      context.loc.settingsPayjoinEnabledLabel,
-                      style: context.font.bodyLarge,
-                    ),
-                  ),
-                  BBSwitch(
-                    value: isEnabled,
-                    onChanged: _updating ? null : _setPayjoinEnabled,
-                  ),
-                ],
+              _sectionTitle(context.loc.settingsPayjoinUsersSection),
+              const Gap(8),
+              _switchRow(
+                context.loc.settingsPayjoinSendLabel,
+                PayjoinAction.send,
               ),
-              const Gap(16),
-              BorderedTappableTile(
+              _switchRow(
+                context.loc.settingsPayjoinReceiveLabel,
+                PayjoinAction.receive,
+              ),
+              const Gap(24),
+              _sectionTitle(context.loc.settingsPayjoinExchangeSection),
+              const Gap(8),
+              _switchRow(
+                context.loc.settingsPayjoinBuyLabel,
+                PayjoinAction.buy,
+              ),
+              _switchRow(
+                context.loc.settingsPayjoinSellLabel,
+                PayjoinAction.sell,
+              ),
+              const Gap(24),
+              BullBorderedTile(
                 onTap: () async {
                   await PayjoinDisclaimerDialog.show(context);
                 },
@@ -98,9 +132,9 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                   ],
                 ),
               ),
-              if (isEnabled) ...[
+              if (isAnyEnabled) ...[
                 const Gap(16),
-                BorderedTappableTile(
+                BullBorderedTile(
                   onTap: () => context.pushNamed(
                     SettingsRoute.payjoinAdvancedSettings.name,
                   ),

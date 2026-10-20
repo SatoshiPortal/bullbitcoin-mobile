@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
@@ -64,6 +65,7 @@ FundExchangeBloc _blocFor(FundExchangeFailure failure) {
     openFundingPaymentLinkUsecase: const OpenFundingPaymentLinkUsecase(
       externalLink: _UnusedExternalLink(),
     ),
+    getConfidentialSepaFundingAvailabilityUsecase: _NoConfidentialSepa(),
   );
 }
 
@@ -105,6 +107,12 @@ Future<InfoCard> _pumpCard(
   await tester.pumpAndSettle();
 
   return tester.widget<InfoCard>(find.byType(InfoCard));
+}
+
+class _NoConfidentialSepa
+    implements GetConfidentialSepaFundingAvailabilityUsecase {
+  @override
+  Future<Result<bool, FundExchangeFailure>> execute() async => const Ok(false);
 }
 
 void main() {

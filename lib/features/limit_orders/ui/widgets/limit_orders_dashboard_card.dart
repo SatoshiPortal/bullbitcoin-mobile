@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
@@ -32,11 +31,11 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         key: ValueKey('loading'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LoadingLineContent(
+          BullShimmerLine(
             height: 16,
             padding: EdgeInsets.symmetric(vertical: 6),
           ),
-          LoadingLineContent(
+          BullShimmerLine(
             height: 16,
             width: 180,
             padding: EdgeInsets.symmetric(vertical: 6),

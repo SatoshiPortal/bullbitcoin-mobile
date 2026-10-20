@@ -1,15 +1,17 @@
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullDialog,
+        BullSegmented,
+        BullSnackBar,
+        BullText,
+        BullViewerActionButton,
+        Gap;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,7 +59,7 @@ class AddressViewer extends StatelessWidget {
           showDetail(context, data: data, clipboardText: clipboardText),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
-        SnackBarUtils.showCopiedSnackBar(context);
+        BullSnackBar.show(context, message: context.loc.copiedToClipboard);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -66,7 +68,7 @@ class AddressViewer extends StatelessWidget {
             effectiveStyle,
             constraints.maxWidth,
           );
-          return BBText(
+          return BullText(
             truncated,
             style: effectiveStyle,
             maxLines: 1,
@@ -137,8 +139,9 @@ class AddressViewer extends StatelessWidget {
     required String data,
     String? clipboardText,
   }) {
-    return BlurredDialog.show<void>(
+    return BullDialog.show<void>(
       context: context,
+      padding: EdgeInsets.zero,
       builder: (dialogContext) => _AddressDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
@@ -198,7 +201,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (_hasBip21)
-            BBSegmentFull(
+            BullSegmented(
               items: {
                 context.loc.viewerAddressTab,
                 context.loc.viewerPaymentUriTab,
@@ -213,7 +216,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
               },
             )
           else
-            BBText(
+            BullText(
               context.loc.addressViewerTitle,
               style: context.font.titleSmall,
               color: context.appColors.onSurface,
@@ -290,19 +293,22 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildCopyAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.copy,
       label: context.loc.viewerTapToCopy,
       onTap: () {
         Clipboard.setData(ClipboardData(text: _activeText));
         Navigator.of(widget.dialogContext).pop();
-        SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
+        BullSnackBar.show(
+          widget.dialogContext,
+          message: widget.dialogContext.loc.copiedToClipboard,
+        );
       },
     );
   }
 
   Widget _buildCopyLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.link,
       label: context.loc.viewerCopyLink,
       onTap: () async {
@@ -311,14 +317,17 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         Clipboard.setData(ClipboardData(text: url));
         if (widget.dialogContext.mounted) {
           Navigator.of(widget.dialogContext).pop();
-          SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
+          BullSnackBar.show(
+            widget.dialogContext,
+            message: widget.dialogContext.loc.copiedToClipboard,
+          );
         }
       },
     );
   }
 
   Widget _buildOpenLinkAction(BuildContext context) {
-    return ViewerActionButton(
+    return BullViewerActionButton(
       icon: Icons.open_in_new,
       label: context.loc.viewerViewInExplorer,
       onTap: () async {

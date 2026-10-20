@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 
 enum RecipientsTab { newRecipient, recipientsList }
 
@@ -69,18 +68,16 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.recipientsScreenTitle),
-        // TODO: he app bar with the loading indicator below like this should
-        // be a shared widget so all screens have the loading indicator out-of-the-box
-        // and in the same place/way. This new shared widget should replace
-        // the current use of TopBar and the need to always add the back behaviour
-        // manually in various places that use the bad TopBar widget.
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: BlocSelector<RecipientsBloc, RecipientsState, bool>(
             selector: (state) =>
-                state.isLoading || (widget.isHookRunning ?? false),
+                (state.isLoading &&
+                    !(state.isLoadingRecipients &&
+                        (state.recipients?.isEmpty ?? true))) ||
+                (widget.isHookRunning ?? false),
             builder: (context, isLoading) => isLoading
-                ? FadingLinearProgress(
+                ? BullFadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
                     backgroundColor: context.appColors.surface,

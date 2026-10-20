@@ -17,6 +17,8 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.externalWalletNetworkSelected({
     required OrderBitcoinNetwork network,
   }) = PayExternalWalletNetworkSelected;
+  const factory PayEvent.paymentPreparationAbandoned() =
+      PayPaymentPreparationAbandoned;
   const factory PayEvent.orderRefreshTimePassed() = PayOrderRefreshTimePassed;
   // The fee to pay comes from the committed selection on PayPaymentState, not
   // from the event: the modal writes it there and the summary row reads it

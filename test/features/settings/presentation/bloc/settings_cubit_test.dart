@@ -152,7 +152,7 @@ void main() {
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'USD',
       ),
-      PayjoinPolicy.defaults().copyWith(enabled: true),
+      PayjoinPolicy.defaults().copyWith(receiveEnabled: true),
     );
   });
 
@@ -164,21 +164,26 @@ void main() {
   test('a successful disable updates the cubit state to false', () async {
     when(
       () => setPayjoinEnabled.execute(
+        PayjoinAction.receive,
         false,
         requestConsent: any(named: 'requestConsent'),
       ),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
 
-    await cubit.togglePayjoinEnabled(false, requestConsent: () async => true);
+    await cubit.togglePayjoinEnabled(
+      PayjoinAction.receive,
+      false,
+      requestConsent: () async => true,
+    );
 
-    expect(cubit.state.isPayjoinEnabled, isFalse);
+    expect(cubit.state.isPayjoinEnabled(PayjoinAction.receive), isFalse);
   });
 
   test('external persisted changes keep the cubit in sync', () async {
     changes.add(PayjoinPolicy.defaults());
     await Future<void>.delayed(Duration.zero);
 
-    expect(cubit.state.isPayjoinEnabled, isFalse);
+    expect(cubit.state.isPayjoinEnabled(PayjoinAction.receive), isFalse);
   });
 
   group('a write that does not stick', () {

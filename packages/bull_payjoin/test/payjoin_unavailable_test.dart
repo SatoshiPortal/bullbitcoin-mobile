@@ -40,7 +40,10 @@ void main() {
     );
     await _expectFailure(payjoin.sessions.reservedOutpoints(), failure);
     await _expectFailure(payjoin.policy.load(), failure);
-    await _expectFailure(payjoin.policy.setEnabled(true), failure);
+    await _expectFailure(
+      payjoin.policy.setActionEnabled(PayjoinAction.receive, enabled: true),
+      failure,
+    );
     await _expectFailure(
       payjoin.policy.setMinimumAmount(Sats.fromInt(10000)),
       failure,

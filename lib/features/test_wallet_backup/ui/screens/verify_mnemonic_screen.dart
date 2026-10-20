@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
@@ -12,7 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullText, Gap;
 
 class VerifyMnemonicScreen extends StatefulWidget {
   const VerifyMnemonicScreen({super.key});
@@ -83,7 +81,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
           _selectedIndices = [];
           _isLoading = false;
         });
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        BullSnackBar.show(context, message: failure.toTranslated(context));
     }
   }
 
@@ -105,9 +103,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
 
     if (!isCorrectSoFar) {
       _resetGame();
-      SnackBarUtils.showSnackBar(
+      BullSnackBar.show(
         context,
-        context.loc.testBackupErrorIncorrectOrder,
+        message: context.loc.testBackupErrorIncorrectOrder,
       );
       return;
     }
@@ -146,9 +144,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               if (state.selectedWallet == null) {
                 setState(() => _isLoading = false);
               }
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                failure.toTranslated(context),
+                message: failure.toTranslated(context),
               );
               context.read<TestWalletBackupBloc>().add(const ClearFailure());
               return;
@@ -163,9 +161,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 );
               case BackupVerificationStatus.failure:
                 _resetGame();
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  context.loc.testBackupErrorIncorrectOrder,
+                  message: context.loc.testBackupErrorIncorrectOrder,
                 );
                 context.read<TestWalletBackupBloc>().add(const ClearFailure());
               case BackupVerificationStatus.idle:
@@ -193,7 +191,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                   child: Column(
                     crossAxisAlignment: .stretch,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.testBackupTapWordsInOrder,
                         textAlign: .center,
                         maxLines: 2,
@@ -207,7 +205,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                       if (showPrompt)
                         Column(
                           children: [
-                            BBText(
+                            BullText(
                               context.loc.testBackupWhatIsWordNumber(
                                 nextWordNumber,
                               ),
@@ -223,7 +221,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         )
                       // No words means a failed read, not a finished test.
                       else if (_mnemonic.isNotEmpty)
-                        BBText(
+                        BullText(
                           context.loc.testBackupAllWordsSelected,
                           textAlign: .center,
                           style: context.font.labelMedium?.copyWith(
@@ -362,7 +360,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2.46),
                 ),
                 child: Center(
-                  child: BBText(
+                  child: BullText(
                     isSelected ? '$selectedWordNumber' : '00',
                     style: context.font.titleMedium?.copyWith(
                       fontWeight: .w700,
@@ -375,7 +373,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
               ),
             ),
             const Gap(12),
-            BBText(
+            BullText(
               word,
               textAlign: .start,
               maxLines: 2,

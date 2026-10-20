@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
@@ -8,7 +7,7 @@ import 'package:bb_mobile/features/recipients/presentation/models/recipient_form
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullLowerCaseTextFormatter, Gap;
 
 class InteracEmailCadForm extends StatefulWidget {
   const InteracEmailCadForm({super.key, this.hookError});
@@ -89,7 +88,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
               // No whitespace allowed
               FilteringTextInputFormatter.deny(RegExp(r'\s')),
               // Force lowercase
-              LowerCaseTextFormatter(),
+              BullLowerCaseTextFormatter(),
             ],
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),

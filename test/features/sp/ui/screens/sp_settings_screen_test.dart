@@ -7,9 +7,9 @@ import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_settings_screen.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -135,7 +135,7 @@ void main() {
     expect(find.text('Automatic scanning'), findsOneWidget);
     expect(find.text('Delete Silent Payments wallet'), findsOneWidget);
     // Wallet management rows use the shared settings row widget.
-    expect(find.byType(SettingsEntryItem), findsNWidgets(7));
+    expect(find.byType(BullSettingsEntryItem), findsNWidgets(7));
   });
 
   testWidgets('network is read-only after wallet creation', (tester) async {

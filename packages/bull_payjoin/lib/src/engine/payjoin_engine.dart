@@ -6,6 +6,7 @@ import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
+import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_contract.dart';
@@ -37,6 +38,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // until repository disposal so a lock is never replaced while callbacks are
   // queued on it.
   final Map<String, Lock> _sessionLocks = {};
+
+  /// Shared across screens for the lifetime of this engine. A cold restart
+  /// restores the previous immediate-fallback behavior without a schema change.
+  final Map<String, DateTime> _receiverFallbackAvailableAt = {};
+  static const receiverSenderWait = Duration(seconds: 60);
 
   final StreamController<Payjoin> _payjoinStreamController;
 
@@ -104,6 +110,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Registration alone must not start protocol work in background locators.
   }
 
+  DateTime? receiverFallbackAvailableAt(String sessionId) =>
+      _receiverFallbackAvailableAt[sessionId];
+
+  bool _isWaitingForSender(Payjoin payjoin) {
+    final until = receiverFallbackAvailableAt(payjoin.id);
+    return payjoin is PayjoinReceiver &&
+        payjoin.isOngoing &&
+        until != null &&
+        DateTime.now().isBefore(until);
+  }
+
   /// Releases all long-lived subscriptions and closes the payjoin stream.
   /// The production singleton lives for the whole app session and is never
   /// disposed, but tests (and any future teardown) need a clean exit.
@@ -132,6 +149,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       await sub.cancel();
     }
     _datasourceSubscriptions.clear();
+    _receiverFallbackAvailableAt.clear();
     await _pdkPayjoinDatasource.dispose();
     await _payjoinStreamController.close();
   }
@@ -234,10 +252,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
     int? amountSat,
+    bool isTrade = false,
   }) async {
     final initialPolicy = await _policy.load();
-    if (!initialPolicy.enabled) {
-      throw StateError('Payjoin is disabled');
+    if (!_isReceiverPermitted(initialPolicy, isTrade: isTrade)) {
+      throw StateError('Payjoin is disabled for this receiver');
     }
 
     final model = await _pdkPayjoinDatasource.createReceiver(
@@ -247,6 +266,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       expireAfterSec: expireAfterSec,
       amountSat: amountSat,
+      isTrade: isTrade,
     );
 
     return _withSessionLock(model.id, () async {
@@ -260,7 +280,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         stored = true;
 
         final policy = await _policy.load();
-        if (!policy.enabled) {
+        if (!_isReceiverPermitted(policy, isTrade: isTrade)) {
           await _settleReceiverAfterDisable(model);
           settled = true;
           throw StateError('Payjoin was disabled while creating the receiver');
@@ -360,13 +380,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return _canManuallyBroadcastOriginal(freshModel.toEntity());
   }
 
-  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async {
-    if (!payjoin.canManuallyBroadcastOriginal) return false;
+  Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async =>
+      payjoin.canManuallyBroadcastOriginal &&
+      !_isWaitingForSender(payjoin) &&
+      await _visibleCompetingTransaction(payjoin) == null;
 
-    // A fresh wallet lookup covers both mempool and confirmed transactions.
-    // Check both competing spends: persisted status can lag a transaction that
-    // has just reached the network, and broadcasting the original in that gap
-    // could race a successfully negotiated payjoin.
+  /// The first of the session's competing spends the network already knows,
+  /// or null when neither is visible.
+  ///
+  /// A fresh lookup covers both mempool and confirmed transactions. Check
+  /// both: persisted status can lag a transaction that has just reached the
+  /// network, and broadcasting the original in that gap could race a
+  /// successfully negotiated payjoin.
+  Future<String?> _visibleCompetingTransaction(Payjoin payjoin) async {
     for (final txId in [payjoin.originalTxId, payjoin.txId]) {
       if (txId == null) continue;
       if (await _transactions.isTransactionVisible(
@@ -374,10 +400,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         transactionId: txId,
         refresh: true,
       )) {
-        return false;
+        return txId;
       }
     }
-    return true;
+    return null;
   }
 
   @override
@@ -420,16 +446,55 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session not found locally',
+        code: api.PayjoinLogCode.fallbackRejected,
+        sessionRef: payjoin.id,
       );
       return const Err(
         api.PayjoinFallbackUnavailableFailure('Session not found locally'),
       );
     }
     final freshEntity = freshModel.toEntity();
-    if (!await _canManuallyBroadcastOriginal(freshEntity)) {
+    final String? competingTxId;
+    try {
+      competingTxId = freshEntity.canManuallyBroadcastOriginal
+          ? await _visibleCompetingTransaction(freshEntity)
+          : null;
+    } on Exception catch (error, trace) {
+      _log.warning(
+        '',
+        code: api.PayjoinLogCode.watchFailure,
+        sessionRef: freshEntity.id,
+        error: error,
+        trace: trace,
+      );
+      return const Err(
+        api.PayjoinUnavailableFailure(
+          'Could not verify competing transactions',
+        ),
+      );
+    }
+    if (competingTxId != null && competingTxId == freshEntity.txId) {
+      // The payjoin already reached the network: the user is paid. Settle the
+      // session now instead of leaving them on a spinner until a watcher
+      // notices the same transaction.
+      final completed = await _completeOnPayjoinTransactionSeen(
+        freshEntity.id,
+        competingTxId,
+      );
+      if (completed != null) return Ok(completed);
+    }
+    if (competingTxId != null && competingTxId == freshEntity.originalTxId) {
+      final aborted = await _completeOnOriginalTransactionSeen(freshEntity.id);
+      if (aborted != null) return Ok(aborted);
+    }
+    if (!freshEntity.canManuallyBroadcastOriginal ||
+        competingTxId != null ||
+        _isWaitingForSender(freshEntity)) {
       _log.warning(
         'tryBroadcastOriginalTransaction ignored for ${payjoin.logRef}: '
         'session is unsafe to abort or a competing transaction is visible',
+        code: api.PayjoinLogCode.fallbackRejected,
+        sessionRef: payjoin.id,
       );
       return const Err(
         api.PayjoinFallbackUnavailableFailure(
@@ -472,12 +537,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (settled != null) _payjoinStreamController.add(settled);
       });
 
+  /// Whether [policy] lets a receiver session of this origin exist. Every
+  /// receiver gate (creation, request arrival, disable sweep, resume) goes
+  /// through here, so one switch never settles another switch's sessions.
+  static bool _isReceiverPermitted(
+    PayjoinPolicy policy, {
+    required bool isTrade,
+  }) => policy.allows(isTrade ? PayjoinAction.buy : PayjoinAction.receive);
+
   @override
-  Future<void> disableReceivers() async {
+  Future<void> settleReceiversNotPermittedBy(PayjoinPolicy policy) =>
+      // Turning off receiving from users must leave a live buy order payout
+      // alone, and the other way round.
+      _settleReceivers(
+        (receiver) => !_isReceiverPermitted(policy, isTrade: receiver.isTrade),
+      );
+
+  @override
+  Future<void> settleAllReceivers() => _settleReceivers((_) => true);
+
+  Future<void> _settleReceivers(
+    bool Function(PayjoinReceiverModel receiver) shouldSettle,
+  ) async {
     final receivers = await _localPayjoinDatasource.fetchReceivers();
     Object? firstError;
     StackTrace? firstStackTrace;
     for (final receiver in receivers) {
+      if (!shouldSettle(receiver)) continue;
       try {
         await _withSessionLock(receiver.id, () async {
           final fresh = await _localPayjoinDatasource.fetchReceiver(
@@ -525,7 +611,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } on StateError catch (e) {
         // A previous attempt may already have advanced the PDK typestate.
         // Broadcasting the persisted original remains the safe recovery.
-        _log.warning('Receiver decline already applied: $e');
+        _log.warning(
+          'Receiver decline already applied',
+          code: api.PayjoinLogCode.storageFailure,
+          sessionRef: declined.id,
+          error: e,
+        );
       }
 
       final result = await _broadcastOriginalWithRetry(declined.toEntity());
@@ -726,10 +817,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // probing our UTXO set to at least a real payment above the
       // threshold. See PayjoinConstants.defaultMinAmountSat.
       final policy = await _policy.load();
-      if (!policy.enabled) {
+      if (!_isReceiverPermitted(policy, isTrade: model.isTrade)) {
         _log.warning(
           'Payjoin request ${model.id} arrived after Payjoin was disabled; '
           'broadcasting the original transaction instead',
+          code: api.PayjoinLogCode.requestAfterDisable,
+          sessionRef: model.id,
         );
         result = await _settleReceiverAfterDisable(model);
       } else if (isBelowPayjoinMinimum(
@@ -740,6 +833,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           'Payjoin request ${model.id} below minimum '
           '(${policy.minimumAmount.value} sat); declining and '
           'broadcasting original instead',
+          code: api.PayjoinLogCode.requestBelowMinimum,
+          sessionRef: model.id,
         );
         result = await _settleReceiverAfterDisable(model);
       } else {
@@ -820,6 +915,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       'Failed to broadcast the original transaction after $maxAttempts '
       'attempts; leaving payjoin ${payjoin.logRef} unfinished so the next app '
       'start retries',
+      code: api.PayjoinLogCode.broadcastFailure,
+      sessionRef: payjoin.id,
     );
     return null;
   }
@@ -939,6 +1036,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         } catch (e, st) {
           _log.warning(
             'Payjoin broadcast succeeded but labeling failed',
+            code: api.PayjoinLogCode.labelFailure,
+            sessionRef: payjoin.id,
             error: e,
             trace: st,
           );
@@ -1217,7 +1316,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             receiver.id,
           );
           if (fresh == null || fresh.isCompleted || fresh.isAborted) return;
-          if (!policy.enabled) {
+          if (!_isReceiverPermitted(policy, isTrade: fresh.isTrade)) {
             await _settleReceiverAfterDisable(fresh);
             return;
           }
@@ -1301,7 +1400,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
-      if (!policy.enabled && model is PayjoinReceiverModel) {
+      if (model is PayjoinReceiverModel &&
+          !_isReceiverPermitted(policy, isTrade: model.isTrade)) {
         continue;
       }
       // Each session is independent: a bug or a transient failure resuming
@@ -1422,6 +1522,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         _log.warning(
           'Skipping payjoin proposal for ${freshModel.toEntity().logRef}: '
           'session already resolved (${freshModel.status})',
+          code: api.PayjoinLogCode.proposalSkipped,
+          sessionRef: freshModel.id,
         );
         return null;
       }
@@ -1453,6 +1555,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         processPsbt: signPsbtSync,
       );
 
+      _receiverFallbackAvailableAt.putIfAbsent(
+        payjoin.id,
+        () => DateTime.now().add(receiverSenderWait),
+      );
       try {
         final recorded = await _localPayjoinDatasource.recordReceiverProposal(
           updatedModel,
@@ -1578,6 +1684,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           'Payjoin ${payjoinModel.toEntity().logRef} broadcast after the '
           'original transaction was observed; the network will resolve the '
           'conflict',
+          code: api.PayjoinLogCode.conflictingBroadcast,
+          sessionRef: payjoinModel.id,
         );
       }
       completedModel = (persisted ?? payjoinModel).copyWith(
@@ -1634,14 +1742,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// The sender typically finalizes and broadcasts within seconds of
   /// receiving the proposal, so the first forced lookup comes quickly.
   @visibleForTesting
-  static const broadcastPollInitialDelay = Duration(seconds: 5);
+  static const broadcastPollInitialDelay = Duration(seconds: 2);
 
   /// Cap for the exponential backoff between active broadcast polls.
   @visibleForTesting
   static const broadcastPollMaxDelay = Duration(minutes: 5);
 
   /// Number of active broadcast polls before giving up on forcing syncs
-  /// ourselves (≈35 minutes with the initial delay doubling up to the cap).
+  /// ourselves (≈30 minutes with the initial delay doubling up to the cap).
   /// The passive sync-driven watcher stays armed afterwards, so a very late
   /// broadcast is still caught by the next organic wallet sync — this bound
   /// only stops a stranded session from forcing network syncs forever.
@@ -1767,7 +1875,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
                 transactionId: txId,
               );
             } catch (e) {
-              _log.warning('Payjoin $kind watch lookup failed: $e');
+              _log.warning(
+                'Payjoin $kind watch lookup failed',
+                code: api.PayjoinLogCode.watchFailure,
+                sessionRef: payjoinId,
+                error: e,
+              );
               return false;
             }
           })
@@ -1778,7 +1891,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             //  unhandled zone error.
             unawaited(
               onSeen(payjoinId).catchError((Object e) {
-                _log.warning('Payjoin $kind completion handler failed: $e');
+                _log.warning(
+                  'Payjoin $kind completion handler failed',
+                  code: api.PayjoinLogCode.watchFailure,
+                  sessionRef: payjoinId,
+                  error: e,
+                );
               }),
             );
           });
@@ -1800,8 +1918,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // logRefForId: payjoinId is the raw session id, which for a sender IS
       //  the full BIP21 URI (address+amount) — never log it raw.
       _log.warning(
-        'Failed to arm the $kind watch for '
-        '${Payjoin.logRefForId(payjoinId)}: $e',
+        'Failed to arm the $kind watch for ${Payjoin.logRefForId(payjoinId)}',
+        code: api.PayjoinLogCode.watchFailure,
+        sessionRef: payjoinId,
+        error: e,
       );
     }
   }
@@ -1849,7 +1969,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           refresh: true,
         );
       } catch (e) {
-        _log.warning('Payjoin $kind poll failed: $e');
+        _log.warning(
+          'Payjoin $kind poll failed',
+          code: api.PayjoinLogCode.watchFailure,
+          sessionRef: payjoinId,
+          error: e,
+        );
       }
 
       // Re-check: the session may have resolved through the passive watcher
@@ -1862,7 +1987,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         try {
           await onSeen(payjoinId);
         } catch (e) {
-          _log.warning('Payjoin $kind completion handler failed: $e');
+          _log.warning(
+            'Payjoin $kind completion handler failed',
+            code: api.PayjoinLogCode.watchFailure,
+            sessionRef: payjoinId,
+            error: e,
+          );
         }
         if (watchers.containsKey(key)) {
           _scheduleTransactionPoll(
@@ -1896,13 +2026,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<void> _onPayjoinTransactionSeen(
     String payjoinId,
     String observedTxId,
-  ) => _withSessionLock(payjoinId, () async {
+  ) => _withSessionLock(
+    payjoinId,
+    () => _completeOnPayjoinTransactionSeen(payjoinId, observedTxId),
+  );
+
+  /// Body of [_onPayjoinTransactionSeen], for callers already holding the
+  /// session lock. Returns the completed session, or null when nothing
+  /// changed.
+  Future<Payjoin?> _completeOnPayjoinTransactionSeen(
+    String payjoinId,
+    String observedTxId,
+  ) async {
     final receiver = await _localPayjoinDatasource.fetchReceiver(payjoinId);
     final PayjoinModel? model =
         receiver ?? await _localPayjoinDatasource.fetchSender(payjoinId);
     if (model == null || model.isCompleted) {
       _stopWatching(payjoinId);
-      return;
+      return null;
     }
 
     final PayjoinModel completedModel = model is PayjoinReceiverModel
@@ -1924,7 +2065,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
           : await _localPayjoinDatasource.fetchSender(payjoinId);
       if (refreshed?.isCompleted == true) _stopWatching(payjoinId);
-      return;
+      return null;
     }
 
     // Persistence won. Any already-delivered duplicate callback now observes
@@ -1936,11 +2077,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: completedModel.walletId,
       );
     }
-    _payjoinStreamController.add(completedModel.toEntity());
-    _log.info(
-      'Payjoin ${completedModel.toEntity().logRef} completed on broadcast',
-    );
-  });
+    final completed = completedModel.toEntity();
+    _payjoinStreamController.add(completed);
+    _log.info('Payjoin ${completed.logRef} completed on broadcast');
+    return completed;
+  }
 
   /// The original transaction landed on-chain — regardless of which side
   /// actually broadcast it (this repository's own attempt, possibly already
@@ -1951,45 +2092,49 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// "payjoin" — this is by definition not a real one.
   Future<void> _onOriginalTransactionSeen(String payjoinId) => _withSessionLock(
     payjoinId,
-    () async {
-      final receiverModel = await _localPayjoinDatasource.fetchReceiver(
-        payjoinId,
-      );
-      final PayjoinModel? model =
-          receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
-      if (model == null || model.isCompleted || model.isAborted) {
-        _stopWatching(payjoinId);
-        return;
-      }
-
-      final PayjoinModel abortedModel = model is PayjoinReceiverModel
-          ? model.copyWith(isExpired: false, isAborted: true, txId: null)
-          : (model as PayjoinSenderModel).copyWith(
-              isExpired: false,
-              isAborted: true,
-              txId: null,
-            );
-      final applied = await _localPayjoinDatasource.markAborted(abortedModel);
-      if (!applied) {
-        final refreshed = model is PayjoinReceiverModel
-            ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
-            : await _localPayjoinDatasource.fetchSender(payjoinId);
-        if (refreshed?.isCompleted == true || refreshed?.isAborted == true) {
-          _stopWatching(payjoinId);
-        }
-        return;
-      }
-      _stopWatching(payjoinId);
-      _syncWalletAfterBroadcast(abortedModel.walletId);
-      final abortedEntity = abortedModel.toEntity();
-      _payjoinStreamController.add(abortedEntity);
-      _log.info(
-        'Payjoin ${abortedEntity.logRef} resolved via the original '
-        'transaction observed on-chain (fallback, not necessarily broadcast '
-        'by this device)',
-      );
-    },
+    () => _completeOnOriginalTransactionSeen(payjoinId),
   );
+
+  /// Body of [_onOriginalTransactionSeen] for callers holding the session lock.
+  Future<Payjoin?> _completeOnOriginalTransactionSeen(String payjoinId) async {
+    final receiverModel = await _localPayjoinDatasource.fetchReceiver(
+      payjoinId,
+    );
+    final PayjoinModel? model =
+        receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (model == null || model.isCompleted || model.isAborted) {
+      _stopWatching(payjoinId);
+      return null;
+    }
+
+    final PayjoinModel abortedModel = model is PayjoinReceiverModel
+        ? model.copyWith(isExpired: false, isAborted: true, txId: null)
+        : (model as PayjoinSenderModel).copyWith(
+            isExpired: false,
+            isAborted: true,
+            txId: null,
+          );
+    final applied = await _localPayjoinDatasource.markAborted(abortedModel);
+    if (!applied) {
+      final refreshed = model is PayjoinReceiverModel
+          ? await _localPayjoinDatasource.fetchReceiver(payjoinId)
+          : await _localPayjoinDatasource.fetchSender(payjoinId);
+      if (refreshed?.isCompleted == true || refreshed?.isAborted == true) {
+        _stopWatching(payjoinId);
+      }
+      return null;
+    }
+    _stopWatching(payjoinId);
+    _syncWalletAfterBroadcast(abortedModel.walletId);
+    final abortedEntity = abortedModel.toEntity();
+    _payjoinStreamController.add(abortedEntity);
+    _log.info(
+      'Payjoin ${abortedEntity.logRef} resolved via the original '
+      'transaction observed on-chain (fallback, not necessarily broadcast '
+      'by this device)',
+    );
+    return abortedEntity;
+  }
 
   /// Stops every watcher of a session — the real-payjoin broadcast watch
   /// ([_watchForBroadcast]), the original-transaction fallback watch
@@ -2006,6 +2151,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// awaiting it would make completion latency depend on the upstream
   /// stream's teardown.
   void _stopWatching(String payjoinId) {
+    _receiverFallbackAvailableAt.remove(payjoinId);
     _broadcastPollTimers.remove(payjoinId)?.cancel();
     final broadcastSubscription = _broadcastWatchers.remove(payjoinId);
     if (broadcastSubscription != null) {
@@ -2051,7 +2197,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       Future(() => _transactions.refreshWallet(walletId)).catchError((
         Object e,
       ) {
-        _log.warning('Failed to sync wallet after payjoin broadcast: $e');
+        _log.warning(
+          'Failed to sync wallet after payjoin broadcast',
+          code: api.PayjoinLogCode.walletFailure,
+          error: e,
+        );
       }),
     );
   }
@@ -2068,7 +2218,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      _log.warning('Failed to label payjoin transaction', error: e);
+      _log.warning(
+        'Failed to label payjoin transaction',
+        code: api.PayjoinLogCode.labelFailure,
+        error: e,
+      );
     }
   }
 
@@ -2092,7 +2246,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       await _labels.labelTransaction(walletId: walletId, transactionId: txId);
     } catch (e) {
-      _log.warning('Failed to label completed payjoin send', error: e);
+      _log.warning(
+        'Failed to label completed payjoin send',
+        code: api.PayjoinLogCode.labelFailure,
+        error: e,
+      );
     }
   }
 }

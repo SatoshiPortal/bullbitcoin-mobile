@@ -3,47 +3,52 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
+import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullButton,
+        BullCountdown,
+        BullShimmerLine,
+        BullText,
+        Gap;
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final buyOrder = context.select((BuyBloc bloc) => bloc.state.buyOrder!);
-    final formattedPayInAmount = FormatAmount.fiat(
-      buyOrder.payinAmount,
-      buyOrder.payinCurrency,
-    );
+    final state = context.watch<BuyBloc>().state;
+    final buyOrder = state.buyOrder;
+    final isLoading = state.isCreatingOrder || state.isRefreshingOrder;
+    final isUnavailable = buyOrder == null && state.confirmFailure != null;
+    final formattedPayInAmount = buyOrder == null || isLoading
+        ? null
+        : FormatAmount.fiat(buyOrder.payinAmount, buyOrder.payinCurrency);
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
-    final payoutAmountBtc = buyOrder.payoutAmount;
-    final payoutAmountSat = ConvertAmount.btcToSats(
-      payoutAmountBtc,
-    ); // Convert sats to BTC
-    final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
-        ? FormatAmount.sats(payoutAmountSat)
+    final formattedPayOutAmount = buyOrder == null || isLoading
+        ? null
+        : bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(ConvertAmount.btcToSats(buyOrder.payoutAmount))
         : FormatAmount.btc(buyOrder.payoutAmount);
-    // A buy order always carries a rate, but the model no longer guarantees one,
-    // so derive it from the two amounts rather than crash the screen.
-    final formattedExchangeRate = FormatAmount.fiat(
-      buyOrder.exchangeRateAmount ??
-          (payoutAmountBtc > 0 ? buyOrder.payinAmount / payoutAmountBtc : 0.0),
-      buyOrder.exchangeRateCurrency ?? buyOrder.payinCurrency,
-    );
+    final formattedExchangeRate = buyOrder == null || isLoading
+        ? null
+        : FormatAmount.fiat(
+            buyOrder.exchangeRateAmount ??
+                (buyOrder.payoutAmount > 0
+                    ? buyOrder.payinAmount / buyOrder.payoutAmount
+                    : 0.0),
+            buyOrder.exchangeRateCurrency ?? buyOrder.payinCurrency,
+          );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
@@ -55,125 +60,152 @@ class BuyConfirmScreen extends StatelessWidget {
     // pasted, so the order itself is the only source for the network.
     final payoutMethod = buyPayoutMethodLabel(
       context,
-      isLiquid: selectedWallet?.network.isLiquid ?? buyOrder.isLiquid,
+      isLiquid: selectedWallet?.network.isLiquid ?? buyOrder?.isLiquid ?? false,
     );
 
-    final isConfirmingOrder = context.select(
-      (BuyBloc bloc) => bloc.state.isConfirmingOrder,
-    );
-    final BuyFailure? confirmFailure = context.select(
-      (BuyBloc bloc) => bloc.state.confirmFailure,
-    );
-    final isRefreshingOrder = context.select(
-      (BuyBloc bloc) => bloc.state.isRefreshingOrder,
-    );
-    return Scaffold(
-      appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: context.appColors.secondaryFixedDim,
-                      shape: .circle,
+    final isConfirmingOrder = state.isConfirmingOrder;
+    final confirmFailure = state.confirmFailure;
+    final isRefreshingOrder = state.isRefreshingOrder;
+    return PopScope<Object?>(
+      canPop: !isConfirmingOrder,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<BuyBloc>().add(const BuyEvent.orderCreationAbandoned());
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: context.appColors.secondaryFixedDim,
+                        shape: .circle,
+                      ),
+                      child: Image.asset(Assets.icons.btc.path),
                     ),
-                    child: Image.asset(Assets.icons.btc.path),
                   ),
-                ),
-                const Gap(13),
-                Center(
-                  child: BBText(
-                    formattedPayInAmount,
-                    style: context.font.displaySmall,
-                    color: context.appColors.secondary,
+                  const Gap(13),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56),
+                    child: Center(
+                      child: switch (formattedPayInAmount) {
+                        final String amount => BullText(
+                          amount,
+                          style: context.font.displaySmall,
+                          color: context.appColors.secondary,
+                        ),
+                        null when isUnavailable => const Text('—'),
+                        null => const BullShimmerLine(
+                          width: 180,
+                          height: 32,
+                          padding: EdgeInsets.zero,
+                        ),
+                      },
+                    ),
                   ),
-                ),
-                const Gap(32),
-                BuyConfirmDetailRow(
-                  label: context.loc.buyConfirmYouPay,
-                  value: formattedPayInAmount,
-                ),
-                BuyConfirmDetailRow(
-                  label: context.loc.buyConfirmYouReceive,
-                  value: formattedPayOutAmount,
-                ),
-                BuyConfirmDetailRow(
-                  label: context.loc.buyConfirmBitcoinPrice,
-                  value: formattedExchangeRate,
-                ),
-                BuyConfirmDetailRow(
-                  label: context.loc.buyConfirmPayoutWallet,
-                  value: payoutWallet,
-                ),
-                BuyConfirmDetailRow(
-                  label: context.loc.buyConfirmPayoutMethod,
-                  value: payoutMethod,
-                ),
-                const Gap(32),
-              ],
+                  const Gap(32),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmYouPay,
+                    value: formattedPayInAmount,
+                    isUnavailable: isUnavailable,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmYouReceive,
+                    value: formattedPayOutAmount,
+                    isUnavailable: isUnavailable,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmBitcoinPrice,
+                    value: formattedExchangeRate,
+                    isUnavailable: isUnavailable,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmPayoutWallet,
+                    value: payoutWallet,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmPayoutMethod,
+                    value: payoutMethod,
+                  ),
+                  const Gap(32),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              if (isConfirmingOrder || isRefreshingOrder)
-                const Center(child: CircularProgressIndicator())
-              else
-                Row(
-                  mainAxisAlignment: .center,
-                  children: [
-                    Text(
-                      context.loc.buyConfirmAwaitingConfirmation,
-                      style: context.font.bodyMedium?.copyWith(
-                        fontWeight: .w500,
-                        color: context.appColors.outline,
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: .min,
+              children: [
+                if (isLoading)
+                  const BullShimmerLine(
+                    width: 160,
+                    height: 14,
+                    padding: EdgeInsets.zero,
+                  )
+                else if (buyOrder != null && !isConfirmingOrder)
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      Text(
+                        context.loc.buyConfirmAwaitingConfirmation,
+                        style: context.font.bodyMedium?.copyWith(
+                          fontWeight: .w500,
+                          color: context.appColors.outline,
+                        ),
                       ),
-                    ),
-                    const Gap(4),
-                    if (buyOrder.confirmationDeadline case final deadline?)
-                      Countdown(
-                        until: deadline,
-                        onTimeout: () {
-                          context.read<BuyBloc>().add(
-                            const BuyEvent.refreshOrder(),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              if (confirmFailure != null) ...[
-                const Gap(16),
-                Text(
-                  confirmFailure.toTranslated(context),
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.error,
+                      const Gap(4),
+                      if (buyOrder.confirmationDeadline case final deadline?)
+                        BullCountdown(
+                          until: deadline,
+                          onTimeout: () {
+                            context.read<BuyBloc>().add(
+                              const BuyEvent.refreshOrder(),
+                            );
+                          },
+                        ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
-                ),
+                if (confirmFailure != null) ...[
+                  const Gap(16),
+                  BuyOrderFailureMessage(error: confirmFailure),
+                ],
+                const Gap(16),
+                if (isConfirmingOrder)
+                  BullAsyncStatus.progress(
+                    label: context.loc.buyConfirmAwaitingConfirmation,
+                    color: context.appColors.secondary,
+                    textStyle: context.font.bodyMedium,
+                  )
+                else
+                  BullButton.big(
+                    label: context.loc.buyConfirmPurchase,
+                    disabled:
+                        buyOrder == null ||
+                        isConfirmingOrder ||
+                        isRefreshingOrder ||
+                        isLoading,
+                    onPressed: () {
+                      context.read<BuyBloc>().add(
+                        const BuyEvent.confirmOrder(),
+                      );
+                    },
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
               ],
-              const Gap(16),
-              BBButton.big(
-                label: context.loc.buyConfirmPurchase,
-                disabled: isConfirmingOrder || isRefreshingOrder,
-                onPressed: () {
-                  context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
-                },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-              ),
-            ],
+            ),
           ),
         ),
       ),

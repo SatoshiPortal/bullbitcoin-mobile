@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -22,10 +23,12 @@ class AddRecipientResult {
 
 class AddRecipientUsecase {
   final RecipientsGatewayPort _recipientsGateway;
+  final SepaVirtualPayeeRepository _sepaVirtualPayeeRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   AddRecipientUsecase({
     required this._recipientsGateway,
+    required this._sepaVirtualPayeeRepository,
     required this._getRecipientsEnvironmentUsecase,
   });
 
@@ -61,9 +64,41 @@ class AddRecipientUsecase {
       return const Err(RecipientsSaveFailure());
     }
 
-    return (await _recipientsGateway.saveRecipient(
+    final Recipient recipient;
+    switch (await _recipientsGateway.saveRecipient(
       details,
       isTestnet: isTestnet,
-    )).map((recipient) => AddRecipientResult(recipient: recipient));
+    )) {
+      case Ok(:final value):
+        recipient = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+
+    if (details is! SepaEurDetails || !details.isConfidential) {
+      return Ok(AddRecipientResult(recipient: recipient));
+    }
+
+    // The API saves a Confidential SEPA recipient as a regular one; its
+    // virtual payee is activated separately. An activation failure does not
+    // fail the save: the activation screen retries it before any payout.
+    final activation = await _sepaVirtualPayeeRepository.activate(
+      recipientId: recipient.recipientId,
+      isTestnet: isTestnet,
+    );
+    if (activation case Err(:final failure)) {
+      log.warning(
+        'Saved a Confidential SEPA recipient, but could not activate it: '
+        '${failure.runtimeType}',
+      );
+    }
+    final savedDetails = recipient.details;
+    return Ok(
+      AddRecipientResult(
+        recipient: savedDetails is SepaEurDetails
+            ? recipient.withDetails(savedDetails.asConfidential())
+            : recipient,
+      ),
+    );
   }
 }

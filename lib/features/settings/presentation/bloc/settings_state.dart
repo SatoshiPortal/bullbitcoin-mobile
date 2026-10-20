@@ -38,7 +38,14 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>
       storedSettings?.exchangeTestnetBasicAuthPassword;
-  bool get isPayjoinEnabled => payjoinPolicy?.enabled ?? false;
+
+  /// Off until the policy loads, as the payjoin gates treat a missing policy.
+  bool isPayjoinEnabled(PayjoinAction action) =>
+      payjoinPolicy?.allows(action) ?? false;
+
+  /// Whether any switch keeps payjoin in use, which is when its advanced
+  /// settings matter.
+  bool get isAnyPayjoinEnabled => payjoinPolicy?.anyEnabled ?? false;
   int get payjoinMinAmountSat =>
       payjoinPolicy?.minimumAmount.value.toInt() ??
       PayjoinPolicy.defaults().minimumAmount.value.toInt();

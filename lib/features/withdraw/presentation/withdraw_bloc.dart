@@ -19,6 +19,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   final LoadWithdrawContextUsecase _loadWithdrawContextUsecase;
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
   final ConfirmWithdrawOrderUsecase _confirmWithdrawOrderUsecase;
+  final Set<String> _activatedRecipientIds = {};
+  bool _isNewRecipient = false;
 
   WithdrawBloc({
     required this._loadWithdrawContextUsecase,
@@ -33,6 +35,11 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       transformer: droppable(),
     );
     on<WithdrawConfirmed>(_onConfirmed);
+    on<WithdrawVirtualPayeeActivated>(_onVirtualPayeeActivated);
+    on<WithdrawRegularSepaChosen>(_onRegularSepaChosen);
+    on<WithdrawVirtualPayeeActivationDismissed>(
+      _onVirtualPayeeActivationDismissed,
+    );
   }
 
   Future<void> _onStarted(
@@ -104,12 +111,69 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       return;
     }
 
+    _isNewRecipient = event.isNew;
+    if (recipient.requiresVirtualPayeeActivation) {
+      emit(recipientInputState.copyWith(recipientToActivate: recipient));
+      return;
+    }
+
+    await _createOrder(recipientInputState, recipient, emit);
+  }
+
+  Future<void> _onVirtualPayeeActivated(
+    WithdrawVirtualPayeeActivated event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    final recipient = _recipientToActivate();
+    if (recipient == null) return;
+    _activatedRecipientIds.add(recipient.id);
+    await _createOrder(
+      state.cleanRecipientInputState!,
+      recipient.asVirtualPayeeActive(),
+      emit,
+    );
+  }
+
+  Future<void> _onRegularSepaChosen(
+    WithdrawRegularSepaChosen event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    final recipient = _recipientToActivate();
+    if (recipient == null) return;
+    await _createOrder(
+      state.cleanRecipientInputState!,
+      recipient.asRegularSepa(),
+      emit,
+    );
+  }
+
+  void _onVirtualPayeeActivationDismissed(
+    WithdrawVirtualPayeeActivationDismissed event,
+    Emitter<WithdrawState> emit,
+  ) {
+    if (_recipientToActivate() == null) return;
+    emit(state.cleanRecipientInputState!);
+  }
+
+  RecipientSelection? _recipientToActivate() => switch (state) {
+    WithdrawRecipientInputState(:final recipientToActivate) =>
+      recipientToActivate,
+    _ => null,
+  };
+
+  Future<void> _createOrder(
+    WithdrawRecipientInputState recipientInputState,
+    RecipientSelection recipient,
+    Emitter<WithdrawState> emit,
+  ) async {
     emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
 
+    WithdrawFailure failure;
     try {
       switch (await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.id,
+        recipientType: recipient.type,
       )) {
         case Ok(:final value):
           emit(
@@ -118,18 +182,9 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
               order: value.order,
             ),
           );
-        case Err(:final failure):
-          emit(
-            event.isNew
-                ? recipientInputState.copyWith(
-                    isCreatingWithdrawOrder: false,
-                    newRecipientFailure: failure,
-                  )
-                : recipientInputState.copyWith(
-                    isCreatingWithdrawOrder: false,
-                    selectedRecipientFailure: failure,
-                  ),
-          );
+          return;
+        case Err(failure: final err):
+          failure = err;
       }
     } catch (e, st) {
       log.severe(
@@ -137,21 +192,30 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         error: e,
         trace: st,
       );
-      final failure = WithdrawUnexpectedFailure(
-        'create threw: ${e.runtimeType}',
-      );
-      emit(
-        event.isNew
-            ? recipientInputState.copyWith(
-                isCreatingWithdrawOrder: false,
-                newRecipientFailure: failure,
-              )
-            : recipientInputState.copyWith(
-                isCreatingWithdrawOrder: false,
-                selectedRecipientFailure: failure,
-              ),
-      );
+      failure = WithdrawUnexpectedFailure('create threw: ${e.runtimeType}');
     }
+
+    // The recipient list can still show a payee as active after the API
+    // stopped accepting it. Activation is offered once; if the API refuses
+    // again, the user sees why instead of looping.
+    if (failure is WithdrawConfidentialSepaNotActivatedFailure &&
+        recipient.type == RecipientType.confidentialSepaEur &&
+        !_activatedRecipientIds.contains(recipient.id)) {
+      emit(recipientInputState.copyWith(recipientToActivate: recipient));
+      return;
+    }
+
+    emit(
+      _isNewRecipient
+          ? recipientInputState.copyWith(
+              isCreatingWithdrawOrder: false,
+              newRecipientFailure: failure,
+            )
+          : recipientInputState.copyWith(
+              isCreatingWithdrawOrder: false,
+              selectedRecipientFailure: failure,
+            ),
+    );
   }
 
   Future<void> _onInteracSecurityDetailsSubmitted(

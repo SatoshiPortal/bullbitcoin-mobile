@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 /// The settings search surface: a field, and the results for what it holds.
 ///
@@ -104,7 +104,7 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
             itemCount: results.length,
             itemBuilder: (context, index) {
               final entry = results[index];
-              return SettingsEntryItem(
+              return BullSettingsEntryItem(
                 key: Key('settings-search-result-${entry.id.name}-$index'),
                 icon: entry.icon,
                 title: entry.title,

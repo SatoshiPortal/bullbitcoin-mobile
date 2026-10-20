@@ -3,12 +3,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar, Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 class AppInitErrorScreen extends StatefulWidget {
@@ -34,9 +32,9 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
         trace: StackTrace.current,
       );
       if (!context.mounted) return;
-      SnackBarUtils.showSnackBar(
+      BullSnackBar.show(
         context,
-        loc.errorSharingLogsMessage(e.toString()),
+        message: loc.errorSharingLogsMessage(e.toString()),
       );
     }
   }
@@ -47,7 +45,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       final saved = await exportLogsAsFile(logs);
       if (!context.mounted) return;
       if (saved) {
-        SnackBarUtils.showSnackBar(context, loc.logsExportedMessage);
+        BullSnackBar.show(context, message: loc.logsExportedMessage);
       }
     } catch (e) {
       log.severe(
@@ -56,7 +54,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
         trace: StackTrace.current,
       );
       if (!context.mounted) return;
-      SnackBarUtils.showSnackBar(context, loc.logsExportFailedMessage);
+      BullSnackBar.show(context, message: loc.logsExportFailedMessage);
     }
   }
 
@@ -70,7 +68,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
   Future<void> _deleteLogs(BuildContext context, AppLocalizations loc) async {
     await log.deleteLogs();
     if (!context.mounted) return;
-    SnackBarUtils.showSnackBar(context, loc.logsDeletedMessage);
+    BullSnackBar.show(context, message: loc.logsDeletedMessage);
   }
 
   @override
@@ -126,7 +124,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       message: loc.appInitErrorNoBackupMessage,
                     ),
                     const Gap(32),
-                    BBButton.big(
+                    BullButton.big(
                       label: loc.appInitErrorContactSupportButton,
                       iconData: Icons.open_in_new,
                       bgColor: context.appColors.primary,
@@ -134,7 +132,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       onPressed: _contactSupport,
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.big(
                       label: loc.appInitErrorShareLogsButton,
                       iconData: Icons.share,
                       iconFirst: true,
@@ -145,7 +143,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       onPressed: () => _shareLogs(context, loc),
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.big(
                       label: loc.logsShareOptionExport,
                       iconData: Icons.file_download_outlined,
                       iconFirst: true,
@@ -156,7 +154,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       onPressed: () => _exportLogs(context, loc),
                     ),
                     const Gap(12),
-                    BBButton.big(
+                    BullButton.big(
                       label: loc.deleteLogsTitle,
                       iconData: Icons.delete_outline,
                       iconFirst: true,
@@ -243,7 +241,7 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BBButton.big(
+        BullButton.big(
           label: widget.label,
           iconData: _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
           iconFirst: true,

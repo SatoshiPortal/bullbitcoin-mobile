@@ -19,7 +19,9 @@ extension ReceiveFailureL10n on ReceiveFailure {
     ReceiveAmountOutOfBoundsFailure() ||
     ReceiveInvalidInvoiceFailure() ||
     ReceiveSwapUnavailableFailure() ||
-    ReceiveUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    ReceiveUnexpectedFailure() ||
+    ReceiveBroadcastOriginalTxVerificationFailure() =>
+      context.loc.oopsSomethingWentWrong,
     ReceiveSwapRouteUnavailableFailure(:final inNetwork?, :final outNetwork?) =>
       context.loc.swapErrorRouteUnavailable(
         inNetwork.toTranslated(context),

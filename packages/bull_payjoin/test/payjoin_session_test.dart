@@ -61,6 +61,29 @@ void main() {
     expect(session.canManuallyBroadcastOriginal, isTrue);
   });
 
+  test('the same receiver deadline gates every consumer until it elapses', () {
+    final until = createdAt.add(const Duration(seconds: 60));
+    final session = PayjoinReceiverSession(
+      status: PayjoinStatus.proposed,
+      id: '0123456789abcdef',
+      network: BitcoinNetwork.mainnet,
+      walletId: 'wallet',
+      createdAt: createdAt,
+      expiresAt: createdAt.add(const Duration(hours: 1)),
+      payjoinUri: 'bitcoin:address',
+      hasOriginalTransaction: true,
+      hasProposal: true,
+      fallbackAvailableAt: until,
+    );
+    expect(
+      session.canManuallyBroadcastOriginalAt(
+        until.subtract(const Duration(microseconds: 1)),
+      ),
+      isFalse,
+    );
+    expect(session.canManuallyBroadcastOriginalAt(until), isTrue);
+  });
+
   test('keeps sender fallback available after proposal expiry', () {
     final session = PayjoinSenderSession(
       status: PayjoinStatus.expired,

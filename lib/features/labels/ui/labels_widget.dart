@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({super.key, required this.labels, this.onDelete});
@@ -35,9 +35,9 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         await widget.onDelete!(label);
       } catch (e) {
         if (mounted) {
-          SnackBarUtils.showSnackBar(
+          BullSnackBar.show(
             context,
-            context.loc.labelDeleteFailed(label.label),
+            message: context.loc.labelDeleteFailed(label.label),
           );
         }
       }
@@ -49,7 +49,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
     if (!mounted) return;
     setState(() => _deletingLabels.remove(label));
     if (result case Err(:final failure)) {
-      SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      BullSnackBar.show(context, message: failure.toTranslated(context));
     }
   }
 

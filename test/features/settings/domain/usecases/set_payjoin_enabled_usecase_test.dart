@@ -36,18 +36,21 @@ void main() {
   late _MockMarkPayjoinDisclaimerShownUsecase markDisclaimerShown;
   late SetPayjoinEnabledUsecase usecase;
 
+  setUpAll(() => registerFallbackValue(payjoin.PayjoinAction.receive));
+
   setUp(() {
     payjoinPolicy = _MockPayjoinPolicyAccess();
     getDisclaimerShown = _MockGetPayjoinDisclaimerShownUsecase();
     markDisclaimerShown = _MockMarkPayjoinDisclaimerShownUsecase();
-    when(() => payjoinPolicy.setEnabled(any())).thenAnswer((invocation) async {
-      final enabled = invocation.positionalArguments.single as bool;
+    when(
+      () =>
+          payjoinPolicy.setActionEnabled(any(), enabled: any(named: 'enabled')),
+    ).thenAnswer((invocation) async {
+      final action =
+          invocation.positionalArguments.single as payjoin.PayjoinAction;
+      final enabled = invocation.namedArguments[#enabled] as bool;
       return primitives.Ok(
-        payjoin.PayjoinPolicy(
-          enabled: enabled,
-          minimumAmount: primitives.Sats.fromInt(10000),
-          sessionLifetime: const Duration(hours: 24),
-        ),
+        payjoin.PayjoinPolicy.defaults().withAction(action, enabled: enabled),
       );
     });
     when(
@@ -67,6 +70,7 @@ void main() {
     var requestedConsent = false;
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       false,
       requestConsent: () async {
         requestedConsent = true;
@@ -76,18 +80,29 @@ void main() {
 
     expect(_valueOf(result), isFalse);
     expect(requestedConsent, isFalse);
-    verify(() => payjoinPolicy.setEnabled(false)).called(1);
+    verify(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: false,
+      ),
+    ).called(1);
     verifyNever(() => getDisclaimerShown.execute());
   });
 
   test('returns a settings failure when policy persistence fails', () async {
-    when(() => payjoinPolicy.setEnabled(false)).thenAnswer(
+    when(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: false,
+      ),
+    ).thenAnswer(
       (_) async => const primitives.Err(
         payjoin.PayjoinStorageFailure('storage unavailable'),
       ),
     );
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       false,
       requestConsent: () async => true,
     );
@@ -102,6 +117,7 @@ void main() {
     var requestedConsent = false;
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async {
         requestedConsent = true;
@@ -111,7 +127,12 @@ void main() {
 
     expect(_valueOf(result), isTrue);
     expect(requestedConsent, isFalse);
-    verify(() => payjoinPolicy.setEnabled(true)).called(1);
+    verify(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: true,
+      ),
+    ).called(1);
     verifyNever(() => markDisclaimerShown.execute());
   });
 
@@ -120,14 +141,15 @@ void main() {
       () => getDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     final calls = <String>[];
-    when(() => payjoinPolicy.setEnabled(true)).thenAnswer((_) async {
+    when(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: true,
+      ),
+    ).thenAnswer((_) async {
       calls.add('persist');
       return primitives.Ok(
-        payjoin.PayjoinPolicy(
-          enabled: true,
-          minimumAmount: primitives.Sats.fromInt(10000),
-          sessionLifetime: const Duration(hours: 24),
-        ),
+        payjoin.PayjoinPolicy.defaults().copyWith(receiveEnabled: true),
       );
     });
     when(() => markDisclaimerShown.execute()).thenAnswer((_) async {
@@ -136,6 +158,7 @@ void main() {
     });
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async {
         calls.add('consent');
@@ -153,12 +176,16 @@ void main() {
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async => false,
     );
 
     expect(_valueOf(result), isFalse);
-    verifyNever(() => payjoinPolicy.setEnabled(any()));
+    verifyNever(
+      () =>
+          payjoinPolicy.setActionEnabled(any(), enabled: any(named: 'enabled')),
+    );
     verifyNever(() => markDisclaimerShown.execute());
   });
 
@@ -166,11 +193,17 @@ void main() {
     when(
       () => getDisclaimerShown.execute(),
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
-    when(() => payjoinPolicy.setEnabled(true)).thenAnswer(
+    when(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: true,
+      ),
+    ).thenAnswer(
       (_) async => const primitives.Err(payjoin.PayjoinStorageFailure()),
     );
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async => true,
     );
@@ -185,12 +218,16 @@ void main() {
     );
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async => true,
     );
 
     expect(_failureOf(result), isA<SettingsStorageFailure>());
-    verifyNever(() => payjoinPolicy.setEnabled(any()));
+    verifyNever(
+      () =>
+          payjoinPolicy.setActionEnabled(any(), enabled: any(named: 'enabled')),
+    );
   });
 
   test('keeps Payjoin enabled if recording consent fails', () async {
@@ -202,12 +239,18 @@ void main() {
     );
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async => true,
     );
 
     expect(_valueOf(result), isTrue);
-    verify(() => payjoinPolicy.setEnabled(true)).called(1);
+    verify(
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: true,
+      ),
+    ).called(1);
   });
 
   test('a consent dialog that throws is a consent failure, without the '
@@ -217,6 +260,7 @@ void main() {
     ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       true,
       requestConsent: () async => throw StateError('navigator detached'),
     );
@@ -224,21 +268,57 @@ void main() {
     final failure = _failureOf(result);
     expect(failure, isA<SettingsConsentFailure>());
     expect(failure.logMessage, isNull);
-    verifyNever(() => payjoinPolicy.setEnabled(any()));
+    verifyNever(
+      () =>
+          payjoinPolicy.setActionEnabled(any(), enabled: any(named: 'enabled')),
+    );
+  });
+
+  test('only receiving asks for consent', () async {
+    when(
+      () => getDisclaimerShown.execute(),
+    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    var requestedConsent = false;
+
+    for (final action in [
+      payjoin.PayjoinAction.send,
+      payjoin.PayjoinAction.buy,
+      payjoin.PayjoinAction.sell,
+    ]) {
+      final result = await usecase.execute(
+        action,
+        true,
+        requestConsent: () async {
+          requestedConsent = true;
+          return true;
+        },
+      );
+
+      expect(_valueOf(result), isTrue);
+      verify(
+        () => payjoinPolicy.setActionEnabled(action, enabled: true),
+      ).called(1);
+    }
+    expect(requestedConsent, isFalse);
+    verifyNever(() => markDisclaimerShown.execute());
   });
 
   test('a policy that throws is the catch-all, with the type only', () async {
     when(
-      () => payjoinPolicy.setEnabled(false),
+      () => payjoinPolicy.setActionEnabled(
+        payjoin.PayjoinAction.receive,
+        enabled: false,
+      ),
     ).thenThrow(Exception('sqlite: disk I/O error at /data/user/0'));
 
     final result = await usecase.execute(
+      payjoin.PayjoinAction.receive,
       false,
       requestConsent: () async => true,
     );
 
     final failure = _failureOf(result);
     expect(failure, isA<SettingsUnexpectedFailure>());
-    expect(failure.logMessage, 'setEnabled threw: _Exception');
+    expect(failure.logMessage, 'setActionEnabled threw: _Exception');
   });
 }

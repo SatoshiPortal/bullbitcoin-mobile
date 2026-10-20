@@ -315,6 +315,84 @@ void main() {
 
   tearDown(() => bloc.close());
 
+  group('Pay preparation lifecycle', () {
+    test(
+      'opens preparation before the dependency finishes and ignores duplicate selection',
+      () async {
+        bloc.seed(
+          PayWalletSelectionState(
+            selectedRecipient: recipient,
+            userSummary: userSummary,
+            amount: const FiatAmount(50),
+          ),
+        );
+        final response = Completer<Result<PayPayinFeeEstimate, PayFailure>>();
+        when(
+          () => estimatePayPayinFees.execute(
+            wallet: wallet,
+            fiatAmount: 50,
+            currencyCode: 'CAD',
+          ),
+        ).thenAnswer((_) => response.future);
+        final opened = bloc.stream.firstWhere(
+          (s) => s is PayPreparingPaymentState,
+        );
+        bloc.add(PayEvent.walletSelected(wallet: wallet));
+        final preparing = await opened as PayPreparingPaymentState;
+        expect(preparing.selectedWallet, same(wallet));
+        bloc.add(PayEvent.walletSelected(wallet: wallet));
+        await Future<void>.delayed(Duration.zero);
+        verify(
+          () => estimatePayPayinFees.execute(
+            wallet: wallet,
+            fiatAmount: 50,
+            currencyCode: 'CAD',
+          ),
+        ).called(1);
+        final failed = bloc.stream.firstWhere(
+          (s) => s is PayPreparingPaymentState && s.error != null,
+        );
+        response.complete(const Err(PayUnexpectedFailure('dependency failed')));
+        expect((await failed as PayPreparingPaymentState).error, isNotNull);
+      },
+    );
+
+    test(
+      'back discards a late failure without reopening confirmation',
+      () async {
+        bloc.seed(
+          PayWalletSelectionState(
+            selectedRecipient: recipient,
+            userSummary: userSummary,
+            amount: const FiatAmount(50),
+          ),
+        );
+        final response = Completer<Result<PayPayinFeeEstimate, PayFailure>>();
+        when(
+          () => estimatePayPayinFees.execute(
+            wallet: wallet,
+            fiatAmount: 50,
+            currencyCode: 'CAD',
+          ),
+        ).thenAnswer((_) => response.future);
+        final opened = bloc.stream.firstWhere(
+          (s) => s is PayPreparingPaymentState,
+        );
+        bloc.add(PayEvent.walletSelected(wallet: wallet));
+        await opened;
+        final returned = bloc.stream.firstWhere(
+          (s) => s is PayWalletSelectionState,
+        );
+        bloc.add(const PayEvent.paymentPreparationAbandoned());
+        await returned;
+        response.complete(const Err(PayUnexpectedFailure('late failure')));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state, isA<PayWalletSelectionState>());
+        expect((bloc.state as PayWalletSelectionState).error, isNull);
+      },
+    );
+  });
+
   group('PayBloc — broadcast latch', () {
     test(
       'does not report success while a Payjoin is only requested',
@@ -649,6 +727,14 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+    });
+
+    test('Payjoin can be enabled below 50000 sats', () async {
+      when(() => payOrder.payinAmount).thenReturn(0.0001);
+      bloc.seed(paymentState().copyWith(isPayjoinEnabled: false));
+      bloc.add(const PayEvent.payjoinToggled(true));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect((bloc.state as PayPaymentState).isPayjoinEnabled, isTrue);
     });
 
     test('Payjoin toggle is ignored while confirmation is in flight', () async {
@@ -1123,10 +1209,10 @@ void main() {
         final last = bloc.state;
         expect(
           last,
-          isA<PayWalletSelectionState>(),
-          reason: 'the handler must recover to the wallet-selection state',
+          isA<PayPreparingPaymentState>(),
+          reason: 'the destination must show the preparation failure',
         );
-        final selection = last as PayWalletSelectionState;
+        final selection = last as PayPreparingPaymentState;
         expect(
           selection.error,
           isNotNull,
@@ -1135,7 +1221,7 @@ void main() {
               'handler: no error state, and the order-creation spinner '
               'stays latched with no retry path',
         );
-        expect(selection.isCreatingPayOrder, isFalse);
+        expect(selection.error, isA<PayUnexpectedFailure>());
       },
     );
   });

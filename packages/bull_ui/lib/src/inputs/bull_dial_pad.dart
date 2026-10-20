@@ -2,8 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// Numeric dial pad for PIN / amount entry — duplicated from
-/// `core/widgets/dialpad/dial_pad.dart`.
+/// Numeric dial pad for PIN / amount entry.
 ///
 /// Renders 0–9, a decimal point (hidden when [onlyDigits]) and a backspace.
 /// [onNumberPressed] receives the tapped glyph; [onBackspacePressed] handles
@@ -15,6 +14,7 @@ class BullDialPad extends StatelessWidget {
     required this.onBackspacePressed,
     this.disableFeedback = false,
     this.onlyDigits = false,
+    this.enabled = true,
   });
 
   /// Called with the tapped digit or decimal point (`'0'`–`'9'`, `'.'`).
@@ -29,13 +29,18 @@ class BullDialPad extends StatelessWidget {
   /// Hides the decimal-point key, leaving an empty slot.
   final bool onlyDigits;
 
+  /// When false, taps are ignored and the keys are dimmed. Callers use this to
+  /// lock the pad — for example during a failed-attempt timeout or while a PIN
+  /// is being verified.
+  final bool enabled;
+
   Widget _numPadButton(BuildContext context, String num) {
     final colors = context.bull;
     return Expanded(
       child: InkWell(
-        onTap: () => onNumberPressed(num),
+        onTap: enabled ? () => onNumberPressed(num) : null,
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        highlightColor: disableFeedback ? colors.transparent : null,
         child: SizedBox(
           height: 64,
           child: Center(
@@ -45,7 +50,7 @@ class BullDialPad extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
               ),
-              color: colors.onSurface,
+              color: enabled ? colors.onSurface : colors.textMuted,
             ),
           ),
         ),
@@ -57,13 +62,16 @@ class BullDialPad extends StatelessWidget {
     final colors = context.bull;
     return Expanded(
       child: InkWell(
-        onTap: onBackspacePressed,
+        onTap: enabled ? onBackspacePressed : null,
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        highlightColor: disableFeedback ? colors.transparent : null,
         child: SizedBox(
           height: 64,
           child: Center(
-            child: Icon(Icons.backspace_outlined, color: colors.onSurface),
+            child: Icon(
+              Icons.backspace_outlined,
+              color: enabled ? colors.onSurface : colors.textMuted,
+            ),
           ),
         ),
       ),

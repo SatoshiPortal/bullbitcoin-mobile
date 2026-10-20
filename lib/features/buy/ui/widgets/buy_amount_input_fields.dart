@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
 import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
@@ -78,7 +77,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
               crossAxisAlignment: .start,
               children: [
                 if (currency == null)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                   )
                 else
@@ -129,7 +128,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                   ),
                 const Gap(16),
                 if (currency == null)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                   )
                 else

@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.14.0+224
+version: 6.15.0+225
 
 
 environment:
@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.3.0
   qr_flutter: ^4.1.0
   decimal: ^3.2.4
+  clock: ^1.1.2
   dio: ^5.9.0
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7

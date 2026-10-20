@@ -1,29 +1,28 @@
+import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullBottomSheet,
+        BullButton,
+        BullCountdown,
+        BullSwitch,
+        Gap;
 
 class SellSendPaymentScreen extends StatelessWidget {
   const SellSendPaymentScreen({super.key});
@@ -36,9 +35,11 @@ class SellSendPaymentScreen extends StatelessWidget {
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).selectedWallet
-          : null,
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final selectedWallet) => selectedWallet,
+        SellPreparingPaymentState(:final selectedWallet) => selectedWallet,
+        _ => null,
+      },
     );
     final bitcoinUnit = context.select((SellBloc bloc) {
       final state = bloc.state;
@@ -56,163 +57,213 @@ class SellSendPaymentScreen extends StatelessWidget {
           : false,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          Assets.logos.bbLogoSmall.path,
-          height: 32,
-          width: 32,
+    final preparationFailure = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPreparingPaymentState(:final error) => error,
+        _ => null,
+      },
+    );
+    final isPayinBroadcast = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState &&
+          (bloc.state as SellPaymentState).isPayinBroadcast,
+    );
+    return PopScope<Object?>(
+      canPop: !isConfirmingPayment && !isPayinBroadcast,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<SellBloc>().add(
+            const SellEvent.paymentPreparationAbandoned(),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Image.asset(
+            Assets.logos.bbLogoSmall.path,
+            height: 32,
+            width: 32,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: ScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          children: [
-            FadingLinearProgress(
-              height: 3,
-              trigger: isConfirmingPayment,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
-            const Gap(24.0),
-            Text(
-              context.loc.sellConfirmPayment,
-              style: context.font.headlineMedium?.copyWith(
-                color: context.appColors.secondary,
-              ),
-            ),
-            const Gap(4.0),
-            Row(
-              mainAxisAlignment: .center,
-              children: [
-                Text(
-                  context.loc.sellPriceWillRefreshIn,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.outline,
+        body: preparationFailure != null && order == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    preparationFailure.toTranslated(context),
+                    textAlign: TextAlign.center,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.error,
+                    ),
                   ),
                 ),
-                if (order?.confirmationDeadline case final deadline?)
-                  Countdown(
-                    until: deadline,
-                    onTimeout: () {
-                      context.read<SellBloc>().add(
-                        const SellEvent.orderRefreshTimePassed(),
-                      );
-                    },
-                  ),
-              ],
-            ),
-
-            const Gap(8.0),
-            _DetailRow(
-              title: context.loc.sellOrderNumber,
-              value: order?.orderNumber.toString(),
-              copyValue: order?.orderNumber.toString(),
-            ),
-            // The payin goes to this address: showing it is the user's only
-            // way to notice if it ever changed under them.
-            _DetailRow(
-              title: context.loc.sellDepositAddress,
-              value: order?.toAddress,
-              copyValue: order?.toAddress,
-            ),
-            _DetailRow(
-              title: context.loc.sellPayoutRecipient,
-              value: switch (order?.payoutMethod) {
-                OrderPaymentMethod.cadBalance => context.loc.sellCadBalance,
-                OrderPaymentMethod.crcBalance => context.loc.sellCrcBalance,
-                OrderPaymentMethod.eurBalance => context.loc.sellEurBalance,
-                OrderPaymentMethod.usdBalance => context.loc.sellUsdBalance,
-                OrderPaymentMethod.mxnBalance => context.loc.sellMxnBalance,
-                OrderPaymentMethod.arsBalance => context.loc.sellArsBalance,
-                OrderPaymentMethod.copBalance => context.loc.sellCopBalance,
-                _ => order?.payoutMethod.name,
-              },
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: context.loc.sellPayinAmount,
-              value: order == null
-                  ? null
-                  : bitcoinUnit == BitcoinUnit.btc
-                  ? FormatAmount.btc(order.payinAmount)
-                  : FormatAmount.sats(
-                      ConvertAmount.btcToSats(order.payinAmount),
-                    ),
-            ),
-            _DetailRow(
-              title: context.loc.sellPayoutAmount,
-              value: order == null
-                  ? null
-                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
-            ),
-            _DetailRow(
-              title: context.loc.sellExchangeRate,
-              value: order == null
-                  ? null
-                  : FormatAmount.fiat(
-                      order.exchangeRateAmount ??
-                          order.payoutAmount / order.payinAmount,
-                      order.exchangeRateCurrency ?? order.payoutCurrency,
-                    ),
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: context.loc.sellPayFromWallet,
-              value:
-                  wallet?.label ??
-                  (wallet?.isDefault == true
-                      ? wallet?.isLiquid == true
-                            ? context.loc.sellInstantPayments
-                            : context.loc.sellSecureBitcoinWallet
-                      : ''),
-            ),
-            // Liquid payins pay the network minimum, so there is nothing to pick.
-            if (wallet != null && !wallet.isLiquid) const _FeePriorityRow(),
-            _DetailRow(
-              title: context.loc.sellSendPaymentNetworkFees,
-              value: context.select((SellBloc bloc) {
-                final state = bloc.state;
-                if (state is SellPaymentState && state.absoluteFees != null) {
-                  return bitcoinUnit == BitcoinUnit.btc
-                      ? FormatAmount.btc(
-                          ConvertAmount.satsToBtc(state.absoluteFees!),
-                        )
-                      : FormatAmount.sats(state.absoluteFees!);
-                }
-                return context.loc.sellCalculating;
-              }),
-            ),
-            if (wallet != null &&
-                !wallet.isLiquid &&
-                order?.payjoinBip21 != null)
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.loc.payjoinUseToggle,
-                      style: context.font.bodyMedium,
-                    ),
-                  ),
-                  BBSwitch(
-                    value: isPayjoinEnabled,
-                    onChanged: isConfirmingPayment
-                        ? null
-                        : (enabled) => context.read<SellBloc>().add(
-                            SellEvent.payjoinToggled(enabled),
+              )
+            : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      const Gap(24.0),
+                      Text(
+                        context.loc.sellConfirmPayment,
+                        style: context.font.headlineMedium?.copyWith(
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Text(
+                            context.loc.sellPriceWillRefreshIn,
+                            style: context.font.bodyMedium?.copyWith(
+                              color: context.appColors.outline,
+                            ),
                           ),
+                          if (order?.confirmationDeadline case final deadline?)
+                            BullCountdown(
+                              until: deadline,
+                              onTimeout: () {
+                                context.read<SellBloc>().add(
+                                  const SellEvent.orderRefreshTimePassed(),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+
+                      const Gap(8.0),
+                      PaymentDetailRow(
+                        title: context.loc.sellOrderNumber,
+                        value: order?.orderNumber.toString(),
+                        copyValue: order?.orderNumber.toString(),
+                      ),
+                      // The payin goes to this address: showing it is the user's only
+                      // way to notice if it ever changed under them.
+                      PaymentDetailRow(
+                        title: context.loc.sellDepositAddress,
+                        isAddress: true,
+                        value: order?.toAddress,
+                        copyValue: order?.toAddress,
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.sellPayoutRecipient,
+                        value: switch (order?.payoutMethod) {
+                          OrderPaymentMethod.cadBalance =>
+                            context.loc.sellCadBalance,
+                          OrderPaymentMethod.crcBalance =>
+                            context.loc.sellCrcBalance,
+                          OrderPaymentMethod.eurBalance =>
+                            context.loc.sellEurBalance,
+                          OrderPaymentMethod.usdBalance =>
+                            context.loc.sellUsdBalance,
+                          OrderPaymentMethod.mxnBalance =>
+                            context.loc.sellMxnBalance,
+                          OrderPaymentMethod.arsBalance =>
+                            context.loc.sellArsBalance,
+                          OrderPaymentMethod.copBalance =>
+                            context.loc.sellCopBalance,
+                          _ => order?.payoutMethod.name,
+                        },
+                      ),
+                      const _Divider(),
+                      PaymentDetailRow(
+                        title: context.loc.sellPayinAmount,
+                        value: order == null
+                            ? null
+                            : bitcoinUnit == BitcoinUnit.btc
+                            ? FormatAmount.btc(order.payinAmount)
+                            : FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payinAmount),
+                              ),
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.sellPayoutAmount,
+                        value: order == null
+                            ? null
+                            : FormatAmount.fiat(
+                                order.payoutAmount,
+                                order.payoutCurrency,
+                              ),
+                      ),
+                      PaymentDetailRow(
+                        title: context.loc.sellExchangeRate,
+                        value: order == null
+                            ? null
+                            : FormatAmount.fiat(
+                                order.exchangeRateAmount ??
+                                    order.payoutAmount / order.payinAmount,
+                                order.exchangeRateCurrency ??
+                                    order.payoutCurrency,
+                              ),
+                      ),
+                      const _Divider(),
+                      PaymentDetailRow(
+                        title: context.loc.sellPayFromWallet,
+                        value:
+                            wallet?.label ??
+                            (wallet?.isDefault == true
+                                ? wallet?.isLiquid == true
+                                      ? context.loc.sellInstantPayments
+                                      : context.loc.sellSecureBitcoinWallet
+                                : ''),
+                      ),
+                      // Liquid payins pay the network minimum, so there is nothing to pick.
+                      if (wallet != null && !wallet.isLiquid)
+                        const _FeePriorityRow(),
+                      PaymentDetailRow(
+                        title: context.loc.sellSendPaymentNetworkFees,
+                        value: context.select((SellBloc bloc) {
+                          final state = bloc.state;
+                          if (state case SellPaymentState(
+                            absoluteFees: final fees?,
+                          )) {
+                            return bitcoinUnit == BitcoinUnit.btc
+                                ? FormatAmount.btc(
+                                    ConvertAmount.satsToBtc(fees),
+                                  )
+                                : FormatAmount.sats(fees);
+                          }
+                          return null;
+                        }),
+                      ),
+                      if (wallet != null &&
+                          !wallet.isLiquid &&
+                          order?.payjoinBip21 != null)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                context.loc.payjoinUseToggle,
+                                style: context.font.bodyMedium,
+                              ),
+                            ),
+                            BullSwitch(
+                              value: isPayjoinEnabled,
+                              onChanged: isConfirmingPayment
+                                  ? null
+                                  : (enabled) => context.read<SellBloc>().add(
+                                      SellEvent.payjoinToggled(enabled),
+                                    ),
+                            ),
+                          ],
+                        ),
+                      const Gap(24),
+                    ],
                   ),
-                ],
+                ),
               ),
-            const Spacer(),
-            _BottomButtons(
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+            child: _BottomButtons(
               onContinuePressed: () {
                 context.read<SellBloc>().add(
                   const SellEvent.sendPaymentConfirmed(),
                 );
               },
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -238,7 +289,7 @@ class _FeePriorityRow extends StatelessWidget {
       return (state.selectedFeeOption, state.customFee, state.canEditFees);
     });
 
-    return _DetailRow(
+    return PaymentDetailRow(
       title: context.loc.sellFeePriority,
       value: feeSelectionRowLabel(
         context,
@@ -249,7 +300,7 @@ class _FeePriorityRow extends StatelessWidget {
       onTap: canEditFees
           ? () async {
               final bloc = context.read<SellBloc>();
-              final selected = await BlurredBottomSheet.show<String>(
+              final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
                   viewState: bloc,
@@ -282,102 +333,6 @@ class _FeePriorityRow extends StatelessWidget {
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  final String title;
-  final String? value;
-  final void Function()? onTap;
-  final String? copyValue;
-
-  const _DetailRow({
-    required this.title,
-    required this.value,
-    this.onTap,
-    this.copyValue,
-  }) : super();
-
-  @override
-  Widget build(BuildContext context) {
-    final valueColor = onTap == null
-        ? context.appColors.outlineVariant
-        : context.appColors.primary;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: value == null
-          ? const LoadingLineContent()
-          : Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                ),
-                Expanded(
-                  child: onTap == null
-                      ? Row(
-                          mainAxisAlignment: .end,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                value!,
-                                textAlign: .end,
-                                maxLines: 2,
-                                style: context.font.bodyMedium?.copyWith(
-                                  color: context.appColors.secondary,
-                                ),
-                              ),
-                            ),
-                            if (copyValue != null) ...[
-                              const Gap(8),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: copyValue!),
-                                  );
-                                  SnackBarUtils.showCopiedSnackBar(context);
-                                },
-                                child: Icon(
-                                  Icons.copy,
-                                  color: context.appColors.primary,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                          ],
-                        )
-                      : GestureDetector(
-                          onTap: onTap,
-                          behavior: .opaque,
-                          child: Row(
-                            mainAxisAlignment: .end,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  value!,
-                                  textAlign: .end,
-                                  maxLines: 2,
-                                  style: context.font.bodyMedium?.copyWith(
-                                    color: valueColor,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: valueColor,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                ),
-              ],
-            ),
-    );
-  }
-}
-
 class _Divider extends StatelessWidget {
   const _Divider();
 
@@ -405,22 +360,30 @@ class _BottomButtons extends StatelessWidget {
           (bloc.state as SellPaymentState).isPayinBroadcast,
     );
     final wallet = context.select(
-      (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).selectedWallet
-          : null,
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final selectedWallet) => selectedWallet,
+        SellPreparingPaymentState(:final selectedWallet) => selectedWallet,
+        _ => null,
+      },
+    );
+    final isReady = context.select(
+      (SellBloc bloc) => bloc.state is SellPaymentState,
     );
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const _SellError(),
-        const _PaymentInFlightStatus(),
-        if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
+        if (wallet != null &&
+            !wallet.isLiquid &&
+            !isConfirmingPayment &&
+            !isPayinBroadcast) ...[
+          BullButton.big(
             label: context.loc.sellAdvancedSettings,
             // Changing coin selection or RBF mid-confirmation would rebuild the
             // transaction under the payment being sent.
-            disabled: isConfirmingPayment || isPayinBroadcast,
+            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
             onPressed: () {
-              BlurredBottomSheet.show(
+              BullBottomSheet.show(
                 context: context,
                 child: BlocProvider.value(
                   value: context.read<SellBloc>(),
@@ -435,64 +398,23 @@ class _BottomButtons extends StatelessWidget {
           ),
           const Gap(16),
         ],
-        BBButton.big(
-          label: context.loc.sellSendPaymentContinue,
-          disabled: isConfirmingPayment || isPayinBroadcast,
-          onPressed: onContinuePressed,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
-        ),
+        if (isConfirmingPayment || isPayinBroadcast)
+          BullAsyncStatus.progress(
+            label: isPayinBroadcast
+                ? context.loc.exchangePaymentSentRefreshingOrder
+                : context.loc.exchangeSendingPayment,
+            color: context.appColors.secondary,
+            textStyle: context.font.bodyMedium,
+          )
+        else
+          BullButton.big(
+            label: context.loc.sellSendPaymentContinue,
+            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
+            onPressed: onContinuePressed,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          ),
       ],
-    );
-  }
-}
-
-/// Spinner and status text right above the confirm button, so the in-flight
-/// payment is visible where the user is looking (#2522).
-class _PaymentInFlightStatus extends StatelessWidget {
-  const _PaymentInFlightStatus();
-
-  @override
-  Widget build(BuildContext context) {
-    final (isConfirmingPayment, isPayinBroadcast) = context.select((
-      SellBloc bloc,
-    ) {
-      final state = bloc.state;
-      if (state is! SellPaymentState) return (false, false);
-      return (state.isConfirmingPayment, state.isPayinBroadcast);
-    });
-
-    if (!isConfirmingPayment && !isPayinBroadcast) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Row(
-        mainAxisAlignment: .center,
-        children: [
-          SizedBox(
-            height: 16,
-            width: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: context.appColors.primary,
-            ),
-          ),
-          const Gap(8),
-          Flexible(
-            child: Text(
-              isPayinBroadcast
-                  ? context.loc.sellPaymentSentRefreshingOrder
-                  : context.loc.sellSendingPayment,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.outline,
-              ),
-              textAlign: .center,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

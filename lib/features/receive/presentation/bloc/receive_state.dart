@@ -34,6 +34,10 @@ abstract class ReceiveState with _$ReceiveState {
     // itself happens in PayjoinRepositoryImpl before any negotiation.
     int? payjoinMinAmountSat,
     @Default(false) bool isBroadcastingOriginalTransaction,
+    // True for a short while after the proposal went out: the sender
+    // normally broadcasts the payjoin within seconds, so offering the
+    // plain-payment fallback right away only invites a race with it.
+    @Default(false) bool isWaitingForPayjoinSender,
     // Whether it is settled yet whether THIS address will carry a payjoin
     // endpoint. Recorded by ReceiveBloc, which knows it as a fact, rather than
     // re-derived by [isPayjoinLoading] from the reasons a session might never
@@ -283,6 +287,13 @@ abstract class ReceiveState with _$ReceiveState {
     return !(receiver.status == PayjoinStatus.expired &&
         !receiver.hasOriginalTransaction);
   }
+
+  /// Whether to offer receiving the payment without payjoin. Hidden while the
+  /// sender is expected to broadcast the payjoin, then offered again in case
+  /// the sender never does.
+  bool get canOfferPayjoinFallback =>
+      !isWaitingForPayjoinSender &&
+      (payjoin?.canManuallyBroadcastOriginalAt(clock.now()) ?? false);
 
   /// True when the payjoin session resolved via the plain-broadcast fallback
   /// specifically because the sender's amount fell below the configured

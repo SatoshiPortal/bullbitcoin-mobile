@@ -3,10 +3,8 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
@@ -16,7 +14,8 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCountdown, BullFadingLinearProgress, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReceivePayjoinInProgressScreen extends StatelessWidget {
@@ -74,7 +73,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(3.0),
-              child: FadingLinearProgress(
+              child: BullFadingLinearProgress(
                 trigger: isBroadcasting,
                 backgroundColor: context.appColors.onPrimary,
                 foregroundColor: context.appColors.primary,
@@ -142,17 +141,15 @@ class PayjoinInProgressPage extends StatelessWidget {
     );
     // The single source of truth ReceiveBloc's own action guard
     // (_onPayjoinOriginalTxBroadcasted) agrees with — see
-    // Payjoin.canManuallyBroadcastOriginal's doc comment. Deriving the
-    // button's visibility from the exact same getter as the action means
-    // they can never disagree.
+    // ReceiveState.canOfferPayjoinFallback. Deriving the button's visibility
+    // from the exact same getter as the action means they can never disagree.
     final canManuallyBroadcastOriginal = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
+      (ReceiveBloc bloc) => bloc.state.canOfferPayjoinFallback,
     );
     final payjoinExpiresAt = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.expiresAt,
     );
-    // The default session expiry is 24h; the Countdown widget renders
+    // The default session expiry is 24h; the BullCountdown widget renders
     // minutes:seconds (a day would show a meaningless "1440:00"), so only
     // reveal it when the fallback is genuinely imminent (≤ 1h remaining).
     // Computed once per build — acceptable for a display-only hint, the
@@ -253,7 +250,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                   // Gated on the same canManuallyBroadcastOriginal as the
                   // fallback button below — a single source of truth so the
                   // countdown never outlives the action it is counting down
-                  // to (see Payjoin.canManuallyBroadcastOriginal).
+                  // to (see ReceiveState.canOfferPayjoinFallback).
                   if (canManuallyBroadcastOriginal &&
                       payjoinExpiresAt != null &&
                       isFallbackImminent) ...[
@@ -267,7 +264,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                           color: context.appColors.secondary,
                         ),
                         const Gap(4),
-                        Countdown(
+                        BullCountdown(
                           until: payjoinExpiresAt.add(
                             const Duration(
                               seconds:
@@ -330,10 +327,11 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
     final broadcastFailure = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.failure is ReceiveBroadcastOriginalTxFailure
-          ? bloc.state.failure
-          : null,
+      (ReceiveBloc bloc) => switch (bloc.state.failure) {
+        final ReceiveBroadcastOriginalTxFailure failure => failure,
+        final ReceiveBroadcastOriginalTxVerificationFailure failure => failure,
+        _ => null,
+      },
     );
     return Padding(
       padding: const EdgeInsets.all(16.0),

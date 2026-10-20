@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -22,13 +21,13 @@ import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullShimmerLine, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -124,7 +123,7 @@ class ReceiveQRDetails extends StatelessWidget {
               isBitcoin &&
               selectedWallet != null &&
               selectedWallet.isBitcoin)
-            BorderedTappableTile(
+            BullBorderedTile(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: DropdownButtonFormField<Wallet>(
                 alignment: Alignment.centerLeft,
@@ -178,7 +177,7 @@ class ReceiveQRDetails extends StatelessWidget {
             ),
             Gap(gap),
           ],
-          BorderedTappableTile(
+          BullBorderedTile(
             backgroundColor: context.appColors.surfaceContainerHighest,
             onTap: () => isLightning
                 ? InvoiceViewer.showDetail(
@@ -277,7 +276,7 @@ class ReceiveInfoDetails extends StatelessWidget {
         children: [
           // Amount + note unified behind one element (product decision
           // 2026-07-26): the sheet edits both, this tile just summarises.
-          BorderedTappableTile(
+          BullBorderedTile(
             // This tile renders for both the bitcoin and the liquid QR page;
             // the two amount routes share the 'amount' path but live under
             // different parents, so push the one matching the current flow.
@@ -419,7 +418,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (swap?.receieveAmount == null)
-                  const LoadingLineContent(
+                  const BullShimmerLine(
                     width: 90,
                     height: 14,
                     padding: EdgeInsets.zero,
@@ -496,7 +495,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           ),
           const Spacer(),
           if (identifier == null)
-            const LoadingLineContent(
+            const BullShimmerLine(
               width: 120,
               height: 14,
               padding: EdgeInsets.zero,
@@ -578,7 +577,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
                   color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
-                const LoadingLineContent(
+                const BullShimmerLine(
                   width: 90,
                   height: 14,
                   padding: EdgeInsets.zero,

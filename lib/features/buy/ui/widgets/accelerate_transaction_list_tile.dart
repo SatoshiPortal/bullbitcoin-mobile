@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/buy/ui/widgets/buy_cubes_loader.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -27,42 +28,28 @@ class AccelerateTransactionListTile extends StatelessWidget {
           ),
         ],
       ),
-      child: ListTile(
-        leading: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 36,
-              height: 36,
-              child: CircularProgressIndicator(
-                value: 0.75, // portion of the circle to fill
-                strokeWidth: 4,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  context.appColors.warning,
-                ),
-                backgroundColor: context.appColors.shimmerBase,
-              ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+          leading: const BuyCubesLoader(),
+          title: Text(
+            context.loc.buyAccelerateTransaction,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              color: context.appColors.secondary,
             ),
-            Icon(Icons.schedule, size: 16, color: context.appColors.secondary),
-          ],
-        ),
-        title: Text(
-          context.loc.buyAccelerateTransaction,
-          style: theme.textTheme.headlineLarge?.copyWith(
+          ),
+          subtitle: Text(
+            context.loc.buyGetConfirmedFaster,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: context.appColors.secondary,
+            ),
+          ),
+          trailing: Icon(
+            Icons.fast_forward_outlined,
             color: context.appColors.secondary,
           ),
+          onTap: onTap,
         ),
-        subtitle: Text(
-          context.loc.buyGetConfirmedFaster,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: context.appColors.secondary,
-          ),
-        ),
-        trailing: Icon(
-          Icons.fast_forward_outlined,
-          color: context.appColors.secondary,
-        ),
-        onTap: onTap,
       ),
     );
   }

@@ -13,6 +13,8 @@ sealed class SellEvent with _$SellEvent {
   const factory SellEvent.externalWalletNetworkSelected({
     required OrderBitcoinNetwork network,
   }) = SellExternalWalletNetworkSelected;
+  const factory SellEvent.paymentPreparationAbandoned() =
+      SellPaymentPreparationAbandoned;
   const factory SellEvent.orderRefreshTimePassed() = SellOrderRefreshTimePassed;
   // The fee to pay comes from the committed selection on SellPaymentState, not
   // from the event: the modal writes it there and the summary row reads it

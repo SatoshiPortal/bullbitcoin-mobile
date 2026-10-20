@@ -86,6 +86,12 @@ final class ReceivePayjoinPolicyUnavailableFailure extends ReceiveFailure {
   const ReceivePayjoinPolicyUnavailableFailure([super.logMessage]);
 }
 
+/// Checking for a competing transaction failed before any broadcast.
+final class ReceiveBroadcastOriginalTxVerificationFailure
+    extends ReceiveFailure {
+  const ReceiveBroadcastOriginalTxVerificationFailure([super.logMessage]);
+}
+
 /// Broadcasting the sender's original (non-payjoin) transaction failed.
 final class ReceiveBroadcastOriginalTxFailure extends ReceiveFailure {
   const ReceiveBroadcastOriginalTxFailure([super.logMessage]);

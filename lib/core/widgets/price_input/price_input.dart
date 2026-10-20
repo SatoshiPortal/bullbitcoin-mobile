@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountInputFormatter, BullBottomSheet, Gap;
 
 class PriceInput extends StatelessWidget {
   const PriceInput({
@@ -71,7 +70,9 @@ class PriceInput extends StatelessWidget {
                                   : const TextInputType.numberWithOptions(
                                       decimal: true,
                                     ),
-                              inputFormatters: [AmountInputFormatter(currency)],
+                              inputFormatters: [
+                                BullAmountInputFormatter(currency),
+                              ],
                               showCursor: !readOnly,
                               readOnly: readOnly,
                               cursorColor: context.appColors.outline,
@@ -138,7 +139,7 @@ class PriceInput extends StatelessWidget {
   }
 
   Future<String?> _openPopup(BuildContext context, String selected) async {
-    final c = await BlurredBottomSheet.show<String?>(
+    final c = await BullBottomSheet.show<String?>(
       context: context,
       child: CurrencyBottomSheet(
         availableCurrencies: availableCurrencies,

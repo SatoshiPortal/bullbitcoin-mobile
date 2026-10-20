@@ -2,15 +2,18 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButton,
+        BullInfoCard,
+        BullInputText,
+        BullLabeledTextInput,
+        BullText,
+        Gap;
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {
@@ -50,15 +53,15 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(networkLabel, style: context.font.bodyMedium),
+        BullText(networkLabel, style: context.font.bodyMedium),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
           value: entity.descriptor.combined,
           onChanged: null,
         ),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyType,
           value: entity.descriptor.derivation.label,
           onChanged: null,
@@ -69,7 +72,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             children: [
               SizedBox(
                 width: 120,
-                child: BBText(
+                child: BullText(
                   context.loc.importWatchOnlySigningDevice,
                   style: context.font.titleMedium,
                 ),
@@ -91,7 +94,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                       .map(
                         (value) => DropdownMenuItem<SignerDeviceEntity?>(
                           value: value,
-                          child: BBText(
+                          child: BullText(
                             value?.displayName ??
                                 context.loc.importWatchOnlyUnknown,
                             style: context.font.headlineSmall,
@@ -105,13 +108,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             ],
           ),
         if (entity.signerDevice != null)
-          LabeledTextInput(
+          BullLabeledTextInput(
             label: context.loc.importWatchOnlySigningDevice,
             value: entity.signerDevice!.displayName,
             onChanged: null,
           ),
         const Gap(24),
-        LabeledTextInput(
+        BullLabeledTextInput(
           label: context.loc.importWatchOnlyLabel,
           hint: context.loc.importWatchOnlyRequired,
           value: entity.label,
@@ -119,7 +122,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           maxLines: 1,
         ),
         const Gap(24),
-        BBButton.big(
+        BullButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
           bgColor: context.appColors.onSurface,
@@ -147,38 +150,38 @@ class _XpubDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           context.loc.importWatchOnlyExtendedPublicKey,
           style: context.font.titleMedium,
         ),
         const Gap(8),
-        BBText(entity.pubkey, style: context.font.bodyMedium),
+        BullText(entity.pubkey, style: context.font.bodyMedium),
         const Gap(24),
         if (!isXpub) ...[
-          BBText(
+          BullText(
             context.loc.importWatchOnlyXpubLabel,
             style: context.font.titleMedium,
           ),
           const Gap(8),
-          BBText(
+          BullText(
             entity.watchOnlyXpub.extendedPubkey.xpub,
             style: context.font.bodyMedium,
           ),
           const Gap(24),
         ],
-        BBText(
+        BullText(
           context.loc.importWatchOnlyType,
           style: context.font.titleMedium,
         ),
         const Gap(8),
         if (!isXpub) ...[
-          BBText(
+          BullText(
             entity.extendedPubkey.derivation.label,
             style: context.font.bodyMedium,
           ),
           const Gap(24),
         ] else ...[
-          InfoCard(
+          BullInfoCard(
             title: context.loc.importWatchOnlyDisclaimerTitle,
             description: context.loc.importWatchOnlyDisclaimerDescription,
             bgColor: context.appColors.warning.withValues(alpha: 0.1),
@@ -201,7 +204,7 @@ class _XpubDetailsWidget extends StatelessWidget {
                   .map(
                     (value) => DropdownMenuItem<satoshifier.Derivation>(
                       value: value,
-                      child: BBText(
+                      child: BullText(
                         'BIP${value.purpose} - ${value.label}',
                         style: context.font.headlineSmall,
                       ),
@@ -213,7 +216,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           const Gap(24),
         ],
-        BBText(
+        BullText(
           context.loc.importWatchOnlyLabel,
           style: context.font.titleMedium,
         ),
@@ -224,7 +227,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           maxLines: 1,
         ),
         const Gap(24),
-        BBButton.big(
+        BullButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
           bgColor: context.appColors.primary,

@@ -1,5 +1,6 @@
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
+import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:drift/native.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
@@ -15,7 +16,10 @@ void main() {
           .insert(
             const PayjoinPolicyRow(
               id: 1,
-              enabled: true,
+              receiveEnabled: true,
+              sendEnabled: true,
+              buyEnabled: true,
+              sellEnabled: true,
               minimumAmountSat: 10000,
               sessionLifetimeSeconds: 86400,
             ),
@@ -27,7 +31,10 @@ void main() {
       final disableSnapshot = await store.load();
       final minimumSnapshot = await store.load();
 
-      await store.setEnabled(disableSnapshot.copyWith(enabled: false).enabled);
+      await store.setActionEnabled(
+        PayjoinAction.receive,
+        enabled: !disableSnapshot.receiveEnabled,
+      );
       await store.setMinimumAmount(
         minimumSnapshot
             .copyWith(minimumAmount: Sats.fromInt(20000))
@@ -36,7 +43,7 @@ void main() {
 
       final persisted = await store.load();
       expect(
-        persisted.enabled,
+        persisted.receiveEnabled,
         isFalse,
         reason: 'changing the minimum must not undo a concurrent disable',
       );

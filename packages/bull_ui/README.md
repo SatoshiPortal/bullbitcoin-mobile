@@ -53,31 +53,27 @@ symbols plus every `Bull*` component and the theme. Internals live under `lib/sr
 Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 `BB*`/core originals are left untouched). Grouped by barrel category:
 
-**Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`
-(`TabMenuVerticalButton`), `BullViewerActionButton` (`ViewerActionButton`).
+**Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`,
+`BullViewerActionButton`.
 
-**Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText` (`BBInputText`),
-`BullPasteInput` (`PasteInput`), `BullDropdown` (`BBDropdown`),
-`BullSelectableList` + `BullSelectableListItem` (`SelectableList`),
-`BullDialPad` (`DialPad`), `BullAmountInputFormatter` (`AmountInputFormatter`),
-`BullLowerCaseTextFormatter` (`LowerCaseTextFormatter`).
+**Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
+`BullLabeledTextInput`, `BullPasteInput`, `BullDropdown`,
+`BullSelectableList` + `BullSelectableListItem`, `BullDialPad`,
+`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
 
-**Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch` (`BBSwitch`).
+**Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.
 
-**Feedback** — `BullRefreshIndicator` (`BBRefreshIndicator`), `BullShimmerBox`/
-`BullShimmerLine`, `BullSnackBar`, `BullCountdown` (`Countdown`),
-`BullFadingLinearProgress` (`FadingLinearProgress`).
+**Feedback** — `BullRefreshIndicator`, `BullShimmerBox`/`BullShimmerLine`,
+`BullSnackBar`, `BullCountdown`, `BullFadingLinearProgress`.
 
 **Layout** — `BullScrollableColumn` (`ScrollableColumn`), `BullStackedPage`
 (`StackedPage`), `BullPullableBody` (`BBPullableBody`).
 
 **Data display** — `BullAddressText`, `BullBadge`, `BullInfoBar`,
-`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`
-(`OptionsTag`), `BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
-`BullBackupOptionCard` (`BackupOptionCard`), `BullBorderedTile`
-(`BorderedTappableTile`), `BullTransactionDirectionBadge`
-(`TransactionDirectionBadge`), `BullSettingsEntryItem` (`SettingsEntryItem`),
-`BullDetailsTable` + `BullDetailsTableItem` (`DetailsTable` / `DetailsTableItem`).
+`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`,
+`BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
+`BullBackupOptionCard`, `BullBorderedTile`, `BullTransactionDirectionBadge`,
+`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`.
 
 **Overlays** — `BullBottomSheet`, `BullDialog`, `BullPickerSheet`
 (`BBPickerSheet`), `BullInstructionsSheet` (`InstructionsBottomSheet`).
@@ -92,7 +88,6 @@ until the dependency is abstracted out of the widget:
 
 | Widget | Blocker |
 | --- | --- |
-| `MultiTapTrigger` | `package:bb_mobile/core/widgets/snackbar_utils.dart` — its public `tapsReachedMessageTextColor` / `tapsReachedMessageBackgroundColor` API can't be honoured by `BullSnackBar.show` (String-only), so migrating would lose API. |
 | `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
 | `BBButton` (`buttons/button.dart`) | already superseded by `BullButton`; not a 1:1 copy. |
 | Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |

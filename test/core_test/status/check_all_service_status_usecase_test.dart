@@ -57,57 +57,58 @@ void main() {
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(BigInt.zero);
   });
-  test('disabled Payjoin is not probed or reported offline', () async {
-    final electrum = _MockElectrumConnectivityPort();
-    when(
-      () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-    ).thenAnswer((_) async => true);
-    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
-    when(
-      () => bitcoinPriceRepository.getCurrencyValue(
-        amountSat: any(named: 'amountSat'),
-        currency: any(named: 'currency'),
-      ),
-    ).thenAnswer((_) async => throw Exception('Pricer probe failed'));
-    final feesRepository = _MockFeesRepository();
-    when(
-      () => feesRepository.getNetworkFees(network: any(named: 'network')),
-    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
-    final payjoinPolicy = _MockPayjoinPolicyAccess();
-    final payjoinDiagnostics = _MockPayjoinDiagnostics();
-    final walletRepository = _MockWalletRepository();
-    // Tor is not required for this wallet, so neither the Tor nor the
-    // RecoverBull probe is reached — the point of the test is Payjoin.
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-    when(
-      payjoinPolicy.load,
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
-    final settingsRepository = _MockSettingsRepository();
-    final tor = _MockTor();
-    final external = _MockExternalTor();
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: false));
-    when(() => tor.external).thenReturn(external);
-    final usecase = CheckAllServiceStatusUsecase(
-      electrumConnectivityPort: electrum,
-      bitcoinPriceRepository: bitcoinPriceRepository,
-      payjoinPolicy: payjoinPolicy,
-      payjoinDiagnostics: payjoinDiagnostics,
-      feesRepository: feesRepository,
-      walletRepository: walletRepository,
-      ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
-      settingsRepository: settingsRepository,
-      tor: tor,
-    );
+  test(
+    'Payjoin with every switch off is not probed or reported offline',
+    () async {
+      final electrum = _MockElectrumConnectivityPort();
+      when(
+        () => electrum.checkServersInUseAreOnlineForNetwork(any()),
+      ).thenAnswer((_) async => true);
+      final bitcoinPriceRepository = _MockBitcoinPriceRepository();
+      when(
+        () => bitcoinPriceRepository.getCurrencyValue(
+          amountSat: any(named: 'amountSat'),
+          currency: any(named: 'currency'),
+        ),
+      ).thenAnswer((_) async => throw Exception('Pricer probe failed'));
+      final feesRepository = _MockFeesRepository();
+      when(
+        () => feesRepository.getNetworkFees(network: any(named: 'network')),
+      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      final payjoinPolicy = _MockPayjoinPolicyAccess();
+      final payjoinDiagnostics = _MockPayjoinDiagnostics();
+      final walletRepository = _MockWalletRepository();
+      // Tor is not required for this wallet, so neither the Tor nor the
+      // RecoverBull probe is reached — the point of the test is Payjoin.
+      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
+      final settingsRepository = _MockSettingsRepository();
+      final tor = _MockTor();
+      final external = _MockExternalTor();
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _settings(useTorProxy: false));
+      when(() => tor.external).thenReturn(external);
+      final usecase = CheckAllServiceStatusUsecase(
+        electrumConnectivityPort: electrum,
+        bitcoinPriceRepository: bitcoinPriceRepository,
+        payjoinPolicy: payjoinPolicy,
+        payjoinDiagnostics: payjoinDiagnostics,
+        feesRepository: feesRepository,
+        walletRepository: walletRepository,
+        ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
+        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        settingsRepository: settingsRepository,
+        tor: tor,
+      );
 
-    final status = await usecase.execute(network: Network.bitcoinMainnet);
+      final status = await usecase.execute(network: Network.bitcoinMainnet);
 
-    expect(status.payjoin.status, ServiceStatus.disabled);
-    expect(status.payjoin.isOffline, isFalse);
-    verifyNever(payjoinDiagnostics.relayHealth);
-  });
+      expect(status.payjoin.status, ServiceStatus.disabled);
+      expect(status.payjoin.isOffline, isFalse);
+      verifyNever(payjoinDiagnostics.relayHealth);
+    },
+  );
 
   test(
     'reports configured external Tor ready without a backup wallet',
@@ -130,9 +131,7 @@ void main() {
         () => feesRepository.getNetworkFees(network: any(named: 'network')),
       ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
@@ -190,9 +189,7 @@ void main() {
         () => feesRepository.getNetworkFees(network: any(named: 'network')),
       ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
@@ -260,9 +257,7 @@ void main() {
         () => settingsRepository.fetch(),
       ).thenAnswer((_) async => _settings(useTorProxy: false));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
@@ -328,9 +323,7 @@ void main() {
     final settingsRepository = _MockSettingsRepository();
     when(settingsRepository.fetch).thenThrow(Exception('Tor probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
-    when(
-      payjoinPolicy.load,
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
     final updates = <AllServicesStatus>[];
     final usecase = CheckAllServiceStatusUsecase(
@@ -382,9 +375,7 @@ void main() {
         () => feesRepository.getNetworkFees(network: any(named: 'network')),
       ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final settingsRepository = _MockSettingsRepository();
@@ -430,9 +421,7 @@ void main() {
       () => feesRepository.getNetworkFees(network: any(named: 'network')),
     ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
-    when(
-      payjoinPolicy.load,
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     final settingsRepository = _MockSettingsRepository();
@@ -459,3 +448,8 @@ void main() {
     );
   });
 }
+
+/// The exchange switches ship on, so payjoin is unused only with all four off.
+PayjoinPolicy _allPayjoinOff() => PayjoinPolicy.defaults()
+    .withAction(PayjoinAction.buy, enabled: false)
+    .withAction(PayjoinAction.sell, enabled: false);

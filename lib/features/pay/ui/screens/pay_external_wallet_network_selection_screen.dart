@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 
 class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const PayExternalWalletNetworkSelectionScreen({super.key});
@@ -15,9 +13,7 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCreatingPayOrder = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayWalletSelectionState &&
-          (bloc.state as PayWalletSelectionState).isCreatingPayOrder,
+      (PayBloc bloc) => bloc.state is PayPreparingPaymentState,
     );
 
     return Scaffold(
@@ -25,14 +21,8 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            FadingLinearProgress(
-              height: 3,
-              trigger: isCreatingPayOrder,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
             Expanded(
-              child: ScrollableColumn(
+              child: BullScrollableColumn(
                 children: [
                   const Gap(24.0),
                   Text(

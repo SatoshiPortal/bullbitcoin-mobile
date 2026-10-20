@@ -15,6 +15,11 @@ sealed class SellState with _$SellState {
     @Default(false) bool isCreatingSellOrder,
     SellFailure? error,
   }) = SellWalletSelectionState;
+  const factory SellState.preparingPayment({
+    required SellWalletSelectionState input,
+    Wallet? selectedWallet,
+    SellFailure? error,
+  }) = SellPreparingPaymentState;
   const factory SellState.payment({
     required UserSummary userSummary,
     required BitcoinUnit bitcoinUnit,
@@ -65,6 +70,7 @@ sealed class SellState with _$SellState {
   // Backward step: drop forward state. Same-type case resets transients.
   SellAmountInputState? get toCleanAmountInputState => switch (this) {
     final SellAmountInputState s => s,
+    SellPreparingPaymentState(:final input) => input.toCleanAmountInputState,
     SellWalletSelectionState(:final userSummary, :final bitcoinUnit) =>
       SellAmountInputState(userSummary: userSummary, bitcoinUnit: bitcoinUnit),
     SellPaymentState(:final userSummary, :final bitcoinUnit) =>
@@ -73,6 +79,8 @@ sealed class SellState with _$SellState {
   };
 
   SellWalletSelectionState? get toCleanWalletSelectionState => switch (this) {
+    SellPreparingPaymentState(:final input) =>
+      input.toCleanWalletSelectionState,
     final SellWalletSelectionState s => s.copyWith(
       isCreatingSellOrder: false,
       error: null,
@@ -109,6 +117,7 @@ sealed class SellState with _$SellState {
     SellAmountInputState(:final userSummary) => FiatCurrency.fromCode(
       userSummary.currency ?? 'CAD',
     ),
+    SellPreparingPaymentState(:final input) => input.fiatCurrency,
     SellWalletSelectionState(:final fiatCurrency) => fiatCurrency,
     SellPaymentState(:final fiatCurrency) => fiatCurrency,
     SellSuccessState(:final sellOrder) => FiatCurrency.fromCode(
@@ -119,6 +128,7 @@ sealed class SellState with _$SellState {
   BitcoinUnit? get bitcoinUnit => switch (this) {
     SellInitialState() => null,
     SellAmountInputState(:final bitcoinUnit) => bitcoinUnit,
+    SellPreparingPaymentState(:final input) => input.bitcoinUnit,
     SellWalletSelectionState(:final bitcoinUnit) => bitcoinUnit,
     SellPaymentState(:final bitcoinUnit) => bitcoinUnit,
     SellSuccessState(:final bitcoinUnit) => bitcoinUnit,
@@ -127,6 +137,7 @@ sealed class SellState with _$SellState {
   bool get isLimitedKycLevel => switch (this) {
     SellInitialState() => false,
     SellAmountInputState(:final userSummary) => userSummary.isLimitedKycLevel,
+    SellPreparingPaymentState(:final input) => input.isLimitedKycLevel,
     SellWalletSelectionState(:final userSummary) =>
       userSummary.isLimitedKycLevel,
     SellPaymentState(:final userSummary) => userSummary.isLimitedKycLevel,
@@ -136,6 +147,7 @@ sealed class SellState with _$SellState {
   bool get isLightKycLevel => switch (this) {
     SellInitialState() => false,
     SellAmountInputState(:final userSummary) => userSummary.isLightKycLevel,
+    SellPreparingPaymentState(:final input) => input.isLightKycLevel,
     SellWalletSelectionState(:final userSummary) => userSummary.isLightKycLevel,
     SellPaymentState(:final userSummary) => userSummary.isLightKycLevel,
     SellSuccessState() => true, // Success state implies KYC was sufficient
@@ -145,6 +157,7 @@ sealed class SellState with _$SellState {
     SellInitialState() => false,
     SellAmountInputState(:final userSummary) =>
       userSummary.isFullyVerifiedKycLevel,
+    SellPreparingPaymentState(:final input) => input.isFullyVerifiedKycLevel,
     SellWalletSelectionState(:final userSummary) =>
       userSummary.isFullyVerifiedKycLevel,
     SellPaymentState(:final userSummary) => userSummary.isFullyVerifiedKycLevel,
@@ -153,6 +166,7 @@ sealed class SellState with _$SellState {
 
   UserSummary? get _userSummary => switch (this) {
     SellAmountInputState(:final userSummary) => userSummary,
+    SellPreparingPaymentState(:final input) => input._userSummary,
     SellWalletSelectionState(:final userSummary) => userSummary,
     SellPaymentState(:final userSummary) => userSummary,
     _ => null,

@@ -14,6 +14,7 @@ sealed class BuyEvent with _$BuyEvent {
   const factory BuyEvent.bitcoinAddressInputChanged(String bitcoinAddress) =
       _BuyBitcoinAddressInputChanged;
   const factory BuyEvent.createOrder() = _BuyCreateOrder;
+  const factory BuyEvent.orderCreationAbandoned() = _BuyOrderCreationAbandoned;
   const factory BuyEvent.refreshOrder({String? orderId}) = _BuyRefreshOrder;
   const factory BuyEvent.confirmOrder() = _BuyConfirmOrder;
   const factory BuyEvent.payjoinToggled(bool enabled) = _BuyPayjoinToggled;

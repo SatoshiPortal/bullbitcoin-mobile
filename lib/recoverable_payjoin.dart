@@ -253,9 +253,12 @@ final class _RecoverablePayjoinPolicy implements PayjoinPolicyAccess {
   }
 
   @override
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled) async {
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  }) async {
     await _owner._readyForRoleCall();
-    return _owner._delegate.policy.setEnabled(enabled);
+    return _owner._delegate.policy.setActionEnabled(action, enabled: enabled);
   }
 
   @override

@@ -213,7 +213,10 @@ abstract interface class _PayjoinRuntimeContract {
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints();
   Future<Result<PayjoinPolicy, PayjoinFailure>> load();
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watchPolicy();
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled);
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  });
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);
   Future<Result<PayjoinPolicy, PayjoinFailure>> setSessionLifetime(
     Duration lifetime,
@@ -237,6 +240,11 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   );
 
   _PayjoinRoles(this._engine, this._policy, this._wallet, this._fees);
+
+  PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
+    value,
+    fallbackAvailableAt: _engine.receiverFallbackAvailableAt(value.id),
+  );
 
   @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> startSender(
@@ -310,6 +318,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         ),
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
+        isTrade: request.isTrade,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
     } catch (_) {
@@ -360,7 +369,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   @override
   Future<Result<void, PayjoinFailure>> disableAll() async {
     try {
-      await _engine.disableReceivers();
+      await _engine.settleAllReceivers();
       return const Ok(null);
     } catch (_) {
       return const Err(
@@ -449,17 +458,25 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   }
 
   @override
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled) async {
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  }) async {
     return _policyMutationLock.synchronized(() async {
       late final PayjoinPolicy saved;
       try {
-        saved = await _policy.setEnabled(enabled);
+        saved = await _policy.setActionEnabled(action, enabled: enabled);
       } catch (_) {
         return const Err(PayjoinStorageFailure('Policy update failed'));
       }
-      if (!enabled) {
+      // Only receivers have a policy gate after creation. A sender session
+      // has committed the payment and must resolve, so turning off send or
+      // sell only stops new ones.
+      final gatesReceivers =
+          action == PayjoinAction.receive || action == PayjoinAction.buy;
+      if (!enabled && gatesReceivers) {
         try {
-          await _engine.disableReceivers();
+          await _engine.settleReceiversNotPermittedBy(saved);
         } catch (_) {
           return const Err(
             PayjoinInvalidSessionTransitionFailure(
@@ -616,8 +633,10 @@ final class _PolicyRole implements PayjoinPolicyAccess {
       _runtime.watchPolicy();
 
   @override
-  Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled) =>
-      _runtime.setEnabled(enabled);
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
+    PayjoinAction action, {
+    required bool enabled,
+  }) => _runtime.setActionEnabled(action, enabled: enabled);
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount) =>
@@ -639,7 +658,10 @@ final class _DiagnosticsRole implements PayjoinDiagnostics {
       _runtime.relayHealth();
 }
 
-PayjoinSession _toSession(engine.Payjoin value) {
+PayjoinSession _mapSession(
+  engine.Payjoin value, {
+  DateTime? fallbackAvailableAt,
+}) {
   final network = value.isTestnet
       ? BitcoinNetwork.testnet
       : BitcoinNetwork.mainnet;
@@ -672,6 +694,7 @@ PayjoinSession _toSession(engine.Payjoin value) {
       transactionId: value.txId,
       hasProposal: value.proposalPsbt != null,
       hasOriginalTransaction: value.originalTxBytes != null,
+      fallbackAvailableAt: fallbackAvailableAt,
       ownership: ownership,
     ),
   };

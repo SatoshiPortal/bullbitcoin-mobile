@@ -15,9 +15,11 @@ class BullTopBar extends StatelessWidget {
     this.onAction,
     this.actionIcon,
     this.actionBadge = false,
+    this.color,
+    this.titleWidget,
   });
 
-  /// The centered title text.
+  /// The centered title text. Ignored when [titleWidget] is supplied.
   final String title;
 
   /// Back-button callback. When null, no back button is shown.
@@ -33,10 +35,18 @@ class BullTopBar extends StatelessWidget {
   /// that a filter is currently active.
   final bool actionBadge;
 
+  /// Optional background colour. Transparent when null.
+  final Color? color;
+
+  /// Replaces the centered [title] text — e.g. a logo. Takes a widget rather
+  /// than a flag so the asset stays in the app and out of the design system.
+  final Widget? titleWidget;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
+      color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -55,12 +65,14 @@ class BullTopBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.only(bottom: 8),
               alignment: Alignment.bottomCenter,
-              child: Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: colors.text),
-              ),
+              child:
+                  titleWidget ??
+                  Text(
+                    title,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(color: colors.text),
+                  ),
             ),
           ),
           if (onAction != null)

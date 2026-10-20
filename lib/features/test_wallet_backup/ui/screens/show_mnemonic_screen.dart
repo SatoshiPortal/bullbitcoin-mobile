@@ -4,8 +4,6 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
@@ -15,7 +13,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 
 class ShowMnemonicScreen extends StatefulWidget {
   const ShowMnemonicScreen({super.key});
@@ -61,7 +59,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       children: [
-                        BBButton.big(
+                        BullButton.big(
                           label: context.loc.testBackupNext,
                           onPressed: () {
                             Navigator.of(context).push(
@@ -153,7 +151,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
           child: Column(
             crossAxisAlignment: .stretch,
             children: [
-              BBText(
+              BullText(
                 context.loc.testBackupWriteDownPhrase,
                 textAlign: .center,
                 style: context.font.headlineLarge?.copyWith(
@@ -163,7 +161,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 maxLines: 2,
               ),
               const Gap(20),
-              BBText(
+              BullText(
                 context.loc.testBackupStoreItSafe,
                 textAlign: .center,
                 style: context.font.labelMedium?.copyWith(
@@ -174,7 +172,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 ),
               ),
               if (lastPhysicalBackup != null) ...[
-                BBText(
+                BullText(
                   context.loc.testBackupLastBackupTest(
                     lastPhysicalBackup.toString().substring(0, 19),
                   ),
@@ -193,7 +191,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 child: Column(
                   children: [
                     if (failure != null)
-                      BBText(
+                      BullText(
                         failure.toTranslated(context),
                         textAlign: .center,
                         style: context.font.bodyLarge?.copyWith(
@@ -249,7 +247,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                           bottomRight: Radius.circular(2),
                         ),
                       ),
-                      child: BBText(
+                      child: BullText(
                         context.loc.testBackupDoNotShare,
                         textAlign: .center,
                         style: context.font.headlineMedium?.copyWith(
@@ -362,7 +360,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2.46),
                 ),
                 child: Center(
-                  child: BBText(
+                  child: BullText(
                     number < 10 ? '0$number' : '$number',
                     style: context.font.titleMedium?.copyWith(
                       fontWeight: .w700,
@@ -377,7 +375,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
             const Gap(12),
             Expanded(
               flex: 6,
-              child: BBText(
+              child: BullText(
                 word,
                 textAlign: .start,
                 maxLines: 2,
@@ -421,7 +419,7 @@ class _PassphraseWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .start,
         children: [
-          BBText(
+          BullText(
             context.loc.testBackupPassphrase,
             style: context.font.labelMedium?.copyWith(
               fontWeight: .w700,
@@ -431,7 +429,7 @@ class _PassphraseWidget extends StatelessWidget {
             ),
           ),
           const Gap(8),
-          BBText(
+          BullText(
             passphrase,
             style: context.font.bodyLarge?.copyWith(
               fontWeight: .w700,

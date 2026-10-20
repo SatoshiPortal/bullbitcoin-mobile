@@ -14,13 +14,13 @@ class WatchPayjoinPolicyUsecase {
           case Ok(:final value):
             yield value;
           case Err(:final failure):
-            // Degrade to defaults rather than breaking the settings screen,
-            // but never silently: this is how a mis-stored policy hides.
+            // Degrade rather than breaking the settings screen, but never
+            // silently: this is how a mis-stored policy hides.
             log.warning(
-              'Payjoin policy unreadable, using defaults: '
+              'Payjoin policy unreadable, showing payjoin off: '
               '${failure.runtimeType}',
             );
-            yield PayjoinPolicy.defaults();
+            yield _failClosed();
         }
       }
     } catch (e, st) {
@@ -29,7 +29,11 @@ class WatchPayjoinPolicyUsecase {
         error: e.runtimeType,
         trace: st,
       );
-      yield PayjoinPolicy.defaults();
+      yield _failClosed();
     }
   }
+
+  /// Every switch off, as the payjoin gates treat an unreadable policy.
+  static PayjoinPolicy _failClosed() =>
+      PayjoinPolicy.defaults().copyWith(buyEnabled: false, sellEnabled: false);
 }

@@ -12,11 +12,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,11 +25,11 @@ import 'package:intl/intl.dart';
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({
     super.key,
-    this.fromExchange = false,
+    required this.onExit,
     this.initialMessage,
   });
 
-  final bool fromExchange;
+  final VoidCallback onExit;
   final String? initialMessage;
 
   @override
@@ -61,10 +59,8 @@ class ExchangeSupportChatScreen extends StatelessWidget {
             onPressed: () {
               if (context.canPop()) {
                 context.pop();
-              } else if (fromExchange) {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
               } else {
-                context.goNamed(WalletRoute.walletHome.name);
+                onExit();
               }
             },
           ),

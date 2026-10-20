@@ -17,8 +17,7 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -399,11 +398,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
-        // Make the exchange cubit available to the whole app so redirects
-        // can use it to check if the user is authenticated
-        BlocProvider(create: (_) => locator<ExchangeCubit>()),
       ],
-      child: ExchangeListener(
+      child: ExchangeScope(
         child: MultiBlocListener(
           listeners: [
             SettingsFailureListener(),
@@ -418,14 +414,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 context.read<WalletBloc>().add(const WalletStarted());
                 // Also fetch user summary to check if user is logged in
                 // and connect WebSocket if so (handled by ExchangeListener)
-                context.read<ExchangeCubit>().fetchUserSummary();
+                ExchangeScope.refreshSession(context);
                 // Reconnect WebSocket here too — when AppStartupBloc retries
                 // after a pre-warm KeychainLockedException, the SettingsCubit
                 // env-change listener below has ALREADY fired during pre-warm
                 // (with the keychain locked) and won't fire again, so without
                 // this call the WebSocket stays disconnected post-unlock until
                 // the user toggles environment or cold-launches.
-                context.read<ExchangeCubit>().reconnectWebSocket();
+                ExchangeScope.reconnectNotifications(context);
               },
             ),
             BlocListener<SettingsCubit, SettingsState>(
@@ -436,9 +432,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 // Re-fetch user summary (re-init exchange bloc) and wallets
                 //  when environment changes
                 context.read<WalletBloc>().add(const WalletStarted());
-                await context.read<ExchangeCubit>().fetchUserSummary();
+                await ExchangeScope.refreshSession(context);
                 // Reconnect WebSocket for the new environment
-                await context.read<ExchangeCubit>().reconnectWebSocket();
+                await ExchangeScope.reconnectNotifications(context);
               },
             ),
           ],

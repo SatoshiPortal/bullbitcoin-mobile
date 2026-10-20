@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
@@ -103,7 +101,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
                   textAlign: .center,
                 ),
                 const Gap(4),
-                Countdown(
+                BullCountdown(
                   until: payoutTime,
                   onTimeout: () {
                     // TODO: Maybe fetch the order again or notify the user
@@ -127,7 +125,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
             },
           ),
         const Gap(16),
-        BBButton.big(
+        BullButton.big(
           label: context.loc.buyViewDetails,
           onPressed: () {
             context.pushNamed(

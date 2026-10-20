@@ -3,10 +3,8 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/price/domain/rate.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -65,7 +63,7 @@ class PriceChartWidget extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  BBText(
+                  BullText(
                     state.failure!.toTranslated(context),
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onPrimary,
@@ -99,7 +97,7 @@ class PriceChartWidget extends StatelessWidget {
                       color: context.appColors.onPrimary,
                     ),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.priceChartFetchingHistory,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.appColors.onPrimary,
@@ -185,7 +183,7 @@ class _PriceDisplay extends StatelessWidget {
       return;
     }
 
-    final selectedCurrency = await BlurredBottomSheet.show<String?>(
+    final selectedCurrency = await BullBottomSheet.show<String?>(
       context: context,
       child: CurrencyBottomSheet(
         availableCurrencies: availableCurrencies,
@@ -233,7 +231,7 @@ class _PriceDisplay extends StatelessWidget {
                       style: context.font.headlineSmall,
                     ),
                     const Gap(6),
-                    BBText(
+                    BullText(
                       currency,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.onPrimary.withValues(
@@ -252,7 +250,7 @@ class _PriceDisplay extends StatelessWidget {
                 _openCurrencyBottomSheet(builderContext);
               },
               child: Center(
-                child: BBText(
+                child: BullText(
                   NumberFormat.currency(
                     symbol: '',
                     decimalDigits: 2,
@@ -271,7 +269,7 @@ class _PriceDisplay extends StatelessWidget {
                 _openCurrencyBottomSheet(builderContext);
               },
               child: Center(
-                child: BBText(
+                child: BullText(
                   dateFormat.format(date.toLocal()),
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.onPrimary.withValues(alpha: 0.6),
