@@ -964,10 +964,19 @@ class SellBloc extends Bloc<SellEvent, SellState>
   ) async {
     final session = event.session;
     if (session.id != _activePayjoinSessionId || session.isOngoing) return;
-    log.fine(
-      'Sell Payjoin session resolved: ${session.logRef}, '
-      'status=${session.status.name}',
-    );
+    if (session.hasProposal) {
+      log.fine(
+        'Sell Payjoin session resolved: ${session.logRef}, '
+        'status=${session.status.name}',
+      );
+    } else {
+      // Only what this device recorded: a poll failing on every relay looks
+      // the same as a counterparty that never answered.
+      log.warning(
+        'Sell Payjoin resolved without a recorded proposal: '
+        '${session.logRef}, status=${session.status.name}',
+      );
+    }
 
     // `expired` is terminal but settles nothing: the package released this
     // session's inputs and stopped re-broadcasting it, so the user may confirm

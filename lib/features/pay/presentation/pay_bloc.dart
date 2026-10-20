@@ -765,10 +765,19 @@ class PayBloc extends Bloc<PayEvent, PayState>
   ) async {
     final session = event.session;
     if (session.id != _activePayjoinSessionId || session.isOngoing) return;
-    log.fine(
-      'Pay Payjoin session resolved: ${session.logRef}, '
-      'status=${session.status.name}',
-    );
+    if (session.hasProposal) {
+      log.fine(
+        'Pay Payjoin session resolved: ${session.logRef}, '
+        'status=${session.status.name}',
+      );
+    } else {
+      // Only what this device recorded: a poll failing on every relay looks
+      // the same as a counterparty that never answered.
+      log.warning(
+        'Pay Payjoin resolved without a recorded proposal: '
+        '${session.logRef}, status=${session.status.name}',
+      );
+    }
 
     final subscription = _payjoinSubscription;
     _payjoinSubscription = null;
