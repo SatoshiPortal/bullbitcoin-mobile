@@ -15683,5 +15683,9 @@
   "settingsPayjoinMinutesUnit": "min",
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
+  },
+  "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@sellQuoteExpiredError": {
+    "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
   }
 }

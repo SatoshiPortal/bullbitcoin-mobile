@@ -622,6 +622,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
       return;
     }
 
+    // The exchange expires the order at its deadline and does not credit a
+    // payin sent after it, so a lapsed quote is refreshed, never paid.
+    if (_isQuoteExpired(sellPaymentState)) {
+      emit(sellPaymentState);
+      _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
+      return;
+    }
+
     emit(sellPaymentState.copyWith(isConfirmingPayment: true));
     var waitingForPayjoin = false;
     try {
@@ -675,6 +683,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
+        }
+        if (_isQuoteExpired(sellPaymentState)) {
+          _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
+          return;
         }
         final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
         if (broadcast case Err(:final failure)) {
@@ -874,6 +886,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
               return;
+          }
+          // Signing is asynchronous: the deadline may have passed meanwhile.
+          if (_isQuoteExpired(sellPaymentState)) {
+            _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
+            return;
           }
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
@@ -1260,6 +1277,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
         origin: walletId,
       ),
     );
+  }
+
+  bool _isQuoteExpired(SellPaymentState paymentState) {
+    final deadline = paymentState.sellOrder.confirmationDeadline;
+    return deadline != null && !deadline.isAfter(DateTime.now());
   }
 
   void _startPolling() {

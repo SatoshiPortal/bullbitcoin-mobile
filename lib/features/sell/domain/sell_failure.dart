@@ -74,6 +74,13 @@ final class SellFeesUnavailableFailure extends SellFailure {
   const SellFeesUnavailableFailure([super.logMessage]);
 }
 
+/// The price lock lapsed before the payin was sent, so nothing was paid and a
+/// fresh quote must be confirmed instead. An exchange expires the order at its
+/// deadline: a payin sent after it is not credited to the order.
+final class SellQuoteExpiredFailure extends SellFailure {
+  const SellQuoteExpiredFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation
