@@ -46,7 +46,7 @@ class CreateSellOrderUsecase {
           usePayjoin &&
           payjoinEnabled &&
           network == OrderBitcoinNetwork.bitcoin;
-      log.info(
+      log.fine(
         'Sell Payjoin order request: requested=$usePayjoin, '
         'sellEnabled=$payjoinEnabled, '
         'network=${network.value}, sent=$resolvedUsePayjoin',
@@ -57,7 +57,7 @@ class CreateSellOrderUsecase {
         network: network,
         usePayjoin: resolvedUsePayjoin,
       );
-      log.info(
+      log.fine(
         'Sell Payjoin order response: requested=$resolvedUsePayjoin, '
         'bip21Present=${order.bip21URI != null}',
       );

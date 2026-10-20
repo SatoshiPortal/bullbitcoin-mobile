@@ -634,6 +634,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
             payjoinBip21 == null || confirmationDeadline == null
             ? null
             : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+        log.fine(
+          'Pay Payjoin confirmation: '
+          'toggle=${payPaymentState.isPayjoinEnabled}, '
+          'bip21Present=${payjoinBip21 != null}, '
+          'windowSec=${payjoinWindow?.inSeconds ?? 0}',
+        );
         if (payPaymentState.isPayjoinEnabled &&
             payjoinWindow != null &&
             payjoinBip21 != null) {
@@ -674,12 +680,17 @@ class PayBloc extends Bloc<PayEvent, PayState>
               );
               payjoinSender = persisted;
           }
+          log.fine(
+            'Pay Payjoin sender active: ${payjoinSender.logRef}, '
+            'status=${payjoinSender.status.name}',
+          );
           _watchPayjoin(
             payjoinSender.id,
             orderId: payPaymentState.payOrder.orderId,
           );
           waitingForPayjoin = true;
         } else {
+          log.fine('Pay Payjoin skipped; broadcasting plain transaction');
           final ({String signedPsbt, int txSize}) signedTx;
           switch (await _signPayPayinUsecase.bitcoin(
             psbt: preparedSend.unsignedPsbt,
@@ -754,6 +765,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
   ) async {
     final session = event.session;
     if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+    log.fine(
+      'Pay Payjoin session resolved: ${session.logRef}, '
+      'status=${session.status.name}',
+    );
 
     final subscription = _payjoinSubscription;
     _payjoinSubscription = null;
