@@ -103,8 +103,8 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeNotificationDatasource>(
       () => ExchangeNotificationDatasource(
         baseUrl: ApiServiceConstants.bbApiUrl,
-        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: false,
+        getApiKey: () =>
+            locator<BullbitcoinApiKeyProvider>().getApiKey(isTestnet: false),
         isForeground: () => locator<ForegroundLifecycle>().isForeground,
       ),
       instanceName: 'mainnetExchangeNotificationDatasource',
@@ -113,14 +113,14 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeNotificationDatasource>(
       () => ExchangeNotificationDatasource(
         baseUrl: ApiServiceConstants.bbApiTestUrl,
-        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: true,
+        getApiKey: () =>
+            locator<BullbitcoinApiKeyProvider>().getApiKey(isTestnet: true),
         isForeground: () => locator<ForegroundLifecycle>().isForeground,
       ),
       instanceName: 'testnetExchangeNotificationDatasource',
     );
 
-    // Shared authenticated HTTP clients used by multiple features
+    // Shared credentials and authenticated HTTP clients used by multiple features
     // (fund_exchange, recipients, etc.)
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(

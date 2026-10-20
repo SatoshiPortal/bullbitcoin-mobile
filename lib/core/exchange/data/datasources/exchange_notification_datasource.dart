@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show HttpClient;
 
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -10,8 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// Maintains one notification connection, with bounded retries while visible.
 class ExchangeNotificationDatasource {
   final String _baseUrl;
-  final BullbitcoinApiKeyDatasource _apiKeyDatasource;
-  final bool _isTestnet;
+  final Future<String?> Function() _getApiKey;
   final WebSocketChannel Function(Uri, Map<String, dynamic>)? _openChannel;
   final bool Function() _isForeground;
   final _messages = StreamController<Map<String, dynamic>>.broadcast();
@@ -23,8 +21,7 @@ class ExchangeNotificationDatasource {
 
   ExchangeNotificationDatasource({
     required this._baseUrl,
-    required this._apiKeyDatasource,
-    required this._isTestnet,
+    required this._getApiKey,
     this._openChannel,
     bool Function()? isForeground,
   }) : _isForeground = isForeground ?? _allowConnection;
@@ -41,13 +38,13 @@ class ExchangeNotificationDatasource {
     final connection = _NotificationConnection(_openChannel);
     _connection = connection;
     try {
-      final key = await _apiKeyDatasource.get(isTestnet: _isTestnet);
+      final key = await _getApiKey();
       if (!identical(_connection, connection)) return;
       if (!_isForeground()) {
         disconnect();
         return;
       }
-      if (key == null || !key.isActive) {
+      if (key == null) {
         _release(connection);
         log.fine('WebSocket connection skipped: user not authenticated');
         return;
@@ -57,7 +54,7 @@ class ExchangeNotificationDatasource {
       // stream errors and failed handshakes.
       await connection.open(
         Uri.parse(_buildWebSocketUrl()),
-        {'X-API-Key': key.key},
+        {'X-API-Key': key},
         onMessage: (message) {
           if (identical(_connection, connection) && _isForeground()) {
             _handleMessage(message);

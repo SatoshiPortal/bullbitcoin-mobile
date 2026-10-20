@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class _Keys extends Mock implements BullbitcoinApiKeyDatasource {}
+class _Keys extends Mock implements BullbitcoinApiKeyProvider {}
 
 class _Channel extends Mock implements WebSocketChannel {}
 
@@ -26,6 +25,7 @@ void main() {
   late List<Completer<void>> ready;
   late List<StreamController<dynamic>> streams;
   late List<_Sink> sinks;
+  late List<Map<String, dynamic>> authorizationHeaders;
   late ExchangeNotificationDatasource datasource;
   late bool foreground;
 
@@ -34,27 +34,20 @@ void main() {
     logger = _Logger();
     log = logger;
     keys = _Keys();
-    when(() => keys.get(isTestnet: false)).thenAnswer(
-      (_) async => ExchangeApiKeyModel(
-        id: 'test',
-        key: 'test-only',
-        name: 'test',
-        userId: 'test',
-        isActive: true,
-        createdAt: 0,
-        updatedAt: 0,
-      ),
-    );
+    when(
+      () => keys.getApiKey(isTestnet: false),
+    ).thenAnswer((_) async => 'test-only');
     foreground = true;
     ready = [];
     streams = [];
     sinks = [];
+    authorizationHeaders = [];
     datasource = ExchangeNotificationDatasource(
       baseUrl: 'https://example.test',
-      apiKeyDatasource: keys,
-      isTestnet: false,
+      getApiKey: () => keys.getApiKey(isTestnet: false),
       isForeground: () => foreground,
       openChannel: (uri, headers) {
+        authorizationHeaders.add(Map.of(headers));
         final channel = _Channel();
         final sink = _Sink();
         sinks.add(sink);
@@ -101,21 +94,13 @@ void main() {
   test(
     'disconnect while reading credentials prevents opening a socket',
     () async {
-      final key = Completer<ExchangeApiKeyModel?>();
-      when(() => keys.get(isTestnet: false)).thenAnswer((_) => key.future);
+      final key = Completer<String?>();
+      when(
+        () => keys.getApiKey(isTestnet: false),
+      ).thenAnswer((_) => key.future);
       final connecting = datasource.connect();
       datasource.disconnect();
-      key.complete(
-        ExchangeApiKeyModel(
-          id: 'test',
-          key: 'test-only',
-          name: 'test',
-          userId: 'test',
-          isActive: true,
-          createdAt: 0,
-          updatedAt: 0,
-        ),
-      );
+      key.complete('test-only');
       await Future<void>.delayed(Duration.zero);
       if (ready.isNotEmpty) ready.single.complete();
       await connecting;
@@ -203,6 +188,41 @@ void main() {
     expect(ready, hasLength(1));
   });
 
+  test('each retry reads the current credential', () {
+    fakeAsync((time) {
+      var key = 'first-key';
+      when(() => keys.getApiKey(isTestnet: false)).thenAnswer((_) async => key);
+      unawaited(datasource.connect());
+      time.flushMicrotasks();
+      ready.single.completeError(const SocketException('offline'));
+      time.flushMicrotasks();
+      key = 'replacement-key';
+      time.elapse(const Duration(seconds: 5));
+      expect(authorizationHeaders.map((h) => h['X-API-Key']), [
+        'first-key',
+        'replacement-key',
+      ]);
+      ready.last.complete();
+      time.flushMicrotasks();
+    });
+  });
+
+  test('credential revocation stops a scheduled retry', () {
+    fakeAsync((time) {
+      unawaited(datasource.connect());
+      time.flushMicrotasks();
+      ready.single.completeError(const SocketException('offline'));
+      time.flushMicrotasks();
+      when(
+        () => keys.getApiKey(isTestnet: false),
+      ).thenAnswer((_) async => null);
+      time.elapse(const Duration(minutes: 2));
+      verify(() => keys.getApiKey(isTestnet: false)).called(2);
+      expect(ready, hasLength(1));
+      expect(time.pendingTimers, isEmpty);
+    });
+  });
+
   test('DNS retries back off and stop after disposal', () {
     fakeAsync((time) {
       unawaited(datasource.connect());
@@ -228,7 +248,7 @@ void main() {
     foreground = false;
     await datasource.connect();
     expect(ready, isEmpty);
-    verifyNever(() => keys.get(isTestnet: false));
+    verifyNever(() => keys.getApiKey(isTestnet: false));
   });
 
   test('leaving foreground during handshake discards the connection', () async {

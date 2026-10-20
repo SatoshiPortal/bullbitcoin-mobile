@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:flutter/widgets.dart';
@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Keys extends Mock implements BullbitcoinApiKeyDatasource {}
+class _Keys extends Mock implements BullbitcoinApiKeyProvider {}
 
 void main() {
   testWidgets('registered sockets preserve foreground through inactive', (
@@ -16,8 +16,8 @@ void main() {
     final locator = GetIt.asNewInstance();
     ExchangeLocator.registerDatasources(locator);
     final keys = _Keys();
-    await locator.unregister<BullbitcoinApiKeyDatasource>();
-    locator.registerSingleton<BullbitcoinApiKeyDatasource>(keys);
+    await locator.unregister<BullbitcoinApiKeyProvider>();
+    locator.registerSingleton<BullbitcoinApiKeyProvider>(keys);
     final sockets = [
       locator<ExchangeNotificationDatasource>(
         instanceName: 'mainnetExchangeNotificationDatasource',
@@ -27,7 +27,9 @@ void main() {
       ),
     ];
     for (final isTestnet in [false, true]) {
-      when(() => keys.get(isTestnet: isTestnet)).thenAnswer((_) async => null);
+      when(
+        () => keys.getApiKey(isTestnet: isTestnet),
+      ).thenAnswer((_) async => null);
     }
     addTearDown(() async {
       for (final socket in sockets) {
@@ -44,7 +46,7 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     await connectBoth();
     for (final isTestnet in [false, true]) {
-      verify(() => keys.get(isTestnet: isTestnet)).called(1);
+      verify(() => keys.getApiKey(isTestnet: isTestnet)).called(1);
     }
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
@@ -52,12 +54,12 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     await connectBoth();
     for (final isTestnet in [false, true]) {
-      verifyNever(() => keys.get(isTestnet: isTestnet));
+      verifyNever(() => keys.getApiKey(isTestnet: isTestnet));
     }
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await connectBoth();
     for (final isTestnet in [false, true]) {
-      verify(() => keys.get(isTestnet: isTestnet)).called(1);
+      verify(() => keys.getApiKey(isTestnet: isTestnet)).called(1);
     }
   });
 }

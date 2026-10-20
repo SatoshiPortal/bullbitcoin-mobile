@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:bb_mobile/core/exchange/data/datasources/http/authenticated_bullbitcoin_dio_factory.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,6 +24,29 @@ class _Storage extends Fake implements KeyValueStorageDatasource<String> {
 }
 
 class _Logger extends Mock implements Logger {}
+
+class _HttpAdapter implements HttpClientAdapter {
+  final apiKeys = <Object?>[];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    apiKeys.add(options.headers['X-API-Key']);
+    return ResponseBody.fromString(
+      '{}',
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
 
 String _record(String key, {bool active = true}) => jsonEncode({
   'id': 'test',
@@ -62,6 +88,37 @@ void main() {
     expect(await provider.getApiKey(isTestnet: false), isNull);
     expect(storage.reads, [mainKey, testKey, mainKey, mainKey]);
   });
+
+  test(
+    'Dio rereads shared credentials and rejects logout before sending',
+    () async {
+      storage.values[mainKey] = _record('main-only');
+      storage.values[testKey] = _record('test-only');
+      final adapter = _HttpAdapter();
+      final mainnet = AuthenticatedBullBitcoinDioFactory.create(
+        isTestnet: false,
+        apiKeyProvider: provider,
+      )..httpClientAdapter = adapter;
+      final testnet = AuthenticatedBullBitcoinDioFactory.create(
+        isTestnet: true,
+        apiKeyProvider: provider,
+      )..httpClientAdapter = adapter;
+      addTearDown(() {
+        mainnet.close();
+        testnet.close();
+      });
+      await mainnet.get<dynamic>('/test');
+      await testnet.get<dynamic>('/test');
+      storage.values[mainKey] = _record('replacement');
+      await mainnet.get<dynamic>('/test');
+      storage.values.remove(mainKey);
+      await expectLater(
+        mainnet.get<dynamic>('/test'),
+        throwsA(isA<DioException>()),
+      );
+      expect(adapter.apiKeys, ['main-only', 'test-only', 'replacement']);
+    },
+  );
 
   test('missing and empty records are unauthenticated', () async {
     expect(await provider.getApiKey(isTestnet: false), isNull);
