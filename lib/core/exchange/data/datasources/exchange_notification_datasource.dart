@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show HttpClient;
 
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
@@ -14,8 +15,16 @@ class ExchangeNotificationDatasource {
   final String _baseUrl;
   final BullbitcoinApiKeyDatasource _apiKeyDatasource;
   final bool _isTestnet;
+  final WebSocketChannel Function(Uri, Map<String, dynamic>)? _openChannel;
+  final bool Function() _isForeground;
 
   WebSocketChannel? _channel;
+  HttpClient? _httpClient;
+  StreamSubscription<dynamic>? _subscription;
+  Timer? _reconnectTimer;
+  int _generation = 0;
+  int _retrySeconds = 5;
+  bool _disposed = false;
   bool _isConnected = false;
   bool _isManuallyDisconnected = false;
   bool _isConnecting = false;
@@ -29,7 +38,28 @@ class ExchangeNotificationDatasource {
     required this._baseUrl,
     required this._apiKeyDatasource,
     required this._isTestnet,
-  });
+    this._openChannel,
+    bool Function()? isForeground,
+  }) : _isForeground = isForeground ?? _allowConnection;
+
+  static bool _allowConnection() => true;
+
+  WebSocketChannel _connectChannel(Uri uri, Map<String, dynamic> headers) {
+    final openChannel = _openChannel;
+    if (openChannel != null) return openChannel(uri, headers);
+    // Own the HTTP client so disconnect/timeout also aborts an in-flight
+    // upgrade. A Future timeout alone leaves the underlying request alive.
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 15);
+    _httpClient = client;
+    return IOWebSocketChannel.connect(
+      uri,
+      headers: headers,
+      pingInterval: _pingInterval,
+      connectTimeout: const Duration(seconds: 15),
+      customClient: client,
+    );
+  }
 
   String _buildWebSocketUrl() {
     // Clean the base URL - remove trailing slashes and whitespace
@@ -56,74 +86,84 @@ class ExchangeNotificationDatasource {
   }
 
   Future<void> connect() async {
-    if (_isConnected || _isConnecting) {
-      log.info('WebSocket already connected or connecting');
-      return;
-    }
+    if (_disposed || !_isForeground() || _isConnected || _isConnecting) return;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
     _isConnecting = true;
     _isManuallyDisconnected = false;
+    final generation = ++_generation;
 
     try {
-      // Verify API key exists - don't attempt connection if not authenticated
       final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
+      if (!_isCurrent(generation)) return;
+      if (!_isForeground()) {
+        disconnect();
+        return;
+      }
       if (apiKey == null || !apiKey.isActive) {
         _isConnecting = false;
-        _isManuallyDisconnected = true; // Prevent auto-reconnect loop
+        _isManuallyDisconnected = true;
         log.fine('WebSocket connection skipped: user not authenticated');
         return;
       }
 
-      // Build WebSocket URL
-      final fullUrl = _buildWebSocketUrl();
-      log.info('Base URL: $_baseUrl');
-      log.info('Built WebSocket URL: $fullUrl');
-
-      // Parse and verify URI
-      final uri = Uri.parse(fullUrl);
-      log.info(
-        'Parsed URI - scheme: ${uri.scheme}, host: ${uri.host}, path: ${uri.path}',
+      final uri = Uri.parse(_buildWebSocketUrl());
+      final channel = _connectChannel(uri, {'X-API-Key': apiKey.key});
+      _channel = channel;
+      // Subscribe before awaiting ready: connection failures are also emitted
+      // on the stream, including when the handshake has been cancelled.
+      _subscription = channel.stream.listen(
+        (message) {
+          if (_isCurrent(generation) && _isForeground()) {
+            _handleMessage(message);
+          }
+        },
+        onError: (Object error, StackTrace trace) {
+          if (!_isCurrent(generation)) return;
+          if (error is Error) {
+            log.severe(
+              message: 'WebSocket stream error',
+              error: error,
+              trace: trace,
+            );
+            _isManuallyDisconnected = true;
+            _handleDisconnect(generation);
+            return;
+          }
+          _connectionFailed(error, generation);
+        },
+        onDone: () => _handleDisconnect(generation),
       );
-
-      // Use IOWebSocketChannel to pass X-API-Key header
-      _channel = IOWebSocketChannel.connect(
-        uri,
-        headers: {'X-API-Key': apiKey.key},
-        pingInterval: _pingInterval,
-      );
-
-      // Wait for the connection to be ready
-      await _channel!.ready;
-
-      _channel!.stream.listen(
-        _handleMessage,
-        onError: _handleError,
-        onDone: _handleDisconnect,
-      );
+      await channel.ready;
+      if (!_isCurrent(generation)) return;
+      if (!_isForeground()) {
+        disconnect();
+        return;
+      }
 
       _isConnected = true;
       _isConnecting = false;
-      log.info('WebSocket connected successfully');
-    } catch (e) {
-      _isConnecting = false;
-      final errorStr = e.toString();
-
-      // Don't auto-reconnect if server doesn't support WebSocket upgrade
-      if (errorStr.contains('not upgraded to websocket')) {
-        log.warning(
-          'WebSocket endpoint not available - server may not support WebSocket on this endpoint. '
-          'Disabling auto-reconnect.',
-          error: e,
-        );
-        _isManuallyDisconnected = true; // Prevent auto-reconnect
-      }
-
-      log.severe(
-        message: 'WebSocket connection failed',
-        error: e,
-        trace: StackTrace.current,
-      );
-      _handleDisconnect();
+      _retrySeconds = 5;
+      log.fine('WebSocket connected successfully');
+    } on Exception catch (e) {
+      if (_isCurrent(generation)) _connectionFailed(e, generation);
     }
+  }
+
+  bool _isCurrent(int generation) =>
+      !_disposed && !_isManuallyDisconnected && generation == _generation;
+
+  void _connectionFailed(Object error, int generation) {
+    if (error.toString().contains('not upgraded to websocket')) {
+      _isManuallyDisconnected = true;
+      log.warning('WebSocket endpoint unavailable; auto-reconnect disabled');
+    } else {
+      log.warning(
+        'WebSocket connection failed (foreground=${_isForeground()})',
+        error: error,
+      );
+    }
+    _handleDisconnect(generation);
   }
 
   void _handleMessage(dynamic message) {
@@ -142,50 +182,69 @@ class ExchangeNotificationDatasource {
     }
   }
 
-  void _handleDisconnect() {
-    _isConnected = false;
-    _isConnecting = false;
-    log.info('WebSocket disconnected');
-
-    // AUTO-RECONNECT after 5 seconds (unless manually disconnected)
-    if (!_isManuallyDisconnected) {
-      log.info('Scheduling WebSocket auto-reconnect in 5 seconds...');
-      Future.delayed(const Duration(seconds: 5), () {
-        if (!_isManuallyDisconnected && !_isConnecting) {
-          log.info('Attempting WebSocket auto-reconnect...');
-          connect();
-        }
-      });
+  void _closeChannel() {
+    final subscription = _subscription;
+    _subscription = null;
+    if (subscription != null) unawaited(subscription.cancel());
+    final channel = _channel;
+    _channel = null;
+    final client = _httpClient;
+    _httpClient = null;
+    client?.close(force: true);
+    if (channel != null) {
+      unawaited(
+        channel.sink.close().catchError((Object error) {
+          log.warning('WebSocket close failed: ${error.runtimeType}');
+        }),
+      );
     }
   }
 
-  void _handleError(dynamic error) {
-    log.severe(
-      message: 'WebSocket error',
-      error: error,
-      trace: StackTrace.current,
-    );
-    _handleDisconnect();
+  void _handleDisconnect(int generation) {
+    if (generation != _generation) return;
+    ++_generation;
+    _isConnected = false;
+    _isConnecting = false;
+    _closeChannel();
+    if (_disposed ||
+        _isManuallyDisconnected ||
+        !_isForeground() ||
+        _reconnectTimer != null) {
+      return;
+    }
+
+    final delay = Duration(seconds: _retrySeconds);
+    _retrySeconds = (_retrySeconds * 2).clamp(5, 60);
+    log.fine('WebSocket reconnect scheduled in ${delay.inSeconds}s');
+    _reconnectTimer = Timer(delay, () {
+      _reconnectTimer = null;
+      unawaited(connect());
+    });
   }
 
   void disconnect() {
+    ++_generation;
     _isManuallyDisconnected = true;
     _isConnecting = false;
-    _channel?.sink.close();
-    _channel = null;
     _isConnected = false;
-    log.info('WebSocket manually disconnected');
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _closeChannel();
   }
 
   Future<void> reconnect() async {
+    if (_disposed) return;
     disconnect();
-    _isManuallyDisconnected = false;
-    await Future.delayed(const Duration(seconds: 1));
+    final generation = _generation;
+    await Future<void>.delayed(const Duration(seconds: 1));
+    if (_disposed || generation != _generation) return;
     await connect();
   }
 
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     disconnect();
-    _messageController.close();
+    unawaited(_messageController.close());
   }
 }

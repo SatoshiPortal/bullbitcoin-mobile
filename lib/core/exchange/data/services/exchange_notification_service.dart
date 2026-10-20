@@ -20,7 +20,9 @@ class ExchangeNotificationService {
 
   StreamSubscription<Map<String, dynamic>>? _mainnetSubscription;
   StreamSubscription<Map<String, dynamic>>? _testnetSubscription;
-  bool _isTestnet = false;
+  ExchangeNotificationDatasource? _activeDatasource;
+  int _generation = 0;
+  bool _disposed = false;
 
   ExchangeNotificationService({
     required this._mainnetDatasource,
@@ -33,7 +35,7 @@ class ExchangeNotificationService {
   void _setupInternalListeners() {
     // Listen to mainnet and forward messages only when on mainnet
     _mainnetSubscription = _mainnetDatasource.messageStream.listen((json) {
-      if (!_isTestnet) {
+      if (identical(_activeDatasource, _mainnetDatasource)) {
         final entity = NotificationMessageModel.fromJson(json).toEntity();
         _messageController.add(entity);
       }
@@ -41,7 +43,7 @@ class ExchangeNotificationService {
 
     // Listen to testnet and forward messages only when on testnet
     _testnetSubscription = _testnetDatasource.messageStream.listen((json) {
-      if (_isTestnet) {
+      if (identical(_activeDatasource, _testnetDatasource)) {
         final entity = NotificationMessageModel.fromJson(json).toEntity();
         _messageController.add(entity);
       }
@@ -50,18 +52,29 @@ class ExchangeNotificationService {
 
   Future<ExchangeNotificationDatasource> _getDatasource() async {
     final settings = await _settingsRepository.fetch();
-    _isTestnet = settings.environment.isTestnet;
-    return _isTestnet ? _testnetDatasource : _mainnetDatasource;
+    return settings.environment.isTestnet
+        ? _testnetDatasource
+        : _mainnetDatasource;
   }
 
   /// Connect to the WebSocket for the current environment (mainnet/testnet)
   Future<void> connect() async {
+    if (_disposed) return;
+    final generation = ++_generation;
     final datasource = await _getDatasource();
+    if (_disposed || generation != _generation) return;
+    final previous = _activeDatasource;
+    if (previous != null && !identical(previous, datasource)) {
+      previous.disconnect();
+    }
+    _activeDatasource = datasource;
     await datasource.connect();
   }
 
   /// Disconnect from both mainnet and testnet WebSockets
   void disconnect() {
+    ++_generation;
+    _activeDatasource = null;
     _mainnetDatasource.disconnect();
     _testnetDatasource.disconnect();
   }
@@ -71,19 +84,30 @@ class ExchangeNotificationService {
 
   /// Check if the current environment's WebSocket is connected
   Future<bool> get isConnected async {
+    if (_disposed) return false;
+    final generation = _generation;
     final datasource = await _getDatasource();
-    return datasource.isConnected;
+    return !_disposed &&
+        generation == _generation &&
+        identical(_activeDatasource, datasource) &&
+        datasource.isConnected;
   }
 
   /// Reconnect to the WebSocket for the current environment
   /// Call this when the network changes to switch connections
   Future<void> reconnect() async {
+    if (_disposed) return;
     disconnect();
-    await Future.delayed(const Duration(milliseconds: 500));
+    final generation = _generation;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    if (_disposed || generation != _generation) return;
     await connect();
   }
 
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    disconnect();
     _mainnetSubscription?.cancel();
     _testnetSubscription?.cancel();
     _messageController.close();

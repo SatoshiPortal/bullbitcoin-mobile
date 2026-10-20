@@ -1,14 +1,15 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Listens to ExchangeCubit state changes and manages WebSocket connection lifecycle.
 ///
 /// - Connects WebSocket when user logs in (userSummary becomes non-null)
 /// - Disconnects WebSocket when user logs out (userSummary becomes null)
-/// - Reconnects WebSocket when the app returns from the background, as the OS
-///   may have dropped the connection while it was hidden
+/// - Suspends the socket whenever the app leaves foreground-resumed
+/// - Reconnects and catches up account state only after returning to resumed
 ///
 /// For network changes (mainnet/testnet switch), call [ExchangeCubit.reconnectWebSocket]
 /// from the settings screen or wherever the network change is triggered.
@@ -22,14 +23,28 @@ class ExchangeListener extends StatefulWidget {
 
 class _ExchangeListenerState extends State<ExchangeListener> {
   late final AppLifecycleListener _lifecycleListener;
+  late bool _isForeground;
 
   @override
   void initState() {
     super.initState();
-    _lifecycleListener = AppLifecycleListener(onShow: _onShow);
+    final state = WidgetsBinding.instance.lifecycleState;
+    _isForeground = state == null || state == AppLifecycleState.resumed;
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: _onLifecycleChange,
+    );
   }
 
-  void _onShow() {
+  void _onLifecycleChange(AppLifecycleState state) {
+    log.fine('Exchange notifications lifecycle: ${state.name}');
+    final wasForeground = _isForeground;
+    _isForeground = state == AppLifecycleState.resumed;
+    if (!_isForeground) {
+      if (wasForeground) context.read<ExchangeCubit>().disconnectWebSocket();
+      return;
+    }
+    if (wasForeground) return;
+
     final exchangeCubit = context.read<ExchangeCubit>();
     if (exchangeCubit.state.userSummary != null) {
       exchangeCubit.reconnectWebSocket();
@@ -54,6 +69,7 @@ class _ExchangeListenerState extends State<ExchangeListener> {
         final exchangeCubit = context.read<ExchangeCubit>();
 
         if (state.userSummary != null) {
+          if (!_isForeground) return;
           // User logged in - connect WebSocket
           exchangeCubit.connectWebSocket();
         } else {
