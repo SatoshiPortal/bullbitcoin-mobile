@@ -64,14 +64,9 @@ class ExchangeNotificationDatasource {
           if (!identical(_connection, connection)) return;
           if (error is Error) {
             _release(connection);
-            log.severe(
-              message: 'WebSocket stream error',
-              error: error,
-              trace: trace,
-            );
-          } else {
-            _connectionLost(connection, error);
+            Error.throwWithStackTrace(error, trace);
           }
+          _connectionLost(connection, error);
         },
         onDone: () => _connectionLost(connection),
       );
@@ -229,7 +224,7 @@ class _NotificationConnection {
       unawaited(
         channel.sink.close().catchError((Object error) {
           log.warning('WebSocket close failed: ${error.runtimeType}');
-        }),
+        }, test: (Object error) => error is Exception),
       );
     }
   }

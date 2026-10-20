@@ -25,6 +25,7 @@ void main() {
   late Logger previousLogger;
   late List<Completer<void>> ready;
   late List<StreamController<dynamic>> streams;
+  late List<_Sink> sinks;
   late ExchangeNotificationDatasource datasource;
   late bool foreground;
 
@@ -47,6 +48,7 @@ void main() {
     foreground = true;
     ready = [];
     streams = [];
+    sinks = [];
     datasource = ExchangeNotificationDatasource(
       baseUrl: 'https://example.test',
       apiKeyDatasource: keys,
@@ -55,6 +57,7 @@ void main() {
       openChannel: (uri, headers) {
         final channel = _Channel();
         final sink = _Sink();
+        sinks.add(sink);
         final completion = Completer<void>();
         final stream = StreamController<dynamic>();
         ready.add(completion);
@@ -164,6 +167,40 @@ void main() {
     ready[0].completeError(StateError('obsolete handshake'));
     await failure;
     expect(datasource.isConnected, isTrue);
+  });
+
+  test(
+    'a programmer error on close reaches the uncaught error handler',
+    () async {
+      final errors = <Object>[];
+      await runZonedGuarded(() async {
+        final connecting = datasource.connect();
+        await Future<void>.delayed(Duration.zero);
+        ready.single.complete();
+        await connecting;
+        when(
+          () => sinks.single.close(),
+        ).thenAnswer((_) => Future<void>.error(StateError('broken close')));
+        datasource.disconnect();
+        await Future<void>.delayed(Duration.zero);
+      }, (error, trace) => errors.add(error));
+      expect(errors, [isA<StateError>()]);
+    },
+  );
+
+  test('a programmer stream error propagates without retrying', () async {
+    final errors = <Object>[];
+    await runZonedGuarded(() async {
+      final connecting = datasource.connect();
+      await Future<void>.delayed(Duration.zero);
+      ready.single.complete();
+      await connecting;
+      streams.single.addError(StateError('broken stream'));
+      await Future<void>.delayed(Duration.zero);
+      expect(datasource.isConnected, isFalse);
+    }, (error, trace) => errors.add(error));
+    expect(errors, [isA<StateError>()]);
+    expect(ready, hasLength(1));
   });
 
   test('DNS retries back off and stop after disposal', () {
