@@ -38,24 +38,27 @@ class ExchangeNotificationDatasource {
   Future<void> connect() async {
     if (_disposed || !_isForeground() || _connection != null) return;
     _cancelRetry();
-    final connection = _NotificationConnection();
+    final connection = _NotificationConnection(_openChannel);
     _connection = connection;
     try {
       final key = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (!_canContinue(connection)) return;
+      if (!identical(_connection, connection)) return;
+      if (!_isForeground()) {
+        disconnect();
+        return;
+      }
       if (key == null || !key.isActive) {
         _release(connection);
         log.fine('WebSocket connection skipped: user not authenticated');
         return;
       }
 
-      final channel = connection.open(Uri.parse(_buildWebSocketUrl()), {
-        'X-API-Key': key.key,
-      }, _openChannel);
-      // Handshake failures also arrive on the stream. Listen before ready,
-      // and let connection identity deduplicate the two failure paths.
-      connection.subscription = channel.stream.listen(
-        (message) {
+      // The attempt listens before awaiting ready. Its identity deduplicates
+      // stream errors and failed handshakes.
+      await connection.open(
+        Uri.parse(_buildWebSocketUrl()),
+        {'X-API-Key': key.key},
+        onMessage: (message) {
           if (identical(_connection, connection) && _isForeground()) {
             _handleMessage(message);
           }
@@ -70,8 +73,11 @@ class ExchangeNotificationDatasource {
         },
         onDone: () => _connectionLost(connection),
       );
-      await channel.ready;
-      if (!_canContinue(connection)) return;
+      if (!identical(_connection, connection)) return;
+      if (!_isForeground()) {
+        disconnect();
+        return;
+      }
       connection.isConnected = true;
       _retrySeconds = 5;
       log.fine('WebSocket connected successfully');
@@ -95,13 +101,6 @@ class ExchangeNotificationDatasource {
     _disposed = true;
     disconnect();
     unawaited(_messages.close());
-  }
-
-  bool _canContinue(_NotificationConnection connection) {
-    if (!identical(_connection, connection)) return false;
-    if (_isForeground()) return true;
-    disconnect();
-    return false;
   }
 
   void _release(_NotificationConnection connection) {
@@ -185,17 +184,23 @@ class ExchangeNotificationDatasource {
 /// Resources belong to one attempt, from handshake through disconnection.
 /// Replacing the attempt cannot accidentally close a newer socket.
 class _NotificationConnection {
+  final WebSocketChannel Function(Uri, Map<String, dynamic>)? _openChannel;
   WebSocketChannel? _channel;
   HttpClient? _client;
-  StreamSubscription<dynamic>? subscription;
+  StreamSubscription<dynamic>? _subscription;
   bool isConnected = false;
 
-  WebSocketChannel open(
+  _NotificationConnection(this._openChannel);
+
+  Future<void> open(
     Uri uri,
-    Map<String, dynamic> headers,
-    WebSocketChannel Function(Uri, Map<String, dynamic>)? openChannel,
-  ) {
+    Map<String, dynamic> headers, {
+    required void Function(dynamic) onMessage,
+    required void Function(Object, StackTrace) onError,
+    required void Function() onDone,
+  }) {
     final WebSocketChannel channel;
+    final openChannel = _openChannel;
     if (openChannel != null) {
       channel = openChannel(uri, headers);
     } else {
@@ -211,11 +216,16 @@ class _NotificationConnection {
       );
     }
     _channel = channel;
-    return channel;
+    _subscription = channel.stream.listen(
+      onMessage,
+      onError: onError,
+      onDone: onDone,
+    );
+    return channel.ready;
   }
 
   void close() {
-    final listener = subscription;
+    final listener = _subscription;
     if (listener != null) unawaited(listener.cancel());
     // Abort the native request too: a Future timeout alone leaves it alive.
     _client?.close(force: true);
