@@ -32,6 +32,10 @@ sealed class SellState with _$SellState {
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).
     String? payinBroadcastTxid,
+    // Set once the exchange reports, after the payin was broadcast, that the
+    // order's payment deadline expired before it saw the payment. The latch
+    // above stays: the order is paid as far as this device is concerned.
+    @Default(false) bool isPayinPastDeadline,
     SellFailure? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
@@ -252,6 +256,13 @@ extension SellPaymentStateX on SellPaymentState {
   /// The payin transaction is already broadcast, so preparing, signing and
   /// broadcasting again would risk paying the order twice.
   bool get isPayinBroadcast => payinBroadcastTxid != null;
+
+  /// Leaving is safe before the confirmation starts, and after the broadcast
+  /// only once the exchange has reported the payin late: until then the screen
+  /// is what takes the order to success. The broadcast latch survives leaving
+  /// and still forbids paying this order again.
+  bool get canLeavePaymentScreen =>
+      !isConfirmingPayment && (!isPayinBroadcast || isPayinPastDeadline);
 
   /// Fee the payin must be built at, resolved from the committed selection.
   /// Null while the presets have not loaded (or a custom fee was selected

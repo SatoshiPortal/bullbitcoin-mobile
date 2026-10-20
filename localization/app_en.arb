@@ -15687,5 +15687,13 @@
   "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
   "@sellQuoteExpiredError": {
     "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "exchangePaymentSentPastDeadline": "Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
+  "@exchangePaymentSentPastDeadline": {
+    "description": "Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment."
+  },
+  "exchangePaymentSentLeave": "Leave",
+  "@exchangePaymentSentLeave": {
+    "description": "Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline."
   }
 }
