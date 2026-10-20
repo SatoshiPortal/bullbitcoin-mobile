@@ -678,6 +678,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// repository's own internal fallback call sites, which intentionally
   /// bypass that guard (see its doc comment for why).
   Future<Payjoin?> _broadcastOriginalTransaction(Payjoin payjoin) async {
+    var broadcasted = false;
     try {
       final network = payjoin.isTestnet
           ? primitives.BitcoinNetwork.testnet
@@ -689,6 +690,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           network: network,
           transaction: payjoin.originalTxBytes!,
         );
+        broadcasted = true;
 
         model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       } else {
@@ -697,6 +699,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           network: network,
           psbt: payjoin.originalPsbt,
         );
+        broadcasted = true;
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
       }
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21
@@ -786,9 +789,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       return resolvedModel.toEntity();
     } catch (e) {
+      // A failure after the broadcast is a bookkeeping failure: the original
+      // is on the network, and reporting it as unsent would invite paying
+      // again.
       _log.severe(
-        message: 'Error broadcasting original transaction',
-        code: api.PayjoinLogCode.broadcastFailure,
+        message: broadcasted
+            ? 'Original transaction broadcast but not recorded'
+            : 'Error broadcasting original transaction',
+        code: broadcasted
+            ? api.PayjoinLogCode.storageFailure
+            : api.PayjoinLogCode.fallbackBroadcastFailed,
+        role: _roleOf(payjoin),
         sessionRef: payjoin.logRef,
         error: e,
         trace: StackTrace.current,
@@ -1178,9 +1189,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (freshModel == null || freshModel.isCompleted || freshModel.isAborted) {
       return;
     }
+    // Classified from what this device recorded, never from what the
+    // counterparty did: a poll failing on every relay leaves the same empty
+    // fields as a counterparty that never answered.
+    final expiryCode = switch (freshModel) {
+      PayjoinSenderModel(proposalPsbt: null) =>
+        api.PayjoinLogCode.expiredWithoutProposal,
+      PayjoinReceiverModel(originalTxBytes: null) =>
+        api.PayjoinLogCode.expiredWithoutOriginal,
+      _ => api.PayjoinLogCode.expiredMidNegotiation,
+    };
     _log.info(
       'Payjoin session expired',
-      code: api.PayjoinLogCode.sessionExpired,
+      code: expiryCode,
       role: _roleOf(freshModel),
       sessionRef: freshModel.toEntity().logRef,
     );

@@ -26,6 +26,16 @@ class _MockTransactionPort extends Mock implements PayjoinTransactionPort {}
 
 class _MockLabelsPort extends Mock implements PayjoinLabelsPort {}
 
+/// Records nothing as aborted: the write that follows a successful fallback
+/// broadcast is what fails.
+class _FailingAbortLocal extends LocalPayjoinDatasource {
+  _FailingAbortLocal({required super.db});
+
+  @override
+  Future<bool> markAborted(PayjoinModel payjoin) =>
+      Future.error(StateError('disk full'));
+}
+
 final class _CaptureLogPort implements PayjoinLogPort {
   final events = <PayjoinLogEvent>[];
 
@@ -284,16 +294,111 @@ void main() {
 
       await engine.resumePayjoinsOnStartup();
 
-      for (final code in [
-        PayjoinLogCode.sessionResumed,
-        PayjoinLogCode.sessionExpired,
-      ]) {
-        final event = logs.withCode(code).single;
-        expect(event.role, PayjoinLogRole.sender);
-        // A sender id is the payment request itself; only its digest leaves.
-        expect(event.sessionRef, matches(RegExp(r'^[0-9a-f]{16}$')));
-      }
+      final resumed = logs.withCode(PayjoinLogCode.sessionResumed).single;
+      expect(resumed.role, PayjoinLogRole.sender);
+      // A sender id is the payment request itself; only its digest leaves.
+      expect(resumed.sessionRef, matches(RegExp(r'^[0-9a-f]{16}$')));
     });
+
+    // Expiry events are matched by name so these tests compile, and fail for
+    // the right reason, against the engine that predates the new codes.
+    Iterable<PayjoinLogEvent> named(String name) =>
+        logs.events.where((event) => event.code.name == name);
+
+    test('a sender with no proposal recorded says only that', () async {
+      await local.storeSender(expiredSender());
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await engine.resumePayjoinsOnStartup();
+
+      final expired = named('expiredWithoutProposal').single;
+      expect(expired.role, PayjoinLogRole.sender);
+      // Polling may have failed on every relay: local absence is all the
+      // engine knows, so nothing may blame the counterparty.
+      expect(expired.code.description, isNot(contains('answer')));
+    });
+
+    test(
+      'a receiver that already proposed is not said to be unanswered',
+      () async {
+        final model =
+            receiver(
+              originalTransaction: Uint8List.fromList([1, 2, 3]),
+              originalTransactionId: 'original-tx',
+              proposalPsbt: 'cHNidP8=',
+              transactionId: 'payjoin-tx',
+            ).copyWith(
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+            );
+        await local.storeReceiver(model);
+
+        await engine.resumePayjoinsOnStartup();
+
+        final expired = named('expiredMidNegotiation').single;
+        expect(expired.role, PayjoinLogRole.receiver);
+        expect(expired.code.description, isNot(contains('answer')));
+      },
+    );
+
+    test(
+      'a failed fallback broadcast is told apart from a recorded one',
+      () async {
+        await local.storeSender(expiredSender());
+        when(
+          () => blockchain.broadcastPsbt(
+            network: any(named: 'network'),
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenThrow(StateError('electrum unavailable'));
+
+        await engine.resumePayjoinsOnStartup();
+
+        expect(named('fallbackBroadcastFailed'), isNotEmpty);
+        expect(logs.withCode(PayjoinLogCode.fallbackBroadcast), isEmpty);
+      },
+    );
+  });
+
+  test('a fallback broadcast that could not be recorded is not called a '
+      'broadcast failure', () async {
+    final failing = _FailingAbortLocal(db: database);
+    final failingEngine = PayjoinRepositoryImpl(
+      localPayjoinDatasource: failing,
+      pdkPayjoinDatasource: pdk,
+      log: PayjoinLogger(logs),
+      wallet: wallet,
+      blockchain: blockchain,
+      transactions: transactions,
+      policy: policy,
+      labels: labels,
+    );
+    addTearDown(failingEngine.dispose);
+    await failing.storeSender(expiredSender());
+    when(
+      () => blockchain.broadcastPsbt(
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenAnswer((_) async {});
+
+    await failingEngine.resumePayjoinsOnStartup();
+
+    // The original did reach the network: claiming it failed would send a
+    // user to re-pay an order that is already paid.
+    expect(logs.withCode(PayjoinLogCode.fallbackBroadcast), isNotEmpty);
+    expect(logs.withCode(PayjoinLogCode.broadcastFailure), isEmpty);
+    expect(
+      logs.events.where(
+        (event) => event.code.name == 'fallbackBroadcastFailed',
+      ),
+      isEmpty,
+    );
+    expect(logs.withCode(PayjoinLogCode.storageFailure), isNotEmpty);
   });
 
   test('receiver creation fails closed when policy is disabled', () async {
