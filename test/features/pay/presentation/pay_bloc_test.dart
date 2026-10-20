@@ -27,6 +27,8 @@ import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -329,7 +331,11 @@ void main() {
     bloc.seed(paymentState());
   });
 
-  tearDown(() => bloc.close());
+  // A test may have closed the bloc inside a fake-time zone; closing it again
+  // would wait on that zone forever.
+  tearDown(() async {
+    if (!bloc.isClosed) await bloc.close();
+  });
 
   group('Pay preparation lifecycle', () {
     test(
@@ -1007,6 +1013,148 @@ void main() {
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
         ),
       ).called(1);
+    });
+  });
+
+  group('PayBloc — quote refresh scheduling', () {
+    Future<Result<FiatPaymentOrder, PayFailure>> refreshCall() =>
+        refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        );
+
+    setUp(() {
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
+    });
+
+    // The scheduler's timers must be born inside the fake zone, so the bloc
+    // is rebuilt there from the state the outer setUp seeded.
+    Future<void> inFakeTime(void Function(FakeAsync) check) async {
+      final initial = bloc.state;
+      await bloc.close();
+      fakeAsync((time) {
+        bloc = _SeedablePayBloc(
+          loadPayUserSummaryUsecase: _MockLoadPayUserSummary(),
+          placePayOrderUsecase: _MockPlacePayOrder(),
+          refreshPayOrderUsecase: refreshPayOrder,
+          getPayOrderUsecase: getOrder,
+          estimatePayPayinFeesUsecase: estimatePayPayinFees,
+          preparePayBitcoinPayinUsecase: preparePayBitcoinPayin,
+          preparePayLiquidPayinUsecase: _MockPreparePayLiquidPayin(),
+          signPayPayinUsecase: signPayPayin,
+          broadcastPayPayinUsecase: broadcastPayPayin,
+          loadPayWalletUtxosUsecase: _MockLoadPayWalletUtxos(),
+          loadPayNetworkFeesUsecase: getNetworkFees,
+          calculatePayAbsoluteFeesUsecase: calculateBitcoinFees,
+          getPayPayinAddressUsecase: _MockGetPayPayinAddress(),
+          sendWithPayjoinUsecase: sendWithPayjoin,
+          watchPayjoinUsecase: watchPayjoin,
+          getPayjoinUsecase: getPayjoin,
+          previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
+          previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
+        );
+        bloc.seed(initial);
+        try {
+          check(time);
+        } finally {
+          unawaited(bloc.close());
+          time.flushMicrotasks();
+        }
+      });
+    }
+
+    test('overlapping refresh requests send one call', () async {
+      final response = Completer<Result<FiatPaymentOrder, PayFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      await pumpEventQueue();
+      verify(refreshCall).called(1);
+      response.complete(Ok(payOrder));
+      await pumpEventQueue();
+    });
+
+    test('a lapsed quote coming back is retried after five seconds', () {
+      return inFakeTime((time) {
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 4));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(seconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a failed refresh has a deferred successor', () {
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(PayUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a fresh lock is refreshed at its exact deadline', () {
+      // The countdown widget fires up to a second early; the bloc no longer
+      // listens to it and arms its own timer at the instant the lock lapses.
+      return inFakeTime((time) {
+        when(
+          () => payOrder.confirmationDeadline,
+        ).thenReturn(clock.now().add(const Duration(milliseconds: 500)));
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(milliseconds: 499));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(milliseconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('retries stop with a typed failure once the budget is spent', () {
+      return inFakeTime((time) {
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        // Six retries, five seconds apart, after the first lapsed answer.
+        time.elapse(const Duration(seconds: 30));
+        time.flushMicrotasks();
+        verify(refreshCall).called(7);
+        expect(
+          (bloc.state as PayPaymentState).error,
+          isA<PayQuoteUnavailableFailure>(),
+        );
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('leaving cancels the pending retry', () {
+      return inFakeTime((time) {
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        bloc.add(const PayEvent.paymentPreparationAbandoned());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
     });
   });
 

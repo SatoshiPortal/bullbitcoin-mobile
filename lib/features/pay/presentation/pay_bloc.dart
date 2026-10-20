@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -70,7 +71,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
     on<PayWalletSelected>(_onWalletSelected);
     on<PayPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
-    on<PayOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
+    on<PayOrderRefreshTimePassed>(
+      _onOrderRefreshTimePassed,
+      transformer: droppable(), // One quote request on the wire at a time
+    );
+    on<PayQuoteRefreshGaveUp>(_onQuoteRefreshGaveUp);
     on<PaySendPaymentConfirmed>(
       _onSendPaymentConfirmed,
       transformer: droppable(),
@@ -113,6 +118,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
+
+  /// Asks for a fresh quote when the order's price lock lapses, and keeps
+  /// asking at a bounded pace while the exchange hands back lapsed ones. The
+  /// countdown on screen is display only; this is the single trigger.
+  late final OrderDeadlineScheduler _quoteScheduler = OrderDeadlineScheduler(
+    onDue: () => add(const PayEvent.orderRefreshTimePassed()),
+    onGiveUp: () => add(const PayEvent.quoteRefreshGaveUp()),
+  );
   bool _isOrderRequestInFlight = false;
   String? _pendingOrderStatusUpdateId;
   StreamSubscription<Result<PayjoinSession, PayFailure>>? _payjoinSubscription;
@@ -240,6 +253,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
     _stopPolling();
+    _quoteScheduler.cancel();
     final selection = state.cleanWalletSelectionState;
     if (selection != null) emit(selection);
   }
@@ -331,6 +345,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
         ),
       );
       if (!isCurrent()) return;
+      _quoteScheduler.track(createdPayOrder.confirmationDeadline);
       _startPolling();
       return;
     }
@@ -367,6 +382,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       ),
     );
     if (!isCurrent()) return;
+    _quoteScheduler.track(createdPayOrder.confirmationDeadline);
     _startPolling();
   }
 
@@ -415,6 +431,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
         if (!isCurrent()) return;
         emit(walletSelectionState.toReceivePaymentState(payOrder: value));
         if (!isCurrent()) return;
+        _quoteScheduler.track(value.confirmationDeadline);
         _startPolling();
     }
   }
@@ -451,6 +468,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     switch (result) {
       case Err(:final failure):
         emit(current.copyWith(error: failure));
+        _quoteScheduler.refreshFailed();
       case Ok(:final value):
         final refreshed = current.copyWith(payOrder: value);
         // A new price lock moves the payin amount, which invalidates every
@@ -460,7 +478,25 @@ class PayBloc extends Bloc<PayEvent, PayState>
               ? refreshed
               : _clearedFeePreviews(refreshed),
         );
+        // A lapsed lock coming back is a retry, not a new quote: the scheduler
+        // paces it rather than asking again at the speed of the response.
+        _quoteScheduler.track(value.confirmationDeadline);
     }
+  }
+
+  /// The retries ran out without a usable quote: say so instead of spinning.
+  /// Confirm stays live; a tap on a lapsed quote asks for a fresh one again.
+  void _onQuoteRefreshGaveUp(
+    PayQuoteRefreshGaveUp event,
+    Emitter<PayState> emit,
+  ) {
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.isConfirmingPayment ||
+        current.isPayinBroadcast) {
+      return;
+    }
+    emit(current.copyWith(error: const PayQuoteUnavailableFailure()));
   }
 
   // From Sell: Send payment for internal wallets
@@ -1168,6 +1204,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   }
 
   void _latchBroadcast(Emitter<PayState> emit, String txid) {
+    // The payin pays this quote; there is nothing left to refresh.
+    _quoteScheduler.cancel();
     final current = _currentPaymentState;
     if (current == null) return;
     emit(
@@ -1233,9 +1271,13 @@ class PayBloc extends Bloc<PayEvent, PayState>
     if (current == null || current.isPayinBroadcast) return;
     emit(current.copyWith(error: error, isConfirmingPayment: false));
 
+    // Confirm is live again. If the lock lapsed during this failed attempt,
+    // the refresh the scheduler fired meanwhile was skipped as in flight, so
+    // ask now — unless a retry is already on its way.
     final confirmationDeadline = current.payOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
-        !confirmationDeadline.isAfter(DateTime.now())) {
+        !confirmationDeadline.isAfter(DateTime.now()) &&
+        !_quoteScheduler.isPending) {
       add(const PayEvent.orderRefreshTimePassed());
     }
   }
@@ -1597,6 +1639,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   Future<void> close() async {
     ++_paymentPreparationGeneration;
     _stopPolling();
+    _quoteScheduler.dispose();
     await _payjoinSubscription?.cancel();
     return super.close();
   }

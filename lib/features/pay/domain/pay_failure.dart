@@ -77,6 +77,12 @@ final class PayQuoteExpiredFailure extends PayFailure {
   const PayQuoteExpiredFailure([super.logMessage]);
 }
 
+/// The lock lapsed and the bounded retries brought no usable quote back:
+/// every answer was lapsed too, or the requests failed. Nothing was paid.
+final class PayQuoteUnavailableFailure extends PayFailure {
+  const PayQuoteUnavailableFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation
