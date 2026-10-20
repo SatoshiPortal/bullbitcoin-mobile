@@ -230,6 +230,31 @@ void main() {
     expect(warning, isNot(contains('private-relay')));
   });
 
+  test('a relay rejection does not imply an unreachable directory', () {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+    final request = RequestOptions(path: 'https://private-relay/x');
+
+    const AppPayjoinLogAdapter().write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.relayFailure,
+        error: DioException(
+          requestOptions: request,
+          response: Response<void>(requestOptions: request, statusCode: 403),
+          type: DioExceptionType.badResponse,
+        ),
+      ),
+    );
+
+    final warning = verify(() => logger.warning(captureAny())).captured.single;
+    expect(warning, contains('cause=DioException.badResponse(403)'));
+    expect(warning, isNot(contains('unreachable')));
+    expect(warning, isNot(contains('private-relay')));
+  });
+
   test('foreign warning and severe causes cannot leak payment data', () {
     final previousLogger = log;
     final logger = _MockLogger();

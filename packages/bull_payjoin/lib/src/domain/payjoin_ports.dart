@@ -268,7 +268,7 @@ enum PayjoinLogCode {
   fallbackBroadcast('Original transaction broadcast instead of a payjoin'),
   fallbackObserved('Original transaction seen on the network instead'),
   fallbackBroadcastFailed('Original transaction could not be broadcast'),
-  relayFailure('Payjoin directory unreachable through every OHTTP relay'),
+  relayFailure('Payjoin directory request failed through every OHTTP relay'),
   walletFailure('Wallet operation failed'),
   signingFailure('Signing failed'),
   broadcastFailure('Broadcast failed'),
