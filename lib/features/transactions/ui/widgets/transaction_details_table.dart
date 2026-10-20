@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -17,7 +16,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem, BullText, Gap;
+    show BullDetailsTable, BullDetailsTableItem, BullSnackBar, BullText, Gap;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -27,7 +26,8 @@ class TransactionDetailsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Keep the copy confirmation at the top, like the rest of this screen.
-    void showCopied() => SnackBarUtils.showCopiedSnackBar(context);
+    void showCopied() =>
+        BullSnackBar.show(context, message: context.loc.copiedToClipboard);
     final transaction = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );

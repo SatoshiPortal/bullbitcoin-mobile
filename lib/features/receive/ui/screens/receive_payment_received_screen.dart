@@ -1,8 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
@@ -11,7 +8,8 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, BullTopBar, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,7 +28,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
+          flexibleSpace: BullTopBar(
             title: context.loc.receiveTitle,
             actionIcon: Icons.close,
             onAction: () => context.go(WalletRoute.walletHome.path),
@@ -71,7 +69,7 @@ class PaymentReceivedPage extends StatelessWidget {
             width: 100,
           ),
           const Gap(20),
-          BBText(
+          BullText(
             context.loc.receivePaymentReceived,
             style: context.font.headlineLarge,
           ),
@@ -82,7 +80,7 @@ class PaymentReceivedPage extends StatelessWidget {
             style: context.font.displaySmall,
           ),
           const Gap(4),
-          BBText(
+          BullText(
             '~$amountFiat',
             style: context.font.bodyLarge,
             color: context.appColors.onSurfaceVariant,
@@ -103,7 +101,7 @@ class ReceiveDetailsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.receiveDetails,
         onPressed: () {
           final target = receiveDetailsTarget(

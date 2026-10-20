@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInfoCard, BullSegmented, BullShimmerBox, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -88,7 +87,7 @@ class _SpReusableAddressTab extends StatelessWidget {
             const Gap(16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: InfoCard(
+              child: BullInfoCard(
                 title: context.loc.spReceiveManualScanRequired,
                 description: context.loc.spReceiveReusableInfo,
                 tagColor: context.appColors.tertiary,
@@ -159,7 +158,7 @@ class _SpTaprootReceiveTab extends StatelessWidget {
           const Gap(24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BBButton.big(
+            child: BullButton.big(
               label: hasAddress
                   ? context.loc.spReceiveGenerateNewAddress
                   : context.loc.spReceiveGenerateAddress,

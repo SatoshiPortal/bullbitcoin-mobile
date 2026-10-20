@@ -7,13 +7,9 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
@@ -27,7 +23,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullShimmerLine, Gap;
+    show
+        BullBorderedTile,
+        BullButton,
+        BullInfoCard,
+        BullShimmerLine,
+        BullSnackBar,
+        BullText,
+        Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -162,7 +165,7 @@ class ReceiveQRDetails extends StatelessWidget {
           Center(child: QrDisplayWidget(data: qrData, size: 217)),
           Gap(gap),
           if (isBitcoin && isPayjoinAwaitingFunds) ...[
-            InfoCard(
+            BullInfoCard(
               description: context.loc.receivePayjoinAwaitingFunds,
               tagColor: context.appColors.secondary,
               bgColor: context.appColors.onSecondary,
@@ -170,7 +173,7 @@ class ReceiveQRDetails extends StatelessWidget {
             Gap(gap),
           ],
           if (isBitcoin && isPayjoinSuppressedByAmount) ...[
-            InfoCard(
+            BullInfoCard(
               description: context.loc.receivePayjoinBelowMinimumAmount,
               tagColor: context.appColors.secondary,
               bgColor: context.appColors.onSecondary,
@@ -198,7 +201,10 @@ class ReceiveQRDetails extends StatelessWidget {
                       : addressOrInvoiceOnly,
                 ),
               );
-              SnackBarUtils.showCopiedSnackBar(context);
+              BullSnackBar.show(
+                context,
+                message: context.loc.copiedToClipboard,
+              );
             },
             child: Row(
               children: [
@@ -206,7 +212,7 @@ class ReceiveQRDetails extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
-                      BBText(
+                      BullText(
                         isLightning
                             ? context.loc.receiveLightningInvoice
                             : context.loc.receiveAddress,
@@ -291,7 +297,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.receiveAdditionalInformation,
                         style: context.font.bodyLarge,
                         color: context.appColors.secondary,
@@ -301,7 +307,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                       // always show the BTC value; when the user entered in
                       // another unit (sats or fiat), show that alongside.
                       if (amountSat != null)
-                        BBText(
+                        BullText(
                           '${context.loc.coreScreensAmountLabel}: '
                           '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
                           '$enteredUnitSuffix',
@@ -310,14 +316,14 @@ class ReceiveInfoDetails extends StatelessWidget {
                           overflow: .ellipsis,
                         ),
                       if (note.isNotEmpty)
-                        BBText(
+                        BullText(
                           '${context.loc.receiveMessageForSender}: $note',
                           style: context.font.bodyMedium,
                           maxLines: 2,
                           overflow: .ellipsis,
                         ),
                       if (amountSat == null && note.isEmpty)
-                        BBText(
+                        BullText(
                           context.loc.receiveAdditionalInformationPlaceholder,
                           style: context.font.bodyMedium,
                           color: context.appColors.onSurfaceVariant,
@@ -380,7 +386,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             child: Row(
               crossAxisAlignment: .start,
               children: [
-                BBText(
+                BullText(
                   context.loc.transactionLabelSendAmount,
                   style: context.font.bodySmall,
                   color: context.appColors.onSurfaceVariant,
@@ -395,7 +401,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                       style: context.font.bodyMedium,
                       color: context.appColors.secondary,
                     ),
-                    BBText(
+                    BullText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,
                       color: context.appColors.onSurfaceVariant,
@@ -411,7 +417,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             child: Row(
               crossAxisAlignment: .start,
               children: [
-                BBText(
+                BullText(
                   context.loc.receiveReceiveAmount,
                   style: context.font.bodySmall,
                   color: context.appColors.onSurfaceVariant,
@@ -439,14 +445,14 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
                 children: [
-                  BBText(
+                  BullText(
                     context.loc.receiveNote,
                     style: context.font.labelSmall,
                     color: context.appColors.onSurfaceVariant,
                   ),
                   const Gap(24),
                   Expanded(
-                    child: BBText(
+                    child: BullText(
                       note.isNotEmpty ? note : '',
                       style: context.font.bodyMedium,
                       color: context.appColors.secondary,
@@ -488,7 +494,7 @@ class ReceiveLnSwapID extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          BBText(
+          BullText(
             context.loc.swapTransferTitle,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
@@ -501,7 +507,7 @@ class ReceiveLnSwapID extends StatelessWidget {
               padding: EdgeInsets.zero,
             )
           else ...[
-            BBText(
+            BullText(
               orderNumber?.toString() ??
                   StringFormatting.truncateMiddle(identifier),
               style: context.font.bodyLarge,
@@ -541,7 +547,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          BBText(
+          BullText(
             label,
             style: context.font.bodySmall,
             color: context.appColors.onSurfaceVariant,
@@ -571,7 +577,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
             padding: const EdgeInsets.only(bottom: 12),
             child: Row(
               children: [
-                BBText(
+                BullText(
                   context.loc.receiveTotalFee,
                   style: context.font.bodySmall,
                   color: context.appColors.onSurfaceVariant,
@@ -604,7 +610,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           },
           child: Row(
             children: [
-              BBText(
+              BullText(
                 context.loc.receiveTotalFee,
                 style: context.font.bodySmall,
                 color: context.appColors.onSurfaceVariant,
@@ -629,7 +635,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           Container(color: context.appColors.surface, height: 1),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: BBText(
+            child: BullText(
               context.loc.receiveFeeExplanation,
               style: context.font.labelSmall,
               color: context.appColors.onSurfaceVariant,
@@ -672,7 +678,7 @@ class ReceiveNewAddressButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.receiveNewAddress,
         onPressed: () {
           context.read<ReceiveBloc>().add(
@@ -693,15 +699,15 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.receiveVerifyAddressLedger,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.receiveVerifyAddressError,
+              message: context.loc.receiveVerifyAddressError,
             );
             return;
           }
@@ -737,15 +743,15 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.bitboxActionVerifyAddressTitle,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.receiveVerifyAddressError,
+              message: context.loc.receiveVerifyAddressError,
             );
             return;
           }
