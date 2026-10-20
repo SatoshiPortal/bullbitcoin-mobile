@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -54,6 +55,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }
 
   int _orderCreationGeneration = 0;
+  bool _isQuoteConfirmed = false;
+  Timer? _quoteRetryTimer;
+  static const _quoteRetryDelay = Duration(seconds: 5);
 
   final LoadBuyContextUsecase _loadBuyContextUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
@@ -204,6 +208,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
 
+    _cancelQuoteRetry();
+    _isQuoteConfirmed = false;
     final generation = ++_orderCreationGeneration;
     bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
     // Navigation starts with this emission, before cleanup, address lookup or
@@ -281,6 +287,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
     final abandonedOrder = state.buyOrder;
+    _cancelQuoteRetry();
+    _isQuoteConfirmed = false;
     ++_orderCreationGeneration;
     emit(
       state.copyWith(
@@ -315,6 +323,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyRefreshOrder event,
     Emitter<BuyState> emit,
   ) async {
+    if (_quoteRetryTimer?.isActive ?? false) return;
     final orderId = event.orderId ?? state.buyOrder?.orderId;
     if (orderId == null) {
       log.severe(
@@ -359,8 +368,46 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       if (!isCurrent()) return;
       emit(state.copyWith(buyOrder: order));
     } finally {
-      if (isCurrent()) emit(state.copyWith(isRefreshingOrder: false));
+      if (isCurrent()) {
+        emit(state.copyWith(isRefreshingOrder: false));
+        _scheduleQuoteRetry();
+      }
     }
+  }
+
+  void _cancelQuoteRetry() {
+    _quoteRetryTimer?.cancel();
+    _quoteRetryTimer = null;
+  }
+
+  void _scheduleQuoteRetry() {
+    _cancelQuoteRetry();
+    final order = state.buyOrder;
+    final deadline = order?.confirmationDeadline;
+    if (isClosed ||
+        _isQuoteConfirmed ||
+        state.isConfirmingOrder ||
+        order == null ||
+        deadline == null ||
+        deadline.isAfter(DateTime.now()) ||
+        order.isPayinCompleted) {
+      return;
+    }
+    final generation = _orderCreationGeneration;
+    // A response may contain another expired lock. Defer instead of allowing
+    // the countdown's next rebuild to create an HTTP-speed refresh loop.
+    _quoteRetryTimer = Timer(_quoteRetryDelay, () {
+      _quoteRetryTimer = null;
+      if (isClosed ||
+          _isQuoteConfirmed ||
+          generation != _orderCreationGeneration ||
+          state.buyOrder?.orderId != order.orderId ||
+          state.isConfirmingOrder ||
+          state.buyOrder?.isPayinCompleted == true) {
+        return;
+      }
+      add(const BuyEvent.refreshOrder());
+    });
   }
 
   Future<void> _onConfirmOrder(
@@ -381,6 +428,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
 
+    _cancelQuoteRetry();
     try {
       emit(state.copyWith(isConfirmingOrder: true, failure: null));
 
@@ -391,8 +439,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       switch (confirmResult) {
         case Ok(:final value):
           confirmedOrder = value;
+          _isQuoteConfirmed = true;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
+          // The maintained countdown already consumed its one timeout while
+          // confirmation was in flight. A failed confirmation needs a new quote.
+          final deadline = state.buyOrder?.confirmationDeadline;
+          if (deadline != null && !deadline.isAfter(DateTime.now())) {
+            add(const BuyEvent.refreshOrder());
+          }
           return;
       }
       final order = confirmedOrder.bip21URI == null
@@ -418,6 +473,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
   @override
   Future<void> close() async {
+    _cancelQuoteRetry();
     ++_orderCreationGeneration;
     await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();

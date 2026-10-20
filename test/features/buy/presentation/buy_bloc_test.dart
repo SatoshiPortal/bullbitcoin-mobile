@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
@@ -57,7 +59,10 @@ class _MockLabelCompletedBuyOrderUsecase extends Mock
     implements LabelCompletedBuyOrderUsecase {}
 
 void main() {
-  setUpAll(() => registerFallbackValue(const FiatAmount(100)));
+  setUpAll(() {
+    registerFallbackValue(const FiatAmount(100));
+    registerFallbackValue(_MockBuyOrder());
+  });
 
   group('order preparation', () {
     late _SeedableBuyBloc bloc;
@@ -250,6 +255,175 @@ void main() {
       verify(() => cancelAbandonedPayjoin.execute(order)).called(1);
     },
   );
+
+  group('quote refresh scheduling', () {
+    late _SeedableBuyBloc bloc;
+    late _MockRefreshBuyOrderUsecase refresh;
+    late _MockConfirmBuyOrderUsecase confirm;
+    late _MockCancelAbandonedBuyPayjoinUsecase cancel;
+    late BuyOrder order;
+    late _MockLabelCompletedBuyOrderUsecase labels;
+
+    setUp(() {
+      refresh = _MockRefreshBuyOrderUsecase();
+      confirm = _MockConfirmBuyOrderUsecase();
+      cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+      labels = _MockLabelCompletedBuyOrderUsecase();
+      order = BuyOrder(
+        orderId: 'quote-order',
+        orderType: OrderType.buy,
+        message: OrderMessage(code: '', message: ''),
+        orderNumber: 1,
+        payinAmount: 100,
+        payinCurrency: 'CAD',
+        payoutAmount: 0.001,
+        payoutCurrency: 'BTC',
+        payinMethod: OrderPaymentMethod.cadBalance,
+        payoutMethod: OrderPaymentMethod.bitcoin,
+        orderStatus: OrderStatus.inProgress,
+        payinStatus: OrderPayinStatus.awaitingPayment,
+        payoutStatus: OrderPayoutStatus.notStarted,
+        confirmationDeadline: DateTime.now().subtract(
+          const Duration(minutes: 1),
+        ),
+        createdAt: DateTime.now(),
+        isTestnet: true,
+      );
+      when(() => cancel.execute(any())).thenAnswer((_) async => const Ok(null));
+      when(
+        () => refresh.execute(orderId: 'quote-order'),
+      ).thenAnswer((_) async => Ok(order));
+      when(
+        () => labels.execute(order: any(named: 'order')),
+      ).thenAnswer((_) async => const Ok(null));
+      bloc = _SeedableBuyBloc(
+        loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
+        confirmBuyOrderUsecase: confirm,
+        createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+        refreshBuyOrderUsecase: refresh,
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        cancelAbandonedBuyPayjoinUsecase: cancel,
+        getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+        labelCompletedBuyOrderUsecase: labels,
+      );
+      bloc.seed(BuyState(buyOrder: order));
+    });
+    tearDown(() async {
+      if (!bloc.isClosed) await bloc.close();
+    });
+
+    Future<void> inFakeTime(void Function(FakeAsync) check) async {
+      final initial = bloc.state;
+      await bloc.close();
+      fakeAsync((time) {
+        bloc = _SeedableBuyBloc(
+          loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
+          confirmBuyOrderUsecase: confirm,
+          createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+          refreshBuyOrderUsecase: refresh,
+          accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+          cancelAbandonedBuyPayjoinUsecase: cancel,
+          getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+          labelCompletedBuyOrderUsecase: labels,
+        );
+        bloc.seed(initial);
+        try {
+          check(time);
+        } finally {
+          unawaited(bloc.close());
+          time.flushMicrotasks();
+        }
+      });
+    }
+
+    test('a failed confirmation refreshes an expired quote once', () async {
+      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer(
+        (_) async => const Err(BuyUnexpectedFailure('confirmation failed')),
+      );
+      bloc.add(const BuyEvent.confirmOrder());
+      await pumpEventQueue();
+      verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+    });
+
+    test('a failed confirmation leaves a future quote alone', () async {
+      bloc.seed(
+        BuyState(
+          buyOrder: order.copyWith(
+            confirmationDeadline: DateTime.now().add(
+              const Duration(minutes: 5),
+            ),
+          ),
+        ),
+      );
+      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer(
+        (_) async => const Err(BuyUnexpectedFailure('confirmation failed')),
+      );
+      bloc.add(const BuyEvent.confirmOrder());
+      await pumpEventQueue();
+      verifyNever(() => refresh.execute(orderId: 'quote-order'));
+    });
+
+    test('a confirmed order does not start its own quote refresh loop', () {
+      when(
+        () => confirm.execute(orderId: 'quote-order'),
+      ).thenAnswer((_) async => Ok(order));
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.confirmOrder());
+        time.flushMicrotasks();
+        // A successful confirmation need not report payin completed yet.
+        expect(bloc.state.buyOrder?.isPayinCompleted, isFalse);
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(() => refresh.execute(orderId: 'quote-order'));
+      });
+    });
+
+    test('expired responses and countdown callbacks wait five seconds', () {
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 4));
+        time.flushMicrotasks();
+        verifyNever(() => refresh.execute(orderId: 'quote-order'));
+        time.elapse(const Duration(seconds: 1));
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+      });
+    });
+
+    test('a failed expired refresh retries after five seconds', () {
+      when(
+        () => refresh.execute(orderId: 'quote-order'),
+      ).thenAnswer((_) async => const Err(BuyUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+      });
+    });
+
+    test('abandonment cancels the pending quote retry', () {
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(() => refresh.execute(orderId: 'quote-order')).called(1);
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(() => refresh.execute(orderId: 'quote-order'));
+      });
+    });
+  });
 
   test('overlapping order refreshes send one request', () async {
     final refresh = _MockRefreshBuyOrderUsecase();
