@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -11,6 +13,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/payjoin_runtime_adapters.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -98,6 +101,110 @@ void main() {
     ).thenAnswer((_) async => null);
   });
 
+  test('session milestones reach the exported log file', () async {
+    final previousLogger = log;
+    final directory = await Directory.systemTemp.createTemp('payjoin_logs');
+    addTearDown(() async {
+      log = previousLogger;
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(directory: directory);
+    await log.ensureLogsExist(writeDiagnosticContext: false);
+    const adapter = AppPayjoinLogAdapter();
+
+    adapter.write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.info,
+        code: PayjoinLogCode.sessionStarted,
+        sessionRef: '0123456789abcdef',
+      ),
+    );
+
+    final lines = await log.readLogs();
+    expect(
+      lines.where((line) => line.contains('0123456789abcdef')),
+      hasLength(1),
+      reason: 'an exported log must show how a payjoin attempt progressed',
+    );
+  });
+
+  test('polling chatter stays out of the exported log file', () async {
+    final previousLogger = log;
+    final directory = await Directory.systemTemp.createTemp('payjoin_logs');
+    addTearDown(() async {
+      log = previousLogger;
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(directory: directory);
+    await log.ensureLogsExist(writeDiagnosticContext: false);
+    const adapter = AppPayjoinLogAdapter();
+
+    adapter.write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.debug,
+        code: PayjoinLogCode.lifecycle,
+        sessionRef: '0123456789abcdef',
+      ),
+    );
+    adapter.write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.info,
+        code: PayjoinLogCode.lifecycle,
+        sessionRef: '0123456789abcdef',
+      ),
+    );
+
+    expect(
+      (await log.readLogs()).where((line) => line.contains('Payjoin')),
+      isEmpty,
+    );
+  });
+
+  test('a milestone names its side, step and session', () {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+
+    const AppPayjoinLogAdapter().write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.info,
+        code: PayjoinLogCode.proposalReceived,
+        role: PayjoinLogRole.sender,
+        sessionRef: '0123456789abcdef',
+      ),
+    );
+
+    expect(
+      verify(() => logger.fine(captureAny())).captured.single,
+      'Payjoin sender proposalReceived: Payjoin proposal received from the '
+      'receiver ref=0123456789abcdef',
+    );
+  });
+
+  test('a relay failure keeps its transport kind but not its URL', () {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+
+    const AppPayjoinLogAdapter().write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.relayFailure,
+        role: PayjoinLogRole.sender,
+        error: DioException.connectionError(
+          requestOptions: RequestOptions(path: 'https://private-relay/x'),
+          reason: 'Failed host lookup: private-relay',
+        ),
+      ),
+    );
+
+    final warning = verify(() => logger.warning(captureAny())).captured.single;
+    expect(warning, contains('cause=DioException.connectionError'));
+    expect(warning, isNot(contains('private-relay')));
+  });
+
   test('foreign warning and severe causes cannot leak payment data', () {
     final previousLogger = log;
     final logger = _MockLogger();
@@ -120,7 +227,11 @@ void main() {
       );
     }
     final warning = verify(() => logger.warning(captureAny())).captured.single;
-    expect(warning, 'Payjoin watchFailure 0123456789abcdef _Exception');
+    expect(
+      warning,
+      'Payjoin watchFailure: Transaction watch failed '
+      'ref=0123456789abcdef cause=_Exception',
+    );
     final errors = verify(
       () => logger.severe(
         message: captureAny(named: 'message'),
