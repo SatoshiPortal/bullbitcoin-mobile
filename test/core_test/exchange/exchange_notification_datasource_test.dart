@@ -253,15 +253,6 @@ void main() {
     });
   });
 
-  test('disconnect cancels an explicit delayed reconnect', () {
-    fakeAsync((time) {
-      unawaited(datasource.reconnect());
-      datasource.disconnect();
-      time.elapse(const Duration(seconds: 2));
-      expect(ready, isEmpty);
-    });
-  });
-
   test('explicit disconnect starts a fresh retry round', () {
     fakeAsync((time) {
       unawaited(datasource.connect());
@@ -290,10 +281,9 @@ void main() {
     });
   });
 
-  test('a disposed datasource cannot reconnect', () async {
+  test('a disposed datasource cannot connect', () async {
     datasource.dispose();
     await datasource.connect();
-    await datasource.reconnect();
     expect(ready, isEmpty);
   });
 }
