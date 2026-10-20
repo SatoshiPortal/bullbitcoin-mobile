@@ -265,12 +265,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                         ),
                         const Gap(4),
                         BullCountdown(
-                          until: payjoinExpiresAt.add(
-                            const Duration(
-                              seconds:
-                                  PayjoinConstants.directoryPollingInterval,
-                            ),
-                          ),
+                          until: payjoinExpiresAt,
                           onTimeout: () {},
                         ),
                       ],

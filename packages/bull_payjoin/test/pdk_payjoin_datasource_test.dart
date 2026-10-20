@@ -248,7 +248,64 @@ void main() {
   });
 
   group('polling lifecycle', () {
-    PayjoinSenderModel expiredSender() =>
+    const retryDelay = Duration(
+      seconds: PayjoinConstants.directoryMinPollSpacingSec,
+    );
+    // BIP 173 test vector: a valid testnet P2WPKH address.
+    const receiverAddress = 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx';
+
+    setUpAll(() {
+      registerFallbackValue(RequestOptions(path: 'https://relay.example'));
+      registerFallbackValue(Options());
+      registerFallbackValue(CancelToken());
+    });
+
+    /// A receiver whose PDK session is really initialized, so a poll gets as
+    /// far as the relay request; [expireAfterSec] bounds the engine-side
+    /// expiry the poll enforces. With [cancelled], the PDK session is closed,
+    /// so a poll replays to a state the request poll no longer serves.
+    PayjoinReceiverModel initializedReceiver({
+      required int expireAfterSec,
+      bool cancelled = false,
+    }) {
+      final persister = InMemoryJsonReceiverSessionPersister();
+      final initialized = ReceiverBuilder(
+        address: receiverAddress,
+        directory: PayjoinConstants.directoryUrl,
+        ohttpKeys: _fakeOhttpKeys(),
+      ).withExpiration(expirationSecs: 3600).build().save(persister: persister);
+      if (cancelled) initialized.cancel().save(persister: persister);
+      return PayjoinModel.receiver(
+            id: 'receiver-1',
+            address: receiverAddress,
+            isTestnet: true,
+            receiver: persister.toJson(),
+            walletId: 'w1',
+            pjUri:
+                'bitcoin:$receiverAddress?pj=${PayjoinConstants.directoryUrl}',
+            maxFeeRateSatPerVb: BigInt.from(100),
+            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            expireAfterSec: expireAfterSec,
+          )
+          as PayjoinReceiverModel;
+    }
+
+    _MockDio relayDio() {
+      final dio = _MockDio();
+      when(() => dio.options).thenReturn(BaseOptions());
+      return dio;
+    }
+
+    Future<Response<List<int>>> Function(Invocation) throwingRelay() =>
+        (invocation) async => throw DioException(
+          requestOptions: RequestOptions(path: 'https://relay.example'),
+          type: DioExceptionType.connectionError,
+        );
+
+    PayjoinSenderModel sender({
+      required int createdAt,
+      required int expireAfterSec,
+    }) =>
         PayjoinModel.sender(
               uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
               isTestnet: true,
@@ -257,10 +314,13 @@ void main() {
               originalPsbt: 'cHNidP8=',
               originalTxId: 'orig-txid',
               amountSat: 50000,
-              createdAt: 0,
-              expireAfterSec: 300,
+              createdAt: createdAt,
+              expireAfterSec: expireAfterSec,
             )
             as PayjoinSenderModel;
+
+    PayjoinSenderModel expiredSender() =>
+        sender(createdAt: 0, expireAfterSec: 300);
 
     test('stopPolling prevents a pending expiry event', () {
       fakeAsync((async) {
@@ -274,13 +334,157 @@ void main() {
 
         datasource.startListeningForProposal(model);
         datasource.stopPolling(model.id);
-        async.elapse(
-          const Duration(
-            seconds: PayjoinConstants.directoryPollingInterval * 3,
+        async.elapse(retryDelay * 3);
+
+        expect(events, isEmpty);
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('the first poll goes out right away', () {
+      fakeAsync((async) {
+        final dio = relayDio();
+        when(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).thenAnswer(throwingRelay());
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: dio,
+        );
+
+        datasource.startListeningForRequest(
+          initializedReceiver(expireAfterSec: 3600),
+        );
+        // No time passes: the request is already on its way to a relay.
+        async.flushMicrotasks();
+        async.elapse(Duration.zero);
+
+        verify(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).called(greaterThan(0));
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('a failed poll is retried after the retry delay', () {
+      fakeAsync((async) {
+        final dio = relayDio();
+        when(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).thenAnswer(throwingRelay());
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: dio,
+        );
+        final relays = PayjoinConstants.ohttpRelayUrlsBase.length;
+
+        datasource.startListeningForRequest(
+          initializedReceiver(expireAfterSec: 3600),
+        );
+        async.elapse(Duration.zero);
+        verify(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).called(relays);
+
+        async.elapse(retryDelay - const Duration(milliseconds: 1));
+        verifyNever(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
           ),
         );
 
+        async.elapse(const Duration(milliseconds: 1));
+        verify(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).called(relays);
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('the expiry cuts a held poll short and settles the session', () {
+      fakeAsync((async) {
+        final dio = relayDio();
+        CancelToken? seenToken;
+        // A relay that holds the request until the poll's token is cancelled,
+        // the way the directory holds an empty GET.
+        when(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).thenAnswer((invocation) async {
+          final token = invocation.namedArguments[#cancelToken] as CancelToken;
+          seenToken = token;
+          throw await token.whenCancel;
+        });
+        // The datasource reads the fake clock, so the expiry moves with
+        // async.elapse rather than with wall time.
+        final start = DateTime.now();
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: dio,
+          now: () => start.add(async.elapsed),
+        );
+        final events = <PayjoinModel>[];
+        datasource.expiredPayjoins.listen(events.add);
+        final model = initializedReceiver(expireAfterSec: 2);
+        final untilExpiry = DateTime.fromMillisecondsSinceEpoch(
+          model.expiresAt * 1000,
+        ).difference(start);
+
+        datasource.startListeningForRequest(model);
+        async.elapse(untilExpiry - const Duration(milliseconds: 1));
         expect(events, isEmpty);
+        expect(seenToken?.isCancelled, isFalse);
+
+        async.elapse(const Duration(milliseconds: 1));
+        expect(events, hasLength(1));
+        expect(events.single.isExpired, isTrue);
+        expect(seenToken?.isCancelled, isTrue);
+
+        // Settled, and the cancelled poll asked no other relay.
+        async.elapse(retryDelay * 3);
+        verify(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
+          ),
+        ).called(1);
         datasource.dispose();
         async.flushMicrotasks();
       });

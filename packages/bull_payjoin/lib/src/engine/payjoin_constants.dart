@@ -13,7 +13,20 @@ abstract final class PayjoinConstants {
   }
 
   static const directoryUrl = 'https://payjo.in';
-  static const directoryPollingInterval = 5;
+  // Directory polls follow payjoin-cli. The first poll goes out as soon as
+  // the session is stored, and a poll that comes back empty is followed by
+  // the next one right away, because the directory itself holds an empty
+  // GET for up to 30 s (BIP 77, "Client/Directory interactions"). The client
+  // adds no wait of its own, so the directory and the OHTTP relays see the
+  // same request pattern from this wallet as from the reference client.
+  //
+  // The one bound: two polls of a session start at least this far apart.
+  // A reply the directory held satisfies it on its own, so it costs nothing
+  // on the normal path; an empty reply that came back early (a non-blocking
+  // directory, an already-read mailbox) waits out the rest, so the loop can
+  // never hammer the relays. A failed poll waits it in full, which is the
+  // 5 s payjoin-cli uses as TRANSIENT_RETRY_DELAY.
+  static const directoryMinPollSpacingSec = 5;
   static const defaultExpireAfterSec = 60 * 60 * 24;
   static const defaultMinAmountSat = 10000;
 

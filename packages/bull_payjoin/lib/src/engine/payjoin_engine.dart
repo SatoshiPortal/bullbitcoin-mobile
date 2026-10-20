@@ -286,9 +286,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           throw StateError('Payjoin was disabled while creating the receiver');
         }
 
-        return model.toEntity() as PayjoinReceiver;
+        // Only now, with the row stored and the policy confirmed, start
+        // polling the directory for the sender's request. Nothing fallible
+        // may follow: a throw after this point would delete the row below
+        // while the poll keeps running.
+        final entity = model.toEntity() as PayjoinReceiver;
+        _pdkPayjoinDatasource.startListeningForRequest(model);
+        return entity;
       } catch (_) {
-        _pdkPayjoinDatasource.stopPolling(model.id);
         if (stored && !settled) {
           // The row is still idle while this session lock is held. If another
           // path already settled it, the conditional delete is a no-op.
@@ -360,8 +365,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
     // pre-POST one. Bring the row to the live state so a resume replays
-    // PollingForProposal instead of stalling on the pre-POST state.
-    await _localPayjoinDatasource.updateSenderSessionState(model);
+    // PollingForProposal instead of stalling on the pre-POST state, then
+    // start polling the directory for the receiver's proposal. The poll is
+    // armed even if the row update fails: the original is already on the
+    // directory, the poll replays the in-memory posted model, and the
+    // proposal it finds is what brings the row back in line.
+    try {
+      await _localPayjoinDatasource.updateSenderSessionState(model);
+    } finally {
+      // Starting a polled id is a no-op, so replace whatever poll this id may
+      // already hold: one the expired attempt of a retry left (a retry reuses
+      // the payment's BIP21 URI as id), or one a resume armed during the POST
+      // on the stored pre-POST row, which would otherwise stay stale until
+      // the expiry. Only the poll is stopped, not the watchers, which keep an
+      // expired attempt's original under watch on purpose.
+      _pdkPayjoinDatasource.stopPolling(model.id);
+      _pdkPayjoinDatasource.startListeningForProposal(model);
+    }
 
     _watchForFallback(
       payjoinId: model.id,

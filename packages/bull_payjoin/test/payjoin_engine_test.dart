@@ -26,6 +26,31 @@ class _MockTransactionPort extends Mock implements PayjoinTransactionPort {}
 
 class _MockLabelsPort extends Mock implements PayjoinLabelsPort {}
 
+/// The real local datasource, except that the two writes an engine must
+/// finish before arming a directory poll wait on [storeReceiverGate] and
+/// [updateSenderGate] when they are set, and [updateSenderError] makes the
+/// post-POST sender update fail.
+class _GatedLocalPayjoinDatasource extends LocalPayjoinDatasource {
+  Completer<void>? storeReceiverGate;
+  Completer<void>? updateSenderGate;
+  Object? updateSenderError;
+
+  _GatedLocalPayjoinDatasource({required super.db});
+
+  @override
+  Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
+    await storeReceiverGate?.future;
+    await super.storeReceiver(receiver);
+  }
+
+  @override
+  Future<void> updateSenderSessionState(PayjoinSenderModel sender) async {
+    await updateSenderGate?.future;
+    if (updateSenderError case final error?) throw error;
+    await super.updateSenderSessionState(sender);
+  }
+}
+
 void main() {
   late PayjoinDatabase database;
   late LocalPayjoinDatasource local;
@@ -171,6 +196,67 @@ void main() {
     await database.close();
   });
 
+  /// Swaps the engine for one whose local datasource can hold its writes.
+  Future<_GatedLocalPayjoinDatasource> useGatedLocal() async {
+    await engine.dispose();
+    final gated = _GatedLocalPayjoinDatasource(db: database);
+    engine = PayjoinRepositoryImpl(
+      localPayjoinDatasource: gated,
+      pdkPayjoinDatasource: pdk,
+      log: PayjoinLogger.silent,
+      wallet: _MockWalletPort(),
+      blockchain: blockchain,
+      transactions: transactions,
+      policy: policy,
+      labels: labels,
+    );
+    return gated;
+  }
+
+  /// Lets every pending microtask and zero-delay timer run.
+  Future<void> settle() async {
+    for (var i = 0; i < 10; i++) {
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
+  void stubCreateReceiver(PayjoinReceiverModel model) {
+    when(
+      () => pdk.createReceiver(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        isTestnet: any(named: 'isTestnet'),
+        maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
+      ),
+    ).thenAnswer((_) async => model);
+  }
+
+  /// Mirrors the real datasource: the write-ahead persist stores [prePost],
+  /// the returned model carries [posted].
+  void stubCreateSender(PayjoinSenderModel prePost, PayjoinSenderModel posted) {
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      return posted;
+    });
+  }
+
   test('receiver creation persists before returning', () async {
     final model = receiver();
     when(
@@ -196,6 +282,62 @@ void main() {
 
     expect(created.id, model.id);
     expect(await local.fetchReceiver(model.id), isNotNull);
+  });
+
+  test('receiver polling waits for the row to be stored', () async {
+    final gated = await useGatedLocal();
+    final model = receiver();
+    stubCreateReceiver(model);
+    gated.storeReceiverGate = Completer<void>();
+
+    final creation = engine.createPayjoinReceiver(
+      walletId: model.walletId,
+      address: model.address,
+      isTestnet: true,
+      maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+      expireAfterSec: model.expireAfterSec,
+      amountSat: model.amountSat,
+    );
+    await settle();
+    verifyNever(() => pdk.startListeningForRequest(model));
+
+    gated.storeReceiverGate?.complete();
+    await creation;
+    verify(() => pdk.startListeningForRequest(model)).called(1);
+  });
+
+  test('a receiver disabled during creation never starts polling', () async {
+    final model = receiver();
+    when(
+      () => pdk.createReceiver(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        isTestnet: any(named: 'isTestnet'),
+        maxFeeRateSatPerVb: any(named: 'maxFeeRateSatPerVb'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        amountSat: any(named: 'amountSat'),
+        isTrade: any(named: 'isTrade'),
+      ),
+    ).thenAnswer((_) async {
+      // The switch flips while the directory session is being created.
+      await policy.setActionEnabled(PayjoinAction.receive, enabled: false);
+      return model;
+    });
+
+    await expectLater(
+      engine.createPayjoinReceiver(
+        walletId: model.walletId,
+        address: model.address,
+        isTestnet: true,
+        maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+        expireAfterSec: model.expireAfterSec,
+        amountSat: model.amountSat,
+      ),
+      throwsStateError,
+    );
+
+    expect(await local.fetchReceiver(model.id), isNull);
+    verifyNever(() => pdk.startListeningForRequest(model));
   });
 
   test('receiver creation fails closed when policy is disabled', () async {
@@ -488,6 +630,76 @@ void main() {
     expect(await local.fetchReceiver(idle.id), isNull);
     expect(await local.fetchReceiver(proposed.id), isNotNull);
     verify(() => pdk.stopPolling(idle.id)).called(1);
+  });
+
+  test('sender polling waits for the row to hold the posted state', () async {
+    final gated = await useGatedLocal();
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+    gated.updateSenderGate = Completer<void>();
+
+    final creation = engine.createPayjoinSender(
+      walletId: posted.walletId,
+      isTestnet: true,
+      bip21: posted.id,
+      originalPsbt: posted.originalPsbt,
+      amountSat: posted.amountSat,
+      networkFeesSatPerVb: 1,
+    );
+    await settle();
+    verifyNever(() => pdk.startListeningForProposal(posted));
+
+    gated.updateSenderGate?.complete();
+    await creation;
+    verify(() => pdk.startListeningForProposal(posted)).called(1);
+    expect((await local.fetchSender(posted.id))?.sender, posted.sender);
+  });
+
+  test('a new sender replaces any poll a resume armed meanwhile', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+
+    await engine.createPayjoinSender(
+      walletId: posted.walletId,
+      isTestnet: true,
+      bip21: posted.id,
+      originalPsbt: posted.originalPsbt,
+      amountSat: posted.amountSat,
+      networkFeesSatPerVb: 1,
+    );
+
+    // A resume during the POST can arm a poll on the stored pre-POST row,
+    // and starting a polled id is a no-op: the creation must replace it.
+    verifyInOrder([
+      () => pdk.stopPolling(posted.id),
+      () => pdk.startListeningForProposal(posted),
+    ]);
+  });
+
+  test('a failed post-POST update still polls the posted session', () async {
+    final gated = await useGatedLocal();
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+    gated.updateSenderError = StateError('storage unavailable');
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: posted.walletId,
+        isTestnet: true,
+        bip21: posted.id,
+        originalPsbt: posted.originalPsbt,
+        amountSat: posted.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsStateError,
+    );
+
+    // The original is already on the directory: the receiver's proposal must
+    // still be read, from the in-memory posted session.
+    verify(() => pdk.startListeningForProposal(posted)).called(1);
   });
 
   test('startup resumes sender proposal polling', () async {
@@ -1082,6 +1294,13 @@ void main() {
         amountSat: retried.amountSat,
         networkFeesSatPerVb: 1,
       );
+
+      // Same id as the first attempt: starting a polled id is a no-op, so the
+      // retry must replace the old poll explicitly before arming its own.
+      verifyInOrder([
+        () => pdk.stopPolling(retried.id),
+        () => pdk.startListeningForProposal(retried),
+      ]);
 
       // The new original lands on-chain (the receiver broadcasts it, as
       // BIP78's fallback allows). The retried session must converge to
