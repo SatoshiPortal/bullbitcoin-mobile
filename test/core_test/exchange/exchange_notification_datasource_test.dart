@@ -133,6 +133,39 @@ void main() {
     expect(datasource.isConnected, isTrue);
   });
 
+  test(
+    'a programmer error releases the connection attempt and propagates',
+    () async {
+      final first = datasource.connect();
+      await Future<void>.delayed(Duration.zero);
+      final failure = expectLater(first, throwsStateError);
+      ready.single.completeError(StateError('broken handshake'));
+      await failure;
+
+      final replacement = datasource.connect();
+      await Future<void>.delayed(Duration.zero);
+      expect(ready, hasLength(2));
+      ready.last.complete();
+      await replacement;
+      expect(datasource.isConnected, isTrue);
+    },
+  );
+
+  test('a stale programmer error cannot close a replacement', () async {
+    final first = datasource.connect();
+    await Future<void>.delayed(Duration.zero);
+    datasource.disconnect();
+    final replacement = datasource.connect();
+    await Future<void>.delayed(Duration.zero);
+    ready[1].complete();
+    await replacement;
+
+    final failure = expectLater(first, throwsStateError);
+    ready[0].completeError(StateError('obsolete handshake'));
+    await failure;
+    expect(datasource.isConnected, isTrue);
+  });
+
   test('DNS retries back off and stop after disposal', () {
     fakeAsync((time) {
       unawaited(datasource.connect());

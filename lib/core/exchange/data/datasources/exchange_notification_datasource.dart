@@ -147,6 +147,14 @@ class ExchangeNotificationDatasource {
       log.fine('WebSocket connected successfully');
     } on Exception catch (e) {
       if (_isCurrent(generation)) _connectionFailed(e, generation);
+    } finally {
+      // Release an attempt that exits with a programmer error, without
+      // catching that error or touching a newer connection.
+      if (generation == _generation && _isConnecting) {
+        ++_generation;
+        _isConnecting = false;
+        _closeChannel();
+      }
     }
   }
 
