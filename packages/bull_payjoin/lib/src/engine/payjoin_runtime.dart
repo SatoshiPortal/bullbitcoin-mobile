@@ -81,7 +81,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       policy: policy,
       labels: labels,
     );
-    final roles = _PayjoinRoles(engine, policy, wallet, fees);
+    final roles = _PayjoinRoles(engine, policy, wallet, fees, payjoinLog);
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
@@ -229,6 +229,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final PayjoinPolicyStore _policy;
   final PayjoinWalletPort _wallet;
   final PayjoinFeesPort _fees;
+  final logger.PayjoinLogger _log;
   final Lock _policyMutationLock = Lock();
 
   late final Payjoin payjoin = Payjoin(
@@ -239,7 +240,13 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     diagnostics: _DiagnosticsRole(this),
   );
 
-  _PayjoinRoles(this._engine, this._policy, this._wallet, this._fees);
+  _PayjoinRoles(
+    this._engine,
+    this._policy,
+    this._wallet,
+    this._fees,
+    this._log,
+  );
 
   PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
     value,
@@ -265,7 +272,14 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     late final String signed;
     try {
       signed = await _engineWalletSign(request);
-    } catch (_) {
+    } catch (error, trace) {
+      _log.warning(
+        'Payjoin sender could not sign the original',
+        code: PayjoinLogCode.signingFailure,
+        role: PayjoinLogRole.sender,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinSigningFailure('Sender signing failed'));
     }
     try {
@@ -279,7 +293,16 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         expireAfterSec: lifetime.inSeconds,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
-    } catch (_) {
+    } catch (error, trace) {
+      // The failure handed back is deliberately generic; without this the
+      // cause of a payment falling back to a plain transaction is lost.
+      _log.warning(
+        'Payjoin sender start failed',
+        code: PayjoinLogCode.sessionStartFailed,
+        role: PayjoinLogRole.sender,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinProtocolRejectedFailure('Sender start failed'));
     }
   }
@@ -321,7 +344,14 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         isTrade: request.isTrade,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
-    } catch (_) {
+    } catch (error, trace) {
+      _log.warning(
+        'Payjoin receiver start failed',
+        code: PayjoinLogCode.sessionStartFailed,
+        role: PayjoinLogRole.receiver,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinProtocolRejectedFailure('Receiver start failed'));
     }
   }
