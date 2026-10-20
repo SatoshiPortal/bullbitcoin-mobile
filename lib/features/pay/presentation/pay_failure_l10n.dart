@@ -16,6 +16,7 @@ extension PayFailureL10n on PayFailure {
     PayInsufficientBalanceFailure() => context.loc.payInsufficientBalanceError,
     PayFeeBelowRelayFloorFailure() => context.loc.payErrorFeeBelowRelayFloor,
     PayFeesUnavailableFailure() => context.loc.payErrorFeesUnavailable,
+    PayQuoteExpiredFailure() => context.loc.payQuoteExpiredError,
     // Never `logMessage`. This arm used to be `unexpected: (m) => m`, which put
     // BDK/LWK/Dio text straight onto the payment screen.
     PayUnexpectedFailure() => context.loc.payUnexpectedError,

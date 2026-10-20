@@ -895,6 +895,37 @@ void main() {
     });
   });
 
+  group('PayBloc — order deadline', () {
+    test('a quote past its deadline is never paid', () async {
+      when(
+        () => payOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+      when(
+        () => refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
+      bloc.seed(paymentState().copyWith(isPayjoinEnabled: false));
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // The exchange expires the order at its deadline and does not credit a
+      // payin sent after it.
+      verifyNever(
+        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      );
+      // A fresh quote is asked for instead.
+      verify(
+        () => refreshPayOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        ),
+      ).called(1);
+    });
+  });
+
   group('PayBloc — fee selection (#2521)', () {
     /// Resolves once the fee recalculation triggered by a selection has landed.
     Future<PayPaymentState> awaitRecalculatedFee() async {
