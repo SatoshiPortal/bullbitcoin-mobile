@@ -75,7 +75,14 @@ class _MockLabelCompletedSellOrderUsecase extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
-class _MockSellOrder extends Mock implements SellOrder {}
+class _MockSellOrder extends Mock implements SellOrder {
+  // Read only by the order-progress log line; no test drives them.
+  @override
+  OrderStatus get orderStatus => OrderStatus.inProgress;
+
+  @override
+  OrderPayjoinOutcome get payjoinOutcome => OrderPayjoinOutcome.none;
+}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 

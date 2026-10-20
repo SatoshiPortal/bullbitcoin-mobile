@@ -873,6 +873,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
         return;
       }
 
+      if (_orderProgress(latestOrder) != _orderProgress(current.payOrder)) {
+        log.fine('Pay order polled: ${_orderProgress(latestOrder)}');
+      }
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -1167,6 +1170,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // the confirming state and let the poll take the order to success when
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
+    log.fine('Pay order after payin: ${_orderProgress(latestOrder)}');
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
@@ -1509,3 +1513,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     return super.close();
   }
 }
+
+/// The exchange's view of an order while the screen waits on it: without it a
+/// shared log cannot tell a payin the exchange never saw from one it rejected.
+String _orderProgress(Order order) =>
+    'status=${order.orderStatus.name}, payin=${order.payinStatus.name}, '
+    'payjoin=${order.payjoinOutcome.name}';

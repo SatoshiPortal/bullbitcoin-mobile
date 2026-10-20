@@ -79,7 +79,14 @@ class _MockPreviewBitcoinFeePresets extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
-class _MockPayOrder extends Mock implements FiatPaymentOrder {}
+class _MockPayOrder extends Mock implements FiatPaymentOrder {
+  // Read only by the order-progress log line; no test drives them.
+  @override
+  OrderStatus get orderStatus => OrderStatus.inProgress;
+
+  @override
+  OrderPayjoinOutcome get payjoinOutcome => OrderPayjoinOutcome.none;
+}
 
 /// The confirmation path only ever runs from a [PayPaymentState] that earlier
 /// events built up. Seeding it directly keeps this test to the send path and

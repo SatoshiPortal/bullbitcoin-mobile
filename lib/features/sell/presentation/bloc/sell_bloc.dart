@@ -1069,6 +1069,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // the confirming state and let the poll take the order to success when
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
+    log.fine('Sell order after payin: ${_orderProgress(latestOrder)}');
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
@@ -1203,6 +1204,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
       }
 
+      if (_orderProgress(latestOrder) != _orderProgress(current.sellOrder)) {
+        log.fine('Sell order polled: ${_orderProgress(latestOrder)}');
+      }
       final payinStatus = latestOrder.payinStatus;
 
       if (payinStatus == OrderPayinStatus.inProgress ||
@@ -1763,3 +1767,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     return super.close();
   }
 }
+
+/// The exchange's view of an order while the screen waits on it: without it a
+/// shared log cannot tell a payin the exchange never saw from one it rejected.
+String _orderProgress(Order order) =>
+    'status=${order.orderStatus.name}, payin=${order.payinStatus.name}, '
+    'payjoin=${order.payjoinOutcome.name}';
