@@ -4962,5 +4962,6 @@
   "settingsPayjoinMinutesUnit": "min",
   "sellQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "exchangePaymentSentPastDeadline": "Paiement envoyé. L’exchange indique que le délai de paiement de cette commande a expiré. Conservez l’identifiant de transaction ci-dessous et contactez le support si la commande n’est pas mise à jour.",
-  "exchangePaymentSentLeave": "Quitter"
+  "exchangePaymentSentLeave": "Quitter",
+  "payQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer."
 }

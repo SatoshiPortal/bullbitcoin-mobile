@@ -70,6 +70,13 @@ final class PayFeesUnavailableFailure extends PayFailure {
   const PayFeesUnavailableFailure([super.logMessage]);
 }
 
+/// The price lock lapsed before the payin was sent, so nothing was paid and a
+/// fresh quote must be confirmed instead. An exchange expires the order at its
+/// deadline: a payin sent after it is not credited to the order.
+final class PayQuoteExpiredFailure extends PayFailure {
+  const PayQuoteExpiredFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation
