@@ -368,7 +368,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           refreshedOrder = value;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
-          _quoteScheduler.refreshFailed();
+          // Only a quote awaiting confirmation is worth retrying: a confirmed
+          // order, or one read by id with nothing on screen, has none.
+          if (!_isQuoteConfirmed && state.buyOrder != null) {
+            _quoteScheduler.refreshFailed();
+          }
           return;
       }
       final order = refreshedOrder.bip21URI == null

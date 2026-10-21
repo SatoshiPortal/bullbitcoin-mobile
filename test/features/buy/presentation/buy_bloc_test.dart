@@ -311,6 +311,52 @@ void main() {
       });
     });
 
+    test('a failed read after confirmation schedules no refresh', () {
+      bloc.seed(
+        BuyState(
+          buyOrder: order.copyWith(
+            confirmationDeadline: DateTime.now().add(
+              const Duration(minutes: 5),
+            ),
+          ),
+        ),
+      );
+      when(
+        () => confirm.execute(orderId: 'quote-order'),
+      ).thenAnswer((_) async => Ok(order));
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(BuyUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const BuyEvent.confirmOrder());
+        time.flushMicrotasks();
+        // The success screen reads the order and the read fails.
+        bloc.add(const BuyEvent.refreshOrder());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('a failed read of an order not on screen schedules no refresh', () {
+      // The accelerate route builds a fresh bloc and reads the order by id.
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(BuyUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.seed(const BuyState());
+        bloc.add(const BuyEvent.refreshOrder(orderId: 'quote-order'));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        expect(bloc.state.failure, isNot(isA<BuyQuoteUnavailableFailure>()));
+      });
+    });
+
     test('abandoning the order cancels the pending retry', () {
       return inFakeTime((time) {
         bloc.add(const BuyEvent.refreshOrder());
