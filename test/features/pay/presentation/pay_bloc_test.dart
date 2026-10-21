@@ -1079,6 +1079,28 @@ void main() {
       await pumpEventQueue();
     });
 
+    test('a late answer for a replaced order leaves the new one', () async {
+      final response = Completer<Result<FiatPaymentOrder, PayFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const PayEvent.orderRefreshTimePassed());
+      await pumpEventQueue();
+
+      // The user picked another wallet meanwhile: a new order is on screen.
+      final replacement = _MockPayOrder();
+      when(() => replacement.orderId).thenReturn('order-2');
+      when(() => replacement.payinAmount).thenReturn(0.002);
+      when(
+        () => replacement.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      bloc.seed(
+        (bloc.state as PayPaymentState).copyWith(payOrder: replacement),
+      );
+
+      response.complete(Ok(payOrder));
+      await pumpEventQueue();
+      expect((bloc.state as PayPaymentState).payOrder.orderId, 'order-2');
+    });
+
     test('a lapsed quote coming back is retried after five seconds', () {
       return inFakeTime((time) {
         bloc.add(const PayEvent.orderRefreshTimePassed());

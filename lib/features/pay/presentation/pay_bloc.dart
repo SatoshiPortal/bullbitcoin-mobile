@@ -461,9 +461,13 @@ class PayBloc extends Bloc<PayEvent, PayState>
     );
 
     // Re-read after the await: the payment may have started or been broadcast
-    // while the refresh was in flight, and neither may be disturbed.
+    // while the refresh was in flight, and neither may be disturbed. A new
+    // order may have replaced the refreshed one too: its answer is then stale.
     final current = _currentPaymentState;
-    if (current == null) return;
+    if (current == null ||
+        current.payOrder.orderId != paymentState.payOrder.orderId) {
+      return;
+    }
     if (current.isConfirmingPayment || current.isPayinBroadcast) return;
 
     switch (result) {

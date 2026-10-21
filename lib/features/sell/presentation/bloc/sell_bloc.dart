@@ -578,7 +578,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // Same re-read as the success path: a refresh failure must not paint
           // an error over a confirmation that started while it was in flight.
           final currentOnFailure = _currentPaymentState;
-          if (currentOnFailure == null) return;
+          if (currentOnFailure == null ||
+              currentOnFailure.sellOrder.orderId !=
+                  paymentState.sellOrder.orderId) {
+            return;
+          }
           if (currentOnFailure.isConfirmingPayment ||
               currentOnFailure.isPayinBroadcast) {
             return;
@@ -589,9 +593,13 @@ class SellBloc extends Bloc<SellEvent, SellState>
       }
 
       // A confirmation may have started while the refresh was in flight, so
-      // work from the current state instead of the snapshot above.
+      // work from the current state instead of the snapshot above. A new order
+      // may have replaced the refreshed one too: its answer is then stale.
       final current = _currentPaymentState;
-      if (current == null) return;
+      if (current == null ||
+          current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+        return;
+      }
       if (current.isConfirmingPayment || current.isPayinBroadcast) return;
       // The error is kept: when this refresh was triggered by a failed send
       // (see _emitSendPaymentError) clearing it would erase the only
