@@ -1,5 +1,11 @@
 abstract interface class BitcoinPriceRepository {
   Future<List<String>> get availableCurrencies;
+
+  /// When the price served for [currency] was fetched from the pricer, or null
+  /// when none is held. A read may be answered from a recent fetch without a
+  /// request, so this is when the pricer last answered for it.
+  DateTime? priceFetchedAt(String currency);
+
   Future<double> getCurrencyValue({
     required BigInt amountSat,
     required String currency,

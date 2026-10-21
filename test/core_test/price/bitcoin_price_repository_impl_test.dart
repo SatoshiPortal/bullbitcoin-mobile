@@ -182,4 +182,14 @@ void main() {
       verify(() => priceCall('USD')).called(2);
     });
   });
+  test('tells when the price it serves was fetched', () {
+    inFakeTime((time, repository, _, _) {
+      expect(repository.priceFetchedAt('USD'), isNull);
+      read(time, repository);
+      final fetchedAt = clock.now();
+      time.elapse(const Duration(seconds: 30));
+      read(time, repository);
+      expect(repository.priceFetchedAt('usd'), fetchedAt);
+    });
+  });
 }

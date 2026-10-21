@@ -80,6 +80,10 @@ class BitcoinPriceRepositoryImpl implements BitcoinPriceRepository {
   }
 
   @override
+  DateTime? priceFetchedAt(String currency) =>
+      _prices[currency.toUpperCase()]?.fetchedAt;
+
+  @override
   Future<List<String>> get availableCurrencies =>
       _bullbitcoinPrice.availableCurrencies;
 

@@ -208,10 +208,16 @@ class CheckAllServiceStatusUsecase {
       currency: 'USD',
     );
 
+    // A price under a minute old is served without asking the pricer, so an
+    // online pricer is dated by its last real answer. A failure is never
+    // cached: that one is a fresh attempt.
+    final isOnline = price > 0;
     return ServiceStatusInfo(
-      status: price > 0 ? ServiceStatus.online : ServiceStatus.offline,
+      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
       name: 'Pricer',
-      lastChecked: DateTime.now(),
+      lastChecked:
+          (isOnline ? _bitcoinPriceRepository.priceFetchedAt('USD') : null) ??
+          DateTime.now(),
     );
   }
 

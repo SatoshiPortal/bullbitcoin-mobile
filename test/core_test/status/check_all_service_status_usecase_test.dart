@@ -57,6 +57,57 @@ void main() {
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(BigInt.zero);
   });
+  // The price repository answers from a price up to a minute old without
+  // asking the pricer: the status must say when the pricer last answered.
+  test('the pricer is dated by its last real answer, not by now', () async {
+    final fetchedAt = DateTime(2026, 10, 21, 12);
+    final electrum = _MockElectrumConnectivityPort();
+    when(
+      () => electrum.checkServersInUseAreOnlineForNetwork(any()),
+    ).thenAnswer((_) async => true);
+    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
+    when(
+      () => bitcoinPriceRepository.getCurrencyValue(
+        amountSat: any(named: 'amountSat'),
+        currency: any(named: 'currency'),
+      ),
+    ).thenAnswer((_) async => 70000);
+    when(
+      () => bitcoinPriceRepository.priceFetchedAt('USD'),
+    ).thenReturn(fetchedAt);
+    final feesRepository = _MockFeesRepository();
+    when(
+      () => feesRepository.getNetworkFees(network: any(named: 'network')),
+    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    final payjoinPolicy = _MockPayjoinPolicyAccess();
+    final walletRepository = _MockWalletRepository();
+    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
+    final settingsRepository = _MockSettingsRepository();
+    final tor = _MockTor();
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => tor.external).thenReturn(_MockExternalTor());
+    final usecase = CheckAllServiceStatusUsecase(
+      electrumConnectivityPort: electrum,
+      bitcoinPriceRepository: bitcoinPriceRepository,
+      payjoinPolicy: payjoinPolicy,
+      payjoinDiagnostics: _MockPayjoinDiagnostics(),
+      feesRepository: feesRepository,
+      walletRepository: walletRepository,
+      ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
+      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      settingsRepository: settingsRepository,
+      tor: tor,
+    );
+
+    final status = await usecase.execute(network: Network.bitcoinMainnet);
+
+    expect(status.pricer.status, ServiceStatus.online);
+    expect(status.pricer.lastChecked, fetchedAt);
+  });
+
   test(
     'Payjoin with every switch off is not probed or reported offline',
     () async {
