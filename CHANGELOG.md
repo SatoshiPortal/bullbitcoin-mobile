@@ -10,6 +10,16 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [6.15.0] - 2026-10-19
 
+### Updates In Build 226
+
+- Reduced duplicate fiat-price requests and fixed currency changes that could display a rate for the wrong currency. ([#3022](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3022))
+- When a price is unavailable, Send and Receive offer bitcoin units without a fiat equivalent; Buy, Sell, and Pay show an unavailable estimate instead of using missing or outdated rates. ([#3022](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3022))
+- Buy, Sell, and Pay quotes refresh when their price lock expires, with bounded retries and an error if a new quote cannot be loaded. Expired quotes cannot be confirmed or paid. ([#3016](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3016))
+- Payjoin sessions reserve time for fallback before exchange order deadlines. If the exchange reports a Sell or Pay order expired after payment, the confirmation screen shows the transaction ID and lets the user leave. ([#3016](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3016))
+- Confidential SEPA availability failures now show an error and a retry action instead of silently hiding the option. Recipient and funding screens clarify the self-transfer behavior and distinguish bank-account and virtual-IBAN labels. ([#3024](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3024), [#3023](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3023))
+- Improved exported Payjoin diagnostics with clearer session milestones, start failures, fallback outcomes, and exchange order status. ([#3013](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3013))
+- Aligned iOS CocoaPods dependency checksums with release CI to prevent dependency-installation failures. ([#3008](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3008))
+
 ### New Features
 
 - **Confidential SEPA**: added recipient creation, virtual IBAN onboarding and activation, and a choice between Regular and Confidential SEPA for recipients and withdrawals. Eligible non-corporate EU accounts can also activate a virtual IBAN and view deposit details to fund their exchange account, subject to account permissions. ([#2982](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2982))
