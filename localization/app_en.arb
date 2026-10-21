@@ -15700,7 +15700,7 @@
   "@payQuoteExpiredError": {
     "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
   },
-  "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Go back and start again.",
+  "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Try again, or go back and start a new order.",
   "@exchangeQuoteUnavailableError": {
     "description": "Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid."
   },

@@ -28,7 +28,9 @@ final class OrderDeadlineScheduler {
   /// Pause between retries after a lapsed quote or a failed refresh.
   final Duration retryDelay;
 
-  /// Retries allowed per lapsed lock before [onGiveUp]; a fresh lock resets it.
+  /// Retries allowed per lapsed lock before [onGiveUp]. The bound is per lock,
+  /// not per order: a fresh lock resets it, and so does giving up, so a later
+  /// [track] of a lapsed lock (the user retrying) opens a new budget.
   final int maxRetries;
 
   Timer? _timer;

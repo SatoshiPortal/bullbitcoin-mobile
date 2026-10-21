@@ -670,6 +670,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // The exchange expires the order at its deadline and does not credit a
     // payin sent after it, so a lapsed quote is refreshed, never paid.
     if (_isQuoteExpired(sellPaymentState)) {
+      // Publish the cleaned state (previous error and transient flags
+      // cleared) first: _emitSendPaymentError builds on the current state.
       emit(sellPaymentState);
       _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
       return;
