@@ -351,7 +351,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     final generation = _orderCreationGeneration;
     bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
     try {
-      emit(state.copyWith(isRefreshingOrder: true, failure: null));
+      // A refused confirmation explains why a new price is loading: keep that
+      // message through the refresh, as sell and pay do.
+      final kept = state.failure is BuyQuoteExpiredFailure
+          ? state.failure
+          : null;
+      emit(state.copyWith(isRefreshingOrder: true, failure: kept));
 
       final refreshResult = await _refreshBuyOrderUsecase.execute(
         orderId: orderId,
@@ -425,6 +430,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         error: 'Confirm requested with no order to confirm',
         trace: StackTrace.current,
       );
+      return;
+    }
+
+    // A lapsed quote is refreshed, never confirmed: the price the user saw is
+    // no longer the one the exchange would apply.
+    final deadline = state.buyOrder?.confirmationDeadline;
+    if (deadline != null && !deadline.isAfter(clock.now())) {
+      emit(state.copyWith(failure: const BuyQuoteExpiredFailure()));
+      if (!_quoteScheduler.isPending) add(const BuyEvent.refreshOrder());
       return;
     }
 

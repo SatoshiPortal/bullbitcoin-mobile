@@ -219,12 +219,32 @@ void main() {
       });
     });
 
-    test('a failed confirmation refreshes a lapsed quote at once', () async {
-      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer(
-        (_) async => const Err(BuyUnexpectedFailure('confirmation failed')),
-      );
+    test('a lapsed quote is refreshed, never confirmed', () async {
       bloc.add(const BuyEvent.confirmOrder());
       await pumpEventQueue();
+      verifyNever(() => confirm.execute(orderId: 'quote-order'));
+      verify(refreshCall).called(1);
+      expect(bloc.state.failure, isA<BuyQuoteExpiredFailure>());
+    });
+
+    test('a quote lapsing during a failed confirmation is refreshed', () async {
+      bloc.seed(
+        BuyState(
+          buyOrder: order.copyWith(
+            confirmationDeadline: DateTime.now().add(
+              const Duration(milliseconds: 50),
+            ),
+          ),
+        ),
+      );
+      when(() => confirm.execute(orderId: 'quote-order')).thenAnswer((_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        return const Err(BuyUnexpectedFailure('confirmation failed'));
+      });
+      bloc.add(const BuyEvent.confirmOrder());
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
+      verify(() => confirm.execute(orderId: 'quote-order')).called(1);
       verify(refreshCall).called(1);
     });
 
@@ -247,6 +267,16 @@ void main() {
     });
 
     test('a confirmed order is not refreshed for its lapsed quote', () {
+      // Confirmed while the lock was live; later reads carry a lapsed one.
+      bloc.seed(
+        BuyState(
+          buyOrder: order.copyWith(
+            confirmationDeadline: DateTime.now().add(
+              const Duration(minutes: 5),
+            ),
+          ),
+        ),
+      );
       when(
         () => confirm.execute(orderId: 'quote-order'),
       ).thenAnswer((_) async => Ok(order));

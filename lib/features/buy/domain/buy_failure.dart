@@ -39,6 +39,13 @@ final class BuyAboveMaxAmountFailure extends BuyFailure {
   }) : super(logMessage);
 }
 
+/// The price lock lapsed before the order was confirmed, so nothing was bought
+/// and a fresh quote must be confirmed instead. The exchange is not relied on
+/// to reject a confirmation at a lapsed price.
+final class BuyQuoteExpiredFailure extends BuyFailure {
+  const BuyQuoteExpiredFailure([super.logMessage]);
+}
+
 /// The order's price lock lapsed and the bounded retries brought no usable
 /// quote back: every answer was lapsed too, or the requests failed.
 final class BuyQuoteUnavailableFailure extends BuyFailure {

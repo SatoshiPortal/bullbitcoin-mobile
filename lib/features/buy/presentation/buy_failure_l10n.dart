@@ -7,6 +7,7 @@ extension BuyFailureL10n on BuyFailure {
     BuyUnauthenticatedFailure() => context.loc.buyUnauthenticatedError,
     BuyBelowMinAmountFailure() => context.loc.buyBelowMinAmountError,
     BuyAboveMaxAmountFailure() => context.loc.buyAboveMaxAmountError,
+    BuyQuoteExpiredFailure() => context.loc.buyQuoteExpiredError,
     BuyQuoteUnavailableFailure() => context.loc.exchangeQuoteUnavailableError,
 
     // Never `logMessage`: the raw reason is logged at the boundary and is
