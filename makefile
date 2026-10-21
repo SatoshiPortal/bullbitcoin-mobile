@@ -428,7 +428,7 @@ integration-test:
 .PHONY: exchange-credentials-device-build exchange-credentials-device-test
 EXCHANGE_DEVICE_LIVE ?= false
 exchange-credentials-device-build:
-	@fvm flutter build apk --debug --target-platform android-arm64 --flavor production \
+	@fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi --flavor production \
 		--target integration_test/device/exchange_credentials_test.dart \
 		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false \
 		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
