@@ -49,7 +49,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     // orElse guards against the bloc closing (route popped) before completion,
     // which would otherwise throw an unhandled StateError on this future.
     await bloc.stream.firstWhere(
-      (state) => !state.isLoadingRecipients,
+      (state) =>
+          !state.isLoadingRecipients &&
+          !state.isLoadingConfidentialSepaAvailability,
       orElse: () => bloc.state,
     );
   }
