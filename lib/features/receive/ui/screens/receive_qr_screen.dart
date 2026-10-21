@@ -396,7 +396,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                       color: context.appColors.secondary,
                     ),
                     BBText(
-                      '~$amountEquivalent',
+                      amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
                       style: context.font.labelSmall,
                       color: context.appColors.onSurfaceVariant,
                     ),
