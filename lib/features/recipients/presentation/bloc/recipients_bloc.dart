@@ -47,6 +47,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsStarted>(_onStarted);
     on<RecipientsMoreLoaded>(_onMoreLoaded);
     on<RecipientsRefreshed>(_onRefreshed, transformer: restartable());
+    on<RecipientsConfidentialSepaAvailabilityRetried>(
+      _onConfidentialSepaAvailabilityRetried,
+      transformer: droppable(),
+    );
     on<RecipientsJurisdictionChanged>(
       _onJurisdictionChanged,
       transformer: restartable(),
@@ -86,33 +90,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsStarted event,
     Emitter<RecipientsState> emit,
   ) async {
-    if (state.allowedRecipientFilters.types.contains(
-      RecipientType.confidentialSepaEur,
-    )) {
-      // Not surfaced as a failure: without an answer the option is hidden.
-      emit(
-        state.copyWith(
-          confidentialSepaAvailability:
-              switch (await _getConfidentialSepaAvailabilityUsecase.execute()) {
-                Ok(:final value) => value,
-                Err() => ConfidentialSepaAvailability.unavailable,
-              },
-        ),
-      );
-      if (state.confidentialSepaAvailability !=
-          ConfidentialSepaAvailability.unavailable) {
-        // Not surfaced as a failure: the form cannot be sent without a name.
-        emit(
-          state.copyWith(
-            accountOwnerName: switch (await _getAccountOwnerNameUsecase
-                .execute()) {
-              Ok(:final value) => value,
-              Err() => null,
-            },
-          ),
-        );
-      }
-    }
+    await _loadConfidentialSepaAvailability(emit);
+    if (emit.isDone) return;
 
     final jurisdictions = state.availableJurisdictions;
     if (jurisdictions.length == 1) {
@@ -187,7 +166,61 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsRefreshed event,
     Emitter<RecipientsState> emit,
   ) async {
+    if (state.failedToLoadConfidentialSepaAvailability != null) {
+      add(const RecipientsEvent.confidentialSepaAvailabilityRetried());
+      return;
+    }
     await _loadFirstPage(emit, clearList: false);
+  }
+
+  Future<void> _onConfidentialSepaAvailabilityRetried(
+    RecipientsConfidentialSepaAvailabilityRetried event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    emit(state.copyWith(isLoadingRecipients: true));
+    await _loadConfidentialSepaAvailability(emit);
+    if (emit.isDone) return;
+    await _loadFirstPage(emit, clearList: false);
+  }
+
+  Future<void> _loadConfidentialSepaAvailability(
+    Emitter<RecipientsState> emit,
+  ) async {
+    if (!state.allowedRecipientFilters.types.contains(
+          RecipientType.confidentialSepaEur,
+        ) ||
+        state.isLoadingConfidentialSepaAvailability) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        isLoadingConfidentialSepaAvailability: true,
+        failedToLoadConfidentialSepaAvailability: null,
+      ),
+    );
+    final outcome = await _getConfidentialSepaAvailabilityUsecase.execute();
+    if (emit.isDone) return;
+    switch (outcome) {
+      case Ok(:final value):
+        emit(state.copyWith(confidentialSepaAvailability: value));
+        if (value != ConfidentialSepaAvailability.unavailable) {
+          final ownerName = await _getAccountOwnerNameUsecase.execute();
+          if (emit.isDone) return;
+          switch (ownerName) {
+            case Ok(:final value):
+              emit(state.copyWith(accountOwnerName: value));
+            case Err(:final failure):
+              emit(
+                state.copyWith(
+                  failedToLoadConfidentialSepaAvailability: failure,
+                ),
+              );
+          }
+        }
+      case Err(:final failure):
+        emit(state.copyWith(failedToLoadConfidentialSepaAvailability: failure));
+    }
+    emit(state.copyWith(isLoadingConfidentialSepaAvailability: false));
   }
 
   Future<void> _onSepaTypeChanged(
