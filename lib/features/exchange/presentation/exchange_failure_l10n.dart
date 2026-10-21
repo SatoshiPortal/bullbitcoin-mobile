@@ -10,6 +10,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeAccountUnavailableFailure() =>
       context.loc.exchangeAccountInfoLoadErrorMessage,
     ExchangeNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
+    ExchangeAuthenticationDeferredFailure() =>
+      context.loc.exchangeAuthErrorMessage,
     ExchangeAuthenticationFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeApiKeyStorageFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeSessionClearFailure() => context.loc.exchangeErrorSigningOut,

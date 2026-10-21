@@ -15,9 +15,11 @@ final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {
   @override
   Future<Result<ExchangeApiKey, ExchangeFailure>> generateApiKey() async {
     try {
-      final model = ExchangeApiKeyModel.tryFromAuthResponse(
-        await _datasource.generateApiKeyResponse(),
-      );
+      final response = await _datasource.generateApiKeyResponse();
+      if (ExchangeApiKeyModel.isAuthenticationDeferred(response)) {
+        return const Err(ExchangeAuthenticationDeferredFailure());
+      }
+      final model = ExchangeApiKeyModel.tryFromAuthResponse(response);
       if (model == null || !model.isActive) {
         return const Err(ExchangeAuthenticationFailure());
       }

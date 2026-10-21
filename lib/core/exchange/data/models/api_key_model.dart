@@ -26,13 +26,7 @@ class ExchangeApiKeyModel {
   /// Accepts the existing auth envelopes and the WebView's JSON string layers.
   /// Malformed input is data, not a TypeError or an exception containing secrets.
   static ExchangeApiKeyModel? tryFromAuthResponse(Object? response) {
-    try {
-      for (var layer = 0; layer < 2 && response is String; layer++) {
-        response = jsonDecode(response);
-      }
-    } on FormatException {
-      return null;
-    }
+    response = _decodeAuthResponse(response);
     if (response is! Map<String, dynamic> || response['error'] != null) {
       return null;
     }
@@ -82,6 +76,23 @@ class ExchangeApiKeyModel {
       );
     }
     return null;
+  }
+
+  /// An unfinished/rejected web request keeps the existing WebView flow open.
+  static bool isAuthenticationDeferred(Object? response) {
+    final decoded = _decodeAuthResponse(response);
+    return decoded is Map<String, dynamic> && decoded['error'] != null;
+  }
+
+  static Object? _decodeAuthResponse(Object? response) {
+    try {
+      for (var layer = 0; layer < 2 && response is String; layer++) {
+        response = jsonDecode(response);
+      }
+    } on FormatException {
+      return null;
+    }
+    return response;
   }
 
   static int? _timestamp(Object? value) => switch (value) {

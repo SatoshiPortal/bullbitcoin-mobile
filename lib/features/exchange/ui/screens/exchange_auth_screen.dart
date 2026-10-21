@@ -182,7 +182,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
                   .read<ExchangeCubit>()
                   .completeAuthentication(_authentication);
               if (!mounted || _isClosing) return;
-              if (failure != null) retry = await _handleLoginError(failure);
+              if (failure != null &&
+                  failure is! ExchangeAuthenticationDeferredFailure) {
+                retry = await _handleLoginError(failure);
+              }
             } on Exception catch (error) {
               log.warning(
                 'Exchange authentication failed: ${error.runtimeType}',
@@ -294,7 +297,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     return bbSessionCookie;
   }
 
-  /// Retry preserves the web session; only explicit sign-out clears cookies.
+  /// OK returns to the same web session; Retry reloads it.
+  /// Only explicit sign-out clears cookies.
   Future<bool> _handleLoginError([ExchangeFailure? failure]) async {
     if (!mounted || _isClosing) return false;
     return await BullDialog.show<bool>(

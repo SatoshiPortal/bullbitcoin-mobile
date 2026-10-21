@@ -106,10 +106,37 @@ void main() {
   );
 
   for (final payload in <Object>[
+    {'error': 'refused'},
+    jsonEncode({'error': 'refused'}),
+    jsonEncode(jsonEncode({'error': 'refused'})),
+  ]) {
+    test(
+      'an error envelope defers authentication without writing a key',
+      () async {
+        final keys = _Keys();
+        final usecase = CompleteExchangeAuthenticationUsecase(
+          authRepository: _repository(() async => payload),
+          apiKeyRepository: keys,
+          isTestnet: true,
+        );
+        final result = await usecase.execute();
+        expect(
+          result,
+          isA<Err<void, ExchangeFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeAuthenticationDeferredFailure>(),
+          ),
+        );
+        expect(keys.writes, 0);
+      },
+    );
+  }
+
+  for (final payload in <Object>[
     'broken synthetic-key',
     'null',
     [],
-    {'error': 'synthetic-key'},
     {...fields, 'key': ''},
     {...fields, 'key': 'synthetic\r\nheader'},
     {...fields, 'isActive': false},
