@@ -288,18 +288,46 @@ void main() {
       await pumpEventQueue();
     }
 
-    test('the currency already loaded is not fetched again', () async {
+    test('a burst towards the loaded currency reads it once', () async {
+      // Re-reading the shown currency is allowed: the price repository serves
+      // it from its minute-long cache, so the pricer is not asked again.
+      final answer = Completer<double>();
       stubPrice(() async => 70000);
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceStarted());
       await pumpEventQueue();
       clearInteractions(convertSatsToCurrency);
+      stubPrice(() => answer.future);
 
       await burst(bloc, 'USD');
+      answer.complete(71000);
+      await pumpEventQueue();
 
-      verifyNever(() => convertSatsToCurrency.execute(currencyCode: 'USD'));
-      expect(bloc.state.bitcoinPrice, 70000);
+      verify(
+        () => convertSatsToCurrency.execute(currencyCode: 'USD'),
+      ).called(1);
+      expect(bloc.state.bitcoinPrice, 71000);
+    });
+
+    test('an answer for a currency left since does not overwrite', () async {
+      final usd = Completer<double>();
+      stubPrice(() => usd.future);
+      when(
+        () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => 95000);
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
+      await pumpEventQueue();
+      bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'CAD'));
+      await pumpEventQueue();
+      usd.complete(70000);
+      await pumpEventQueue();
+
+      expect(bloc.state.currency, 'CAD');
+      expect(bloc.state.bitcoinPrice, 95000);
     });
 
     test('a burst towards a new currency fetches it once', () async {
@@ -338,16 +366,19 @@ void main() {
     });
 
     test('switching to another currency still fetches it', () async {
+      final cad = Completer<double>();
       stubPrice(() async => 70000);
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => 95000);
+      ).thenAnswer((_) => cad.future);
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceStarted());
       await pumpEventQueue();
 
       await burst(bloc, 'CAD');
+      cad.complete(95000);
+      await pumpEventQueue();
 
       verify(
         () => convertSatsToCurrency.execute(currencyCode: 'CAD'),

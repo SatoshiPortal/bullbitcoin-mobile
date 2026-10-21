@@ -48,6 +48,11 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   /// its own.
   String? _currencyInFlight;
 
+  /// Counts currency changes, so only the latest one may publish its price:
+  /// an answer for a currency the user has since left must not overwrite the
+  /// newer one.
+  int _currencyRequest = 0;
+
   @override
   Future<void> close() async {
     await _currencyChangeSubscription.cancel();
@@ -190,15 +195,14 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
-    // A change to the currency already shown, or already being fetched, is no
-    // change: screens send their flow's currency when they open, and a screen
-    // that rebuilds sends it again. A refresh goes through BitcoinPriceFetched.
-    final isLoaded =
-        event.currencyCode == state.currency && state.hasValidFiatRate;
-    if (isLoaded || event.currencyCode == _currencyInFlight) return;
+    // A burst of the same change shares the request already out. The price
+    // repository bounds how often the pricer is actually asked.
+    if (event.currencyCode == _currencyInFlight) return;
 
     log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
     _currencyInFlight = event.currencyCode;
+    final request = ++_currencyRequest;
+    bool isLatest() => request == _currencyRequest;
 
     try {
       emit(state.copyWith(loadingPrice: true));
@@ -207,6 +211,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
+      if (!isLatest()) return;
 
       if (price <= 0) {
         log.warning(
@@ -235,6 +240,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       );
     } catch (e) {
       log.warning('BitcoinPriceCurrencyChanged failed', error: e);
+      if (!isLatest()) return;
       emit(
         state.copyWith(
           bitcoinPrice: null,
