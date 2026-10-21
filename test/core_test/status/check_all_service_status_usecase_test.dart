@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok;
@@ -106,6 +107,56 @@ void main() {
 
     expect(status.pricer.status, ServiceStatus.online);
     expect(status.pricer.lastChecked, fetchedAt);
+  });
+
+  test('an offline pricer is dated by the controlled clock', () async {
+    final now = DateTime(2026, 10, 21, 12, 30);
+    final electrum = _MockElectrumConnectivityPort();
+    when(
+      () => electrum.checkServersInUseAreOnlineForNetwork(any()),
+    ).thenAnswer((_) async => true);
+    final bitcoinPriceRepository = _MockBitcoinPriceRepository();
+    // The datasource reports an unreachable pricer as a zero rate.
+    when(
+      () => bitcoinPriceRepository.getCurrencyValue(
+        amountSat: any(named: 'amountSat'),
+        currency: any(named: 'currency'),
+      ),
+    ).thenAnswer((_) async => 0);
+    final feesRepository = _MockFeesRepository();
+    when(
+      () => feesRepository.getNetworkFees(network: any(named: 'network')),
+    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    final payjoinPolicy = _MockPayjoinPolicyAccess();
+    final walletRepository = _MockWalletRepository();
+    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
+    final settingsRepository = _MockSettingsRepository();
+    final tor = _MockTor();
+    when(
+      () => settingsRepository.fetch(),
+    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => tor.external).thenReturn(_MockExternalTor());
+    final usecase = CheckAllServiceStatusUsecase(
+      electrumConnectivityPort: electrum,
+      bitcoinPriceRepository: bitcoinPriceRepository,
+      payjoinPolicy: payjoinPolicy,
+      payjoinDiagnostics: _MockPayjoinDiagnostics(),
+      feesRepository: feesRepository,
+      walletRepository: walletRepository,
+      ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
+      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      settingsRepository: settingsRepository,
+      tor: tor,
+    );
+
+    final status = await withClock(
+      Clock.fixed(now),
+      () => usecase.execute(network: Network.bitcoinMainnet),
+    );
+
+    expect(status.pricer.status, ServiceStatus.offline);
+    expect(status.pricer.lastChecked, now);
   });
 
   test(

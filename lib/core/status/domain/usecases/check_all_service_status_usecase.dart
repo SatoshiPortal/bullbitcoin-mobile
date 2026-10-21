@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:clock/clock.dart';
+
 import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
@@ -217,7 +219,7 @@ class CheckAllServiceStatusUsecase {
       name: 'Pricer',
       lastChecked:
           (isOnline ? _bitcoinPriceRepository.priceFetchedAt('USD') : null) ??
-          DateTime.now(),
+          clock.now(),
     );
   }
 
