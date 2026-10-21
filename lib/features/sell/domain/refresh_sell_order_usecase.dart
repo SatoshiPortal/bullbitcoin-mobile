@@ -40,8 +40,8 @@ class RefreshSellOrderUsecase {
       if (deposit case Err(:final failure)) return Err(failure);
 
       return Ok(order);
-    } on ApiKeyException catch (e) {
-      return Err(SellUnauthenticatedFailure(e.message));
+    } on ApiKeyException {
+      return const Err(SellUnauthenticatedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to refresh the sell order',

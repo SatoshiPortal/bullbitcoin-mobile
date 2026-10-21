@@ -36,12 +36,12 @@ class ConfirmWithdrawOrderUsecase {
           : _mainnetExchangeOrderRepository;
       order = await repo.confirmWithdrawOrder(orderId);
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Cannot confirm the withdrawal order: not authenticated',
-        error: e,
+      log.warning(
+        'Cannot confirm the withdrawal order: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(WithdrawUnauthenticatedFailure(e.message));
+      return const Err(WithdrawUnauthenticatedFailure());
     } catch (_, st) {
       // The raw error is deliberately dropped, as for order creation: it must
       // not carry order payment data into diagnostics.

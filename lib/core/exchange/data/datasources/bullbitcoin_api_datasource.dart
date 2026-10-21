@@ -23,7 +23,7 @@ class BullbitcoinApiDatasource {
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
 
-  Future<void> registerResponsibilityConsent(String apiKey) async {
+  Future<void> registerResponsibilityConsent() async {
     try {
       final resp = await _http.post(
         _usersPath,
@@ -33,7 +33,6 @@ class BullbitcoinApiDatasource {
           'method': 'registerResponsibilityConsent',
           'params': {},
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
@@ -49,7 +48,7 @@ class BullbitcoinApiDatasource {
     }
   }
 
-  Future<UserSummaryModel?> getUserSummary(String apiKey) async {
+  Future<UserSummaryModel?> getUserSummary() async {
     try {
       final resp = await _http.post(
         _usersPath,
@@ -59,7 +58,6 @@ class BullbitcoinApiDatasource {
           'method': 'getUserSummary',
           'params': {},
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
@@ -86,7 +84,6 @@ class BullbitcoinApiDatasource {
   /// URI when it is given. A payjoin buy therefore has to pass [bip21URI], and
   /// there is no endpoint to swap one for the other afterwards.
   Future<OrderModel> createBuyOrder({
-    required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
@@ -121,7 +118,6 @@ class BullbitcoinApiDatasource {
         'method': 'createOrderBuy',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
@@ -132,10 +128,7 @@ class BullbitcoinApiDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  Future<OrderModel> confirmOrder({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> confirmOrder({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -144,16 +137,12 @@ class BullbitcoinApiDatasource {
         'method': 'confirmOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) throw Exception('Failed to confirm order');
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  Future<OrderModel> getOrderSummary({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> getOrderSummary({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -162,7 +151,6 @@ class BullbitcoinApiDatasource {
         'method': 'getOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) throw Exception('Failed to get order summary');
@@ -172,7 +160,7 @@ class BullbitcoinApiDatasource {
     );
   }
 
-  Future<List<OrderModel>> listOrderSummaries({required String apiKey}) async {
+  Future<List<OrderModel>> listOrderSummaries() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -184,7 +172,6 @@ class BullbitcoinApiDatasource {
           "paginator": {"page": 1, "pageSize": 50},
         },
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to list order summaries');
@@ -210,10 +197,7 @@ class BullbitcoinApiDatasource {
         .toList();
   }
 
-  Future<OrderModel> refreshOrder({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> refreshOrder({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -222,7 +206,6 @@ class BullbitcoinApiDatasource {
         'method': 'refreshOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to refresh order summary');
@@ -230,10 +213,7 @@ class BullbitcoinApiDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  Future<OrderModel> dequeueAndPay({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> dequeueAndPay({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -242,7 +222,6 @@ class BullbitcoinApiDatasource {
         'method': 'unbatchAndExpressOrder',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to refresh order summary');
@@ -251,7 +230,6 @@ class BullbitcoinApiDatasource {
   }
 
   Future<void> saveUserPreference({
-    required String apiKey,
     required UserPreferencePayloadModel params,
   }) async {
     final resp = await _http.post(
@@ -262,7 +240,6 @@ class BullbitcoinApiDatasource {
         'method': 'saveUserPreferences',
         'params': {'userPreferences': params.toMap()},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -286,7 +263,6 @@ class BullbitcoinApiDatasource {
   /// [OrderBitcoinNetwork.bitcoin]. Omitted rather than sent as false so a
   /// backend without the flag is unaffected.
   Future<OrderModel> createSellOrder({
-    required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
@@ -312,7 +288,6 @@ class BullbitcoinApiDatasource {
         'method': 'sellToBalance',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
@@ -326,7 +301,6 @@ class BullbitcoinApiDatasource {
   /// See [createSellOrder] for [usePayjoin]; a payment is a sell to a recipient
   /// and the flag behaves identically.
   Future<OrderModel> createPayOrder({
-    required String apiKey,
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -356,11 +330,7 @@ class BullbitcoinApiDatasource {
       'params': params,
     };
 
-    final resp = await _http.post(
-      _ordersPath,
-      data: requestData,
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
+    final resp = await _http.post(_ordersPath, data: requestData);
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
     if (statusCode != 200) {
@@ -374,7 +344,6 @@ class BullbitcoinApiDatasource {
   }
 
   Future<OrderModel> createWithdrawalOrder({
-    required String apiKey,
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -401,7 +370,6 @@ class BullbitcoinApiDatasource {
         'method': 'createWithdrawalOrder',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
@@ -418,7 +386,6 @@ class BullbitcoinApiDatasource {
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
     required String address,
-    required String apiKey,
   }) async {
     final data = {
       'jsonrpc': '2.0',
@@ -443,11 +410,7 @@ class BullbitcoinApiDatasource {
         },
       },
     };
-    final resp = await _http.post(
-      _orderTriggerPath,
-      data: data,
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
+    final resp = await _http.post(_orderTriggerPath, data: data);
     if (resp.statusCode != 200) {
       throw Exception('Failed to create DCA');
     }
@@ -461,7 +424,7 @@ class BullbitcoinApiDatasource {
     );
   }
 
-  Future<Map<String, dynamic>> getBuyLimits({required String apiKey}) async {
+  Future<Map<String, dynamic>> getBuyLimits() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -470,7 +433,6 @@ class BullbitcoinApiDatasource {
         'method': 'getBuyLimits',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -485,7 +447,7 @@ class BullbitcoinApiDatasource {
     return resp.data['result'] as Map<String, dynamic>;
   }
 
-  Future<Map<String, dynamic>> getSellLimits({required String apiKey}) async {
+  Future<Map<String, dynamic>> getSellLimits() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -494,7 +456,6 @@ class BullbitcoinApiDatasource {
         'method': 'getSellLimits',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -513,7 +474,6 @@ class BullbitcoinApiDatasource {
 
   /// List recipients with optional filters for default wallets
   Future<List<Map<String, dynamic>>> listMyRecipients({
-    required String apiKey,
     List<String>? recipientTypes,
     bool? isDefault,
   }) async {
@@ -533,7 +493,6 @@ class BullbitcoinApiDatasource {
         'method': 'listMyRecipients',
         'params': {'filters': filters},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -552,7 +511,6 @@ class BullbitcoinApiDatasource {
 
   /// Create a new recipient (default wallet)
   Future<Map<String, dynamic>> createMyRecipient({
-    required String apiKey,
     required String recipientType,
     required String address,
     required bool isOwner,
@@ -575,7 +533,6 @@ class BullbitcoinApiDatasource {
           },
         },
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -593,7 +550,6 @@ class BullbitcoinApiDatasource {
 
   /// Update an existing recipient
   Future<Map<String, dynamic>> updateMyRecipient({
-    required String apiKey,
     required String recipientId,
     required String recipientType,
     String? address,
@@ -622,7 +578,6 @@ class BullbitcoinApiDatasource {
         'method': 'updateMyRecipient',
         'params': {'element': element},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -657,7 +612,7 @@ class BullbitcoinApiDatasource {
   // ==================== Order Stats API ====================
 
   /// Get order statistics for the user
-  Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
+  Future<Map<String, dynamic>> getOrderStats() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -666,7 +621,6 @@ class BullbitcoinApiDatasource {
         'method': 'getOrderStats',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -685,7 +639,6 @@ class BullbitcoinApiDatasource {
 
   /// Upload a KYC document file using multipart form (same as BB-Exchange)
   Future<void> uploadKycDocument({
-    required String apiKey,
     required List<int> fileBytes,
     required String fileName,
     required String docType,
@@ -706,10 +659,7 @@ class BullbitcoinApiDatasource {
     final resp = await _http.post(
       '$_kycPath/upload',
       data: formData,
-      options: Options(
-        headers: {'X-API-Key': apiKey},
-        contentType: 'multipart/form-data',
-      ),
+      options: Options(contentType: 'multipart/form-data'),
     );
 
     if (resp.statusCode != 200) {
@@ -733,9 +683,7 @@ class BullbitcoinApiDatasource {
 
   // ==================== Announcements API ====================
 
-  Future<List<Map<String, dynamic>>> listAnnouncements({
-    required String apiKey,
-  }) async {
+  Future<List<Map<String, dynamic>>> listAnnouncements() async {
     try {
       final resp = await _http.post(
         _messagesPath,
@@ -748,7 +696,6 @@ class BullbitcoinApiDatasource {
             'sortBy': {'id': 'updatedAt', 'sort': 'desc'},
           },
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {

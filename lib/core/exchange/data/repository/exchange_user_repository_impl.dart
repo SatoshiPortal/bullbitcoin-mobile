@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
 import 'package:bb_mobile/core/exchange/data/models/announcement_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
@@ -18,26 +18,13 @@ import 'package:dio/dio.dart';
 /// sanitized [ExchangeUserFailure] travels on.
 class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
-  final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
-  final bool _isTestnet;
 
-  ExchangeUserRepositoryImpl({
-    required this._bullbitcoinApiDatasource,
-    required this._bullbitcoinApiKeyDatasource,
-    required this._isTestnet,
-  });
+  ExchangeUserRepositoryImpl({required this._bullbitcoinApiDatasource});
 
   @override
   Future<Result<UserSummary, ExchangeUserFailure>> getUserSummary() async {
     try {
-      final apiKey = await _apiKey();
-      if (apiKey == null) {
-        return const Err(ExchangeUserNotAuthenticatedFailure());
-      }
-
-      final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
-        apiKey,
-      );
+      final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary();
       if (userSummaryModel == null) {
         // A key that resolves to no account is an auth problem, not transport.
         log.warning('Exchange user summary came back empty');
@@ -60,12 +47,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   @override
   Future<Result<void, ExchangeUserFailure>> registerScamWarningConsent() async {
     try {
-      final apiKey = await _apiKey();
-      if (apiKey == null) {
-        return const Err(ExchangeUserNotAuthenticatedFailure());
-      }
-
-      await _bullbitcoinApiDatasource.registerResponsibilityConsent(apiKey);
+      await _bullbitcoinApiDatasource.registerResponsibilityConsent();
       return const Ok(null);
     } catch (e, st) {
       return Err(
@@ -88,13 +70,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     bool? emailNotificationsEnabled,
   }) async {
     try {
-      final apiKey = await _apiKey();
-      if (apiKey == null) {
-        return const Err(ExchangeUserNotAuthenticatedFailure());
-      }
-
       await _bullbitcoinApiDatasource.saveUserPreference(
-        apiKey: apiKey,
         params: UserPreferencePayloadModel(
           language: language,
           currencyCode: currency,
@@ -120,14 +96,8 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   Future<Result<List<Announcement>, ExchangeUserFailure>>
   listAnnouncements() async {
     try {
-      final apiKey = await _apiKey();
-      if (apiKey == null) {
-        // Signed out is not a failure here: there is simply nothing to show.
-        return const Ok([]);
-      }
-
       final announcementDataList = await _bullbitcoinApiDatasource
-          .listAnnouncements(apiKey: apiKey);
+          .listAnnouncements();
 
       return Ok(
         announcementDataList
@@ -135,6 +105,9 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
             .toList(),
       );
     } catch (e, st) {
+      if (exchangeAuthenticationException(e)?.isUnauthenticated ?? false) {
+        return const Ok([]);
+      }
       return Err(
         _failureFrom(
           e,
@@ -148,7 +121,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
 
   /// Maps a thrown error to a sanitized failure, logging only its type.
   ///
-  /// A `dart:core` [Error] is a bug and goes to Sentry as `severe`. Anything
+  /// A `dart:core` [Error] is a bug and propagates. Anything
   /// else (a refused request, a timeout, an offline device) is an ordinary
   /// condition and is logged as a `warning`, so it does not raise a Sentry
   /// event. Unreachable is told apart because it is the one case with advice
@@ -159,6 +132,12 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     String operation,
     ExchangeUserFailure Function([String?]) onFailure,
   ) {
+    final refusal = exchangeAuthenticationException(e);
+    if (refusal != null) {
+      return refusal.isUnauthenticated
+          ? const ExchangeUserNotAuthenticatedFailure()
+          : onFailure('Exchange credential unavailable');
+    }
     if (e is DioException && _isUnreachable(e.type)) {
       log.warning(
         'Could not reach the exchange API to $operation: ${e.type.name}',
@@ -167,11 +146,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         '$operation unreachable: ${e.type.name}',
       );
     }
-    if (e is Error) {
-      log.severe(message: '$operation failed', error: e.runtimeType, trace: st);
-    } else {
-      log.warning('$operation failed: ${e.runtimeType}', trace: st);
-    }
+    log.warning('$operation failed: ${e.runtimeType}', trace: st);
     return onFailure('$operation failed: ${e.runtimeType}');
   }
 
@@ -182,11 +157,4 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     DioExceptionType.connectionError => true,
     _ => false,
   };
-
-  Future<String?> _apiKey() async {
-    final apiKey = await _bullbitcoinApiKeyDatasource.get(
-      isTestnet: _isTestnet,
-    );
-    return apiKey?.key;
-  }
 }

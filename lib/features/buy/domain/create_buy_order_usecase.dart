@@ -146,14 +146,13 @@ class CreateBuyOrderUsecase {
         rethrow;
       }
     } on ApiKeyException catch (e, st) {
-      // Severe: a session that expired mid-flow is not something the user did
-      // wrong, and it is the one failure here worth finding in Sentry.
-      log.severe(
-        message: 'Buy order rejected: not authenticated',
-        error: e,
+      // A missing or expired session is recoverable, including mid-flow.
+      log.warning(
+        'Buy order rejected: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(BuyUnauthenticatedFailure(e.message));
+      return const Err(BuyUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       // The two amount bounds are expected user input errors, so they are
       // logged at info rather than severe; the bound itself travels in the

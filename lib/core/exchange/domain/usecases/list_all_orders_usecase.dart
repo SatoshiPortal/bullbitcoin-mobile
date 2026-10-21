@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -31,10 +32,19 @@ class ListAllOrdersUsecase {
         offset: offset,
         type: type,
       );
-      return orders;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw ListAllOrdersException('$e');
+      return switch (orders) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw ListAllOrdersException(
+          'Exchange order history unavailable: ${failure.runtimeType}',
+        ),
+      };
+    } on ListAllOrdersException {
+      rethrow;
+    } on Exception catch (e) {
+      log.warning('Exchange order unavailable: ${e.runtimeType}');
+      throw ListAllOrdersException(
+        'Exchange order history unavailable: ${e.runtimeType}',
+      );
     }
   }
 }

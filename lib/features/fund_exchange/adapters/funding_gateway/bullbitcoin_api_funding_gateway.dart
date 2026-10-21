@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_request_params_model.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_response_model.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/institution_model.dart';
@@ -75,6 +76,16 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       // Genuinely unexpected escape — the raw reason is born here, so it is
       // logged here (Sentry) and the UI shows a generic message.
       log.severe(message: '$method failed', error: e, trace: st);
@@ -133,6 +144,16 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       log.severe(message: '$method failed', error: e, trace: st);
       return Err(FundExchangeUnexpectedFailure(e.toString()));
     }
@@ -163,6 +184,16 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         _ => FundExchangeConsentRegistrationFailure(e.logMessage),
       });
     } catch (e, st) {
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       log.severe(message: '$method failed', error: e, trace: st);
       return Err(FundExchangeConsentRegistrationFailure(e.toString()));
     }

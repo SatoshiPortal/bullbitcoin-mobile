@@ -4,6 +4,11 @@ sealed class FundExchangeFailure extends Failure {
   const FundExchangeFailure([super.logMessage]);
 }
 
+/// No usable exchange credential is available for this authenticated action.
+final class FundExchangeNotAuthenticatedFailure extends FundExchangeFailure {
+  const FundExchangeNotAuthenticatedFailure();
+}
+
 /// `ERR_ORD_PO404` — the account has no payment option for this method.
 final class FundExchangePaymentOptionUnavailableFailure
     extends FundExchangeFailure {

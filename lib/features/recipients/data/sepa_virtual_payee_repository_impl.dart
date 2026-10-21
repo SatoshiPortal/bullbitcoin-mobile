@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -75,6 +76,12 @@ final class SepaVirtualPayeeRepositoryImpl
     String operation,
     RecipientsFailure Function([String?]) onApiFailure,
   ) {
+    final refusal = exchangeAuthenticationException(e);
+    if (refusal != null) {
+      return refusal.isUnauthenticated
+          ? const RecipientsNotAuthenticatedFailure()
+          : onApiFailure('Exchange credential unavailable');
+    }
     if (e is SepaVirtualPayeeApiException) {
       log.warning('API refused to $operation — $e');
       return onApiFailure(e.toString());

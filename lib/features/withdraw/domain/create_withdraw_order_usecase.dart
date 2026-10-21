@@ -78,12 +78,12 @@ class CreateWithdrawOrderUsecase {
         ),
       );
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Withdrawal order rejected: not authenticated',
-        error: e,
+      log.warning(
+        'Withdrawal order rejected: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(WithdrawUnauthenticatedFailure(e.message));
+      return const Err(WithdrawUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       // The two amount bounds are expected user input errors, so they are
       // logged at info rather than severe; the bound itself travels in the

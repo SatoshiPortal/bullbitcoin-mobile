@@ -62,8 +62,8 @@ class CreateSellOrderUsecase {
         'bip21Present=${order.bip21URI != null}',
       );
       return Ok(order);
-    } on ApiKeyException catch (e) {
-      return Err(SellUnauthenticatedFailure(e.message));
+    } on ApiKeyException {
+      return const Err(SellUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       return Err(
         SellBelowMinAmountFailure(

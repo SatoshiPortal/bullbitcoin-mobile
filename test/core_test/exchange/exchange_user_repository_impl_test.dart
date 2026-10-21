@@ -1,6 +1,5 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
@@ -30,16 +29,8 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 
 class _MockApiDatasource extends Mock implements BullbitcoinApiDatasource {}
 
-class _MockApiKeyDatasource extends Mock
-    implements BullbitcoinApiKeyDatasource {}
-
 class _FakePreferencePayload extends Fake
     implements UserPreferencePayloadModel {}
-
-class _FakeApiKey extends Fake implements ExchangeApiKeyModel {
-  @override
-  String get key => 'bbk_live_7f3a9c2e';
-}
 
 /// Asserts the boundary kept the payload out of the failure.
 void _expectSanitized(ExchangeUserFailure failure) {
@@ -54,35 +45,32 @@ void main() {
   setUpAll(() => registerFallbackValue(_FakePreferencePayload()));
 
   late _MockApiDatasource api;
-  late _MockApiKeyDatasource apiKeys;
 
-  ExchangeUserRepositoryImpl build() => ExchangeUserRepositoryImpl(
-    bullbitcoinApiDatasource: api,
-    bullbitcoinApiKeyDatasource: apiKeys,
-    isTestnet: false,
-  );
-
-  void givenSignedIn() {
-    when(
-      () => apiKeys.get(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => _FakeApiKey());
-  }
+  ExchangeUserRepositoryImpl build() =>
+      ExchangeUserRepositoryImpl(bullbitcoinApiDatasource: api);
 
   void givenSignedOut() {
     when(
-      () => apiKeys.get(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => null);
+      () => api.getUserSummary(),
+    ).thenThrow(const ExchangeAuthenticationException());
+    when(
+      () => api.listAnnouncements(),
+    ).thenThrow(const ExchangeAuthenticationException());
+    when(
+      () => api.registerResponsibilityConsent(),
+    ).thenThrow(const ExchangeAuthenticationException());
+    when(
+      () => api.saveUserPreference(params: any(named: 'params')),
+    ).thenThrow(const ExchangeAuthenticationException());
   }
 
   setUp(() {
     api = _MockApiDatasource();
-    apiKeys = _MockApiKeyDatasource();
   });
 
   group('getUserSummary', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      givenSignedIn();
-      when(() => api.getUserSummary(any())).thenThrow(Exception(_rawReason));
+      when(() => api.getUserSummary()).thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(await build().getUserSummary());
 
@@ -100,13 +88,12 @@ void main() {
         final failure = _failureOf(await build().getUserSummary());
 
         expect(failure, isA<ExchangeUserNotAuthenticatedFailure>());
-        verifyNever(() => api.getUserSummary(any()));
+        verify(() => api.getUserSummary()).called(1);
       },
     );
 
     test('a key that resolves to no account is not-authenticated', () async {
-      givenSignedIn();
-      when(() => api.getUserSummary(any())).thenAnswer((_) async => null);
+      when(() => api.getUserSummary()).thenAnswer((_) async => null);
 
       expect(
         _failureOf(await build().getUserSummary()),
@@ -117,8 +104,7 @@ void main() {
 
   group('an unreachable API is told apart from a refusal', () {
     test('a connection error is a network failure', () async {
-      givenSignedIn();
-      when(() => api.getUserSummary(any())).thenThrow(
+      when(() => api.getUserSummary()).thenThrow(
         DioException.connectionError(
           requestOptions: RequestOptions(path: '/ak/api-users'),
           reason: _rawReason,
@@ -133,8 +119,7 @@ void main() {
     });
 
     test('an HTTP error is not reported as a connection problem', () async {
-      givenSignedIn();
-      when(() => api.getUserSummary(any())).thenThrow(
+      when(() => api.getUserSummary()).thenThrow(
         DioException.badResponse(
           statusCode: 503,
           requestOptions: RequestOptions(path: '/ak/api-users'),
@@ -154,10 +139,7 @@ void main() {
 
   group('listAnnouncements', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      givenSignedIn();
-      when(
-        () => api.listAnnouncements(apiKey: any(named: 'apiKey')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => api.listAnnouncements()).thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(await build().listAnnouncements());
 
@@ -178,12 +160,8 @@ void main() {
 
   group('saveUserPreference', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      givenSignedIn();
       when(
-        () => api.saveUserPreference(
-          apiKey: any(named: 'apiKey'),
-          params: any(named: 'params'),
-        ),
+        () => api.saveUserPreference(params: any(named: 'params')),
       ).thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(
@@ -206,9 +184,8 @@ void main() {
 
   group('registerScamWarningConsent', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      givenSignedIn();
       when(
-        () => api.registerResponsibilityConsent(any()),
+        () => api.registerResponsibilityConsent(),
       ).thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(await build().registerScamWarningConsent());

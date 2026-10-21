@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -84,6 +85,23 @@ void main() {
   });
 
   test(
+    'credential failure does not hide the remaining transaction data',
+    () async {
+      final payjoin = _payjoinSession();
+      when(
+        () => payjoinSessions.byTransactionId(_txId),
+      ).thenAnswer((_) async => Ok([payjoin]));
+      when(
+        () => mainnetOrderRepository.getOrderByTxId(_txId),
+      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      final transactions = unwrap(await usecase.execute(_txId));
+      expect(transactions, hasLength(1));
+      expect(transactions.single.payjoin, payjoin);
+      expect(transactions.single.order, isNull);
+    },
+  );
+
+  test(
     'keeps the order when only a payjoin session is found for the txid',
     () async {
       final payjoin = _payjoinSession();
@@ -93,7 +111,7 @@ void main() {
       ).thenAnswer((_) async => Ok([payjoin]));
       when(
         () => mainnetOrderRepository.getOrderByTxId(_txId),
-      ).thenAnswer((_) async => order);
+      ).thenAnswer((_) async => Ok(order));
 
       final transactions = unwrap(await usecase.execute(_txId));
 
@@ -112,7 +130,7 @@ void main() {
     ).thenAnswer((_) async => Ok([payjoin]));
     when(
       () => mainnetOrderRepository.getOrderByTxId(_txId),
-    ).thenAnswer((_) async => null);
+    ).thenAnswer((_) async => const Ok(null));
 
     final transactions = unwrap(await usecase.execute(_txId));
 

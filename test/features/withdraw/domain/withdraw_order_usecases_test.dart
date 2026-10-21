@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -53,7 +54,18 @@ F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
+class _Logger extends Mock implements Logger {}
+
 void main() {
+  late Logger previousLogger;
+  late _Logger logger;
+  setUpAll(() => registerFallbackValue(StackTrace.empty));
+  setUp(() {
+    previousLogger = log;
+    logger = _Logger();
+    log = logger;
+  });
+  tearDown(() => log = previousLogger);
   late _MockExchangeOrderRepository mainnet;
   late _MockExchangeOrderRepository testnet;
   late _MockSettingsRepository settingsRepository;
@@ -125,6 +137,13 @@ void main() {
         ).thenThrow(exception);
 
         expect(_err(await execute()), isA<WithdrawUnauthenticatedFailure>());
+        verifyNever(
+          () => logger.severe(
+            message: any(named: 'message'),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        );
       }
     });
 
@@ -241,6 +260,13 @@ void main() {
         final result = await build().execute(orderId: 'order-1');
 
         expect(_err(result), isA<WithdrawUnauthenticatedFailure>());
+        verifyNever(
+          () => logger.severe(
+            message: any(named: 'message'),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        );
       }
     });
   });

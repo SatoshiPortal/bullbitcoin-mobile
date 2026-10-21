@@ -29,12 +29,12 @@ class AccelerateBuyOrderUsecase {
       final order = await repo.accelerateBuyOrder(orderId);
       return Ok(order);
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Cannot accelerate the buy order: not authenticated',
-        error: e,
+      log.warning(
+        'Cannot accelerate the buy order: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(BuyUnauthenticatedFailure(e.message));
+      return const Err(BuyUnauthenticatedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to accelerate the buy order',

@@ -55,7 +55,7 @@ class GetTransactionsByTxIdUsecase {
         walletTransactions,
         swap,
         payjoinResult,
-        order,
+        orderResult,
         orderSwaps,
       ) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
@@ -64,6 +64,15 @@ class GetTransactionsByTxIdUsecase {
         orderRepository.getOrderByTxId(txId),
         _getTransactionOrderSwapsUsecase.execute(),
       ).wait;
+      final order = switch (orderResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          log.warning(
+            'Exchange enrichment unavailable: ${failure.runtimeType}',
+          );
+          return null;
+        }(),
+      };
       final payjoins = switch (payjoinResult) {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
