@@ -55,9 +55,8 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         );
       }
 
-      final element = (result['element'] as Map<String, dynamic>?) ?? {};
-      final ppExtraData =
-          (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
+      final element = _detailsMap(result['element']);
+      final ppExtraData = _detailsMap(result['ppExtraData']);
       final merged = {...element, ...ppExtraData}.map(
         (key, value) => MapEntry(key, value is num ? value.toString() : value),
       );
@@ -119,8 +118,14 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         );
       }
 
-      final elements = result['elements'] as List<dynamic>?;
-      final institutions = (elements ?? const [])
+      final elements = switch (result['elements']) {
+        null => const <dynamic>[],
+        final List<dynamic> values => values,
+        _ => throw const FundingResponseException(
+          'Institution elements are not a list',
+        ),
+      };
+      final institutions = elements
           .map((e) {
             try {
               return InstitutionModel.fromJson(
@@ -219,6 +224,14 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       return Err(FundExchangeConsentRegistrationFailure(e.toString()));
     }
   }
+
+  static Map<String, dynamic> _detailsMap(Object? value) => switch (value) {
+    null => const {},
+    final Map<String, dynamic> values => values,
+    _ => throw const FundingResponseException(
+      'Funding details are not an object',
+    ),
+  };
 
   /// Performs one JSON-RPC call and returns its `result`, converting every
   /// transport- and protocol-level problem into a [FundingDatasourceException].

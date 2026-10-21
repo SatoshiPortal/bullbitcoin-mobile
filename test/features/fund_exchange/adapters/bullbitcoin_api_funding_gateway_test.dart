@@ -46,6 +46,102 @@ Map<String, dynamic> _jsonRpcError({
 };
 
 void main() {
+  for (final method in const <FundingMethod>[
+    EmailETransfer(),
+    BankTransferWire(),
+    OnlineBillPayment(),
+    CanadaPost(),
+    InstantSepa(),
+    RegularSepa(),
+    SpeiTransfer(),
+    Sinpe(),
+    CrIbanCrc(),
+    CrIbanUsd(),
+    ArsBankTransfer(),
+  ]) {
+    test('${method.runtimeType} rejects missing required fields', () async {
+      final dio = _dioReturning({
+        'result': {'element': <String, dynamic>{}},
+      });
+      addTearDown(dio.close);
+      final result = await BullBitcoinApiFundingGateway(
+        authenticatedApiClient: dio,
+      ).getFundingDetails(fundingMethod: method);
+      expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+    });
+    test(
+      '${method.runtimeType} preserves valid fields and ignores unknown metadata',
+      () async {
+        final dio = _dioReturning({
+          'result': {
+            'element': {
+              'code': 7,
+              'userNbr': 'synthetic',
+              'BENEFICIARY NAME': 'synthetic',
+              'BENEFICIARY EMAIL': 'synthetic',
+              'BANK ACCOUNT DETAILS': 'synthetic',
+              'IBAN': 'synthetic',
+              'SWIFT': 'synthetic',
+              'INSTITUTION NUMBER': 'synthetic',
+              'TRANSIT NUMBER': 'synthetic',
+              'ACCOUNT NUMBER': 'synthetic',
+              'ROUTING NUMBER': 'synthetic',
+              'BENEFICIARY ADDRESS': 'synthetic',
+              'BANK ADDRESS': 'synthetic',
+              'BANK NAME': 'synthetic',
+              'BILLER NAME': 'synthetic',
+              'BIC': 'synthetic',
+              'BANK ACCOUNT COUNTRY': 'synthetic',
+              'BANK COUNTRY': 'synthetic',
+              'CLABE': 'synthetic',
+              'CÉDULA JURÍDICA': 'synthetic',
+              'CVU': 'synthetic',
+              'numTelefono': 'synthetic',
+              'paymentLink': 'synthetic',
+              'value': 'synthetic',
+              'extraServerMetadata': {'nested': true},
+            },
+          },
+        });
+        addTearDown(dio.close);
+        final result = await BullBitcoinApiFundingGateway(
+          authenticatedApiClient: dio,
+        ).getFundingDetails(fundingMethod: method);
+        expect(result, isA<Ok>());
+      },
+    );
+  }
+
+  group('malformed funding responses', () {
+    for (final entry in <String, Object>{
+      'invalid element': {'element': 42},
+      'invalid extra data': {'ppExtraData': 42},
+      'missing required fields': {'element': <String, dynamic>{}},
+      'incorrect field type': {
+        'element': {'code': true},
+      },
+    }.entries) {
+      test('${entry.key} returns a recoverable failure', () async {
+        final dio = _dioReturning({'result': entry.value});
+        addTearDown(dio.close);
+        final result = await BullBitcoinApiFundingGateway(
+          authenticatedApiClient: dio,
+        ).getFundingDetails(fundingMethod: const EmailETransfer());
+        expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+      });
+    }
+    test('invalid institutions list returns a recoverable failure', () async {
+      final dio = _dioReturning({
+        'result': {'elements': 42},
+      });
+      addTearDown(dio.close);
+      final result = await BullBitcoinApiFundingGateway(
+        authenticatedApiClient: dio,
+      ).listInstitutions(jurisdiction: FundingJurisdiction.canada);
+      expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+    });
+  });
+
   group('BullBitcoinApiFundingGateway.getFundingDetails', () {
     test('maps each known API code to its own failure variant', () async {
       const expected = <String, Type>{
