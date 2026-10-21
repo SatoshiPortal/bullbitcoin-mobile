@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -7,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
@@ -34,6 +34,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebViewController _controller = WebViewController();
   late final WebviewCookieManager _cookieManager = WebviewCookieManager();
   late final String _bbAuthUrl;
+  late final CompleteExchangeAuthenticationUsecase _authentication;
   String? _basicAuthUsername;
   String? _basicAuthPassword;
   bool _isGeneratingApiKey = false;
@@ -72,6 +73,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
         return;
     }
     final isTestnet = settingsState.environment == Environment.testnet;
+    _authentication = locator<CompleteExchangeAuthenticationUsecase>(
+      param1: _controller.runJavaScriptReturningResult,
+      param2: (isTestnet: isTestnet, isOpen: () => mounted && !_isClosing),
+    );
     _bbAuthUrl = isTestnet
         ? ApiServiceConstants.bbAuthTestUrl
         : ApiServiceConstants.bbAuthUrl;
@@ -164,52 +169,29 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             }
 
             // Check if the URL contains the bb_session cookie
-            final bbSessionCookie = await _tryGetBBSessionCookie(change.url!);
+            final bbSessionCookie = await _tryGetBBSessionCookie(url);
             // If no bb_session cookie is found, do nothing as the user is not
             //  logged in yet.
             if (bbSessionCookie == null) return;
 
-            // If the bb_session cookie is found, the user is logged in and
-            //  we can proceed to try to generate and save the API key.
-
+            if (!mounted || _isClosing || _isGeneratingApiKey) return;
+            var retry = false;
+            setState(() => _isGeneratingApiKey = true);
             try {
-              // Set the flag to indicate that we are generating the API key
-              setState(() => _isGeneratingApiKey = true);
-
-              final apiKeyData = await _generateApiKey();
-              if (apiKeyData['error'] != null) {
-                setState(() => _isGeneratingApiKey = false);
-                return;
-              }
-              // Save the API key so it can be used for future requests
-              if (!mounted) return;
-              await context.read<ExchangeCubit>().storeApiKey(apiKeyData);
-
-              // Check if the API key was successfully stored. The cubit holds
-              // a sanitized failure; the raw reason was logged at the boundary.
-              if (!mounted) return;
-              final saveApiKeyFailure = context
+              final failure = await context
                   .read<ExchangeCubit>()
-                  .state
-                  .saveApiKeyFailure;
-              if (saveApiKeyFailure != null) {
-                await _handleLoginError(saveApiKeyFailure);
-                return;
-              }
-            } catch (e) {
-              log.severe(
-                message: 'Error generating or saving API key',
-                error: 'API key generation or storage failed',
-                trace: StackTrace.current,
+                  .completeAuthentication(_authentication);
+              if (!mounted || _isClosing) return;
+              if (failure != null) retry = await _handleLoginError(failure);
+            } on Exception catch (error) {
+              log.warning(
+                'Exchange authentication failed: ${error.runtimeType}',
               );
-              await _handleLoginError();
+              if (mounted && !_isClosing) retry = await _handleLoginError();
             } finally {
-              // Reset the flag after the API key generation process is done
-              //  and if the widget is still mounted.
-              if (mounted) {
-                setState(() => _isGeneratingApiKey = false);
-              }
+              if (mounted) setState(() => _isGeneratingApiKey = false);
             }
+            if (retry && mounted && !_isClosing) await _controller.reload();
           },
           onNavigationRequest: (NavigationRequest request) {
             // Exact host matching — a startsWith('https://accounts') prefix
@@ -312,71 +294,30 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     return bbSessionCookie;
   }
 
-  Future<Map<String, dynamic>> _generateApiKey() async {
-    final url = '$_bbAuthUrl/api/generate-api-key';
-
-    final result =
-        await _controller.runJavaScriptReturningResult('''
-        (function() {
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', '$url', false);
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.withCredentials = true;
-          try {
-            xhr.send(JSON.stringify({ apiKeyName: 'test-key-' + new Date().getTime() }));
-            if (xhr.status >= 200 && xhr.status < 300) {
-              try { return xhr.responseText; } catch (e) { return JSON.stringify({error: 'Failed to parse response: ' + e.toString()}); }
-            } else {
-              return JSON.stringify({ error: 'Request failed with status: ' + xhr.status, statusText: xhr.statusText || 'Unknown error' });
-            }
-          } catch (e) {
-            return JSON.stringify({error: 'XHR Error: ' + e.toString()});
-          }
-        })();
-      ''')
-            as String;
-    String jsonString = result;
-    if (jsonString.startsWith('"') && jsonString.endsWith('"')) {
-      jsonString = jsonString
-          .substring(1, jsonString.length - 1)
-          .replaceAll(r'\"', '"')
-          .replaceAll(r'\\', '\\');
-    }
-    final responseData = json.decode(jsonString) as Map<String, dynamic>;
-
-    return responseData;
-  }
-
-  Future<void> _clearCacheAndCookies() async {
-    // Only clear cookies, not cache to avoid blank screen issues
-    await _cookieManager.clearCookies();
-  }
-
-  /// [failure] is the sanitized reason when one is known; the generic copy is
-  /// used otherwise. The raw reason was logged at the repository boundary.
-  Future<void> _handleLoginError([ExchangeFailure? failure]) async {
-    // Clear cache and cookies and reload the controller to
-    //  allow the user to try logging in again
-    await _clearCacheAndCookies();
-    await _controller.reload();
-
-    if (!mounted) return;
-    await BullDialog.show(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.loc.exchangeAuthLoginFailedTitle),
-        content: Text(
-          failure?.toTranslated(context) ??
-              context.loc.exchangeAuthLoginFailedMessage,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.loc.exchangeAuthLoginFailedOkButton),
+  /// Retry preserves the web session; only explicit sign-out clears cookies.
+  Future<bool> _handleLoginError([ExchangeFailure? failure]) async {
+    if (!mounted || _isClosing) return false;
+    return await BullDialog.show<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(context.loc.exchangeAuthLoginFailedTitle),
+            content: Text(
+              failure?.toTranslated(context) ??
+                  context.loc.exchangeAuthLoginFailedMessage,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: Text(context.loc.exchangeAuthLoginFailedOkButton),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: Text(context.loc.retry),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ) ??
+        false;
   }
 
   @override

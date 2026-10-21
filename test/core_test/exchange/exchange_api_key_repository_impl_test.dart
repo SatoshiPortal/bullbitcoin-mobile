@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -45,6 +46,19 @@ const _fields = {
   'isActive': true,
   'createdAt': 0,
   'updatedAt': 0,
+};
+
+ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
+  id: 'key-1',
+  key: _key,
+  name: 'mobile',
+  userId: 'user',
+  isActive: true,
+  createdAt: 0,
+  updatedAt: 0,
+)) {
+  Ok(:final value) => value,
+  Err() => throw StateError('Invalid synthetic fixture'),
 };
 
 void main() {
@@ -195,32 +209,42 @@ void main() {
     },
   );
 
-  for (final entry in <String, Map<String, dynamic>>{
-    'bare': _fields,
-    'apiKey': {'apiKey': _fields},
-    'result': {
-      'result': {'apiKey': _fields},
-    },
-    'data': {
-      'data': {'apiKey': _fields},
-    },
-  }.entries) {
-    test('saves ${entry.key} auth envelope in the existing format', () async {
+  test('rejects credentials that cannot safely enter an HTTP header', () async {
+    for (final key in [
+      ' ',
+      'synthetic\r\nheader',
+      'synthetic\u0000',
+      'synthetic\u{1f600}',
+    ]) {
+      storage.values['exchange_api_key_testnet'] = jsonEncode({
+        'key': key,
+        'isActive': true,
+      });
+      final result = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        await repository.saveApiKey(entry.value, isTestnet: true),
-        isA<Ok<void, ExchangeApiKeyFailure>>(),
+        result is Err<String?, ExchangeApiKeyFailure>,
+        isTrue,
+        reason: 'invalid stored credentials must fail before reaching HTTP',
       );
-      expect(storage.values.keys, ['exchange_api_key_testnet']);
-      expect(
-        jsonDecode(storage.values['exchange_api_key_testnet'] ?? ''),
-        containsPair('key', _key),
-      );
+    }
+  });
+
+  test('saves a domain credential in the existing JSON format', () async {
+    expect(
+      await repository.saveApiKey(_credential(), isTestnet: true),
+      isA<Ok<void, ExchangeApiKeyFailure>>(),
+    );
+    expect(storage.values.keys, ['exchange_api_key_testnet']);
+    expect(jsonDecode(storage.values['exchange_api_key_testnet'] ?? ''), {
+      ..._fields,
+      'lastUsedAt': null,
+      'expiresAt': null,
     });
-  }
+  });
 
   test('save and delete failures are sanitized', () async {
     storage.writeFailure = Exception(_key);
-    final saved = await repository.saveApiKey(_fields, isTestnet: false);
+    final saved = await repository.saveApiKey(_credential(), isTestnet: false);
     expect(
       saved,
       isA<Err<void, ExchangeApiKeyFailure>>().having(

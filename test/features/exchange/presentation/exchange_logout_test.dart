@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +27,8 @@ const _account = UserSummary(
 
 class _MockGetAccount extends Mock implements GetExchangeAccountUsecase {}
 
-class _MockStoreApiKey extends Mock implements StoreExchangeApiKeyUsecase {}
+class _MockCompleteAuthentication extends Mock
+    implements CompleteExchangeAuthenticationUsecase {}
 
 class _MockSavePreferences extends Mock
     implements SaveExchangePreferencesUsecase {}
@@ -53,7 +54,6 @@ void main() {
 
   ExchangeCubit build() => ExchangeCubit(
     getExchangeAccountUsecase: getAccount,
-    storeExchangeApiKeyUsecase: _MockStoreApiKey(),
     saveExchangePreferencesUsecase: savePreferences,
     clearExchangeSessionUsecase: clearSession,
     getExchangeAnnouncementsUsecase: announcements,
@@ -76,6 +76,28 @@ void main() {
     when(notifications.connect).thenAnswer((_) async => const Ok(null));
     when(notifications.disconnect).thenReturn(null);
     when(getAccount.execute).thenAnswer((_) async => const Ok(_account));
+  });
+
+  group('completeAuthentication', () {
+    test('returns a failure without refreshing the account', () async {
+      final operation = _MockCompleteAuthentication();
+      const failure = ExchangeAuthenticationFailure();
+      when(operation.execute).thenAnswer((_) async => const Err(failure));
+      final cubit = build();
+      addTearDown(cubit.close);
+      expect(await cubit.completeAuthentication(operation), same(failure));
+      verifyNever(getAccount.execute);
+      expect(cubit.state.userSummary, isNull);
+    });
+    test('refreshes the account after persistence succeeds', () async {
+      final operation = _MockCompleteAuthentication();
+      when(operation.execute).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      expect(await cubit.completeAuthentication(operation), isNull);
+      verify(getAccount.execute).called(1);
+      expect(cubit.state.userSummary, _account);
+    });
   });
 
   group('logout', () {
@@ -109,7 +131,6 @@ void main() {
 
       expect(cubit.state.stopDcaFailure, isNull);
       expect(cubit.state.getUserSummaryFailure, isNull);
-      expect(cubit.state.saveApiKeyFailure, isNull);
       expect(cubit.state.logoutFailure, isNull);
     });
 

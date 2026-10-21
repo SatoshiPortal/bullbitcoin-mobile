@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +15,6 @@ import 'package:primitives/primitives.dart';
 
 class ExchangeCubit extends Cubit<ExchangeState> {
   final GetExchangeAccountUsecase _getExchangeAccountUsecase;
-  final StoreExchangeApiKeyUsecase _storeExchangeApiKeyUsecase;
   final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
   final ClearExchangeSessionUsecase _clearExchangeSessionUsecase;
   final GetExchangeAnnouncementsUsecase _getExchangeAnnouncementsUsecase;
@@ -27,7 +26,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   ExchangeCubit({
     required this._getExchangeAccountUsecase,
-    required this._storeExchangeApiKeyUsecase,
     required this._saveExchangePreferencesUsecase,
     required this._clearExchangeSessionUsecase,
     required this._getExchangeAnnouncementsUsecase,
@@ -73,18 +71,15 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     unawaited(loadAnnouncements());
   }
 
-  Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
-    emit(state.copyWith(saveApiKeyFailure: null));
-
-    final result = await _storeExchangeApiKeyUsecase.execute(apiKeyData);
-    if (isClosed) return;
-
-    if (result case Err(:final failure)) {
-      emit(state.copyWith(saveApiKeyFailure: failure));
-      return;
-    }
-
+  /// The operation is scoped to its WebView and is never retained in state.
+  Future<ExchangeFailure?> completeAuthentication(
+    CompleteExchangeAuthenticationUsecase operation,
+  ) async {
+    final result = await operation.execute();
+    if (isClosed) return null;
+    if (result case Err(:final failure)) return failure;
     await fetchUserSummary();
+    return null;
   }
 
   void clearStopDcaFailure() {
@@ -144,7 +139,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         // Every failure belonged to the session that just ended. Leaving one
         // behind would re-show its banner to whoever signs in next.
         getUserSummaryFailure: null,
-        saveApiKeyFailure: null,
         stopDcaFailure: null,
         logoutFailure: null,
       ),
