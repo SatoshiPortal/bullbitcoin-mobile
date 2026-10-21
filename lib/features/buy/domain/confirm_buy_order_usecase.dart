@@ -43,6 +43,9 @@ class ConfirmBuyOrderUsecase {
       }
 
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(BuyUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       log.warning(
         'Cannot confirm the buy order: not authenticated',

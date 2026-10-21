@@ -28,6 +28,9 @@ class AccelerateBuyOrderUsecase {
           : _mainnetExchangeOrderRepository;
       final order = await repo.accelerateBuyOrder(orderId);
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(BuyUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       log.warning(
         'Cannot accelerate the buy order: not authenticated',

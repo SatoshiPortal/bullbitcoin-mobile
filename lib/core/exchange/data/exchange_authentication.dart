@@ -44,10 +44,15 @@ void rethrowExchangeAuthentication(Object error, StackTrace trace) {
   )) {
     Error.throwWithStackTrace(bug, trace);
   }
+  if (error is ExchangeCredentialUnavailableException) {
+    Error.throwWithStackTrace(error, trace);
+  }
   final refusal = exchangeAuthenticationException(error);
   if (refusal != null) {
     Error.throwWithStackTrace(
-      refusal.isUnauthenticated ? ApiKeyNotFoundException() : refusal,
+      refusal.isUnauthenticated
+          ? ApiKeyNotFoundException()
+          : const ExchangeCredentialUnavailableException(),
       trace,
     );
   }

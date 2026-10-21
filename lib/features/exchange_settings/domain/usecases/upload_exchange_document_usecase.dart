@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
@@ -60,12 +61,17 @@ class UploadExchangeDocumentUsecase {
       return Err(rejection);
     }
 
+    final bytes = document.bytes;
+    if (bytes == null) {
+      return const Err(ExchangeSettingsDocumentUnreadableFailure());
+    }
+
     // Mirrors the filename BB-Exchange expects for a secure upload.
     final fileName = userId != null ? 'doc-$userId-ID' : document.name;
 
     try {
       final result = await _uploadKycDocumentUsecase.execute(
-        fileBytes: document.bytes!,
+        fileBytes: bytes,
         fileName: fileName,
       );
 
@@ -80,6 +86,11 @@ class UploadExchangeDocumentUsecase {
       }
 
       return const Ok(ExchangeDocumentUploaded());
+    } on ExchangeCredentialUnavailableException {
+      log.warning(
+        'Exchange document upload unavailable: credential read refused',
+      );
+      return const Err(ExchangeSettingsDocumentUploadFailure());
     } catch (e, st) {
       log.severe(message: 'uploadKycDocument failed', error: e, trace: st);
       return Err(

@@ -44,6 +44,9 @@ class RefreshPayOrderUsecase {
       }
 
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(PayUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       log.warning(
         'Pay order refresh rejected: not authenticated',

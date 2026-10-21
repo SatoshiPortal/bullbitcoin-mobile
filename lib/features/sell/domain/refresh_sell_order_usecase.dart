@@ -40,6 +40,9 @@ class RefreshSellOrderUsecase {
       if (deposit case Err(:final failure)) return Err(failure);
 
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(SellUnexpectedFailure());
     } on ApiKeyException {
       return const Err(SellUnauthenticatedFailure());
     } catch (e, st) {

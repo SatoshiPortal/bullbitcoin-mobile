@@ -64,6 +64,9 @@ class PlacePayOrderUsecase {
       );
 
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(PayUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       // A missing or expired session is recoverable, including mid-flow.
       log.warning(

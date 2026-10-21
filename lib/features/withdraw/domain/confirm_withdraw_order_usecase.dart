@@ -35,6 +35,9 @@ class ConfirmWithdrawOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       order = await repo.confirmWithdrawOrder(orderId);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(WithdrawUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       log.warning(
         'Cannot confirm the withdrawal order: not authenticated',

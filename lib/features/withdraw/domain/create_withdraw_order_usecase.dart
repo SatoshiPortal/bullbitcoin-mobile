@@ -77,6 +77,9 @@ class CreateWithdrawOrderUsecase {
           interacSecurityDetails: interacSecurityDetails,
         ),
       );
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(WithdrawUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
       log.warning(
         'Withdrawal order rejected: not authenticated',
