@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -32,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:clock/clock.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,7 +70,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
     on<SellWalletSelected>(_onWalletSelected);
     on<SellPaymentPreparationAbandoned>(_onPaymentPreparationAbandoned);
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
-    on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
+    on<SellOrderRefreshTimePassed>(
+      _onOrderRefreshTimePassed,
+      transformer: droppable(), // One quote request on the wire at a time
+    );
+    on<SellQuoteRefreshGaveUp>(_onQuoteRefreshGaveUp);
     on<SellSendPaymentConfirmed>(
       _onSendPaymentConfirmed,
       transformer: droppable(), // Prevent multiple simultaneous confirmations
@@ -107,6 +113,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
+
+  /// Asks for a fresh quote when the order's price lock lapses, and keeps
+  /// asking at a bounded pace while the exchange hands back lapsed ones. The
+  /// countdown on screen is display only; this is the single trigger.
+  late final OrderDeadlineScheduler _quoteScheduler = OrderDeadlineScheduler(
+    onDue: () => add(const SellEvent.orderRefreshTimePassed()),
+    onGiveUp: () => add(const SellEvent.quoteRefreshGaveUp()),
+  );
   StreamSubscription<Result<PayjoinSession, SellFailure>>? _payjoinSubscription;
   String? _activePayjoinSessionId;
 
@@ -197,10 +211,19 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellPaymentPreparationAbandoned event,
     Emitter<SellState> emit,
   ) {
+    // Leaving a payin the exchange reported late: the screen that would show a
+    // late credit is gone, so stop polling for one. The broadcast latch stays.
+    final current = _currentPaymentState;
+    if (current != null && current.isPayinPastDeadline) {
+      _stopPolling();
+      emit(current.copyWith(isPolling: false));
+      return;
+    }
     if (_hasPaymentInFlight) return;
     ++_paymentPreparationGeneration;
     _bitcoinPreviewEpoch++;
     _stopPolling();
+    _quoteScheduler.cancel();
     final selection = state.toCleanWalletSelectionState;
     if (selection != null) emit(selection);
   }
@@ -439,6 +462,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         );
       }
       if (!isCurrent()) return;
+      _quoteScheduler.track(createdSellOrder.confirmationDeadline);
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -506,6 +530,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         ),
       );
       if (!isCurrent()) return;
+      _quoteScheduler.track(createdSellOrder.confirmationDeadline);
       _startPolling();
     } catch (e, st) {
       log.severe(
@@ -554,18 +579,29 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // an error over a confirmation that started while it was in flight.
           final currentOnFailure = _currentPaymentState;
           if (currentOnFailure == null) return;
+          if (currentOnFailure.sellOrder.orderId !=
+              paymentState.sellOrder.orderId) {
+            _resumeQuoteSchedule(currentOnFailure);
+            return;
+          }
           if (currentOnFailure.isConfirmingPayment ||
               currentOnFailure.isPayinBroadcast) {
             return;
           }
           emit(currentOnFailure.copyWith(error: failure));
+          _quoteScheduler.refreshFailed();
           return;
       }
 
       // A confirmation may have started while the refresh was in flight, so
-      // work from the current state instead of the snapshot above.
+      // work from the current state instead of the snapshot above. A new order
+      // may have replaced the refreshed one too: its answer is then stale.
       final current = _currentPaymentState;
       if (current == null) return;
+      if (current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+        _resumeQuoteSchedule(current);
+        return;
+      }
       if (current.isConfirmingPayment || current.isPayinBroadcast) return;
       // The error is kept: when this refresh was triggered by a failed send
       // (see _emitSendPaymentError) clearing it would erase the only
@@ -578,13 +614,40 @@ class SellBloc extends Bloc<SellEvent, SellState>
             ? refreshed
             : _clearedFeePreviews(refreshed),
       );
+      // A lapsed lock coming back is a retry, not a new quote: the scheduler
+      // paces it rather than asking again at the speed of the response.
+      _quoteScheduler.track(refreshedOrder.confirmationDeadline);
     } catch (e, st) {
       log.severe(
         message: 'Unexpected error while refreshing the sell order',
         error: e,
         trace: st,
       );
+      _quoteScheduler.refreshFailed();
     }
+  }
+
+  /// A stale answer arrived for an order that has since been replaced. The new
+  /// order's own refresh may have been dropped as overlapping while that one
+  /// was in flight, so put it back on its deadline.
+  void _resumeQuoteSchedule(SellPaymentState current) {
+    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    _quoteScheduler.track(current.sellOrder.confirmationDeadline);
+  }
+
+  /// The retries ran out without a usable quote: say so instead of spinning.
+  /// Confirm stays live; a tap on a lapsed quote asks for a fresh one again.
+  void _onQuoteRefreshGaveUp(
+    SellQuoteRefreshGaveUp event,
+    Emitter<SellState> emit,
+  ) {
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.isConfirmingPayment ||
+        current.isPayinBroadcast) {
+      return;
+    }
+    emit(current.copyWith(error: const SellQuoteUnavailableFailure()));
   }
 
   Future<void> _onSendPaymentConfirmed(
@@ -619,6 +682,16 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // order's payin is already committed.
     if (_activePayjoinSessionId != null) {
       emit(sellPaymentState.copyWith(isConfirmingPayment: true));
+      return;
+    }
+
+    // The exchange expires the order at its deadline and does not credit a
+    // payin sent after it, so a lapsed quote is refreshed, never paid.
+    if (_isQuoteExpired(sellPaymentState)) {
+      // Publish the cleaned state (previous error and transient flags
+      // cleared) first: _emitSendPaymentError builds on the current state.
+      emit(sellPaymentState);
+      _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
       return;
     }
 
@@ -675,6 +748,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
+        }
+        if (_isQuoteExpired(sellPaymentState)) {
+          _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
+          return;
         }
         final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
         if (broadcast case Err(:final failure)) {
@@ -761,7 +838,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
         final payjoinWindow =
             payjoinBip21 == null || confirmationDeadline == null
             ? null
-            : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+            : PayjoinSessionWindow.forOrderDeadline(
+                confirmationDeadline,
+                now: clock.now(),
+              );
         log.fine(
           'Sell Payjoin confirmation: '
           'toggle=${sellPaymentState.isPayjoinEnabled}, '
@@ -874,6 +954,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
               return;
+          }
+          // Signing is asynchronous: the deadline may have passed meanwhile.
+          if (_isQuoteExpired(sellPaymentState)) {
+            _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
+            return;
           }
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
@@ -1033,6 +1118,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
   }
 
   void _latchBroadcast(Emitter<SellState> emit, String txid) {
+    // The payin pays this quote; there is nothing left to refresh.
+    _quoteScheduler.cancel();
     final current = _currentPaymentState;
     if (current == null) return;
     emit(
@@ -1079,18 +1166,26 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // the payment shows up, rather than celebrating an order the exchange
     // has never seen paid.
     log.fine('Sell order after payin: ${_orderProgress(latestOrder)}');
+    // The read took seconds: settle only the order still on screen, from the
+    // state as it is now rather than as it was before the request.
+    final current = _currentPaymentState;
+    if (current == null ||
+        current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+      return;
+    }
+
     final payinStatus = latestOrder.payinStatus;
     if (payinStatus != OrderPayinStatus.inProgress &&
         payinStatus != OrderPayinStatus.awaitingConfirmation &&
         payinStatus != OrderPayinStatus.completed) {
+      if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
+      }
       return;
     }
 
-    await _labelPayjoinSellTransaction(
-      latestOrder,
-      paymentState.selectedWallet?.id,
-    );
-    emit(paymentState.toSuccessState(sellOrder: latestOrder));
+    await _labelPayjoinSellTransaction(latestOrder, current.selectedWallet?.id);
+    emit(current.toSuccessState(sellOrder: latestOrder));
   }
 
   void _emitSendPaymentError(Emitter<SellState> emit, SellFailure error) {
@@ -1104,13 +1199,13 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
     emit(current.copyWith(error: error, isConfirmingPayment: false));
 
-    // Confirm is live again, but the price-lock countdown fires onTimeout only
-    // once. If the deadline elapsed during this failed attempt, the skip in
-    // _onOrderRefreshTimePassed dropped that one refresh and nothing else will
-    // ask for it, leaving the user retrying against a stale quote.
+    // Confirm is live again. If the lock lapsed during this failed attempt,
+    // the refresh the scheduler fired meanwhile was skipped as in flight, so
+    // ask now — unless a retry is already on its way.
     final confirmationDeadline = current.sellOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
-        !confirmationDeadline.isAfter(DateTime.now())) {
+        !confirmationDeadline.isAfter(clock.now()) &&
+        !_quoteScheduler.isPending) {
       add(const SellEvent.orderRefreshTimePassed());
     }
   }
@@ -1194,6 +1289,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
       final current = _currentPaymentState;
       if (current == null) return;
+      // The order on screen may have been replaced while this read was out.
+      if (current.sellOrder.orderId != sellPaymentState.sellOrder.orderId) {
+        return;
+      }
       if (!current.isPayinBroadcast) {
         // Fail closed: the polled order must still pay the address the user
         // confirmed, or polling stops and the order is refused.
@@ -1231,6 +1330,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
               .copyWith(sellOrder: latestOrder, isPolling: false)
               .toSuccessState(sellOrder: latestOrder),
         );
+      } else if (current.isPayinBroadcast && _isPastDeadline(latestOrder)) {
+        _reportPayinPastDeadline(emit, current, latestOrder);
       } else {
         // The fetch takes seconds and the poll runs for the life of the screen,
         // so it routinely spans the broadcast. Emitting the pre-await snapshot
@@ -1262,9 +1363,50 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
   }
 
-  void _startPolling() {
+  bool _isQuoteExpired(SellPaymentState paymentState) {
+    final deadline = paymentState.sellOrder.confirmationDeadline;
+    return deadline != null && !deadline.isAfter(clock.now());
+  }
+
+  /// The exchange's own verdict that the payment deadline passed with no payin
+  /// seen. Whether a late payin can still be credited is the exchange's call,
+  /// so the screen keeps watching instead of failing the order.
+  static bool _isPastDeadline(SellOrder order) =>
+      (order.orderStatus == OrderStatus.expired ||
+          order.orderStatus == OrderStatus.orderExpired) &&
+      (order.payinStatus == OrderPayinStatus.notStarted ||
+          order.payinStatus == OrderPayinStatus.awaitingPayment);
+
+  void _reportPayinPastDeadline(
+    Emitter<SellState> emit,
+    SellPaymentState current,
+    SellOrder latestOrder,
+  ) {
+    if (!current.isPayinPastDeadline) {
+      log.warning(
+        // Kept short and punctuated: a long run of lowercase words is
+        // redacted from exported logs as a possible mnemonic.
+        'Sell payin broadcast; exchange reports order past deadline: '
+        'status=${latestOrder.orderStatus.name}, '
+        'payin=${latestOrder.payinStatus.name}',
+      );
+      // Still watched, in case the exchange credits it late, but no longer at
+      // the pace of a payment expected within seconds.
+      _startPolling(interval: const Duration(seconds: 30));
+    }
+    emit(
+      current.copyWith(
+        sellOrder: latestOrder,
+        isConfirmingPayment: false,
+        isPayinPastDeadline: true,
+        isPolling: true,
+      ),
+    );
+  }
+
+  void _startPolling({Duration interval = const Duration(seconds: 5)}) {
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _pollingTimer = Timer.periodic(interval, (timer) {
       add(const SellEvent.pollOrderStatus());
     });
   }
@@ -1772,6 +1914,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   Future<void> close() async {
     ++_paymentPreparationGeneration;
     _stopPolling();
+    _quoteScheduler.dispose();
     await _payjoinSubscription?.cancel();
     return super.close();
   }

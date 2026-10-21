@@ -271,7 +271,6 @@ class PayjoinInProgressPage extends StatelessWidget {
                                   PayjoinConstants.directoryPollingInterval,
                             ),
                           ),
-                          onTimeout: () {},
                         ),
                       ],
                     ),

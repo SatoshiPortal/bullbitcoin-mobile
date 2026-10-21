@@ -4959,5 +4959,11 @@
   "settingsPayjoinExpireMinutesDescription": "Durée pendant laquelle une session payjoin reste ouverte avant de basculer vers un paiement normal.",
   "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "min"
+  "settingsPayjoinMinutesUnit": "min",
+  "sellQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
+  "exchangePaymentSentPastDeadline": "Paiement envoyé. L’exchange indique que le délai de paiement de cette commande a expiré. Conservez l’identifiant de transaction ci-dessous et contactez le support si la commande n’est pas mise à jour.",
+  "exchangePaymentSentLeave": "Quitter",
+  "payQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
+  "exchangeQuoteUnavailableError": "Impossible d'obtenir un nouveau prix. Réessayez, ou revenez en arrière pour créer un nouvel ordre.",
+  "buyQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer."
 }

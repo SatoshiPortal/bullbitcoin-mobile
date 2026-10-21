@@ -112,14 +112,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                       color: context.appColors.outline,
                     ),
                     if (order?.confirmationDeadline case final deadline?)
-                      BullCountdown(
-                        until: deadline,
-                        onTimeout: () {
-                          context.read<SellBloc>().add(
-                            const SellEvent.orderRefreshTimePassed(),
-                          );
-                        },
-                      ),
+                      BullCountdown(until: deadline),
                   ],
                 ),
               ),
