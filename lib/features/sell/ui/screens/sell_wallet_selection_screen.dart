@@ -24,8 +24,7 @@ class _SellWalletSelectionScreenState extends State<SellWalletSelectionScreen> {
   void initState() {
     super.initState();
     // Show wallet values in the sell flow's currency. Once, on open: sent
-    // from build, it went out on every rebuild, and each one fetched the price
-    // (eight pricer calls in 0.65 s as the keyboard closed on a Pixel 6a).
+    // from build, it went out again on every rebuild.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final currency = context.read<SellBloc>().state.fiatCurrency;
