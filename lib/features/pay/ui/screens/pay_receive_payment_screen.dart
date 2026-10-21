@@ -129,14 +129,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                       color: context.appColors.outline,
                     ),
                     if (order.confirmationDeadline case final deadline?)
-                      BullCountdown(
-                        until: deadline,
-                        onTimeout: () {
-                          context.read<PayBloc>().add(
-                            const PayEvent.orderRefreshTimePassed(),
-                          );
-                        },
-                      ),
+                      BullCountdown(until: deadline),
                   ],
                 ),
               ),

@@ -16,6 +16,8 @@ sealed class SellEvent with _$SellEvent {
   const factory SellEvent.paymentPreparationAbandoned() =
       SellPaymentPreparationAbandoned;
   const factory SellEvent.orderRefreshTimePassed() = SellOrderRefreshTimePassed;
+  // The quote scheduler exhausted its retries without a usable quote.
+  const factory SellEvent.quoteRefreshGaveUp() = SellQuoteRefreshGaveUp;
   // The fee to pay comes from the committed selection on SellPaymentState, not
   // from the event: the modal writes it there and the summary row reads it
   // back, so a second copy on the event could only ever disagree (#2521).

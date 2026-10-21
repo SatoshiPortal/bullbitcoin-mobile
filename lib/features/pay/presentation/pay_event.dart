@@ -20,6 +20,8 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.paymentPreparationAbandoned() =
       PayPaymentPreparationAbandoned;
   const factory PayEvent.orderRefreshTimePassed() = PayOrderRefreshTimePassed;
+  // The quote scheduler exhausted its retries without a usable quote.
+  const factory PayEvent.quoteRefreshGaveUp() = PayQuoteRefreshGaveUp;
   // The fee to pay comes from the committed selection on PayPaymentState, not
   // from the event: the modal writes it there and the summary row reads it
   // back, so a second copy on the event could only ever disagree (#2521).

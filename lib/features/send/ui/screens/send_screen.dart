@@ -1806,7 +1806,6 @@ class SendSendingScreen extends StatelessWidget {
                             seconds: PayjoinConstants.directoryPollingInterval,
                           ),
                         ),
-                        onTimeout: () {},
                       ),
                     ],
                   ),

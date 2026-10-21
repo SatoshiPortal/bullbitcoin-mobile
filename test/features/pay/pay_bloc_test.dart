@@ -123,7 +123,8 @@ FiatPaymentOrder _order({
         orderStatus: OrderStatus.inProgress,
         payinStatus: payinStatus,
         payoutStatus: OrderPayoutStatus.notStarted,
-        confirmationDeadline: DateTime(2026, 1, 1),
+        // Ahead of the clock: a payin is never sent on a lapsed quote.
+        confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
         createdAt: DateTime(2026, 1, 1),
         liquidAddress: 'lq1address',
         beneficiaryName: beneficiaryName,

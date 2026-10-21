@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -16,6 +17,8 @@ import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart';
@@ -43,7 +46,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyBitcoinAddressInputChanged>(_onBitcoinAddressInputChanged);
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyOrderCreationAbandoned>(_onOrderCreationAbandoned);
-    on<_BuyRefreshOrder>(_onRefreshOrder);
+    on<_BuyRefreshOrder>(
+      _onRefreshOrder,
+      transformer: droppable(), // One quote request on the wire at a time
+    );
+    on<_BuyQuoteRefreshGaveUp>(_onQuoteRefreshGaveUp);
     on<_BuyConfirmOrder>(_onConfirmOrder);
     on<_BuyPayjoinToggled>(_onPayjoinToggled);
     on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
@@ -51,6 +58,18 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }
 
   int _orderCreationGeneration = 0;
+
+  /// Set once the order is confirmed at its quote: later reads of the order
+  /// (the success screen polls it) carry a deadline that no longer matters.
+  bool _isQuoteConfirmed = false;
+
+  /// Asks for a fresh quote when the order's price lock lapses, and keeps
+  /// asking at a bounded pace while the exchange hands back lapsed ones. The
+  /// countdown on screen is display only; this is the single trigger.
+  late final OrderDeadlineScheduler _quoteScheduler = OrderDeadlineScheduler(
+    onDue: () => add(const BuyEvent.refreshOrder()),
+    onGiveUp: () => add(const BuyEvent.quoteRefreshGaveUp()),
+  );
 
   final LoadBuyContextUsecase _loadBuyContextUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
@@ -258,6 +277,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       switch (orderResult) {
         case Ok(:final value):
           emit(state.copyWith(buyOrder: value));
+          _isQuoteConfirmed = false;
+          _quoteScheduler.track(value.confirmationDeadline);
         case Err(:final failure):
           // Already logged at the boundary.
           emit(state.copyWith(failure: failure, isCreatingOrder: false));
@@ -279,6 +300,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     }
     final abandonedOrder = state.buyOrder;
     ++_orderCreationGeneration;
+    _isQuoteConfirmed = false;
+    _quoteScheduler.cancel();
     emit(
       state.copyWith(
         isCreatingOrder: false,
@@ -321,10 +344,19 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
 
+    // A confirmation in flight pays the quote on screen; swapping it under
+    // the request would be wrong, and the confirm handler re-arms on failure.
+    if (state.isConfirmingOrder) return;
+
     final generation = _orderCreationGeneration;
     bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
     try {
-      emit(state.copyWith(isRefreshingOrder: true, failure: null));
+      // A refused confirmation explains why a new price is loading: keep that
+      // message through the refresh, as sell and pay do.
+      final kept = state.failure is BuyQuoteExpiredFailure
+          ? state.failure
+          : null;
+      emit(state.copyWith(isRefreshingOrder: true, failure: kept));
 
       final refreshResult = await _refreshBuyOrderUsecase.execute(
         orderId: orderId,
@@ -336,6 +368,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           refreshedOrder = value;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
+          // Only a quote awaiting confirmation is worth retrying: a confirmed
+          // order, or one read by id with nothing on screen, has none.
+          if (!_isQuoteConfirmed && state.buyOrder != null) {
+            _quoteScheduler.refreshFailed();
+          }
           return;
       }
       final order = refreshedOrder.bip21URI == null
@@ -355,9 +392,33 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       if (!isCurrent()) return;
       emit(state.copyWith(buyOrder: order));
+      // A confirmed, paid or expired order has no quote left to keep fresh:
+      // the accelerate screen reads orders through a bloc that never saw the
+      // confirmation, so the order's own status has to say so. Otherwise a
+      // lapsed lock coming back is a retry, not a new quote: the scheduler
+      // paces it rather than asking again at the speed of the response.
+      if (_isQuoteConfirmed || order.isPayinCompleted || order.isExpired()) {
+        _quoteScheduler.cancel();
+      } else {
+        _quoteScheduler.track(order.confirmationDeadline);
+      }
     } finally {
       if (isCurrent()) emit(state.copyWith(isRefreshingOrder: false));
     }
+  }
+
+  /// The retries ran out without a usable quote: say so instead of spinning.
+  /// Confirm stays live; a failed confirmation re-arms the scheduler.
+  void _onQuoteRefreshGaveUp(
+    _BuyQuoteRefreshGaveUp event,
+    Emitter<BuyState> emit,
+  ) {
+    if (_isQuoteConfirmed ||
+        state.isConfirmingOrder ||
+        state.buyOrder?.isPayinCompleted == true) {
+      return;
+    }
+    emit(state.copyWith(failure: const BuyQuoteUnavailableFailure()));
   }
 
   Future<void> _onConfirmOrder(
@@ -378,6 +439,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       return;
     }
 
+    // A lapsed quote is refreshed, never confirmed: the price the user saw is
+    // no longer the one the exchange would apply.
+    final deadline = state.buyOrder?.confirmationDeadline;
+    if (deadline != null && !deadline.isAfter(clock.now())) {
+      emit(state.copyWith(failure: const BuyQuoteExpiredFailure()));
+      if (!_quoteScheduler.isPending) add(const BuyEvent.refreshOrder());
+      return;
+    }
+
     try {
       emit(state.copyWith(isConfirmingOrder: true, failure: null));
 
@@ -390,6 +460,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           confirmedOrder = value;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
+          // The refresh the scheduler fired meanwhile was skipped as in
+          // flight: if the lock lapsed during the attempt, ask now — unless
+          // a retry is already on its way.
+          final deadline = state.buyOrder?.confirmationDeadline;
+          if (deadline != null &&
+              !deadline.isAfter(clock.now()) &&
+              !_quoteScheduler.isPending) {
+            add(const BuyEvent.refreshOrder());
+          }
           return;
       }
       final order = confirmedOrder.bip21URI == null
@@ -397,6 +476,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           : confirmedOrder;
 
       emit(state.copyWith(buyOrder: order));
+      // Confirmed at this quote; there is nothing left to refresh.
+      _isQuoteConfirmed = true;
+      _quoteScheduler.cancel();
     } finally {
       emit(state.copyWith(isConfirmingOrder: false));
     }
@@ -416,6 +498,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   @override
   Future<void> close() async {
     ++_orderCreationGeneration;
+    _quoteScheduler.dispose();
     await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();
   }
