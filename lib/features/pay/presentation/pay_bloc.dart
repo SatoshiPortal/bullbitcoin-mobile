@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:clock/clock.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -689,7 +690,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
         final payjoinWindow =
             payjoinBip21 == null || confirmationDeadline == null
             ? null
-            : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+            : PayjoinSessionWindow.forOrderDeadline(
+                confirmationDeadline,
+                now: clock.now(),
+              );
         log.fine(
           'Pay Payjoin confirmation: '
           'toggle=${payPaymentState.isPayjoinEnabled}, '
@@ -1276,7 +1280,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // ask now — unless a retry is already on its way.
     final confirmationDeadline = current.payOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
-        !confirmationDeadline.isAfter(DateTime.now()) &&
+        !confirmationDeadline.isAfter(clock.now()) &&
         !_quoteScheduler.isPending) {
       add(const PayEvent.orderRefreshTimePassed());
     }
@@ -1583,7 +1587,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
   bool _isQuoteExpired(PayPaymentState paymentState) {
     final deadline = paymentState.payOrder.confirmationDeadline;
-    return deadline != null && !deadline.isAfter(DateTime.now());
+    return deadline != null && !deadline.isAfter(clock.now());
   }
 
   /// The exchange's own verdict that the payment deadline passed with no payin

@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:clock/clock.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -817,7 +818,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
         final payjoinWindow =
             payjoinBip21 == null || confirmationDeadline == null
             ? null
-            : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
+            : PayjoinSessionWindow.forOrderDeadline(
+                confirmationDeadline,
+                now: clock.now(),
+              );
         log.fine(
           'Sell Payjoin confirmation: '
           'toggle=${sellPaymentState.isPayjoinEnabled}, '
@@ -1180,7 +1184,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // ask now — unless a retry is already on its way.
     final confirmationDeadline = current.sellOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
-        !confirmationDeadline.isAfter(DateTime.now()) &&
+        !confirmationDeadline.isAfter(clock.now()) &&
         !_quoteScheduler.isPending) {
       add(const SellEvent.orderRefreshTimePassed());
     }
@@ -1341,7 +1345,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
   bool _isQuoteExpired(SellPaymentState paymentState) {
     final deadline = paymentState.sellOrder.confirmationDeadline;
-    return deadline != null && !deadline.isAfter(DateTime.now());
+    return deadline != null && !deadline.isAfter(clock.now());
   }
 
   /// The exchange's own verdict that the payment deadline passed with no payin

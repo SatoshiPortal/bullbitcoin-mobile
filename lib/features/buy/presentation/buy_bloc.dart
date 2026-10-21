@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.da
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart';
@@ -444,7 +445,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           // a retry is already on its way.
           final deadline = state.buyOrder?.confirmationDeadline;
           if (deadline != null &&
-              !deadline.isAfter(DateTime.now()) &&
+              !deadline.isAfter(clock.now()) &&
               !_quoteScheduler.isPending) {
             add(const BuyEvent.refreshOrder());
           }
