@@ -20,7 +20,6 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipien
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_selector.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
@@ -73,17 +72,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
       return;
     }
 
-    final next = await Navigator.of(context).push<RecipientType>(
-      MaterialPageRoute(
-        builder: (onboardingContext) => VirtualIbanOnboardingScreen(
-          onActivated: () => Navigator.of(
-            onboardingContext,
-          ).pop(RecipientType.confidentialSepaEur),
-          onUseRegularSepa: () =>
-              Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
-        ),
-      ),
-    );
+    final next = await VirtualIbanOnboardingScreen.showForWithdraw(context);
     if (!mounted) return;
     if (next == RecipientType.confidentialSepaEur) {
       bloc.add(const RecipientsEvent.virtualIbanActivated());
