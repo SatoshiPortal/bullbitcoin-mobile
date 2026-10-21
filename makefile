@@ -435,8 +435,8 @@ exchange-credentials-device-build:
 
 exchange-credentials-device-test:
 	@test -n "$(DEVICE)" || { echo "Set DEVICE to the reserved Android serial"; exit 1; }
-	@test -n "$(VM_SERVICE_URL)" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }
-	@VM_SERVICE_URL="$(VM_SERVICE_URL)" fvm dart run integration_test/device/driver.dart
+	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }
+	@fvm dart run integration_test/device/driver.dart
 
 # Build & render the bull_ui design-system catalogue (Widgetbook) locally in the
 # browser. Dev-only tooling — never shipped in the app. Regenerates the
