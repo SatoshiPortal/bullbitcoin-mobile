@@ -19,10 +19,11 @@ dependencies:
   drift: ^2.29.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
+  # Upstream Git builds are unlocked and enable test helpers; this pin is for compatibility testing, not verification of reproducible production builds.
   payjoin:
     git:
-      url: https://github.com/SatoshiPortal/payjoin-rust
-      ref: 51da8ed79ee57536f4be223a01e6ecb163986f28
+      url: https://github.com/payjoin/rust-payjoin
+      ref: 0d80347e40ce7927960b799fd0946940732b8cd7
       path: payjoin-ffi/dart
   primitives:
   sqlite3: ^2.9.4

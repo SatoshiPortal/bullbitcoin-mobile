@@ -1578,11 +1578,11 @@ packages:
     dependency: transitive
     description:
       path: "payjoin-ffi/dart"
-      ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
-      resolved-ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
-      url: "https://github.com/SatoshiPortal/payjoin-rust"
+      ref: "0d80347e40ce7927960b799fd0946940732b8cd7"
+      resolved-ref: "0d80347e40ce7927960b799fd0946940732b8cd7"
+      url: "https://github.com/payjoin/rust-payjoin"
     source: git
-    version: "0.2.1+payjoin-1.0.0-rc.8"
+    version: "0.25.0"
   permission_handler:
     dependency: "direct main"
     description:

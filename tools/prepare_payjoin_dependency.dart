@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
-const _archiveUrl =
-    'https://pub.dev/api/archives/payjoin-0.2.1%2Bpayjoin-1.0.0-rc.8.tar.gz';
+// The pinned upstream commit retains the production FFI interface of 0.25.0.
+const _archiveUrl = 'https://pub.dev/api/archives/payjoin-0.25.0.tar.gz';
 const _archiveSha256 =
-    '52696fe34ef3c05f9827f5dd08a984e8ea86642677ba934f65a7f3a722755985';
+    '31a0321702aea56fde807dcf9872f79412a62895d054293927389276baa35bce';
 const _bindingSha256 =
-    'aee74c23bf5076c5db8dda79c9ac1866446d3c4e237dbafeddd52c3efe499500';
+    '48171c0fd2a516d7dce66e806f1ad45df85c3b99c9af659fc8388bfd96d959d4';
 
 Future<void> main() async {
   Directory? temporaryDirectory;
