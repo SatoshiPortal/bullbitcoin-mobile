@@ -1,5 +1,3 @@
-[![Analyze and Test](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml/badge.svg?branch=develop)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml)
-
 # About BULL Wallet
 
 BULL Wallet is a self-custodial Bitcoin and Liquid Network wallet which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
@@ -8,87 +6,50 @@ Following the cypherpunk ethos, the BULL Wallet is fully open-source and trustle
 
 ## Wallet basics
 
-At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.
+During setup, BULL creates two default wallets that share the same mnemonic:
 
-**Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 segwit addresses.
+- **Secure Bitcoin Wallet**: a Bitcoin wallet using native SegWit addresses.
+- **Instant Payments Wallet**: a Liquid wallet using confidential SegWit addresses.
 
-**Instant Payments Wallet**: this is a descriptor-based Liquid network wallet which uses bech32 confidential segwit addresses.
+Lightning invoices can be paid from either wallet; incoming Lightning payments are received into the Instant Payments Wallet. These payments and Bitcoin/Liquid transfers use the [configured swap service](lib/core/utils/constants.dart).
 
-Both these wallets are able to send and receive Lightning Network payments via the swap provider.
+## Features
 
-### Translations
+- Create, import and switch between multiple Bitcoin and Liquid wallets, including wallets with BIP39 passphrases.
+- View amounts in BTC, sats or your preferred fiat currency.
+- Send and receive Lightning payments through swap services, including payments to LNURL-pay requests and Lightning addresses.
+- Transfer between Bitcoin and Liquid, including external wallet destinations.
+- Configure automatic transfers of excess funds from the default Liquid wallet to a Bitcoin wallet, with balance and fee limits.
+- Export wallet transaction history as CSV.
 
-Translations are AI-generated and community-reviewed. To fix or improve translations, submit a pull request to the [localization folder](https://github.com/SatoshiPortal/bullbitcoin-mobile/tree/develop/localization).
+### Transaction fees
 
-### [Dependencies](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/pubspec.yaml)
-
-### [Default service providers](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/lib/core/utils/constants.dart)
-
-### [Reproducible builds](reproducibility/README.md)
-
-The app can be built reproducibly from source and verified against official releases. See the [`reproducibility/`](reproducibility/) directory for instructions.
-
-### General features
-
-- Non-custodial: private keys are generated on the device, and never leave the device.
-- Multiple wallets can be created. Users can switch easily from one wallet to the other on the wallet homepage.
-- Wallets with BIP39 passphrases can be created.
-- Amounts can be viewed as Bitcoin or Sats.
-- Users can enable RBF for each transaction.
-- Users can send the full wallet balance (sweep a wallet).
-
-### Network fee estimation
-
-Unlike most wallets which rely on Bitcoin Core's smart fee estimation algorithm, Bull Bitcoin wallet fetches the network fee estimation from a Mempool instance. Default network fee can be specified in the settings and will be used for all transactions, unless specified when creating a transaction.
-
-There are four network fee presets:
-1. Fastest: aiming for next block
-2. Fast: aiming for three blocks
-3. Medium: aiming for 6 blocks
-4. Economical: aiming for lowest fee possible without the transaction being purged from mempools
-
-### Fee warning system
-
-We have developed a warning system that aims to prevent the user from making uneconomical Bitcoin transactions. There are three types of warnings:
-1. Small UTXO warning: receiving Bitcoin network UTXOs of less than 0.01 BTC is considered to be uneconomical. Users are prompted to use the Liquid Network instead.
-2. High fee warning: all transactions where the network fee is over 3% of the value of the transaction trigger a warning.
-3. Slow payment warning: paying Lightning network invoices from a Bitcoin network wallet will require at least one on-chain confirmation, and thus this warning prevents users from accidentally paying a Lightning Network invoice from a Bitcoin network wallet expecting the payment to be instant.
-
-### Default wallet selection
-
-When receiving payments, the Bull Bitcoin app will select which wallet and which network is most appropriate based on the amount to be received. By default, payments under 0.01 BTC will be directed to the Instant Payments Wallet and payments over 0.01 BTC will be directed to the Secure Bitcoin Wallet. 
-
-When sending payments, the Bull Bitcoin wallet will select the most appropriate wallet based both on the amount to be sent, and the network used by the recipients. 
-We try to always use a wallet that is the same network as the recipient: if recipient is on-chain, use secure Bitcoin wallet and if recipient is Liquid use Instant Payments Wallet. If the recipient is Lightning, use the instant payments wallet.
-
-Automated selection of the wallet can be overridden by the user at any time. This will most likely trigger a warning that the user can choose to ignore.
+Bitcoin fee estimates are fetched from a mempool instance, with three presets (Fastest, Economic and Slow) and a custom fee option. Use replace-by-fee (RBF) to increase fees on eligible unconfirmed Bitcoin transactions. Warnings highlight high fees and potentially slow Bitcoin-funded Lightning payments.
 
 ## Wallet security
-- An optional PIN from 4 to 8 digits can be set for access to the app.
-- The PIN is optional to prevent users from being accidentally locked out of a wallet without having first performed a backup.
-- Private keys are stored in secure storage and only accessed via the application when signing transactions, viewing the wallet’s private keys for back-up (mnemonic or xpriv). This prevents malicious applications from accessing the private keys. 
-- BIP39 passphrase is also stored in secure storage, and can be viewed only via the application.
-- When initializing the app, a single-sig hot wallet wallet is created. By default, this wallet does not have a BIP39 passphrase.
-- A warning is displayed until the user has tested their backup by successfully entering the mnemonic.
+
+- Protect access to the app with an optional 4-to-8-digit PIN.
+- Private keys and BIP39 passphrases are stored in secure storage on the device.
+- Back up recovery phrases manually, or save an encrypted RecoverBull vault of the default mnemonic to Google Drive or a file.
+- Sensitive mnemonic screens have screen-capture protection enabled by default; phrase entry uses an in-app keyboard.
+
+RecoverBull stores the encrypted vault separately from its password-encrypted vault key, which is kept on a key server accessed over Tor.
 
 ### Hardware wallets and watch-only wallets
 
-- Users can import watch-only wallets via QR code, copy-pasting an Xpub/Ypub/Zpub, uploading a Coldcard file or via NFC (for Coldcard).
-- Users can create PSBTs from watch-only wallets for offline signing.
-- Users can broadcast PSBTs signed in an offline wallet.
+- Import watch-only wallets using QR codes or extended public keys (xpub/ypub/zpub).
+- Connect supported Ledger and BitBox devices directly via USB or Bluetooth, depending on the device and platform.
+- Create partially signed Bitcoin transactions (PSBTs) for external signing, then import and broadcast signed transactions. QR-based workflows support Coldcard, Jade, Passport, Keystone, SeedSigner, Specter and Krux; supported Coldcard models also offer NFC.
 
 ### Privacy and UTXO management (coin selection)
 
-- Users can create labels for receiving addresses. Transactions sent to a receiving address that has a label will inherit the label of the receiving address.
-- Users can label outbound transactions. The change address of these transactions will inherit the label of the outbound transaction.
-- Coin selection: users can select which utxos will be spent for each transaction. The UTXOs will have the labels of the transactions that created them. When enabling coin selection, only the selected utxos will be used to create a transaction.
-- Labels can be imported and exported according to the BIP-329 standard.
-- Users can connect to their own electrum server.
-- The default electrum server of Bull Bitcoin does not keep logs. The secondary default electrum server of Blockstream is also believed not to keep logs.
-- Users can freeze a specific UTXO. It will be added to a list of unspendable UTXOs, and will never be used when making transactions unless specifically overridden. Unfreezing a utxo will make the utxo spendable again.
-- Combination of "send full amount" and "coin selection": a user can specify a utxo and spend that utxo's entire balance. The network fee will be deducted from the amount sent. This prevents the creation of any change output when moving a UTXO from one wallet to another.
+- Label addresses and transactions, and import or export labels using BIP-329.
+- Select the UTXOs to spend or freeze coins to exclude them from automatic selection.
+- Send the full wallet balance or sweep selected UTXOs, deducting fees from the amount sent.
+- Use Payjoin v2 for Bitcoin payments and supported exchange interactions.
+- Connect to custom Electrum servers, including `.onion` servers through embedded Tor or a local SOCKS5 proxy. RecoverBull key-server connections also use Tor.
 
-## Integration with the Bull Bitcoin exchange 
+## Integration with the Bull Bitcoin exchange
 
 Our mission is to facilitate and encourage the self-custody of Bitcoin by providing an integrated experience that combines a Bitcoin Wallet, Bitcoin Payments service and a Bitcoin Exchange (on-ramp, off-ramp). For this reason, the wallet will be fully integrated with the Bull Bitcoin API. Users will be able to manage their Bull Bitcoin accounts, buy Bitcoin and sell Bitcoin. This integration will be fully open-source. Use of the Bull Bitcoin exchange is fully optional. Users do not need to register for a Bull Bitcoin account to use all wallet features.
 
@@ -102,14 +63,25 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 
 ## Roadmap
 
-The roadmap is based on the Github issues. You can suggest your own ideas by creating a new issue. The issues are then prioritized by the maintainers according to their importance and feasibility.
+Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues). To suggest a feature or report a bug, see the [contribution guidelines](CONTRIBUTING.md).
 
-## Acknowledgements 
+## Technical resources
 
-- The project is entirely financed by [bullbitcoin.com](https://bullbitcoin.com) 
+- [Architecture](ARCHITECTURE.md) and [feature dependencies](FEATURES.md).
+- [Toolchain, setup and development conventions](AGENTS.md). Start with an issue before implementation work; see [CONTRIBUTING.md](CONTRIBUTING.md).
+- Translations are AI-generated and community-reviewed. See the [translation tooling guide](tools/README.md) for changes to [`localization/`](localization/).
+- [Dependencies](pubspec.yaml) and [default service providers](lib/core/utils/constants.dart).
+- [Android reproducible build and verification instructions](reproducibility/) and [BULL Wallet on WalletScrutiny](https://walletscrutiny.com/mobile/com.bullbitcoin.mobile/).
+- Report vulnerabilities privately using the [security policy](SECURITY.md).
+- Licensed under [MIT](LICENSE).
+- [AI-generated code documentation on DeepWiki](https://deepwiki.com/SatoshiPortal/bullbitcoin-mobile).
+
+## Acknowledgements
+
+- Fully funded by [Bull Bitcoin](https://bullbitcoin.com)
 - Created by Francis Pouliot and Vishal Menon
 - Maintainers: [i5hi](https://github.com/i5hi), [ethicnology](https://github.com/ethicnology)
-- Collaborators: [mocodesmo](https://github.com/mocodesmo), [kumulynja](https://github.com/kumulynja), [kiranmetri](https://github.com/kiranmetri), [thibistaken](https://github.com/thibistaken) [basantagoswami](https://github.com/basantagoswami), [wired-pasteque](https://github.com/wired-pasteque)
+- Collaborators: [mocodesmo](https://github.com/mocodesmo), [kiranmetri](https://github.com/kiranmetri), [thibistaken](https://github.com/thibistaken), [basantagoswami](https://github.com/basantagoswami), [wired-pasteque](https://github.com/wired-pasteque)
 - Thanks to all [contributors](https://github.com/SatoshiPortal/bullbitcoin-mobile/graphs/contributors)
 - Thanks to Raj for his work on Boltz-rust
 - Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
