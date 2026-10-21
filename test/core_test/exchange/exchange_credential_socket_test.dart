@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class _Logger extends Mock implements Logger {}
 
 void main() {
   test(
@@ -72,7 +76,45 @@ void main() {
     expect(keys, ['first', 'replacement']);
   });
 
+  test('notification fields never enter diagnostic messages', () async {
+    final previous = log;
+    final logger = _Logger();
+    log = logger;
+    addTearDown(() => log = previous);
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    WebSocket? connection;
+    final subscription = server.listen((request) async {
+      final socket = await WebSocketTransformer.upgrade(request);
+      connection = socket;
+      socket.add('invalid JSON SYNTHETIC_PRIVATE_FRAME');
+      socket.add('[]');
+      socket.add('{"type":{"label":"SYNTHETIC_PRIVATE_FRAME"}}');
+      socket.listen((_) {});
+    });
+    final datasource = ExchangeNotificationDatasource(
+      baseUrl: 'http://127.0.0.1:${server.port}',
+      readApiKey: () async => const Ok('synthetic-header'),
+    );
+    addTearDown(() async {
+      datasource.dispose();
+      await connection?.close();
+      await subscription.cancel();
+      await server.close(force: true);
+    });
+    final message = datasource.messageStream.first;
+    await datasource.connect();
+    await message;
+    final fine = verify(() => logger.fine(captureAny())).captured;
+    expect(fine.join(' '), isNot(contains('SYNTHETIC_PRIVATE_FRAME')));
+    final info = verify(() => logger.info(captureAny())).captured;
+    expect(info.join(' '), isNot(contains('SYNTHETIC_PRIVATE_FRAME')));
+  });
+
   test('storage errors retry but logout cancels further attempts', () {
+    final previous = log;
+    final logger = _Logger();
+    log = logger;
+    addTearDown(() => log = previous);
     fakeAsync((time) {
       var reads = 0;
       var available = false;
@@ -98,6 +140,7 @@ void main() {
       datasource.dispose();
       time.flushMicrotasks();
       expect(time.nonPeriodicTimerCount, 0);
+      verify(() => logger.warning(any(), error: any(named: 'error'))).called(1);
     });
   });
 }

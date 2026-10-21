@@ -47,8 +47,11 @@ class ExchangeSupportChatRepositoryImpl
       );
       return const Err(NotAuthenticatedFailure());
     } catch (e, st) {
-      if (exchangeAuthenticationException(e)?.isUnauthenticated ?? false) {
-        return const Err(NotAuthenticatedFailure());
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Err(NotAuthenticatedFailure())
+            : const Err(LoadMessagesFailure('Exchange credential unavailable'));
       }
       log.warning(
         'Failed to load support chat messages',
@@ -89,8 +92,11 @@ class ExchangeSupportChatRepositoryImpl
       );
       return const Err(NotAuthenticatedFailure());
     } catch (e, st) {
-      if (exchangeAuthenticationException(e)?.isUnauthenticated ?? false) {
-        return const Err(NotAuthenticatedFailure());
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Err(NotAuthenticatedFailure())
+            : const Err(SendMessageFailure('Exchange credential unavailable'));
       }
       log.warning(
         'Failed to send support chat message',
@@ -118,8 +124,13 @@ class ExchangeSupportChatRepositoryImpl
       );
       return const Err(NotAuthenticatedFailure());
     } catch (e, st) {
-      if (exchangeAuthenticationException(e)?.isUnauthenticated ?? false) {
-        return const Err(NotAuthenticatedFailure());
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Err(NotAuthenticatedFailure())
+            : const Err(
+                LoadAttachmentFailure('Exchange credential unavailable'),
+              );
       }
       log.warning(
         'Failed to load support chat attachment',

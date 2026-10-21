@@ -14,6 +14,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   final KeyValueStorageDatasource<String> _secureStorage;
   final _mainnetMutationLock = Lock();
   final _testnetMutationLock = Lock();
+  final _readFailureTypes = <bool, Type>{};
 
   ExchangeApiKeyRepositoryImpl({required this._secureStorage});
 
@@ -27,11 +28,29 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
     required bool isTestnet,
   }) async {
+    final result = await _readActiveApiKey(isTestnet: isTestnet);
+    final environment = isTestnet ? 'testnet' : 'mainnet';
+    if (result case Err(:final failure)) {
+      if (_readFailureTypes[isTestnet] != failure.runtimeType) {
+        _readFailureTypes[isTestnet] = failure.runtimeType;
+        log.warning(
+          'Exchange credential read failed: env=$environment',
+          error: failure.runtimeType,
+        );
+      }
+    } else if (_readFailureTypes.remove(isTestnet) != null) {
+      log.fine('Exchange credential read recovered: env=$environment');
+    }
+    return result;
+  }
+
+  Future<Result<String?, ExchangeApiKeyFailure>> _readActiveApiKey({
+    required bool isTestnet,
+  }) async {
     final String? stored;
     try {
       stored = await _secureStorage.getValue(_storageKey(isTestnet));
-    } on Exception catch (error) {
-      log.warning('Exchange credential unavailable: ${error.runtimeType}');
+    } on Exception {
       return const Err(ExchangeApiKeyReadFailure());
     }
     if (stored == null || stored.isEmpty) return const Ok(null);
@@ -44,8 +63,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
         _ => const Err(ExchangeApiKeyInvalidFailure()),
       };
     } on FormatException {
-      // FormatException embeds its source. Never log the exception itself.
-      log.warning('Stored exchange credential is invalid');
+      // FormatException embeds its source; report only the modeled failure type.
       return const Err(ExchangeApiKeyInvalidFailure());
     }
   }

@@ -20,6 +20,7 @@ class ExchangeNotificationDatasource {
   StreamSubscription<dynamic>? _subscription;
   Timer? _retryTimer;
   bool _disposed = false;
+  bool _hasConnectionFailure = false;
   bool _isConnected = false;
   bool _isManuallyDisconnected = false;
   bool _isConnecting = false;
@@ -80,6 +81,7 @@ class ExchangeNotificationDatasource {
         _attempt = null;
         _isConnecting = false;
         _isManuallyDisconnected = true;
+        _hasConnectionFailure = false;
         log.fine('WebSocket skipped: user not authenticated');
         return;
       }
@@ -105,6 +107,7 @@ class ExchangeNotificationDatasource {
       if (!identical(_attempt, attempt)) return;
       _isConnected = true;
       _isConnecting = false;
+      _hasConnectionFailure = false;
       log.fine('WebSocket connected successfully');
     } catch (error) {
       if (error is Error) {
@@ -116,25 +119,26 @@ class ExchangeNotificationDatasource {
       if (error.toString().contains('not upgraded to websocket')) {
         _isManuallyDisconnected = true;
       }
-      log.warning('WebSocket connection failed: ${error.runtimeType}');
+      _recordConnectionFailure(error);
       _handleDisconnect();
     }
   }
 
-  void _handleMessage(dynamic message) {
+  void _handleMessage(Object? message) {
+    final Object? decoded;
     try {
-      final parsed = message is String
-          ? jsonDecode(message) as Map<String, dynamic>
-          : message as Map<String, dynamic>;
-      // Type only: the payload carries account data (group/kyc/balance
-      // notifications) and the on-device log can be exported.
-      log.fine('WebSocket message received: type=${parsed['type']}');
-      _messageController.add(parsed);
-    } catch (e) {
-      // Type only: FormatException.toString() embeds the malformed frame,
-      // which can carry account data.
-      log.warning('Error parsing WebSocket message: ${e.runtimeType}');
+      decoded = message is String ? jsonDecode(message) : message;
+    } on FormatException {
+      log.warning('WebSocket message rejected: invalid JSON');
+      return;
     }
+    if (decoded is! Map<String, dynamic>) {
+      log.warning('WebSocket message rejected: invalid shape');
+      return;
+    }
+    // Even the discriminator is untrusted and may contain account data.
+    log.info('WebSocket message received');
+    _messageController.add(decoded);
   }
 
   void _handleDisconnect() {
@@ -160,22 +164,32 @@ class ExchangeNotificationDatasource {
     if (channel != null) {
       unawaited(
         channel.sink.close().catchError((Object error) {
-          log.warning('WebSocket close failed: ${error.runtimeType}');
+          log.info('WebSocket close cleanup failed', error: error.runtimeType);
         }, test: (Object error) => error is Exception),
       );
     }
   }
 
-  void _handleError(dynamic error) {
+  void _recordConnectionFailure(Object error) {
+    if (_hasConnectionFailure) {
+      log.info('WebSocket retry failed', error: error.runtimeType);
+      return;
+    }
+    _hasConnectionFailure = true;
+    log.warning('WebSocket unavailable', error: error.runtimeType);
+  }
+
+  void _handleError(Object error) {
     if (error is Error) {
       disconnect();
       throw error;
     }
-    log.warning('WebSocket error: ${error.runtimeType}');
+    _recordConnectionFailure(error);
     _handleDisconnect();
   }
 
   void disconnect() {
+    _hasConnectionFailure = false;
     _isManuallyDisconnected = true;
     _isConnecting = false;
     _attempt = null;
