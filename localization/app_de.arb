@@ -5071,7 +5071,7 @@
   "recipientsVirtualIbanCopied": "In die Zwischenablage kopiert",
   "recipientsVirtualIbanDone": "Fertig",
   "recipientsVirtualIbanRecipientName": "Empfängername",
-  "recipientsVirtualIbanIbanLabel": "IBAN Kontonummer",
+  "recipientsVirtualIbanIbanLabel": "Virtuelle IBAN-Kontonummer",
   "recipientsVirtualIbanCountry": "Land des Bankkontos",
   "recipientsVirtualIbanBic": "BIC-Code",
   "fundExchangeMethodConfidentialSepa": "Vertrauliches SEPA",
@@ -5092,5 +5092,7 @@
   "settingsPayjoinExpireMinutesDescription": "Wie lange eine Payjoin-Sitzung geöffnet bleibt, bevor zu einer regulären Zahlung gewechselt wird.",
   "settingsPayjoinExpireMinutesRangeError": "Der Wert muss zwischen {min} und {max} Minuten liegen",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "Min."
+  "settingsPayjoinMinutesUnit": "Min.",
+  "recipientsFieldBankAccountIban": "Bankkontonummer (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen"
 }

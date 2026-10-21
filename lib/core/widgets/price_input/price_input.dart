@@ -129,7 +129,8 @@ class PriceInput extends StatelessWidget {
         ),
         const Gap(14),
         Text(
-          '~$amountEquivalent',
+          // No equivalent (no price): a lone "~" would read as a value.
+          amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.onSurfaceVariant,
           ),
