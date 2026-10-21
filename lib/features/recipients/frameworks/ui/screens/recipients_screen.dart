@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/confidential_sepa_availability_status.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,7 +119,17 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
                 },
               ),
               const Gap(16.0),
-              // Tab content
+              BlocBuilder<RecipientsBloc, RecipientsState>(
+                buildWhen: (previous, current) =>
+                    previous.failedToLoadConfidentialSepaAvailability !=
+                    current.failedToLoadConfidentialSepaAvailability,
+                builder: (context, state) => ConfidentialSepaAvailabilityStatus(
+                  failure: state.failedToLoadConfidentialSepaAvailability,
+                  onRetry: () => context.read<RecipientsBloc>().add(
+                    const RecipientsEvent.confidentialSepaAvailabilityRetried(),
+                  ),
+                ),
+              ),
               Expanded(
                 child: switch (_currentTab) {
                   RecipientsTab.newRecipient => NewRecipientTab(
