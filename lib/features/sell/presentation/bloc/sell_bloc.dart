@@ -578,9 +578,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // Same re-read as the success path: a refresh failure must not paint
           // an error over a confirmation that started while it was in flight.
           final currentOnFailure = _currentPaymentState;
-          if (currentOnFailure == null ||
-              currentOnFailure.sellOrder.orderId !=
-                  paymentState.sellOrder.orderId) {
+          if (currentOnFailure == null) return;
+          if (currentOnFailure.sellOrder.orderId !=
+              paymentState.sellOrder.orderId) {
+            _resumeQuoteSchedule(currentOnFailure);
             return;
           }
           if (currentOnFailure.isConfirmingPayment ||
@@ -596,8 +597,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
       // work from the current state instead of the snapshot above. A new order
       // may have replaced the refreshed one too: its answer is then stale.
       final current = _currentPaymentState;
-      if (current == null ||
-          current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+      if (current == null) return;
+      if (current.sellOrder.orderId != paymentState.sellOrder.orderId) {
+        _resumeQuoteSchedule(current);
         return;
       }
       if (current.isConfirmingPayment || current.isPayinBroadcast) return;
@@ -623,6 +625,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
       _quoteScheduler.refreshFailed();
     }
+  }
+
+  /// A stale answer arrived for an order that has since been replaced. The new
+  /// order's own refresh may have been dropped as overlapping while that one
+  /// was in flight, so put it back on its deadline.
+  void _resumeQuoteSchedule(SellPaymentState current) {
+    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    _quoteScheduler.track(current.sellOrder.confirmationDeadline);
   }
 
   /// The retries ran out without a usable quote: say so instead of spinning.

@@ -464,8 +464,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // while the refresh was in flight, and neither may be disturbed. A new
     // order may have replaced the refreshed one too: its answer is then stale.
     final current = _currentPaymentState;
-    if (current == null ||
-        current.payOrder.orderId != paymentState.payOrder.orderId) {
+    if (current == null) return;
+    if (current.payOrder.orderId != paymentState.payOrder.orderId) {
+      _resumeQuoteSchedule(current);
       return;
     }
     if (current.isConfirmingPayment || current.isPayinBroadcast) return;
@@ -487,6 +488,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
         // paces it rather than asking again at the speed of the response.
         _quoteScheduler.track(value.confirmationDeadline);
     }
+  }
+
+  /// A stale answer arrived for an order that has since been replaced. The new
+  /// order's own refresh may have been dropped as overlapping while that one
+  /// was in flight, so put it back on its deadline.
+  void _resumeQuoteSchedule(PayPaymentState current) {
+    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    _quoteScheduler.track(current.payOrder.confirmationDeadline);
   }
 
   /// The retries ran out without a usable quote: say so instead of spinning.

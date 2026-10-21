@@ -1101,6 +1101,38 @@ void main() {
       expect((bloc.state as PayPaymentState).payOrder.orderId, 'order-2');
     });
 
+    test('a stale answer leaves the new order on its own schedule', () {
+      // The new order's lock lapsed while the old order's refresh was still
+      // in flight, so its own refresh was dropped as overlapping.
+      // Created inside the fake zone below, so completing it runs there.
+      late final Completer<Result<FiatPaymentOrder, PayFailure>> response;
+      var calls = 0;
+      when(refreshCall).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? response.future : Future.value(Ok(payOrder));
+      });
+      return inFakeTime((time) {
+        response = Completer();
+        bloc.add(const PayEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        final replacement = _MockPayOrder();
+        when(() => replacement.orderId).thenReturn('order-2');
+        when(() => replacement.payinAmount).thenReturn(0.002);
+        when(
+          () => replacement.confirmationDeadline,
+        ).thenReturn(clock.now().subtract(const Duration(seconds: 1)));
+        bloc.seed(
+          (bloc.state as PayPaymentState).copyWith(payOrder: replacement),
+        );
+        response.complete(Ok(payOrder));
+        time.flushMicrotasks();
+        expect(calls, 1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        expect(calls, 2, reason: 'the new order gets its refresh');
+      });
+    });
+
     test('a lapsed quote coming back is retried after five seconds', () {
       return inFakeTime((time) {
         bloc.add(const PayEvent.orderRefreshTimePassed());
