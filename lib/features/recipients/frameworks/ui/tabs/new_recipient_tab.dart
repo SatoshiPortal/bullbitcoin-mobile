@@ -124,6 +124,13 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           selectedType: _selectedRecipientType,
           onTypeSelected: _onTypeSelected,
         ),
+        if (_selectedRecipientType == RecipientType.confidentialSepaEur) ...[
+          const Gap(8),
+          Text(
+            context.loc.recipientsTypeConfidentialSepaDescription,
+            style: context.font.bodyMedium,
+          ),
+        ],
         const Gap(16.0),
         switch (_selectedRecipientType) {
           // CANADA types

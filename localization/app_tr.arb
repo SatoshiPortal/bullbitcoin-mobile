@@ -11851,7 +11851,7 @@
   "recipientsVirtualIbanCopied": "Copied to klibi",
   "recipientsVirtualIbanDone": "Done",
   "recipientsVirtualIbanRecipientName": "Recipient name",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Sanal IBAN hesap numarası",
   "recipientsVirtualIbanCountry": "Banka hesabı ülke",
   "recipientsVirtualIbanBic": "BIC kodu",
   "fundExchangeMethodConfidentialSepa": "Gizli SEPA",
@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "Banka adresi",
   "recipientsVirtualIbanBankAddressHelp": "Bankanız isterse diye resmi banka adresi.",
   "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.",
-  "copiedToClipboard": "Panoya kopyalandı"
+  "copiedToClipboard": "Panoya kopyalandı",
+  "recipientsFieldBankAccountIban": "Banka hesap numarası (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür"
 }

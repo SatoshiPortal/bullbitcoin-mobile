@@ -4899,7 +4899,7 @@
   "recipientsVirtualIbanCopied": "Copiado para clipboard",
   "recipientsVirtualIbanDone": "Feito",
   "recipientsVirtualIbanRecipientName": "Nome do destinatário",
-  "recipientsVirtualIbanIbanLabel": "Número de conta IBAN",
+  "recipientsVirtualIbanIbanLabel": "Número da conta IBAN virtual",
   "recipientsVirtualIbanCountry": "País de conta bancária",
   "recipientsVirtualIbanBic": "Código BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA Confidencial",
@@ -4910,5 +4910,7 @@
   "recipientsVirtualIbanBankAddress": "Morada do banco",
   "recipientsVirtualIbanBankAddressHelp": "A morada oficial do banco, caso o seu banco a peça.",
   "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual têm de corresponder, caso contrário as transferências serão devolvidas automaticamente.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "recipientsFieldBankAccountIban": "Número da conta bancária (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Os levantamentos aparecem como uma transferência para si próprio com o nome da sua conta"
 }
