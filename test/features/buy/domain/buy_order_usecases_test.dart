@@ -81,10 +81,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(() => mainnet.refreshBuyOrder('order-1')).thenThrow(exception);
 
         final result = await build().execute(orderId: 'order-1');

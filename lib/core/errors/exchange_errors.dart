@@ -19,14 +19,6 @@ final class ExchangeCredentialUnavailableException implements Exception {
   String toString() => 'Exchange credential unavailable';
 }
 
-/// The stored exchange API key is no longer active.
-class ApiKeyInactiveException extends ApiKeyException {
-  ApiKeyInactiveException()
-    : super(
-        'API key is inactive. Please login again to your Bull Bitcoin account.',
-      );
-}
-
 /// The API returned an order of a different type than the endpoint implies.
 class UnexpectedOrderTypeException extends BullException {
   UnexpectedOrderTypeException(String expected)

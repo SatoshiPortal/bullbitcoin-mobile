@@ -123,10 +123,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(
           () => mainnet.placeWithdrawalOrder(
             fiatAmount: any(named: 'fiatAmount'),
@@ -249,10 +246,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(
           () => mainnet.confirmWithdrawOrder('order-1'),
         ).thenThrow(exception);
