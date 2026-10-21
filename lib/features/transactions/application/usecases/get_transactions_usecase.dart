@@ -54,9 +54,8 @@ class GetTransactionsUsecase {
       final orders = switch (orderResult) {
         Ok(:final value) => value,
         Err(:final failure) => () {
-          log.warning(
-            'Exchange enrichment unavailable: ${failure.runtimeType}',
-          );
+          // The repository records persistent failure/recovery transitions.
+          log.info('Exchange enrichment unavailable: ${failure.runtimeType}');
           return <Order>[];
         }(),
       };

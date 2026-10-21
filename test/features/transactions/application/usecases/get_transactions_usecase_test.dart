@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'dart:collection';
 import 'dart:typed_data';
@@ -180,9 +182,29 @@ void main() {
       when(
         () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
       ).thenAnswer((_) async {});
-      final transactions = unwrap(await usecase.execute());
-      expect(transactions, hasLength(1));
-      expect(transactions.single.walletTransaction?.txId, 'wallet-tx');
+      final previousDirectory = log.dir;
+      final directory = await Directory.systemTemp.createTemp(
+        'enrichment-log-',
+      );
+      log = Logger.replace(directory: directory);
+      addTearDown(() async {
+        await log.flush();
+        // Recreate the listener retired by replace, in the original temp directory.
+        log = Logger.replace(directory: previousDirectory);
+        await directory.delete(recursive: true);
+      });
+      for (var attempt = 0; attempt < 3; attempt++) {
+        final transactions = unwrap(await usecase.execute());
+        expect(transactions, hasLength(1));
+        expect(transactions.single.walletTransaction?.txId, 'wallet-tx');
+      }
+      final persisted = await log.readLogs();
+      expect(
+        persisted.where(
+          (line) => line.contains('Exchange enrichment unavailable'),
+        ),
+        isEmpty,
+      );
     },
   );
 

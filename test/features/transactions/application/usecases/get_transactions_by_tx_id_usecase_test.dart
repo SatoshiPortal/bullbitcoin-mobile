@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -94,10 +96,30 @@ void main() {
       when(
         () => mainnetOrderRepository.getOrderByTxId(_txId),
       ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
-      final transactions = unwrap(await usecase.execute(_txId));
-      expect(transactions, hasLength(1));
-      expect(transactions.single.payjoin, payjoin);
-      expect(transactions.single.order, isNull);
+      final previousDirectory = log.dir;
+      final directory = await Directory.systemTemp.createTemp(
+        'enrichment-log-',
+      );
+      log = Logger.replace(directory: directory);
+      addTearDown(() async {
+        await log.flush();
+        // Recreate the listener retired by replace, in the original temp directory.
+        log = Logger.replace(directory: previousDirectory);
+        await directory.delete(recursive: true);
+      });
+      for (var attempt = 0; attempt < 3; attempt++) {
+        final transactions = unwrap(await usecase.execute(_txId));
+        expect(transactions, hasLength(1));
+        expect(transactions.single.payjoin, payjoin);
+        expect(transactions.single.order, isNull);
+      }
+      final persisted = await log.readLogs();
+      expect(
+        persisted.where(
+          (line) => line.contains('Exchange enrichment unavailable'),
+        ),
+        isEmpty,
+      );
     },
   );
 
