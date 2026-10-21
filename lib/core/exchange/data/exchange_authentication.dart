@@ -23,15 +23,6 @@ final class ExchangeAuthenticationException implements Exception {
 
 /// Dio wraps interceptor refusals. Repositories translate only this known case.
 ExchangeAuthenticationException? exchangeAuthenticationException(Object error) {
-  if (error is Error) {
-    Error.throwWithStackTrace(error, error.stackTrace ?? StackTrace.current);
-  }
-  if (error case DioException(
-    error: final Error bug,
-    stackTrace: final trace,
-  )) {
-    Error.throwWithStackTrace(bug, trace);
-  }
   if (error is ExchangeAuthenticationException) return error;
   if (error case DioException(
     error: final ExchangeAuthenticationException refusal,
@@ -44,6 +35,15 @@ ExchangeAuthenticationException? exchangeAuthenticationException(Object error) {
 /// Compatibility for existing throwing repository contracts. New Result-based
 /// contracts translate the refusal into their own failure family instead.
 void rethrowExchangeAuthentication(Object error, StackTrace trace) {
+  if (error is Error) {
+    Error.throwWithStackTrace(error, error.stackTrace ?? StackTrace.current);
+  }
+  if (error case DioException(
+    error: final Error bug,
+    stackTrace: final trace,
+  )) {
+    Error.throwWithStackTrace(bug, trace);
+  }
   final refusal = exchangeAuthenticationException(error);
   if (refusal != null) {
     Error.throwWithStackTrace(

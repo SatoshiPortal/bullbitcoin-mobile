@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
@@ -49,6 +50,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return Ok(orderModel.toEntity(isTestnet: _isTestnet));
     } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return refusal.isUnauthenticated
@@ -126,6 +133,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return Ok(orders);
     } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return refusal.isUnauthenticated

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_json_decoder.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 
 class OrderModel {
@@ -109,59 +110,89 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      orderId: json['orderId'] as String,
-      orderType: json['orderType'] as String,
-      orderSubtype: json['orderSubtype'] as String?,
-      orderNumber: json['orderNumber'] as int,
+      orderId: decodeExchangeJson<String>(json['orderId']),
+      orderType: decodeExchangeJson<String>(json['orderType']),
+      orderSubtype: decodeExchangeJson<String?>(json['orderSubtype']),
+      orderNumber: decodeExchangeJson<int>(json['orderNumber']),
       // Nullable per the server contract: reward, funding, refund and
       // balance-adjustment orders carry no exchange rate and no deadline. The
       // amounts and the status strings are read defensively for the same
       // reason — an admin-initiated order has no real pay-in side.
-      exchangeRateAmount: (json['exchangeRateAmount'] as num?)?.toDouble(),
-      exchangeRateCurrency: json['exchangeRateCurrency'] as String?,
-      indexRateAmount: (json['indexRateAmount'] as num?)?.toDouble(),
-      indexRateCurrency: json['indexRateCurrency'] as String?,
-      payinAmount: (json['payinAmount'] as num?)?.toDouble() ?? 0,
-      payinCurrency: json['payinCurrency'] as String? ?? '',
-      payoutAmount: (json['payoutAmount'] as num?)?.toDouble() ?? 0,
-      payoutCurrency: json['payoutCurrency'] as String? ?? '',
-      orderStatus: json['orderStatus'] as String? ?? '',
-      payinStatus: json['payinStatus'] as String? ?? '',
-      payoutStatus: json['payoutStatus'] as String? ?? '',
-      scheduledPayoutTime: json['scheduledPayoutTime'] as String?,
-      createdAt: json['createdAt'] as String,
-      completedAt: json['completedAt'] as String?,
-      message: json['message'] as Map<String, dynamic>?,
-      sentAt: json['sentAt'] as String?,
-      payinMethod: json['payinMethod'] as String? ?? '',
-      payoutMethod: json['payoutMethod'] as String? ?? '',
-      triggerType: json['triggerType'] as String?,
-      confirmationDeadline: json['confirmationDeadline'] as String?,
-      bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
-      lnUrl: json['lnUrl'] as String?,
-      lightningVoucherExpiresAt: json['lightningVoucherExpiresAt'] as String?,
-      isPPBitcoinOutUpdatable: json['isPPBitcoinOutUpdatable'] as bool?,
-      payinAmountChanged: json['payinAmountChanged'] as Map<String, dynamic>?,
-      lightningInvoice: json['lightningInvoice'] as String?,
-      bitcoinAddress: json['bitcoinAddress'] as String?,
-      liquidAddress: json['liquidAddress'] as String?,
-      liquidTransactionId: json['liquidTransactionId'] as String?,
-      lightningAddress: json['lightningAddress'] as String?,
-      beneficiaryName: json['beneficiaryName'] as String?,
-      beneficiaryLabel: json['beneficiaryLabel'] as String?,
-      beneficiaryAccountNumber: json['beneficiaryAccountNumber'] as String?,
-      beneficiaryETransferAddress:
-          json['beneficiaryETransferAddress'] as String?,
-      securityQuestion: json['securityQuestion'] as String?,
-      securityAnswer: json['securityAnswer'] as String?,
-      paymentDescription: json['paymentDescription'] as String?,
-      unbatchedBuyOnchainFees: (json['unbatchedBuyOnchainFees'] as num?)
-          ?.toDouble(),
-      bip21URI: json['bip21URI'] as String?,
-      payjoinDetails: json['payjoinDetails'] as Map<String, dynamic>?,
-      referenceNumber: json['referenceNumber'] as String?,
-      originName: json['originName'] as String?,
-      originCedula: json['originCedula'] as String?,
+      exchangeRateAmount: (decodeExchangeJson<num?>(
+        json['exchangeRateAmount'],
+      ))?.toDouble(),
+      exchangeRateCurrency: decodeExchangeJson<String?>(
+        json['exchangeRateCurrency'],
+      ),
+      indexRateAmount: (decodeExchangeJson<num?>(
+        json['indexRateAmount'],
+      ))?.toDouble(),
+      indexRateCurrency: decodeExchangeJson<String?>(json['indexRateCurrency']),
+      payinAmount:
+          (decodeExchangeJson<num?>(json['payinAmount']))?.toDouble() ?? 0,
+      payinCurrency: decodeExchangeJson<String?>(json['payinCurrency']) ?? '',
+      payoutAmount:
+          (decodeExchangeJson<num?>(json['payoutAmount']))?.toDouble() ?? 0,
+      payoutCurrency: decodeExchangeJson<String?>(json['payoutCurrency']) ?? '',
+      orderStatus: decodeExchangeJson<String?>(json['orderStatus']) ?? '',
+      payinStatus: decodeExchangeJson<String?>(json['payinStatus']) ?? '',
+      payoutStatus: decodeExchangeJson<String?>(json['payoutStatus']) ?? '',
+      scheduledPayoutTime: decodeExchangeJson<String?>(
+        json['scheduledPayoutTime'],
+      ),
+      createdAt: decodeExchangeJson<String>(json['createdAt']),
+      completedAt: decodeExchangeJson<String?>(json['completedAt']),
+      message: decodeExchangeJson<Map<String, dynamic>?>(json['message']),
+      sentAt: decodeExchangeJson<String?>(json['sentAt']),
+      payinMethod: decodeExchangeJson<String?>(json['payinMethod']) ?? '',
+      payoutMethod: decodeExchangeJson<String?>(json['payoutMethod']) ?? '',
+      triggerType: decodeExchangeJson<String?>(json['triggerType']),
+      confirmationDeadline: decodeExchangeJson<String?>(
+        json['confirmationDeadline'],
+      ),
+      bitcoinTransactionId: decodeExchangeJson<String?>(
+        json['bitcoinTransactionId'],
+      ),
+      lnUrl: decodeExchangeJson<String?>(json['lnUrl']),
+      lightningVoucherExpiresAt: decodeExchangeJson<String?>(
+        json['lightningVoucherExpiresAt'],
+      ),
+      isPPBitcoinOutUpdatable: decodeExchangeJson<bool?>(
+        json['isPPBitcoinOutUpdatable'],
+      ),
+      payinAmountChanged: decodeExchangeJson<Map<String, dynamic>?>(
+        json['payinAmountChanged'],
+      ),
+      lightningInvoice: decodeExchangeJson<String?>(json['lightningInvoice']),
+      bitcoinAddress: decodeExchangeJson<String?>(json['bitcoinAddress']),
+      liquidAddress: decodeExchangeJson<String?>(json['liquidAddress']),
+      liquidTransactionId: decodeExchangeJson<String?>(
+        json['liquidTransactionId'],
+      ),
+      lightningAddress: decodeExchangeJson<String?>(json['lightningAddress']),
+      beneficiaryName: decodeExchangeJson<String?>(json['beneficiaryName']),
+      beneficiaryLabel: decodeExchangeJson<String?>(json['beneficiaryLabel']),
+      beneficiaryAccountNumber: decodeExchangeJson<String?>(
+        json['beneficiaryAccountNumber'],
+      ),
+      beneficiaryETransferAddress: decodeExchangeJson<String?>(
+        json['beneficiaryETransferAddress'],
+      ),
+      securityQuestion: decodeExchangeJson<String?>(json['securityQuestion']),
+      securityAnswer: decodeExchangeJson<String?>(json['securityAnswer']),
+      paymentDescription: decodeExchangeJson<String?>(
+        json['paymentDescription'],
+      ),
+      unbatchedBuyOnchainFees: (decodeExchangeJson<num?>(
+        json['unbatchedBuyOnchainFees'],
+      ))?.toDouble(),
+      bip21URI: decodeExchangeJson<String?>(json['bip21URI']),
+      payjoinDetails: decodeExchangeJson<Map<String, dynamic>?>(
+        json['payjoinDetails'],
+      ),
+      referenceNumber: decodeExchangeJson<String?>(json['referenceNumber']),
+      originName: decodeExchangeJson<String?>(json['originName']),
+      originCedula: decodeExchangeJson<String?>(json['originCedula']),
     );
   }
 
@@ -258,17 +289,25 @@ class OrderModel {
         payinAmountChanged != null && payinAmountChanged is Map<String, dynamic>
         ? PayinAmountChanged(
             requestedAmount:
-                (payinAmountChanged['requestedAmount'] as num?)?.toDouble() ??
+                decodeExchangeJson<num?>(
+                  payinAmountChanged['requestedAmount'],
+                )?.toDouble() ??
                 0,
             receivedAmount:
-                (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ?? 0,
+                decodeExchangeJson<num?>(
+                  payinAmountChanged['receivedAmount'],
+                )?.toDouble() ??
+                0,
           )
         : null;
     // txid is the only field mapped — see OrderPayjoinDetails for why. It stays
     // null until the exchange has actually seen the payjoin transaction.
-    final payjoinDetailsObj = payjoinDetails != null
-        ? OrderPayjoinDetails(txid: payjoinDetails!['txid'] as String?)
-        : null;
+    final payjoinDetailsObj = switch (payjoinDetails) {
+      final Map<String, dynamic> details => OrderPayjoinDetails(
+        txid: decodeExchangeJson<String?>(details['txid']),
+      ),
+      null => null,
+    };
 
     switch (orderTypeEnum) {
       case OrderType.buy:

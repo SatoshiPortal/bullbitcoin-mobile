@@ -76,6 +76,13 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return Err(
@@ -144,6 +151,13 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return Err(
@@ -184,6 +198,13 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         _ => FundExchangeConsentRegistrationFailure(e.logMessage),
       });
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return Err(

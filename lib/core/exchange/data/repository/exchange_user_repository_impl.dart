@@ -132,6 +132,10 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     String operation,
     ExchangeUserFailure Function([String?]) onFailure,
   ) {
+    if (e is Error) Error.throwWithStackTrace(e, st);
+    if (e case DioException(error: final Error bug, stackTrace: final trace)) {
+      Error.throwWithStackTrace(bug, trace);
+    }
     final refusal = exchangeAuthenticationException(e);
     if (refusal != null) {
       return refusal.isUnauthenticated
