@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_l
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullRefreshIndicator, BullShimmerBox, Gap;
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ class RecipientsListTab extends StatefulWidget {
 
 class RecipientsListTabState extends State<RecipientsListTab> {
   RecipientViewModel? _selectedRecipient;
+  Key _sepaTypeSelectorKey = UniqueKey();
   late ScrollController _scrollController;
   late TextEditingController _searchController;
 
@@ -54,6 +57,30 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           !state.isLoadingConfidentialSepaAvailability,
       orElse: () => bloc.state,
     );
+  }
+
+  Future<void> _onSepaTypeChanged(RecipientType type) async {
+    final bloc = context.read<RecipientsBloc>();
+    var next = type;
+    if (type == RecipientType.confidentialSepaEur &&
+        bloc.state.confidentialSepaAvailability ==
+            ConfidentialSepaAvailability.needsVirtualIban) {
+      final result = await VirtualIbanOnboardingScreen.showForWithdraw(context);
+      if (!mounted) return;
+      if (result == null) {
+        setState(() => _sepaTypeSelectorKey = UniqueKey());
+        return;
+      }
+      next = result;
+      if (next == RecipientType.confidentialSepaEur) {
+        bloc.add(const RecipientsEvent.virtualIbanActivated());
+      }
+    }
+    bloc.add(RecipientsEvent.sepaTypeChanged(next));
+    setState(() {
+      _selectedRecipient = null;
+      _sepaTypeSelectorKey = UniqueKey();
+    });
   }
 
   @override
@@ -131,6 +158,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: BBSegmentedButton(
+                key: _sepaTypeSelectorKey,
                 items: {
                   RecipientType.sepaEur.name,
                   RecipientType.confidentialSepaEur.name,
@@ -141,14 +169,8 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                       context.loc.recipientsTypeConfidentialSepa,
                 },
                 selected: state.sepaType.name,
-                onChanged: (value) {
-                  context.read<RecipientsBloc>().add(
-                    RecipientsEvent.sepaTypeChanged(
-                      RecipientType.values.byName(value),
-                    ),
-                  );
-                  setState(() => _selectedRecipient = null);
-                },
+                onChanged: (value) =>
+                    _onSepaTypeChanged(RecipientType.values.byName(value)),
               ),
             );
           },
