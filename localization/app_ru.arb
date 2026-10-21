@@ -4869,7 +4869,7 @@
   "recipientsVirtualIbanCopied": "Копируется в буфер обмена",
   "recipientsVirtualIbanDone": "Дон",
   "recipientsVirtualIbanRecipientName": "Имя получателя",
-  "recipientsVirtualIbanIbanLabel": "Номер счета IBAN",
+  "recipientsVirtualIbanIbanLabel": "Номер виртуального счёта IBAN",
   "recipientsVirtualIbanCountry": "Страна с банковским счетом",
   "recipientsVirtualIbanBic": "Код BIC",
   "fundExchangeMethodConfidentialSepa": "Конфиденциальный SEPA",
@@ -4880,5 +4880,7 @@
   "recipientsVirtualIbanBankAddress": "Адрес банка",
   "recipientsVirtualIbanBankAddressHelp": "Официальный адрес банка, если ваш банк его запросит.",
   "recipientsConfidentialSepaNameMustMatchHint": "Имена в вашем банке и в виртуальном IBAN должны совпадать, иначе переводы будут автоматически возвращены.",
-  "copiedToClipboard": "Скопировано в буфер обмена"
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "recipientsFieldBankAccountIban": "Номер банковского счёта (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Выводы средств отображаются как перевод самому себе с именем вашего счёта"
 }

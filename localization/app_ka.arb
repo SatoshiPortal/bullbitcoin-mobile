@@ -3779,7 +3779,7 @@
   "recipientsVirtualIbanCopied": "დაკოპირდა",
   "recipientsVirtualIbanDone": "დასრულდა",
   "recipientsVirtualIbanRecipientName": "მიმღების სახელი",
-  "recipientsVirtualIbanIbanLabel": "IBAN ანგარიშის ნომერი",
+  "recipientsVirtualIbanIbanLabel": "ვირტუალური IBAN ანგარიშის ნომერი",
   "recipientsVirtualIbanCountry": "საბანკო ანგარიშის ქვეყანა",
   "recipientsVirtualIbanBic": "BIC კოდი",
   "fundExchangeMethodConfidentialSepa": "კონფიდენციალური SEPA",
@@ -3790,5 +3790,7 @@
   "recipientsVirtualIbanBankAddress": "ბანკის მისამართი",
   "recipientsVirtualIbanBankAddressHelp": "ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს.",
   "recipientsConfidentialSepaNameMustMatchHint": "თქვენი ბანკისა და ვირტუალური IBAN ანგარიშების სახელები უნდა ემთხვეოდეს, წინააღმდეგ შემთხვევაში გადარიცხვები ავტომატურად დაბრუნდება.",
-  "copiedToClipboard": "დაკოპირდა ბუფერში"
+  "copiedToClipboard": "დაკოპირდა ბუფერში",
+  "recipientsFieldBankAccountIban": "საბანკო ანგარიშის ნომერი (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "გატანილი თანხები გამოჩნდება როგორც საკუთარ ანგარიშზე გადარიცხვა თქვენი ანგარიშის სახელით"
 }

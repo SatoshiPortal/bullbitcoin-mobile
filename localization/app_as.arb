@@ -9222,7 +9222,7 @@
   "recipientsVirtualIbanCopied": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
   "recipientsVirtualIbanDone": "সম্পন্ন",
   "recipientsVirtualIbanRecipientName": "প্ৰাপকৰ নাম",
-  "recipientsVirtualIbanIbanLabel": "IBAN একাউন্ট নম্বৰ",
+  "recipientsVirtualIbanIbanLabel": "ভাৰ্চুৱেল IBAN একাউণ্ট নম্বৰ",
   "recipientsVirtualIbanCountry": "ব্যাংক একাউন্টৰ দেশ",
   "recipientsVirtualIbanBic": "BIC কোড",
   "fundExchangeMethodConfidentialSepa": "গোপনীয় SEPA",
@@ -9233,5 +9233,7 @@
   "recipientsVirtualIbanBankAddress": "বেংকৰ ঠিকনা",
   "recipientsVirtualIbanBankAddressHelp": "বেংকৰ চৰকাৰী ঠিকনা, যদি আপোনাৰ বেংকে বিচাৰে।",
   "recipientsConfidentialSepaNameMustMatchHint": "আপোনাৰ বেংক আৰু ভাৰ্চুৱেল IBAN একাউণ্টৰ নাম মিলিব লাগিব, নহ’লে স্থানান্তৰ স্বয়ংক্ৰিয়ভাৱে ঘূৰাই পঠিওৱা হ’ব।",
-  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "recipientsFieldBankAccountIban": "বেংক একাউণ্ট নম্বৰ (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "উত্তোলনসমূহ আপোনাৰ একাউণ্টৰ নামত নিজৰ একাউণ্টলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়"
 }

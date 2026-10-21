@@ -4860,7 +4860,7 @@
   "recipientsVirtualIbanCopied": "Скопіювати до буферу",
   "recipientsVirtualIbanDone": "Сонце",
   "recipientsVirtualIbanRecipientName": "Ім'я одержувача",
-  "recipientsVirtualIbanIbanLabel": "Номер рахунку IBAN",
+  "recipientsVirtualIbanIbanLabel": "Номер віртуального рахунку IBAN",
   "recipientsVirtualIbanCountry": "Країна банківського рахунку",
   "recipientsVirtualIbanBic": "Код BIC",
   "fundExchangeMethodConfidentialSepa": "Конфіденційний SEPA",
@@ -4871,5 +4871,7 @@
   "recipientsVirtualIbanBankAddress": "Адреса банку",
   "recipientsVirtualIbanBankAddressHelp": "Офіційна адреса банку, якщо ваш банк її попросить.",
   "recipientsConfidentialSepaNameMustMatchHint": "Імена у вашому банку та у віртуальному IBAN мають збігатися, інакше перекази буде автоматично повернуто.",
-  "copiedToClipboard": "Скопійовано в буфер обміну"
+  "copiedToClipboard": "Скопійовано в буфер обміну",
+  "recipientsFieldBankAccountIban": "Номер банківського рахунку (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Зняття коштів відображаються як переказ самому собі з іменем вашого рахунку"
 }

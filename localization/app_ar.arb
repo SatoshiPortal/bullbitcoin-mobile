@@ -11854,7 +11854,7 @@
   "recipientsVirtualIbanCopied": "مركب على لوح مشبك",
   "recipientsVirtualIbanDone": "تم",
   "recipientsVirtualIbanRecipientName": "الاسم المستقبِل",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "رقم حساب IBAN الافتراضي",
   "recipientsVirtualIbanCountry": "بلد الحساب المصرفي",
   "recipientsVirtualIbanBic": "رمز BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA السري",
@@ -11865,5 +11865,7 @@
   "recipientsVirtualIbanBankAddress": "عنوان المصرف",
   "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك.",
   "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.",
-  "copiedToClipboard": "تم النسخ إلى الحافظة"
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "recipientsFieldBankAccountIban": "رقم الحساب المصرفي (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك"
 }
