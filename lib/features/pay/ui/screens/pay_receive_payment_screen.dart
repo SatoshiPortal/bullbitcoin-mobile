@@ -128,10 +128,8 @@ class PayReceivePaymentScreen extends StatelessWidget {
                       style: context.font.bodyMedium,
                       color: context.appColors.outline,
                     ),
-                    // Display only: the bloc refreshes the quote from the
-                    // order deadline itself.
                     if (order.confirmationDeadline case final deadline?)
-                      BullCountdown(until: deadline, onTimeout: () {}),
+                      BullCountdown(until: deadline),
                   ],
                 ),
               ),

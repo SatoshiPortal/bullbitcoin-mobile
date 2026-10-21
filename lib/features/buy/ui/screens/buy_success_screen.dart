@@ -101,12 +101,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
                   textAlign: .center,
                 ),
                 const Gap(4),
-                BullCountdown(
-                  until: payoutTime,
-                  onTimeout: () {
-                    // TODO: Maybe fetch the order again or notify the user
-                  },
-                ),
+                BullCountdown(until: payoutTime),
               ],
             ),
         ],

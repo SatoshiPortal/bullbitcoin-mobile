@@ -166,10 +166,8 @@ class BuyConfirmScreen extends StatelessWidget {
                         ),
                       ),
                       const Gap(4),
-                      // Display only: the bloc refreshes the quote from the
-                      // order deadline itself.
                       if (buyOrder.confirmationDeadline case final deadline?)
-                        BullCountdown(until: deadline, onTimeout: () {}),
+                        BullCountdown(until: deadline),
                     ],
                   ),
                 if (confirmFailure != null) ...[

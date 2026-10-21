@@ -757,7 +757,6 @@ m.Widget bullCountdownUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(Duration(minutes: minutes)),
-      onTimeout: () {},
       textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
         fontFeatures: const [m.FontFeature.tabularFigures()],
         color: context.bull.text,
@@ -772,7 +771,6 @@ m.Widget bullCountdownShortUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(const Duration(seconds: 30)),
-      onTimeout: () {},
       textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
         fontFeatures: const [m.FontFeature.tabularFigures()],
         color: context.bull.warning,
