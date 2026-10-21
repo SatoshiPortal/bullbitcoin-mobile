@@ -139,6 +139,21 @@ void main() {
     });
   });
 
+  test('dispose is final: a late refresh outcome arms nothing', () {
+    // A refresh still in flight when the owner closes reports back after
+    // dispose; a timer armed then would call onDue on a closed bloc.
+    fakeAsync((time) {
+      scheduler.dispose();
+      scheduler.track(clock.now().add(const Duration(seconds: 30)));
+      scheduler.track(clock.now().subtract(const Duration(minutes: 1)));
+      scheduler.refreshFailed();
+      expect(scheduler.isPending, isFalse);
+      time.elapse(const Duration(minutes: 5));
+      expect(dueCount, 0);
+      expect(giveUpCount, 0);
+    });
+  });
+
   test('never two timers at once', () {
     fakeAsync((time) {
       final lapsed = clock.now().subtract(const Duration(minutes: 1));

@@ -35,6 +35,7 @@ final class OrderDeadlineScheduler {
 
   Timer? _timer;
   int _retries = 0;
+  bool _isDisposed = false;
 
   OrderDeadlineScheduler({
     required this.onDue,
@@ -51,6 +52,7 @@ final class OrderDeadlineScheduler {
   /// behind is a lapsed quote: retry after [retryDelay]. No deadline means
   /// nothing to watch.
   void track(DateTime? deadline) {
+    if (_isDisposed) return;
     _clearTimer();
     if (deadline == null) {
       _retries = 0;
@@ -67,6 +69,7 @@ final class OrderDeadlineScheduler {
 
   /// The refresh request itself failed: retry after [retryDelay].
   void refreshFailed() {
+    if (_isDisposed) return;
     _clearTimer();
     _retry();
   }
@@ -77,7 +80,12 @@ final class OrderDeadlineScheduler {
     _retries = 0;
   }
 
-  void dispose() => cancel();
+  /// Final: a refresh still in flight when the owner closes may report back
+  /// afterwards, and must not arm a timer that would fire into a closed owner.
+  void dispose() {
+    _isDisposed = true;
+    cancel();
+  }
 
   void _retry() {
     if (_retries >= maxRetries) {
