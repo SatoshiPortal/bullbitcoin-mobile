@@ -11,19 +11,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
-class SellWalletSelectionScreen extends StatelessWidget {
+class SellWalletSelectionScreen extends StatefulWidget {
   const SellWalletSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Update BitcoinPriceBloc currency to match sell flow currency
+  State<SellWalletSelectionScreen> createState() =>
+      _SellWalletSelectionScreenState();
+}
+
+class _SellWalletSelectionScreenState extends State<SellWalletSelectionScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Show wallet values in the sell flow's currency. Once, on open: sent
+    // from build, it went out again on every rebuild.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final currency = context.read<SellBloc>().state.fiatCurrency;
       context.read<BitcoinPriceBloc>().add(
         BitcoinPriceCurrencyChanged(currencyCode: currency.code),
       );
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     final isCreatingSellOrder = context.select(
       (SellBloc bloc) => bloc.state is SellPreparingPaymentState,
     );

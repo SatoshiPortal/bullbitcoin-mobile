@@ -67,6 +67,11 @@ class EstimatePayPayinFeesUsecase {
       );
       return Err(PayUnexpectedFailure('$e'));
     }
+    // The pricer reports an unavailable price as zero: there is nothing to
+    // estimate with, and a zero rate would pass any balance check.
+    if (!exchangeRateEstimate.isFinite || exchangeRateEstimate <= 0) {
+      return const Err(PayQuoteUnavailableFailure('No price for the estimate'));
+    }
 
     final requiredAmountSat = ConvertAmount.fiatToSats(
       fiatAmount,

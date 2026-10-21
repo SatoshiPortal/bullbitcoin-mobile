@@ -371,6 +371,60 @@ void main() {
     });
   });
 
+  group('BuyBloc without a price', () {
+    late _SeedableBuyBloc bloc;
+    late _MockLoadBuyContextUsecase load;
+
+    setUp(() {
+      load = _MockLoadBuyContextUsecase();
+      final cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+      when(
+        () => cancel.execute(any()),
+      ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
+      bloc = _SeedableBuyBloc(
+        loadBuyContextUsecase: load,
+        confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+        createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+        refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        cancelAbandonedBuyPayjoinUsecase: cancel,
+        getBuyPayjoinEnabledUsecase: _MockGetBuyPayjoinEnabledUsecase(),
+        labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      );
+    });
+    tearDown(() async {
+      if (!bloc.isClosed) await bloc.close();
+    });
+
+    test('a currency whose price does not come says so', () async {
+      bloc.seed(const BuyState(currencyInput: 'USD', exchangeRate: 70000));
+      // The datasource reports an unreachable pricer as a zero rate.
+      when(
+        () => load.satsToCurrency(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => const Ok<double, BuyFailure>(0));
+
+      bloc.add(const BuyEvent.currencyInputChanged('CAD'));
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<BuyQuoteUnavailableFailure>());
+      expect(bloc.state.exchangeRate, 0);
+    });
+
+    test('a failed price read does not keep the previous currency rate', () {
+      bloc.seed(const BuyState(currencyInput: 'USD', exchangeRate: 70000));
+      when(() => load.satsToCurrency(currencyCode: 'CAD')).thenAnswer(
+        (_) async => const Err<double, BuyFailure>(BuyUnexpectedFailure('x')),
+      );
+
+      bloc.add(const BuyEvent.currencyInputChanged('CAD'));
+      return pumpEventQueue().then((_) {
+        // 70000 is the USD price: it must not price a CAD amount.
+        expect(bloc.state.exchangeRate, 0);
+        expect(bloc.state.failure, isNotNull);
+      });
+    });
+  });
+
   group('order preparation', () {
     late _SeedableBuyBloc bloc;
     late _MockCreateBuyOrderUsecase create;

@@ -154,9 +154,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     final rate = await _loadBuyContextUsecase.satsToCurrency(
       currencyCode: currencyInput,
     );
-    if (rate case Ok(:final value)) {
-      emit(state.copyWith(exchangeRate: value));
-    }
+    emit(_withOrderRate(rate));
 
     emit(state.copyWith(isStarted: true));
   }
@@ -177,10 +175,25 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     final rate = await _loadBuyContextUsecase.satsToCurrency(
       currencyCode: event.currencyCode,
     );
-    if (rate case Ok(:final value)) {
-      emit(state.copyWith(exchangeRate: value));
-    }
+    emit(_withOrderRate(rate));
   }
+
+  /// The order is estimated with this rate: the amount converted, the balance
+  /// and limits checked. With no price there is no estimate, and the previous
+  /// rate, possibly another currency's, must not stand in for it.
+  BuyState _withOrderRate(Result<double, BuyFailure> rate) => switch (rate) {
+    Ok(:final value) when value.isFinite && value > 0 => state.copyWith(
+      exchangeRate: value,
+      failure: state.failure is BuyQuoteUnavailableFailure
+          ? null
+          : state.failure,
+    ),
+    Ok() => state.copyWith(
+      exchangeRate: 0,
+      failure: const BuyQuoteUnavailableFailure('No price for the estimate'),
+    ),
+    Err(:final failure) => state.copyWith(exchangeRate: 0, failure: failure),
+  };
 
   Future<void> _onFiatCurrencyInputToggled(
     _BuyFiatCurrencyInputToggled event,
@@ -326,9 +339,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       currencyCode: currency.code,
     );
     if (emit.isDone || generation != _orderCreationGeneration) return;
-    if (rate case Ok(:final value)) {
-      emit(state.copyWith(exchangeRate: value));
-    }
+    // Keep the order failure on screen; only the rate is refreshed.
+    final failure = state.failure;
+    emit(_withOrderRate(rate).copyWith(failure: failure));
   }
 
   Future<void> _onRefreshOrder(
