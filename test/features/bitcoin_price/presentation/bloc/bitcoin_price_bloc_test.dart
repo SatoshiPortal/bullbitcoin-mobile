@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_us
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -134,8 +135,11 @@ void main() {
     },
   );
 
+  // A refresh only reaches the pricer once the repository's price is over a
+  // minute old, so the price still on screen is outdated: with no answer,
+  // show no price rather than that one.
   blocTest<BitcoinPriceBloc, BitcoinPriceState>(
-    'a failed refresh keeps the last known price',
+    'a failed refresh drops the outdated price',
     build: () {
       var online = true;
       stubPrice(() async {
@@ -153,8 +157,36 @@ void main() {
       bloc.add(const BitcoinPriceFetched());
     },
     verify: (bloc) {
-      expect(bloc.state.bitcoinPrice, 100000);
+      expect(bloc.state.bitcoinPrice, isNull);
+      expect(bloc.state.hasValidFiatRate, isFalse);
+      expect(bloc.state.currency, 'USD');
       expect(bloc.state.failure, isNotNull);
+    },
+  );
+
+  blocTest<BitcoinPriceBloc, BitcoinPriceState>(
+    'a refresh answered with no rate drops the outdated price',
+    build: () {
+      var online = true;
+      stubPrice(() async {
+        if (online) {
+          online = false;
+          return 100000;
+        }
+        // The datasource reports an unreachable pricer as a zero rate.
+        return 0;
+      });
+      return buildBloc();
+    },
+    act: (bloc) async {
+      bloc.add(const BitcoinPriceStarted());
+      await bloc.stream.firstWhere((s) => s.hasValidFiatRate);
+      bloc.add(const BitcoinPriceFetched());
+    },
+    verify: (bloc) {
+      expect(bloc.state.bitcoinPrice, isNull);
+      expect(bloc.state.hasValidFiatRate, isFalse);
+      expect(bloc.state.failure, isA<BitcoinPriceInvalidRateFailure>());
     },
   );
 

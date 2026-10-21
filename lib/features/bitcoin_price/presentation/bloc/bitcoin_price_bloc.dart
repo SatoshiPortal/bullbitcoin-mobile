@@ -164,8 +164,16 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // old one, and the change has fetched its own.
       if (state.currency != currency) return;
 
+      // A refresh only reaches the pricer once the price repository's rate is
+      // over a minute old, so the price on screen is outdated: with no answer,
+      // show no price rather than that one.
       if (price <= 0) {
-        emit(state.copyWith(failure: const BitcoinPriceInvalidRateFailure()));
+        emit(
+          state.copyWith(
+            bitcoinPrice: null,
+            failure: const BitcoinPriceInvalidRateFailure(),
+          ),
+        );
         return;
       }
 
@@ -177,16 +185,13 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         ),
       );
     } catch (e) {
-      // TODO: would it make sense to not emit a failure state here, but keep the
-      //  previous success state as to be able to show an exchange rate allthough
-      //  not the most recent one? If that makes sense, we can add the error directly
-      //  to the success state. So the UI can show the exchange rate, but also show
-      //  that it might not be the most recent one.
-      //  (Adding a fetch and rate timestamp to the success can also help)
       log.warning('BitcoinPriceFetched failed', error: e);
       if (state.currency != currency) return;
       emit(
-        state.copyWith(failure: BitcoinPriceUnexpectedFailure(e.toString())),
+        state.copyWith(
+          bitcoinPrice: null,
+          failure: BitcoinPriceUnexpectedFailure(e.toString()),
+        ),
       );
     }
   }
