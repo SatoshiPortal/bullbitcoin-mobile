@@ -235,6 +235,53 @@ void main() {
     },
   );
 
+  test(
+    'the latest active duplicate keeps shared authentication current',
+    () async {
+      final response = Completer<Object>();
+      var calls = 0;
+      final keys = _Keys();
+      final usecase = CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(() {
+          calls++;
+          return response.future;
+        }),
+        apiKeyRepository: keys,
+        isTestnet: true,
+      );
+      var firstIsCurrent = true;
+      final first = usecase.execute(isCurrent: () => firstIsCurrent);
+      firstIsCurrent = false;
+      final second = usecase.execute(isCurrent: () => true);
+      response.complete(fields);
+      expect(await first, isA<Ok<void, ExchangeFailure>>());
+      expect(await second, isA<Ok<void, ExchangeFailure>>());
+      expect(calls, 1);
+      expect(keys.writes, 1);
+    },
+  );
+
+  test(
+    'a predicate-less duplicate cannot widen a cancelled operation',
+    () async {
+      final response = Completer<Object>();
+      final keys = _Keys();
+      var isCurrent = true;
+      final usecase = CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(() => response.future),
+        apiKeyRepository: keys,
+        isTestnet: true,
+      );
+      final first = usecase.execute(isCurrent: () => isCurrent);
+      isCurrent = false;
+      final second = usecase.execute();
+      response.complete(fields);
+      expect(await first, isA<Err<void, ExchangeFailure>>());
+      expect(await second, isA<Err<void, ExchangeFailure>>());
+      expect(keys.writes, 0);
+    },
+  );
+
   test('a failed authentication attempt can be explicitly retried', () async {
     var calls = 0;
     final keys = _Keys();

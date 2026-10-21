@@ -1,5 +1,10 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -44,6 +49,18 @@ class _MockRequestDeletion extends Mock
 class _MockWatchNotifications extends Mock
     implements WatchExchangeNotificationsUsecase {}
 
+class _StoredKeys extends Fake implements ExchangeApiKeyRepository {
+  var writes = 0;
+  @override
+  Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
+    ExchangeApiKey key, {
+    required bool isTestnet,
+  }) async {
+    writes++;
+    return const Ok(null);
+  }
+}
+
 void main() {
   late _MockClearSession clearSession;
   late _MockGetAccount getAccount;
@@ -78,11 +95,59 @@ void main() {
     when(getAccount.execute).thenAnswer((_) async => const Ok(_account));
   });
 
+  for (final clearPending in [false, true]) {
+    test(
+      clearPending
+          ? 'logout cancels generation while deletion is pending'
+          : 'logout cancels generation before a new credential is persisted',
+      () async {
+        final response = Completer<Object>();
+        final keys = _StoredKeys();
+        final operation = CompleteExchangeAuthenticationUsecase(
+          authRepository: ExchangeAuthRepositoryImpl(
+            datasource: ExchangeWebAuthDatasource(
+              isTestnet: true,
+              evaluateJavaScript: (_) => response.future,
+              isOpen: () => true,
+            ),
+          ),
+          apiKeyRepository: keys,
+          isTestnet: true,
+        );
+        final clearance = Completer<Result<void, ExchangeFailure>>();
+        when(clearSession.execute).thenAnswer((_) => clearance.future);
+        if (!clearPending) clearance.complete(const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(operation);
+        final signout = cubit.logout();
+        if (!clearPending) expect(await signout, isNull);
+        response.complete({
+          'id': 'synthetic-id',
+          'key': 'synthetic-key',
+          'name': 'synthetic',
+          'userId': 'synthetic-user',
+          'isActive': true,
+          'createdAt': 0,
+          'updatedAt': 0,
+        });
+        await pending;
+        expect(keys.writes, 0);
+        verifyNever(getAccount.execute);
+        expect(cubit.state.userSummary, isNull);
+        if (clearPending) clearance.complete(const Ok(null));
+        expect(await signout, isNull);
+      },
+    );
+  }
+
   group('completeAuthentication', () {
     test('returns a failure without refreshing the account', () async {
       final operation = _MockCompleteAuthentication();
       const failure = ExchangeAuthenticationFailure();
-      when(operation.execute).thenAnswer((_) async => const Err(failure));
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Err(failure));
       final cubit = build();
       addTearDown(cubit.close);
       expect(await cubit.completeAuthentication(operation), same(failure));
@@ -91,7 +156,9 @@ void main() {
     });
     test('refreshes the account after persistence succeeds', () async {
       final operation = _MockCompleteAuthentication();
-      when(operation.execute).thenAnswer((_) async => const Ok(null));
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
       expect(await cubit.completeAuthentication(operation), isNull);
@@ -123,7 +190,9 @@ void main() {
       () async {
         final response = Completer<Result<void, ExchangeFailure>>();
         final operation = _MockCompleteAuthentication();
-        when(operation.execute).thenAnswer((_) => response.future);
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) => response.future);
         when(clearSession.execute).thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
@@ -142,8 +211,12 @@ void main() {
         final response = Completer<Result<void, ExchangeFailure>>();
         final first = _MockCompleteAuthentication();
         final second = _MockCompleteAuthentication();
-        when(first.execute).thenAnswer((_) => response.future);
-        when(second.execute).thenAnswer((_) async => const Ok(null));
+        when(
+          () => first.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) => response.future);
+        when(
+          () => second.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
         final pending = cubit.completeAuthentication(first);
@@ -165,7 +238,9 @@ void main() {
               ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
         );
         final operation = _MockCompleteAuthentication();
-        when(operation.execute).thenAnswer((_) async => const Ok(null));
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
         final pending = cubit.fetchUserSummary();
@@ -183,7 +258,9 @@ void main() {
       when(requestDeletion.execute).thenAnswer((_) => response.future);
       when(clearSession.execute).thenAnswer((_) async => const Ok(null));
       final operation = _MockCompleteAuthentication();
-      when(operation.execute).thenAnswer((_) async => const Ok(null));
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
       final pending = cubit.deleteAccount();
@@ -204,7 +281,9 @@ void main() {
         ).thenAnswer((_) => response.future);
         when(clearSession.execute).thenAnswer((_) async => const Ok(null));
         final operation = _MockCompleteAuthentication();
-        when(operation.execute).thenAnswer((_) async => const Ok(null));
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
         final pending = cubit.stopDca();

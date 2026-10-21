@@ -90,7 +90,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     if (isClosed) return null;
     final attempt = Object();
     _authenticationAttempt = attempt;
-    final result = await operation.execute();
+    final result = await operation.execute(
+      isCurrent: () => !isClosed && identical(_authenticationAttempt, attempt),
+    );
     if (isClosed || !identical(_authenticationAttempt, attempt)) return null;
     _authenticationAttempt = null;
     if (result case Err(:final failure)) return failure;
@@ -140,6 +142,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   /// between believing the session is gone and it still being live.
   Future<ExchangeFailure?> logout() async {
     if (isClosed) return null;
+    _authenticationAttempt = null;
     emit(state.copyWith(logoutFailure: null));
     disconnectWebSocket();
 
