@@ -434,7 +434,6 @@ exchange-credentials-device-build:
 		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
 
 exchange-credentials-device-test:
-	@test -n "$(DEVICE)" || { echo "Set DEVICE to the reserved Android serial"; exit 1; }
 	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }
 	@fvm dart run integration_test/device/driver.dart
 
