@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'dart:convert';
+
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
@@ -10,9 +12,39 @@ import 'package:bull_logger/bull_logger.dart';
 /// Nothing logged here may carry key material: the payload is the auth
 /// response, so only the exception type is recorded.
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
-  final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
+  final KeyValueStorageDatasource<String> _secureStorage;
 
-  ExchangeApiKeyRepositoryImpl({required this._bullbitcoinApiKeyDatasource});
+  ExchangeApiKeyRepositoryImpl({required this._secureStorage});
+
+  static String _storageKey(bool isTestnet) =>
+      isTestnet ? 'exchange_api_key_testnet' : 'exchange_api_key';
+
+  @override
+  Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
+    required bool isTestnet,
+  }) async {
+    final String? stored;
+    try {
+      stored = await _secureStorage.getValue(_storageKey(isTestnet));
+    } on Exception catch (error) {
+      log.warning('Exchange credential unavailable: ${error.runtimeType}');
+      return const Err(ExchangeApiKeyReadFailure());
+    }
+    if (stored == null || stored.isEmpty) return const Ok(null);
+    try {
+      // Authentication deliberately ignores account metadata and timestamps.
+      return switch (jsonDecode(stored)) {
+        {'key': final String key, 'isActive': final bool active}
+            when key.isNotEmpty =>
+          Ok(active ? key : null),
+        _ => const Err(ExchangeApiKeyInvalidFailure()),
+      };
+    } on FormatException {
+      // FormatException embeds its source. Never log the exception itself.
+      log.warning('Stored exchange credential is invalid');
+      return const Err(ExchangeApiKeyInvalidFailure());
+    }
+  }
 
   @override
   Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
@@ -24,9 +56,9 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
         _unwrapApiKeyPayload(apiKeyResponseData),
       );
 
-      await _bullbitcoinApiKeyDatasource.store(
-        apiKeyModel,
-        isTestnet: isTestnet,
+      await _secureStorage.saveValue(
+        key: _storageKey(isTestnet),
+        value: jsonEncode(apiKeyModel.toJson()),
       );
       return const Ok(null);
     } catch (e, st) {
@@ -48,7 +80,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     required bool isTestnet,
   }) async {
     try {
-      await _bullbitcoinApiKeyDatasource.delete(isTestnet: isTestnet);
+      await _secureStorage.deleteValue(_storageKey(isTestnet));
       return const Ok(null);
     } catch (e, st) {
       log.severe(

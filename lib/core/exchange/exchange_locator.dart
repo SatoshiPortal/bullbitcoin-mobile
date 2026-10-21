@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/data/datasources/http/authenticated_bull
 import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
@@ -148,7 +148,9 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
       () => ExchangeApiKeyRepositoryImpl(
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        secureStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
       ),
     );
 
