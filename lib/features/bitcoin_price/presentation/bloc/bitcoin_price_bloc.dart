@@ -256,7 +256,9 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         ),
       );
     } finally {
-      if (_currencyInFlight == event.currencyCode) _currencyInFlight = null;
+      // Only the latest request owns the marker: an earlier one finishing,
+      // even for the same currency, must not end the sharing of the latest.
+      if (isLatest()) _currencyInFlight = null;
     }
   }
 }

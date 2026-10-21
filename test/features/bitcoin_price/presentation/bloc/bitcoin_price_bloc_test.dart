@@ -342,6 +342,41 @@ void main() {
       expect(bloc.state.bitcoinPrice, 71000);
     });
 
+    test(
+      'a superseded answer does not end the latest request\'s sharing',
+      () async {
+        // USD, then CAD, then USD again: when the first USD answer lands, the
+        // second USD request is still out and a further USD change must share
+        // it rather than send its own.
+        final first = Completer<double>();
+        final second = Completer<double>();
+        var usdCalls = 0;
+        stubPrice(() => ++usdCalls == 1 ? first.future : second.future);
+        when(
+          () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
+        ).thenAnswer((_) async => 95000);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
+        await pumpEventQueue();
+        bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'CAD'));
+        await pumpEventQueue();
+        bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
+        await pumpEventQueue();
+        first.complete(70000);
+        await pumpEventQueue();
+        bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
+        await pumpEventQueue();
+
+        expect(usdCalls, 2);
+        second.complete(71000);
+        await pumpEventQueue();
+        expect(bloc.state.currency, 'USD');
+        expect(bloc.state.bitcoinPrice, 71000);
+      },
+    );
+
     test('an answer for a currency left since does not overwrite', () async {
       final usd = Completer<double>();
       stubPrice(() => usd.future);
