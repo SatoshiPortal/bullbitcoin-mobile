@@ -92,7 +92,7 @@ class Logger {
           );
         }
 
-        // Print the un-sanitized line so ANSI color codes survive to the terminal.
+        // Debug builds print the same sanitized content used for the file.
         if (kDebugMode) debugPrint(content.map(_sanitize).join('\t'));
       } catch (e) {
         if (kDebugMode) debugPrint('[Logger listener failed] $e');
@@ -282,46 +282,52 @@ class Logger {
   // Log level methods
   // ---------------------------------------------------------------------------
 
-  /// Logs information messages that are part of the normal operation of the app.
-  /// These messages are typically written to file only and not kept in memory.
-  /// Use for recording general app flow and user actions.
+  /// Debug-console chatter only: INFO is excluded from the on-disk support log.
+  /// Nothing is printed outside kDebugMode, and this method never invokes the reporter.
+  /// Use [fine] for a milestone that support must see in an export.
   void info(Object? message, {Object? error, StackTrace? trace}) {
     logger.info(message, error, trace);
   }
 
   /// Logs static configuration information at startup or during major configuration changes.
   /// Use for logging app settings, environment details, or significant state changes.
+  /// Persists to the support log without invoking the reporter.
   void config(Object? message, {Object? error, StackTrace? trace}) {
     logger.config(message, error, trace);
   }
 
   /// Logs basic tracing information for debugging.
   /// Use for high-level flow tracking during development and troubleshooting.
+  /// Persists to the support log without invoking the reporter, unlike [info].
   void fine(Object? message, {Object? error, StackTrace? trace}) {
     logger.fine(message, error, trace);
   }
 
-  /// Logs detailed tracing information.
-  /// Use for more granular debugging information than fine(), such as loop iterations or method entry/exit.
+  /// Detailed persisted diagnostics for bounded troubleshooting.
+  /// Does not invoke the reporter. Repetitive poll chatter belongs in [info].
   void finer(Object? message, {Object? error, StackTrace? trace}) {
     logger.finer(message, error, trace);
   }
 
-  /// Logs highly detailed tracing information.
-  /// Use for the most detailed level of debugging, such as variable values within loops.
+  /// The most detailed persisted diagnostics; keep them bounded and secret-free.
+  /// Does not invoke the reporter. Repetitive poll chatter belongs in [info].
   void finest(Object? message, {Object? error, StackTrace? trace}) {
     logger.finest(message, error, trace);
   }
 
   /// Logs potentially harmful situations that don't prevent the app from working.
   /// Use for recoverable errors or unexpected but handled conditions.
+  /// Persists to the support log without invoking the reporter.
   void warning(Object? message, {Object? error, StackTrace? trace}) {
     logger.warning(message, error, trace);
   }
 
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
-  /// [trace] is required to ensure proper error tracking in Sentry.
+  /// [trace] is persisted locally and forwarded to the reporter on the normal path when one is configured.
+  /// Persists and flushes locally, then invokes the optional reporter on the normal path.
+  /// App reporting requires an enabled SDK and user consent; reentrant calls write locally only.
+  /// The local sanitizer does not sanitize reporter arguments: keep [message] and [error] free of sensitive data.
   ///
   /// Optional [category] attaches a `category=<name>` Sentry tag for
   /// crash-cache filtering (e.g. [ReportCategory.migration] for
@@ -370,6 +376,8 @@ class Logger {
   /// milestones (install/upgrade, FSS fallback started, feature-flag
   /// flip, etc.). [message] is required — every such event carries a
   /// human-readable label for the Sentry UI and the on-disk TSV log.
+  /// Like [severe], invokes the optional reporter only on the normal path; reentrant calls stay local.
+  /// Message events may retain [message] in Sentry, so use a fixed label or explicitly allowlisted metadata, never user data.
   ///
   /// Optional [category] attaches a `category=<name>` Sentry tag for
   /// crash-cache filtering (e.g. [ReportCategory.migration] for

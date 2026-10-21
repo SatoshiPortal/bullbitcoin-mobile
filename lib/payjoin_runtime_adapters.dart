@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
@@ -204,27 +205,19 @@ final class AppPayjoinLabelsAdapter implements PayjoinLabelsPort {
 }
 
 final class AppPayjoinLogAdapter implements PayjoinLogPort {
+  static const _displayedSessionRefLength = 7;
+
   const AppPayjoinLogAdapter();
 
   @override
   void write(PayjoinLogEvent event) {
-    // Lifecycle info events are periodic recovery/polling noise. Keep warnings
-    // and severe lifecycle events, plus all session-specific info events.
-    if (event.code == PayjoinLogCode.lifecycle &&
-        (event.level == PayjoinLogLevel.debug ||
-            event.level == PayjoinLogLevel.info)) {
-      return;
-    }
-    final message =
-        'Payjoin ${event.code.name}'
-        '${event.sessionRef == null ? '' : ' ${event.sessionRef}'}'
-        '${event.error == null ? '' : ' ${event.error.runtimeType}'}';
+    final message = _describe(event);
     switch (event.level) {
-      case PayjoinLogLevel.debug || PayjoinLogLevel.info:
+      case PayjoinLogLevel.info:
         log.info(message);
+      case PayjoinLogLevel.fine:
+        log.fine(message);
       case PayjoinLogLevel.warning:
-        // Foreign exception text can contain transaction IDs, payment URIs
-        // or custom server URLs. Keep only its type and the structured code.
         log.warning(message);
       case PayjoinLogLevel.severe:
         // Sentry must not receive arbitrary exception text either. Group by
@@ -239,4 +232,30 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
         );
     }
   }
+
+  /// Shows the role and a short correlation prefix before the event description; the structured event retains its full reference.
+  /// Foreign exception text can contain transaction IDs, payment URIs or custom server URLs, so it never appears.
+  static String _describe(PayjoinLogEvent event) {
+    final role = event.role;
+    final sessionRef = event.sessionRef;
+    final error = event.error;
+    return [
+      'Payjoin',
+      ?role?.name,
+      if (sessionRef != null)
+        sessionRef.substring(0, _displayedSessionRefLength),
+      '${event.code.name}: ${event.code.description}',
+      if (error != null) 'cause=${_describeCause(error)}',
+    ].join(' ');
+  }
+
+  /// A transport failure says whether the directory or relay could not be
+  /// reached, timed out or answered with an error status; its message is
+  /// dropped because it quotes the URL.
+  static String _describeCause(Object error) => switch (error) {
+    DioException(:final type, :final response) =>
+      'DioException.${type.name}'
+          '${response == null ? '' : '(${response.statusCode})'}',
+    _ => '${error.runtimeType}',
+  };
 }

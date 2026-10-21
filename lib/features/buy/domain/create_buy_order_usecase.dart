@@ -103,18 +103,27 @@ class CreateBuyOrderUsecase {
               expiresAt: DateTime.now().add(_payjoinPayoutWindow),
             ),
           );
-          final receiver = switch (result) {
-            Ok(:final value) => value,
-            Err() => throw StateError('Failed to start Payjoin receiver'),
-          };
-          payjoinId = receiver.id;
-          payjoinBip21 = receiver.pjUri;
+          switch (result) {
+            case Ok(:final value):
+              payjoinId = value.id;
+              payjoinBip21 = value.pjUri;
+              log.fine('Buy Payjoin receiver attached: ref=${value.logRef}');
+            case Err(:final failure):
+              log.warning(
+                'Buy Payjoin unavailable; the order pays a plain address',
+                error: '${failure.runtimeType}',
+              );
+          }
         } catch (e) {
           // Payjoin is an improvement on a purchase, never a precondition for
           // one. Anything that stops a session from opening — no spendable
           // utxo, a relay outage, a wallet that cannot sign — falls back to the
-          // plain address the flow has always used.
-          log.warning('Buy order falls back to a plain address: $e');
+          // plain address the flow has always used. Only the cause's type is
+          // logged: foreign exception text can quote the payment request.
+          log.warning(
+            'Buy Payjoin unavailable; the order pays a plain address',
+            error: '${e.runtimeType}',
+          );
         }
       }
 
