@@ -11851,7 +11851,7 @@
   "recipientsVirtualIbanCopied": "Připojil se do schránky",
   "recipientsVirtualIbanDone": "Čeština",
   "recipientsVirtualIbanRecipientName": "Název příjemce",
-  "recipientsVirtualIbanIbanLabel": "Číslo účtu IBAN",
+  "recipientsVirtualIbanIbanLabel": "Číslo virtuálního účtu IBAN",
   "recipientsVirtualIbanCountry": "Bankovní účet",
   "recipientsVirtualIbanBic": "BIC kód",
   "fundExchangeMethodConfidentialSepa": "Důvěrný SEPA",
@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "Adresa banky",
   "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.",
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
-  "copiedToClipboard": "Zkopírováno do schránky"
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu"
 }

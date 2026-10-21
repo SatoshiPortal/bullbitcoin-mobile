@@ -11851,7 +11851,7 @@
   "recipientsVirtualIbanCopied": "نصب شده برای Clipboard",
   "recipientsVirtualIbanDone": "انجام کارها",
   "recipientsVirtualIbanRecipientName": "نام اضطراری",
-  "recipientsVirtualIbanIbanLabel": "شماره حساب IBAN",
+  "recipientsVirtualIbanIbanLabel": "شماره حساب IBAN مجازی",
   "recipientsVirtualIbanCountry": "بانک کشور",
   "recipientsVirtualIbanBic": "کد BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA محرمانه",
@@ -11862,5 +11862,7 @@
   "recipientsVirtualIbanBankAddress": "نشانی بانک",
   "recipientsVirtualIbanBankAddressHelp": "نشانی رسمی بانک، در صورتی که بانک شما آن را بخواهد.",
   "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
-  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "recipientsFieldBankAccountIban": "شماره حساب بانکی (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند"
 }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
@@ -441,6 +442,35 @@ void main() {
       );
 
       expect(state.isPayjoinSuppressedByAmount, isFalse);
+    });
+  });
+  // With no price, fiat cannot be shown or typed: no rate means no currency,
+  // never a zero amount.
+  group('ReceiveState without a price', () {
+    test('offers only bitcoin units as input currencies', () {
+      const state = ReceiveState(fiatCurrencyCodes: ['USD', 'CAD']);
+      expect(state.inputAmountCurrencyCodes, [
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ]);
+    });
+
+    test('offers fiat currencies once a price is known', () {
+      const state = ReceiveState(
+        fiatCurrencyCodes: ['USD', 'CAD'],
+        exchangeRate: 70000,
+      );
+      expect(state.inputAmountCurrencyCodes, contains('USD'));
+    });
+
+    test('shows no fiat equivalent of a bitcoin amount', () {
+      const state = ReceiveState(
+        inputAmountCurrencyCode: 'sats',
+        inputAmount: '1000',
+        fiatCurrencyCode: 'USD',
+      );
+      expect(state.formattedAmountInputEquivalent, isEmpty);
+      expect(state.formattedConfirmedAmountFiat, isEmpty);
     });
   });
 }

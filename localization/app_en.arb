@@ -15588,7 +15588,7 @@
   "@recipientsVirtualIbanRecipientName": {
     "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
   },
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN Account Number",
   "@recipientsVirtualIbanIbanLabel": {
     "description": "Label of the virtual IBAN account number"
   },
@@ -15707,5 +15707,13 @@
   "buyQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
   "@buyQuoteExpiredError": {
     "description": "Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought."
+  },
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "@recipientsFieldBankAccountIban": {
+    "description": "Label for the destination bank account IBAN on the SEPA recipient form"
+  },
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
+  "@recipientsTypeConfidentialSepaDescription": {
+    "description": "Explanation of Confidential SEPA in the payout method selector"
   }
 }

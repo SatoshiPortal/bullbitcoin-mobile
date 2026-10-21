@@ -4938,7 +4938,7 @@
   "recipientsVirtualIbanCopied": "Copié dans le presse-papiers",
   "recipientsVirtualIbanDone": "Terminé",
   "recipientsVirtualIbanRecipientName": "Nom du destinataire",
-  "recipientsVirtualIbanIbanLabel": "Numéro de compte IBAN",
+  "recipientsVirtualIbanIbanLabel": "Numéro de compte IBAN virtuel",
   "recipientsVirtualIbanCountry": "Pays du compte bancaire",
   "recipientsVirtualIbanBic": "Code BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA Confidentiel",
@@ -4965,5 +4965,7 @@
   "exchangePaymentSentLeave": "Quitter",
   "payQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "exchangeQuoteUnavailableError": "Impossible d'obtenir un nouveau prix. Réessayez, ou revenez en arrière pour créer un nouvel ordre.",
-  "buyQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer."
+  "buyQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
+  "recipientsFieldBankAccountIban": "Numéro de compte bancaire (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Les retraits apparaissent comme un virement à vous-même au nom de votre compte"
 }

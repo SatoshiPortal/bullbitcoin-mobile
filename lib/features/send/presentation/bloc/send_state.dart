@@ -184,7 +184,12 @@ abstract class SendState with _$SendState {
   const SendState._();
 
   List<String> get inputAmountCurrencyCodes {
-    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+    // With no price, an amount cannot be typed in fiat: offer none.
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      if (exchangeRate > 0) ...fiatCurrencyCodes,
+    ];
   }
 
   /// Whether we have a valid payment request
@@ -275,6 +280,10 @@ abstract class SendState with _$SendState {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(amount) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
+      } else if (!_isBitcoinUnit(inputAmountCurrencyCode)) {
+        // A fiat amount with no price has no sats value. Reading it as BTC
+        // would turn 0.01 typed in a USD field into 0.01 BTC.
+        amountSat = 0;
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         amountSat = int.tryParse(amount) ?? 0;
       } else {
@@ -347,10 +356,16 @@ abstract class SendState with _$SendState {
       } else {
         return FormatAmount.btc(inputAmountBtc);
       }
+    } else if (exchangeRate <= 0) {
+      // No price: no fiat equivalent rather than a misleading zero.
+      return '';
     } else {
       return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
   }
+
+  static bool _isBitcoinUnit(String code) =>
+      code == BitcoinUnit.btc.code || code == BitcoinUnit.sats.code;
 
   String formattedWalletBalance() {
     if (selectedWallet == null) return '0';
@@ -379,6 +394,7 @@ abstract class SendState with _$SendState {
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      if (exchangeRate <= 0) return '';
       return FormatAmount.fiat(
         ConvertAmount.satsToFiat(satsBalance, exchangeRate),
         fiatCurrencyCode,

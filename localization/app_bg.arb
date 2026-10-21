@@ -9958,7 +9958,7 @@
   "recipientsVirtualIbanCopied": "Копирано в клипборда",
   "recipientsVirtualIbanDone": "Готово",
   "recipientsVirtualIbanRecipientName": "Име на получателя",
-  "recipientsVirtualIbanIbanLabel": "IBAN номер на сметка",
+  "recipientsVirtualIbanIbanLabel": "Номер на виртуална IBAN сметка",
   "recipientsVirtualIbanCountry": "Държава на банковата сметка",
   "recipientsVirtualIbanBic": "BIC код",
   "fundExchangeMethodConfidentialSepa": "Поверителен SEPA",
@@ -9969,5 +9969,7 @@
   "recipientsVirtualIbanBankAddress": "Адрес на банката",
   "recipientsVirtualIbanBankAddressHelp": "Официалният адрес на банката, ако банката ви го изисква.",
   "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично.",
-  "copiedToClipboard": "Копирано в клипборда"
+  "copiedToClipboard": "Копирано в клипборда",
+  "recipientsFieldBankAccountIban": "Номер на банкова сметка (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Тегленията се показват като превод към вас самите с името на вашата сметка"
 }

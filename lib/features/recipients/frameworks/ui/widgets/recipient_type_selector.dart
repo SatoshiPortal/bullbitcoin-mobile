@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_text.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
@@ -48,6 +49,12 @@ class RecipientTypeSelector extends StatelessWidget {
                     recipientType: type,
                     style: context.font.headlineSmall,
                   ),
+                  subtitle: type == RecipientType.confidentialSepaEur
+                      ? Text(
+                          context.loc.recipientsTypeConfidentialSepaDescription,
+                          style: context.font.bodyMedium,
+                        )
+                      : null,
                   value: type,
                 ),
                 const Gap(16),

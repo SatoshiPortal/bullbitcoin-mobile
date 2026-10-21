@@ -49,7 +49,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     // orElse guards against the bloc closing (route popped) before completion,
     // which would otherwise throw an unhandled StateError on this future.
     await bloc.stream.firstWhere(
-      (state) => !state.isLoadingRecipients,
+      (state) =>
+          !state.isLoadingRecipients &&
+          !state.isLoadingConfidentialSepaAvailability,
       orElse: () => bloc.state,
     );
   }
@@ -128,25 +130,38 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             if (!state.canChooseSepaType) return const SizedBox.shrink();
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: BBSegmentedButton(
-                items: {
-                  RecipientType.sepaEur.name,
-                  RecipientType.confidentialSepaEur.name,
-                },
-                labels: {
-                  RecipientType.sepaEur.name: context.loc.recipientsTypeSepa,
-                  RecipientType.confidentialSepaEur.name:
-                      context.loc.recipientsTypeConfidentialSepa,
-                },
-                selected: state.sepaType.name,
-                onChanged: (value) {
-                  context.read<RecipientsBloc>().add(
-                    RecipientsEvent.sepaTypeChanged(
-                      RecipientType.values.byName(value),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  BBSegmentedButton(
+                    items: {
+                      RecipientType.sepaEur.name,
+                      RecipientType.confidentialSepaEur.name,
+                    },
+                    labels: {
+                      RecipientType.sepaEur.name:
+                          context.loc.recipientsTypeSepa,
+                      RecipientType.confidentialSepaEur.name:
+                          context.loc.recipientsTypeConfidentialSepa,
+                    },
+                    selected: state.sepaType.name,
+                    onChanged: (value) {
+                      context.read<RecipientsBloc>().add(
+                        RecipientsEvent.sepaTypeChanged(
+                          RecipientType.values.byName(value),
+                        ),
+                      );
+                      setState(() => _selectedRecipient = null);
+                    },
+                  ),
+                  if (state.sepaType == RecipientType.confidentialSepaEur) ...[
+                    const Gap(8),
+                    Text(
+                      context.loc.recipientsTypeConfidentialSepaDescription,
+                      style: context.font.bodyMedium,
                     ),
-                  );
-                  setState(() => _selectedRecipient = null);
-                },
+                  ],
+                ],
               ),
             );
           },

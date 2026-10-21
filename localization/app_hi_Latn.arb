@@ -12233,7 +12233,7 @@
   "recipientsVirtualIbanCopied": "Clipboard mein copy hua",
   "recipientsVirtualIbanDone": "Ho gaya",
   "recipientsVirtualIbanRecipientName": "Praaptakarta ka naam",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN account number",
   "recipientsVirtualIbanCountry": "Bank account desh",
   "recipientsVirtualIbanBic": "BIC code",
   "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
@@ -12244,5 +12244,7 @@
   "recipientsVirtualIbanBankAddress": "Bank ka pata",
   "recipientsVirtualIbanBankAddressHelp": "Bank ka official pata, agar aapka bank maange.",
   "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge.",
-  "copiedToClipboard": "Clipboard par copy kiya gaya"
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain"
 }
