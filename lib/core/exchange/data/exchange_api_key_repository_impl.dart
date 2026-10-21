@@ -7,15 +7,21 @@ import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:synchronized/synchronized.dart';
 
 /// Owns credential persistence and maps storage exceptions without logging their payload.
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   final KeyValueStorageDatasource<String> _secureStorage;
+  final _mainnetMutationLock = Lock();
+  final _testnetMutationLock = Lock();
 
   ExchangeApiKeyRepositoryImpl({required this._secureStorage});
 
   static String _storageKey(bool isTestnet) =>
       isTestnet ? 'exchange_api_key_testnet' : 'exchange_api_key';
+
+  Lock _mutationLock(bool isTestnet) =>
+      isTestnet ? _testnetMutationLock : _mainnetMutationLock;
 
   @override
   Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
@@ -48,7 +54,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
     ExchangeApiKey apiKey, {
     required bool isTestnet,
-  }) async {
+  }) => _mutationLock(isTestnet).synchronized(() async {
     try {
       final apiKeyModel = ExchangeApiKeyMapper.toModel(apiKey);
 
@@ -56,27 +62,33 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
         key: _storageKey(isTestnet),
         value: jsonEncode(apiKeyModel.toJson()),
       );
+      log.fine(
+        'Exchange credential stored: env=${isTestnet ? 'testnet' : 'mainnet'}',
+      );
       return const Ok(null);
     } on Exception catch (e, st) {
       log.warning(
-        'Failed to save the exchange API key',
+        'Exchange credential write failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
         error: e.runtimeType,
         trace: st,
       );
       return Err(ExchangeApiKeySaveFailure('store failed: ${e.runtimeType}'));
     }
-  }
+  });
 
   @override
   Future<Result<void, ExchangeApiKeyFailure>> deleteApiKey({
     required bool isTestnet,
-  }) async {
+  }) => _mutationLock(isTestnet).synchronized(() async {
     try {
       await _secureStorage.deleteValue(_storageKey(isTestnet));
+      log.fine(
+        'Exchange credential removed: env=${isTestnet ? 'testnet' : 'mainnet'}',
+      );
       return const Ok(null);
     } on Exception catch (e, st) {
       log.warning(
-        'Failed to delete the exchange API key',
+        'Exchange credential deletion failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
         error: e.runtimeType,
         trace: st,
       );
@@ -84,5 +96,5 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
         ExchangeApiKeyDeleteFailure('delete failed: ${e.runtimeType}'),
       );
     }
-  }
+  });
 }

@@ -10,15 +10,26 @@ class CompleteExchangeAuthenticationUsecase {
   final ExchangeAuthRepository _authRepository;
   final ExchangeApiKeyRepository _apiKeyRepository;
   final bool _isTestnet;
+  Future<Result<void, ExchangeFailure>>? _inFlight;
 
-  const CompleteExchangeAuthenticationUsecase({
+  CompleteExchangeAuthenticationUsecase({
     required this._authRepository,
     required this._apiKeyRepository,
     required this._isTestnet,
   });
 
   @useResult
-  Future<Result<void, ExchangeFailure>> execute() async {
+  Future<Result<void, ExchangeFailure>> execute() {
+    final running = _inFlight;
+    if (running != null) return running;
+    final pending = _complete().whenComplete(() {
+      _inFlight = null;
+    });
+    _inFlight = pending;
+    return pending;
+  }
+
+  Future<Result<void, ExchangeFailure>> _complete() async {
     final generated = await _authRepository.generateApiKey();
     return switch (generated) {
       Err(:final failure) => Err(failure),

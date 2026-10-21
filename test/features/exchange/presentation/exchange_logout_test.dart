@@ -100,6 +100,168 @@ void main() {
     });
   });
 
+  group('session changes during pending operations', () {
+    test(
+      'a late account response cannot sign the user back in after logout',
+      () async {
+        final response = Completer<Result<UserSummary, ExchangeFailure>>();
+        when(getAccount.execute).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.fetchUserSummary();
+        expect(await cubit.logout(), isNull);
+        response.complete(const Ok(_account));
+        await pending;
+        expect(cubit.state.userSummary, isNull);
+        expect(cubit.state.getUserSummaryFailure, isNull);
+      },
+    );
+
+    test(
+      'authentication finishing after logout does not refresh the account',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        final operation = _MockCompleteAuthentication();
+        when(operation.execute).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(operation);
+        expect(await cubit.logout(), isNull);
+        response.complete(const Ok(null));
+        await pending;
+        verifyNever(getAccount.execute);
+        expect(cubit.state.userSummary, isNull);
+      },
+    );
+
+    test(
+      'a superseded authentication completion does not refresh the account',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        final first = _MockCompleteAuthentication();
+        final second = _MockCompleteAuthentication();
+        when(first.execute).thenAnswer((_) => response.future);
+        when(second.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(first);
+        await cubit.completeAuthentication(second);
+        response.complete(const Ok(null));
+        await pending;
+        verify(getAccount.execute).called(1);
+      },
+    );
+
+    test(
+      'an older account response cannot replace the newly authenticated account',
+      () async {
+        final response = Completer<Result<UserSummary, ExchangeFailure>>();
+        var calls = 0;
+        final newerAccount = _account.copyWith(userNumber: 2);
+        when(getAccount.execute).thenAnswer(
+          (_) =>
+              ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
+        );
+        final operation = _MockCompleteAuthentication();
+        when(operation.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.fetchUserSummary();
+        await cubit.completeAuthentication(operation);
+        response.complete(const Ok(_account));
+        await pending;
+        expect(cubit.state.userSummary, newerAccount);
+      },
+    );
+  });
+
+  group('account actions finishing after a session change', () {
+    test('an older deletion request cannot log out the new session', () async {
+      final response = Completer<Result<void, ExchangeFailure>>();
+      when(requestDeletion.execute).thenAnswer((_) => response.future);
+      when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+      final operation = _MockCompleteAuthentication();
+      when(operation.execute).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      final pending = cubit.deleteAccount();
+      await cubit.logout();
+      await cubit.completeAuthentication(operation);
+      response.complete(const Ok(null));
+      await pending;
+      verify(clearSession.execute).called(1);
+      expect(cubit.state.userSummary, _account);
+    });
+
+    test(
+      'an old preference failure does not leak into the new session',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        when(
+          () => savePreferences.execute(dcaEnabled: false),
+        ).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final operation = _MockCompleteAuthentication();
+        when(operation.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.stopDca();
+        await cubit.logout();
+        final loadingReset = !cubit.state.isSaving;
+        await cubit.completeAuthentication(operation);
+        response.complete(const Err(ExchangePreferencesSaveFailure()));
+        await pending;
+        expect(loadingReset, isTrue);
+        expect(cubit.state.stopDcaFailure, isNull);
+        expect(cubit.state.userSummary, _account);
+      },
+    );
+  });
+
+  test('late announcements do not reappear after logout', () async {
+    final response = Completer<Result<List<Announcement>, ExchangeFailure>>();
+    when(announcements.execute).thenAnswer((_) => response.future);
+    when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+    final cubit = build();
+    addTearDown(cubit.close);
+    final pending = cubit.loadAnnouncements();
+    await cubit.logout();
+    final loadingReset = !cubit.state.loadingAnnouncements;
+    response.complete(
+      Ok([
+        Announcement(
+          title: 'old session',
+          description: 'synthetic',
+          updatedAt: DateTime(2026),
+        ),
+      ]),
+    );
+    await pending;
+    expect(cubit.state.announcements, isEmpty);
+    expect(loadingReset, isTrue);
+  });
+
+  test(
+    'the latest account refresh wins when responses arrive out of order',
+    () async {
+      final response = Completer<Result<UserSummary, ExchangeFailure>>();
+      var calls = 0;
+      final newerAccount = _account.copyWith(userNumber: 2);
+      when(getAccount.execute).thenAnswer(
+        (_) => ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
+      );
+      final cubit = build();
+      addTearDown(cubit.close);
+      final pending = cubit.fetchUserSummary();
+      await cubit.fetchUserSummary();
+      response.complete(const Ok(_account));
+      await pending;
+      expect(cubit.state.userSummary, newerAccount);
+    },
+  );
+
   group('logout', () {
     test('a cleared session signs the user out', () async {
       when(clearSession.execute).thenAnswer((_) async => const Ok(null));

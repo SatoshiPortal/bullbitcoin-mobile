@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -209,6 +210,30 @@ void main() {
       },
     );
   }
+
+  test(
+    'concurrent completion requests generate and store one credential',
+    () async {
+      final response = Completer<Object>();
+      var calls = 0;
+      final keys = _Keys();
+      final usecase = CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(() {
+          calls++;
+          return response.future;
+        }),
+        apiKeyRepository: keys,
+        isTestnet: true,
+      );
+      final first = usecase.execute();
+      final second = usecase.execute();
+      response.complete(fields);
+      expect(await first, isA<Ok<void, ExchangeFailure>>());
+      expect(await second, isA<Ok<void, ExchangeFailure>>());
+      expect(calls, 1);
+      expect(keys.writes, 1);
+    },
+  );
 
   test('a failed authentication attempt can be explicitly retried', () async {
     var calls = 0;
