@@ -175,7 +175,7 @@ class CurrencyBottomSheet extends StatelessWidget {
               const Gap(16 * 3),
               const Spacer(),
               Text(
-                'Currency',
+                context.loc.settingsCurrencyTitle,
                 style: context.font.headlineMedium?.copyWith(
                   color: context.appColors.onSurface,
                 ),
