@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -29,6 +30,8 @@ class GetExchangeUserSummaryUsecase {
     final SettingsEntity settings;
     try {
       settings = await _settingsRepository.fetch();
+    } on Error {
+      rethrow;
     } catch (e) {
       throw GetExchangeUserSummaryException(
         'settings fetch failed: ${e.runtimeType}',
@@ -40,6 +43,14 @@ class GetExchangeUserSummaryUsecase {
 
     return switch (await repo.getUserSummary()) {
       Ok(:final value) => value,
+      Err(failure: final ExchangeUserNotAuthenticatedFailure failure) =>
+        throw GetExchangeUserSummaryCredentialException(
+          failure.runtimeType.toString(),
+        ),
+      Err(failure: final ExchangeUserCredentialUnavailableFailure failure) =>
+        throw GetExchangeUserSummaryCredentialException(
+          failure.runtimeType.toString(),
+        ),
       // The raw reason was already logged at the repository boundary.
       Err(:final failure) => throw GetExchangeUserSummaryException(
         failure.logMessage ?? failure.runtimeType.toString(),
@@ -50,4 +61,10 @@ class GetExchangeUserSummaryUsecase {
 
 class GetExchangeUserSummaryException extends BullException {
   GetExchangeUserSummaryException(super.message);
+}
+
+/// Preserves typed credential refusals within the legacy account contract.
+final class GetExchangeUserSummaryCredentialException
+    extends GetExchangeUserSummaryException {
+  GetExchangeUserSummaryCredentialException(super.message);
 }

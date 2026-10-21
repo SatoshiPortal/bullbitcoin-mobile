@@ -125,7 +125,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'profile',
-          isA<ExchangeUserSummaryUnavailableFailure>(),
+          isA<ExchangeUserCredentialUnavailableFailure>(),
         ),
       );
       expect(
@@ -133,7 +133,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'announcements',
-          isA<ExchangeUserAnnouncementsUnavailableFailure>(),
+          isA<ExchangeUserCredentialUnavailableFailure>(),
         ),
       );
       expect(

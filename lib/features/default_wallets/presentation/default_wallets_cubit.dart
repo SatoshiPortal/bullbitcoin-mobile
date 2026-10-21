@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
@@ -43,12 +44,18 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
           liquidAddressInput: wallets.liquidAddress,
         ),
       );
+    } on Error {
+      rethrow;
     } catch (e) {
-      log.severe(
-        message: 'Failed to load default wallets',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is ApiKeyException || e is ExchangeCredentialUnavailableException) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+      } else {
+        log.severe(
+          message: 'Failed to load default wallets',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
       emit(
         state.copyWith(
           isLoading: false,
@@ -135,12 +142,18 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       if (!isClosed) {
         emit(state.copyWith(saveSuccess: false));
       }
+    } on Error {
+      rethrow;
     } catch (e) {
-      log.severe(
-        message: 'Failed to save wallet',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is ApiKeyException || e is ExchangeCredentialUnavailableException) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+      } else {
+        log.severe(
+          message: 'Failed to save wallet',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
       emit(
         state.copyWith(
           isSaving: false,
@@ -154,7 +167,8 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   Future<void> deleteWallet(WalletAddressType type) async {
     final existingWallet = state.defaultWallets?.getWallet(type);
 
-    if (existingWallet?.recipientId == null) {
+    final recipientId = existingWallet?.recipientId;
+    if (existingWallet == null || recipientId == null) {
       return;
     }
 
@@ -162,7 +176,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
 
     try {
       await _deleteDefaultWalletUsecase.execute(
-        recipientId: existingWallet!.recipientId!,
+        recipientId: recipientId,
         walletType: type,
         address: existingWallet.address,
       );
@@ -183,12 +197,18 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       if (!isClosed) {
         emit(state.copyWith(saveSuccess: false));
       }
+    } on Error {
+      rethrow;
     } catch (e) {
-      log.severe(
-        message: 'Failed to delete wallet',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is ApiKeyException || e is ExchangeCredentialUnavailableException) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+      } else {
+        log.severe(
+          message: 'Failed to delete wallet',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
       emit(
         state.copyWith(
           isSaving: false,

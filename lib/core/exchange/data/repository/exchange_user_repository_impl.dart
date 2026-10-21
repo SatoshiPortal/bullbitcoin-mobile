@@ -140,7 +140,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     if (refusal != null) {
       return refusal.isUnauthenticated
           ? const ExchangeUserNotAuthenticatedFailure()
-          : onFailure('Exchange credential unavailable');
+          : const ExchangeUserCredentialUnavailableFailure();
     }
     if (e is DioException && _isUnreachable(e.type)) {
       log.warning(
