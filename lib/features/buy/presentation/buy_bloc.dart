@@ -388,10 +388,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       if (!isCurrent()) return;
       emit(state.copyWith(buyOrder: order));
-      // A confirmed or paid order has no quote left to keep fresh. Otherwise
-      // a lapsed lock coming back is a retry, not a new quote: the scheduler
+      // A confirmed, paid or expired order has no quote left to keep fresh:
+      // the accelerate screen reads orders through a bloc that never saw the
+      // confirmation, so the order's own status has to say so. Otherwise a
+      // lapsed lock coming back is a retry, not a new quote: the scheduler
       // paces it rather than asking again at the speed of the response.
-      if (_isQuoteConfirmed || order.isPayinCompleted) {
+      if (_isQuoteConfirmed || order.isPayinCompleted || order.isExpired()) {
         _quoteScheduler.cancel();
       } else {
         _quoteScheduler.track(order.confirmationDeadline);

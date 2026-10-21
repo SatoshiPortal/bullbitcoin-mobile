@@ -295,6 +295,22 @@ void main() {
       });
     });
 
+    test('an expired order read without a confirmation is not refreshed', () {
+      // The accelerate route builds a fresh bloc and only reads the order.
+      when(refreshCall).thenAnswer(
+        (_) async => Ok(order.copyWith(orderStatus: OrderStatus.expired)),
+      );
+      return inFakeTime((time) {
+        bloc.seed(const BuyState());
+        bloc.add(const BuyEvent.refreshOrder(orderId: 'quote-order'));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
     test('abandoning the order cancels the pending retry', () {
       return inFakeTime((time) {
         bloc.add(const BuyEvent.refreshOrder());
