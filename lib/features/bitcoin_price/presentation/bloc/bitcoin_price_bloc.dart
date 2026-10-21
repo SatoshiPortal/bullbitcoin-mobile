@@ -43,6 +43,11 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
   late final StreamSubscription<String> _currencyChangeSubscription;
 
+  /// The currency whose price is being fetched by a currency change, so a
+  /// burst of the same change waits for that one request instead of sending
+  /// its own.
+  String? _currencyInFlight;
+
   @override
   Future<void> close() async {
     await _currencyChangeSubscription.cancel();
@@ -185,7 +190,15 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
+    // A change to the currency already shown, or already being fetched, is no
+    // change: screens send their flow's currency when they open, and a screen
+    // that rebuilds sends it again. A refresh goes through BitcoinPriceFetched.
+    final isLoaded =
+        event.currencyCode == state.currency && state.hasValidFiatRate;
+    if (isLoaded || event.currencyCode == _currencyInFlight) return;
+
     log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
+    _currencyInFlight = event.currencyCode;
 
     try {
       emit(state.copyWith(loadingPrice: true));
@@ -231,6 +244,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           startupFailed: false,
         ),
       );
+    } finally {
+      if (_currencyInFlight == event.currencyCode) _currencyInFlight = null;
     }
   }
 }
