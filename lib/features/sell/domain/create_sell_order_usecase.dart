@@ -62,8 +62,11 @@ class CreateSellOrderUsecase {
         'bip21Present=${order.bip21URI != null}',
       );
       return Ok(order);
-    } on ApiKeyException catch (e) {
-      return Err(SellUnauthenticatedFailure(e.message));
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(SellUnexpectedFailure());
+    } on ApiKeyException {
+      return const Err(SellUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       return Err(
         SellBelowMinAmountFailure(

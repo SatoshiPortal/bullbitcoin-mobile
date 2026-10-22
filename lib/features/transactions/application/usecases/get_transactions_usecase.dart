@@ -50,7 +50,15 @@ class GetTransactionsUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      final orders = await orderRepository.getOrders();
+      final orderResult = await orderRepository.getOrders();
+      final orders = switch (orderResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          // The repository records persistent failure/recovery transitions.
+          log.info('Exchange enrichment unavailable: ${failure.runtimeType}');
+          return <Order>[];
+        }(),
+      };
       await _labelExchangeOrdersUsecase.execute(orders: orders);
 
       // Labels must exist before wallet transactions are hydrated.

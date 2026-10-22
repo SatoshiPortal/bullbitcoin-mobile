@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_request_params_model.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_response_model.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/institution_model.dart';
@@ -54,9 +55,8 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         );
       }
 
-      final element = (result['element'] as Map<String, dynamic>?) ?? {};
-      final ppExtraData =
-          (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
+      final element = _detailsMap(result['element']);
+      final ppExtraData = _detailsMap(result['ppExtraData']);
       final merged = {...element, ...ppExtraData}.map(
         (key, value) => MapEntry(key, value is num ? value.toString() : value),
       );
@@ -75,6 +75,23 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       // Genuinely unexpected escape — the raw reason is born here, so it is
       // logged here (Sentry) and the UI shows a generic message.
       log.severe(message: '$method failed', error: e, trace: st);
@@ -101,8 +118,14 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         );
       }
 
-      final elements = result['elements'] as List<dynamic>?;
-      final institutions = (elements ?? const [])
+      final elements = switch (result['elements']) {
+        null => const <dynamic>[],
+        final List<dynamic> values => values,
+        _ => throw const FundingResponseException(
+          'Institution elements are not a list',
+        ),
+      };
+      final institutions = elements
           .map((e) {
             try {
               return InstitutionModel.fromJson(
@@ -133,6 +156,23 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       log.warning('$method failed', error: e, trace: st);
       return Err(_mapException(e));
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       log.severe(message: '$method failed', error: e, trace: st);
       return Err(FundExchangeUnexpectedFailure(e.toString()));
     }
@@ -163,10 +203,35 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         _ => FundExchangeConsentRegistrationFailure(e.logMessage),
       });
     } catch (e, st) {
+      if (e is Error) Error.throwWithStackTrace(e, st);
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const FundExchangeNotAuthenticatedFailure()
+              : const FundExchangeUnexpectedFailure(
+                  'Exchange credential unavailable',
+                ),
+        );
+      }
       log.severe(message: '$method failed', error: e, trace: st);
       return Err(FundExchangeConsentRegistrationFailure(e.toString()));
     }
   }
+
+  static Map<String, dynamic> _detailsMap(Object? value) => switch (value) {
+    null => const {},
+    final Map<String, dynamic> values => values,
+    _ => throw const FundingResponseException(
+      'Funding details are not an object',
+    ),
+  };
 
   /// Performs one JSON-RPC call and returns its `result`, converting every
   /// transport- and protocol-level problem into a [FundingDatasourceException].

@@ -423,6 +423,20 @@ integration-test:
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
 
+# Physical-device credential probes use a separately installed debug APK.
+# The SDK driver connects through VM_SERVICE_URL without installing an app.
+.PHONY: exchange-credentials-device-build exchange-credentials-device-test
+EXCHANGE_DEVICE_LIVE ?= false
+exchange-credentials-device-build:
+	@fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi --flavor production \
+		--target integration_test/device/exchange_credentials_test.dart \
+		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false \
+		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
+
+exchange-credentials-device-test:
+	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }
+	@fvm dart run integration_test/device/driver.dart
+
 # Build & render the bull_ui design-system catalogue (Widgetbook) locally in the
 # browser. Dev-only tooling — never shipped in the app. Regenerates the
 # @UseCase directories, then runs the catalogue app on Chrome (hot-reload).

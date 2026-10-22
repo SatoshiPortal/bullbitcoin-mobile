@@ -30,13 +30,16 @@ class RefreshBuyOrderUsecase {
           : _mainnetExchangeOrderRepository;
       final order = await repo.refreshBuyOrder(orderId);
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(BuyUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Cannot refresh the buy order: not authenticated',
-        error: e,
+      log.warning(
+        'Cannot refresh the buy order: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(BuyUnauthenticatedFailure(e.message));
+      return const Err(BuyUnauthenticatedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to refresh the buy order',

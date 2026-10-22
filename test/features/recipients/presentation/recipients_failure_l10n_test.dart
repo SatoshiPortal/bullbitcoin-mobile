@@ -22,6 +22,7 @@ const _rawReason =
 /// check is that each arm resolves to a real, non-empty `.arb` value and that
 /// none of them echoes the reason.
 final _everyFailure = <RecipientsFailure>[
+  const RecipientsNotAuthenticatedFailure(),
   const RecipientsLoadFailure(_rawReason),
   const RecipientsSaveFailure(_rawReason),
   const RecipientsSinpeLookupFailure(_rawReason),

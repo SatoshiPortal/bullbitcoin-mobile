@@ -22,6 +22,17 @@ final class ExchangeAccountUnavailableFailure extends ExchangeFailure {
   const ExchangeAccountUnavailableFailure([super.logMessage]);
 }
 
+/// The web request was rejected before a credential was generated.
+/// Leave the WebView open so authentication can continue.
+final class ExchangeAuthenticationDeferredFailure extends ExchangeFailure {
+  const ExchangeAuthenticationDeferredFailure();
+}
+
+/// The web authentication response could not provide a usable credential.
+final class ExchangeAuthenticationFailure extends ExchangeFailure {
+  const ExchangeAuthenticationFailure([super.logMessage]);
+}
+
 /// The API key returned by the auth flow could not be stored, so the session
 /// would not survive. The user has to sign in again.
 final class ExchangeApiKeyStorageFailure extends ExchangeFailure {

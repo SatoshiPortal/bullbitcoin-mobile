@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 /// carry both server internals and the user's own banking details.
 extension RecipientsFailureL10n on RecipientsFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    RecipientsNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
     RecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
     RecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
     RecipientsSinpeLookupFailure() =>

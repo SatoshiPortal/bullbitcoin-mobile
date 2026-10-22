@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -10,100 +13,70 @@ import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
-  final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
   final bool _isTestnet;
 
   ExchangeOrderRepositoryImpl({
     required this._bullbitcoinApiDatasource,
-    required this._bullbitcoinApiKeyDatasource,
     required this._isTestnet,
   });
 
   @override
   Future<Order> getOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.getOrderSummary(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
       return orderModel.toEntity(isTestnet: _isTestnet);
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get order: $e');
     }
   }
 
   @override
-  Future<Order?> getOrderByTxId(String txId) async {
+  Future<Result<Order?, ExchangeOrderFailure>> getOrderByTxId(
+    String txId,
+  ) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        return null;
-      }
-
-      final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(
-        apiKey: apiKeyModel.key,
-      );
+      final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries();
 
       // A wallet transaction with no matching order is the normal case, not an
       // error, so it must not be logged as one.
       final orderModel = orderModels.firstWhereOrNull(
         (model) => model.matchesTxId(txId),
       );
-      if (orderModel == null) return null;
+      if (orderModel == null) return const Ok(null);
 
-      return orderModel.toEntity(isTestnet: _isTestnet);
-    } catch (e) {
-      log.severe(
-        message: 'Error fetching order by txId',
-        error: e,
-        trace: StackTrace.current,
-      );
-      return null;
+      return Ok(orderModel.toEntity(isTestnet: _isTestnet));
+    } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Ok(null)
+            : const Err(ExchangeOrderCredentialFailure());
+      }
+      log.warning('Exchange order lookup failed: ${e.runtimeType}');
+      return const Err(ExchangeOrderLoadFailure());
     }
   }
 
   @override
-  Future<List<Order>> getOrders({
+  Future<Result<List<Order>, ExchangeOrderFailure>> getOrders({
     int? limit,
     int? offset,
     OrderType? type,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
+      final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries();
 
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        return [];
-      }
-
-      final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(
-        apiKey: apiKeyModel.key,
-      );
-
-      // Map each order on its own. The catch-all below returns an empty list, so
-      // a single order the app can't map would otherwise cost the user all of
-      // them.
+      // Preserve the remaining history when one order cannot be mapped.
       List<Order> orders = orderModels
           .map((model) {
             try {
@@ -158,14 +131,22 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         }
       }
 
-      return orders;
-    } catch (e) {
-      log.severe(
-        message: 'Error fetching orders',
-        error: e,
-        trace: StackTrace.current,
-      );
-      return [];
+      return Ok(orders);
+    } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Ok([])
+            : const Err(ExchangeOrderCredentialFailure());
+      }
+      log.warning('Exchange order history failed: ${e.runtimeType}');
+      return const Err(ExchangeOrderLoadFailure());
     }
   }
 
@@ -179,20 +160,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     String? payjoinBip21,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyNotFoundException();
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyInactiveException();
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.createBuyOrder(
-        apiKey: apiKeyModel.key,
         fiatCurrency: currency,
         orderAmount: orderAmount,
         network: network,
@@ -210,7 +178,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to place buy order: $e');
     }
   }
@@ -223,19 +192,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     bool usePayjoin = false,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key not found or inactive. '
-          'Please login to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
-        apiKey: apiKeyModel.key,
         fiatCurrency: currency,
         orderAmount: orderAmount,
         network: network,
@@ -251,7 +208,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to place sell order: $e');
     }
   }
@@ -265,20 +223,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     bool usePayjoin = false,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyNotFoundException();
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyInactiveException();
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.createPayOrder(
-        apiKey: apiKeyModel.key,
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
@@ -297,6 +242,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on ApiKeyException {
       rethrow;
     } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       // Keep the original trace: see refreshPayOrder.
       Error.throwWithStackTrace(Exception('Failed to place pay order: $e'), st);
     }
@@ -305,24 +251,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> confirmBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.confirmOrder(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -335,7 +264,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to confirm buy order: $e');
     }
   }
@@ -343,20 +273,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyNotFoundException();
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyInactiveException();
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.confirmOrder(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -370,6 +287,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on ApiKeyException {
       rethrow;
     } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       // Keep the original trace: the use-case logs the trace it catches, so
       // wrapping without it would point every report at this line instead of
       // at the call that actually failed.
@@ -383,24 +301,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> refreshBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -413,7 +314,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to refresh order: $e');
     }
   }
@@ -421,24 +323,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<SellOrder> refreshSellOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -453,7 +338,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to refresh sell order: $e');
     }
   }
@@ -461,20 +347,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<FiatPaymentOrder> refreshPayOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyNotFoundException();
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyInactiveException();
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -488,6 +361,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on ApiKeyException {
       rethrow;
     } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       // Keep the original trace: the use-case logs the trace it catches, so
       // wrapping without it would point every report at this line instead of
       // at the call that actually failed.
@@ -501,24 +375,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> accelerateBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.dequeueAndPay(
-        apiKey: apiKeyModel.key,
         orderId: orderId,
       );
 
@@ -527,7 +384,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to dequeue and pay order: $e');
     }
   }
@@ -541,20 +399,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     String? securityAnswer,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyNotFoundException();
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyInactiveException();
-      }
-
       final orderModel = await _bullbitcoinApiDatasource.createWithdrawalOrder(
-        apiKey: apiKeyModel.key,
         fiatAmount: fiatAmount,
         recipientId: recipientId,
         paymentProcessor: paymentProcessor,
@@ -573,7 +418,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
-    } catch (_, st) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       // Keep the original trace: see confirmWithdrawOrder. The error itself
       // is dropped because the request carries the Interac security answer.
       Error.throwWithStackTrace(
@@ -592,33 +438,17 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String address,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
       final dcaModel = await _bullbitcoinApiDatasource.createDca(
         amount: amount,
         currency: currency,
         frequency: frequency,
         network: network,
         address: address,
-        apiKey: apiKeyModel.key,
       );
 
       return dcaModel.toEntity();
-    } catch (e) {
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to create DCA: $e');
     }
   }
@@ -626,26 +456,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<Map<String, dynamic>> getBuyLimits() async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
-      return await _bullbitcoinApiDatasource.getBuyLimits(
-        apiKey: apiKeyModel.key,
-      );
-    } catch (e) {
+      return await _bullbitcoinApiDatasource.getBuyLimits();
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get buy limits: $e');
     }
   }
@@ -653,26 +466,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<Map<String, dynamic>> getSellLimits() async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
-        isTestnet: _isTestnet,
-      );
-
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
-      }
-
-      return await _bullbitcoinApiDatasource.getSellLimits(
-        apiKey: apiKeyModel.key,
-      );
-    } catch (e) {
+      return await _bullbitcoinApiDatasource.getSellLimits();
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get sell limits: $e');
     }
   }

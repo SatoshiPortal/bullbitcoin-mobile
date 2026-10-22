@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/funding_datasource_exception.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -39,78 +40,120 @@ sealed class GetFundingDetailsResponseModel
   const GetFundingDetailsResponseModel._();
 
   factory GetFundingDetailsResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$GetFundingDetailsResponseModelFromJson(json);
+      _$GetFundingDetailsResponseModelFromJson(_validatedJson(json));
+
+  static Map<String, dynamic> _validatedJson(Map<String, dynamic> json) {
+    // Validate known wire fields before generated casts; ignore extra metadata.
+    for (final name in const [
+      'code',
+      'userNbr',
+      'BENEFICIARY NAME',
+      'BENEFICIARY EMAIL',
+      'BANK ACCOUNT DETAILS',
+      'IBAN',
+      'SWIFT',
+      'INSTITUTION NUMBER',
+      'TRANSIT NUMBER',
+      'ACCOUNT NUMBER',
+      'ROUTING NUMBER',
+      'BENEFICIARY ADDRESS',
+      'BANK ADDRESS',
+      'BANK NAME',
+      'BILLER NAME',
+      'BIC',
+      'BANK ACCOUNT COUNTRY',
+      'BANK COUNTRY',
+      'CLABE',
+      'CÉDULA JURÍDICA',
+      'CVU',
+      'numTelefono',
+      'paymentLink',
+    ]) {
+      final value = json[name];
+      if (value != null && value is! String) {
+        throw const FundingResponseException('Invalid funding detail type');
+      }
+    }
+    return json;
+  }
+
+  static String _required(String? value) {
+    if (value == null) {
+      throw const FundingResponseException('Missing required funding detail');
+    }
+    return value;
+  }
 
   FundingDetails toDomain({required FundingMethod method}) {
     return switch (method) {
       EmailETransfer() => ETransferFundingDetails(
-        secretQuestion: code!,
-        beneficiaryName: beneficiaryName!,
-        beneficiaryEmail: beneficiaryEmail!,
+        secretQuestion: _required(code),
+        beneficiaryName: _required(beneficiaryName),
+        beneficiaryEmail: _required(beneficiaryEmail),
       ),
       BankTransferWire() => WireFundingDetails(
-        code: code!,
-        beneficiaryName: beneficiaryName!,
-        bankAccountDetails: bankAccountDetails!,
-        iban: iban!,
-        swift: swift!,
-        institutionNumber: institutionNumber!,
-        transitNumber: transitNumber!,
-        accountNumber: accountNumber!,
-        routingNumber: routingNumber!,
-        beneficiaryAddress: beneficiaryAddress!,
-        bankAddress: bankAddress!,
-        bankName: bankName!,
+        code: _required(code),
+        beneficiaryName: _required(beneficiaryName),
+        bankAccountDetails: _required(bankAccountDetails),
+        iban: _required(iban),
+        swift: _required(swift),
+        institutionNumber: _required(institutionNumber),
+        transitNumber: _required(transitNumber),
+        accountNumber: _required(accountNumber),
+        routingNumber: _required(routingNumber),
+        beneficiaryAddress: _required(beneficiaryAddress),
+        bankAddress: _required(bankAddress),
+        bankName: _required(bankName),
       ),
       OnlineBillPayment() => BillPaymentFundingDetails(
-        code: code!,
-        billerName: billerName!,
+        code: _required(code),
+        billerName: _required(billerName),
       ),
-      CanadaPost() => CanadaPostFundingDetails(code: code!),
+      CanadaPost() => CanadaPostFundingDetails(code: _required(code)),
       InstantSepa() => InstantSepaFundingDetails(
-        code: code!,
-        iban: iban!,
-        bic: bic!,
-        beneficiaryName: beneficiaryName!,
-        beneficiaryAddress: beneficiaryAddress!,
-        bankAccountCountry: bankAccountCountry!,
+        code: _required(code),
+        iban: _required(iban),
+        bic: _required(bic),
+        beneficiaryName: _required(beneficiaryName),
+        beneficiaryAddress: _required(beneficiaryAddress),
+        bankAccountCountry: _required(bankAccountCountry),
       ),
       RegularSepa() => RegularSepaFundingDetails(
-        code: code!,
-        iban: iban!,
-        bic: bic!,
-        beneficiaryName: beneficiaryName!,
-        beneficiaryAddress: beneficiaryAddress!,
-        bankCountry: bankCountry!,
+        code: _required(code),
+        iban: _required(iban),
+        bic: _required(bic),
+        beneficiaryName: _required(beneficiaryName),
+        beneficiaryAddress: _required(beneficiaryAddress),
+        bankCountry: _required(bankCountry),
       ),
       SpeiTransfer() => SpeiFundingDetails(
-        code: code!,
-        bankName: bankName!,
-        beneficiaryName: beneficiaryName!,
-        clabe: clabe!,
+        code: _required(code),
+        bankName: _required(bankName),
+        beneficiaryName: _required(beneficiaryName),
+        clabe: _required(clabe),
       ),
       Sinpe() => SinpeFundingDetails(
-        number: numTelefono!,
-        beneficiaryName: beneficiaryName!,
+        number: _required(numTelefono),
+        beneficiaryName: _required(beneficiaryName),
       ),
       CrIbanCrc() => CrIbanCrcFundingDetails(
-        iban: iban!,
-        code: code!,
-        beneficiaryName: beneficiaryName!,
-        cedulaJuridica: cedulaJuridica!,
+        iban: _required(iban),
+        code: _required(code),
+        beneficiaryName: _required(beneficiaryName),
+        cedulaJuridica: _required(cedulaJuridica),
       ),
       CrIbanUsd() => CrIbanUsdFundingDetails(
-        iban: iban!,
-        code: code!,
-        beneficiaryName: beneficiaryName!,
-        cedulaJuridica: cedulaJuridica!,
+        iban: _required(iban),
+        code: _required(code),
+        beneficiaryName: _required(beneficiaryName),
+        cedulaJuridica: _required(cedulaJuridica),
       ),
       ArsBankTransfer() => ArsBankTransferFundingDetails(
-        beneficiaryName: beneficiaryName!,
-        cvu: cvu!,
+        beneficiaryName: _required(beneficiaryName),
+        cvu: _required(cvu),
       ),
       CopBankTransfer() => CopBankTransferFundingDetails(
-        paymentLink: paymentLink!,
+        paymentLink: _required(paymentLink),
       ),
     };
   }

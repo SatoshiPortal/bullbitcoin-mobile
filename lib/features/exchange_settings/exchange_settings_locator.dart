@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
@@ -34,8 +33,6 @@ class ExchangeSettingsLocator {
         bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'mainnetExchangeApiDatasource',
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: false,
       ),
       instanceName: 'mainnet',
     );
@@ -45,8 +42,6 @@ class ExchangeSettingsLocator {
         bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'testnetExchangeApiDatasource',
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: true,
       ),
       instanceName: 'testnet',
     );
@@ -56,8 +51,6 @@ class ExchangeSettingsLocator {
         bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'mainnetExchangeApiDatasource',
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: false,
       ),
       instanceName: 'mainnet',
     );
@@ -67,8 +60,6 @@ class ExchangeSettingsLocator {
         bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'testnetExchangeApiDatasource',
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
-        isTestnet: true,
       ),
       instanceName: 'testnet',
     );

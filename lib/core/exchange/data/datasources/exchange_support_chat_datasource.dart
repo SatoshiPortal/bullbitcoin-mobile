@@ -13,7 +13,6 @@ class ExchangeSupportChatDatasource {
     : _http = bullbitcoinApiHttpClient;
 
   Future<List<SupportChatMessageModel>> listMessages({
-    required String apiKey,
     required String userId,
     int? page,
     int? pageSize,
@@ -32,7 +31,6 @@ class ExchangeSupportChatDatasource {
           'method': 'listMessages',
           'params': params,
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode != 200) {
@@ -61,7 +59,6 @@ class ExchangeSupportChatDatasource {
   }
 
   Future<void> sendMessage({
-    required String apiKey,
     required String text,
     List<SupportChatMessageAttachmentModel>? attachments,
   }) async {
@@ -89,11 +86,7 @@ class ExchangeSupportChatDatasource {
         'params': {'element': params},
       };
 
-      final resp = await _http.post(
-        _messagesPath,
-        data: requestData,
-        options: Options(headers: {'X-API-Key': apiKey}),
-      );
+      final resp = await _http.post(_messagesPath, data: requestData);
 
       if (resp.statusCode != 200) {
         throw Exception('Failed to send message');
@@ -109,7 +102,6 @@ class ExchangeSupportChatDatasource {
   }
 
   Future<SupportChatMessageAttachmentModel> getMessageAttachment({
-    required String apiKey,
     required String attachmentId,
   }) async {
     try {
@@ -120,11 +112,7 @@ class ExchangeSupportChatDatasource {
         'params': {'attachmentId': attachmentId},
       };
 
-      final resp = await _http.post(
-        _messagesPath,
-        data: requestData,
-        options: Options(headers: {'X-API-Key': apiKey}),
-      );
+      final resp = await _http.post(_messagesPath, data: requestData);
 
       if (resp.statusCode != 200) {
         throw Exception('Failed to get message attachment');

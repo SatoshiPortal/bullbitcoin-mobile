@@ -7,6 +7,9 @@ part 'dca_model.g.dart';
 
 @freezed
 sealed class DcaModel with _$DcaModel {
+  // Freezed forwards this annotation to the generated concrete class.
+  // ignore: invalid_annotation_target
+  @JsonSerializable(checked: true)
   const factory DcaModel({
     required String userId,
     required int userNbr,

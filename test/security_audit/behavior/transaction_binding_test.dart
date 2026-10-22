@@ -120,7 +120,9 @@ void main() {
     when(
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
-    when(() => orderRepository.getOrders()).thenAnswer((_) async => <Order>[]);
+    when(
+      () => orderRepository.getOrders(),
+    ).thenAnswer((_) async => const Ok(<Order>[]));
     when(
       () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
     ).thenAnswer((_) async {});
@@ -159,7 +161,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [tx]);
       when(() => orderRepository.getOrders()).thenAnswer(
-        (_) async => [
+        (_) async => Ok([
           Order.buy(
             orderId: 'order-1',
             orderType: OrderType.buy,
@@ -181,7 +183,7 @@ void main() {
             bitcoinTransactionId: 'shared-txid',
             isTestnet: false,
           ),
-        ],
+        ]),
       );
 
       final transactions = _transactionsOf(await usecase.execute());

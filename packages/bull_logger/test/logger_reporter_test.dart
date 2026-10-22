@@ -134,6 +134,30 @@ void main() {
     },
   );
 
+  test(
+    'recoverable diagnostics persist safe cause types without reporting',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'logger-recoverable-',
+      );
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      final reporter = _Reporter();
+      log = Logger.replace(directory: directory, reporter: reporter);
+      log.warning('credential unavailable', error: FormatException);
+      log.info('credential retry', error: FormatException);
+      log.fine('credential recovered');
+      final rows = (await log.readLogs())
+          .map((line) => line.split('\t'))
+          .toList();
+      expect(rows.map((row) => row[1]), ['WARNING', 'FINE']);
+      expect(rows.first[3], contains('FormatException'));
+      expect(reporter.calls, isEmpty);
+    },
+  );
+
   test('reports errors immediately and awaits shout reporting', () async {
     final directory = await Directory.systemTemp.createTemp('logger-reporter-');
     addTearDown(() async {

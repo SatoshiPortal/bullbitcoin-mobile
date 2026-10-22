@@ -14,6 +14,12 @@ final class ExchangeUserNotAuthenticatedFailure extends ExchangeUserFailure {
   const ExchangeUserNotAuthenticatedFailure([super.logMessage]);
 }
 
+/// A stored credential is temporarily unreadable or invalid; retry, never logout.
+final class ExchangeUserCredentialUnavailableFailure
+    extends ExchangeUserFailure {
+  const ExchangeUserCredentialUnavailableFailure([super.logMessage]);
+}
+
 /// The account could not be read.
 final class ExchangeUserSummaryUnavailableFailure extends ExchangeUserFailure {
   const ExchangeUserSummaryUnavailableFailure([super.logMessage]);

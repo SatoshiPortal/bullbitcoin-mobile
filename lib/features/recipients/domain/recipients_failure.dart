@@ -4,6 +4,11 @@ sealed class RecipientsFailure extends Failure {
   const RecipientsFailure([super.logMessage]);
 }
 
+/// No usable exchange credential is available for this authenticated action.
+final class RecipientsNotAuthenticatedFailure extends RecipientsFailure {
+  const RecipientsNotAuthenticatedFailure();
+}
+
 /// The recipient list could not be loaded.
 final class RecipientsLoadFailure extends RecipientsFailure {
   const RecipientsLoadFailure([super.logMessage]);

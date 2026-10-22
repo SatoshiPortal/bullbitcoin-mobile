@@ -1,5 +1,6 @@
 import 'dart:convert' show jsonEncode;
 
+import 'package:bb_mobile/core/exchange/data/exchange_json_decoder.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
@@ -23,7 +24,7 @@ class BullbitcoinApiDatasource {
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
 
-  Future<void> registerResponsibilityConsent(String apiKey) async {
+  Future<void> registerResponsibilityConsent() async {
     try {
       final resp = await _http.post(
         _usersPath,
@@ -33,14 +34,13 @@ class BullbitcoinApiDatasource {
           'method': 'registerResponsibilityConsent',
           'params': {},
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Unable to register scam warning consent';
       }
 
-      final result = resp.data['result'] as Map<String, dynamic>?;
+      final result = _optionalObject(_body(resp)['result']);
       if (result == null || result['success'] != true) {
         throw 'Unexpected response from registerResponsibilityConsent';
       }
@@ -49,7 +49,7 @@ class BullbitcoinApiDatasource {
     }
   }
 
-  Future<UserSummaryModel?> getUserSummary(String apiKey) async {
+  Future<UserSummaryModel?> getUserSummary() async {
     try {
       final resp = await _http.post(
         _usersPath,
@@ -59,21 +59,22 @@ class BullbitcoinApiDatasource {
           'method': 'getUserSummary',
           'params': {},
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Unable to fetch user summary from Bull Bitcoin API';
       }
 
-      final result = resp.data['result'];
+      final body = _body(resp);
+      final result = body['result'];
       if (result == null) {
         return null;
       }
 
-      final userSummary = UserSummaryModel.fromJson(
-        result as Map<String, dynamic>,
-      );
+      if (result is! Map<String, dynamic>) {
+        throw const FormatException('Invalid exchange account result');
+      }
+      final userSummary = UserSummaryModel.fromJson(result);
 
       return userSummary;
     } catch (e) {
@@ -86,7 +87,6 @@ class BullbitcoinApiDatasource {
   /// URI when it is given. A payjoin buy therefore has to pass [bip21URI], and
   /// there is no endpoint to swap one for the other afterwards.
   Future<OrderModel> createBuyOrder({
-    required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
@@ -121,21 +121,17 @@ class BullbitcoinApiDatasource {
         'method': 'createOrderBuy',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (statusCode != 200) throw Exception('Failed to create order');
     if (error != null) {
       _throwOrderApiError(error, 'Failed to create buy order');
     }
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
-  Future<OrderModel> confirmOrder({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> confirmOrder({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -144,16 +140,12 @@ class BullbitcoinApiDatasource {
         'method': 'confirmOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) throw Exception('Failed to confirm order');
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
-  Future<OrderModel> getOrderSummary({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> getOrderSummary({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -162,17 +154,15 @@ class BullbitcoinApiDatasource {
         'method': 'getOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) throw Exception('Failed to get order summary');
     return OrderModel.fromJson(
-      (resp.data['result']['element'] ?? resp.data['result'])
-          as Map<String, dynamic>,
+      _jsonObject(_result(resp)['element'] ?? _result(resp)),
     );
   }
 
-  Future<List<OrderModel>> listOrderSummaries({required String apiKey}) async {
+  Future<List<OrderModel>> listOrderSummaries() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -184,19 +174,29 @@ class BullbitcoinApiDatasource {
           "paginator": {"page": 1, "pageSize": 50},
         },
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to list order summaries');
     }
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    final body = _body(resp);
+    if (body['error'] != null) {
+      throw const FormatException('Invalid exchange order history envelope');
+    }
+    final result = body['result'];
+    if (result is! Map<String, dynamic>) {
+      throw const FormatException('Invalid exchange order history result');
+    }
+    final elements = result['elements'];
     if (elements == null) return [];
+    if (elements is! List) {
+      throw const FormatException('Invalid exchange order history elements');
+    }
     return elements
         .map((e) {
           // Parse each order on its own so one malformed element doesn't cost
           // the user their whole order history. Nulls are filtered out below.
           try {
-            return OrderModel.fromJson(e as Map<String, dynamic>);
+            return OrderModel.fromJson(_jsonObject(e));
           } catch (err, stackTrace) {
             log.severe(
               message: 'Error parsing order element',
@@ -210,10 +210,7 @@ class BullbitcoinApiDatasource {
         .toList();
   }
 
-  Future<OrderModel> refreshOrder({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> refreshOrder({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -222,18 +219,14 @@ class BullbitcoinApiDatasource {
         'method': 'refreshOrderSummary',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to refresh order summary');
     }
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
-  Future<OrderModel> dequeueAndPay({
-    required String apiKey,
-    required String orderId,
-  }) async {
+  Future<OrderModel> dequeueAndPay({required String orderId}) async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -242,16 +235,14 @@ class BullbitcoinApiDatasource {
         'method': 'unbatchAndExpressOrder',
         'params': {'orderId': orderId},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to refresh order summary');
     }
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
   Future<void> saveUserPreference({
-    required String apiKey,
     required UserPreferencePayloadModel params,
   }) async {
     final resp = await _http.post(
@@ -262,7 +253,6 @@ class BullbitcoinApiDatasource {
         'method': 'saveUserPreferences',
         'params': {'userPreferences': params.toMap()},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -286,7 +276,6 @@ class BullbitcoinApiDatasource {
   /// [OrderBitcoinNetwork.bitcoin]. Omitted rather than sent as false so a
   /// backend without the flag is unaffected.
   Future<OrderModel> createSellOrder({
-    required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
@@ -312,21 +301,19 @@ class BullbitcoinApiDatasource {
         'method': 'sellToBalance',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (statusCode != 200) throw Exception('Failed to create sell order');
     if (error != null) {
       _throwOrderApiError(error, 'Failed to create sell order');
     }
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
   /// See [createSellOrder] for [usePayjoin]; a payment is a sell to a recipient
   /// and the flag behaves identically.
   Future<OrderModel> createPayOrder({
-    required String apiKey,
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -356,13 +343,9 @@ class BullbitcoinApiDatasource {
       'params': params,
     };
 
-    final resp = await _http.post(
-      _ordersPath,
-      data: requestData,
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
+    final resp = await _http.post(_ordersPath, data: requestData);
     final statusCode = resp.statusCode;
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (statusCode != 200) {
       throw Exception('Failed to create sell to recipient order');
     }
@@ -370,11 +353,10 @@ class BullbitcoinApiDatasource {
       _throwOrderApiError(error, 'Failed to create sell to recipient order');
     }
 
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
   Future<OrderModel> createWithdrawalOrder({
-    required String apiKey,
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -401,15 +383,14 @@ class BullbitcoinApiDatasource {
         'method': 'createWithdrawalOrder',
         'params': params,
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');
     if (error != null) {
       _throwOrderApiError(error, 'Failed to create withdrawal order');
     }
-    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return OrderModel.fromJson(_result(resp));
   }
 
   Future<DcaModel> createDca({
@@ -418,7 +399,6 @@ class BullbitcoinApiDatasource {
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
     required String address,
-    required String apiKey,
   }) async {
     final data = {
       'jsonrpc': '2.0',
@@ -443,25 +423,19 @@ class BullbitcoinApiDatasource {
         },
       },
     };
-    final resp = await _http.post(
-      _orderTriggerPath,
-      data: data,
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
+    final resp = await _http.post(_orderTriggerPath, data: data);
     if (resp.statusCode != 200) {
       throw Exception('Failed to create DCA');
     }
-    if (resp.data['error'] != null) {
-      final error = resp.data['error'];
+    if (_body(resp)['error'] != null) {
+      final error = _body(resp)['error'];
       final message = error['message'];
       throw Exception('Failed to create DCA: $message');
     }
-    return DcaModel.fromJson(
-      resp.data['result']['element'] as Map<String, dynamic>,
-    );
+    return DcaModel.fromJson(_jsonObject(_result(resp)['element']));
   }
 
-  Future<Map<String, dynamic>> getBuyLimits({required String apiKey}) async {
+  Future<Map<String, dynamic>> getBuyLimits() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -470,22 +444,21 @@ class BullbitcoinApiDatasource {
         'method': 'getBuyLimits',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to get buy limits');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       throw Exception('Failed to get buy limits: $error');
     }
 
-    return resp.data['result'] as Map<String, dynamic>;
+    return _result(resp);
   }
 
-  Future<Map<String, dynamic>> getSellLimits({required String apiKey}) async {
+  Future<Map<String, dynamic>> getSellLimits() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -494,26 +467,24 @@ class BullbitcoinApiDatasource {
         'method': 'getSellLimits',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to get sell limits');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       throw Exception('Failed to get sell limits: $error');
     }
 
-    return resp.data['result'] as Map<String, dynamic>;
+    return _result(resp);
   }
 
   // ==================== Recipients API ====================
 
   /// List recipients with optional filters for default wallets
   Future<List<Map<String, dynamic>>> listMyRecipients({
-    required String apiKey,
     List<String>? recipientTypes,
     bool? isDefault,
   }) async {
@@ -533,26 +504,23 @@ class BullbitcoinApiDatasource {
         'method': 'listMyRecipients',
         'params': {'filters': filters},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to list recipients');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       throw Exception('Failed to list recipients: $error');
     }
 
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
-    return elements.cast<Map<String, dynamic>>();
+    final elements = _jsonElements(_result(resp)['elements']);
+    return elements.map(_jsonObject).toList();
   }
 
   /// Create a new recipient (default wallet)
   Future<Map<String, dynamic>> createMyRecipient({
-    required String apiKey,
     required String recipientType,
     required String address,
     required bool isOwner,
@@ -575,25 +543,23 @@ class BullbitcoinApiDatasource {
           },
         },
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to create recipient');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       final message = error['message'] ?? 'Unknown error';
       throw Exception('Failed to create recipient: $message');
     }
 
-    return resp.data['result']['element'] as Map<String, dynamic>;
+    return _jsonObject(_result(resp)['element']);
   }
 
   /// Update an existing recipient
   Future<Map<String, dynamic>> updateMyRecipient({
-    required String apiKey,
     required String recipientId,
     required String recipientType,
     String? address,
@@ -622,20 +588,19 @@ class BullbitcoinApiDatasource {
         'method': 'updateMyRecipient',
         'params': {'element': element},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to update recipient');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       final message = error['message'] ?? 'Unknown error';
       throw Exception('Failed to update recipient: $message');
     }
 
-    return resp.data['result']['element'] as Map<String, dynamic>;
+    return _jsonObject(_result(resp)['element']);
   }
 
   Map<String, dynamic> _buildRecipientDetails(
@@ -657,7 +622,7 @@ class BullbitcoinApiDatasource {
   // ==================== Order Stats API ====================
 
   /// Get order statistics for the user
-  Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
+  Future<Map<String, dynamic>> getOrderStats() async {
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -666,26 +631,24 @@ class BullbitcoinApiDatasource {
         'method': 'getOrderStats',
         'params': {},
       },
-      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to get order stats');
     }
 
-    final error = resp.data['error'];
+    final error = _body(resp)['error'];
     if (error != null) {
       throw Exception('Failed to get order stats: $error');
     }
 
-    return resp.data['result']['element'] as Map<String, dynamic>;
+    return _jsonObject(_result(resp)['element']);
   }
 
   // ==================== KYC Upload API ====================
 
   /// Upload a KYC document file using multipart form (same as BB-Exchange)
   Future<void> uploadKycDocument({
-    required String apiKey,
     required List<int> fileBytes,
     required String fileName,
     required String docType,
@@ -706,10 +669,7 @@ class BullbitcoinApiDatasource {
     final resp = await _http.post(
       '$_kycPath/upload',
       data: formData,
-      options: Options(
-        headers: {'X-API-Key': apiKey},
-        contentType: 'multipart/form-data',
-      ),
+      options: Options(contentType: 'multipart/form-data'),
     );
 
     if (resp.statusCode != 200) {
@@ -717,7 +677,7 @@ class BullbitcoinApiDatasource {
     }
 
     // Check if response data indicates an error condition
-    final responseData = resp.data as Map<String, dynamic>?;
+    final responseData = _optionalObject(resp.data);
     if (responseData != null) {
       // Check for various error indicators in the response
       if (responseData.containsKey('error') ||
@@ -733,9 +693,7 @@ class BullbitcoinApiDatasource {
 
   // ==================== Announcements API ====================
 
-  Future<List<Map<String, dynamic>>> listAnnouncements({
-    required String apiKey,
-  }) async {
+  Future<List<Map<String, dynamic>>> listAnnouncements() async {
     try {
       final resp = await _http.post(
         _messagesPath,
@@ -748,27 +706,44 @@ class BullbitcoinApiDatasource {
             'sortBy': {'id': 'updatedAt', 'sort': 'desc'},
           },
         },
-        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw Exception('Failed to list announcements');
       }
 
-      final error = resp.data['error'];
+      final error = _body(resp)['error'];
       if (error != null) {
         throw Exception('Failed to list announcements: $error');
       }
 
-      final result = resp.data['result'] as Map<String, dynamic>?;
+      final result = _optionalObject(_body(resp)['result']);
       if (result == null) {
         return [];
       }
-      final items = result['elements'] as List<dynamic>? ?? [];
-      return items.cast<Map<String, dynamic>>();
+      final items = _jsonElements(result['elements']);
+      return items.map(_jsonObject).toList();
     } catch (e) {
       rethrow;
     }
+  }
+
+  Map<String, dynamic> _body(Response<dynamic> response) =>
+      _jsonObject(response.data);
+
+  Map<String, dynamic> _result(Response<dynamic> response) =>
+      _jsonObject(_body(response)['result']);
+
+  Map<String, dynamic>? _optionalObject(Object? value) =>
+      value == null ? null : _jsonObject(value);
+
+  Map<String, dynamic> _jsonObject(Object? value) {
+    return decodeExchangeJson<Map<String, dynamic>>(value);
+  }
+
+  List<dynamic> _jsonElements(Object? value) {
+    if (value == null) return const [];
+    return decodeExchangeJson<List<dynamic>>(value);
   }
 }
 

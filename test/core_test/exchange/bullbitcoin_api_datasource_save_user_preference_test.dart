@@ -34,7 +34,6 @@ void main() {
   }
 
   Future<void> save() => datasource.saveUserPreference(
-    apiKey: 'key',
     params: UserPreferencePayloadModel(autoBuyEnabled: 'true'),
   );
 

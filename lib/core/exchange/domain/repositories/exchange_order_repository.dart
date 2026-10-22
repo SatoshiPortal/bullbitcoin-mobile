@@ -1,8 +1,11 @@
+import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
-abstract class ExchangeOrderRepository {
+abstract interface class ExchangeOrderRepository {
   /// [payjoinBip21] replaces [toAddress] on the wire when set: the exchange then
   /// pays through payjoin, extracting the payout address from the URI. The two
   /// are mutually exclusive and cannot be swapped after the order exists.
@@ -44,8 +47,14 @@ abstract class ExchangeOrderRepository {
   Future<FiatPaymentOrder> refreshPayOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
-  Future<Order?> getOrderByTxId(String txId);
-  Future<List<Order>> getOrders({int? limit, int? offset, OrderType? type});
+  @useResult
+  Future<Result<Order?, ExchangeOrderFailure>> getOrderByTxId(String txId);
+  @useResult
+  Future<Result<List<Order>, ExchangeOrderFailure>> getOrders({
+    int? limit,
+    int? offset,
+    OrderType? type,
+  });
   Future<Dca> createDca({
     required double amount,
     required FiatCurrency currency,

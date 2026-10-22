@@ -43,7 +43,6 @@ void main() {
     test('rejects a missing address and BIP21 URI', () async {
       await expectLater(
         datasource.createBuyOrder(
-          apiKey: 'key',
           fiatCurrency: FiatCurrency.cad,
           orderAmount: const FiatAmount(5),
           network: OrderBitcoinNetwork.bitcoin,
@@ -63,7 +62,6 @@ void main() {
     test('rejects an address and BIP21 URI together', () async {
       await expectLater(
         datasource.createBuyOrder(
-          apiKey: 'key',
           fiatCurrency: FiatCurrency.cad,
           orderAmount: const FiatAmount(5),
           network: OrderBitcoinNetwork.bitcoin,
@@ -84,7 +82,6 @@ void main() {
   });
 
   Future<OrderModel> createBuyOrder() => datasource.createBuyOrder(
-    apiKey: 'key',
     fiatCurrency: FiatCurrency.cad,
     orderAmount: const FiatAmount(5),
     network: OrderBitcoinNetwork.liquid,

@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +15,6 @@ import 'package:primitives/primitives.dart';
 
 class ExchangeCubit extends Cubit<ExchangeState> {
   final GetExchangeAccountUsecase _getExchangeAccountUsecase;
-  final StoreExchangeApiKeyUsecase _storeExchangeApiKeyUsecase;
   final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
   final ClearExchangeSessionUsecase _clearExchangeSessionUsecase;
   final GetExchangeAnnouncementsUsecase _getExchangeAnnouncementsUsecase;
@@ -24,10 +23,13 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final WatchExchangeNotificationsUsecase _watchExchangeNotificationsUsecase;
 
   StreamSubscription<NotificationMessage>? _notificationSubscription;
+  // Late results must belong to the current session and request.
+  Object _session = Object();
+  Object? _authenticationAttempt;
+  Object? _accountAttempt;
 
   ExchangeCubit({
     required this._getExchangeAccountUsecase,
-    required this._storeExchangeApiKeyUsecase,
     required this._saveExchangePreferencesUsecase,
     required this._clearExchangeSessionUsecase,
     required this._getExchangeAnnouncementsUsecase,
@@ -55,10 +57,18 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> fetchUserSummary() async {
+    if (isClosed) return;
+    final session = _session;
+    final attempt = Object();
+    _accountAttempt = attempt;
     emit(state.copyWith(getUserSummaryFailure: null));
 
     final result = await _getExchangeAccountUsecase.execute();
-    if (isClosed) return;
+    if (isClosed ||
+        !identical(_session, session) ||
+        !identical(_accountAttempt, attempt)) {
+      return;
+    }
 
     switch (result) {
       case Err(:final failure):
@@ -73,18 +83,23 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     unawaited(loadAnnouncements());
   }
 
-  Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
-    emit(state.copyWith(saveApiKeyFailure: null));
-
-    final result = await _storeExchangeApiKeyUsecase.execute(apiKeyData);
-    if (isClosed) return;
-
-    if (result case Err(:final failure)) {
-      emit(state.copyWith(saveApiKeyFailure: failure));
-      return;
-    }
-
+  /// The operation is scoped to its WebView and is never retained in state.
+  Future<ExchangeFailure?> completeAuthentication(
+    CompleteExchangeAuthenticationUsecase operation,
+  ) async {
+    if (isClosed) return null;
+    final attempt = Object();
+    _authenticationAttempt = attempt;
+    final result = await operation.execute(
+      isCurrent: () => !isClosed && identical(_authenticationAttempt, attempt),
+    );
+    if (isClosed || !identical(_authenticationAttempt, attempt)) return null;
+    _authenticationAttempt = null;
+    if (result case Err(:final failure)) return failure;
+    _session = Object();
+    emit(const ExchangeState());
     await fetchUserSummary();
+    return null;
   }
 
   void clearStopDcaFailure() {
@@ -92,6 +107,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> stopDca() async {
+    if (isClosed) return;
+    final session = _session;
     emit(state.copyWith(isSaving: true, stopDcaFailure: null));
 
     // The use-case reads a fresh summary and fills the rest of the
@@ -99,7 +116,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     final result = await _saveExchangePreferencesUsecase.execute(
       dcaEnabled: false,
     );
-    if (isClosed) return;
+    if (isClosed || !identical(_session, session)) return;
 
     if (result case Err(:final failure)) {
       // Surfaced, not swallowed: otherwise the tile silently keeps saying the
@@ -111,7 +128,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     // Refresh so the tile reflects whatever the server actually holds rather
     // than what we hoped it would hold.
     await fetchUserSummary();
-    if (isClosed) return;
+    if (isClosed || !identical(_session, session)) return;
 
     emit(state.copyWith(isSaving: false));
   }
@@ -124,6 +141,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   /// the user straight back in. On a shared device that is the difference
   /// between believing the session is gone and it still being live.
   Future<ExchangeFailure?> logout() async {
+    if (isClosed) return null;
+    _authenticationAttempt = null;
     emit(state.copyWith(logoutFailure: null));
     disconnectWebSocket();
 
@@ -138,17 +157,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       return failure;
     }
 
-    emit(
-      state.copyWith(
-        userSummary: null,
-        // Every failure belonged to the session that just ended. Leaving one
-        // behind would re-show its banner to whoever signs in next.
-        getUserSummaryFailure: null,
-        saveApiKeyFailure: null,
-        stopDcaFailure: null,
-        logoutFailure: null,
-      ),
-    );
+    _session = Object();
+    _authenticationAttempt = null;
+    emit(const ExchangeState());
     return null;
   }
 
@@ -161,7 +172,11 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   /// success confirmation in that case. The raw reason is logged at the
   /// boundary.
   Future<ExchangeFailure?> deleteAccount() async {
+    if (isClosed) return null;
+    final session = _session;
     final result = await _requestExchangeAccountDeletionUsecase.execute();
+
+    if (isClosed || !identical(_session, session)) return null;
 
     switch (result) {
       case Ok():
@@ -174,10 +189,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> loadAnnouncements() async {
+    if (isClosed) return;
+    final session = _session;
     emit(state.copyWith(loadingAnnouncements: true));
 
     final result = await _getExchangeAnnouncementsUsecase.execute();
-    if (isClosed) return;
+    if (isClosed || !identical(_session, session)) return;
 
     // Decorative: a failure leaves the banner empty and is logged at the
     // boundary rather than shown.

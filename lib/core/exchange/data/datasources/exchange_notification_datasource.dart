@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -12,10 +13,14 @@ class ExchangeNotificationDatasource {
   static const _pingInterval = Duration(seconds: 30);
 
   final String _baseUrl;
-  final BullbitcoinApiKeyDatasource _apiKeyDatasource;
-  final bool _isTestnet;
+  final ReadExchangeApiKey _readApiKey;
 
   WebSocketChannel? _channel;
+  Object? _attempt;
+  StreamSubscription<dynamic>? _subscription;
+  Timer? _retryTimer;
+  bool _disposed = false;
+  bool _hasConnectionFailure = false;
   bool _isConnected = false;
   bool _isManuallyDisconnected = false;
   bool _isConnecting = false;
@@ -27,8 +32,7 @@ class ExchangeNotificationDatasource {
 
   ExchangeNotificationDatasource({
     required this._baseUrl,
-    required this._apiKeyDatasource,
-    required this._isTestnet,
+    required this._readApiKey,
   });
 
   String _buildWebSocketUrl() {
@@ -56,136 +60,155 @@ class ExchangeNotificationDatasource {
   }
 
   Future<void> connect() async {
-    if (_isConnected || _isConnecting) {
-      log.info('WebSocket already connected or connecting');
-      return;
-    }
+    if (_disposed || _isConnected || _isConnecting) return;
+    _retryTimer?.cancel();
+    final attempt = Object();
+    _attempt = attempt;
     _isConnecting = true;
     _isManuallyDisconnected = false;
 
     try {
-      // Verify API key exists - don't attempt connection if not authenticated
-      final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
-      if (apiKey == null || !apiKey.isActive) {
+      final credential = await _readApiKey();
+      if (!identical(_attempt, attempt)) return;
+      final String? apiKey;
+      switch (credential) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          throw ExchangeAuthenticationException(failure);
+      }
+      if (apiKey == null) {
+        _attempt = null;
         _isConnecting = false;
-        _isManuallyDisconnected = true; // Prevent auto-reconnect loop
-        log.fine('WebSocket connection skipped: user not authenticated');
+        _isManuallyDisconnected = true;
+        _hasConnectionFailure = false;
+        log.fine('WebSocket skipped: user not authenticated');
         return;
       }
 
-      // Build WebSocket URL
-      final fullUrl = _buildWebSocketUrl();
-      log.info('Base URL: $_baseUrl');
-      log.info('Built WebSocket URL: $fullUrl');
-
-      // Parse and verify URI
-      final uri = Uri.parse(fullUrl);
-      log.info(
-        'Parsed URI - scheme: ${uri.scheme}, host: ${uri.host}, path: ${uri.path}',
-      );
-
-      // Use IOWebSocketChannel to pass X-API-Key header
-      _channel = IOWebSocketChannel.connect(
-        uri,
-        headers: {'X-API-Key': apiKey.key},
+      final channel = IOWebSocketChannel.connect(
+        Uri.parse(_buildWebSocketUrl()),
+        headers: {'X-API-Key': apiKey},
         pingInterval: _pingInterval,
       );
-
-      // Wait for the connection to be ready
-      await _channel!.ready;
-
-      _channel!.stream.listen(
-        _handleMessage,
-        onError: _handleError,
-        onDone: _handleDisconnect,
+      _channel = channel;
+      _subscription = channel.stream.listen(
+        (message) {
+          if (identical(_attempt, attempt)) _handleMessage(message);
+        },
+        onError: (Object error) {
+          if (identical(_attempt, attempt)) _handleError(error);
+        },
+        onDone: () {
+          if (identical(_attempt, attempt)) _handleDisconnect();
+        },
       );
-
+      await channel.ready;
+      if (!identical(_attempt, attempt)) return;
       _isConnected = true;
       _isConnecting = false;
-      log.info('WebSocket connected successfully');
-    } catch (e) {
-      _isConnecting = false;
-      final errorStr = e.toString();
-
-      // Don't auto-reconnect if server doesn't support WebSocket upgrade
-      if (errorStr.contains('not upgraded to websocket')) {
-        log.warning(
-          'WebSocket endpoint not available - server may not support WebSocket on this endpoint. '
-          'Disabling auto-reconnect.',
-          error: e,
-        );
-        _isManuallyDisconnected = true; // Prevent auto-reconnect
+      _hasConnectionFailure = false;
+      log.fine('WebSocket connected successfully');
+    } catch (error) {
+      if (error is Error) {
+        if (identical(_attempt, attempt)) disconnect();
+        rethrow;
       }
-
-      log.severe(
-        message: 'WebSocket connection failed',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (!identical(_attempt, attempt)) return;
+      _isConnecting = false;
+      if (error.toString().contains('not upgraded to websocket')) {
+        _isManuallyDisconnected = true;
+      }
+      _recordConnectionFailure(error);
       _handleDisconnect();
     }
   }
 
-  void _handleMessage(dynamic message) {
+  void _handleMessage(Object? message) {
+    final Object? decoded;
     try {
-      final parsed = message is String
-          ? jsonDecode(message) as Map<String, dynamic>
-          : message as Map<String, dynamic>;
-      // Type only: the payload carries account data (group/kyc/balance
-      // notifications) and the on-device log can be exported.
-      log.fine('WebSocket message received: type=${parsed['type']}');
-      _messageController.add(parsed);
-    } catch (e) {
-      // Type only: FormatException.toString() embeds the malformed frame,
-      // which can carry account data.
-      log.warning('Error parsing WebSocket message: ${e.runtimeType}');
+      decoded = message is String ? jsonDecode(message) : message;
+    } on FormatException {
+      log.warning('WebSocket message rejected: invalid JSON');
+      return;
     }
+    if (decoded is! Map<String, dynamic>) {
+      log.warning('WebSocket message rejected: invalid shape');
+      return;
+    }
+    // Even the discriminator is untrusted and may contain account data.
+    log.info('WebSocket message received');
+    _messageController.add(decoded);
   }
 
   void _handleDisconnect() {
+    _attempt = null;
     _isConnected = false;
     _isConnecting = false;
-    log.info('WebSocket disconnected');
+    _closeChannel();
+    if (_isManuallyDisconnected || _disposed || _retryTimer?.isActive == true) {
+      return;
+    }
+    _retryTimer = Timer(const Duration(seconds: 5), () {
+      _retryTimer = null;
+      if (!_isManuallyDisconnected && !_disposed) unawaited(connect());
+    });
+  }
 
-    // AUTO-RECONNECT after 5 seconds (unless manually disconnected)
-    if (!_isManuallyDisconnected) {
-      log.info('Scheduling WebSocket auto-reconnect in 5 seconds...');
-      Future.delayed(const Duration(seconds: 5), () {
-        if (!_isManuallyDisconnected && !_isConnecting) {
-          log.info('Attempting WebSocket auto-reconnect...');
-          connect();
-        }
-      });
+  void _closeChannel() {
+    final subscription = _subscription;
+    _subscription = null;
+    if (subscription != null) unawaited(subscription.cancel());
+    final channel = _channel;
+    _channel = null;
+    if (channel != null) {
+      unawaited(
+        channel.sink.close().catchError((Object error) {
+          log.info('WebSocket close cleanup failed', error: error.runtimeType);
+        }, test: (Object error) => error is Exception),
+      );
     }
   }
 
-  void _handleError(dynamic error) {
-    log.severe(
-      message: 'WebSocket error',
-      error: error,
-      trace: StackTrace.current,
-    );
+  void _recordConnectionFailure(Object error) {
+    if (_hasConnectionFailure) {
+      log.info('WebSocket retry failed', error: error.runtimeType);
+      return;
+    }
+    _hasConnectionFailure = true;
+    log.warning('WebSocket unavailable', error: error.runtimeType);
+  }
+
+  void _handleError(Object error) {
+    if (error is Error) {
+      disconnect();
+      throw error;
+    }
+    _recordConnectionFailure(error);
     _handleDisconnect();
   }
 
   void disconnect() {
+    _hasConnectionFailure = false;
     _isManuallyDisconnected = true;
     _isConnecting = false;
-    _channel?.sink.close();
-    _channel = null;
+    _attempt = null;
+    _retryTimer?.cancel();
+    _retryTimer = null;
+    _closeChannel();
     _isConnected = false;
     log.info('WebSocket manually disconnected');
   }
 
   Future<void> reconnect() async {
     disconnect();
-    _isManuallyDisconnected = false;
-    await Future.delayed(const Duration(seconds: 1));
     await connect();
   }
 
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     disconnect();
-    _messageController.close();
+    unawaited(_messageController.close());
   }
 }
