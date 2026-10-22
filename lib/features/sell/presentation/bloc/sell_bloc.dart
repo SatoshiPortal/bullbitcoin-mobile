@@ -576,7 +576,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       final refreshResult = await _refreshSellOrderUsecase.execute(
         isRecipientPayout: paymentState.sellOrder is FiatPaymentOrder,
         orderId: paymentState.sellOrder.orderId,
-        expectedDepositAddress: paymentState.sellOrder.toAddress,
+        expectedDepositAddress: paymentState.sellOrder.sellPayinAddress,
         expectedLightningInvoice: paymentState.sellOrder.sellLightningInvoice,
       );
       final Order refreshedOrder;
@@ -716,7 +716,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         return;
       }
       final isLiquid = wallet.isLiquid;
-      final depositAddress = sellPaymentState.sellOrder.toAddress;
+      final depositAddress = sellPaymentState.sellOrder.sellPayinAddress;
       if (depositAddress == null || depositAddress.isEmpty) {
         _emitSendPaymentError(
           emit,
@@ -1318,7 +1318,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // confirmed, or polling stops and the order is refused.
         final deposit = validateSellOrderDepositAddress(
           order: latestOrder,
-          expectedDepositAddress: current.sellOrder.toAddress,
+          expectedDepositAddress: current.sellOrder.sellPayinAddress,
           expectedLightningInvoice: current.sellOrder.sellLightningInvoice,
         );
         if (deposit case Err(:final failure)) {
@@ -1653,7 +1653,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellPaymentState paymentState,
     Wallet wallet,
   ) async {
-    final payinAddress = paymentState.sellOrder.toAddress;
+    final payinAddress = paymentState.sellOrder.sellPayinAddress;
     if (payinAddress != null && payinAddress.isNotEmpty) {
       return Ok(payinAddress);
     }

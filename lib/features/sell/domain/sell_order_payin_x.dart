@@ -18,4 +18,25 @@ extension SellOrderPayinX on Order {
     FiatPaymentOrder(:final lightningInvoice) => lightningInvoice,
     _ => null,
   };
+
+  /// The payin (deposit) address for the order's own payin network, so a Liquid
+  /// payin never surfaces the Bitcoin address (or vice-versa). Lightning payins
+  /// carry no address — use [sellLightningInvoice].
+  String? get sellPayinAddress {
+    final bitcoinAddress = switch (this) {
+      SellOrder(:final bitcoinAddress) ||
+      FiatPaymentOrder(:final bitcoinAddress) => bitcoinAddress,
+      _ => null,
+    };
+    final liquidAddress = switch (this) {
+      SellOrder(:final liquidAddress) ||
+      FiatPaymentOrder(:final liquidAddress) => liquidAddress,
+      _ => null,
+    };
+    return switch (payinMethod) {
+      OrderPaymentMethod.bitcoin => bitcoinAddress,
+      OrderPaymentMethod.liquid => liquidAddress,
+      _ => null,
+    };
+  }
 }

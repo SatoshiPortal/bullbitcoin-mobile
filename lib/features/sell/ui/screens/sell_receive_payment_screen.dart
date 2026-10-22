@@ -324,7 +324,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
   Widget _buildPaymentInput(BuildContext context, Order order) {
     final fullText = order.payinMethod == OrderPaymentMethod.lnInvoice
         ? order.sellLightningInvoice ?? ''
-        : order.toAddress ?? '';
+        : order.sellPayinAddress ?? '';
 
     return order.payinMethod == OrderPaymentMethod.lnInvoice
         ? InvoiceViewer(fullText)

@@ -69,7 +69,9 @@ Result<void, SellFailure> validateSellOrderDepositAddress({
   final expected = lightning
       ? expectedLightningInvoice
       : expectedDepositAddress;
-  final actual = lightning ? order.sellLightningInvoice : order.toAddress;
+  final actual = lightning
+      ? order.sellLightningInvoice
+      : order.sellPayinAddress;
   if (expected == null || expected.isEmpty || actual != expected) {
     return const Err(
       SellDepositAddressChangedFailure(

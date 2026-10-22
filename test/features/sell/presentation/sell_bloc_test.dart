@@ -271,6 +271,8 @@ void main() {
     when(
       () => sellOrder.bitcoinAddress,
     ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => sellOrder.liquidAddress).thenReturn(null);
+    when(() => sellOrder.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     // The deposit-address pinning compares orders through this getter; the
     // default order carries the creation-time address.
     when(
@@ -367,6 +369,7 @@ void main() {
   test(
     'a missing deposit address blocks payment before building or signing',
     () async {
+      when(() => sellOrder.bitcoinAddress).thenReturn(null);
       when(() => sellOrder.toAddress).thenReturn(null);
       final failed = bloc.stream.firstWhere(
         (state) =>

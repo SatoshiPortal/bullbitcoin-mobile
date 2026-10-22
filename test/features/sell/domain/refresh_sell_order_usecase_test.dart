@@ -45,7 +45,8 @@ void main() {
 
   SellOrder orderPaying(String address) {
     final order = _MockSellOrder();
-    when(() => order.toAddress).thenReturn(address);
+    when(() => order.bitcoinAddress).thenReturn(address);
+    when(() => order.liquidAddress).thenReturn(null);
     when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     return order;
   }
@@ -71,7 +72,8 @@ void main() {
     for (final address in [_confirmedAddress, 'bc1changed']) {
       test('refreshPayOrder pins the bank order deposit: $address', () async {
         final order = _MockFiatPaymentOrder();
-        when(() => order.toAddress).thenReturn(address);
+        when(() => order.bitcoinAddress).thenReturn(address);
+        when(() => order.liquidAddress).thenReturn(null);
         when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
         when(
           () => mainnet.refreshPayOrder('bank-order'),

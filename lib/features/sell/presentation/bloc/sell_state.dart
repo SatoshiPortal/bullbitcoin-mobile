@@ -300,7 +300,7 @@ extension SellPaymentStateX on SellPaymentState {
 
     switch (order.payinMethod) {
       case OrderPaymentMethod.bitcoin:
-        if (order.toAddress case final address?) {
+        if (order.sellPayinAddress case final address?) {
           final amountBtc = order.payinAmount;
 
           final bip21Uri = Bip21Uri(
@@ -311,7 +311,7 @@ extension SellPaymentStateX on SellPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.liquid:
-        if (order.toAddress case final address?) {
+        if (order.sellPayinAddress case final address?) {
           final amountBtc = order.payinAmount;
 
           final bip21Uri = Bip21Uri(

@@ -161,8 +161,8 @@ class SellSendPaymentScreen extends StatelessWidget {
                       PaymentDetailRow(
                         title: context.loc.sellDepositAddress,
                         isAddress: true,
-                        value: order?.toAddress,
-                        copyValue: order?.toAddress,
+                        value: order?.sellPayinAddress,
+                        copyValue: order?.sellPayinAddress,
                       ),
                       if (recipient != null)
                         SellPayoutDetailsV2(recipient: recipient)
