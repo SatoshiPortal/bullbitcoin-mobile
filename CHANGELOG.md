@@ -8,7 +8,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
-## [6.15.0] - 2026-10-19
+## [6.15.0] - 2026-10-22
 
 ### New Features
 
