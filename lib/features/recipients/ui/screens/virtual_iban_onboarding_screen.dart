@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Where the user started Confidential SEPA, which decides the wording once
@@ -25,6 +27,20 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
   final VirtualIbanOnboardingPurpose purpose;
+
+  static Future<RecipientType?> showForWithdraw(BuildContext context) {
+    return Navigator.of(context).push<RecipientType>(
+      MaterialPageRoute(
+        builder: (onboardingContext) => VirtualIbanOnboardingScreen(
+          onActivated: () => Navigator.of(
+            onboardingContext,
+          ).pop(RecipientType.confidentialSepaEur),
+          onUseRegularSepa: () =>
+              Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
