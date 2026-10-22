@@ -34,6 +34,10 @@ const _socksPolicy = onion.SocksPolicy.onionOnly;
 /// own shorter timeouts where they need them.
 final _connectTimeoutMs = BigInt.from(120000);
 
+/// How long to wait, once `bootstrap()` returns, for Arti to report it can
+/// carry traffic.
+const _trafficReadyTimeout = Duration(seconds: 60);
+
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
@@ -45,6 +49,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   TorTransport? _transport;
   TorDiagnostic? _lastDiagnostic;
   String? _lastReadinessLog;
+  Completer<void> _trafficReady = _pendingTrafficReady();
   Future<void> _lifecycleTail = Future<void>.value();
   Future<void> _dormancyTail = Future<void>.value();
   int _generation = 0;
@@ -133,6 +138,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       );
       _endpoint = endpoint;
 
+      _trafficReady = _pendingTrafficReady();
       _statusSubscription = service.watchStatus().listen(
         (status) => handleStatus(status, endpoint),
         onError: (Object error) {
@@ -142,6 +148,11 @@ final class OnionTorBackend implements EmbeddedTorPort {
       );
 
       await service.bootstrap();
+      if (generation != _generation) throw _cancelled();
+      // `bootstrap()` returns once the directory is usable, before Arti
+      // reports `readyForTraffic`; announcing readiness then sent the first
+      // request into a client that was not ready yet.
+      await waitForTraffic(_trafficReadyTimeout);
       if (generation != _generation) throw _cancelled();
       await _applyDormancy(service);
       if (!await service.proxyIsAlive()) {
@@ -172,12 +183,25 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
   }
 
+  /// Completes once a status reports `readyForTraffic`, fails on [stop] or
+  /// after [timeout].
+  @visibleForTesting
+  Future<void> waitForTraffic(Duration timeout) => _trafficReady.future.timeout(
+    timeout,
+    onTimeout: () => throw TorBackendException(
+      TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
+    ),
+  );
+
   @visibleForTesting
   void handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
     final blockage = status.blockage;
     final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
     final transport = _mapTransport(status.transport);
     _lastDiagnostic = diagnostic;
+    if (status.readyForTraffic && !_trafficReady.isCompleted) {
+      _trafficReady.complete();
+    }
     final percent = (status.fraction * 100).round();
     // Arti reports every internal change; only a visible one is worth a line.
     final readinessLog =
@@ -274,6 +298,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   @override
   Future<void> stop() async {
     _generation++;
+    if (!_trafficReady.isCompleted) _trafficReady.completeError(_cancelled());
     // Interrupt bootstrap before joining the serialized lifecycle tail.
     // Waiting for `_start` first would make Retry wait for the very bootstrap
     // it is supposed to cancel.
@@ -361,6 +386,11 @@ final class OnionTorBackend implements EmbeddedTorPort {
       connectTimeoutMs: _connectTimeoutMs,
     );
   }
+
+  /// Errors are observed by `_start` when it waits; marking the future handled
+  /// keeps a cancellation nobody waits for from surfacing as uncaught.
+  static Completer<void> _pendingTrafficReady() =>
+      Completer<void>()..future.ignore();
 
   TorBackendException _cancelled() => const TorBackendException(
     TorUnexpectedFailure('Embedded Tor start was cancelled'),
