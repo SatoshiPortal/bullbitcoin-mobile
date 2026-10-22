@@ -155,11 +155,17 @@ class SyncCoordinator {
     final failed = failures.entries
         .map((e) => '${e.key.name}:${e.value.runtimeType}')
         .join(', ');
-    log.severe(
-      message: '[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms',
-      error: SyncCoordinatorException(failures),
-      trace: StackTrace.current,
-    );
+    // No wallet yet is the normal state before onboarding, not a broken sync:
+    // keep it in the support log without reporting it.
+    if (failures.values.every((f) => f is NoWalletsFoundFailure)) {
+      log.warning('[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms');
+    } else {
+      log.severe(
+        message: '[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms',
+        error: SyncCoordinatorException(failures),
+        trace: StackTrace.current,
+      );
+    }
     throw SyncCoordinatorException(failures);
   }
 
