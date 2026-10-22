@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bull_sdk/onion.dart' as onion;
+import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/tor_connection_state.dart';
@@ -38,6 +39,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   TorProxyEndpoint? _endpoint;
   TorTransport? _transport;
   TorDiagnostic? _lastDiagnostic;
+  String? _lastReadinessLog;
   Future<void> _lifecycleTail = Future<void>.value();
   Future<void> _dormancyTail = Future<void>.value();
   int _generation = 0;
@@ -126,7 +128,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       _endpoint = endpoint;
 
       _statusSubscription = service.watchStatus().listen(
-        (status) => _handleStatus(status, endpoint),
+        (status) => handleStatus(status, endpoint),
         onError: (Object error) {
           _log.warning('Embedded Tor status stream failed: $error');
           _publish(EmbeddedTorFailed(TorUnexpectedFailure(error.toString())));
@@ -164,17 +166,22 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
   }
 
-  void _handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
+  @visibleForTesting
+  void handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
     final blockage = status.blockage;
     final diagnostic = blockage == null ? null : _mapDiagnostic(blockage.kind);
     final transport = _mapTransport(status.transport);
     _lastDiagnostic = diagnostic;
     final percent = (status.fraction * 100).round();
-    _log.fine(
-      'Embedded Tor readiness ${status.readyForTraffic ? 'ready' : 'waiting'} '
-      '($percent%)'
-      '${diagnostic == null ? '' : ' (${diagnostic.name})'}',
-    );
+    // Arti reports every internal change; only a visible one is worth a line.
+    final readinessLog =
+        'Embedded Tor readiness ${status.readyForTraffic ? 'ready' : 'waiting'} '
+        '($percent%)'
+        '${diagnostic == null ? '' : ' (${diagnostic.name})'}';
+    if (readinessLog != _lastReadinessLog) {
+      _lastReadinessLog = readinessLog;
+      _log.fine(readinessLog);
+    }
 
     _publish(
       status.readyForTraffic
@@ -321,6 +328,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _endpoint = null;
     _transport = null;
     _lastDiagnostic = null;
+    _lastReadinessLog = null;
     _snowflakeLease = false;
     try {
       await service?.stop();
