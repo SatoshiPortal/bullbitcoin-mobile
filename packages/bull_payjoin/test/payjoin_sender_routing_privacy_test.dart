@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinLogCode, PayjoinLogEvent, PayjoinLogPort;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
@@ -13,8 +15,67 @@ const _originalPsbt =
     'cHNidP8BAHMCAAAAAY8nutGgJdyYGXWiBEb45Hoe9lWGbkxh/6bNiOJdCDuDAAAAAAD+////AtyVuAUAAAAAF6kUHehJ8GnSdBUOOv6ujXLrWmsJRDCHgIQeAAAAAAAXqRR3QJbbz0hnQ8IvQ0fptGn+votneofTAAAAAAEBIKgb1wUAAAAAF6kU3k4ekGHKWRNbA1rV5tR5kEVDVNCHAQcXFgAUx4pFclNVgo1WWAdN1SYNX8tphTABCGsCRzBEAiB8Q+A6dep+Rz92vhy26lT0AjZn4PRLi8Bf9qoB/CMk0wIgP/Rj2PWZ3gEjUkTlhDRNAQ0gXwTO7t9n+V14pZ6oljUBIQMVmsAaoNWHVMS02LfTSe0e388LNitPa1UQZyOihY+FFgABABYAFEb2Giu6c4KO5YW0pfw3lGp9jMUUAAA=';
 const _ohttpKeys =
     'AQAWBFJz2qj2TN+Ajx6UA5gJ9kf8Icposr0x5zCpxX3zaISy54JuL6GtK58jiBV2WqZ7H1bMcsZpg0BpiYaHgO5Zmx8ABAABAAM=';
+const _expiredBip21 =
+    'bitcoin:2N47mmrWXsNBvQR6k78hWJoTji57zXwNcU7?pjos=0&pj=HTTPS://PJ.BULLBITCOIN.COM/TXJCGKTKXLUUZ%23EX1WKV8CEC-OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ-RK1Q0DJS3VVDXWQQTLQ8022QGXSX7ML9PHZ6EDSF6AKEWQG758JPS2EV';
+
+final class _CaptureLogPort implements PayjoinLogPort {
+  final events = <PayjoinLogEvent>[];
+
+  @override
+  void write(PayjoinLogEvent event) => events.add(event);
+}
 
 void main() {
+  test('an expired URI does not mark a server as unreachable', () async {
+    final port = _CaptureLogPort();
+    var requests = 0;
+    final dio = Dio();
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          requests++;
+          handler.reject(
+            DioException.connectionError(
+              requestOptions: options,
+              reason: 'unexpected request',
+            ),
+          );
+        },
+      ),
+    );
+    final datasource = PdkPayjoinDatasource(dio: dio, log: PayjoinLogger(port));
+    try {
+      await expectLater(
+        datasource.createSender(
+          walletId: 'fixture-wallet',
+          isTestnet: true,
+          bip21: _expiredBip21,
+          originalPsbt: _originalPsbt,
+          amountSat: 10000,
+          networkFeesSatPerVb: 4,
+          persistBeforePost: (_) async {},
+        ),
+        throwsA(isA<SendCreationException>()),
+      );
+      expect(requests, 0);
+      expect(
+        port.events.where(
+          (event) => {
+            PayjoinLogCode.relayUnreachable,
+            PayjoinLogCode.directoryUnreachable,
+            PayjoinLogCode.relayFailure,
+            PayjoinLogCode.serverRecovered,
+          }.contains(event.code),
+        ),
+        isEmpty,
+        reason: 'local validation must not change server availability',
+      );
+    } finally {
+      await datasource.dispose();
+      dio.close(force: true);
+    }
+  });
+
   for (final directory in PayjoinConstants.serverUrls) {
     test('sender retries only other servers for ${directory.host}', () async {
       await _expectSenderRoutes(

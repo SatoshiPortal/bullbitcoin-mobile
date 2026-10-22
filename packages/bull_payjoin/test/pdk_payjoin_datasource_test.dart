@@ -4,6 +4,8 @@ import 'dart:core' as core;
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinLogCode, PayjoinLogEvent, PayjoinLogLevel, PayjoinLogPort;
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
@@ -16,6 +18,16 @@ import 'package:payjoin/payjoin.dart';
 import 'package:test/test.dart';
 
 class _MockDio extends Mock implements Dio {}
+
+final class _CaptureLogPort implements PayjoinLogPort {
+  final events = <PayjoinLogEvent>[];
+
+  @override
+  void write(PayjoinLogEvent event) => events.add(event);
+
+  Iterable<PayjoinLogEvent> at(PayjoinLogLevel level) =>
+      events.where((event) => event.level == level);
+}
 
 final _ohttpKeysBytes = Uint8List.fromList([
   0x01,
@@ -198,6 +210,93 @@ void main() {
               if (relay != directory) (relay, directory),
         });
         expect(attempts, hasLength(urls.length * (urls.length - 1)));
+        await datasource.dispose();
+      },
+    );
+
+    test(
+      'warns once about a relay that failed, then logs its recovery',
+      () async {
+        const bull = 'https://pj.bullbitcoin.com';
+        var bullUp = false;
+        final port = _CaptureLogPort();
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger(port),
+          dio: Dio(),
+          random: Random(4),
+          ohttpKeysFetcher:
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                if (ohttpRelayUrl == bull && !bullUp) {
+                  throw StateError('relay down');
+                }
+                return _fakeOhttpKeys();
+              },
+        );
+
+        for (var i = 0; i < 20; i++) {
+          await datasource.fetchDirectoryKeys();
+        }
+        final warning = port.at(PayjoinLogLevel.warning).single;
+        expect(warning.code, PayjoinLogCode.relayUnreachable);
+        expect(warning.server?.host, 'pj.bullbitcoin.com');
+        expect(
+          port
+              .at(PayjoinLogLevel.info)
+              .map((event) => event.server?.host)
+              .toSet(),
+          {'pj.bullbitcoin.com'},
+          reason: 'repeats stay out of the persisted log',
+        );
+
+        bullUp = true;
+        for (var i = 0; i < 20; i++) {
+          await datasource.fetchDirectoryKeys();
+        }
+        final recovered = port.at(PayjoinLogLevel.fine).single;
+        expect(recovered.code, PayjoinLogCode.serverRecovered);
+        expect(recovered.server?.host, 'pj.bullbitcoin.com');
+        expect(port.at(PayjoinLogLevel.warning), hasLength(1));
+        await datasource.dispose();
+      },
+    );
+
+    test(
+      'blames the directory, not its relays, when none reaches it',
+      () async {
+        final port = _CaptureLogPort();
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger(port),
+          dio: Dio(),
+          random: Random(5),
+          ohttpKeysFetcher:
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                if (directoryUrl == 'https://pj.bullbitcoin.com') {
+                  throw StateError('directory down');
+                }
+                return _fakeOhttpKeys();
+              },
+        );
+
+        for (var i = 0; i < 20; i++) {
+          expect(await datasource.fetchDirectoryKeys(), isNotNull);
+        }
+        final warning = port.at(PayjoinLogLevel.warning).single;
+        expect(warning.code, PayjoinLogCode.directoryUnreachable);
+        expect(warning.server?.host, 'pj.bullbitcoin.com');
+        expect(
+          port.events.where(
+            (event) => event.code == PayjoinLogCode.relayUnreachable,
+          ),
+          isEmpty,
+        );
         await datasource.dispose();
       },
     );

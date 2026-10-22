@@ -35,6 +35,29 @@ void main() {
     expect(port.event?.role, PayjoinLogRole.sender);
   });
 
+  test('names only the servers of the app', () {
+    final port = _CaptureLogPort();
+    final logger = PayjoinLogger(port);
+
+    logger.warning(
+      code: PayjoinLogCode.relayUnreachable,
+      server: Uri.parse('https://pj.bullbitcoin.com'),
+    );
+    expect(port.event?.server, Uri.https('pj.bullbitcoin.com'));
+
+    logger.warning(
+      code: PayjoinLogCode.directoryUnreachable,
+      server: Uri.parse('HTTPS://PAYJOIN.LAB.VINTEUM.ORG/ABC#RK1Q'),
+    );
+    expect(port.event?.server, Uri.https('payjoin.lab.vinteum.org'));
+
+    logger.warning(
+      code: PayjoinLogCode.directoryUnreachable,
+      server: Uri.parse('https://receivers-own-directory.example/abc'),
+    );
+    expect(port.event?.server, isNull);
+  });
+
   test('a proposal persistence failure keeps its storage classification', () {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);

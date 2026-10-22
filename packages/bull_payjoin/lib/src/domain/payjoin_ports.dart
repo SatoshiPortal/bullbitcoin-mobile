@@ -269,6 +269,9 @@ enum PayjoinLogCode {
   fallbackObserved('Original transaction seen on the network instead'),
   fallbackBroadcastFailed('Original transaction could not be broadcast'),
   relayFailure('Payjoin directory request failed through every OHTTP relay'),
+  relayUnreachable('OHTTP relay did not answer, trying another'),
+  directoryUnreachable('Payjoin directory did not answer through any relay'),
+  serverRecovered('Payjoin server answers again'),
   walletFailure('Wallet operation failed'),
   signingFailure('Signing failed'),
   broadcastFailure('Broadcast failed'),
@@ -293,6 +296,10 @@ final class PayjoinLogEvent {
   final PayjoinLogRole? role;
   final String? sessionRef;
 
+  /// One of the app's own Payjoin servers, never a directory read from a
+  /// payment request.
+  final Uri? server;
+
   /// What actually went wrong, for the host to report.
   /// Without it a failure reaches the app as a bare [code], which collapses every cause into one signature: a locked database, a rejected broadcast and a failed migration become indistinguishable in crash reports.
   /// Foreign exception text can still contain payment or credential data: hosts must reduce the cause to safe type/status metadata, never forward its raw text to their logs or reporter.
@@ -304,6 +311,7 @@ final class PayjoinLogEvent {
     required this.code,
     this.role,
     this.sessionRef,
+    this.server,
     this.error,
     this.trace,
   }) {

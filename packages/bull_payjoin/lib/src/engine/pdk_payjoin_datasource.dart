@@ -55,6 +55,10 @@ class PdkPayjoinDatasource {
   final Set<String> _receiverPollsInFlight = {};
   final Set<String> _senderPollsInFlight = {};
 
+  // Servers whose last request failed, per role (keyed by the failure code):
+  // one that stays down is warned about once, not on every poll.
+  final Set<(PayjoinLogCode, String)> _failingServers = {};
+
   bool _disposed = false;
 
   PdkPayjoinDatasource({
@@ -142,6 +146,7 @@ class PdkPayjoinDatasource {
         try {
           ensureActive();
           final keys = await _throughRelays(
+            directory,
             relaysOutsideDomainOf(directory, servers: _servers),
             (relay) async {
               ensureActive();
@@ -195,32 +200,83 @@ class PdkPayjoinDatasource {
   Future<T> _throughSessionRelays<T>(
     String payjoinUri,
     Future<T> Function(String relay) request,
-  ) async =>
-      _throughRelays(allowedRelays(payjoinUri, servers: _servers), request);
+  ) async => _throughRelays(
+    payjoinDirectoryOf(payjoinUri),
+    allowedRelays(payjoinUri, servers: _servers),
+    request,
+  );
 
-  /// Sends [request] through each of [relays], in a random order, and returns
-  /// the first success. When every relay fails, the last failure is thrown and
-  /// the payjoin step does not go through; an expired session stops at once.
+  /// Sends [request] to [directory] through each of [relays], a non-empty
+  /// list, in a random order, and returns the first success. When every relay
+  /// fails, the last failure is thrown and the payjoin step does not go
+  /// through; an expired session stops at once.
+  ///
+  /// A relay is reported down only when another one reached the directory;
+  /// when none does, the directory is.
   Future<T> _throughRelays<T>(
+    core.Uri? directory,
     List<core.Uri> relays,
     Future<T> Function(String relay) request,
   ) async {
-    Object failure = const PayjoinRelayUnavailableException(
-      'no relay allowed for the directory',
-    );
+    final failed = <(core.Uri, Object)>[];
     for (final relay in [...relays]..shuffle(_random)) {
       try {
-        return await request(relay.toString());
+        final result = await request(relay.toString());
+        for (final (failedRelay, error) in failed) {
+          _reportServerFailed(
+            failedRelay,
+            PayjoinLogCode.relayUnreachable,
+            error,
+          );
+        }
+        _reportServerAnswered(relay, PayjoinLogCode.relayUnreachable);
+        if (directory != null) {
+          _reportServerAnswered(directory, PayjoinLogCode.directoryUnreachable);
+        }
+        return result;
       } on PayjoinExpiredException {
         rethrow;
       } on _KeyDiscoveryStopped {
         rethrow;
+      } on CreateRequestException {
+        // Local request validation says nothing about server availability.
+        rethrow;
       } catch (e) {
-        failure = e;
+        failed.add((relay, e));
       }
     }
-    throw failure;
+    final (_, lastError) = failed.last;
+    if (directory != null) {
+      _reportServerFailed(
+        directory,
+        PayjoinLogCode.directoryUnreachable,
+        lastError,
+      );
+    }
+    throw lastError;
   }
+
+  /// Warns the first time [server] fails, then keeps repeats to debug traces.
+  void _reportServerFailed(
+    core.Uri server,
+    PayjoinLogCode failure,
+    Object error,
+  ) {
+    if (_failingServers.add((failure, _hostKey(server)))) {
+      _log.warning(code: failure, server: server, error: error);
+    } else {
+      _log.info(code: failure, server: server);
+    }
+  }
+
+  /// Logs that [server] answered again in the role whose [failure] it had.
+  void _reportServerAnswered(core.Uri server, PayjoinLogCode failure) {
+    if (_failingServers.remove((failure, _hostKey(server)))) {
+      _log.fine(code: PayjoinLogCode.serverRecovered, server: server);
+    }
+  }
+
+  static String _hostKey(core.Uri url) => payjoinHostOf(url) ?? url.toString();
 
   /// [amountSat] pins the amount inside the generated BIP21 URI.
   ///
@@ -395,6 +451,12 @@ class PdkPayjoinDatasource {
             .processResponse(response: body, postCtx: reqCtx.ohttpCtx)
             .save(persister: persister);
       });
+    } on CreateRequestException catch (e) {
+      throw SendCreationException(
+        e.isExpired()
+            ? 'Payjoin session expired'
+            : 'Could not create payjoin request',
+      );
     } catch (e) {
       _log.warning(
         code: PayjoinLogCode.relayFailure,

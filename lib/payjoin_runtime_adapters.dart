@@ -244,6 +244,7 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
       ?role?.name,
       if (sessionRef != null)
         sessionRef.substring(0, _displayedSessionRefLength),
+      ?event.server?.host,
       '${event.code.name}: ${event.code.description}',
       if (error != null) 'cause=${_describeCause(error)}',
     ].join(' ');

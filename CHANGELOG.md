@@ -36,6 +36,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 - Fixed button labels that were invisible on the dark theme, including Confirm express on the Buy acceleration screen, and made the indeterminate loading bar visible. ([#3030](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3030), [#3032](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3032))
 - Payjoin now uses four servers, `pj.bullbitcoin.com`, `pj.bobspacebkk.com`, `payjoin.lab.vinteum.org` and `pj.pow.plan-b.foundation`, as payjoin directories and OHTTP relays, replacing `payjo.in`, which is shutting down. Each request goes through a relay on a different domain than its directory, trying the others if one is unreachable, so no single operator sees both your IP address and your payjoin request.
 - Payjoin receiver discovery has a 30-second total budget so unavailable servers do not hold up the Bitcoin QR for several minutes.
+- Expired Payjoin requests no longer produce false server outage warnings.
 
 ### Translations
 
