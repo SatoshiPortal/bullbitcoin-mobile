@@ -373,6 +373,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       final refreshResult = await _refreshBuyOrderUsecase.execute(
         orderId: orderId,
+        confirmed: _isQuoteConfirmed,
       );
       if (!isCurrent()) return;
       final BuyOrder refreshedOrder;

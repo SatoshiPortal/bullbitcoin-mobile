@@ -18,9 +18,12 @@ class RefreshBuyOrderUsecase {
     required this._settingsRepository,
   });
 
+  /// A fresh quote for an order awaiting confirmation; once [confirmed], the
+  /// order as the exchange now sees it, which asks for no new quote.
   @useResult
   Future<Result<BuyOrder, BuyFailure>> execute({
     required String orderId,
+    bool confirmed = false,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -28,7 +31,15 @@ class RefreshBuyOrderUsecase {
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
-      final order = await repo.refreshBuyOrder(orderId);
+      if (!confirmed) return Ok(await repo.refreshBuyOrder(orderId));
+      final order = await repo.getOrder(orderId);
+      if (order is! BuyOrder) {
+        log.severe(
+          error: 'Expected a buy order but read ${order.runtimeType}',
+          trace: StackTrace.current,
+        );
+        return Err(BuyUnexpectedFailure('Not a buy order: $orderId'));
+      }
       return Ok(order);
     } on ApiKeyException catch (e, st) {
       log.severe(
