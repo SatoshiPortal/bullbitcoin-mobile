@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
@@ -23,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
@@ -147,8 +147,8 @@ Future<void> _pumpLoaded(WidgetTester tester, ExternalLinkPort link) async {
 }
 
 /// The "open payment link" button, as opposed to the "done" bar button.
-BBButton _openButton(WidgetTester tester) => tester
-    .widgetList<BBButton>(find.byType(BBButton))
+BullButton _openButton(WidgetTester tester) => tester
+    .widgetList<BullButton>(find.byType(BullButton))
     .firstWhere((b) => b.iconData == Icons.open_in_new);
 
 Future<void> _settleBloc(WidgetTester tester) async {

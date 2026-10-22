@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 class FundExchangeErrorText extends StatelessWidget {
   const FundExchangeErrorText({
@@ -20,7 +20,7 @@ class FundExchangeErrorText extends StatelessWidget {
     final message = failure.toTranslated(context);
 
     if (title == null) {
-      return BBText(
+      return BullText(
         message,
         style: context.font.bodyMedium,
         color: Theme.of(context).colorScheme.error,
@@ -31,7 +31,7 @@ class FundExchangeErrorText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBText(
+        BullText(
           title,
           style: context.font.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class FundExchangeErrorText extends StatelessWidget {
           textAlign: textAlign,
         ),
         const SizedBox(height: 4),
-        BBText(
+        BullText(
           message,
           style: context.font.bodyMedium,
           color: Theme.of(context).colorScheme.error,
