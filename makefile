@@ -73,12 +73,12 @@ pr-governance-test:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
+	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --delete-conflicting-outputs --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
 
 translations:
 	@echo "🌐 Generating translations files"
@@ -422,5 +422,5 @@ integration-test:
 catalogue:
 	@echo "📚 Building & rendering the bull_ui catalogue in the browser"
 	@cd packages/bull_ui_catalogue && \
-		fvm dart run build_runner build --delete-conflicting-outputs && \
+		fvm dart run build_runner build && \
 		fvm flutter run -d chrome
