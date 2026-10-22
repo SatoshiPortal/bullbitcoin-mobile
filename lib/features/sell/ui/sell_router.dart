@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart
 import 'package:bb_mobile/features/sell/ui/screens/sell_success_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_wallet_selection_screen.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_route_guard_v2.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show SizedBox;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -135,6 +136,8 @@ class SellRouter {
                 onActivated: () =>
                     context.pop(RecipientType.confidentialSepaEur),
                 onUseRegularSepa: () => context.pop(RecipientType.sepaEur),
+                onReturnHome: () =>
+                    context.goNamed(WalletRoute.walletHome.name),
               ),
             ),
           ),
@@ -155,6 +158,8 @@ class SellRouter {
                   onActivated: () =>
                       context.pop(RecipientType.confidentialSepaEur),
                   onUseRegularSepa: () => context.pop(RecipientType.sepaEur),
+                  onReturnHome: () =>
+                      context.goNamed(WalletRoute.walletHome.name),
                 ),
               );
             },

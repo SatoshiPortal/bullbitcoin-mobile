@@ -15516,6 +15516,10 @@
   "@recipientsConfidentialSepaUseRegularSepa": {
     "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
   },
+  "recipientsReturnHome": "Return Home",
+  "@recipientsReturnHome": {
+    "description": "Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready"
+  },
   "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
   "@recipientsVirtualIbanIntroTitle": {
     "description": "Title of the virtual IBAN onboarding screen"
