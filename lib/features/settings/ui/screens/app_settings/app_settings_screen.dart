@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
 class AppSettingsScreen extends StatelessWidget {
   const AppSettingsScreen({super.key});
@@ -40,9 +40,9 @@ class AppSettingsScreen extends StatelessWidget {
       // is unloadable but still there; the user is the only one who can retry.
       listenWhen: (previous, current) =>
           !previous.revokeSpFailed && current.revokeSpFailed,
-      listener: (context, state) => SnackBarUtils.showSnackBar(
+      listener: (context, state) => BullSnackBar.show(
         context,
-        context.loc.settingsDevModeSpRevokeFailed,
+        message: context.loc.settingsDevModeSpRevokeFailed,
       ),
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),

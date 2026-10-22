@@ -2,15 +2,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullIcon, BullIcons, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class WalletDetailsScreen extends StatelessWidget {
@@ -57,7 +56,7 @@ class WalletDetailsScreen extends StatelessWidget {
                   children: [
                     const CircularProgressIndicator(),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.walletDetailsDeletingMessage,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
@@ -118,7 +117,7 @@ class WalletDetailsScreen extends StatelessWidget {
                         context.loc.walletDetailsSignerDeviceNotSupported,
                   ),
                   const Gap(32),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(
                       SettingsRoute.walletAddresses.name,
@@ -145,14 +144,14 @@ class _InfoField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           label,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
-        BBText(
+        BullText(
           value,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.onSurface,
@@ -178,7 +177,7 @@ class _CopyField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           label,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.textMuted,
@@ -189,7 +188,7 @@ class _CopyField extends StatelessWidget {
           spacing: 4,
           runSpacing: 4,
           children: [
-            BBText(
+            BullText(
               value,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
@@ -204,7 +203,7 @@ class _CopyField extends StatelessWidget {
               child: Row(
                 mainAxisSize: .min,
                 children: [
-                  BBText(
+                  BullText(
                     copyLabel,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.primary,

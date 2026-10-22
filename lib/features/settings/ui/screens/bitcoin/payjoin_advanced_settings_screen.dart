@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, BullText, Gap;
 
 /// The thresholds fit in a few digits, so their fields stay narrow.
 const _fieldWidth = 140.0;
@@ -195,30 +194,30 @@ class _PayjoinAdvancedSettingsScreenState
                     ),
                   ),
                   const Gap(24),
-                  BBText(
+                  BullText(
                     context.loc.settingsPayjoinServersTitle,
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBText(
+                  BullText(
                     context.loc.settingsPayjoinDirectoryLabel,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                   ),
-                  BBText(
+                  BullText(
                     PayjoinConstants.directoryUrl,
                     style: context.font.bodyMedium,
                   ),
                   const Gap(12),
-                  BBText(
+                  BullText(
                     context.loc.settingsPayjoinRelaysLabel,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   for (final relay in PayjoinConstants.ohttpRelayUrlsBase)
-                    BBText(relay, style: context.font.bodyMedium),
+                    BullText(relay, style: context.font.bodyMedium),
                 ],
               ),
             ),
@@ -257,9 +256,9 @@ class _ThresholdField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(title, style: context.font.bodyLarge),
+                  BullText(title, style: context.font.bodyLarge),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     description,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -275,7 +274,7 @@ class _ThresholdField extends StatelessWidget {
         ),
         if (error != null) ...[
           const Gap(4),
-          BBText(
+          BullText(
             error,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
