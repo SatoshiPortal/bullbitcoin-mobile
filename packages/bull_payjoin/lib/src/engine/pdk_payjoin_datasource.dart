@@ -1125,6 +1125,9 @@ class PdkPayjoinDatasource {
       options: Options(
         headers: {'Content-Type': contentType},
         responseType: ResponseType.bytes,
+        // A relay must never redirect the client to the directory itself,
+        // which would expose the client's IP outside the OHTTP tunnel.
+        followRedirects: false,
       ),
     );
     return Uint8List.fromList(response.data ?? const []);
