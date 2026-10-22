@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -20,6 +22,8 @@ class _MockSettings extends Mock implements SettingsEntity {}
 class _MockPayjoinPolicy extends Mock implements PayjoinPolicyAccess {}
 
 class _MockSellOrder extends Mock implements SellOrder {}
+
+class _MockFiatPaymentOrder extends Mock implements FiatPaymentOrder {}
 
 void main() {
   late _MockExchangeOrderRepository mainnet;
@@ -53,7 +57,7 @@ void main() {
     );
   });
 
-  Future<Result<SellOrder, SellFailure>> run() => usecase.execute(
+  Future<Result<Order, SellFailure>> run() => usecase.execute(
     orderAmount: const FiatAmount(100),
     currency: FiatCurrency.cad,
     network: OrderBitcoinNetwork.bitcoin,
@@ -69,6 +73,130 @@ void main() {
       ),
     ).thenThrow(error);
   }
+
+  group('EUR recipient payouts', () {
+    for (final network in OrderBitcoinNetwork.values) {
+      for (final type in [
+        RecipientType.sepaEur,
+        RecipientType.confidentialSepaEur,
+      ]) {
+        test(
+          '${type.name} on ${network.name} keeps the bank order type',
+          () async {
+            final order = _MockFiatPaymentOrder();
+            when(
+              payjoinPolicy.load,
+            ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+            final processor = type == RecipientType.confidentialSepaEur
+                ? SepaPaymentProcessor.confidential
+                : SepaPaymentProcessor.regular;
+            when(
+              () => mainnet.placeSellToRecipientOrderV2(
+                orderAmount: const FiatAmount(100),
+                recipientId: 'own-account',
+                network: network,
+                paymentProcessor: processor,
+                usePayjoin: network == OrderBitcoinNetwork.bitcoin,
+              ),
+            ).thenAnswer((_) async => order);
+            final result = await usecase.execute(
+              orderAmount: const FiatAmount(100),
+              currency: FiatCurrency.eur,
+              network: network,
+              recipient: RecipientSelection(
+                id: 'own-account',
+                type: type,
+                isVirtualPayeeActive: true,
+              ),
+              usePayjoin: true,
+            );
+            expect(
+              result,
+              isA<Ok<Order, SellFailure>>().having(
+                (r) => r.value,
+                'order',
+                same(order),
+              ),
+            );
+            verifyNever(
+              () => mainnet.placeSellOrder(
+                orderAmount: any(named: 'orderAmount'),
+                currency: any(named: 'currency'),
+                network: any(named: 'network'),
+                usePayjoin: any(named: 'usePayjoin'),
+              ),
+            );
+          },
+        );
+      }
+    }
+
+    test(
+      'requires confidential recipient activation before creation',
+      () async {
+        final result = await usecase.execute(
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.eur,
+          network: OrderBitcoinNetwork.bitcoin,
+          recipient: const RecipientSelection(
+            id: 'own-account',
+            type: RecipientType.confidentialSepaEur,
+          ),
+        );
+        expect(
+          (result as Err<Order, SellFailure>).failure,
+          isA<SellConfidentialSepaNotActivatedFailure>(),
+        );
+        verifyZeroInteractions(mainnet);
+      },
+    );
+
+    test('rejects recipient payouts outside the EUR SEPA path', () async {
+      for (final (currency, type) in [
+        (FiatCurrency.cad, RecipientType.sepaEur),
+        (FiatCurrency.eur, RecipientType.interacEmailCad),
+      ]) {
+        final result = await usecase.execute(
+          orderAmount: const FiatAmount(100),
+          currency: currency,
+          network: OrderBitcoinNetwork.bitcoin,
+          recipient: RecipientSelection(id: 'recipient', type: type),
+        );
+        expect(result, isA<Err<Order, SellFailure>>());
+      }
+      verifyZeroInteractions(mainnet);
+    });
+
+    test(
+      'an expired recipient activation returns a recoverable failure',
+      () async {
+        when(
+          () => mainnet.placeSellToRecipientOrderV2(
+            orderAmount: any(named: 'orderAmount'),
+            recipientId: 'own-account',
+            network: OrderBitcoinNetwork.bitcoin,
+            paymentProcessor: SepaPaymentProcessor.confidential,
+          ),
+        ).thenThrow(
+          const BullBitcoinApiConfidentialSepaNotActivatedException(),
+        );
+        final result = await usecase.execute(
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.eur,
+          network: OrderBitcoinNetwork.bitcoin,
+          recipient: const RecipientSelection(
+            id: 'own-account',
+            type: RecipientType.confidentialSepaEur,
+            isVirtualPayeeActive: true,
+          ),
+        );
+        expect(
+          (result as Err<Order, SellFailure>).failure,
+          isA<SellConfidentialSepaNotActivatedFailure>(),
+        );
+      },
+    );
+  });
 
   group('payjoin follows the sell switch only', () {
     Future<bool> requestedPayjoin(PayjoinPolicy policy) async {
@@ -131,7 +259,7 @@ void main() {
       ),
     ).thenAnswer((_) async => order);
 
-    expect(await run(), isA<Ok<SellOrder, SellFailure>>());
+    expect(await run(), isA<Ok<Order, SellFailure>>());
   });
 
   // These three used to be translated inside the shared exchange repository,
@@ -139,7 +267,7 @@ void main() {
   test('maps a below-minimum API rejection with its bound', () async {
     stubThrow(BullBitcoinApiMinAmountException(minAmount: 25, currency: 'CAD'));
 
-    final failure = (await run() as Err<SellOrder, SellFailure>).failure;
+    final failure = (await run() as Err<Order, SellFailure>).failure;
 
     expect(failure, isA<SellBelowMinAmountFailure>());
     expect((failure as SellBelowMinAmountFailure).minAmount, 25);
@@ -151,7 +279,7 @@ void main() {
       BullBitcoinApiMaxAmountException(maxAmount: 5000, currency: 'CAD'),
     );
 
-    final failure = (await run() as Err<SellOrder, SellFailure>).failure;
+    final failure = (await run() as Err<Order, SellFailure>).failure;
 
     expect(failure, isA<SellAboveMaxAmountFailure>());
     expect((failure as SellAboveMaxAmountFailure).maxAmount, 5000);
@@ -161,7 +289,7 @@ void main() {
     stubThrow(ApiKeyException('API key not found or inactive'));
 
     expect(
-      (await run() as Err<SellOrder, SellFailure>).failure,
+      (await run() as Err<Order, SellFailure>).failure,
       isA<SellUnauthenticatedFailure>(),
     );
   });
@@ -171,7 +299,7 @@ void main() {
     () async {
       stubThrow(Exception('Dio 500 apikey=secret123'));
 
-      final failure = (await run() as Err<SellOrder, SellFailure>).failure;
+      final failure = (await run() as Err<Order, SellFailure>).failure;
 
       expect(failure, isA<SellUnexpectedFailure>());
       expect(

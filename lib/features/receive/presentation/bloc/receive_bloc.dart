@@ -767,6 +767,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (await _convertReceiveAmountUsecase.execute(
         currencyCode: event.currencyCode,
       )) {
+        // No price for that currency: stay on the current one, or a fiat
+        // amount would request zero sats.
+        case Ok(:final value) when value <= 0:
+          return;
         case Ok(:final value):
           exchangeRate = value;
         case Err(:final failure):

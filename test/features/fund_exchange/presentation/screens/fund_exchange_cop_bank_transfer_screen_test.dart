@@ -101,15 +101,20 @@ FundExchangeBloc _blocWith(ExternalLinkPort link) {
 
 /// Pumps the screen with the payment link already loaded.
 Future<void> _pumpLoaded(WidgetTester tester, ExternalLinkPort link) async {
-  final bloc = _blocWith(link);
-  // `close()` waits for in-flight event handlers. A launch parked on a
-  // Completer must therefore be released *inside* the test body — tear-downs
-  // run outside the FakeAsync zone, so completing one there never advances the
-  // microtask that would finish the handler, and the test hangs.
-  addTearDown(bloc.close);
-  bloc.add(
-    const FundExchangeEvent.fundingDetailsRequested(fundingMethod: _copMethod),
-  );
+  late final FundExchangeBloc bloc;
+  await tester.runAsync(() async {
+    bloc = _blocWith(link);
+    addTearDown(bloc.close);
+    final loaded = bloc.stream.firstWhere(
+      (state) => state.fundingDetails != null,
+    );
+    bloc.add(
+      const FundExchangeEvent.fundingDetailsRequested(
+        fundingMethod: _copMethod,
+      ),
+    );
+    await loaded;
+  });
 
   final router = GoRouter(
     initialLocation: '/',
@@ -146,6 +151,11 @@ BBButton _openButton(WidgetTester tester) => tester
     .widgetList<BBButton>(find.byType(BBButton))
     .firstWhere((b) => b.iconData == Icons.open_in_new);
 
+Future<void> _settleBloc(WidgetTester tester) async {
+  await tester.runAsync(() => pumpEventQueue());
+  await tester.pumpAndSettle();
+}
+
 class _NoConfidentialSepa
     implements GetConfidentialSepaFundingAvailabilityUsecase {
   @override
@@ -169,7 +179,7 @@ void main() {
     await _pumpLoaded(tester, link);
 
     await tester.tap(find.byIcon(Icons.open_in_new));
-    await tester.pump();
+    await _settleBloc(tester);
 
     expect(
       _openButton(tester).disabled,
@@ -179,7 +189,7 @@ void main() {
     expect(link.opened.single.toString(), _link);
 
     link.releaseAll();
-    await tester.pumpAndSettle();
+    await _settleBloc(tester);
   });
 
   testWidgets('a second tap while in flight does not open the link twice', (
@@ -189,14 +199,14 @@ void main() {
     await _pumpLoaded(tester, link);
 
     await tester.tap(find.byIcon(Icons.open_in_new));
-    await tester.pump();
+    await _settleBloc(tester);
     await tester.tap(find.byIcon(Icons.open_in_new), warnIfMissed: false);
-    await tester.pump();
+    await _settleBloc(tester);
 
     expect(link.opened, hasLength(1));
 
     link.releaseAll();
-    await tester.pumpAndSettle();
+    await _settleBloc(tester);
   });
 
   testWidgets('the button is re-enabled once the launch settles', (
@@ -206,9 +216,9 @@ void main() {
     await _pumpLoaded(tester, link);
 
     await tester.tap(find.byIcon(Icons.open_in_new));
-    await tester.pump();
+    await _settleBloc(tester);
     link.pending.single.complete(const Ok(null));
-    await tester.pumpAndSettle();
+    await _settleBloc(tester);
 
     expect(_openButton(tester).disabled, isFalse);
   });
@@ -219,7 +229,7 @@ void main() {
     await _pumpLoaded(tester, const _FailingExternalLink());
 
     await tester.tap(find.byIcon(Icons.open_in_new));
-    await tester.pumpAndSettle();
+    await _settleBloc(tester);
 
     expect(
       find.text('The payment link could not be opened. Please try again.'),

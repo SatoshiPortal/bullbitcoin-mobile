@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -129,7 +130,8 @@ class PriceInput extends StatelessWidget {
         ),
         const Gap(14),
         Text(
-          '~$amountEquivalent',
+          // No equivalent (no price): a lone "~" would read as a value.
+          amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.onSurfaceVariant,
           ),

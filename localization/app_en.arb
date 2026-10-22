@@ -15492,7 +15492,7 @@
   "@recipientsConfidentialSepaActivatingTitle": {
     "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
   },
-  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This can take a few minutes.",
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
   "@recipientsConfidentialSepaActivatingDescription": {
     "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
   },
@@ -15500,7 +15500,7 @@
   "@recipientsConfidentialSepaNotActivatedTitle": {
     "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
-  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This can take a few minutes. You can use Instant and Regular SEPA instead.",
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We'll notify you when ready. You can use Instant and Regular SEPA instead.",
   "@recipientsConfidentialSepaNotActivatedDescription": {
     "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
@@ -15515,6 +15515,10 @@
   "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
   "@recipientsConfidentialSepaUseRegularSepa": {
     "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsReturnHome": "Return Home",
+  "@recipientsReturnHome": {
+    "description": "Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready"
   },
   "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
   "@recipientsVirtualIbanIntroTitle": {
@@ -15560,7 +15564,7 @@
   "@recipientsVirtualIbanActivatingTitle": {
     "description": "Title while the virtual IBAN is being created"
   },
-  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes.",
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes. We'll notify you when ready.",
   "@recipientsVirtualIbanActivatingDescription": {
     "description": "Description while the virtual IBAN is being created"
   },
@@ -15588,7 +15592,7 @@
   "@recipientsVirtualIbanRecipientName": {
     "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
   },
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN Account Number",
   "@recipientsVirtualIbanIbanLabel": {
     "description": "Label of the virtual IBAN account number"
   },
@@ -15684,21 +15688,62 @@
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
   },
-  "themeLightDescription": "Use light theme",
-  "@themeLightDescription": {
-    "description": "Light theme option description"
+  "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@sellQuoteExpiredError": {
+    "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
   },
-  "themeDarkDescription": "Use dark theme",
-  "@themeDarkDescription": {
-    "description": "Dark theme option description"
+  "exchangePaymentSentPastDeadline": "Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
+  "@exchangePaymentSentPastDeadline": {
+    "description": "Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment."
   },
-  "themeSystemDescription": "Follow system setting",
-  "@themeSystemDescription": {
-    "description": "System theme option description"
+  "exchangePaymentSentLeave": "Leave",
+  "@exchangePaymentSentLeave": {
+    "description": "Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline."
   },
-  "comingSoonTitle": "Feature Coming Soon",
-  "@comingSoonTitle": {
-    "description": "Title for the coming soon bottom sheet"
+  "payQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@payQuoteExpiredError": {
+    "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Try again, or go back and start a new order.",
+  "@exchangeQuoteUnavailableError": {
+    "description": "Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid."
+  },
+  "buyQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@buyQuoteExpiredError": {
+    "description": "Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought."
+  },
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "@recipientsFieldBankAccountIban": {
+    "description": "Label for the destination bank account IBAN on the SEPA recipient form"
+  },
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
+  "@recipientsTypeConfidentialSepaDescription": {
+    "description": "Explanation of Confidential SEPA in the payout method selector"
+  },
+  "sellPayoutBalance": "Add to my account balance",
+  "@sellPayoutBalance": {
+    "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
+  },
+  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
+  "@sellPayoutSepaDescription": {
+    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
+  },
+  "sellPayoutTitle": "Select recipient",
+  "@sellPayoutTitle": {
+    "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
+  },
+  "sellPayoutNewBadge": "NEW",
+  "@sellPayoutNewBadge": {
+    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
+  },
+  "allSeedViewSwapLinkedWallet": "Linked wallet: {fingerprint}",
+  "@allSeedViewSwapLinkedWallet": {
+    "description": "Fingerprint of the wallet linked to the swap master key",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
   },
   "allSeedViewSwapMnemonicTitle": "Swap mnemonic",
   "@allSeedViewSwapMnemonicTitle": {
@@ -15708,9 +15753,13 @@
   "@allSeedViewDeleteSwapMnemonicTitle": {
     "description": "Confirmation dialog title for deleting the swap mnemonic"
   },
-  "allSeedViewDeleteSwapMnemonicMessage": "This removes the swap master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing swaps are unaffected.",
-  "@allSeedViewDeleteSwapMnemonicMessage": {
-    "description": "Explanation shown before deleting the swap mnemonic"
+  "themeDarkDescription": "Use dark theme",
+  "@themeDarkDescription": {
+    "description": "Dark theme option description"
+  },
+  "themeSystemDescription": "Follow system setting",
+  "@themeSystemDescription": {
+    "description": "System theme option description"
   },
   "allSeedViewSwapFingerprint": "Fingerprint: {fingerprint} ({network})",
   "@allSeedViewSwapFingerprint": {
@@ -15724,13 +15773,16 @@
       }
     }
   },
-  "allSeedViewSwapLinkedWallet": "Linked wallet: {fingerprint}",
-  "@allSeedViewSwapLinkedWallet": {
-    "description": "Fingerprint of the wallet linked to the swap master key",
-    "placeholders": {
-      "fingerprint": {
-        "type": "String"
-      }
-    }
+  "themeLightDescription": "Use light theme",
+  "@themeLightDescription": {
+    "description": "Light theme option description"
+  },
+  "comingSoonTitle": "Feature Coming Soon",
+  "@comingSoonTitle": {
+    "description": "Title for the coming soon bottom sheet"
+  },
+  "allSeedViewDeleteSwapMnemonicMessage": "This removes the swap master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing swaps are unaffected.",
+  "@allSeedViewDeleteSwapMnemonicMessage": {
+    "description": "Explanation shown before deleting the swap mnemonic"
   }
 }

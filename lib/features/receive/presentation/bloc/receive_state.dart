@@ -59,7 +59,12 @@ abstract class ReceiveState with _$ReceiveState {
       failure is ReceiveAmountAboveProtocolLimitFailure;
 
   List<String> get inputAmountCurrencyCodes {
-    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+    // With no price, an amount cannot be requested in fiat: offer none.
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      if (exchangeRate > 0) ...fiatCurrencyCodes,
+    ];
   }
 
   bool get swapLimitsFetched => swapLimits != null;
@@ -198,6 +203,8 @@ abstract class ReceiveState with _$ReceiveState {
   }
 
   String get formattedConfirmedAmountFiat {
+    // No price: no fiat equivalent rather than a misleading zero.
+    if (exchangeRate <= 0) return '';
     return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
   }
 
@@ -211,6 +218,8 @@ abstract class ReceiveState with _$ReceiveState {
       } else {
         return FormatAmount.btc(inputAmountBtc);
       }
+    } else if (exchangeRate <= 0) {
+      return '';
     } else {
       return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }

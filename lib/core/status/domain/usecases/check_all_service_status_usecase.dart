@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:clock/clock.dart';
+
 import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
@@ -208,10 +210,16 @@ class CheckAllServiceStatusUsecase {
       currency: 'USD',
     );
 
+    // A price under a minute old is served without asking the pricer, so an
+    // online pricer is dated by its last real answer. A failure is never
+    // cached: that one is a fresh attempt.
+    final isOnline = price > 0;
     return ServiceStatusInfo(
-      status: price > 0 ? ServiceStatus.online : ServiceStatus.offline,
+      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
       name: 'Pricer',
-      lastChecked: DateTime.now(),
+      lastChecked:
+          (isOnline ? _bitcoinPriceRepository.priceFetchedAt('USD') : null) ??
+          clock.now(),
     );
   }
 

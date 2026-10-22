@@ -6,12 +6,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -32,8 +34,11 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
     _payjoinRefreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       final bloc = context.read<BuyBloc>();
       final state = bloc.state;
-      if (state.buyOrder?.payjoinOutcome.isOngoing != true) {
+      final order = state.buyOrder;
+      if (order == null || !order.isAwaitingPayjoinAt(clock.now())) {
         _payjoinRefreshTimer?.cancel();
+        // Past the window the payjoin status no longer applies: drop it.
+        setState(() {});
         return;
       }
       if (!state.isRefreshingOrder) bloc.add(const BuyEvent.refreshOrder());
@@ -80,6 +85,11 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
           BullAsyncStatus(
             state: switch (buyOrder.payjoinOutcome) {
               OrderPayjoinOutcome.none => BullAsyncStatusState.hidden,
+              // Past its window the payout goes out as an ordinary transaction,
+              // which the exchange reports only once it is sent.
+              OrderPayjoinOutcome.inProgress
+                  when !buyOrder.isAwaitingPayjoinAt(clock.now()) =>
+                BullAsyncStatusState.hidden,
               OrderPayjoinOutcome.inProgress => BullAsyncStatusState.inProgress,
               OrderPayjoinOutcome.succeeded => BullAsyncStatusState.succeeded,
               OrderPayjoinOutcome.plainSend => BullAsyncStatusState.fallback,
@@ -101,12 +111,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
                   textAlign: .center,
                 ),
                 const Gap(4),
-                BullCountdown(
-                  until: payoutTime,
-                  onTimeout: () {
-                    // TODO: Maybe fetch the order again or notify the user
-                  },
-                ),
+                BullCountdown(until: payoutTime),
               ],
             ),
         ],

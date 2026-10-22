@@ -99,12 +99,18 @@ class LoadSellContextUsecase {
     String? currencyCode,
   }) async {
     try {
-      return Ok(
-        await _convertSatsToCurrencyAmountUsecase.execute(
-          amountSat: amountSat,
-          currencyCode: currencyCode,
-        ),
+      final value = await _convertSatsToCurrencyAmountUsecase.execute(
+        amountSat: amountSat,
+        currencyCode: currencyCode,
       );
+      // The pricer reports an unavailable price as zero. The sell estimate
+      // would then need zero sats and pass any balance check.
+      if (!value.isFinite || value <= 0) {
+        return const Err(
+          SellQuoteUnavailableFailure('No price for the estimate'),
+        );
+      }
+      return Ok(value);
     } catch (e, st) {
       log.severe(
         message: 'Failed to convert sats to the display currency',

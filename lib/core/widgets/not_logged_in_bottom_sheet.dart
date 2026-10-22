@@ -66,7 +66,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
                 bgColor: context.appColors.secondary,
-                textColor: context.appColors.onPrimary,
+                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

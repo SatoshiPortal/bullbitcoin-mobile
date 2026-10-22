@@ -11851,7 +11851,7 @@
   "recipientsVirtualIbanCopied": "클립보드에 복사",
   "recipientsVirtualIbanDone": "한국어",
   "recipientsVirtualIbanRecipientName": "이름 *",
-  "recipientsVirtualIbanIbanLabel": "IBAN 계정 번호",
+  "recipientsVirtualIbanIbanLabel": "가상 IBAN 계좌번호",
   "recipientsVirtualIbanCountry": "은행 계좌",
   "recipientsVirtualIbanBic": "BIC 코드",
   "fundExchangeMethodConfidentialSepa": "기밀 SEPA",
@@ -11862,5 +11862,11 @@
   "recipientsVirtualIbanBankAddress": "은행 주소",
   "recipientsVirtualIbanBankAddressHelp": "은행에서 요구하는 경우 사용할 공식 은행 주소입니다.",
   "recipientsConfidentialSepaNameMustMatchHint": "은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다.",
-  "copiedToClipboard": "클립보드에 복사되었습니다"
+  "copiedToClipboard": "클립보드에 복사되었습니다",
+  "recipientsFieldBankAccountIban": "은행 계좌번호 (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다",
+  "sellPayoutBalance": "내 계정 잔액에 추가",
+  "sellPayoutSepaDescription": "출금 내역의 송금인이 Leonod로 표시됩니다",
+  "sellPayoutTitle": "수신자 선택",
+  "sellPayoutNewBadge": "신규"
 }

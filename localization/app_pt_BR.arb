@@ -11863,7 +11863,7 @@
   "recipientsVirtualIbanCopied": "Copiado para clipboard",
   "recipientsVirtualIbanDone": "Feito",
   "recipientsVirtualIbanRecipientName": "Nome do destinatário",
-  "recipientsVirtualIbanIbanLabel": "Número de conta IBAN",
+  "recipientsVirtualIbanIbanLabel": "Número da conta IBAN virtual",
   "recipientsVirtualIbanCountry": "País de conta bancária",
   "recipientsVirtualIbanBic": "Código BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA Confidencial",
@@ -11874,5 +11874,11 @@
   "recipientsVirtualIbanBankAddress": "Endereço do banco",
   "recipientsVirtualIbanBankAddressHelp": "O endereço oficial do banco, caso seu banco solicite.",
   "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual precisam corresponder, caso contrário as transferências serão devolvidas automaticamente.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "recipientsFieldBankAccountIban": "Número da conta bancária (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Os saques aparecem como uma transferência para você mesmo com o nome da sua conta",
+  "sellPayoutBalance": "Adicionar ao saldo da minha conta",
+  "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
+  "sellPayoutTitle": "Selecionar destinatário",
+  "sellPayoutNewBadge": "NOVO"
 }

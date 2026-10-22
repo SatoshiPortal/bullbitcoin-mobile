@@ -132,6 +132,7 @@ void main() {
           when(() => order.orderNumber).thenReturn(123);
           when(() => order.confirmationDeadline).thenReturn(null);
           when(() => order.toAddress).thenReturn(address);
+          when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
           when(() => order.payinAmount).thenReturn(0.001);
           when(() => order.payoutAmount).thenReturn(50);
           when(() => order.payoutCurrency).thenReturn('CAD');
@@ -143,6 +144,8 @@ void main() {
         when(
           () => sellOrder.payoutMethod,
         ).thenReturn(OrderPaymentMethod.cadBalance);
+        when(() => sellOrder.bitcoinAddress).thenReturn(address);
+        when(() => sellOrder.liquidAddress).thenReturn(null);
         when(() => sellOrder.payjoinBip21).thenReturn(null);
         when(() => payOrder.payjoinBip21).thenReturn(null);
         when(() => payOrder.paymentDescription).thenReturn(null);

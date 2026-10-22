@@ -12038,7 +12038,7 @@
   "recipientsVirtualIbanCopied": "कोपिड टू क्लिपबोर्ड",
   "recipientsVirtualIbanDone": "हो गया",
   "recipientsVirtualIbanRecipientName": "Recipient name",
-  "recipientsVirtualIbanIbanLabel": "IBAN खाता संख्या",
+  "recipientsVirtualIbanIbanLabel": "वर्चुअल IBAN खाता संख्या",
   "recipientsVirtualIbanCountry": "बैंक खाता देश",
   "recipientsVirtualIbanBic": "BIC कोड",
   "fundExchangeMethodConfidentialSepa": "गोपनीय SEPA",
@@ -12049,5 +12049,11 @@
   "recipientsVirtualIbanBankAddress": "बैंक का पता",
   "recipientsVirtualIbanBankAddressHelp": "बैंक का आधिकारिक पता, अगर आपका बैंक माँगे।",
   "recipientsConfidentialSepaNameMustMatchHint": "आपके बैंक और वर्चुअल IBAN खातों के नाम मेल खाने चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिए जाएँगे।",
-  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+  "recipientsFieldBankAccountIban": "बैंक खाता संख्या (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "निकासी आपके खाते के नाम से खुद को किए गए ट्रांसफ़र के रूप में दिखाई देती है",
+  "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
+  "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
+  "sellPayoutTitle": "प्राप्तकर्ता चुनें",
+  "sellPayoutNewBadge": "नया"
 }
