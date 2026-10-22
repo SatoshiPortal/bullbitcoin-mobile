@@ -29,6 +29,11 @@ import 'tor_logger.dart';
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
 
+/// SOCKS connect budget. A first hidden-service contact often exceeds the
+/// SDK's 30-second default on a freshly bootstrapped phone; callers keep their
+/// own shorter timeouts where they need them.
+final _connectTimeoutMs = BigInt.from(120000);
+
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
@@ -102,11 +107,12 @@ final class OnionTorBackend implements EmbeddedTorPort {
       _log.config('Starting embedded Tor with ${transport.name} transport...');
       final startedAt = DateTime.now();
       final service = switch (transport) {
-        TorTransport.direct => await onion.TorService.start(
+        TorTransport.direct => await onion.TorService.startWithConnectTimeout(
           stateDir: stateDir.path,
           cacheDir: cacheDir.path,
           socksPort: 0,
           policy: _socksPolicy,
+          connectTimeoutMs: _connectTimeoutMs,
         ),
         TorTransport.snowflake => await _startWithSnowflake(
           stateDir.path,
@@ -247,9 +253,10 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
 
     try {
-      final session = await service.openSession(
+      final session = await service.openSessionWithConnectTimeout(
         socksPort: 0,
         policy: _socksPolicy,
+        connectTimeoutMs: _connectTimeoutMs,
       );
       return TorSession(
         TorProxyEndpoint(
@@ -345,12 +352,13 @@ final class OnionTorBackend implements EmbeddedTorPort {
   ) async {
     final snowflakePort = await onion.SnowflakeTransport.start();
     _snowflakeLease = true;
-    return onion.TorService.startWithSnowflake(
+    return onion.TorService.startWithSnowflakeConnectTimeout(
       stateDir: stateDir,
       cacheDir: cacheDir,
       socksPort: 0,
       snowflakePort: snowflakePort,
       policy: _socksPolicy,
+      connectTimeoutMs: _connectTimeoutMs,
     );
   }
 
