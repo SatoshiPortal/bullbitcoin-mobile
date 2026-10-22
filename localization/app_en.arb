@@ -15735,5 +15735,54 @@
   "sellPayoutNewBadge": "NEW",
   "@sellPayoutNewBadge": {
     "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
+  },
+  "allSeedViewSwapLinkedWallet": "Linked wallet: {fingerprint}",
+  "@allSeedViewSwapLinkedWallet": {
+    "description": "Fingerprint of the wallet linked to the swap master key",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "allSeedViewSwapMnemonicTitle": "Swap mnemonic",
+  "@allSeedViewSwapMnemonicTitle": {
+    "description": "Heading for the swap mnemonic section"
+  },
+  "allSeedViewDeleteSwapMnemonicTitle": "Delete swap mnemonic?",
+  "@allSeedViewDeleteSwapMnemonicTitle": {
+    "description": "Confirmation dialog title for deleting the swap mnemonic"
+  },
+  "themeDarkDescription": "Use dark theme",
+  "@themeDarkDescription": {
+    "description": "Dark theme option description"
+  },
+  "themeSystemDescription": "Follow system setting",
+  "@themeSystemDescription": {
+    "description": "System theme option description"
+  },
+  "allSeedViewSwapFingerprint": "Fingerprint: {fingerprint} ({network})",
+  "@allSeedViewSwapFingerprint": {
+    "description": "Fingerprint and network of the swap master key",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "themeLightDescription": "Use light theme",
+  "@themeLightDescription": {
+    "description": "Light theme option description"
+  },
+  "comingSoonTitle": "Feature Coming Soon",
+  "@comingSoonTitle": {
+    "description": "Title for the coming soon bottom sheet"
+  },
+  "allSeedViewDeleteSwapMnemonicMessage": "This removes the swap master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing swaps are unaffected.",
+  "@allSeedViewDeleteSwapMnemonicMessage": {
+    "description": "Explanation shown before deleting the swap mnemonic"
   }
 }

@@ -154,27 +154,37 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 context,
                 context.loc.payRecipientType,
                 switch (recipient.type) {
-                  // TODO: Use localization labels instead of hardcoded strings.
                   // CANADA types
-                  RecipientType.interacEmailCad => 'Interac e-Transfer',
-                  RecipientType.billPaymentCad => 'Bill Payment',
-                  RecipientType.bankTransferCad => 'Bank Transfer',
+                  RecipientType.interacEmailCad =>
+                    context.loc.recipientsTypeInteracEmail,
+                  RecipientType.billPaymentCad =>
+                    context.loc.recipientsTypeBillPayment,
+                  RecipientType.bankTransferCad =>
+                    context.loc.recipientsTypeBankTransfer,
                   // EUROPE types
-                  RecipientType.sepaEur => 'SEPA Transfer',
+                  RecipientType.sepaEur => context.loc.recipientsTypeSepa,
                   RecipientType.confidentialSepaEur =>
                     context.loc.recipientsTypeConfidentialSepa,
                   // MEXICO types
-                  RecipientType.speiClabeMxn => 'SPEI CLABE',
-                  RecipientType.speiSmsMxn => 'SPEI SMS',
-                  RecipientType.speiCardMxn => 'SPEI Card',
+                  RecipientType.speiClabeMxn =>
+                    context.loc.recipientsTypeSpeiClabe,
+                  RecipientType.speiSmsMxn => context.loc.recipientsTypeSpeiSms,
+                  RecipientType.speiCardMxn =>
+                    context.loc.recipientsTypeSpeiCard,
                   // COSTA RICA types
-                  RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-                  RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-                  RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+                  RecipientType.sinpeIbanUsd =>
+                    context.loc.recipientsTypeSinpeIbanUsd,
+                  RecipientType.sinpeIbanCrc =>
+                    context.loc.recipientsTypeSinpeIbanCrc,
+                  RecipientType.sinpeMovilCrc =>
+                    context.loc.recipientsTypeSinpeMovil,
                   // ARGENTINA types
-                  RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
-                  RecipientType.pseColombia => 'Bank Account COP',
-                  RecipientType.nequiColombia => 'Nequi',
+                  RecipientType.bankAccountArgentina =>
+                    context.loc.recipientsTypeBankAccountAr,
+                  RecipientType.pseColombia =>
+                    context.loc.recipientsTypeBankAccountCo,
+                  RecipientType.nequiColombia =>
+                    context.loc.recipientsTypeNequi,
                 },
               ),
               const Gap(8),
@@ -186,8 +196,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
               const Gap(8),
               _buildDetailRow(
                 context,
-                _getRecipientInfoLabel(recipient),
-                _getRecipientInfoValue(recipient) ?? 'No details available',
+                _getRecipientInfoLabel(context, recipient),
+                _getRecipientInfoValue(recipient) ??
+                    context.loc.payNoDetailsAvailable,
               ),
               const Gap(8),
               _buildDetailRow(
@@ -341,36 +352,38 @@ class PayReceivePaymentScreen extends StatelessWidget {
         : AddressViewer(fullText);
   }
 
-  String _getRecipientInfoLabel(RecipientViewModel recipient) {
+  String _getRecipientInfoLabel(
+    BuildContext context,
+    RecipientViewModel recipient,
+  ) {
     switch (recipient.type) {
       case RecipientType.interacEmailCad:
-        return 'Email';
+        return context.loc.recipientsInfoEmail;
       case RecipientType.billPaymentCad:
-        return 'Payee';
+        return context.loc.recipientsInfoPayee;
       case RecipientType.bankTransferCad:
-        return 'Account';
+        return context.loc.recipientsInfoAccount;
       case RecipientType.sepaEur:
       case RecipientType.confidentialSepaEur:
-        return 'IBAN';
+        return context.loc.recipientsFieldIban;
       case RecipientType.speiClabeMxn:
-        return 'CLABE';
+        return context.loc.recipientsFieldClabe;
       case RecipientType.speiSmsMxn:
-        return 'Phone';
+        return context.loc.recipientsInfoPhone;
       case RecipientType.speiCardMxn:
-        return 'Card';
+        return context.loc.recipientsInfoCard;
       case RecipientType.sinpeIbanUsd:
-        return 'IBAN';
+        return context.loc.recipientsFieldIban;
       case RecipientType.sinpeIbanCrc:
-        return 'IBAN';
+        return context.loc.recipientsFieldIban;
       case RecipientType.sinpeMovilCrc:
-        return 'Phone';
+        return context.loc.recipientsInfoPhone;
       case RecipientType.bankAccountArgentina:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return context.loc.recipientsInfoAccount;
       case RecipientType.pseColombia:
-        return 'Bank Account';
+        return context.loc.recipientsInfoAccount;
       case RecipientType.nequiColombia:
-        return 'Phone Number';
+        return context.loc.recipientsFieldPhoneNumber;
     }
   }
 

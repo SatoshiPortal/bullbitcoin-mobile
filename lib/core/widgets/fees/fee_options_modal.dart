@@ -150,15 +150,11 @@ class _PresetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cache = snapshot.feePreviewCache;
-    // Titles MUST be FeeSelection.X.title() — the modal returns them
-    // via Navigator.pop and the caller routes back through
-    // FeeSelectionName.fromString. Localising the title would break
-    // that round-trip until the lookup is keyed on the enum instead
-    // (pre-existing l10n debt).
     final items = [
       _presetItem(
         context: context,
-        title: FeeSelection.fastest.title(),
+        value: FeeSelection.fastest.title(),
+        title: context.loc.sendFastFee,
         description: context.loc.sendEstimatedDelivery10Minutes,
         rate: snapshot.feePresets?.fastest,
         slot: cache.fastest,
@@ -168,7 +164,8 @@ class _PresetList extends StatelessWidget {
       ),
       _presetItem(
         context: context,
-        title: FeeSelection.economic.title(),
+        value: FeeSelection.economic.title(),
+        title: context.loc.sendEconomyFee,
         description: context.loc.sendEstimatedDelivery10to30Minutes,
         rate: snapshot.feePresets?.economic,
         slot: cache.economic,
@@ -178,7 +175,8 @@ class _PresetList extends StatelessWidget {
       ),
       _presetItem(
         context: context,
-        title: FeeSelection.slow.title(),
+        value: FeeSelection.slow.title(),
+        title: context.loc.feePrioritySlow,
         description: context.loc.sendEstimatedDeliveryHours,
         rate: snapshot.feePresets?.slow,
         slot: cache.slow,
@@ -199,6 +197,7 @@ class _PresetList extends StatelessWidget {
 /// the row renders a shimmer instead of an empty subtitle.
 BullSelectableListItem _presetItem({
   required BuildContext context,
+  required String value,
   required String title,
   required String description,
   required NetworkFee? rate,
@@ -209,7 +208,7 @@ BullSelectableListItem _presetItem({
 }) {
   if (rate == null) {
     return BullSelectableListItem(
-      value: title,
+      value: value,
       title: title,
       subtitle1: description,
       subtitle2: '',
@@ -220,7 +219,7 @@ BullSelectableListItem _presetItem({
   final previewFeeSat = slot.feeSat;
   if (previewFeeSat == null) {
     return BullSelectableListItem(
-      value: title,
+      value: value,
       title: title,
       subtitle1: description,
       subtitle2: rateLabel,
@@ -232,7 +231,7 @@ BullSelectableListItem _presetItem({
             '$fiatCurrencyCode)'
       : '';
   return BullSelectableListItem(
-    value: title,
+    value: value,
     title: title,
     subtitle1: description,
     subtitle2:

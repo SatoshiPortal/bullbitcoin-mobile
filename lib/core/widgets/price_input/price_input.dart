@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -176,7 +177,7 @@ class CurrencyBottomSheet extends StatelessWidget {
               const Gap(16 * 3),
               const Spacer(),
               Text(
-                'Currency',
+                context.loc.settingsCurrencyTitle,
                 style: context.font.headlineMedium?.copyWith(
                   color: context.appColors.onSurface,
                 ),
