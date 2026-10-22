@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:core';
+import 'dart:core' as core;
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
+import 'package:bull_payjoin/src/engine/payjoin_servers.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
@@ -129,56 +133,167 @@ void main() {
     });
   });
 
-  group('fetchOhttpKeyAndRelay', () {
+  group('fetchDirectoryKeys', () {
     test(
-      'returns the first successful relay and requested directory',
+      'moves to another relay off the directory host when one fails',
       () async {
+        const directory = 'https://payjoin.lab.vinteum.org';
+        const workingRelay = 'https://pj.bobspacebkk.com';
         final keys = _fakeOhttpKeys();
-        final seenDirectories = <String>{};
+        final attempts = <(String, String)>[];
         final datasource = PdkPayjoinDatasource(
           log: PayjoinLogger.silent,
           dio: Dio(),
+          random: Random(2),
           ohttpKeysFetcher:
-              ({required ohttpRelayUrl, required directoryUrl}) async {
-                seenDirectories.add(directoryUrl);
-                if (ohttpRelayUrl != 'https://pj.bobspacebkk.com') {
-                  throw StateError('relay unavailable');
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                attempts.add((ohttpRelayUrl, directoryUrl));
+                if (directoryUrl != directory ||
+                    ohttpRelayUrl != workingRelay) {
+                  throw StateError('unavailable');
                 }
                 return keys;
               },
         );
 
-        final (resultKeys, relay) = await datasource.fetchOhttpKeyAndRelay(
-          payjoinDirectory: 'https://directory.example',
-        );
+        final result = await datasource.fetchDirectoryKeys();
 
-        expect(resultKeys, same(keys));
-        expect(relay, 'https://pj.bobspacebkk.com');
-        expect(seenDirectories, {'https://directory.example'});
+        expect(result?.keys, same(keys));
+        expect(result?.directory, directory);
+        expect(attempts.last, (workingRelay, directory));
+        for (final (relay, directory) in attempts) {
+          expect(relay, isNot(directory));
+        }
         await datasource.dispose();
       },
     );
 
-    test('tries every relay before returning unavailable', () async {
-      final attempted = <String>{};
+    test(
+      'tries every relay outside each directory domain, then gives up',
+      () async {
+        final attempts = <(String, String)>[];
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: Dio(),
+          ohttpKeysFetcher:
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                attempts.add((ohttpRelayUrl, directoryUrl));
+                throw StateError('unavailable');
+              },
+        );
+
+        expect(await datasource.fetchDirectoryKeys(), isNull);
+        final urls = PayjoinConstants.serverUrls.map((url) => url.toString());
+        expect(attempts.toSet(), {
+          for (final directory in urls)
+            for (final relay in urls)
+              if (relay != directory) (relay, directory),
+        });
+        expect(attempts, hasLength(urls.length * (urls.length - 1)));
+        await datasource.dispose();
+      },
+    );
+  });
+
+  group('relays reach a directory only from another domain', () {
+    final sameEntity = core.Uri.https('ohttp.example.com');
+    final directory = core.Uri.https('dir.example.com');
+    final otherEntity = core.Uri.https('relay.example.org');
+    final servers = [sameEntity, directory, otherEntity];
+
+    setUpAll(() => registerFallbackValue(Options()));
+
+    test('when fetching the OHTTP keys of a directory', () async {
+      final attempts = <(String, String)>[];
       final datasource = PdkPayjoinDatasource(
         log: PayjoinLogger.silent,
         dio: Dio(),
+        servers: servers,
         ohttpKeysFetcher:
-            ({required ohttpRelayUrl, required directoryUrl}) async {
-              attempted.add(ohttpRelayUrl);
-              throw StateError('relay unavailable');
+            ({
+              required ohttpRelayUrl,
+              required directoryUrl,
+              required timeout,
+            }) async {
+              attempts.add((ohttpRelayUrl, directoryUrl));
+              throw StateError('unavailable');
             },
       );
 
-      expect(
-        await datasource.fetchOhttpKeyAndRelay(
-          payjoinDirectory: PayjoinConstants.directoryUrl,
-        ),
-        (null, null),
-      );
-      expect(attempted, PayjoinConstants.ohttpRelayUrlsBase.toSet());
+      expect(await datasource.fetchDirectoryKeys(), isNull);
+      expect(attempts.where((attempt) => attempt.$2 == directory.toString()), [
+        (otherEntity.toString(), directory.toString()),
+      ]);
+      for (final (relay, dir) in attempts) {
+        expect(
+          payjoinDomainOf(core.Uri.parse(relay)),
+          isNot(payjoinDomainOf(core.Uri.parse(dir))),
+        );
+      }
       await datasource.dispose();
+    });
+
+    test('when a receiver session polls its directory', () {
+      fakeAsync((async) {
+        final relayHosts = <String>[];
+        final dio = _MockDio();
+        when(
+          () => dio.post<List<int>>(
+            any(),
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          ),
+        ).thenAnswer((invocation) async {
+          final url = invocation.positionalArguments.first as String;
+          relayHosts.add(core.Uri.parse(url).host);
+          throw StateError('relay unavailable');
+        });
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger.silent,
+          dio: dio,
+          servers: servers,
+          ohttpKeysFetcher:
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                if (directoryUrl != directory.toString()) {
+                  throw StateError('unavailable');
+                }
+                return _fakeOhttpKeys();
+              },
+        );
+
+        PayjoinReceiverModel? receiver;
+        datasource
+            .createReceiver(
+              walletId: 'w1',
+              address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              isTestnet: true,
+              maxFeeRateSatPerVb: BigInt.from(10),
+              expireAfterSec: 600,
+            )
+            .then((model) => receiver = model);
+        async.flushMicrotasks();
+        expect(payjoinDirectoryOf(receiver?.pjUri ?? '')?.host, directory.host);
+
+        async.elapse(
+          const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+        );
+
+        expect(relayHosts, [otherEntity.host]);
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
     });
   });
 
