@@ -145,7 +145,7 @@
   "backupInstruction4": "Non fare copie digitali del backup. Scrivilo su un pezzo di carta o inciso in metallo.",
   "hwKrux": "Krux",
   "transactionFilterTransfer": "Trasferimento",
-  "recoverbullSelectVaultImportSuccess": "La tua cassaforte e' stato importato con successo",
+  "recoverbullSelectVaultImportSuccess": "La tua cassaforte e' stata importata con successo",
   "mempoolServerNotUsed": "Non utilizzato (server personalizzato attivo)",
   "recoverbullSelectErrorPrefix": "Errore:",
   "exchangeLandingRecommendedExchange": "Scambio Bitcoin consigliato",
@@ -1038,7 +1038,7 @@
   "transactionDetailLabelPayjoinCompleted": "Completato",
   "sellArsBalance": "ARS Balance",
   "fundExchangeCanadaPostStep1": "1. Vai a qualsiasi Canada Post posizione",
-  "exchangeKycLight": "KYC Light",
+  "exchangeKycLight": "Verifica di base",
   "seedsignerInstructionsTitle": "Istruzioni SeedSigner",
   "exchangeAmountInputValidationEmpty": "Inserisci un importo",
   "bitboxActionPairDeviceProcessingSubtext": "Si prega di verificare il codice di accoppiamento sul dispositivo BitBox...",
@@ -1070,7 +1070,7 @@
   "exchangeBitcoinWalletsEnterAddressHint": "Inserisci l'indirizzo",
   "withdrawAmountContinue": "Continua",
   "allSeedViewSecurityWarningMessage": "Visualizzare frasi di seme è un rischio di sicurezza. Chiunque veda la tua frase di seme può accedere ai tuoi fondi. Assicurarsi di essere in una posizione privata e che nessuno può vedere lo schermo.",
-  "recoverbullSeeMoreVaults": "Vedi altre cassaforte",
+  "recoverbullSeeMoreVaults": "Vedi altre cassaforti",
   "sellPayFromWallet": "Paga dal portafoglio",
   "pinProtectionDescription": "Il PIN protegge l'accesso al portafoglio e alle impostazioni. Tienilo memorabile.",
   "kruxStep5": "Scansione del codice QR mostrato nel portafoglio Bull",
@@ -1496,7 +1496,7 @@
   "sendSignatureReceived": "Firma ricevuta",
   "failedToDeriveBackupKey": "Non è riuscito a derivare la chiave di backup",
   "recoverbullGoogleDriveErrorExportFailed": "Non ha esportato la cassaforte da Google Drive",
-  "exchangeKycLevelLight": "Verifica KYC di base",
+  "exchangeKycLevelLight": "Verifica di base",
   "bip329LabelsExportSuccess": "Etichette esportate con successo",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "L'opzione più lenta, ma può essere fatto tramite online banking (3-4 giorni lavorativi)",
   "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
@@ -1743,7 +1743,7 @@
   },
   "sendBroadcastTransaction": "Transazione di trasmissione",
   "receiveBitcoinConfirmationMessage": "La transazione Bitcoin richiederà un po 'per confermare.",
-  "recoverbullDecryptVault": "Decifrare la cassaforte",
+  "recoverbullDecryptVault": "Decifra la cassaforte",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "Il trasferimento è pronto per essere rimborsato.",
   "buyInputCompleteKyc": "Completa KYC",
@@ -1773,7 +1773,7 @@
   "payInvalidInvoice": "Fattura non valida",
   "receiveTotalFee": "Costo totale",
   "importQrDeviceButtonOpenCamera": "Aprire la fotocamera",
-  "recoverbullFetchingVaultKey": "Recupera la chiave della cassaforte",
+  "recoverbullFetchingVaultKey": "Recupero della chiave della cassaforte",
   "dcaConfirmFrequency": "Frequenza",
   "recoverbullGoogleDriveDeleteVaultTitle": "Elimina la cassaforte",
   "advancedOptionsTitle": "Opzioni avanzate",
@@ -1909,7 +1909,7 @@
   "fundExchangeOnlineBillPaymentDescription": "Qualsiasi importo che invii tramite la funzione di pagamento della fattura online della tua banca utilizzando le informazioni qui sotto sarà accreditato sul tuo saldo conto Bull Bitcoin entro 3-4 giorni lavorativi.",
   "receiveAwaitingPayment": "Pagamenti in attesa...",
   "onboardingRecover": "Recuperare",
-  "recoverbullGoogleDriveScreenTitle": "Cassaforte Google Drive",
+  "recoverbullGoogleDriveScreenTitle": "Casseforti su Google Drive",
   "receiveQRCode": "Codice QR QR",
   "appSettingsDevModeTitle": "Modalità Dev",
   "exchangeTestnetBasicAuthTitle": "Credenziali dell'exchange testnet",
@@ -1936,7 +1936,7 @@
   "recoverbullRecoveryContinueButton": "Continua",
   "payTimeoutError": "Tempo di pagamento. Si prega di controllare lo stato",
   "kruxStep4": "Fare clic su Carica dalla fotocamera",
-  "sellErrorRecalculateFees": "Non ha ricalcolato le Commissioni: {error}",
+  "sellErrorRecalculateFees": "Impossibile ricalcolare le commissioni: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
       "error": {
@@ -2757,7 +2757,7 @@
       }
     }
   },
-  "exchangeAccountInfoVerificationLightVerification": "Verifica KYC",
+  "exchangeAccountInfoVerificationLightVerification": "Verifica di base",
   "exchangeFeatureBankTransfers": "• Trasferimenti bancari e bollette di pagamento",
   "sellSendPaymentInstantPayments": "Pagamenti istantanei",
   "onboardingRecoverWalletButton": "Recuperare Wallet",
@@ -3200,7 +3200,7 @@
   "payPayee": "Pagamenti",
   "exchangeAccountComingSoon": "Questa funzione sta arrivando presto.",
   "sellInProgress": "Vendere in corso...",
-  "testBackupLastKnownVault": "Ultima cassaforte crittografato nota: {timestamp}",
+  "testBackupLastKnownVault": "Ultima cassaforte nota: {timestamp}",
   "@testBackupLastKnownVault": {
     "placeholders": {
       "timestamp": {
@@ -3404,7 +3404,7 @@
       }
     }
   },
-  "testBackupEncryptedVaultTitle": "Criptata",
+  "testBackupEncryptedVaultTitle": "Cassaforte crittografata",
   "dcaWalletTypeLiquid": "Liquido (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Numero di istituzione",
   "encryptedVaultDescription": "Backup anonimo con crittografia forte utilizzando il cloud.",
@@ -4678,7 +4678,7 @@
   "sendErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
   "sendErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlla la connessione e riprova.",
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvia il pagamento.",
-  "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprova o contatta l'assistenza.",
+  "sellUnexpectedError": "Il tuo ordine di vendita non è stato completato al momento. Riprova o contatta l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
   "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlla la connessione e riprova.",
   "walletLoadFailed": "Non è stato possibile caricare i tuoi portafogli. Controlla la connessione e riprova.",
@@ -4751,7 +4751,7 @@
   "autoBuyAccountUnavailableError": "Il tuo account Bull Bitcoin non è disponibile. Riprova più tardi.",
   "autoBuyWalletRequiredError": "Aggiungi almeno un indirizzo predefinito Bitcoin, Lightning o Liquid.",
   "autoBuyUpdateError": "Non è stato possibile aggiornare l'acquisto automatico. Riprova più tardi.",
-  "withdrawUnexpectedError": "Il suo prelievo non è stato completato al momento. Riprova o contatta l'assistenza.",
+  "withdrawUnexpectedError": "Il tuo prelievo non è stato completato al momento. Riprova o contatta l'assistenza.",
   "importWatchOnlyErrorNetworkMismatch": "Questo portafoglio sta usando una rete Bitcoin diversa. Passa da Mainnet a Testnet o viceversa, quindi riprova.",
   "importWatchOnlyErrorAlreadyExists": "Questo portafoglio è già stato importato.",
   "importWatchOnlyNetworkBitcoinMainnet": "Rete: mainnet Bitcoin",
