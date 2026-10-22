@@ -11,6 +11,7 @@ class BullScaffold extends StatelessWidget {
     required this.body,
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset,
+    this.backgroundColor,
   });
 
   /// Optional top bar (typically a [PreferredSizeWidget] or a sized box).
@@ -25,10 +26,13 @@ class BullScaffold extends StatelessWidget {
   /// Forwarded to [Scaffold.resizeToAvoidBottomInset].
   final bool? resizeToAvoidBottomInset;
 
+  /// Background fill; defaults to [BullTheme.surface].
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.bull.surface,
+      backgroundColor: backgroundColor ?? context.bull.surface,
       appBar: appBar,
       body: body,
       bottomNavigationBar: bottomNavigationBar,
