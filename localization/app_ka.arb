@@ -3792,5 +3792,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "თქვენი ბანკისა და ვირტუალური IBAN ანგარიშების სახელები უნდა ემთხვეოდეს, წინააღმდეგ შემთხვევაში გადარიცხვები ავტომატურად დაბრუნდება.",
   "copiedToClipboard": "დაკოპირდა ბუფერში",
   "recipientsFieldBankAccountIban": "საბანკო ანგარიშის ნომერი (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "გატანილი თანხები გამოჩნდება როგორც საკუთარ ანგარიშზე გადარიცხვა თქვენი ანგარიშის სახელით"
+  "recipientsTypeConfidentialSepaDescription": "გატანილი თანხები გამოჩნდება როგორც საკუთარ ანგარიშზე გადარიცხვა თქვენი ანგარიშის სახელით",
+  "sellPayoutBalance": "ჩემი ანგარიშის ბალანსზე დამატება",
+  "sellPayoutSepaDescription": "გატანილი თანხა ჩანს, როგორც Leonod-ის მიერ გამოგზავნილი",
+  "sellPayoutTitle": "აირჩიეთ მიმღები",
+  "sellPayoutNewBadge": "ახალი"
 }

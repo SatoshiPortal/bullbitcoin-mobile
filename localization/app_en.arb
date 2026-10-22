@@ -15492,7 +15492,7 @@
   "@recipientsConfidentialSepaActivatingTitle": {
     "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
   },
-  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This can take a few minutes.",
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
   "@recipientsConfidentialSepaActivatingDescription": {
     "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
   },
@@ -15500,7 +15500,7 @@
   "@recipientsConfidentialSepaNotActivatedTitle": {
     "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
-  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This can take a few minutes. You can use Instant and Regular SEPA instead.",
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We'll notify you when ready. You can use Instant and Regular SEPA instead.",
   "@recipientsConfidentialSepaNotActivatedDescription": {
     "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
@@ -15515,6 +15515,10 @@
   "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
   "@recipientsConfidentialSepaUseRegularSepa": {
     "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsReturnHome": "Return Home",
+  "@recipientsReturnHome": {
+    "description": "Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready"
   },
   "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
   "@recipientsVirtualIbanIntroTitle": {
@@ -15560,7 +15564,7 @@
   "@recipientsVirtualIbanActivatingTitle": {
     "description": "Title while the virtual IBAN is being created"
   },
-  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes.",
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes. We'll notify you when ready.",
   "@recipientsVirtualIbanActivatingDescription": {
     "description": "Description while the virtual IBAN is being created"
   },
@@ -15715,5 +15719,21 @@
   "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
   "@recipientsTypeConfidentialSepaDescription": {
     "description": "Explanation of Confidential SEPA in the payout method selector"
+  },
+  "sellPayoutBalance": "Add to my account balance",
+  "@sellPayoutBalance": {
+    "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
+  },
+  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
+  "@sellPayoutSepaDescription": {
+    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
+  },
+  "sellPayoutTitle": "Select recipient",
+  "@sellPayoutTitle": {
+    "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
+  },
+  "sellPayoutNewBadge": "NEW",
+  "@sellPayoutNewBadge": {
+    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
   }
 }

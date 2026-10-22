@@ -8,10 +8,13 @@ sealed class SellEvent with _$SellEvent {
     required bool isFiatCurrencyInput,
     required FiatCurrency fiatCurrency,
   }) = SellAmountInputContinuePressed;
-  const factory SellEvent.walletSelected({required Wallet wallet}) =
-      SellWalletSelected;
+  const factory SellEvent.walletSelected({
+    required Wallet wallet,
+    RecipientSelection? recipient,
+  }) = SellWalletSelected;
   const factory SellEvent.externalWalletNetworkSelected({
     required OrderBitcoinNetwork network,
+    RecipientSelection? recipient,
   }) = SellExternalWalletNetworkSelected;
   const factory SellEvent.paymentPreparationAbandoned() =
       SellPaymentPreparationAbandoned;

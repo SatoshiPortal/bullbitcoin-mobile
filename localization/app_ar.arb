@@ -11867,5 +11867,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.",
   "copiedToClipboard": "تم النسخ إلى الحافظة",
   "recipientsFieldBankAccountIban": "رقم الحساب المصرفي (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك"
+  "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك",
+  "sellPayoutBalance": "إضافة إلى رصيد حسابي",
+  "sellPayoutSepaDescription": "تظهر عمليات السحب على أنها مرسلة من Leonod",
+  "sellPayoutTitle": "اختر المستلم",
+  "sellPayoutNewBadge": "جديد"
 }

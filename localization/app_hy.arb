@@ -3669,5 +3669,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Ձեր բանկային և վիրտուալ IBAN հաշիվների անունները պետք է համընկնեն, հակառակ դեպքում փոխանցումները ավտոմատ կվերադարձվեն։",
   "copiedToClipboard": "Պատճենվեց սեղմատախտակին",
   "recipientsFieldBankAccountIban": "Բանկային հաշվի համարը (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Հանումները ցուցադրվում են որպես փոխանցում ինքներդ ձեզ՝ ձեր հաշվի անունով"
+  "recipientsTypeConfidentialSepaDescription": "Հանումները ցուցադրվում են որպես փոխանցում ինքներդ ձեզ՝ ձեր հաշվի անունով",
+  "sellPayoutBalance": "Ավելացնել իմ հաշվի մնացորդին",
+  "sellPayoutSepaDescription": "Կանխիկացումները ցուցադրվում են որպես Leonod-ի կողմից ուղարկված",
+  "sellPayoutTitle": "Ընտրեք ստացողին",
+  "sellPayoutNewBadge": "ՆՈՐ"
 }

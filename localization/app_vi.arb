@@ -3669,5 +3669,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Tên tại ngân hàng và tài khoản IBAN ảo của bạn phải khớp nhau, nếu không giao dịch chuyển sẽ bị hoàn lại tự động.",
   "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
   "recipientsFieldBankAccountIban": "Số tài khoản ngân hàng (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Các khoản rút tiền hiển thị như giao dịch chuyển cho chính bạn với tên tài khoản của bạn"
+  "recipientsTypeConfidentialSepaDescription": "Các khoản rút tiền hiển thị như giao dịch chuyển cho chính bạn với tên tài khoản của bạn",
+  "sellPayoutBalance": "Thêm vào số dư tài khoản của tôi",
+  "sellPayoutSepaDescription": "Các khoản rút tiền hiển thị là được gửi bởi Leonod",
+  "sellPayoutTitle": "Chọn người nhận",
+  "sellPayoutNewBadge": "MỚI"
 }

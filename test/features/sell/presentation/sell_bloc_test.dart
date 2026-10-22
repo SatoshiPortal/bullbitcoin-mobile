@@ -82,6 +82,12 @@ class _MockWallet extends Mock implements Wallet {}
 class _MockLogger extends Mock implements Logger {}
 
 class _MockSellOrder extends Mock implements SellOrder {
+  @override
+  OrderPaymentMethod get payinMethod =>
+      super.noSuchMethod(Invocation.getter(#payinMethod))
+          as OrderPaymentMethod? ??
+      OrderPaymentMethod.bitcoin;
+
   // Unstubbed, an order is in progress with no payjoin; tests can still stub
   // either with `when`. The order-progress log line reads both.
   @override
@@ -265,6 +271,8 @@ void main() {
     when(
       () => sellOrder.bitcoinAddress,
     ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => sellOrder.liquidAddress).thenReturn(null);
+    when(() => sellOrder.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     // The deposit-address pinning compares orders through this getter; the
     // default order carries the creation-time address.
     when(
@@ -357,6 +365,29 @@ void main() {
   tearDown(() async {
     if (!bloc.isClosed) await bloc.close();
   });
+
+  test(
+    'a missing deposit address blocks payment before building or signing',
+    () async {
+      when(() => sellOrder.bitcoinAddress).thenReturn(null);
+      when(() => sellOrder.toAddress).thenReturn(null);
+      final failed = bloc.stream.firstWhere(
+        (state) =>
+            state is SellPaymentState && state.error is SellUnexpectedFailure,
+      );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      final state = await failed as SellPaymentState;
+      expect(state.isConfirmingPayment, isFalse);
+      expect(state.isPayinBroadcast, isFalse);
+      verifyNoBuilds();
+      verifyNever(
+        () => signSellPayin.bitcoin(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    },
+  );
 
   group('Sell preparation lifecycle', () {
     test(
@@ -476,7 +507,7 @@ void main() {
         const bip21 =
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -524,7 +555,7 @@ void main() {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       // The engine persists the session (signed original included) before
       // posting to the directory; a post failure throws AFTER that persist.
       when(
@@ -584,7 +615,7 @@ void main() {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
@@ -623,7 +654,7 @@ void main() {
             '?amount=0.001&pj=https://payjo.in/session';
         const payjoinTxid =
             'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
@@ -692,7 +723,7 @@ void main() {
         const bip21 =
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
@@ -759,7 +790,7 @@ void main() {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       when(
         () => prepareSellBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
@@ -833,7 +864,7 @@ void main() {
         const bip21 =
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -1081,7 +1112,7 @@ void main() {
   });
 
   group('SellBloc — quote refresh scheduling', () {
-    Future<Result<SellOrder, SellFailure>> refreshCall() =>
+    Future<Result<Order, SellFailure>> refreshCall() =>
         refreshSellOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),

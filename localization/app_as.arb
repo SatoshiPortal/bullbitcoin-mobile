@@ -9235,5 +9235,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "আপোনাৰ বেংক আৰু ভাৰ্চুৱেল IBAN একাউণ্টৰ নাম মিলিব লাগিব, নহ’লে স্থানান্তৰ স্বয়ংক্ৰিয়ভাৱে ঘূৰাই পঠিওৱা হ’ব।",
   "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
   "recipientsFieldBankAccountIban": "বেংক একাউণ্ট নম্বৰ (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "উত্তোলনসমূহ আপোনাৰ একাউণ্টৰ নামত নিজৰ একাউণ্টলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়"
+  "recipientsTypeConfidentialSepaDescription": "উত্তোলনসমূহ আপোনাৰ একাউণ্টৰ নামত নিজৰ একাউণ্টলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়",
+  "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
+  "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
+  "sellPayoutTitle": "প্ৰাপক বাছক",
+  "sellPayoutNewBadge": "নতুন"
 }

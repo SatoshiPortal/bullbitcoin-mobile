@@ -21,11 +21,16 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+
+  /// Leaves the flow for the app home while activation continues in the
+  /// background. When null, the button is not shown.
+  final VoidCallback? onReturnHome;
   final VirtualIbanOnboardingPurpose purpose;
 
   static Future<RecipientType?> showForWithdraw(BuildContext context) {
@@ -52,6 +57,7 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
       child: VirtualIbanOnboardingView(
         onActivated: onActivated,
         onUseRegularSepa: onUseRegularSepa,
+        onReturnHome: onReturnHome,
         purpose: purpose,
       ),
     );
@@ -63,11 +69,13 @@ class VirtualIbanOnboardingView extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
   final VirtualIbanOnboardingPurpose purpose;
 
   @override
@@ -96,6 +104,7 @@ class VirtualIbanOnboardingView extends StatelessWidget {
                 VirtualIbanOnboardingStep.activating => _ActivatingStep(
                   state: state,
                   onUseRegularSepa: onUseRegularSepa,
+                  onReturnHome: onReturnHome,
                 ),
                 VirtualIbanOnboardingStep.active => _ActiveStep(
                   onActivated: onActivated,
@@ -260,15 +269,21 @@ class _IntroStepState extends State<_IntroStep> {
 }
 
 class _ActivatingStep extends StatelessWidget {
-  const _ActivatingStep({required this.state, required this.onUseRegularSepa});
+  const _ActivatingStep({
+    required this.state,
+    required this.onUseRegularSepa,
+    this.onReturnHome,
+  });
 
   final VirtualIbanOnboardingState state;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     final failure = state.failure;
+    final onReturnHome = this.onReturnHome;
     return _StatusLayout(
       icon: BullIcon(BullIcons.schedule, size: 48, color: colors.text),
       title: context.loc.recipientsVirtualIbanActivatingTitle,
@@ -284,6 +299,15 @@ class _ActivatingStep extends StatelessWidget {
           outlined: true,
           borderColor: colors.outline,
         ),
+        if (onReturnHome != null) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recipientsReturnHome,
+            onPressed: onReturnHome,
+            bgColor: colors.primary,
+            textColor: colors.onPrimary,
+          ),
+        ],
       ],
     );
   }

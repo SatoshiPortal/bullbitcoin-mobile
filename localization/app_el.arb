@@ -11864,5 +11864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα.",
   "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
   "recipientsFieldBankAccountIban": "Αριθμός τραπεζικού λογαριασμού (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας"
+  "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας",
+  "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
+  "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
+  "sellPayoutTitle": "Επιλογή παραλήπτη",
+  "sellPayoutNewBadge": "ΝΕΟ"
 }

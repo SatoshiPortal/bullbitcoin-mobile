@@ -4882,5 +4882,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Имена в вашем банке и в виртуальном IBAN должны совпадать, иначе переводы будут автоматически возвращены.",
   "copiedToClipboard": "Скопировано в буфер обмена",
   "recipientsFieldBankAccountIban": "Номер банковского счёта (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Выводы средств отображаются как перевод самому себе с именем вашего счёта"
+  "recipientsTypeConfidentialSepaDescription": "Выводы средств отображаются как перевод самому себе с именем вашего счёта",
+  "sellPayoutBalance": "Добавить к балансу моего счёта",
+  "sellPayoutSepaDescription": "Выводы отображаются как переводы от Leonod",
+  "sellPayoutTitle": "Выбрать получателя",
+  "sellPayoutNewBadge": "НОВОЕ"
 }

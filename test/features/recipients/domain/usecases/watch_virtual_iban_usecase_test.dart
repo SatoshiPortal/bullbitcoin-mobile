@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
@@ -10,6 +15,26 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
+
+class _FakeExchangeNotificationRepository
+    implements ExchangeNotificationRepository {
+  final StreamController<NotificationMessage> controller =
+      StreamController<NotificationMessage>.broadcast();
+
+  @override
+  Stream<NotificationMessage> get messages => controller.stream;
+
+  @override
+  Future<Result<void, ExchangeNotificationFailure>> connect() async =>
+      const Ok(null);
+
+  @override
+  Future<Result<void, ExchangeNotificationFailure>> reconnect() async =>
+      const Ok(null);
+
+  @override
+  void disconnect() {}
+}
 
 class _FakeVirtualIbanRepository implements VirtualIbanRepository {
   final List<Result<VirtualIban?, RecipientsFailure>> findResults;
@@ -49,20 +74,27 @@ const _pending = PendingVirtualIban();
 
 void main() {
   late _MockGetRecipientsEnvironmentUsecase environment;
+  late _FakeExchangeNotificationRepository notifications;
 
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
+    notifications = _FakeExchangeNotificationRepository();
     when(
       () => environment.execute(),
     ).thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
-  WatchVirtualIbanUsecase usecase(_FakeVirtualIbanRepository repository) =>
-      WatchVirtualIbanUsecase(
-        virtualIbanRepository: repository,
-        getRecipientsEnvironmentUsecase: environment,
-        pollInterval: Duration.zero,
-      );
+  tearDown(() => notifications.controller.close());
+
+  WatchVirtualIbanUsecase usecase(
+    _FakeVirtualIbanRepository repository, {
+    Duration pollInterval = Duration.zero,
+  }) => WatchVirtualIbanUsecase(
+    virtualIbanRepository: repository,
+    getRecipientsEnvironmentUsecase: environment,
+    exchangeNotificationRepository: notifications,
+    pollInterval: pollInterval,
+  );
 
   test('reports no virtual IBAN without creating one', () async {
     final repository = _FakeVirtualIbanRepository(
@@ -132,6 +164,44 @@ void main() {
     expect(events, hasLength(2));
     expect((events.last as Err).failure, isA<RecipientsNetworkFailure>());
   });
+
+  test(
+    'a VIRTUAL_IBAN_ACTIVATED push re-checks before the poll fires',
+    () async {
+      final repository = _FakeVirtualIbanRepository(
+        findResults: [const Ok(_pending), Ok(_active)],
+      );
+
+      // A long poll interval: only the websocket push can drive the re-check.
+      final events = usecase(
+        repository,
+        pollInterval: const Duration(minutes: 10),
+      ).execute(createIfAbsent: false);
+
+      final collected = <Result<VirtualIban?, RecipientsFailure>>[];
+      final done = Completer<void>();
+      final sub = events.listen(collected.add, onDone: done.complete);
+
+      // Let the first find() (pending) emit, then push the activation event.
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      notifications.controller.add(
+        NotificationMessage(
+          kind: NotificationMessageKind.recipient,
+          event: 'VIRTUAL_IBAN_ACTIVATED',
+          rawData: const {
+            'type': 'recipient',
+            'event': 'VIRTUAL_IBAN_ACTIVATED',
+          },
+        ),
+      );
+
+      await done.future.timeout(const Duration(seconds: 2));
+      await sub.cancel();
+
+      expect(collected.map((e) => (e as Ok).value), [_pending, _active]);
+      expect(repository.finds, 2);
+    },
+  );
 
   test('an unreadable environment is reported', () async {
     when(

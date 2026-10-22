@@ -3681,5 +3681,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Majina kwenye benki yako na akaunti ya IBAN pepe lazima yalingane, la sivyo uhamisho utarudishwa kiotomatiki.",
   "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili",
   "recipientsFieldBankAccountIban": "Nambari ya akaunti ya benki (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Uondoaji huonekana kama uhamisho kwenda kwako mwenyewe kwa jina la akaunti yako"
+  "recipientsTypeConfidentialSepaDescription": "Uondoaji huonekana kama uhamisho kwenda kwako mwenyewe kwa jina la akaunti yako",
+  "sellPayoutBalance": "Ongeza kwenye salio la akaunti yangu",
+  "sellPayoutSepaDescription": "Utoaji wa fedha unaonekana kuwa umetumwa na Leonod",
+  "sellPayoutTitle": "Chagua Mpokeaji",
+  "sellPayoutNewBadge": "MPYA"
 }

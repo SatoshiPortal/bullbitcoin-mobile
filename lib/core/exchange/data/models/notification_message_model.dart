@@ -10,20 +10,24 @@ class NotificationMessageModel {
     'order': NotificationMessageKind.order,
     'limitOrder': NotificationMessageKind.limitOrder,
     'user': NotificationMessageKind.user,
+    'recipient': NotificationMessageKind.recipient,
   };
 
   final String type;
   final String? orderId;
+  final String? event;
   final Map<String, dynamic> rawData;
 
   NotificationMessageModel.fromJson(Map<String, dynamic> json)
     : type = json['type'] as String? ?? '',
       orderId = json['orderId'] as String?,
+      event = json['event'] as String?,
       rawData = json;
 
   NotificationMessage toEntity() => NotificationMessage(
     kind: _kinds[type] ?? NotificationMessageKind.unknown,
     orderId: orderId,
+    event: event,
     rawData: rawData,
   );
 }

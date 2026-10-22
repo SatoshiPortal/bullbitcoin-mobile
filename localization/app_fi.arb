@@ -4864,5 +4864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Pankkisi ja virtuaalisten IBAN-tiliesi nimien on vastattava toisiaan, tai siirrot palautetaan automaattisesti.",
   "copiedToClipboard": "Kopioitu leikepöydälle",
   "recipientsFieldBankAccountIban": "Pankkitilin numero (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Nostot näkyvät siirtoina itsellesi tilisi nimellä"
+  "recipientsTypeConfidentialSepaDescription": "Nostot näkyvät siirtoina itsellesi tilisi nimellä",
+  "sellPayoutBalance": "Lisää tilini saldoon",
+  "sellPayoutSepaDescription": "Nostot näkyvät Leonodin lähettäminä",
+  "sellPayoutTitle": "Valitse vastaanottaja",
+  "sellPayoutNewBadge": "UUSI"
 }

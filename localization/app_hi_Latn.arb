@@ -12246,5 +12246,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge.",
   "copiedToClipboard": "Clipboard par copy kiya gaya",
   "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain"
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain",
+  "sellPayoutBalance": "Mere account balance mein jodein",
+  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
+  "sellPayoutTitle": "Recipient Select Karo",
+  "sellPayoutNewBadge": "NAYA"
 }

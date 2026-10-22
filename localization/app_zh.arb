@@ -4876,5 +4876,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "您的银行账户与虚拟 IBAN 账户的姓名必须一致，否则转账将被自动退回。",
   "copiedToClipboard": "已复制到剪贴板",
   "recipientsFieldBankAccountIban": "银行账户号码 (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "提现将显示为使用您账户名称的本人账户间转账"
+  "recipientsTypeConfidentialSepaDescription": "提现将显示为使用您账户名称的本人账户间转账",
+  "sellPayoutBalance": "添加到我的账户余额",
+  "sellPayoutSepaDescription": "提款显示为由 Leonod 发送",
+  "sellPayoutTitle": "选择收件人",
+  "sellPayoutNewBadge": "新增"
 }

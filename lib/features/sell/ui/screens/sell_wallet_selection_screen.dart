@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
@@ -60,9 +62,20 @@ class _SellWalletSelectionScreenState extends State<SellWalletSelectionScreen> {
                     padding: EdgeInsets.zero,
                     onTap: isCreatingSellOrder
                         ? null
-                        : (wallet) => context.read<SellBloc>().add(
-                            SellEvent.walletSelected(wallet: wallet),
-                          ),
+                        : (wallet) {
+                            // Use the v2 steps for EUR until the shared Sell flow is migrated.
+                            if (context.read<SellBloc>().state.fiatCurrency ==
+                                FiatCurrency.eur) {
+                              context.pushNamed(
+                                SellRoute.sellPayoutV2.name,
+                                extra: SellPayinSourceV2.wallet(wallet),
+                              );
+                            } else {
+                              context.read<SellBloc>().add(
+                                SellEvent.walletSelected(wallet: wallet),
+                              );
+                            }
+                          },
                     localSignersOnly: true,
                   ),
                   const Gap(24.0),

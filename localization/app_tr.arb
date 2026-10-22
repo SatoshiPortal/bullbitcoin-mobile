@@ -11864,5 +11864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.",
   "copiedToClipboard": "Panoya kopyalandı",
   "recipientsFieldBankAccountIban": "Banka hesap numarası (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür"
+  "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür",
+  "sellPayoutBalance": "Hesap bakiyeme ekle",
+  "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
+  "sellPayoutTitle": "Alıcı Seç",
+  "sellPayoutNewBadge": "YENİ"
 }
