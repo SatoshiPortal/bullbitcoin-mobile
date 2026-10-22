@@ -93,7 +93,7 @@ class Logger {
         }
 
         // Debug builds print the same sanitized content used for the file.
-        if (kDebugMode) debugPrint(content.map(_sanitize).join('\t'));
+        if (kDebugMode) debugPrint(content.join('\t'));
       } catch (e) {
         if (kDebugMode) debugPrint('[Logger listener failed] $e');
       } finally {
