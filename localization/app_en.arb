@@ -15492,7 +15492,7 @@
   "@recipientsConfidentialSepaActivatingTitle": {
     "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
   },
-  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This can take a few minutes.",
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
   "@recipientsConfidentialSepaActivatingDescription": {
     "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
   },
@@ -15500,7 +15500,7 @@
   "@recipientsConfidentialSepaNotActivatedTitle": {
     "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
-  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This can take a few minutes. You can use Instant and Regular SEPA instead.",
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We'll notify you when ready. You can use Instant and Regular SEPA instead.",
   "@recipientsConfidentialSepaNotActivatedDescription": {
     "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
   },
@@ -15560,7 +15560,7 @@
   "@recipientsVirtualIbanActivatingTitle": {
     "description": "Title while the virtual IBAN is being created"
   },
-  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes.",
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes. We'll notify you when ready.",
   "@recipientsVirtualIbanActivatingDescription": {
     "description": "Description while the virtual IBAN is being created"
   },
