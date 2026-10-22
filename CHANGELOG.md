@@ -37,7 +37,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 ### Translations
 
 - Improved Italian translations, correcting misleading terms for funding, withdrawals, balances, fees and PIN, and keeping product names such as Lightning and Liquid untranslated. Thanks to [@loop-btc](https://github.com/loop-btc). ([#3031](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3031))
-- Updated German translations. Thanks to [@bsn21m](https://github.com/bsn21m). ([#2979](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2979), [#3017](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3017))
+- Updated German translations. Special shout-out to [@bsn21m](https://github.com/bsn21m), who keeps the German translation up to date with every release. ([#2979](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2979), [#3017](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3017))
 
 ### Privacy Trade-off
 
