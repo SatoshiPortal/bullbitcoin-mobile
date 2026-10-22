@@ -18,6 +18,8 @@ class _MockSettings extends Mock implements SettingsEntity {}
 
 class _MockSellOrder extends Mock implements SellOrder {}
 
+class _MockFiatPaymentOrder extends Mock implements FiatPaymentOrder {}
+
 const _confirmedAddress = 'bc1qtheaddressuserconfirmed';
 
 void main() {
@@ -44,6 +46,7 @@ void main() {
   SellOrder orderPaying(String address) {
     final order = _MockSellOrder();
     when(() => order.toAddress).thenReturn(address);
+    when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     return order;
   }
 
@@ -60,9 +63,59 @@ void main() {
         expectedDepositAddress: _confirmedAddress,
       );
 
-      expect(result, isA<Ok<SellOrder, SellFailure>>());
+      expect(result, isA<Ok<Order, SellFailure>>());
     },
   );
+
+  group('recipient payouts', () {
+    for (final address in [_confirmedAddress, 'bc1changed']) {
+      test('refreshPayOrder pins the bank order deposit: $address', () async {
+        final order = _MockFiatPaymentOrder();
+        when(() => order.toAddress).thenReturn(address);
+        when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
+        when(
+          () => mainnet.refreshPayOrder('bank-order'),
+        ).thenAnswer((_) async => order);
+        final result = await usecase.execute(
+          orderId: 'bank-order',
+          expectedDepositAddress: _confirmedAddress,
+          isRecipientPayout: true,
+        );
+        if (address == _confirmedAddress) {
+          expect((result as Ok<Order, SellFailure>).value, same(order));
+        } else {
+          expect(
+            (result as Err<Order, SellFailure>).failure,
+            isA<SellDepositAddressChangedFailure>(),
+          );
+        }
+        verifyNever(() => mainnet.refreshSellOrder(any()));
+      });
+    }
+
+    for (final invoice in ['lnbc-confirmed', 'lnbc-changed', null]) {
+      test('Lightning refresh pins its invoice: $invoice', () async {
+        final order = _MockFiatPaymentOrder();
+        when(() => order.payinMethod).thenReturn(OrderPaymentMethod.lnInvoice);
+        when(() => order.lightningInvoice).thenReturn(invoice);
+        when(
+          () => mainnet.refreshPayOrder('lightning-order'),
+        ).thenAnswer((_) async => order);
+        final result = await usecase.execute(
+          orderId: 'lightning-order',
+          expectedDepositAddress: null,
+          expectedLightningInvoice: 'lnbc-confirmed',
+          isRecipientPayout: true,
+        );
+        expect(
+          result,
+          invoice == 'lnbc-confirmed'
+              ? isA<Ok<Order, SellFailure>>()
+              : isA<Err<Order, SellFailure>>(),
+        );
+      });
+    }
+  });
 
   // Security-critical: a price-lock refresh that comes back paying somewhere
   // else would send the user's funds to an address they never confirmed.
@@ -99,7 +152,7 @@ void main() {
 
       expect(
         result,
-        isA<Err<SellOrder, SellFailure>>(),
+        isA<Err<Order, SellFailure>>(),
         reason: 'fail closed rather than trust an unverifiable address',
       );
     }
@@ -116,7 +169,7 @@ void main() {
     );
 
     expect(
-      (result as Err<SellOrder, SellFailure>).failure,
+      (result as Err<Order, SellFailure>).failure,
       isA<SellUnauthenticatedFailure>(),
     );
   });
@@ -132,7 +185,7 @@ void main() {
     );
 
     expect(
-      (result as Err<SellOrder, SellFailure>).failure,
+      (result as Err<Order, SellFailure>).failure,
       isA<SellUnexpectedFailure>(),
     );
   });
@@ -151,7 +204,7 @@ void main() {
       expectedDepositAddress: _confirmedAddress,
     );
 
-    expect(result, isA<Ok<SellOrder, SellFailure>>());
+    expect(result, isA<Ok<Order, SellFailure>>());
     verifyNever(() => mainnet.refreshSellOrder(any()));
   });
 }

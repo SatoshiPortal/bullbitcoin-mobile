@@ -5094,5 +5094,9 @@
   "settingsPayjoinSatsUnit": "sats",
   "settingsPayjoinMinutesUnit": "Min.",
   "recipientsFieldBankAccountIban": "Bankkontonummer (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen"
+  "recipientsTypeConfidentialSepaDescription": "Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen",
+  "sellPayoutBalance": "Meinem Kontoguthaben hinzufügen",
+  "sellPayoutSepaDescription": "Auszahlungen erscheinen als von Leonod gesendet",
+  "sellPayoutTitle": "Empfänger auswählen",
+  "sellPayoutNewBadge": "NEU"
 }

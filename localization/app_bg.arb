@@ -9971,5 +9971,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично.",
   "copiedToClipboard": "Копирано в клипборда",
   "recipientsFieldBankAccountIban": "Номер на банкова сметка (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Тегленията се показват като превод към вас самите с името на вашата сметка"
+  "recipientsTypeConfidentialSepaDescription": "Тегленията се показват като превод към вас самите с името на вашата сметка",
+  "sellPayoutBalance": "Добавяне към баланса по моята сметка",
+  "sellPayoutSepaDescription": "Тегленията се показват като изпратени от Leonod",
+  "sellPayoutTitle": "Избор на получател",
+  "sellPayoutNewBadge": "НОВО"
 }

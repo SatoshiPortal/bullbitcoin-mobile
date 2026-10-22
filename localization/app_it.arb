@@ -4876,5 +4876,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "I nomi devono corrispondere tra la tua banca e l'IBAN virtuale oppure i trasferimenti verranno restituiti automaticamente.",
   "copiedToClipboard": "Copiato negli appunti",
   "recipientsFieldBankAccountIban": "Numero di conto bancario (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "I prelievi appaiono come un trasferimento a sé stessi con il nome del proprio conto"
+  "recipientsTypeConfidentialSepaDescription": "I prelievi appaiono come un trasferimento a sé stessi con il nome del proprio conto",
+  "sellPayoutBalance": "Aggiungi al saldo del mio account",
+  "sellPayoutSepaDescription": "I prelievi appaiono come inviati da Leonod",
+  "sellPayoutTitle": "Seleziona destinatario",
+  "sellPayoutNewBadge": "NUOVO"
 }

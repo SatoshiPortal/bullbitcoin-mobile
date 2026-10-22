@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 
 extension SellFailureL10n on SellFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    SellConfidentialSepaNotActivatedFailure() =>
+      context.loc.withdrawConfidentialSepaNotActivatedError,
+    SellNetworkFailure() => context.loc.exchangeErrorNetwork,
     SellUnauthenticatedFailure() => context.loc.sellUnauthenticatedError,
     SellBelowMinAmountFailure() => context.loc.sellBelowMinAmountError,
     SellAboveMaxAmountFailure() => context.loc.sellAboveMaxAmountError,

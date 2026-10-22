@@ -15715,5 +15715,21 @@
   "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
   "@recipientsTypeConfidentialSepaDescription": {
     "description": "Explanation of Confidential SEPA in the payout method selector"
+  },
+  "sellPayoutBalance": "Add to my account balance",
+  "@sellPayoutBalance": {
+    "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
+  },
+  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
+  "@sellPayoutSepaDescription": {
+    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
+  },
+  "sellPayoutTitle": "Select recipient",
+  "@sellPayoutTitle": {
+    "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
+  },
+  "sellPayoutNewBadge": "NEW",
+  "@sellPayoutNewBadge": {
+    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
   }
 }

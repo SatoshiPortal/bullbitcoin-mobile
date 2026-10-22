@@ -4967,5 +4967,9 @@
   "exchangeQuoteUnavailableError": "Impossible d'obtenir un nouveau prix. Réessayez, ou revenez en arrière pour créer un nouvel ordre.",
   "buyQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "recipientsFieldBankAccountIban": "Numéro de compte bancaire (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Les retraits apparaissent comme un virement à vous-même au nom de votre compte"
+  "recipientsTypeConfidentialSepaDescription": "Les retraits apparaissent comme un virement à vous-même au nom de votre compte",
+  "sellPayoutBalance": "Ajouter à mon solde de compte",
+  "sellPayoutSepaDescription": "Les retraits apparaissent comme envoyés par Leonod",
+  "sellPayoutTitle": "Sélectionner le destinataire",
+  "sellPayoutNewBadge": "NOUVEAU"
 }

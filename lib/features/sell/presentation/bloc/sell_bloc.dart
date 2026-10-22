@@ -1,44 +1,46 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
-import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
+import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:clock/clock.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:primitives/primitives.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:primitives/primitives.dart';
 
 part 'sell_bloc.freezed.dart';
 part 'sell_event.dart';
@@ -403,6 +405,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       final orderResult = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
+        recipient: event.recipient,
         network: event.wallet.isLiquid
             ? OrderBitcoinNetwork.liquid
             : OrderBitcoinNetwork.bitcoin,
@@ -415,7 +418,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             !event.wallet.isLiquid &&
             walletSelectionState.userSummary.payjoinReceiveEnabled,
       );
-      final SellOrder createdSellOrder;
+      final Order createdSellOrder;
       if (!isCurrent()) return;
       switch (orderResult) {
         case Ok(:final value):
@@ -443,6 +446,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           walletSelectionState.toSendPaymentState(
             selectedWallet: event.wallet,
             createdSellOrder: createdSellOrder,
+            payoutRecipient: event.recipient,
             absoluteFees: absoluteFees,
             utxos: utxos,
             exchangeRateEstimate: exchangeRateEstimate,
@@ -456,6 +460,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           walletSelectionState.toSendPaymentState(
             selectedWallet: event.wallet,
             createdSellOrder: createdSellOrder,
+            payoutRecipient: event.recipient,
             absoluteFees: absoluteFees,
             exchangeRateEstimate: exchangeRateEstimate,
           ),
@@ -511,8 +516,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         network: event.network,
+        recipient: event.recipient,
       );
-      final SellOrder createdSellOrder;
+      final Order createdSellOrder;
       if (!isCurrent()) return;
       switch (orderResult) {
         case Ok(:final value):
@@ -527,6 +533,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       emit(
         walletSelectionState.toReceivePaymentState(
           createdSellOrder: createdSellOrder,
+          payoutRecipient: event.recipient,
         ),
       );
       if (!isCurrent()) return;
@@ -567,10 +574,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
     try {
       final refreshResult = await _refreshSellOrderUsecase.execute(
+        isRecipientPayout: paymentState.sellOrder is FiatPaymentOrder,
         orderId: paymentState.sellOrder.orderId,
         expectedDepositAddress: paymentState.sellOrder.toAddress,
+        expectedLightningInvoice: paymentState.sellOrder.sellLightningInvoice,
       );
-      final SellOrder refreshedOrder;
+      final Order refreshedOrder;
       switch (refreshResult) {
         case Ok(:final value):
           refreshedOrder = value;
@@ -707,13 +716,21 @@ class SellBloc extends Bloc<SellEvent, SellState>
         return;
       }
       final isLiquid = wallet.isLiquid;
+      final depositAddress = sellPaymentState.sellOrder.toAddress;
+      if (depositAddress == null || depositAddress.isEmpty) {
+        _emitSendPaymentError(
+          emit,
+          const SellUnexpectedFailure('Sell order has no deposit address'),
+        );
+        return;
+      }
       final payinAmountSat = ConvertAmount.btcToSats(
         sellPaymentState.sellOrder.payinAmount,
       );
       if (isLiquid) {
         final psetResult = await _prepareSellLiquidPayinUsecase.execute(
           walletId: wallet.id,
-          address: sellPaymentState.sellOrder.liquidAddress!,
+          address: depositAddress,
           amountSat: payinAmountSat,
           // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
           feeRate: const RelativeFee(25),
@@ -787,7 +804,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
         final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
           walletId: wallet.id,
-          address: sellPaymentState.sellOrder.bitcoinAddress!,
+          address: depositAddress,
           amountSat: payinAmountSat,
           networkFee: networkFee,
           selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
@@ -832,7 +849,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // The window is bounded by the order, never by the user's global session
         // setting: a payjoin that outlived the order would land the payin
         // against a dead order.
-        final payjoinBip21 = sellPaymentState.sellOrder.bip21URI;
+        final payjoinBip21 = sellPaymentState.sellOrder.payjoinBip21;
         final confirmationDeadline =
             sellPaymentState.sellOrder.confirmationDeadline;
         final payjoinWindow =
@@ -1151,9 +1168,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
         return;
     }
 
-    if (latestOrder is! SellOrder) {
+    if (latestOrder is! SellOrder && latestOrder is! FiatPaymentOrder) {
       log.severe(
-        error: 'Expected SellOrder but received ${latestOrder.runtimeType}',
+        error:
+            'Expected a sell payin order but received ${latestOrder.runtimeType}',
         trace: StackTrace.current,
       );
       return;
@@ -1238,9 +1256,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           case Err():
             return;
         }
-        if (latestOrder is! SellOrder) {
+        if (latestOrder is! SellOrder && latestOrder is! FiatPaymentOrder) {
           log.severe(
-            error: 'Expected SellOrder but received a different order type',
+            error:
+                'Expected a sell payin order but received a different order type',
             trace: StackTrace.current,
           );
           return;
@@ -1279,9 +1298,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           return;
       }
 
-      if (latestOrder is! SellOrder) {
+      if (latestOrder is! SellOrder && latestOrder is! FiatPaymentOrder) {
         log.severe(
-          error: 'Expected SellOrder but received a different order type',
+          error:
+              'Expected a sell payin order but received a different order type',
           trace: StackTrace.current,
         );
         return;
@@ -1299,6 +1319,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         final deposit = validateSellOrderDepositAddress(
           order: latestOrder,
           expectedDepositAddress: current.sellOrder.toAddress,
+          expectedLightningInvoice: current.sellOrder.sellLightningInvoice,
         );
         if (deposit case Err(:final failure)) {
           log.severe(
@@ -1348,7 +1369,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// the exchange reports a completed payjoin, tag its final transaction too.
   /// The payjoin repository supplies the separate `payjoin` system label.
   Future<void> _labelPayjoinSellTransaction(
-    SellOrder order,
+    Order order,
     String? walletId,
   ) async {
     final payjoinTxId = order.payjoin?.txid;
@@ -1371,7 +1392,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// The exchange's own verdict that the payment deadline passed with no payin
   /// seen. Whether a late payin can still be credited is the exchange's call,
   /// so the screen keeps watching instead of failing the order.
-  static bool _isPastDeadline(SellOrder order) =>
+  static bool _isPastDeadline(Order order) =>
       (order.orderStatus == OrderStatus.expired ||
           order.orderStatus == OrderStatus.orderExpired) &&
       (order.payinStatus == OrderPayinStatus.notStarted ||
@@ -1380,7 +1401,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   void _reportPayinPastDeadline(
     Emitter<SellState> emit,
     SellPaymentState current,
-    SellOrder latestOrder,
+    Order latestOrder,
   ) {
     if (!current.isPayinPastDeadline) {
       log.warning(
@@ -1632,7 +1653,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellPaymentState paymentState,
     Wallet wallet,
   ) async {
-    final payinAddress = paymentState.sellOrder.bitcoinAddress;
+    final payinAddress = paymentState.sellOrder.toAddress;
     if (payinAddress != null && payinAddress.isNotEmpty) {
       return Ok(payinAddress);
     }

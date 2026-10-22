@@ -11864,5 +11864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
   "copiedToClipboard": "در کلیپ‌بورد کپی شد",
   "recipientsFieldBankAccountIban": "شماره حساب بانکی (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند"
+  "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند",
+  "sellPayoutBalance": "افزودن به موجودی حساب من",
+  "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
+  "sellPayoutTitle": "انتخاب گیرنده",
+  "sellPayoutNewBadge": "جدید"
 }

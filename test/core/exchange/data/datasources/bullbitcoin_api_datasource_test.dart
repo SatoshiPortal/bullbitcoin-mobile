@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -48,7 +49,7 @@ void main() {
     ).thenAnswer((_) async => response);
   }
 
-  Map<String, dynamic> capturedParams() {
+  Map<String, dynamic> capturedRequest() {
     final request =
         verify(
               () => dio.post(
@@ -58,8 +59,11 @@ void main() {
               ),
             ).captured.single
             as Map<String, dynamic>;
-    return request['params'] as Map<String, dynamic>;
+    return request;
   }
+
+  Map<String, dynamic> capturedParams() =>
+      capturedRequest()['params'] as Map<String, dynamic>;
 
   void stubList(List<Map<String, dynamic>> elements) {
     when(
@@ -70,6 +74,116 @@ void main() {
       ),
     ).thenAnswer((_) async => _elements(elements));
   }
+
+  group('EUR Sell payout requests', () {
+    test('keeps rejection codes without exposing account details', () async {
+      stubPost(
+        _rpcError({
+          'code': -32603,
+          'message': 'Account details must stay out of diagnostics',
+          'data': {
+            'apiError': {
+              'code': 'ERR_ORD_PO404',
+              'message': 'Account details must stay out of diagnostics',
+            },
+          },
+        }),
+      );
+
+      await expectLater(
+        datasource.createSellOrder(
+          apiKey: 'key',
+          fiatCurrency: FiatCurrency.eur,
+          recipientId: 'own-account',
+          paymentProcessor: SepaPaymentProcessor.regular,
+          orderAmount: const FiatAmount(100),
+          network: OrderBitcoinNetwork.liquid,
+        ),
+        throwsA(
+          isA<BullBitcoinApiOrderException>()
+              .having((error) => error.apiCode, 'apiCode', 'ERR_ORD_PO404')
+              .having((error) => error.rpcCode, 'rpcCode', -32603)
+              .having(
+                (error) => error.toString(),
+                'diagnostics',
+                isNot(contains('Account details')),
+              ),
+        ),
+      );
+    });
+
+    test('balance keeps the sellToBalance contract', () async {
+      stubPost(_order(orderJsonFixture(orderType: 'Sell Bitcoin')));
+      await datasource.createSellOrder(
+        apiKey: 'key',
+        fiatCurrency: FiatCurrency.eur,
+        orderAmount: const FiatAmount(100),
+        network: OrderBitcoinNetwork.bitcoin,
+      );
+      final request = capturedRequest();
+      expect(request['method'], 'sellToBalance');
+      expect(request['params'], {
+        'fiatCurrency': 'EUR',
+        'bitcoinNetwork': 'bitcoin',
+        'fiatAmount': 100.0,
+      });
+    });
+
+    for (final processor in SepaPaymentProcessor.values) {
+      test(
+        'bank payout sends ${processor.name} processor and recipient',
+        () async {
+          stubPost(_order(orderJsonFixture(orderType: 'Fiat Payment')));
+          final model = await datasource.createSellOrder(
+            apiKey: 'key',
+            fiatCurrency: FiatCurrency.eur,
+            recipientId: 'own-account',
+            paymentProcessor: processor,
+            orderAmount: const BitcoinAmount(0.001),
+            network: OrderBitcoinNetwork.bitcoin,
+            usePayjoin: true,
+          );
+          final request = capturedRequest();
+          expect(request['method'], 'sellToRecipient');
+          expect(request['params'], {
+            'recipientId': 'own-account',
+            'paymentProcessor': processor == SepaPaymentProcessor.confidential
+                ? 'CONFIDENTIAL_SEPA'
+                : 'REGULAR_SEPA',
+            'bitcoinNetwork': 'bitcoin',
+            'bitcoinAmount': 0.001,
+            'usePayjoin': true,
+          });
+          expect(model.toEntity(isTestnet: false), isA<FiatPaymentOrder>());
+        },
+      );
+    }
+
+    test(
+      'maps inactive confidential recipient to the activation failure',
+      () async {
+        stubPost(
+          _rpcError({
+            'message': 'Recipient not activated',
+            'data': {
+              'apiError': {'code': 'ERR_ORD_CSRCP400'},
+            },
+          }),
+        );
+        await expectLater(
+          datasource.createSellOrder(
+            apiKey: 'key',
+            fiatCurrency: FiatCurrency.eur,
+            recipientId: 'own-account',
+            paymentProcessor: SepaPaymentProcessor.confidential,
+            orderAmount: const FiatAmount(100),
+            network: OrderBitcoinNetwork.bitcoin,
+          ),
+          throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
+        );
+      },
+    );
+  });
 
   group('listOrderSummaries', () {
     test('skips an unparseable element and keeps the rest', () async {

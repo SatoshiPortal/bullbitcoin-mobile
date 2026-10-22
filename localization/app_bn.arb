@@ -12068,5 +12068,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "আপনার ব্যাংক এবং ভার্চুয়াল IBAN অ্যাকাউন্টের নাম মিলতে হবে, না হলে ট্রান্সফার স্বয়ংক্রিয়ভাবে ফেরত পাঠানো হবে।",
   "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
   "recipientsFieldBankAccountIban": "ব্যাংক অ্যাকাউন্ট নম্বর (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "উত্তোলনগুলি আপনার অ্যাকাউন্টের নামে নিজের অ্যাকাউন্টে স্থানান্তর হিসেবে দেখা যায়"
+  "recipientsTypeConfidentialSepaDescription": "উত্তোলনগুলি আপনার অ্যাকাউন্টের নামে নিজের অ্যাকাউন্টে স্থানান্তর হিসেবে দেখা যায়",
+  "sellPayoutBalance": "আমার অ্যাকাউন্ট ব্যালেন্সে যোগ করুন",
+  "sellPayoutSepaDescription": "উত্তোলনগুলি Leonod থেকে পাঠানো হিসেবে দেখায়",
+  "sellPayoutTitle": "প্রাপক নির্বাচন করুন",
+  "sellPayoutNewBadge": "নতুন"
 }

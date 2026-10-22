@@ -11864,5 +11864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
   "copiedToClipboard": "Zkopírováno do schránky",
   "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu"
+  "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
+  "sellPayoutBalance": "Přidat k zůstatku mého účtu",
+  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
+  "sellPayoutTitle": "Vybrat příjemce",
+  "sellPayoutNewBadge": "NOVÉ"
 }

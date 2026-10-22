@@ -26,7 +26,8 @@ sealed class SellState with _$SellState {
     required OrderAmount orderAmount,
     required FiatCurrency fiatCurrency,
     Wallet? selectedWallet,
-    required SellOrder sellOrder,
+    required Order sellOrder,
+    RecipientSelection? payoutRecipient,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
@@ -67,7 +68,7 @@ sealed class SellState with _$SellState {
   }) = SellPaymentState;
   const factory SellState.success({
     required BitcoinUnit bitcoinUnit,
-    required SellOrder sellOrder,
+    required Order sellOrder,
   }) = SellSuccessState;
   const SellState._();
 
@@ -215,7 +216,8 @@ extension SellAmountInputStateX on SellAmountInputState {
 extension SellWalletSelectionStateX on SellWalletSelectionState {
   SellPaymentState toSendPaymentState({
     required Wallet selectedWallet,
-    required SellOrder createdSellOrder,
+    required Order createdSellOrder,
+    RecipientSelection? payoutRecipient,
     int? absoluteFees,
     List<WalletUtxo>? utxos,
     double? exchangeRateEstimate,
@@ -229,6 +231,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       fiatCurrency: fiatCurrency,
       selectedWallet: selectedWallet,
       sellOrder: createdSellOrder,
+      payoutRecipient: payoutRecipient,
       absoluteFees: absoluteFees,
       exchangeRateEstimate: exchangeRateEstimate,
       utxos: utxos ?? [],
@@ -238,7 +241,8 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
   }
 
   SellPaymentState toReceivePaymentState({
-    required SellOrder createdSellOrder,
+    required Order createdSellOrder,
+    RecipientSelection? payoutRecipient,
     double? exchangeRateEstimate,
   }) {
     return SellPaymentState(
@@ -247,6 +251,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       orderAmount: orderAmount,
       fiatCurrency: fiatCurrency,
       sellOrder: createdSellOrder,
+      payoutRecipient: payoutRecipient,
       exchangeRateEstimate: exchangeRateEstimate,
     );
   }
@@ -285,7 +290,7 @@ extension SellPaymentStateX on SellPaymentState {
       selectedWallet != null &&
       !selectedWallet!.isLiquid;
 
-  SellSuccessState toSuccessState({required SellOrder sellOrder}) {
+  SellSuccessState toSuccessState({required Order sellOrder}) {
     return SellSuccessState(bitcoinUnit: bitcoinUnit, sellOrder: sellOrder);
   }
 
@@ -295,9 +300,8 @@ extension SellPaymentStateX on SellPaymentState {
 
     switch (order.payinMethod) {
       case OrderPaymentMethod.bitcoin:
-        if (order.bitcoinAddress != null) {
+        if (order.toAddress case final address?) {
           final amountBtc = order.payinAmount;
-          final address = order.bitcoinAddress!;
 
           final bip21Uri = Bip21Uri(
             scheme: 'bitcoin',
@@ -307,9 +311,8 @@ extension SellPaymentStateX on SellPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.liquid:
-        if (order.liquidAddress != null) {
+        if (order.toAddress case final address?) {
           final amountBtc = order.payinAmount;
-          final address = order.liquidAddress!;
 
           final bip21Uri = Bip21Uri(
             scheme: 'liquidnetwork',
@@ -320,9 +323,7 @@ extension SellPaymentStateX on SellPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.lnInvoice:
-        if (order.lightningInvoice != null) {
-          invoiceString = order.lightningInvoice!;
-        }
+        invoiceString = order.sellLightningInvoice ?? '';
       default:
         break;
     }

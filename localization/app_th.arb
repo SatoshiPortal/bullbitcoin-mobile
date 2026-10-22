@@ -11868,5 +11868,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
   "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
   "recipientsFieldBankAccountIban": "หมายเลขบัญชีธนาคาร (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ"
+  "recipientsTypeConfidentialSepaDescription": "รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ",
+  "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
+  "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
+  "sellPayoutTitle": "เลือกผู้รับเงิน",
+  "sellPayoutNewBadge": "ใหม่"
 }
