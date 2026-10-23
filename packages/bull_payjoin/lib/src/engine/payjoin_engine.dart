@@ -1046,6 +1046,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  session — fall back to broadcasting the original transaction
       //  ourselves, mirroring the sender-expiry fallback, so the payment
       //  still goes through and the send flow doesn't hang forever (#2246).
+      //
+      // Unless the payjoin is already on the network: only we can sign our
+      //  inputs, so that is our own broadcast reaching it before the client
+      //  saw an error (a dropped circuit, a timeout). The original would only
+      //  be a losing conflict, and expiring would invite a second payment.
+      final visibleTxId = await _visiblePayjoinTxId(payjoin);
+      if (visibleTxId != null) {
+        final completed = await _completeOnPayjoinTransactionSeen(
+          payjoin.id,
+          visibleTxId,
+        );
+        // Not applied: the watcher retries the same completion.
+        if (completed == null) {
+          _watchForBroadcast(
+            payjoinId: payjoin.id,
+            walletId: payjoin.walletId,
+            txId: visibleTxId,
+          );
+        }
+        return;
+      }
       result = await _broadcastOriginalTransaction(payjoin) as PayjoinSender?;
     }
 
@@ -1121,6 +1142,30 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         clearTxId: true,
       );
       if (recorded) _payjoinStreamController.add(failedModel.toEntity());
+    }
+  }
+
+  /// The sender's payjoin txid when the network already knows it, else null.
+  /// A failed lookup counts as not visible, so the caller keeps its fallback.
+  Future<String?> _visiblePayjoinTxId(PayjoinSender payjoin) async {
+    final txId = payjoin.txId;
+    if (txId == null) return null;
+    try {
+      final visible = await _transactions.isTransactionVisible(
+        walletId: payjoin.walletId,
+        transactionId: txId,
+        refresh: true,
+      );
+      return visible ? txId : null;
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: payjoin.logRef,
+        error: e,
+        trace: st,
+      );
+      return null;
     }
   }
 

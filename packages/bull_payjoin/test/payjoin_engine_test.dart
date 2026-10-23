@@ -1310,6 +1310,62 @@ void main() {
     );
   });
 
+  test('a payjoin broadcast that errors after reaching the network completes '
+      'the sender without the original fallback', () async {
+    // Only the sender can sign its own inputs, so a payjoin already on the
+    //  network while our broadcast reports an error is our own broadcast that
+    //  got through (a dropped Tor circuit, an Electrum timeout). The original
+    //  can only be a losing conflict then, and the session must not expire.
+    final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+    final live = sender().copyWith(
+      proposalPsbt: oneInputPsbt,
+      txId: payjoinTxId,
+    );
+    await local.storeSender(live);
+
+    when(
+      () => wallet.signPsbt(
+        walletId: any(named: 'walletId'),
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenAnswer((_) async => 'c2lnbmVk');
+    when(
+      () => blockchain.broadcastPsbt(
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenThrow(StateError('connection reset after send'));
+    when(
+      () => labels.labelTransaction(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+        refresh: any(named: 'refresh'),
+      ),
+    ).thenAnswer(
+      (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
+    );
+
+    await engine.resumePayjoinsOnStartup();
+
+    final row = await local.fetchSender(live.id);
+    expect(row?.isCompleted, isTrue);
+    expect(row?.isExpired, isFalse);
+    expect(row?.txId, payjoinTxId);
+    verifyNever(
+      () => blockchain.broadcastPsbt(
+        network: any(named: 'network'),
+        psbt: live.originalPsbt,
+      ),
+    );
+  });
+
   test(
     'disabling continues with later receivers after one settlement fails',
     () async {
