@@ -1166,9 +1166,9 @@ void main() {
 
     test('resumes the payjoin-txid watch from the proposal and reconciles when it '
         'lands', () async {
-      // Regression: a sender that failed BOTH broadcasts — its payjoin was
-      //  already in the mempool via the counterparty (so our re-broadcast
-      //  hit already-spent inputs) and its original was a lower-fee conflict —
+      // Regression: a sender that failed BOTH broadcasts — its payjoin reached
+      //  the mempool though the client saw an error, and its original was a
+      //  lower-fee conflict —
       //  is persisted expired with txId cleared for display hygiene, while the
       //  payjoin transaction is actually live on-chain. The in-memory
       //  broadcast watcher dies with the app. On the next start the sweep must

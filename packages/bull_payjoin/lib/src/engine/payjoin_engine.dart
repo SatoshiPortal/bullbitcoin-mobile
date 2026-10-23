@@ -1459,11 +1459,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // An expired sender has its txId cleared for display hygiene (see
         //  _broadcastOriginalTransaction and the both-broadcasts-failed branch
         //  of _processPayjoinProposalInner). The real payjoin transaction can
-        //  still reach the chain after that — most often the counterparty
-        //  broadcasts it, which is exactly what makes our own payjoin broadcast
-        //  fail on already-spent inputs and the original fallback fail as a
-        //  lower-fee conflict. The in-memory broadcast watcher armed at that
-        //  moment is lost when the app closes, so re-derive the payjoin txid
+        //  still reach the chain after that: only we can sign our inputs, so
+        //  it is our own broadcast getting through before the client saw an
+        //  error, with the wallet not synced yet, and the original fallback
+        //  failing as a lower-fee conflict. The in-memory broadcast watcher
+        //  armed then is lost when the app closes, so re-derive the payjoin txid
         //  from the retained proposal PSBT and re-arm it. Without this the
         //  session stays expired forever while the UI shows the original txid
         //  that was never broadcast, even though the payment confirmed as a
