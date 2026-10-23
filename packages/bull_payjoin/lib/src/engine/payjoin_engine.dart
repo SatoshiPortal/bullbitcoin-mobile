@@ -46,8 +46,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final StreamController<Payjoin> _payjoinStreamController;
 
   // Per-session subscriptions watching for a completed payjoin transaction to
-  // appear on-chain, keyed by payjoin id. Kept so each can be cancelled once
-  // its transaction is seen (the underlying watch stream re-emits on every
+  // appear on-chain, keyed by (payjoin id, txid). Kept so each can be
+  // cancelled once its transaction is seen (the watch stream re-emits on every
   // sync), on expiry, or on teardown. This is the only long-lived
   // subscription state in this otherwise fire-and-forget singleton, so its
   // hygiene lives entirely in _watchForBroadcast / _stopWatching / dispose.
@@ -56,7 +56,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // Per-session active-poll timers complementing _broadcastWatchers: each one
   // periodically forces a sync'd wallet-transaction lookup so completion does
   // not depend on some unrelated wallet sync happening to run (see
-  // _watchForBroadcast). Keyed by payjoin id, cancelled together with the
+  // _watchForBroadcast). Keyed like the watchers, cancelled together with the
   // passive watcher in _stopWatching / dispose.
   final Map<String, Timer> _broadcastPollTimers = {};
 
@@ -1885,8 +1885,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ///   broadcast the payjoin transaction, because nothing else synced the
   ///   wallet in the meantime.
   ///
-  /// Idempotent: a session already being watched (live path then resume, or
-  /// duplicate resume) is not re-subscribed.
+  /// Idempotent per (session, txid), like [_watchForFallback]: a retried
+  /// sender watches its own payjoin alongside the superseded attempt's.
   void _watchForBroadcast({
     required String payjoinId,
     required String walletId,
@@ -1899,6 +1899,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     pollTimers: _broadcastPollTimers,
     onSeen: (payjoinId) => _onPayjoinTransactionSeen(payjoinId, txId),
     kind: 'broadcast',
+    watchKey: '$payjoinId|$txId',
   );
 
   /// Watches for the ORIGINAL transaction [originalTxId] to appear in
@@ -2269,26 +2270,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// stream's teardown.
   void _stopWatching(String payjoinId) {
     _receiverFallbackAvailableAt.remove(payjoinId);
-    _broadcastPollTimers.remove(payjoinId)?.cancel();
-    final broadcastSubscription = _broadcastWatchers.remove(payjoinId);
-    if (broadcastSubscription != null) {
-      unawaited(broadcastSubscription.cancel());
+    // Both watcher kinds are keyed per (session, txid) — '$payjoinId|$txId' —
+    // because a retried sender watches its superseded transactions alongside
+    // the new ones (see _watchForFallback). Tear down every txid of the
+    // session.
+    bool ofSession(String k) => k == payjoinId || k.startsWith('$payjoinId|');
+    for (final timers in [_broadcastPollTimers, _fallbackPollTimers]) {
+      for (final k in timers.keys.where(ofSession).toList()) {
+        timers.remove(k)?.cancel();
+      }
     }
-    // Fallback entries are keyed per (session, txid) — '$payjoinId|$txId' —
-    // because a retried sender watches its superseded original alongside the
-    // new one (see _watchForFallback). Tear down every txid of the session.
-    final fallbackTimerKeys = _fallbackPollTimers.keys
-        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
-        .toList();
-    for (final k in fallbackTimerKeys) {
-      _fallbackPollTimers.remove(k)?.cancel();
-    }
-    final fallbackWatcherKeys = _fallbackWatchers.keys
-        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
-        .toList();
-    for (final k in fallbackWatcherKeys) {
-      final sub = _fallbackWatchers.remove(k);
-      if (sub != null) unawaited(sub.cancel());
+    for (final watchers in [_broadcastWatchers, _fallbackWatchers]) {
+      for (final k in watchers.keys.where(ofSession).toList()) {
+        final sub = watchers.remove(k);
+        if (sub != null) unawaited(sub.cancel());
+      }
     }
     _pdkPayjoinDatasource.stopPolling(payjoinId);
   }
