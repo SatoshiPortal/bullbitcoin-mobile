@@ -4,7 +4,7 @@ import 'package:recoverbull/recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 
 /// Upper bound on one key-server reachability probe; the Tor session's own connect budget is shorter, so a Tor failure arrives with its reason first.
-const keyServerProbeDeadline = Duration(seconds: 60);
+const keyServerProbeDeadline = Duration(seconds: 45);
 
 class RecoverBullRemoteDatasource {
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
