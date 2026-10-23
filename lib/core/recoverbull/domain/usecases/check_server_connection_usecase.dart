@@ -36,8 +36,13 @@ class CheckServerConnectionUsecase {
       }
       final routeToCheck = route;
       try {
-        await _recoverBullRepository.checkConnection(routeToCheck.endpoint);
-        return const Ok(true);
+        final result = await _recoverBullRepository.checkConnection(
+          routeToCheck.endpoint,
+        );
+        return switch (result) {
+          Ok() => const Ok(true),
+          Err(:final failure) => Err(failure),
+        };
       } finally {
         if (acquired) {
           // Without this the outer catch would turn a *successful* check into

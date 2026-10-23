@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:socks5_proxy/enums.dart';
+import 'package:socks5_proxy/exceptions.dart';
 import 'package:socks5_proxy/socks_client.dart';
 
+import '../domain/entities/tor_connect_failure.dart';
 import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/tor_failure.dart';
 
@@ -16,7 +19,11 @@ import '../domain/tor_failure.dart';
 final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
-  HttpClient create(TorProxyEndpoint endpoint) {
+  /// [onConnectFailure] receives the classified reason whenever a connection through the proxy fails, before the HTTP stack reduces it to a message.
+  HttpClient create(
+    TorProxyEndpoint endpoint, {
+    void Function(TorConnectFailure failure)? onConnectFailure,
+  }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
     // ATYP DOMAINNAME instead of resolving it on the device.
@@ -36,9 +43,17 @@ final class TorHttpClientFactory {
         InternetAddress(uri.host, type: InternetAddressType.unix),
         uri.port,
       );
-      final Future<Socket> socket = uri.scheme == 'https'
-          ? connection.then((value) => value.secure(uri.host))
-          : connection;
+      final Future<Socket> socket =
+          (uri.scheme == 'https'
+                  ? connection.then((value) => value.secure(uri.host))
+                  : connection)
+              .then(
+                (socket) => socket,
+                onError: (Object error, StackTrace trace) {
+                  onConnectFailure?.call(classify(error));
+                  Error.throwWithStackTrace(error, trace);
+                },
+              );
       return ConnectionTask.fromSocket(socket, () {
         // Cancellation owns cleanup, not the request's error reporting.
         // The original socket future still delivers failures to HttpClient.
@@ -47,4 +62,18 @@ final class TorHttpClientFactory {
     };
     return client;
   }
+
+  /// Maps a connection error to the reason it carries.
+  static TorConnectFailure classify(Object error) => switch (error) {
+    SocksClientConnectionCommandFailedException(:final code) => switch (code) {
+      CommandReplyCode.ttlExpired => TorConnectFailure.timeout,
+      CommandReplyCode.networkUnreachable =>
+        TorConnectFailure.torNetworkUnreachable,
+      CommandReplyCode.hostUnreachable => TorConnectFailure.hostUnreachable,
+      CommandReplyCode.connectionRefused => TorConnectFailure.refused,
+      _ => TorConnectFailure.other,
+    },
+    SocketException() => TorConnectFailure.proxyUnreachable,
+    _ => TorConnectFailure.other,
+  };
 }

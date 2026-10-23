@@ -10,6 +10,7 @@ import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/entities/tor_session.dart';
 import '../domain/entities/tor_transport.dart';
 import '../domain/ports/embedded_tor_port.dart';
+import '../domain/tor_connect_budget.dart';
 import '../domain/tor_failure.dart';
 import 'tor_logger.dart';
 
@@ -29,14 +30,17 @@ import 'tor_logger.dart';
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
 
-/// SOCKS connect budget. A first hidden-service contact often exceeds the
-/// SDK's 30-second default on a freshly bootstrapped phone; callers keep their
-/// own shorter timeouts where they need them.
-final _connectTimeoutMs = BigInt.from(120000);
+/// [torConnectBudget] as the SDK takes it, applied to the client and every session alike.
+final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
 
 /// How long to wait, once `bootstrap()` returns, for Arti to report it can
 /// carry traffic.
 const _trafficReadyTimeout = Duration(seconds: 60);
+
+/// How long readiness is withheld after Arti first reports `readyForTraffic`.
+///
+/// Arti says it can carry traffic before a first onion connection actually succeeds, so announcing it at once sent requests into a client that failed them. The hold is applied once per bootstrap, not on directory-refresh republications.
+const defaultReadinessHold = Duration(seconds: 5);
 
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
@@ -50,13 +54,23 @@ final class OnionTorBackend implements EmbeddedTorPort {
   TorDiagnostic? _lastDiagnostic;
   String? _lastReadinessLog;
   Completer<void> _trafficReady = _pendingTrafficReady();
+  Completer<void> _holdRelease = Completer<void>();
+  final Duration _readinessHold;
+  final Future<void> Function(Duration) _wait;
+
+  /// Whether this bootstrap has served its readiness hold; until then Arti's readiness is republished as full progress, not as ready.
+  bool _announced = false;
   Future<void> _lifecycleTail = Future<void>.value();
   Future<void> _dormancyTail = Future<void>.value();
   int _generation = 0;
   bool _dormant = false;
   bool _snowflakeLease = false;
 
-  OnionTorBackend(this._log);
+  OnionTorBackend(
+    this._log, {
+    this._readinessHold = defaultReadinessHold,
+    Future<void> Function(Duration)? wait,
+  }) : _wait = wait ?? Future<void>.delayed;
 
   static Future<void> initialize() => onion.OnionCore.init();
 
@@ -154,6 +168,13 @@ final class OnionTorBackend implements EmbeddedTorPort {
       // request into a client that was not ready yet.
       await waitForTraffic(_trafficReadyTimeout);
       if (generation != _generation) throw _cancelled();
+      _log.fine(
+        'Embedded Tor reports ready after '
+        '${DateTime.now().difference(startedAt).inSeconds}s; holding readiness '
+        'for ${_readinessHold.inSeconds}s',
+      );
+      await holdReadiness();
+      if (generation != _generation) throw _cancelled();
       await _applyDormancy(service);
       if (!await service.proxyIsAlive()) {
         throw const TorBackendException(
@@ -163,6 +184,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         );
       }
 
+      _announced = true;
       _publish(EmbeddedTorReady(endpoint, transport));
       _log.fine(
         'Embedded Tor ready in '
@@ -193,6 +215,13 @@ final class OnionTorBackend implements EmbeddedTorPort {
     ),
   );
 
+  /// Waits out [_readinessHold]; [stop] ends the wait early so a restart does not queue behind it.
+  @visibleForTesting
+  Future<void> holdReadiness() {
+    final release = _holdRelease = Completer<void>();
+    return Future.any([_wait(_readinessHold), release.future]);
+  }
+
   @visibleForTesting
   void handleStatus(onion.TorStatus status, TorProxyEndpoint endpoint) {
     final blockage = status.blockage;
@@ -214,10 +243,10 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
 
     _publish(
-      status.readyForTraffic
+      status.readyForTraffic && _announced
           ? EmbeddedTorReady(endpoint, transport)
           : EmbeddedTorConnecting(
-              progress: status.fraction,
+              progress: status.readyForTraffic ? 1 : status.fraction,
               transport: transport,
               diagnostic: diagnostic,
             ),
@@ -299,6 +328,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   Future<void> stop() async {
     _generation++;
     if (!_trafficReady.isCompleted) _trafficReady.completeError(_cancelled());
+    if (!_holdRelease.isCompleted) _holdRelease.complete();
     // Interrupt bootstrap before joining the serialized lifecycle tail.
     // Waiting for `_start` first would make Retry wait for the very bootstrap
     // it is supposed to cancel.
@@ -361,6 +391,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
     _transport = null;
     _lastDiagnostic = null;
     _lastReadinessLog = null;
+    _announced = false;
     _snowflakeLease = false;
     try {
       await service?.stop();

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bull_sdk/onion.dart' as onion;
 import 'package:bull_tor/src/data/onion_tor_backend.dart';
 import 'package:bull_tor/src/data/tor_logger.dart';
 import 'package:bull_tor/src/domain/entities/tor_proxy_endpoint.dart';
+import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/src/domain/tor_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -86,5 +89,50 @@ void main() {
 
       expect(waiting, throwsA(isA<TorBackendException>()));
     });
+  });
+
+  group('readiness hold', () {
+    test(
+      'republishes Arti readiness as full progress until the hold is served',
+      () async {
+        final backend = OnionTorBackend(const TorLogger());
+        final events = <EmbeddedTorEvent>[];
+        backend.watch().listen(events.add);
+
+        backend.handleStatus(status(1, ready: true), endpoint);
+
+        expect(events.single, isA<EmbeddedTorConnecting>());
+        expect((events.single as EmbeddedTorConnecting).progress, 1);
+      },
+    );
+
+    test('waits for the configured hold', () async {
+      final waited = <Duration>[];
+      final backend = OnionTorBackend(
+        const TorLogger(),
+        readinessHold: const Duration(seconds: 15),
+        wait: (duration) async => waited.add(duration),
+      );
+
+      await backend.holdReadiness();
+
+      expect(waited, [const Duration(seconds: 15)]);
+    });
+
+    test(
+      'stop ends the hold instead of queueing a restart behind it',
+      () async {
+        final never = Completer<void>();
+        final backend = OnionTorBackend(
+          const TorLogger(),
+          wait: (_) => never.future,
+        );
+        final holding = backend.holdReadiness();
+
+        await backend.stop();
+
+        await expectLater(holding, completes);
+      },
+    );
   });
 }
