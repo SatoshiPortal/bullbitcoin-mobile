@@ -122,10 +122,11 @@ class RecoverBullRemoteDatasource {
         client: client,
       ).infos().timeout(keyServerProbeDeadline);
     } catch (e) {
-      log.severe(
-        message: 'checkConnection error',
-        error: e,
-        trace: StackTrace.current,
+      // A failed probe is recoverable and the user can retry, so it is a warning, not an error report. Only safe metadata is logged: the raw message is a foreign string.
+      final status = e is KeyServerException ? e.code : null;
+      log.warning(
+        'Key server probe failed: ${connectFailure?.name ?? e.runtimeType}'
+        '${status == null ? '' : ' (HTTP $status)'}',
       );
       throw KeyServerProbeException(e, connectFailure);
     } finally {
