@@ -43,7 +43,11 @@ abstract interface class RecoverBullRepository {
     TorProxyEndpoint endpoint,
   );
 
-  Future<void> checkConnection(TorProxyEndpoint endpoint);
+  /// Health probe; the failure says why the server could not be reached.
+  @useResult
+  Future<Result<void, RecoverBullCoreFailure>> checkConnection(
+    TorProxyEndpoint endpoint,
+  );
 
   Future<Uri> fetchUrl();
 

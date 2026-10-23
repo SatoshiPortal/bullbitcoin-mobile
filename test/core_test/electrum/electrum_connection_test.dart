@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('raises a short onion timeout to thirty seconds', () {
+  test('raises a short onion timeout to the Tor connect deadline', () {
     expect(
       _connection('ssl://hidden.onion:50002', timeout: 5).effectiveTimeout,
-      30,
+      44,
     );
   });
 
@@ -29,7 +29,7 @@ void main() {
   test('recognizes an onion host with a trailing dot', () {
     expect(
       _connection('ssl://hidden.onion.:50002', timeout: 5).effectiveTimeout,
-      30,
+      44,
     );
   });
 }
