@@ -338,6 +338,37 @@ void main() {
   });
 
   group('RecoverBull Tor readiness', () {
+    // A flow waiting behind the server permission page must not race the flow pushed after Continue: two blocs once opened two sessions and two onion connections when Tor became ready.
+    test(
+      'a flow that never asked to connect stays idle when Tor is ready',
+      () async {
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        final route = TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        );
+        final verified = RecoverBullTorRoute(route, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(verified));
+        when(
+          () => checkConnection.execute(route: verified),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        states.add(TorReady(route));
+        await pumpEventQueue();
+
+        expect(bloc.state.torConnection, isA<TorReady>());
+        expect(bloc.state.keyServerStatus, KeyServerStatus.unknown);
+        verifyNever(() => ensureRecoverBullTorSession.execute());
+      },
+    );
+
     test(
       'keeps a usable route ready during Arti directory refreshes',
       () async {
@@ -440,14 +471,10 @@ void main() {
     // for a server check, so readiness arriving through the watch stream has to
     // trigger one — otherwise the screen sits on "waiting" with no retry.
     test(
-      'checks the server when readiness arrives through the stream',
+      'a flow that asked to connect checks the server once Tor is ready',
       () async {
         final states = StreamController<TorConnectionState>();
         when(() => watchTor.execute()).thenAnswer((_) => states.stream);
-        when(
-          () => checkConnection.execute(),
-        ).thenAnswer((_) async => const Ok(true));
-        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
         final route = TorRoute(
           source: TorSource.embedded,
           endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41001),
@@ -455,22 +482,37 @@ void main() {
           transport: TorTransport.direct,
         );
         final recoverBullRoute = RecoverBullTorRoute(route, () async {});
+        // Acquisition waits for Tor, as it does during a cold bootstrap.
+        final acquisition =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
         when(
           () => ensureRecoverBullTorSession.execute(
             restartEmbedded: any(named: 'restartEmbedded'),
           ),
-        ).thenAnswer((_) async => Ok(recoverBullRoute));
+        ).thenAnswer((_) => acquisition.future);
         when(
           () => checkConnection.execute(route: recoverBullRoute),
         ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
 
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
         states.add(TorReady(route));
+        await pumpEventQueue();
+        acquisition.complete(Ok(recoverBullRoute));
         await pumpEventQueue();
 
         expect(bloc.state.keyServerStatus, KeyServerStatus.online);
         verify(
           () => checkConnection.execute(route: recoverBullRoute),
-        ).called(greaterThanOrEqualTo(1));
+        ).called(1);
+        verify(
+          () => ensureRecoverBullTorSession.execute(
+            restartEmbedded: any(named: 'restartEmbedded'),
+          ),
+        ).called(1);
 
         await states.close();
         await bloc.close();

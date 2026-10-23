@@ -68,6 +68,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   int _routeGeneration = 0;
   bool _closingBloc = false;
 
+  /// Whether this flow's screen asked to connect. A flow left under the server permission page stays idle, so it cannot open a second session and race the flow pushed after Continue.
+  bool _connectionRequested = false;
+
   RecoverBullBloc({
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
@@ -188,6 +191,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     emit(state.copyWith(torConnection: next));
 
     if (next is tor.TorReady &&
+        _connectionRequested &&
         state.keyServerStatus == KeyServerStatus.unknown &&
         _pendingRoutePreparation == null) {
       // Readiness does not own an isolated route. Let initialization acquire it exactly once before checking the server.
@@ -203,6 +207,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnTorInitialization event,
     Emitter<RecoverBullState> emit,
   ) async {
+    _connectionRequested = true;
     final retained = _flowRoute;
     if (!event.restart && retained != null) {
       // The route is kept, so the generation is not bumped: work in flight on it stays valid.
@@ -282,6 +287,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnServerCheck event,
     Emitter<RecoverBullState> emit,
   ) async {
+    _connectionRequested = true;
     final route = _flowRoute;
     if (route == null) {
       // Nothing to check through yet. Initialization acquires the flow's route and chains back here.
