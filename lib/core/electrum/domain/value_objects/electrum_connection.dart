@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
+import 'package:bull_tor/tor.dart' show torConnectDeadline;
 
 /// A fully-resolved Electrum server connection ready to be passed to a
 /// datasource (BDK / LWK / the electrum-client repository).
@@ -16,7 +17,8 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url
 /// [isCustom] is carried only so the executor's error reporting can tell the
 /// caller which tier was exhausted — datasources should not branch on it.
 class ElectrumConnection {
-  static const onionMinimumTimeout = 30;
+  /// Seconds an onion server gets at least, derived from Tor's connect deadline so Tor's own budget expires first.
+  static final onionMinimumTimeout = torConnectDeadline.inSeconds;
 
   final String url;
   final int retry;
