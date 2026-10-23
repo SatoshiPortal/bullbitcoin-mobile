@@ -2102,10 +2102,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Старите транзакции",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Не показвай повече това предупреждение.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3042,10 +3038,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Настройки на сметката за обмен",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Качване до {maxFiles} файлове. Разрешени формати: PDF, JPG, PNG, GIF, HEIC. Максимален размер на файл: 10 MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3270,10 +3262,6 @@
   "exchangeReferralsContactSupportMessage": "Свържете се с поддръжката, за да научите за нашата реферална програма",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
-  },
-  "exchangeAccountTitle": "Сметка за обмен",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "keystoneStep2": "Сканирайте",
   "@keystoneStep2": {
@@ -5767,10 +5755,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "Старите транзакции - Очаква се скоро",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "Доказателство за адрес",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -6071,10 +6055,6 @@
   "sendConfirmSwap": "Потвърди размяната",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Изход - Очаква се скоро",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Общ обем на търговията",
   "@exchangeStatisticsTotalVolume": {
@@ -7547,10 +7527,6 @@
   "payPayee": "Получател",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "Тази функция предстои.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "Продажбата е в ход...",
   "@sellInProgress": {

@@ -2490,10 +2490,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "लेगेसी लेनदेन",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "इस चेतावनी को फिर से दिखाना नहीं है।।",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3737,10 +3733,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "एक्सचेंज खाता सेटिंग्स",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "अधिकतम {maxFiles} फ़ाइलें अपलोड करें। अनुमत प्रारूप: PDF, JPG, PNG, GIF, HEIC। अधिकतम फ़ाइल आकार: प्रति फ़ाइल 10MB।",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4077,10 +4069,6 @@
   "sellSendPaymentEurBalance": "EUR शेष",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "एक्सचेंज खाता",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "पूरा स्थानांतरण",
   "@swapProgressCompleted": {
@@ -7435,10 +7423,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "लेगेसी लेनदेन - जल्द आ रहा है",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "पता का प्रमाण",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7844,10 +7828,6 @@
   "sendConfirmSwap": "की पुष्टि करें स्वैप",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "लॉग आउट - जल्द आ रहा है",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "कुल व्यापार वॉल्यूम",
   "@exchangeStatisticsTotalVolume": {
@@ -9814,10 +9794,6 @@
   "payPayee": "भुगतानकर्ता",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "यह सुविधा जल्द आ रही है।",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "बिक्री प्रगति में है...",
   "@sellInProgress": {
