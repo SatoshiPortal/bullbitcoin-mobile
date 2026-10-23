@@ -15804,5 +15804,9 @@
   "recoverbullServerBadResponse": "The backup server answered, but the exchange failed.",
   "@recoverbullServerBadResponse": {
     "description": "Key server connection failed: the server was reached but the exchange or its answer was invalid"
+  },
+  "recoverbullNewRoute": "New route",
+  "@recoverbullNewRoute": {
+    "description": "Button on the RecoverBull connecting screen that replaces the Tor session so the next attempt takes a new route through Tor"
   }
 }

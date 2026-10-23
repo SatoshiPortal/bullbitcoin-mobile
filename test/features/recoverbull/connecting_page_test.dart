@@ -489,4 +489,72 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.recoverbullRetry), findsOneWidget);
   });
+
+  group('key server retries', () {
+    final ready = tor.TorReady(
+      tor.TorRoute(
+        source: tor.TorSource.embedded,
+        endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+        evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+        transport: tor.TorTransport.direct,
+      ),
+    );
+    RecoverBullState failed(int failures) => RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: ready,
+      keyServerStatus: KeyServerStatus.offline,
+      keyServerFailures: failures,
+      failure: const KeyServerConnectionFailure(
+        cause: KeyServerUnreachableCause.onionUnreachable,
+      ),
+    );
+
+    testWidgets('names the cause and offers both buttons after one failure', (
+      tester,
+    ) async {
+      final bloc = _MutableBloc(failed(1));
+      addTearDown(bloc.close);
+      await pumpMutablePage(tester, bloc);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      expect(find.text(l10n.recoverbullServerOnionUnreachable), findsOneWidget);
+      expect(find.text('Tor: onion unreachable'), findsOneWidget);
+      expect(find.text(l10n.recoverbullRetry), findsOneWidget);
+      expect(find.text(l10n.recoverbullNewRoute), findsOneWidget);
+    });
+
+    testWidgets('New route asks the bloc for a new session', (tester) async {
+      final bloc = _MutableBloc(failed(1));
+      addTearDown(bloc.close);
+      await pumpMutablePage(tester, bloc);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      await tester.ensureVisible(find.text(l10n.recoverbullNewRoute));
+      await tester.pump();
+      await tester.tap(find.text(l10n.recoverbullNewRoute));
+
+      expect(bloc.events.single, isA<OnNewCircuit>());
+    });
+
+    testWidgets('keeps both buttons disabled while a retry runs', (
+      tester,
+    ) async {
+      final bloc = _MutableBloc(
+        failed(1).copyWith(keyServerStatus: KeyServerStatus.connecting),
+      );
+      addTearDown(bloc.close);
+      await pumpMutablePage(tester, bloc);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      expect(find.text(l10n.recoverbullServerOnionUnreachable), findsOneWidget);
+      await tester.ensureVisible(find.text(l10n.recoverbullRetry));
+      await tester.pump();
+      await tester.tap(find.text(l10n.recoverbullRetry));
+      await tester.ensureVisible(find.text(l10n.recoverbullNewRoute));
+      await tester.pump();
+      await tester.tap(find.text(l10n.recoverbullNewRoute));
+
+      expect(bloc.events, isEmpty);
+    });
+  });
 }

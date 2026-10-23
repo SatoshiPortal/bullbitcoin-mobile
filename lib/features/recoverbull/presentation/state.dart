@@ -22,6 +22,9 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(false) bool isLoading,
     @Default(null) RecoverBullFailure? failure,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
+
+    /// Failed key-server attempts on the current Tor session; a new session starts again from zero.
+    @Default(0) int keyServerFailures,
     @Default(false) bool isFlowFinished,
 
     /// The full readiness snapshot, not just the coarse status.

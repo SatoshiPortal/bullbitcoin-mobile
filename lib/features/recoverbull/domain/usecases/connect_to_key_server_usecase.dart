@@ -52,7 +52,7 @@ class ConnectToKeyServerUsecase {
               httpStatus == null ? cause.name : '${cause.name} $httpStatus',
             _ => failure.runtimeType.toString(),
           };
-          log.fine('Key server attempt failed in ${seconds}s: $reason');
+          log.warning('Key server attempt failed in ${seconds}s: $reason');
           return Err(failure);
       }
     } finally {

@@ -95,6 +95,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnVaultDecryption>(_onVaultDecryption);
     on<OnServerCheck>(_onServerCheck, transformer: droppable());
     on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
+    on<OnNewCircuit>(_onNewCircuit, transformer: droppable());
     on<OnClearError>(_onClearError);
     on<_OnTorConnectionChanged>(
       _onTorConnectionChanged,
@@ -249,7 +250,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       switch (result) {
         case Ok(:final value):
           _flowRoute = value;
-          emit(state.copyWith(torConnection: tor.TorReady(value.route)));
+          emit(
+            state.copyWith(
+              torConnection: tor.TorReady(value.route),
+              keyServerFailures: 0,
+            ),
+          );
           add(const OnServerCheck());
         case Err(:final failure):
           final torFailure = failure is core.ExternalTorProxyUnavailableFailure
@@ -287,24 +293,22 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       // `torStatus` is not emitted here: it is driven by the subscription set
       // up in the constructor. Emitting a snapshot at this point is what made a
       // healthy cold start look like a Tor failure.
-      emit(
-        state.copyWith(
-          failure: null,
-          keyServerStatus: KeyServerStatus.connecting,
-        ),
-      );
+      // The previous failure stays on screen while a retry runs, so the user still sees why it is retrying.
+      emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
 
       final result = await _connectToKeyServerUsecase.execute(route: route);
       if (isClosed || _closingBloc || generation != _routeGeneration) return;
 
       switch (result) {
         case Err(:final failure):
-          await _releaseFlowRoute(route);
-          if (isClosed || _closingBloc) return;
+          // The route is kept: Retry runs on the same session, and only New route replaces it.
+          final failures = state.keyServerFailures + 1;
+          log.warning('Key server unreachable, $failures failed attempts');
           emit(
             state.copyWith(
               failure: _serverCheckFailure(failure),
               keyServerStatus: KeyServerStatus.offline,
+              keyServerFailures: failures,
             ),
           );
         case Ok():
@@ -312,7 +316,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           // this path, which asserted Tor's health from the key server's reply;
           // the readiness stream is the only thing that knows, and the screen
           // latches it.
-          emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+          emit(
+            state.copyWith(
+              failure: null,
+              keyServerStatus: KeyServerStatus.online,
+            ),
+          );
       }
     } catch (e) {
       if (isClosed || _closingBloc || generation != _routeGeneration) return;
@@ -334,6 +343,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         await _onServerCheck(event, emit);
       }
     }
+  }
+
+  Future<void> _onNewCircuit(
+    OnNewCircuit event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    log.fine(
+      'Key server: new circuit after ${state.keyServerFailures} failed attempts',
+    );
+    final retained = _flowRoute;
+    if (retained != null) await _retireFlowRoute(retained);
+    if (isClosed || _closingBloc) return;
+    emit(state.copyWith(failure: null, keyServerFailures: 0));
+    // Without a retained route, initialization opens a new session on the running client and chains the server check.
+    add(const OnTorInitialization());
   }
 
   // A failed check cannot tell a dead SOCKS session from a server outage. Dropping the route makes the next check acquire a fresh one instead of retrying through a session that may be gone.

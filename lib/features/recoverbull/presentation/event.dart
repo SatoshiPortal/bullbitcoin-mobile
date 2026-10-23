@@ -40,6 +40,11 @@ class OnServerCheck extends RecoverBullEvent {
   const OnServerCheck();
 }
 
+/// Replaces the flow's Tor session, so the next attempt runs on new circuits without restarting Tor.
+class OnNewCircuit extends RecoverBullEvent {
+  const OnNewCircuit();
+}
+
 class OnTorInitialization extends RecoverBullEvent {
   /// Discard a client that is running but stuck, instead of adopting it.
   ///

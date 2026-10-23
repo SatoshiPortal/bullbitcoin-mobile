@@ -280,6 +280,13 @@ class _Body extends StatelessWidget {
       _serverPhase == _PhaseState.failed ||
       _diagnostic != null;
 
+  /// The failure panel also stays up while a retry runs, so its buttons can show as disabled instead of vanishing.
+  bool get _showFailurePanel => _hasFailure || state.keyServerFailures > 0;
+
+  /// New route is offered with Retry from the first failure: a timeout often favours Retry, which reuses work Tor finished in the background, while other causes favour a new route.
+  bool get _offersNewCircuit =>
+      state.keyServerFailures >= 1 && _tor is tor.TorReady;
+
   TorBullState get _mascotState {
     final diagnostic = _diagnostic;
     if (diagnostic?.suggestsCensorship ?? false) {
@@ -451,8 +458,9 @@ class _Body extends StatelessWidget {
           elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
         ),
         const Gap(24),
-        if (_hasFailure)
+        if (_showFailurePanel)
           _FailurePanel(
+            busy: !_hasFailure,
             message: _failureMessage(context),
             detail: switch (state.failure) {
               final KeyServerConnectionFailure failure
@@ -479,6 +487,12 @@ class _Body extends StatelessWidget {
                 bloc.add(const OnTorInitialization(restart: true));
               }
             },
+            onNewCircuit: _offersNewCircuit
+                ? () {
+                    onRetry();
+                    context.read<RecoverBullBloc>().add(const OnNewCircuit());
+                  }
+                : null,
           )
         else
           BullText(
@@ -634,6 +648,10 @@ class _PhaseIcon extends StatelessWidget {
 class _FailurePanel extends StatelessWidget {
   final String message;
 
+  /// An attempt is in flight: the buttons stay visible but cannot start another one.
+  final bool busy;
+  final VoidCallback? onNewCircuit;
+
   /// A fixed technical label naming the exact reason, deliberately unlocalised like the timer.
   final String? detail;
   final VoidCallback onRetry;
@@ -642,6 +660,8 @@ class _FailurePanel extends StatelessWidget {
   const _FailurePanel({
     required this.message,
     required this.onRetry,
+    this.busy = false,
+    this.onNewCircuit,
     this.onOpenTorSettings,
     this.detail,
   });
@@ -674,8 +694,22 @@ class _FailurePanel extends StatelessWidget {
           textStyle: context.font.headlineLarge,
           bgColor: context.appColors.onSurface,
           textColor: context.appColors.surface,
+          disabled: busy,
           onPressed: onRetry,
         ),
+        if (onNewCircuit case final onNewCircuit?) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recoverbullNewRoute,
+            textStyle: context.font.headlineLarge,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.onSurface,
+            outlined: true,
+            borderColor: context.appColors.onSurface,
+            disabled: busy,
+            onPressed: onNewCircuit,
+          ),
+        ],
         if (onOpenTorSettings != null) ...[
           const Gap(12),
           BullButton.big(
