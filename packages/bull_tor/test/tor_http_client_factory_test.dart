@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
+import 'package:socks5_proxy/enums.dart';
+import 'package:socks5_proxy/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -134,6 +136,100 @@ void main() {
       expect(targetConnected.isCompleted, isFalse);
     },
   );
+
+  test('reports the reason a SOCKS5 proxy gives for a failed connect', () async {
+    final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final sockets = <Socket>[];
+    proxy.listen((socket) {
+      sockets.add(socket);
+      var greeted = false;
+      var rejected = false;
+      final bytes = <int>[];
+      socket.listen((chunk) {
+        bytes.addAll(chunk);
+        if (!greeted) {
+          if (bytes.length < 2 || bytes.length < 2 + bytes[1]) return;
+          bytes.removeRange(0, 2 + bytes[1]);
+          greeted = true;
+          socket.add([0x05, 0x00]);
+        }
+        if (!rejected && _completeConnectRequestLength(bytes) != null) {
+          rejected = true;
+          // 0x04: host unreachable, what Tor answers for an unreachable onion.
+          socket.add([0x05, 0x04, 0x00, 0x01, 0, 0, 0, 0, 0, 0]);
+          unawaited(socket.close());
+        }
+      });
+    });
+    addTearDown(() {
+      for (final socket in sockets) {
+        socket.destroy();
+      }
+      return proxy.close();
+    });
+
+    final failures = <TorConnectFailure>[];
+    final client = const TorHttpClientFactory().create(
+      TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
+      onConnectFailure: failures.add,
+    );
+    addTearDown(() => client.close(force: true));
+
+    await expectLater(
+      client
+          .getUrl(Uri.parse('http://destination.invalid/'))
+          .timeout(const Duration(seconds: 5)),
+      throwsA(anything),
+    );
+    expect(failures, [TorConnectFailure.hostUnreachable]);
+  });
+
+  test('reports a proxy that no longer listens', () async {
+    final closed = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final port = closed.port;
+    await closed.close();
+
+    final failures = <TorConnectFailure>[];
+    final client = const TorHttpClientFactory().create(
+      TorProxyEndpoint(host: '127.0.0.1', port: port),
+      onConnectFailure: failures.add,
+    );
+    addTearDown(() => client.close(force: true));
+
+    await expectLater(
+      client
+          .getUrl(Uri.parse('http://destination.invalid/'))
+          .timeout(const Duration(seconds: 5)),
+      throwsA(anything),
+    );
+    expect(failures, [TorConnectFailure.proxyUnreachable]);
+  });
+
+  test('classifies every SOCKS reply Tor uses', () {
+    TorConnectFailure reply(CommandReplyCode code) =>
+        TorHttpClientFactory.classify(
+          SocksClientConnectionCommandFailedException(code),
+        );
+
+    expect(reply(CommandReplyCode.ttlExpired), TorConnectFailure.timeout);
+    expect(
+      reply(CommandReplyCode.networkUnreachable),
+      TorConnectFailure.torNetworkUnreachable,
+    );
+    expect(
+      reply(CommandReplyCode.hostUnreachable),
+      TorConnectFailure.hostUnreachable,
+    );
+    expect(
+      reply(CommandReplyCode.connectionRefused),
+      TorConnectFailure.refused,
+    );
+    expect(reply(CommandReplyCode.serverError), TorConnectFailure.other);
+    expect(
+      TorHttpClientFactory.classify(StateError('x')),
+      TorConnectFailure.other,
+    );
+  });
 }
 
 /// TCP packets can split a SOCKS request anywhere, including inside its address.

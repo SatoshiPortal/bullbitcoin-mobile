@@ -350,9 +350,15 @@ class _Body extends StatelessWidget {
     // "Tor is working" would be false — the shape of a bug seen in testing,
     // where a torn-down Tor still produced a server-side error message.
     if (_serverPhase == _PhaseState.failed) {
-      return _torPhase == _PhaseState.done
-          ? context.loc.recoverbullServerUnreachableTorOk
-          : context.loc.recoverbullTorCantStart;
+      if (_torPhase != _PhaseState.done) {
+        return context.loc.recoverbullTorCantStart;
+      }
+      return switch (state.failure) {
+        final KeyServerConnectionFailure failure
+            when failure.cause != KeyServerUnreachableCause.unknown =>
+          failure.toTranslated(context),
+        _ => context.loc.recoverbullServerUnreachableTorOk,
+      };
     }
 
     return state.failure?.toTranslated(context) ??
@@ -453,6 +459,12 @@ class _Body extends StatelessWidget {
         if (_hasFailure)
           _FailurePanel(
             message: _failureMessage(context),
+            detail: switch (state.failure) {
+              final KeyServerConnectionFailure failure
+                  when _serverPhase == _PhaseState.failed =>
+                failure.technicalLabel,
+              _ => null,
+            },
             onOpenTorSettings:
                 state.failure is ExternalTorProxyUnavailableFailure
                 ? () => context.pushNamed(
@@ -633,6 +645,9 @@ class _PhaseIcon extends StatelessWidget {
 
 class _FailurePanel extends StatelessWidget {
   final String message;
+
+  /// A fixed technical label naming the exact reason, deliberately unlocalised like the timer.
+  final String? detail;
   final VoidCallback onRetry;
   final VoidCallback? onOpenTorSettings;
 
@@ -640,6 +655,7 @@ class _FailurePanel extends StatelessWidget {
     required this.message,
     required this.onRetry,
     this.onOpenTorSettings,
+    this.detail,
   });
 
   @override
@@ -654,6 +670,16 @@ class _FailurePanel extends StatelessWidget {
           ),
           maxLines: 4,
         ),
+        if (detail case final detail?) ...[
+          const Gap(6),
+          BullText(
+            detail,
+            textAlign: .center,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+        ],
         const Gap(24),
         BullButton.big(
           label: context.loc.recoverbullRetry,

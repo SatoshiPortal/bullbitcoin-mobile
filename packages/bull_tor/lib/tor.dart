@@ -7,6 +7,7 @@
 library;
 
 export 'src/data/tor_http_client_factory.dart';
+export 'src/domain/entities/tor_connect_failure.dart';
 export 'src/domain/entities/tor_connection_state.dart';
 export 'src/domain/entities/tor_proxy_endpoint.dart';
 export 'src/domain/entities/tor_route.dart';

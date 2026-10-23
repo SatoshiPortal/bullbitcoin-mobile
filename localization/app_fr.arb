@@ -4969,5 +4969,12 @@
   "sellPayoutBalance": "Ajouter à mon solde de compte",
   "sellPayoutSepaDescription": "Les retraits apparaissent comme envoyés par Leonod",
   "sellPayoutTitle": "Sélectionner le destinataire",
-  "sellPayoutNewBadge": "NOUVEAU"
+  "sellPayoutNewBadge": "NOUVEAU",
+  "recoverbullServerCircuitTimeout": "Tor n'a pas atteint le serveur de sauvegarde à temps.",
+  "recoverbullServerTorNetworkUnreachable": "Tor n'a pas pu établir de chemin à travers son réseau.",
+  "recoverbullServerOnionUnreachable": "Tor n'a pas trouvé le serveur de sauvegarde. Il est peut-être hors ligne, ou le chemin vers lui a échoué.",
+  "recoverbullServerConnectionRefused": "Le serveur de sauvegarde a fermé la connexion.",
+  "recoverbullServerTorSessionGone": "La connexion Tor ne répond plus.",
+  "recoverbullServerHttpError": "Le serveur de sauvegarde a répondu par une erreur.",
+  "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué."
 }

@@ -130,14 +130,25 @@ void main() {
     expect(closeCount, 1);
   });
 
-  test('retries checker failures, then closes the route', () async {
+  test('retries checker failures, then returns the last cause', () async {
     when(() => checkConnection.execute(route: route)).thenAnswer(
-      (_) async => const Err(KeyServerUnavailableFailure('timeout')),
+      (_) async => const Err(
+        KeyServerUnavailableFailure.because(
+          KeyServerUnreachableCause.onionUnreachable,
+        ),
+      ),
     );
 
     final result = await run();
 
-    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(
+      (result as Err<bool, RecoverBullCoreFailure>).failure,
+      isA<KeyServerUnavailableFailure>().having(
+        (f) => f.cause,
+        'cause',
+        KeyServerUnreachableCause.onionUnreachable,
+      ),
+    );
     expect(attempts, [1, 2, 3]);
     verify(
       () => checkConnection.execute(route: route),

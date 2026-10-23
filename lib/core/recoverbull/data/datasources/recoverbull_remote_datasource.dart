@@ -104,8 +104,13 @@ class RecoverBullRemoteDatasource {
     }
   }
 
+  /// Throws [KeyServerProbeException], which keeps the transport reason that `KeyServer` reduces to a message.
   Future<void> checkConnection(TorProxyEndpoint endpoint) async {
-    final client = _torHttpClientFactory.create(endpoint);
+    TorConnectFailure? connectFailure;
+    final client = _torHttpClientFactory.create(
+      endpoint,
+      onConnectFailure: (failure) => connectFailure = failure,
+    );
     try {
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).infos();
@@ -115,9 +120,21 @@ class RecoverBullRemoteDatasource {
         error: e,
         trace: StackTrace.current,
       );
-      rethrow;
+      throw KeyServerProbeException(e, connectFailure);
     } finally {
       client.close(force: true);
     }
   }
+}
+
+/// A failed key-server probe, with the Tor connect reason when the failure happened before HTTP.
+class KeyServerProbeException implements Exception {
+  final Object error;
+  final TorConnectFailure? connectFailure;
+
+  const KeyServerProbeException(this.error, this.connectFailure);
+
+  @override
+  String toString() =>
+      'KeyServerProbeException(${connectFailure?.name ?? 'no connect failure'}): $error';
 }

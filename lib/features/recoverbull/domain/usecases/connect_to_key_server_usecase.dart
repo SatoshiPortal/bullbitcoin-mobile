@@ -40,6 +40,7 @@ class ConnectToKeyServerUsecase {
   }) async {
     // A supplied route remains owned by its flow; standalone callers retain the existing acquire-and-close behavior.
     final ownsRoute = route == null;
+    RecoverBullCoreFailure? lastFailure;
     try {
       for (var attempt = 1; attempt <= maxAttempts; attempt++) {
         if (attempt > 1) await _wait(Duration(seconds: attempt - 1));
@@ -64,11 +65,14 @@ class ConnectToKeyServerUsecase {
           case Err(:final failure)
               when failure is ExternalTorProxyUnavailableFailure:
             return Err(failure);
-          case Err():
-            break;
+          case Err(:final failure):
+            lastFailure = failure;
         }
       }
-      return const Ok(false);
+      return switch (lastFailure) {
+        final failure? => Err(failure),
+        null => const Ok(false),
+      };
     } finally {
       try {
         if (ownsRoute && route != null) await route.close();

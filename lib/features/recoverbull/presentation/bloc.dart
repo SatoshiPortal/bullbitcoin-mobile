@@ -317,7 +317,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           if (isClosed || _closingBloc) return;
           emit(
             state.copyWith(
-              failure: _fetchKeyFailure(failure),
+              failure: _serverCheckFailure(failure),
               keyServerStatus: KeyServerStatus.offline,
             ),
           );
@@ -741,20 +741,28 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // Mirrors [_fetchKeyFailure] for the shared key-server cases (so a 429
   // cooldown or invalid credentials still reach the user) but falls back to the
   // creation-specific error instead of the generic unexpected one.
-  RecoverBullFailure _storeKeyFailure(
-    core.RecoverBullCoreFailure failure,
-  ) => switch (failure) {
-    core.KeyServerInvalidCredentialsFailure() =>
-      const InvalidVaultCredentialsFailure(),
-    core.KeyServerRejectedFailure() => const InvalidVaultCredentialsFailure(),
-    core.KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
-      retryIn: retryIn ?? Duration.zero,
-    ),
-    core.KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
-    core.ExternalTorProxyUnavailableFailure() =>
-      const ExternalTorProxyUnavailableFailure(),
-    _ => const VaultCreationFailure(),
-  };
+  RecoverBullFailure _storeKeyFailure(core.RecoverBullCoreFailure failure) =>
+      switch (failure) {
+        core.KeyServerInvalidCredentialsFailure() =>
+          const InvalidVaultCredentialsFailure(),
+        core.KeyServerRejectedFailure() =>
+          const InvalidVaultCredentialsFailure(),
+        core.KeyServerRateLimitedFailure(:final retryIn) =>
+          VaultRateLimitedFailure(retryIn: retryIn ?? Duration.zero),
+        core.KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+          KeyServerConnectionFailure(cause: cause, httpStatus: httpStatus),
+        core.ExternalTorProxyUnavailableFailure() =>
+          const ExternalTorProxyUnavailableFailure(),
+        _ => const VaultCreationFailure(),
+      };
+
+  // A failed reachability check keeps the transport reason, which the vault-key mapping would fold into a fetch failure.
+  RecoverBullFailure _serverCheckFailure(core.RecoverBullCoreFailure failure) =>
+      switch (failure) {
+        core.KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+          KeyServerConnectionFailure(cause: cause, httpStatus: httpStatus),
+        _ => _fetchKeyFailure(failure),
+      };
 
   RecoverBullFailure _torFailure(core.RecoverBullCoreFailure failure) =>
       switch (failure) {
