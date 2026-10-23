@@ -1317,6 +1317,41 @@ void main() {
       },
     );
 
+    test('a dead session is dropped so Retry opens a new one', () async {
+      var firstClosed = 0;
+      final first = routeAt(41001, () async => firstClosed++);
+      final second = routeAt(41002, () async {});
+      var acquisitions = 0;
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+      when(() => checkConnection.execute(route: first)).thenAnswer(
+        (_) async => const Err(
+          core.KeyServerUnavailableFailure.because(
+            core.KeyServerUnreachableCause.proxyGone,
+          ),
+        ),
+      );
+      when(
+        () => checkConnection.execute(route: second),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
+      expect(firstClosed, 1);
+
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(acquisitions, 2);
+      verify(() => checkConnection.execute(route: second)).called(1);
+    });
+
     test('Retry reuses the session and counts each failed attempt', () async {
       var closed = 0;
       final route = routeAt(41001, () async => closed++);

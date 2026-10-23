@@ -307,7 +307,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       switch (result) {
         case Err(:final failure):
-          // The route is kept: Retry runs on the same session, and only New route replaces it.
+          // The route is kept so Retry runs on the same session, unless that session is gone: then it is dropped and Retry opens a new one, as New route would.
+          if (failure case core.KeyServerUnavailableFailure(
+            cause: core.KeyServerUnreachableCause.proxyGone,
+          )) {
+            await _releaseFlowRoute(route);
+            if (isClosed || _closingBloc) return;
+          }
           final failures = state.keyServerFailures + 1;
           log.warning('Key server unreachable, $failures failed attempts');
           emit(
