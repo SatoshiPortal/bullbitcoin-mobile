@@ -15776,5 +15776,45 @@
   "allSeedViewDeleteSwapMnemonicMessage": "This removes the swap master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing swaps are unaffected.",
   "@allSeedViewDeleteSwapMnemonicMessage": {
     "description": "Explanation shown before deleting the swap mnemonic"
+  },
+  "recoverbullServerCircuitTimeout": "Tor did not reach the backup server in time.",
+  "@recoverbullServerCircuitTimeout": {
+    "description": "Key server connection failed: Tor did not reach the onion service within the time budget"
+  },
+  "recoverbullServerTorNetworkUnreachable": "Tor could not build a path through its network.",
+  "@recoverbullServerTorNetworkUnreachable": {
+    "description": "Key server connection failed: Tor could not build a circuit"
+  },
+  "recoverbullServerOnionUnreachable": "Tor could not find the backup server. It may be offline, or the path to it failed.",
+  "@recoverbullServerOnionUnreachable": {
+    "description": "Key server connection failed: the onion service descriptor or rendezvous failed"
+  },
+  "recoverbullServerConnectionRefused": "The backup server closed the connection.",
+  "@recoverbullServerConnectionRefused": {
+    "description": "Key server connection failed: the server refused or closed the stream"
+  },
+  "recoverbullServerTorSessionGone": "The Tor connection stopped responding.",
+  "@recoverbullServerTorSessionGone": {
+    "description": "Key server connection failed: the local Tor session stopped answering"
+  },
+  "recoverbullServerHttpError": "The backup server answered with an error.",
+  "@recoverbullServerHttpError": {
+    "description": "Key server connection failed: the server returned an HTTP error"
+  },
+  "recoverbullServerBadResponse": "The backup server answered, but the exchange failed.",
+  "@recoverbullServerBadResponse": {
+    "description": "Key server connection failed: the server was reached but the exchange or its answer was invalid"
+  },
+  "recoverbullNewRoute": "New route",
+  "@recoverbullNewRoute": {
+    "description": "Button on the RecoverBull connecting screen that replaces the Tor session so the next attempt takes a new route through Tor"
+  },
+  "recoverbullTorInitializing": "Initializing",
+  "@recoverbullTorInitializing": {
+    "description": "Status of the Tor network row on the RecoverBull connecting screen while Tor bootstraps"
+  },
+  "recoverbullTorReady": "Ready",
+  "@recoverbullTorReady": {
+    "description": "Status of the Tor network row once Tor is bootstrapped; no connection to the server exists yet"
   }
 }
