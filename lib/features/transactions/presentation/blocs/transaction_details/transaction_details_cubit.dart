@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -52,6 +53,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required this._deleteTransactionNoteUsecase,
     required this._getTransactionNoteSuggestionsUsecase,
     required this._broadcastOriginalTransactionUsecase,
+    required this._retrySwapUsecase,
   }) : super(const TransactionDetailsState());
 
   final GetTransactionWalletUsecase _getTransactionWalletUsecase;
@@ -73,6 +75,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   _getTransactionNoteSuggestionsUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
+  final RetrySwapUsecase _retrySwapUsecase;
 
   /// The load that populated this cubit, so [refresh] can re-run it whichever
   /// init path the screen used. Orders only load once (they have no watcher),
@@ -1095,4 +1098,41 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<Set<String>> fetchDistinctLabels() =>
       _getTransactionNoteSuggestionsUsecase.execute();
+
+  /// Drives a stranded swap's claim/refund directly on the script path, without
+  /// the watcher or any Boltz API call. Returns whether an attempt started;
+  /// progress is reflected by [TransactionDetailsState.retryingSwap] and a
+  /// failure by [TransactionDetailsState.swapRetryFailure].
+  bool retrySwap() {
+    if (state.retryingSwap) return false;
+    final swap = state.swap;
+    if (swap == null || !swap.requiresAction) return false;
+    emit(state.copyWith(retryingSwap: true, failure: null));
+    unawaited(_retrySwap(swap));
+    return true;
+  }
+
+  Future<void> _retrySwap(Swap swap) async {
+    try {
+      final updated = await _retrySwapUsecase.execute(swap);
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            transaction: state.transaction?.copyWith(swap: updated),
+          ),
+        );
+      }
+    } catch (e) {
+      log.warning('Transaction details swap retry failed: $e');
+      if (!isClosed) {
+        emit(
+          state.copyWith(failure: TransactionSwapRetryFailure(e.toString())),
+        );
+      }
+    }
+    // Always clear the flag, whichever branch ran, or the bar spins forever.
+    if (!isClosed) {
+      emit(state.copyWith(retryingSwap: false));
+    }
+  }
 }

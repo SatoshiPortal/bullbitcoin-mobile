@@ -3025,6 +3025,18 @@
   "@transactionDetailLoadError": {
     "description": "Error message shown when the transaction details could not be loaded"
   },
+  "transactionDetailRetryClaimRefund": "Retry claim / refund",
+  "@transactionDetailRetryClaimRefund": {
+    "description": "Button to manually retry a stranded swap's claim or refund"
+  },
+  "transactionDetailSwapRetryStarted": "Retrying claim / refund…",
+  "@transactionDetailSwapRetryStarted": {
+    "description": "Snackbar shown when a manual swap claim/refund retry starts"
+  },
+  "transactionDetailSwapRetryFailed": "Could not complete the claim / refund. Please try again.",
+  "@transactionDetailSwapRetryFailed": {
+    "description": "Error shown when a manual swap claim/refund retry fails"
+  },
   "transactionDetailLabelRecipient": "Recipient",
   "@transactionDetailLabelRecipient": {
     "description": "Label for the recipient of a fiat payment order"
