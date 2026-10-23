@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/key_server_budget.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'dart:io';
@@ -17,10 +18,8 @@ import 'package:bull_tor/tor.dart';
 /// traverse the tunnel interface, so the proxy hop stays local and only the
 /// configured proxy carries the traffic.
 class EnsureRecoverBullTorSessionUsecase {
-  /// Connect budget for each onion connect through a RecoverBull session.
-  ///
-  /// Measured on cold installs, successful first contacts took up to 34 seconds while failed ones never recovered within the budget, so 40 seconds keeps every observed success and lets the user reach New route quickly.
-  static const connectBudget = Duration(seconds: 40);
+  /// Connect budget for each onion connect through a RecoverBull session; see [keyServerConnectBudget].
+  static const connectBudget = keyServerConnectBudget;
 
   final EmbeddedTor _embeddedTor;
   final SettingsRepository _settingsRepository;
