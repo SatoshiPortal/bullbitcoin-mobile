@@ -474,9 +474,10 @@ class _Body extends StatelessWidget {
           _FailurePanel(
             busy: !_hasFailure,
             message: _failureMessage(context),
+            // Shown whenever the message comes from this failure, including while a Retry runs.
             detail: switch (state.failure) {
               final KeyServerConnectionFailure failure
-                  when _serverPhase == _PhaseState.failed =>
+                  when _torPhase == _PhaseState.done =>
                 failure.technicalLabel,
               _ => null,
             },

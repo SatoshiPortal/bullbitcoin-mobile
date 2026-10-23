@@ -585,6 +585,7 @@ void main() {
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
       expect(find.text(l10n.recoverbullServerOnionUnreachable), findsOneWidget);
+      expect(find.text('Tor: onion unreachable'), findsOneWidget);
       await tester.ensureVisible(find.text(l10n.recoverbullRetry));
       await tester.pump();
       await tester.tap(find.text(l10n.recoverbullRetry));
