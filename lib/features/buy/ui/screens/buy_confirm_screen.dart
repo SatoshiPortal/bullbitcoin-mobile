@@ -167,14 +167,7 @@ class BuyConfirmScreen extends StatelessWidget {
                       ),
                       const Gap(4),
                       if (buyOrder.confirmationDeadline case final deadline?)
-                        BullCountdown(
-                          until: deadline,
-                          onTimeout: () {
-                            context.read<BuyBloc>().add(
-                              const BuyEvent.refreshOrder(),
-                            );
-                          },
-                        ),
+                        BullCountdown(until: deadline),
                     ],
                   ),
                 if (confirmFailure != null) ...[

@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_us
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -1059,6 +1060,30 @@ void main() {
       );
     },
   );
+
+  group('SendCubit input currency without a price', () {
+    test('keeps the bitcoin unit when the chosen fiat has no price', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          fiatCurrencyCode: 'USD',
+          fiatCurrencyCodes: const ['USD', 'CAD'],
+          exchangeRate: 70000,
+        ),
+      );
+      // The datasource reports an unreachable pricer as a zero rate.
+      when(
+        () => convertSatsUsecase.execute(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => 0);
+
+      await cubit.onCurrencyChanged('CAD');
+
+      expect(cubit.state.inputAmountCurrencyCode, BitcoinUnit.sats.code);
+      expect(cubit.state.isInputAmountFiat, isFalse);
+    });
+  });
 
   group('SendCubit payment request input', () {
     test('stores sanitized input while parsing it', () async {

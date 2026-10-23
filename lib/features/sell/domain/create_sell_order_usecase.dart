@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -26,12 +28,24 @@ class CreateSellOrderUsecase {
   /// intent without also having to re-check the policy. The exchange applies its
   /// own pilot gate on top.
   @useResult
-  Future<Result<SellOrder, SellFailure>> execute({
+  Future<Result<Order, SellFailure>> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
+    RecipientSelection? recipient,
   }) async {
+    if (recipient != null &&
+        (currency != FiatCurrency.eur ||
+            !const {
+              RecipientType.sepaEur,
+              RecipientType.confidentialSepaEur,
+            }.contains(recipient.type))) {
+      return const Err(SellUnexpectedFailure('Invalid EUR sell recipient'));
+    }
+    if (recipient?.requiresVirtualPayeeActivation ?? false) {
+      return const Err(SellConfidentialSepaNotActivatedFailure());
+    }
     try {
       final settings = await _settingsRepository.fetch();
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
@@ -46,22 +60,37 @@ class CreateSellOrderUsecase {
           usePayjoin &&
           payjoinEnabled &&
           network == OrderBitcoinNetwork.bitcoin;
-      log.info(
+      log.fine(
         'Sell Payjoin order request: requested=$usePayjoin, '
         'sellEnabled=$payjoinEnabled, '
         'network=${network.value}, sent=$resolvedUsePayjoin',
       );
-      final order = await repo.placeSellOrder(
-        orderAmount: orderAmount,
-        currency: currency,
-        network: network,
-        usePayjoin: resolvedUsePayjoin,
-      );
-      log.info(
+      final Order order;
+      if (recipient == null) {
+        order = await repo.placeSellOrder(
+          orderAmount: orderAmount,
+          currency: currency,
+          network: network,
+          usePayjoin: resolvedUsePayjoin,
+        );
+      } else {
+        order = await repo.placeSellToRecipientOrderV2(
+          orderAmount: orderAmount,
+          recipientId: recipient.id,
+          network: network,
+          paymentProcessor: recipient.type == RecipientType.confidentialSepaEur
+              ? SepaPaymentProcessor.confidential
+              : SepaPaymentProcessor.regular,
+          usePayjoin: resolvedUsePayjoin,
+        );
+      }
+      log.fine(
         'Sell Payjoin order response: requested=$resolvedUsePayjoin, '
-        'bip21Present=${order.bip21URI != null}',
+        'bip21Present=${order.payjoinBip21 != null}',
       );
       return Ok(order);
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      return const Err(SellConfidentialSepaNotActivatedFailure());
     } on ApiKeyException catch (e) {
       return Err(SellUnauthenticatedFailure(e.message));
     } on BullBitcoinApiMinAmountException catch (e) {

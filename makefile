@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update prepare-payjoin-dependency bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -23,12 +23,6 @@ clean:
 deps:
 	@echo "🏃 Fetch dependencies (enforce pubspec.lock)"
 	@fvm flutter pub get --enforce-lockfile
-	@fvm dart tools/prepare_payjoin_dependency.dart
-
-# Git checkouts omit the generated binding; the published archive is the SHA-pinned oracle.
-# Use `dart` rather than `dart run` intentionally: prepare the source before native build hooks run.
-prepare-payjoin-dependency:
-	@fvm dart tools/prepare_payjoin_dependency.dart
 
 # Intentionally re-resolve from scratch: deletes the lockfiles and lets pub pick
 # fresh versions (and, for branch refs, fresh commits). Use only when you mean to
@@ -37,7 +31,6 @@ deps-update:
 	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
 	@rm -f pubspec.lock ios/Podfile.lock
 	@fvm flutter pub get
-	@fvm dart tools/prepare_payjoin_dependency.dart
 
 # Melos workspace bootstrap (pub get across the workspace + package linking).
 # Wraps `fvm dart run melos` so the pinned SDK (.fvmrc) is used — never bare
@@ -80,12 +73,12 @@ pr-governance-test:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
+	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --delete-conflicting-outputs --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
 
 translations:
 	@echo "🌐 Generating translations files"
@@ -429,5 +422,5 @@ integration-test:
 catalogue:
 	@echo "📚 Building & rendering the bull_ui catalogue in the browser"
 	@cd packages/bull_ui_catalogue && \
-		fvm dart run build_runner build --delete-conflicting-outputs && \
+		fvm dart run build_runner build && \
 		fvm flutter run -d chrome

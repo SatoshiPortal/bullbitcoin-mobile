@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullButton;
 
@@ -65,7 +66,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
               Text(
-                'Feature Coming Soon',
+                context.loc.comingSoonTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: .bold,
                 ),
@@ -83,7 +84,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               BullButton.big(
-                label: 'OK',
+                label: context.loc.okButton,
                 onPressed: () {
                   Navigator.of(context).pop();
                   onDismissed?.call();

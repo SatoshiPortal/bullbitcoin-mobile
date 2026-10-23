@@ -9,17 +9,20 @@ enum NotificationMessageKind {
   order,
   limitOrder,
   user,
+  recipient,
   unknown,
 }
 
 class NotificationMessage {
   final NotificationMessageKind kind;
   final String? orderId;
+  final String? event;
   final Map<String, dynamic> rawData;
 
   const NotificationMessage({
     required this.kind,
     this.orderId,
+    this.event,
     required this.rawData,
   });
 }

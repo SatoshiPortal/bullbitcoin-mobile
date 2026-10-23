@@ -881,10 +881,14 @@ class SendCubit extends Cubit<SendState>
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
-      fiatCurrencyCode = currencyCode;
-      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+      final rate = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currencyCode,
       );
+      // No price for that currency: stay on the current one rather than take
+      // a fiat input that cannot be converted.
+      if (rate <= 0) return;
+      fiatCurrencyCode = currencyCode;
+      exchangeRate = rate;
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.

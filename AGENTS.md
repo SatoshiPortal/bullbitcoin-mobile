@@ -235,6 +235,27 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 - **Learn unknown CLIs with `--help` first.** Don't guess flags. `<cmd> --help`, `<cmd> subcommand --help`, then act.
 - **Get the current date with `date -u +%Y-%m-%d`** before judging anything as "recent" or "outdated" — see the verification section above.
 
+## Logging and error reporting
+
+Use `package:bull_logger/bull_logger.dart` and its `log` API. **Our levels deliberately differ from the usual logging convention: `INFO` is debug-console chatter, not a persisted diagnostic.** All levels print to the console only in `kDebugMode`; the on-disk TSV files are the logs users can share with support.
+
+| API | On-disk support log | Reporter route |
+|---|---|---|
+| `log.info` | No | None |
+| `log.fine`, `log.finer`, `log.finest` | Yes | None |
+| `log.config` | Yes | None |
+| `log.warning` | Yes | None |
+| `log.severe` | Yes, flushed | Error capture |
+| `log.shout` | Yes, flushed | Exception capture, or an info-level message when no exception/trace pair is supplied |
+
+- **Choose a destination deliberately.** Use `info` for repetitive development traces (individual polls, relay attempts, fee previews). Use `fine` for milestones an exported log must reconstruct, `config` for configuration, and `warning` for recoverable failures. Record a persistent failure and its recovery as bounded state transitions rather than persisting every failed poll. Keep messages short and structured: mnemonic-like word sequences can be redacted by the local sanitizer.
+- **Sentry is a separate, conditional route.** On the normal path, `severe` and `shout` invoke the optional reporter; other logger methods do not. In the app, capture requires the release SDK to be enabled and user consent. Background tasks do not call `Report.init`, so they currently keep their diagnostics on disk. Reentrant calls inside the log listener and internal logger failures do not invoke the reporter; their local diagnostics are best effort. Automatic SDK events have their own consent-gated paths; do not bypass the app's reporting boundary with feature-level SDK calls.
+- **Local redaction is not Sentry redaction.** `Logger._sanitize` applies to disk and console output, not to the objects passed to the reporter. `Report.beforeSend` removes exception values, breadcrumb messages/data and requests, and attempts to clear frame variables; it does **not** remove every string. In particular, `bull.dev_message` and `shout` message events can retain the supplied message. Use fixed labels or explicitly allowlisted structured metadata. Never interpolate payment URIs, addresses, txids, amounts, credentials or user input into reporting messages. An `error:` argument can also expose its text in local logs: reduce sensitive foreign causes to safe type/status metadata before logging, and never rely on a scrubber to make secrets safe.
+- **Payjoin uses the same vocabulary.** `AppPayjoinLogAdapter` maps `info`, `fine`, `warning` and `severe` directly to the homonymous wallet methods, without code-based remapping or a package-only debug level. Routine traces use `info`; persisted milestones use `fine`. Both require an explicit code. Remove context-free routine calls rather than emitting indistinguishable lifecycle noise. `PayjoinLogger` accepts structured fields only, without free-text message arguments; the host renders `PayjoinLogCode.description`. Structured session references retain 16 hex characters; the adapter displays their first 7 characters after the role, without a `ref=` label. Preserve fixed codes, roles and safe session references; never forward a raw foreign exception message.
+- **Verify routing when changing logging.** Extend the contract tests in `packages/bull_logger/test/logger_reporter_test.dart` and the affected adapter tests. Check both what reaches the shared log and what invokes the reporter; a console line alone does not prove that support or Sentry will receive it.
+
+Sources of truth: [`logger.dart`](packages/bull_logger/lib/src/logger.dart), [`report.dart`](lib/core/utils/report.dart), reporter wiring in [`main.dart`](lib/main.dart), background bootstrap in [`handler.dart`](lib/core/background_tasks/handler.dart), and [`AppPayjoinLogAdapter`](lib/payjoin_runtime_adapters.dart).
+
 ## Security (self-custodial wallet — treat as load-bearing)
 
 This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold these as hard as the architecture rules:

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -43,13 +44,13 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               BullText(
-                'You Are Not Logged in',
+                context.loc.notLoggedInTitle,
                 style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
               BullText(
-                'Please log in to your Bull Bitcoin account to access exchange settings.',
+                context.loc.notLoggedInMessage,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
@@ -59,13 +60,13 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               BullButton.big(
-                label: 'LOGIN',
+                label: context.loc.loginButton,
                 onPressed: () {
                   Navigator.of(context).pop();
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
                 bgColor: context.appColors.secondary,
-                textColor: context.appColors.onPrimary,
+                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

@@ -55,3 +55,16 @@ class BullBitcoinApiMaxAmountException extends BullException {
 class BullBitcoinApiConfidentialSepaNotActivatedException implements Exception {
   const BullBitcoinApiConfidentialSepaNotActivatedException();
 }
+
+/// Safe diagnostics for an order rejection, without the API's free-text
+/// message or data, which can contain account details.
+class BullBitcoinApiOrderException implements Exception {
+  final String? apiCode;
+  final int? rpcCode;
+
+  const BullBitcoinApiOrderException({this.apiCode, this.rpcCode});
+
+  @override
+  String toString() =>
+      'BullBitcoinApiOrderException(apiCode: $apiCode, rpcCode: $rpcCode)';
+}

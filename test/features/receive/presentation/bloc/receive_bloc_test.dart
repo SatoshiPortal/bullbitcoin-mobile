@@ -1478,6 +1478,27 @@ void main() {
       },
     );
 
+    test('a currency whose price does not come is not taken', () async {
+      // The datasource reports an unreachable pricer as a zero rate.
+      when(
+        () => convertSatsToCurrency.execute(
+          amountSat: any(named: 'amountSat'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => const Ok(0));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+
+      bloc.add(const ReceiveAmountCurrencyChanged('USD'));
+      await pumpEventQueue();
+
+      // A fiat amount with no price would request zero sats.
+      expect(bloc.state.inputAmountCurrencyCode, isNot('USD'));
+    });
+
     test('switches currency and rate on success', () async {
       when(
         () => convertSatsToCurrency.execute(

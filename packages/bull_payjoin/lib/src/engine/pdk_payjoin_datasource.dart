@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
+import 'dart:core' as core;
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
+    show PayjoinLogCode, PayjoinLogRole;
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart' as logger;
+import 'package:bull_payjoin/src/engine/payjoin_servers.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
@@ -20,14 +26,17 @@ import 'package:primitives/primitives.dart' show Outpoint;
 /// [ohttpRelayUrl]. Matches the signature of `payjoin/http.dart`'s top-level
 /// `fetchOhttpKeys`, which is the default implementation used in production;
 /// tests can inject a fake to exercise the relay fallback logic offline.
+/// [timeout] bounds each of the dependency's three HTTP stages.
 typedef OhttpKeysFetcher =
     Future<OhttpKeys> Function({
       required String ohttpRelayUrl,
       required String directoryUrl,
+      required Duration timeout,
     });
 
 class PdkPayjoinDatasource {
-  final String _payjoinDirectoryUrl;
+  final List<core.Uri> _servers;
+  final Random _random;
   final Dio _dio;
   final logger.PayjoinLogger _log;
   final OhttpKeysFetcher _fetchOhttpKeys;
@@ -46,14 +55,21 @@ class PdkPayjoinDatasource {
   final Set<String> _receiverPollsInFlight = {};
   final Set<String> _senderPollsInFlight = {};
 
+  // Servers whose last request failed, per role (keyed by the failure code):
+  // one that stays down is warned about once, not on every poll.
+  final Set<(PayjoinLogCode, String)> _failingServers = {};
+
   bool _disposed = false;
 
   PdkPayjoinDatasource({
-    this._payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
+    List<core.Uri>? servers,
+    Random? random,
     required this._dio,
     required this._log,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
-  }) : _fetchOhttpKeys = ohttpKeysFetcher,
+  }) : _servers = servers ?? PayjoinConstants.serverUrls,
+       _random = random ?? Random.secure(),
+       _fetchOhttpKeys = ohttpKeysFetcher,
        _payjoinRequestedController = StreamController.broadcast(),
        _proposalSentController = StreamController.broadcast(),
        _expiredController = StreamController.broadcast();
@@ -106,23 +122,171 @@ class PdkPayjoinDatasource {
     await _expiredController.close();
   }
 
-  Future<(OhttpKeys?, String?)> fetchOhttpKeyAndRelay({
-    required String payjoinDirectory,
+  /// The longest one directory and relay pair may take to return keys, so
+  /// several pairs fit in a discovery budget.
+  static const _keyAttemptBudget = Duration(seconds: 10);
+
+  /// Fetches the OHTTP keys of a random directory through its relays, moving
+  /// to the next directory when none of them reaches it. Null when no
+  /// directory can be reached. The total budget also bounds the wait for a plain receive QR.
+  Future<({OhttpKeys keys, String directory})?> fetchDirectoryKeys({
+    Duration timeout = const Duration(seconds: 30),
   }) async {
-    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
-      try {
-        final ohttpKeys = await _fetchOhttpKeys(
-          ohttpRelayUrl: ohttpRelayUrl,
-          directoryUrl: payjoinDirectory,
-        );
-        return (ohttpKeys, ohttpRelayUrl);
-      } catch (e) {
-        _log.info('OHTTP key fetch failed');
-        continue;
+    if (timeout <= Duration.zero) {
+      throw ArgumentError.value(timeout, 'timeout', 'must be positive');
+    }
+    final elapsed = Stopwatch()..start();
+    var stopped = false;
+
+    void ensureActive() {
+      if (stopped || _disposed || elapsed.elapsed >= timeout) {
+        throw const _KeyDiscoveryStopped();
       }
     }
-    return (null, null);
+
+    Future<({OhttpKeys keys, String directory})?> discover() async {
+      final directories = [..._servers]..shuffle(_random);
+      for (final directory in directories) {
+        try {
+          ensureActive();
+          final keys = await _throughRelays(
+            directory,
+            relaysOutsideDomainOf(directory, servers: _servers),
+            (relay) async {
+              ensureActive();
+              final remaining = timeout - elapsed.elapsed;
+              final attemptBudget = remaining < _keyAttemptBudget
+                  ? remaining
+                  : _keyAttemptBudget;
+              if (attemptBudget <= Duration.zero) {
+                throw const _KeyDiscoveryStopped();
+              }
+              final OhttpKeys keys;
+              try {
+                // fetchOhttpKeys times each of its three HTTP stages and closes
+                // its client in finally; the outer deadline bounds the attempt
+                // as a whole, so a relay that stalls leaves time for others.
+                keys = await _fetchOhttpKeys(
+                  ohttpRelayUrl: relay,
+                  directoryUrl: directory.toString(),
+                  timeout: attemptBudget,
+                ).timeout(attemptBudget);
+              } on Exception {
+                ensureActive();
+                rethrow;
+              }
+              ensureActive();
+              return keys;
+            },
+          );
+          return (keys: keys, directory: directory.toString());
+        } on _KeyDiscoveryStopped {
+          return null;
+        } catch (_) {
+          continue;
+        }
+      }
+      return null;
+    }
+
+    try {
+      return await discover().timeout(
+        timeout,
+        onTimeout: () {
+          stopped = true;
+          return null;
+        },
+      );
+    } finally {
+      stopped = true;
+      elapsed.stop();
+    }
   }
+
+  /// Sends a session [request] through the relays allowed for [payjoinUri].
+  Future<T> _throughSessionRelays<T>(
+    String payjoinUri,
+    Future<T> Function(String relay) request,
+  ) async => _throughRelays(
+    payjoinDirectoryOf(payjoinUri),
+    allowedRelays(payjoinUri, servers: _servers),
+    request,
+  );
+
+  /// Sends [request] to [directory] through each of [relays], a non-empty
+  /// list, in a random order, and returns the first success. When every relay
+  /// fails, the last failure is thrown and the payjoin step does not go
+  /// through; an expired session stops at once.
+  ///
+  /// A relay is reported down only when another one reached the directory;
+  /// when none does, the directory is.
+  Future<T> _throughRelays<T>(
+    core.Uri? directory,
+    List<core.Uri> relays,
+    Future<T> Function(String relay) request,
+  ) async {
+    final failed = <(core.Uri, Object)>[];
+    for (final relay in [...relays]..shuffle(_random)) {
+      try {
+        final result = await request(relay.toString());
+        for (final (failedRelay, error) in failed) {
+          _reportServerFailed(
+            failedRelay,
+            PayjoinLogCode.relayUnreachable,
+            error,
+          );
+        }
+        _reportServerAnswered(relay, PayjoinLogCode.relayUnreachable);
+        if (directory != null) {
+          _reportServerAnswered(directory, PayjoinLogCode.directoryUnreachable);
+        }
+        return result;
+      } on PayjoinExpiredException {
+        rethrow;
+      } on _KeyDiscoveryStopped {
+        rethrow;
+      } on CreateRequestException {
+        // Local request validation says nothing about server availability.
+        rethrow;
+      } on ReceiverCreateRequestException {
+        // Same on the receiver side, an expired session included.
+        rethrow;
+      } catch (e) {
+        failed.add((relay, e));
+      }
+    }
+    final (_, lastError) = failed.last;
+    if (directory != null) {
+      _reportServerFailed(
+        directory,
+        PayjoinLogCode.directoryUnreachable,
+        lastError,
+      );
+    }
+    throw lastError;
+  }
+
+  /// Warns the first time [server] fails, then keeps repeats to debug traces.
+  void _reportServerFailed(
+    core.Uri server,
+    PayjoinLogCode failure,
+    Object error,
+  ) {
+    if (_failingServers.add((failure, _hostKey(server)))) {
+      _log.warning(code: failure, server: server, error: error);
+    } else {
+      _log.info(code: failure, server: server);
+    }
+  }
+
+  /// Logs that [server] answered again in the role whose [failure] it had.
+  void _reportServerAnswered(core.Uri server, PayjoinLogCode failure) {
+    if (_failingServers.remove((failure, _hostKey(server)))) {
+      _log.fine(code: PayjoinLogCode.serverRecovered, server: server);
+    }
+  }
+
+  static String _hostKey(core.Uri url) => payjoinHostOf(url) ?? url.toString();
 
   /// [amountSat] pins the amount inside the generated BIP21 URI.
   ///
@@ -142,19 +306,16 @@ class PdkPayjoinDatasource {
     bool isTrade = false,
   }) async {
     try {
-      final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
-        payjoinDirectory: _payjoinDirectoryUrl,
-      );
-
-      if (ohttpRelay == null || ohttpKeys == null) {
-        throw Exception('All OHTTP relays failed');
+      final directoryKeys = await fetchDirectoryKeys();
+      if (directoryKeys == null) {
+        throw Exception('No payjoin directory reachable');
       }
 
       var receiverBuilder =
           ReceiverBuilder(
                 address: address,
-                directory: _payjoinDirectoryUrl,
-                ohttpKeys: ohttpKeys,
+                directory: directoryKeys.directory,
+                ohttpKeys: directoryKeys.keys,
               )
               .withExpiration(expirationSecs: expireAfterSec)
               .withMaxFeeRate(
@@ -213,7 +374,6 @@ class PdkPayjoinDatasource {
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final senderLogRef = Payjoin.logRefForId(bip21);
-    _log.info('[sender] creating $senderLogRef with expirySec=$expirySec');
 
     PjUri pjUri;
     final Uri parsedUri;
@@ -261,8 +421,12 @@ class PdkPayjoinDatasource {
     // published and the creation aborts cleanly.
     await persistBeforePost(model);
 
-    await postOriginalProposal(withReplyKey, persister);
-    _log.info('[sender] original proposal posted for $senderLogRef');
+    await postOriginalProposal(withReplyKey, persister, model);
+    _log.fine(
+      code: PayjoinLogCode.originalPosted,
+      role: PayjoinLogRole.sender,
+      sessionRef: senderLogRef,
+    );
 
     // The POST transitioned the session to PollingForProposal, but `model`
     // above still carries the PRE-POST session JSON (WithReplyKey) — that
@@ -275,7 +439,6 @@ class PdkPayjoinDatasource {
     // row is already persisted, so a proposal arriving immediately still
     // finds it.
     startListeningForProposal(postedModel);
-    _log.info('[sender poll] started for $senderLogRef');
 
     return postedModel;
   }
@@ -283,11 +446,10 @@ class PdkPayjoinDatasource {
   Future<void> postOriginalProposal(
     WithReplyKey withReplyKey,
     InMemoryJsonSenderSessionPersister persister,
+    PayjoinSenderModel senderModel,
   ) async {
-    Object? lastError;
-    var posted = false;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
-      try {
+    try {
+      await _throughSessionRelays(senderModel.uri, (relay) async {
         final reqCtx = withReplyKey.createV2PostRequest(ohttpRelay: relay);
         final body = await postBytes(
           _dio,
@@ -298,21 +460,21 @@ class PdkPayjoinDatasource {
         withReplyKey
             .processResponse(response: body, postCtx: reqCtx.ohttpCtx)
             .save(persister: persister);
-        posted = true;
-        break;
-      } catch (e) {
-        _log.info('Sender proposal relay failed');
-        lastError = e;
-        continue;
-      }
-    }
-    if (!posted) {
+      });
+    } on CreateRequestException catch (e) {
+      throw SendCreationException(
+        e.isExpired()
+            ? 'Payjoin session expired'
+            : 'Could not create payjoin request',
+      );
+    } catch (e) {
       _log.warning(
-        'Failed to post original PSBT to any OHTTP relay',
-        error: lastError,
+        code: PayjoinLogCode.relayFailure,
+        role: PayjoinLogRole.sender,
+        error: e,
       );
       throw SendCreationException(
-        'Failed to post original PSBT to any OHTTP relay: $lastError',
+        'Failed to post original PSBT to any OHTTP relay: $e',
       );
     }
   }
@@ -350,8 +512,10 @@ class PdkPayjoinDatasource {
       txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
     );
 
-    _log.info(
-      'Payjoin request processed and proposal sent for ${receiverModel.id}',
+    _log.fine(
+      code: PayjoinLogCode.proposalSent,
+      role: PayjoinLogRole.receiver,
+      sessionRef: receiverModel.id,
     );
 
     return updatedModel;
@@ -398,10 +562,6 @@ class PdkPayjoinDatasource {
     if (pendingFallback == null) {
       // The session was already terminal (e.g. a race with another decline
       // path) — nothing further to persist, but not an error either.
-      _log.info(
-        'Payjoin receiver ${receiverModel.id} was already resolved when '
-        'declining below minimum',
-      );
       return persister.toJson();
     }
 
@@ -485,9 +645,14 @@ class PdkPayjoinDatasource {
           processPsbt,
         );
       case ProvisionalProposalReceiveSession():
-        return _finalizeProposal(state.inner, persister, processPsbt);
+        return _finalizeProposal(
+          state.inner,
+          persister,
+          receiverModel,
+          processPsbt,
+        );
       case PayjoinProposalReceiveSession():
-        return _sendPayjoinProposal(state.inner, persister);
+        return _sendPayjoinProposal(state.inner, persister, receiverModel);
       case HasReplyableExceptionReceiveSession():
         throw StateError('Receive session has a replyable exception');
       case MonitorReceiveSession():
@@ -642,27 +807,28 @@ class PdkPayjoinDatasource {
           maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
         )
         .save(persister: persister);
-    return _finalizeProposal(next, persister, processPsbt);
+    return _finalizeProposal(next, persister, receiverModel, processPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _finalizeProposal(
     ProvisionalProposal inner,
     InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
     String Function(String) processPsbt,
   ) async {
     final next = inner
         .finalizeProposal(processPsbt: _ProcessPsbt(processPsbt))
         .save(persister: persister);
-    return _sendPayjoinProposal(next, persister);
+    return _sendPayjoinProposal(next, persister, receiverModel);
   }
 
   Future<({Monitor monitor, String psbt})> _sendPayjoinProposal(
     PayjoinProposal proposal,
     InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
   ) async {
-    Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
-      try {
+    try {
+      return await _throughSessionRelays(receiverModel.pjUri, (relay) async {
         final req = proposal.createPostRequest(ohttpRelay: relay);
         final body = await postBytes(
           _dio,
@@ -676,19 +842,22 @@ class PdkPayjoinDatasource {
             .processResponse(body: body, ohttpContext: req.clientResponse)
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
-      } catch (e) {
-        _log.info('Receiver proposal relay failed');
-        lastError = e;
-        continue;
+      });
+    } on ReceiverCreateRequestException catch (e) {
+      if (e.isExpired()) {
+        throw PayjoinExpiredException('Payjoin receiver expired');
       }
+      throw PayjoinNotFoundException(
+        'Could not create payjoin proposal request',
+      );
+    } catch (e) {
+      _log.warning(
+        code: PayjoinLogCode.relayFailure,
+        role: PayjoinLogRole.receiver,
+        error: e,
+      );
+      throw PayjoinNotFoundException('Failed to post payjoin proposal: $e');
     }
-    _log.warning(
-      'Failed to post payjoin proposal to any OHTTP relay',
-      error: lastError,
-    );
-    throw PayjoinNotFoundException(
-      'Failed to post payjoin proposal: $lastError',
-    );
   }
 
   InputPair _buildInputPair(PayjoinInputPairModel input) {
@@ -748,7 +917,6 @@ class PdkPayjoinDatasource {
     Timer timer,
   ) async {
     if (!_receiverPollsInFlight.add(receiverModel.id)) return;
-    _log.info('Receiver poll started');
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -775,9 +943,9 @@ class PdkPayjoinDatasource {
       final unchecked = await _getUncheckedOriginalPayload(
         state.inner,
         persister,
+        receiverModel,
       );
       if (unchecked == null) {
-        _log.info('Receiver request not ready');
         return;
       }
 
@@ -790,7 +958,6 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      _log.info('Receiver request found');
       final updatedModel = receiverModel.copyWith(
         receiver: persister.toJson(),
         originalTxBytes: originalTxBytes,
@@ -804,14 +971,13 @@ class PdkPayjoinDatasource {
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _payjoinRequestedController.add(updatedModel);
-    } on PayjoinExpiredException catch (e) {
-      _log.info('[receiver poll] expired for ${receiverModel.id}: $e');
+    } on PayjoinExpiredException {
       if (!timer.isActive) return;
       timer.cancel();
       _receiverTimers.remove(receiverModel.id);
       _expiredController.add(receiverModel.copyWith(isExpired: true));
-    } catch (e) {
-      _log.info('[receiver poll] ${receiverModel.id}: $e');
+    } catch (_) {
+      // Retry transient polling failures on the next timer tick.
     } finally {
       _receiverPollsInFlight.remove(receiverModel.id);
     }
@@ -826,7 +992,6 @@ class PdkPayjoinDatasource {
     //  used as the internal map key below, which never reaches a log.
     final senderLogRef = Payjoin.logRefForId(senderModel.id);
     if (!_senderPollsInFlight.add(senderModel.id)) return;
-    _log.info('Sender poll started');
     try {
       // Local expiry backstop: don't rely solely on the PDK surfacing an
       // "expired" error — bound polling by the session's own expiry time.
@@ -850,10 +1015,13 @@ class PdkPayjoinDatasource {
       }
       if (state is! PollingForProposalSendSession) return;
 
-      final proposalPsbt = await _getProposalPsbt(state.inner, persister);
+      final proposalPsbt = await _getProposalPsbt(
+        state.inner,
+        persister,
+        senderModel,
+      );
       if (proposalPsbt == null) return;
 
-      _log.info('[sender poll] proposal found for $senderLogRef');
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
       final updatedModel = senderModel.copyWith(
         sender: persister.toJson(),
@@ -867,14 +1035,13 @@ class PdkPayjoinDatasource {
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _proposalSentController.add(updatedModel);
-    } on PayjoinExpiredException catch (e) {
-      _log.info('[sender poll] expired for $senderLogRef: $e');
+    } on PayjoinExpiredException {
       if (!timer.isActive) return;
       timer.cancel();
       _senderTimers.remove(senderModel.id);
       _expiredController.add(senderModel.copyWith(isExpired: true));
-    } catch (e) {
-      _log.info('[sender poll] $senderLogRef: $e');
+    } catch (_) {
+      // Retry transient polling failures on the next timer tick.
     } finally {
       _senderPollsInFlight.remove(senderModel.id);
     }
@@ -883,74 +1050,77 @@ class PdkPayjoinDatasource {
   Future<UncheckedOriginalPayload?> _getUncheckedOriginalPayload(
     Initialized initialized,
     InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
   ) async {
-    Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
-      try {
-        final poll = initialized.createPollRequest(ohttpRelay: relay);
-        final body = await postBytes(
-          _dio,
-          poll.request.url,
-          poll.request.body,
-          poll.request.contentType,
-        );
-        final outcome = initialized
-            .processResponse(body: body, ctx: poll.clientResponse)
-            .save(persister: persister);
-        if (outcome is StasisInitializedTransitionOutcome) return null;
-        return (outcome as ProgressInitializedTransitionOutcome).inner;
-      } on ReceiverException catch (e) {
-        if (_isExpiredString(e)) {
-          throw PayjoinExpiredException('Payjoin receiver expired: $e');
+    try {
+      return await _throughSessionRelays(receiverModel.pjUri, (relay) async {
+        try {
+          final poll = initialized.createPollRequest(ohttpRelay: relay);
+          final body = await postBytes(
+            _dio,
+            poll.request.url,
+            poll.request.body,
+            poll.request.contentType,
+          );
+          final outcome = initialized
+              .processResponse(body: body, ctx: poll.clientResponse)
+              .save(persister: persister);
+          if (outcome is StasisInitializedTransitionOutcome) return null;
+          return (outcome as ProgressInitializedTransitionOutcome).inner;
+        } on ReceiverException catch (e) {
+          if (_isExpiredString(e)) {
+            throw PayjoinExpiredException('Payjoin receiver expired: $e');
+          }
+          rethrow;
         }
-        _log.info('Receiver poll request creation failed');
-        lastError = e;
-        continue;
-      } catch (e) {
-        _log.info('Receiver relay poll failed');
-        lastError = e;
-        continue;
+      });
+    } on ReceiverCreateRequestException catch (e) {
+      if (e.isExpired()) {
+        throw PayjoinExpiredException('Payjoin receiver expired');
       }
+      throw PayjoinNotFoundException('Could not create poll request');
+    } on PayjoinExpiredException {
+      rethrow;
+    } catch (e) {
+      throw PayjoinNotFoundException('Failed to poll receiver: $e');
     }
-    throw PayjoinNotFoundException('Failed to poll receiver: $lastError');
   }
 
   Future<String?> _getProposalPsbt(
     PollingForProposal polling,
     InMemoryJsonSenderSessionPersister persister,
+    PayjoinSenderModel senderModel,
   ) async {
-    Object? lastError;
-    for (final relay in PayjoinConstants.ohttpRelayUrls) {
-      try {
-        final poll = polling.createPollRequest(ohttpRelay: relay);
-        final body = await postBytes(
-          _dio,
-          poll.request.url,
-          poll.request.body,
-          poll.request.contentType,
-        );
-        final outcome = polling
-            .processResponse(response: body, ohttpCtx: poll.ohttpCtx)
-            .save(persister: persister);
-        if (outcome is StasisPollingForProposalTransitionOutcome) {
-          return null;
+    try {
+      return await _throughSessionRelays(senderModel.uri, (relay) async {
+        try {
+          final poll = polling.createPollRequest(ohttpRelay: relay);
+          final body = await postBytes(
+            _dio,
+            poll.request.url,
+            poll.request.body,
+            poll.request.contentType,
+          );
+          final outcome = polling
+              .processResponse(response: body, ohttpCtx: poll.ohttpCtx)
+              .save(persister: persister);
+          if (outcome is StasisPollingForProposalTransitionOutcome) {
+            return null;
+          }
+          return (outcome as ProgressPollingForProposalTransitionOutcome)
+              .psbtBase64;
+        } on CreateRequestException catch (e) {
+          if (_isExpiredString(e)) {
+            throw PayjoinExpiredException('Payjoin sender expired: $e');
+          }
+          rethrow;
         }
-        return (outcome as ProgressPollingForProposalTransitionOutcome)
-            .psbtBase64;
-      } on CreateRequestException catch (e) {
-        if (_isExpiredString(e)) {
-          throw PayjoinExpiredException('Payjoin sender expired: $e');
-        }
-        _log.info('Sender poll request creation failed');
-        lastError = e;
-        continue;
-      } catch (e) {
-        _log.info('Sender relay poll failed');
-        lastError = e;
-        continue;
-      }
+      });
+    } on PayjoinExpiredException {
+      rethrow;
+    } catch (e) {
+      throw PayjoinNotFoundException('Failed to poll sender: $e');
     }
-    throw PayjoinNotFoundException('Failed to poll sender: $lastError');
   }
 
   // "Expired" variants aren't exposed publicly as a distinct subtype.
@@ -977,10 +1147,17 @@ class PdkPayjoinDatasource {
       options: Options(
         headers: {'Content-Type': contentType},
         responseType: ResponseType.bytes,
+        // A relay must never redirect the client to the directory itself,
+        // which would expose the client's IP outside the OHTTP tunnel.
+        followRedirects: false,
       ),
     );
     return Uint8List.fromList(response.data ?? const []);
   }
+}
+
+final class _KeyDiscoveryStopped implements Exception {
+  const _KeyDiscoveryStopped();
 }
 
 class PayjoinNotFoundException extends PayjoinEngineException {
@@ -1113,14 +1290,9 @@ List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
       // replayReceiverEventLog on every poll tick.
       return List<String>.from(decoded);
     }
-    log.warning(
-      'Persisted payjoin session event log is not a list; starting empty',
-    );
+    log.warning();
   } catch (e) {
-    log.warning(
-      'Failed to decode persisted payjoin session event log: $e',
-      error: e,
-    );
+    log.warning(error: e);
   }
   return const [];
 }

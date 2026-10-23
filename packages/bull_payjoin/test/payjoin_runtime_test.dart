@@ -125,6 +125,34 @@ void main() {
     );
   }
 
+  test('a sender that cannot start says why in the log', () async {
+    final log = _LogPort();
+    final lifecycle = switch (await open(log: log)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    addTearDown(lifecycle.dispose);
+
+    final result = await lifecycle.payjoin.sender.start(
+      StartPayjoinSender(
+        walletId: 'wallet-1',
+        network: BitcoinNetwork.testnet,
+        bip21Uri: 'bitcoin:tb1qnopayjoinendpoint?amount=0.001',
+        unsignedOriginalPsbt: 'cHNidP8=',
+        amount: Sats.fromInt(100000),
+        feeRate: FeeRate(2),
+      ),
+    );
+
+    expect(result, isA<Err<PayjoinSenderSession, PayjoinFailure>>());
+    final event = log.events.singleWhere(
+      (event) => event.code == PayjoinLogCode.sessionStartFailed,
+    );
+    expect(event.level, PayjoinLogLevel.warning);
+    expect(event.role, PayjoinLogRole.sender);
+    expect(event.error, isNotNull);
+  });
+
   test('opens roles over the seeded policy and disposes cleanly', () async {
     final result = await open();
     final lifecycle = switch (result) {

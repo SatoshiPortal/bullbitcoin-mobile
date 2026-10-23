@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
@@ -103,7 +104,7 @@ class _CommonCoinSelectionBottomSheetState
             children: [
               Center(
                 child: BullText(
-                  "Select amount",
+                  context.loc.selectAmountTitle,
                   style: context.font.headlineMedium?.copyWith(
                     color: context.appColors.secondary,
                   ),
@@ -137,7 +138,7 @@ class _CommonCoinSelectionBottomSheetState
           ],
           const Gap(8),
           BullText(
-            'Amount requested: $amountToSend',
+            context.loc.amountRequestedLabel(amountToSend),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
@@ -145,7 +146,7 @@ class _CommonCoinSelectionBottomSheetState
           if (!isAmountSufficient) ...[
             const Gap(8),
             BullText(
-              'Selected amount is insufficient',
+              context.loc.sendSelectedUtxosInsufficient,
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.error,
               ),
@@ -173,7 +174,7 @@ class _CommonCoinSelectionBottomSheetState
           ),
           const Gap(24),
           BullButton.big(
-            label: "Done",
+            label: context.loc.doneButton,
             onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
                 ? _onDonePressed
                 : () {},
@@ -281,7 +282,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   Row(
                     children: [
                       BullText(
-                        'Address: ',
+                        context.loc.addressLabel,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
@@ -294,7 +295,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       BullText(
-                        'Type: ',
+                        context.loc.typeLabel,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),

@@ -43,6 +43,16 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
   late final StreamSubscription<String> _currencyChangeSubscription;
 
+  /// The currency whose price is being fetched by a currency change, so a
+  /// burst of the same change waits for that one request instead of sending
+  /// its own.
+  String? _currencyInFlight;
+
+  /// Counts currency changes, so only the latest one may publish its price:
+  /// an answer for a currency the user has since left must not overwrite the
+  /// newer one.
+  int _currencyRequest = 0;
+
   @override
   Future<void> close() async {
     await _currencyChangeSubscription.cancel();
@@ -154,8 +164,16 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // old one, and the change has fetched its own.
       if (state.currency != currency) return;
 
+      // A refresh only reaches the pricer once the price repository's rate is
+      // over a minute old, so the price on screen is outdated: with no answer,
+      // show no price rather than that one.
       if (price <= 0) {
-        emit(state.copyWith(failure: const BitcoinPriceInvalidRateFailure()));
+        emit(
+          state.copyWith(
+            bitcoinPrice: null,
+            failure: const BitcoinPriceInvalidRateFailure(),
+          ),
+        );
         return;
       }
 
@@ -167,16 +185,13 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         ),
       );
     } catch (e) {
-      // TODO: would it make sense to not emit a failure state here, but keep the
-      //  previous success state as to be able to show an exchange rate allthough
-      //  not the most recent one? If that makes sense, we can add the error directly
-      //  to the success state. So the UI can show the exchange rate, but also show
-      //  that it might not be the most recent one.
-      //  (Adding a fetch and rate timestamp to the success can also help)
       log.warning('BitcoinPriceFetched failed', error: e);
       if (state.currency != currency) return;
       emit(
-        state.copyWith(failure: BitcoinPriceUnexpectedFailure(e.toString())),
+        state.copyWith(
+          bitcoinPrice: null,
+          failure: BitcoinPriceUnexpectedFailure(e.toString()),
+        ),
       );
     }
   }
@@ -185,7 +200,14 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
+    // A burst of the same change shares the request already out. The price
+    // repository bounds how often the pricer is actually asked.
+    if (event.currencyCode == _currencyInFlight) return;
+
     log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
+    _currencyInFlight = event.currencyCode;
+    final request = ++_currencyRequest;
+    bool isLatest() => request == _currencyRequest;
 
     try {
       emit(state.copyWith(loadingPrice: true));
@@ -194,6 +216,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
+      if (!isLatest()) return;
 
       if (price <= 0) {
         log.warning(
@@ -222,6 +245,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       );
     } catch (e) {
       log.warning('BitcoinPriceCurrencyChanged failed', error: e);
+      if (!isLatest()) return;
       emit(
         state.copyWith(
           bitcoinPrice: null,
@@ -231,6 +255,10 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           startupFailed: false,
         ),
       );
+    } finally {
+      // Only the latest request owns the marker: an earlier one finishing,
+      // even for the same currency, must not end the sharing of the latest.
+      if (isLatest()) _currencyInFlight = null;
     }
   }
 }

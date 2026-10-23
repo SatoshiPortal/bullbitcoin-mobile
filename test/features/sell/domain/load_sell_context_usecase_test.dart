@@ -162,6 +162,24 @@ void main() {
       expect((result as Ok<double, SellFailure>).value, 42.5);
     });
 
+    test('an unavailable price is a failure, not a zero rate', () async {
+      // The datasource reports an unreachable pricer as a zero rate; the sell
+      // estimate would then need zero sats and pass any balance check.
+      when(
+        () => convertSatsToCurrency.execute(
+          amountSat: any(named: 'amountSat'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => 0);
+
+      final result = await usecase.satsToCurrency(currencyCode: 'CAD');
+
+      expect(
+        (result as Err<double, SellFailure>).failure,
+        isA<SellQuoteUnavailableFailure>(),
+      );
+    });
+
     test('sanitizes a conversion failure', () async {
       when(
         () => convertSatsToCurrency.execute(

@@ -1,0 +1,2 @@
+# The native bindings register process-wide Dart callbacks, which cannot cross test isolates.
+concurrency: 1

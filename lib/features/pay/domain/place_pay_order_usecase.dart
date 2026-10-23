@@ -42,15 +42,25 @@ class PlacePayOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
+      final resolvedUsePayjoin =
+          usePayjoin &&
+          payjoinEnabled &&
+          network == OrderBitcoinNetwork.bitcoin;
+      log.fine(
+        'Pay Payjoin order request: requested=$usePayjoin, '
+        'sellEnabled=$payjoinEnabled, '
+        'network=${network.value}, sent=$resolvedUsePayjoin',
+      );
       final order = await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
-        usePayjoin:
-            usePayjoin &&
-            payjoinEnabled &&
-            network == OrderBitcoinNetwork.bitcoin,
+        usePayjoin: resolvedUsePayjoin,
+      );
+      log.fine(
+        'Pay Payjoin order response: requested=$resolvedUsePayjoin, '
+        'bip21Present=${order.bip21URI != null}',
       );
 
       return Ok(order);

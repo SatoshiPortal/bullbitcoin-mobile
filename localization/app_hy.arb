@@ -3656,7 +3656,7 @@
   "recipientsVirtualIbanCopied": "Պատճենվեց սեղմատախտակին",
   "recipientsVirtualIbanDone": "Պատրաստ է",
   "recipientsVirtualIbanRecipientName": "Ստացողի անուն",
-  "recipientsVirtualIbanIbanLabel": "IBAN հաշվի համար",
+  "recipientsVirtualIbanIbanLabel": "Վիրտուալ IBAN հաշվի համարը",
   "recipientsVirtualIbanCountry": "Բանկային հաշվի երկիր",
   "recipientsVirtualIbanBic": "BIC կոդ",
   "fundExchangeMethodConfidentialSepa": "Գաղտնի SEPA",
@@ -3667,5 +3667,11 @@
   "recipientsVirtualIbanBankAddress": "Բանկի հասցեն",
   "recipientsVirtualIbanBankAddressHelp": "Բանկի պաշտոնական հասցեն, եթե ձեր բանկը այն պահանջի։",
   "recipientsConfidentialSepaNameMustMatchHint": "Ձեր բանկային և վիրտուալ IBAN հաշիվների անունները պետք է համընկնեն, հակառակ դեպքում փոխանցումները ավտոմատ կվերադարձվեն։",
-  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին",
+  "recipientsFieldBankAccountIban": "Բանկային հաշվի համարը (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Հանումները ցուցադրվում են որպես փոխանցում ինքներդ ձեզ՝ ձեր հաշվի անունով",
+  "sellPayoutBalance": "Ավելացնել իմ հաշվի մնացորդին",
+  "sellPayoutSepaDescription": "Կանխիկացումները ցուցադրվում են որպես Leonod-ի կողմից ուղարկված",
+  "sellPayoutTitle": "Ընտրեք ստացողին",
+  "sellPayoutNewBadge": "ՆՈՐ"
 }

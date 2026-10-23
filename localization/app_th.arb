@@ -11855,7 +11855,7 @@
   "recipientsVirtualIbanCopied": "ติดตามคลิปบอร์ด",
   "recipientsVirtualIbanDone": "อย่าลืม",
   "recipientsVirtualIbanRecipientName": "ชื่อ",
-  "recipientsVirtualIbanIbanLabel": "จํานวนบัญชี",
+  "recipientsVirtualIbanIbanLabel": "หมายเลขบัญชี IBAN เสมือน",
   "recipientsVirtualIbanCountry": "ธนาคารธนาคาร",
   "recipientsVirtualIbanBic": "รหัส BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA แบบเป็นความลับ",
@@ -11866,5 +11866,11 @@
   "recipientsVirtualIbanBankAddress": "ที่อยู่ธนาคาร",
   "recipientsVirtualIbanBankAddressHelp": "ที่อยู่อย่างเป็นทางการของธนาคาร ในกรณีที่ธนาคารของคุณขอ",
   "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
-  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "recipientsFieldBankAccountIban": "หมายเลขบัญชีธนาคาร (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ",
+  "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
+  "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
+  "sellPayoutTitle": "เลือกผู้รับเงิน",
+  "sellPayoutNewBadge": "ใหม่"
 }
