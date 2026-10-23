@@ -4977,5 +4977,7 @@
   "recoverbullServerTorSessionGone": "La connexion Tor ne répond plus.",
   "recoverbullServerHttpError": "Le serveur de sauvegarde a répondu par une erreur.",
   "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
-  "recoverbullNewRoute": "Autre route"
+  "recoverbullNewRoute": "Autre route",
+  "recoverbullTorInitializing": "Initialisation",
+  "recoverbullTorReady": "Prêt"
 }

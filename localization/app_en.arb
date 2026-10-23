@@ -15808,5 +15808,13 @@
   "recoverbullNewRoute": "New route",
   "@recoverbullNewRoute": {
     "description": "Button on the RecoverBull connecting screen that replaces the Tor session so the next attempt takes a new route through Tor"
+  },
+  "recoverbullTorInitializing": "Initializing",
+  "@recoverbullTorInitializing": {
+    "description": "Status of the Tor network row on the RecoverBull connecting screen while Tor bootstraps"
+  },
+  "recoverbullTorReady": "Ready",
+  "@recoverbullTorReady": {
+    "description": "Status of the Tor network row once Tor is bootstrapped; no connection to the server exists yet"
   }
 }

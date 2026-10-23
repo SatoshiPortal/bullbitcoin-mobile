@@ -443,6 +443,9 @@ class _Body extends StatelessWidget {
         _PhaseCard(
           label: context.loc.recoverbullTorNetwork,
           phase: _torPhase,
+          // Tor is bootstrapped, not connected to anything: no circuit to the server exists until the server row succeeds.
+          activeLabel: context.loc.recoverbullTorInitializing,
+          doneLabel: context.loc.recoverbullTorReady,
           // No sub-step is named: the conn/dir split that would identify the
           // exact phase is private upstream, so claiming one would be wrong
           // about a third of the time.
@@ -516,8 +519,14 @@ class _PhaseCard extends StatelessWidget {
   final String? caption;
   final Duration? elapsed;
 
+  /// Status wording for a phase whose generic "Connecting" and "Connected" would overstate it.
+  final String? activeLabel;
+  final String? doneLabel;
+
   const _PhaseCard({
     required this.label,
+    this.activeLabel,
+    this.doneLabel,
     required this.phase,
     this.caption,
     this.elapsed,
@@ -530,9 +539,9 @@ class _PhaseCard extends StatelessWidget {
   };
 
   String _statusLabel(BuildContext context) => switch (phase) {
-    _PhaseState.done => context.loc.recoverbullConnected,
+    _PhaseState.done => doneLabel ?? context.loc.recoverbullConnected,
     _PhaseState.failed => context.loc.recoverbullFailed,
-    _PhaseState.active => context.loc.recoverbullConnecting,
+    _PhaseState.active => activeLabel ?? context.loc.recoverbullConnecting,
     _PhaseState.pending => context.loc.recoverbullWaiting,
   };
 

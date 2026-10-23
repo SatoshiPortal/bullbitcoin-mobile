@@ -557,4 +557,30 @@ void main() {
       expect(bloc.events, isEmpty);
     });
   });
+
+  testWidgets('says Tor is ready, not connected, once it bootstraps', (
+    tester,
+  ) async {
+    final bloc = _MutableBloc(
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        keyServerStatus: KeyServerStatus.connecting,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+    addTearDown(bloc.close);
+    await pumpMutablePage(tester, bloc);
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+    expect(find.text(l10n.recoverbullTorReady), findsOneWidget);
+    expect(find.text(l10n.recoverbullConnected), findsNothing);
+    expect(find.text(l10n.recoverbullConnecting), findsOneWidget);
+  });
 }
