@@ -281,7 +281,10 @@ class _Body extends StatelessWidget {
       _diagnostic != null;
 
   /// The failure panel also stays up while a retry runs, so its buttons can show as disabled instead of vanishing.
-  bool get _showFailurePanel => _hasFailure || state.keyServerFailures > 0;
+  bool get _showFailurePanel =>
+      _hasFailure ||
+      (state.keyServerFailures > 0 &&
+          state.keyServerStatus == KeyServerStatus.connecting);
 
   /// New route is offered with Retry from the first failure: a timeout often favours Retry, which reuses work Tor finished in the background, while other causes favour a new route.
   ///

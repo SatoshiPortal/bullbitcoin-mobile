@@ -1360,21 +1360,50 @@ void main() {
       ).thenAnswer((_) => acquisition.future);
       final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
       addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      // Set after the acquisition started, so only New route could reset it.
       bloc.emit(
         bloc.state.copyWith(
           keyServerFailures: 2,
           failure: const KeyServerConnectionFailure(),
         ),
       );
-
-      bloc.add(const OnTorInitialization());
-      await pumpEventQueue();
       bloc.add(const OnNewCircuit());
       await pumpEventQueue();
 
       // Nothing was reset for an initialization that the droppable handler would discard.
       expect(bloc.state.keyServerFailures, 2);
       verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      acquisition.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+    });
+
+    test('replacing the route starts the failure count again', () async {
+      final acquisition =
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer((_) => acquisition.future);
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+      bloc.emit(
+        bloc.state.copyWith(
+          keyServerFailures: 1,
+          keyServerStatus: KeyServerStatus.offline,
+          failure: const KeyServerConnectionFailure(),
+        ),
+      );
+
+      // What Retry dispatches once Tor stopped after a failure.
+      bloc.add(const OnTorInitialization(restart: true));
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerFailures, 0);
+      expect(bloc.state.failure, isNull);
       acquisition.complete(const Err(core.KeyServerUnavailableFailure()));
       await pumpEventQueue();
     });

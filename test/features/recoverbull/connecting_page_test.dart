@@ -523,6 +523,22 @@ void main() {
       expect(find.text(l10n.recoverbullNewRoute), findsOneWidget);
     });
 
+    testWidgets('shows no failure panel while a route is being acquired', (
+      tester,
+    ) async {
+      final bloc = _MutableBloc(
+        failed(
+          1,
+        ).copyWith(keyServerStatus: KeyServerStatus.unknown, failure: null),
+      );
+      addTearDown(bloc.close);
+      await pumpMutablePage(tester, bloc);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      expect(find.text(l10n.recoverbullRetry), findsNothing);
+      expect(find.text(l10n.recoverbullConnectionFailed), findsNothing);
+    });
+
     testWidgets('offers only Retry through a user-managed proxy', (
       tester,
     ) async {

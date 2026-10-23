@@ -222,8 +222,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       return;
     }
     final generation = ++_routeGeneration;
+    // A new route starts its own failure count, so a stale one cannot keep the failure panel up during acquisition.
     emit(
-      state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
+      state.copyWith(
+        failure: null,
+        keyServerStatus: KeyServerStatus.unknown,
+        keyServerFailures: 0,
+      ),
     );
     if (retained != null) await _retireFlowRoute(retained);
     if (isClosed || _closingBloc) return;
