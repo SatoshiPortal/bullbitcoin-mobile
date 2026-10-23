@@ -1386,11 +1386,13 @@ void main() {
         'AZCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
         'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
     late StreamController<void> walletEvents;
+    late String supersededTxId;
     late String retriedTxId;
 
     /// Strands a sender on [oneInputPsbt], resumes it so its payjoin is
     /// watched, then retries the payment under the same id.
     Future<PayjoinSenderModel> strandAndRetry() async {
+      supersededTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
       retriedTxId = (await BitcoinTx.fromPsbt(retriedProposalPsbt)).txid;
       final stranded = expiredSender(proposalPsbt: oneInputPsbt);
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
@@ -1480,6 +1482,23 @@ void main() {
       final row = await completedRow(retried.id);
       expect(row?.isCompleted, isTrue);
       expect(row?.txId, retriedTxId);
+    });
+
+    test('records the payjoin actually seen, not its own proposal', () async {
+      // The retried session already holds its new proposal's txid when the
+      //  superseded payjoin lands: the row must name the transaction that is
+      //  on the network.
+      final retried = await strandAndRetry();
+      await local.recordSenderProposal(
+        retried.copyWith(proposalPsbt: retriedProposalPsbt, txId: retriedTxId),
+      );
+
+      onlyVisible(supersededTxId);
+      walletEvents.add(null);
+
+      final row = await completedRow(retried.id);
+      expect(row?.isCompleted, isTrue);
+      expect(row?.txId, supersededTxId);
     });
   });
 

@@ -2164,8 +2164,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             isCompleted: true,
             isAborted: false,
           )
+        // A retried sender may already hold its new proposal's txid while
+        // the superseded payjoin is the one that landed.
         : (model as PayjoinSenderModel).copyWith(
-            txId: model.txId ?? observedTxId,
+            txId: observedTxId,
             isExpired: false,
             isCompleted: true,
             isAborted: false,
