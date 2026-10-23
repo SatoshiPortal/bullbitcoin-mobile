@@ -15,6 +15,9 @@ import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -87,6 +90,17 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+      ),
+    );
+
+    locator.registerFactory<RetrySwapUsecase>(
+      () => RetrySwapUsecase(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
 

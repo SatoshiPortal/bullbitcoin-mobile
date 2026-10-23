@@ -46,8 +46,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final StreamController<Payjoin> _payjoinStreamController;
 
   // Per-session subscriptions watching for a completed payjoin transaction to
-  // appear on-chain, keyed by payjoin id. Kept so each can be cancelled once
-  // its transaction is seen (the underlying watch stream re-emits on every
+  // appear on-chain, keyed by (payjoin id, txid). Kept so each can be
+  // cancelled once its transaction is seen (the watch stream re-emits on every
   // sync), on expiry, or on teardown. This is the only long-lived
   // subscription state in this otherwise fire-and-forget singleton, so its
   // hygiene lives entirely in _watchForBroadcast / _stopWatching / dispose.
@@ -56,7 +56,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // Per-session active-poll timers complementing _broadcastWatchers: each one
   // periodically forces a sync'd wallet-transaction lookup so completion does
   // not depend on some unrelated wallet sync happening to run (see
-  // _watchForBroadcast). Keyed by payjoin id, cancelled together with the
+  // _watchForBroadcast). Keyed like the watchers, cancelled together with the
   // passive watcher in _stopWatching / dispose.
   final Map<String, Timer> _broadcastPollTimers = {};
 
@@ -366,6 +366,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // PollingForProposal instead of stalling on the pre-POST state.
     await _localPayjoinDatasource.updateSenderSessionState(model);
 
+    // On a retry, a broadcast watcher left on the superseded attempt's payjoin
+    // stays armed on purpose: if that payjoin lands, the payment is made, and
+    // completing on it stops this session's fallback from paying a second time.
     _watchForFallback(
       payjoinId: model.id,
       walletId: model.walletId,
@@ -1046,6 +1049,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  session — fall back to broadcasting the original transaction
       //  ourselves, mirroring the sender-expiry fallback, so the payment
       //  still goes through and the send flow doesn't hang forever (#2246).
+      //
+      // Unless the payjoin is already on the network: only we can sign our
+      //  inputs, so that is our own broadcast reaching it before the client
+      //  saw an error (a dropped circuit, a timeout). The original would only
+      //  be a losing conflict, and expiring would invite a second payment.
+      final visibleTxId = await _visiblePayjoinTxId(payjoin);
+      if (visibleTxId != null) {
+        final completed = await _completeOnPayjoinTransactionSeen(
+          payjoin.id,
+          visibleTxId,
+        );
+        // Not applied: the watcher retries the same completion.
+        if (completed == null) {
+          _watchForBroadcast(
+            payjoinId: payjoin.id,
+            walletId: payjoin.walletId,
+            txId: visibleTxId,
+          );
+        }
+        return;
+      }
       result = await _broadcastOriginalTransaction(payjoin) as PayjoinSender?;
     }
 
@@ -1121,6 +1145,30 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         clearTxId: true,
       );
       if (recorded) _payjoinStreamController.add(failedModel.toEntity());
+    }
+  }
+
+  /// The sender's payjoin txid when the network already knows it, else null.
+  /// A failed lookup counts as not visible, so the caller keeps its fallback.
+  Future<String?> _visiblePayjoinTxId(PayjoinSender payjoin) async {
+    final txId = payjoin.txId;
+    if (txId == null) return null;
+    try {
+      final visible = await _transactions.isTransactionVisible(
+        walletId: payjoin.walletId,
+        transactionId: txId,
+        refresh: true,
+      );
+      return visible ? txId : null;
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: payjoin.logRef,
+        error: e,
+        trace: st,
+      );
+      return null;
     }
   }
 
@@ -1408,11 +1456,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     for (final sender in senders) {
       if (!sender.isExpired || sender.isAborted || sender.isCompleted) continue;
       try {
-        if (sender.txId != null) {
+        // An expired sender has its txId cleared for display hygiene (see
+        //  _broadcastOriginalTransaction and the both-broadcasts-failed branch
+        //  of _processPayjoinProposalInner). The real payjoin transaction can
+        //  still reach the chain after that: only we can sign our inputs, so
+        //  it is our own broadcast getting through before the client saw an
+        //  error, with the wallet not synced yet, and the original fallback
+        //  failing as a lower-fee conflict. The in-memory broadcast watcher
+        //  armed then is lost when the app closes, so re-derive the payjoin txid
+        //  from the retained proposal PSBT and re-arm it. Without this the
+        //  session stays expired forever while the UI shows the original txid
+        //  that was never broadcast, even though the payment confirmed as a
+        //  payjoin — _completeOnPayjoinTransactionSeen reconciles the expired
+        //  session the moment that transaction is seen.
+        final payjoinTxId =
+            sender.txId ?? await _deriveSenderPayjoinTxId(sender);
+        if (payjoinTxId != null) {
           _watchForBroadcast(
             payjoinId: sender.id,
             walletId: sender.walletId,
-            txId: sender.txId!,
+            txId: payjoinTxId,
           );
         }
         _watchForFallback(
@@ -1452,6 +1515,32 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           trace: st,
         );
       }
+    }
+  }
+
+  /// The payjoin txid of a sender session, re-derived from its retained
+  /// proposal PSBT. Used on resume for an expired sender whose [txId] was
+  /// cleared for display hygiene (see the sender sweep in
+  /// [_resumePayjoinsOnStartupUnguarded]): the stored proposal still pins the
+  /// payjoin transaction, and the engine's own invariant is that
+  /// `BitcoinTx.fromPsbt(proposalPsbt).txid == txId` (see
+  /// payjoin_runtime reconstructSender). Returns null when no proposal was ever
+  /// exchanged — no payjoin transaction can exist — or the PSBT cannot be
+  /// parsed, in which case no broadcast watcher is armed and the fallback
+  /// observer alone covers the session.
+  Future<String?> _deriveSenderPayjoinTxId(PayjoinSenderModel sender) async {
+    final proposalPsbt = sender.proposalPsbt;
+    if (proposalPsbt == null) return null;
+    try {
+      return (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+    } catch (_) {
+      // A corrupt row. The cause is dropped: it may quote the PSBT.
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: sender.toEntity().logRef,
+      );
+      return null;
     }
   }
 
@@ -1796,8 +1885,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ///   broadcast the payjoin transaction, because nothing else synced the
   ///   wallet in the meantime.
   ///
-  /// Idempotent: a session already being watched (live path then resume, or
-  /// duplicate resume) is not re-subscribed.
+  /// Idempotent per (session, txid), like [_watchForFallback]: a retried
+  /// sender watches its own payjoin alongside the superseded attempt's.
   void _watchForBroadcast({
     required String payjoinId,
     required String walletId,
@@ -1810,6 +1899,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     pollTimers: _broadcastPollTimers,
     onSeen: (payjoinId) => _onPayjoinTransactionSeen(payjoinId, txId),
     kind: 'broadcast',
+    watchKey: '$payjoinId|$txId',
   );
 
   /// Watches for the ORIGINAL transaction [originalTxId] to appear in
@@ -2074,8 +2164,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             isCompleted: true,
             isAborted: false,
           )
+        // A retried sender may already hold its new proposal's txid while
+        // the superseded payjoin is the one that landed.
         : (model as PayjoinSenderModel).copyWith(
-            txId: model.txId ?? observedTxId,
+            txId: observedTxId,
             isExpired: false,
             isCompleted: true,
             isAborted: false,
@@ -2092,9 +2184,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Persistence won. Any already-delivered duplicate callback now observes
     // the terminal row under the same session lock and becomes a no-op.
     _stopWatching(payjoinId);
-    if (completedModel is PayjoinReceiverModel && completedModel.txId != null) {
+    // Senders too: one reconciled here (e.g. a stranded expired sender on
+    // resume) never went through the live broadcast path that labels it.
+    final completedTxId = completedModel.txId;
+    if (completedTxId != null) {
       await _labelPayjoinTransaction(
-        txId: completedModel.txId!,
+        txId: completedTxId,
         walletId: completedModel.walletId,
       );
     }
@@ -2177,26 +2272,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// stream's teardown.
   void _stopWatching(String payjoinId) {
     _receiverFallbackAvailableAt.remove(payjoinId);
-    _broadcastPollTimers.remove(payjoinId)?.cancel();
-    final broadcastSubscription = _broadcastWatchers.remove(payjoinId);
-    if (broadcastSubscription != null) {
-      unawaited(broadcastSubscription.cancel());
+    // Both watcher kinds are keyed per (session, txid) — '$payjoinId|$txId' —
+    // because a retried sender watches its superseded transactions alongside
+    // the new ones (see _watchForFallback). Tear down every txid of the
+    // session.
+    bool ofSession(String k) => k == payjoinId || k.startsWith('$payjoinId|');
+    for (final timers in [_broadcastPollTimers, _fallbackPollTimers]) {
+      for (final k in timers.keys.where(ofSession).toList()) {
+        timers.remove(k)?.cancel();
+      }
     }
-    // Fallback entries are keyed per (session, txid) — '$payjoinId|$txId' —
-    // because a retried sender watches its superseded original alongside the
-    // new one (see _watchForFallback). Tear down every txid of the session.
-    final fallbackTimerKeys = _fallbackPollTimers.keys
-        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
-        .toList();
-    for (final k in fallbackTimerKeys) {
-      _fallbackPollTimers.remove(k)?.cancel();
-    }
-    final fallbackWatcherKeys = _fallbackWatchers.keys
-        .where((k) => k == payjoinId || k.startsWith('$payjoinId|'))
-        .toList();
-    for (final k in fallbackWatcherKeys) {
-      final sub = _fallbackWatchers.remove(k);
-      if (sub != null) unawaited(sub.cancel());
+    for (final watchers in [_broadcastWatchers, _fallbackWatchers]) {
+      for (final k in watchers.keys.where(ofSession).toList()) {
+        final sub = watchers.remove(k);
+        if (sub != null) unawaited(sub.cancel());
+      }
     }
     _pdkPayjoinDatasource.stopPolling(payjoinId);
   }

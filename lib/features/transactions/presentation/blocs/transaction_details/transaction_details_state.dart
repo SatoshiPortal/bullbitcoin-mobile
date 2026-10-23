@@ -38,6 +38,12 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     _ => null,
   };
 
+  /// The failure the swap retry action owns, so its button renders it inline.
+  TransactionFailure? get swapRetryFailure => switch (failure) {
+    final TransactionSwapRetryFailure f => f,
+    _ => null,
+  };
+
   bool get isLoading => transaction == null && !hasLoadError;
 
   WalletTransaction? get walletTransaction => transaction?.walletTransaction;
