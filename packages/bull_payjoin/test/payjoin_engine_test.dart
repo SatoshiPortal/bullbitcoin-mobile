@@ -1217,6 +1217,50 @@ void main() {
       );
     });
 
+    test('labels the payjoin when a stranded sender reconciles', () async {
+      // The live broadcast path labels the sender's payjoin itself. A sender
+      //  reconciled by the watcher never goes through it, so the payment would
+      //  otherwise show in history without the payjoin label.
+      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final stranded = expiredSender(proposalPsbt: oneInputPsbt);
+      await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
+
+      final labelled = Completer<String>();
+      when(
+        () => labels.labelTransaction(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+        ),
+      ).thenAnswer((inv) async {
+        labelled.complete(inv.namedArguments[#transactionId] as String);
+      });
+      final walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
+      );
+
+      await engine.resumePayjoinsOnStartup();
+      walletEvents.add(null);
+
+      expect(
+        await labelled.future.timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => 'never labelled',
+        ),
+        payjoinTxId,
+      );
+    });
+
     test(
       'without a proposal, an expired sender arms no broadcast watcher',
       () async {

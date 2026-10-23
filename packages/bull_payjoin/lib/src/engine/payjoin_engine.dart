@@ -2127,9 +2127,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Persistence won. Any already-delivered duplicate callback now observes
     // the terminal row under the same session lock and becomes a no-op.
     _stopWatching(payjoinId);
-    if (completedModel is PayjoinReceiverModel && completedModel.txId != null) {
+    // Senders too: one reconciled here (e.g. a stranded expired sender on
+    // resume) never went through the live broadcast path that labels it.
+    final completedTxId = completedModel.txId;
+    if (completedTxId != null) {
       await _labelPayjoinTransaction(
-        txId: completedModel.txId!,
+        txId: completedTxId,
         walletId: completedModel.walletId,
       );
     }
