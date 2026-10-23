@@ -1486,6 +1486,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       return (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
     } catch (_) {
+      // A corrupt row. The cause is dropped: it may quote the PSBT.
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: sender.toEntity().logRef,
+      );
       return null;
     }
   }

@@ -1217,6 +1217,22 @@ void main() {
       );
     });
 
+    test('an unreadable proposal is logged, not silently ignored', () async {
+      final stranded = expiredSender(proposalPsbt: 'cHNidP9wcm9wb3NhbA==');
+      await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
+
+      await engine.resumePayjoinsOnStartup();
+
+      final warning = logs.withCode(PayjoinLogCode.watchFailure).single;
+      expect(warning.level, PayjoinLogLevel.warning);
+      expect(warning.sessionRef, stranded.toEntity().logRef);
+      expect(
+        warning.error,
+        isNull,
+        reason: 'the parse error may quote the PSBT, which must not be logged',
+      );
+    });
+
     test('labels the payjoin when a stranded sender reconciles', () async {
       // The live broadcast path labels the sender's payjoin itself. A sender
       //  reconciled by the watcher never goes through it, so the payment would
