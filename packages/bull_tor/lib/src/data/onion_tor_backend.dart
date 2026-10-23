@@ -10,6 +10,7 @@ import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/entities/tor_session.dart';
 import '../domain/entities/tor_transport.dart';
 import '../domain/ports/embedded_tor_port.dart';
+import '../domain/tor_connect_budget.dart';
 import '../domain/tor_failure.dart';
 import 'tor_logger.dart';
 
@@ -28,6 +29,9 @@ import 'tor_logger.dart';
 /// SOCKS credentials, which `bdk_dart` cannot carry on the Electrum path
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
+
+/// [torConnectBudget] as the SDK takes it, applied to the client and every session alike.
+final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
 
 /// How long to wait, once `bootstrap()` returns, for Arti to report it can
 /// carry traffic.
@@ -122,11 +126,12 @@ final class OnionTorBackend implements EmbeddedTorPort {
       _log.config('Starting embedded Tor with ${transport.name} transport...');
       final startedAt = DateTime.now();
       final service = switch (transport) {
-        TorTransport.direct => await onion.TorService.start(
+        TorTransport.direct => await onion.TorService.startWithConnectTimeout(
           stateDir: stateDir.path,
           cacheDir: cacheDir.path,
           socksPort: 0,
           policy: _socksPolicy,
+          connectTimeoutMs: _connectTimeoutMs,
         ),
         TorTransport.snowflake => await _startWithSnowflake(
           stateDir.path,
@@ -291,7 +296,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   };
 
   @override
-  Future<TorSession> openSession({Duration? connectTimeout}) async {
+  Future<TorSession> openSession() async {
     final service = _service;
     final transport = _transport;
     if (service == null || transport == null || !await service.proxyIsAlive()) {
@@ -301,13 +306,11 @@ final class OnionTorBackend implements EmbeddedTorPort {
     }
 
     try {
-      final session = connectTimeout == null
-          ? await service.openSession(socksPort: 0, policy: _socksPolicy)
-          : await service.openSessionWithConnectTimeout(
-              socksPort: 0,
-              policy: _socksPolicy,
-              connectTimeoutMs: BigInt.from(connectTimeout.inMilliseconds),
-            );
+      final session = await service.openSessionWithConnectTimeout(
+        socksPort: 0,
+        policy: _socksPolicy,
+        connectTimeoutMs: _connectTimeoutMs,
+      );
       return TorSession(
         TorProxyEndpoint(
           host: InternetAddress.loopbackIPv4.address,
@@ -405,12 +408,13 @@ final class OnionTorBackend implements EmbeddedTorPort {
   ) async {
     final snowflakePort = await onion.SnowflakeTransport.start();
     _snowflakeLease = true;
-    return onion.TorService.startWithSnowflake(
+    return onion.TorService.startWithSnowflakeConnectTimeout(
       stateDir: stateDir,
       cacheDir: cacheDir,
       socksPort: 0,
       snowflakePort: snowflakePort,
       policy: _socksPolicy,
+      connectTimeoutMs: _connectTimeoutMs,
     );
   }
 

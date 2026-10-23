@@ -62,9 +62,7 @@ class TorSessions {
 
   const TorSessions(this._open);
 
-  /// [connectTimeout] bounds each onion connect through the session; null keeps the SDK default of 30 seconds.
-  Future<TorSession> open({Duration? connectTimeout}) =>
-      _open.execute(connectTimeout: connectTimeout);
+  Future<TorSession> open() => _open.execute();
 }
 
 class ExternalTor {

@@ -99,18 +99,12 @@ void main() {
     when(
       () => embeddedTor.ensureReady(),
     ).thenAnswer((_) async => TorReady(route));
-    when(
-      () => sessions.open(
-        connectTimeout: EnsureRecoverBullTorSessionUsecase.connectBudget,
-      ),
-    ).thenAnswer((_) async => session);
+    when(() => sessions.open()).thenAnswer((_) async => session);
 
     final result = await usecase.execute();
 
     expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
-    verify(
-      () => sessions.open(connectTimeout: const Duration(seconds: 40)),
-    ).called(1);
+    verify(() => sessions.open()).called(1);
   });
 
   test('rejects an external SOCKS route', () async {
@@ -126,9 +120,7 @@ void main() {
     final result = await usecase.execute();
 
     expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
-    verifyNever(
-      () => sessions.open(connectTimeout: any(named: 'connectTimeout')),
-    );
+    verifyNever(() => sessions.open());
   });
 
   // A user-managed proxy is borrowed through its loopback SOCKS5 endpoint; the app must neither bootstrap embedded Tor nor assume ownership of that proxy.
@@ -145,9 +137,7 @@ void main() {
     expect(route.endpoint.host, '127.0.0.1');
     expect(route.endpoint.port, 9050);
     verifyNever(() => embeddedTor.ensureReady());
-    verifyNever(
-      () => sessions.open(connectTimeout: any(named: 'connectTimeout')),
-    );
+    verifyNever(() => sessions.open());
     // Closing must not tear down a proxy the app does not own.
     await route.close();
   });
@@ -192,9 +182,7 @@ void main() {
         isA<ExternalTorProxyUnavailableFailure>(),
       );
       verifyNever(() => embeddedTor.ensureReady());
-      verifyNever(
-        () => sessions.open(connectTimeout: any(named: 'connectTimeout')),
-      );
+      verifyNever(() => sessions.open());
     },
   );
 

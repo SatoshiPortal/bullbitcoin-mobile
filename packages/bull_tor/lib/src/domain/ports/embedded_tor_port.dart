@@ -2,6 +2,7 @@ import '../entities/tor_connection_state.dart';
 import '../entities/tor_proxy_endpoint.dart';
 import '../entities/tor_session.dart';
 import '../entities/tor_transport.dart';
+import '../tor_connect_budget.dart';
 import '../tor_failure.dart';
 
 sealed class EmbeddedTorEvent {
@@ -42,8 +43,8 @@ abstract interface class EmbeddedTorPort {
 
   Future<TorProxyEndpoint> start(TorTransport transport);
 
-  /// Opens an isolated SOCKS session. [connectTimeout] bounds each onion connect through it; null keeps the SDK default of 30 seconds.
-  Future<TorSession> openSession({Duration? connectTimeout});
+  /// Opens an isolated SOCKS session; each connect through it gets [torConnectBudget].
+  Future<TorSession> openSession();
 
   Future<bool> isAlive();
 

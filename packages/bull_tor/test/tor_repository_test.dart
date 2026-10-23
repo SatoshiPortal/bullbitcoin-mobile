@@ -319,26 +319,6 @@ void main() {
       expect(embedded.closedSessionCalls, 1);
     });
 
-    test(
-      'forwards a session connect budget and keeps none by default',
-      () async {
-        final first = repository.openSession();
-        await Future<void>.delayed(Duration.zero);
-        embedded.starts.single.complete(
-          TorProxyEndpoint(host: '127.0.0.1', port: 41001),
-        );
-        await (await first).close();
-        await (await repository.openSession(
-          connectTimeout: const Duration(seconds: 50),
-        )).close();
-
-        expect(embedded.sessionConnectTimeouts, [
-          null,
-          const Duration(seconds: 50),
-        ]);
-      },
-    );
-
     test('opens a session from the replacement transport generation', () async {
       final initialReady = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
@@ -435,7 +415,6 @@ final class _FakeEmbeddedTor implements EmbeddedTorPort {
   int stopCalls = 0;
   int closeCalls = 0;
   int openSessionCalls = 0;
-  final List<Duration?> sessionConnectTimeouts = [];
   int closedSessionCalls = 0;
   bool alive = true;
   Completer<bool>? aliveCheck;
@@ -453,9 +432,8 @@ final class _FakeEmbeddedTor implements EmbeddedTorPort {
   Future<bool> isAlive() => aliveCheck?.future ?? Future.value(alive);
 
   @override
-  Future<TorSession> openSession({Duration? connectTimeout}) async {
+  Future<TorSession> openSession() async {
     openSessionCalls++;
-    sessionConnectTimeouts.add(connectTimeout);
     return TorSession(
       TorProxyEndpoint(host: '127.0.0.1', port: 42001),
       startedTransports.last,

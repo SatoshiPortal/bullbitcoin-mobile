@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/recoverbull/domain/key_server_budget.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -118,7 +117,7 @@ class RecoverBullRemoteDatasource {
       await KeyServer(
         address: url,
         client: client,
-      ).infos().timeout(keyServerProbeDeadline);
+      ).infos().timeout(torConnectDeadline);
     } catch (e) {
       // Console trace only: the use case persists one warning per failed attempt with its cause and duration. Only safe metadata is logged: the raw message is a foreign string.
       final status = e is KeyServerException ? e.code : null;

@@ -6,6 +6,5 @@ class OpenTorSessionUsecase {
 
   const OpenTorSessionUsecase(this._repository);
 
-  Future<TorSession> execute({Duration? connectTimeout}) =>
-      _repository.openSession(connectTimeout: connectTimeout);
+  Future<TorSession> execute() => _repository.openSession();
 }
