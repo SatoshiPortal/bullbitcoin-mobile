@@ -7,6 +7,7 @@ import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
+import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
@@ -1162,6 +1163,91 @@ void main() {
         reason: 'the row must stay unfinished so the fallback is retried',
       );
     });
+
+    test('resumes the payjoin-txid watch from the proposal and reconciles when it '
+        'lands', () async {
+      // Regression: a sender that failed BOTH broadcasts — its payjoin was
+      //  already in the mempool via the counterparty (so our re-broadcast
+      //  hit already-spent inputs) and its original was a lower-fee conflict —
+      //  is persisted expired with txId cleared for display hygiene, while the
+      //  payjoin transaction is actually live on-chain. The in-memory
+      //  broadcast watcher dies with the app. On the next start the sweep must
+      //  re-derive the payjoin txid from the retained proposal PSBT and re-arm
+      //  the watcher, so the session reconciles to COMPLETED on the real
+      //  payjoin txid instead of being stranded forever showing the
+      //  never-broadcast original.
+      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final stranded = expiredSender(proposalPsbt: oneInputPsbt);
+      await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
+
+      final walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
+      );
+
+      await engine.resumePayjoinsOnStartup();
+      walletEvents.add(null);
+
+      final deadline = DateTime.now().add(const Duration(seconds: 5));
+      PayjoinSenderModel? row;
+      while (DateTime.now().isBefore(deadline)) {
+        row = await local.fetchSender(stranded.id);
+        if (row?.isCompleted == true) break;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      expect(
+        row?.isCompleted,
+        isTrue,
+        reason: 'the live payjoin tx must complete the stranded session',
+      );
+      expect(
+        row?.txId,
+        payjoinTxId,
+        reason: 'reconciliation must record the real payjoin txid',
+      );
+    });
+
+    test(
+      'without a proposal, an expired sender arms no broadcast watcher',
+      () async {
+        // The counterpart to the regression test: no proposal was ever
+        //  exchanged, so no payjoin transaction can exist. The sweep must not
+        //  fabricate a broadcast watch (only the fallback observer applies).
+        final stranded = sender();
+        await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
+
+        final walletEvents = StreamController<void>.broadcast();
+        addTearDown(walletEvents.close);
+        when(
+          () => transactions.watchWallet(any()),
+        ).thenAnswer((_) => walletEvents.stream);
+        when(
+          () => transactions.isTransactionVisible(
+            walletId: any(named: 'walletId'),
+            transactionId: any(named: 'transactionId'),
+            refresh: any(named: 'refresh'),
+          ),
+        ).thenAnswer((_) async => true);
+
+        await engine.resumePayjoinsOnStartup();
+        walletEvents.add(null);
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        // A sender with no proposal must never be "completed" as a payjoin,
+        //  even if some unrelated transaction is visible.
+        expect((await local.fetchSender(stranded.id))?.isCompleted, isFalse);
+      },
+    );
   });
 
   test(

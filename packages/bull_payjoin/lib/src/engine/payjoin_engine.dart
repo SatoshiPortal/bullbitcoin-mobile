@@ -1408,11 +1408,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     for (final sender in senders) {
       if (!sender.isExpired || sender.isAborted || sender.isCompleted) continue;
       try {
-        if (sender.txId != null) {
+        // An expired sender has its txId cleared for display hygiene (see
+        //  _broadcastOriginalTransaction and the both-broadcasts-failed branch
+        //  of _processPayjoinProposalInner). The real payjoin transaction can
+        //  still reach the chain after that — most often the counterparty
+        //  broadcasts it, which is exactly what makes our own payjoin broadcast
+        //  fail on already-spent inputs and the original fallback fail as a
+        //  lower-fee conflict. The in-memory broadcast watcher armed at that
+        //  moment is lost when the app closes, so re-derive the payjoin txid
+        //  from the retained proposal PSBT and re-arm it. Without this the
+        //  session stays expired forever while the UI shows the original txid
+        //  that was never broadcast, even though the payment confirmed as a
+        //  payjoin — _completeOnPayjoinTransactionSeen reconciles the expired
+        //  session the moment that transaction is seen.
+        final payjoinTxId =
+            sender.txId ?? await _deriveSenderPayjoinTxId(sender);
+        if (payjoinTxId != null) {
           _watchForBroadcast(
             payjoinId: sender.id,
             walletId: sender.walletId,
-            txId: sender.txId!,
+            txId: payjoinTxId,
           );
         }
         _watchForFallback(
@@ -1452,6 +1467,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           trace: st,
         );
       }
+    }
+  }
+
+  /// The payjoin txid of a sender session, re-derived from its retained
+  /// proposal PSBT. Used on resume for an expired sender whose [txId] was
+  /// cleared for display hygiene (see the sender sweep in
+  /// [_resumePayjoinsOnStartupUnguarded]): the stored proposal still pins the
+  /// payjoin transaction, and the engine's own invariant is that
+  /// `BitcoinTx.fromPsbt(proposalPsbt).txid == txId` (see
+  /// payjoin_runtime reconstructSender). Returns null when no proposal was ever
+  /// exchanged — no payjoin transaction can exist — or the PSBT cannot be
+  /// parsed, in which case no broadcast watcher is armed and the fallback
+  /// observer alone covers the session.
+  Future<String?> _deriveSenderPayjoinTxId(PayjoinSenderModel sender) async {
+    final proposalPsbt = sender.proposalPsbt;
+    if (proposalPsbt == null) return null;
+    try {
+      return (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+    } catch (_) {
+      return null;
     }
   }
 
