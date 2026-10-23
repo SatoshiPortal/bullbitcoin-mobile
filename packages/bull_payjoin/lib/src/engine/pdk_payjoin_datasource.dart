@@ -122,6 +122,10 @@ class PdkPayjoinDatasource {
     await _expiredController.close();
   }
 
+  /// The longest one directory and relay pair may take to return keys, so
+  /// several pairs fit in a discovery budget.
+  static const _keyAttemptBudget = Duration(seconds: 10);
+
   /// Fetches the OHTTP keys of a random directory through its relays, moving
   /// to the next directory when none of them reaches it. Null when no
   /// directory can be reached. The total budget also bounds the wait for a plain receive QR.
@@ -150,20 +154,23 @@ class PdkPayjoinDatasource {
             relaysOutsideDomainOf(directory, servers: _servers),
             (relay) async {
               ensureActive();
-              // fetchOhttpKeys has three separately timed HTTP stages and closes its client in finally.
-              final stageBudget = (timeout - elapsed.elapsed) ~/ 3;
-              if (stageBudget <= Duration.zero) {
+              final remaining = timeout - elapsed.elapsed;
+              final attemptBudget = remaining < _keyAttemptBudget
+                  ? remaining
+                  : _keyAttemptBudget;
+              if (attemptBudget <= Duration.zero) {
                 throw const _KeyDiscoveryStopped();
               }
               final OhttpKeys keys;
               try {
+                // fetchOhttpKeys times each of its three HTTP stages and closes
+                // its client in finally; the outer deadline bounds the attempt
+                // as a whole, so a relay that stalls leaves time for others.
                 keys = await _fetchOhttpKeys(
                   ohttpRelayUrl: relay,
                   directoryUrl: directory.toString(),
-                  timeout: stageBudget < const Duration(seconds: 10)
-                      ? stageBudget
-                      : const Duration(seconds: 10),
-                );
+                  timeout: attemptBudget,
+                ).timeout(attemptBudget);
               } on Exception {
                 ensureActive();
                 rethrow;
