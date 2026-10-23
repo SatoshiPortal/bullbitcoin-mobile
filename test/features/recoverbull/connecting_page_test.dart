@@ -523,6 +523,28 @@ void main() {
       expect(find.text(l10n.recoverbullNewRoute), findsOneWidget);
     });
 
+    testWidgets('offers only Retry through a user-managed proxy', (
+      tester,
+    ) async {
+      final bloc = _MutableBloc(
+        failed(1).copyWith(
+          torConnection: tor.TorReady(
+            tor.TorRoute(
+              source: tor.TorSource.external,
+              endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 9050),
+              evidence: tor.TorReadinessEvidence.externalSocksHandshake,
+            ),
+          ),
+        ),
+      );
+      addTearDown(bloc.close);
+      await pumpMutablePage(tester, bloc);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      expect(find.text(l10n.recoverbullRetry), findsOneWidget);
+      expect(find.text(l10n.recoverbullNewRoute), findsNothing);
+    });
+
     testWidgets('New route asks the bloc for a new session', (tester) async {
       final bloc = _MutableBloc(failed(1));
       addTearDown(bloc.close);

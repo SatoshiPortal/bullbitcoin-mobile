@@ -284,8 +284,14 @@ class _Body extends StatelessWidget {
   bool get _showFailurePanel => _hasFailure || state.keyServerFailures > 0;
 
   /// New route is offered with Retry from the first failure: a timeout often favours Retry, which reuses work Tor finished in the background, while other causes favour a new route.
+  ///
+  /// Only an embedded route can take another path; a user-managed proxy would just be asked again.
   bool get _offersNewCircuit =>
-      state.keyServerFailures >= 1 && _tor is tor.TorReady;
+      state.keyServerFailures >= 1 &&
+      switch (_tor) {
+        tor.TorReady(:final route) => route.source == tor.TorSource.embedded,
+        _ => false,
+      };
 
   TorBullState get _mascotState {
     final diagnostic = _diagnostic;
