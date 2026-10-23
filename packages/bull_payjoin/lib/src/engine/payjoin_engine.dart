@@ -12,7 +12,6 @@ import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_contract.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
-import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
@@ -206,9 +205,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<bool> checkOhttpRelayHealth() async {
-    final (ohttpKeys, ohttpRelay) = await _pdkPayjoinDatasource
-        .fetchOhttpKeyAndRelay(payjoinDirectory: PayjoinConstants.directoryUrl);
-    return ohttpKeys != null && ohttpRelay != null;
+    return await _pdkPayjoinDatasource.fetchDirectoryKeys() != null;
   }
 
   // TODO: Remove this and use the general frozen utxo datasource

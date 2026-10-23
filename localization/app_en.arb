@@ -13271,14 +13271,6 @@
   "@settingsPayjoinServersTitle": {
     "description": "Title of the read-only payjoin servers section"
   },
-  "settingsPayjoinDirectoryLabel": "Payjoin directory",
-  "@settingsPayjoinDirectoryLabel": {
-    "description": "Label for the payjoin directory URL, shown read-only"
-  },
-  "settingsPayjoinRelaysLabel": "OHTTP relays",
-  "@settingsPayjoinRelaysLabel": {
-    "description": "Label for the list of OHTTP relay URLs, shown read-only"
-  },
   "bitcoinSettingsPayjoinTitle": "Payjoin",
   "@bitcoinSettingsPayjoinTitle": {
     "description": "Entry to the payjoin settings screen from the bitcoin settings screen"

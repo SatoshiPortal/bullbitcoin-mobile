@@ -4578,8 +4578,6 @@
   "settingsPayjoinMinAmountRangeError": "Doit être compris entre {min} et {max} sats",
   "settingsPayjoinExpireTitle": "Expiration de la session",
   "settingsPayjoinServersTitle": "Serveurs",
-  "settingsPayjoinDirectoryLabel": "Répertoire payjoin",
-  "settingsPayjoinRelaysLabel": "Relais OHTTP",
   "bitcoinSettingsPayjoinTitle": "Payjoin",
   "transactionStatusPayjoinAborted": "Payjoin abandonné",
   "transactionDetailLabelPayjoinAborted": "Abandonné",
