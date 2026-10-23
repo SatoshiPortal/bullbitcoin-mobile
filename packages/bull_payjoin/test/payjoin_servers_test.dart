@@ -19,6 +19,10 @@ void main() {
 
   final refuses = throwsA(isA<PayjoinRelayUnavailableException>());
 
+  test('the server list cannot be reordered in place', () {
+    expect(() => servers.shuffle(), throwsUnsupportedError);
+  });
+
   test('every server is on its own domain', () {
     expect(servers, [bull, bobspace, vinteum, planB]);
     expect(servers.map(payjoinDomainOf), [
