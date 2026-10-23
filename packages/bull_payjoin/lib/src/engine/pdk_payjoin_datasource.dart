@@ -248,6 +248,9 @@ class PdkPayjoinDatasource {
       } on CreateRequestException {
         // Local request validation says nothing about server availability.
         rethrow;
+      } on ReceiverCreateRequestException {
+        // Same on the receiver side, an expired session included.
+        rethrow;
       } catch (e) {
         failed.add((relay, e));
       }
@@ -840,6 +843,13 @@ class PdkPayjoinDatasource {
             .save(persister: persister);
         return (monitor: monitor, psbt: psbt);
       });
+    } on ReceiverCreateRequestException catch (e) {
+      if (e.isExpired()) {
+        throw PayjoinExpiredException('Payjoin receiver expired');
+      }
+      throw PayjoinNotFoundException(
+        'Could not create payjoin proposal request',
+      );
     } catch (e) {
       _log.warning(
         code: PayjoinLogCode.relayFailure,
@@ -1064,6 +1074,11 @@ class PdkPayjoinDatasource {
           rethrow;
         }
       });
+    } on ReceiverCreateRequestException catch (e) {
+      if (e.isExpired()) {
+        throw PayjoinExpiredException('Payjoin receiver expired');
+      }
+      throw PayjoinNotFoundException('Could not create poll request');
     } on PayjoinExpiredException {
       rethrow;
     } catch (e) {
