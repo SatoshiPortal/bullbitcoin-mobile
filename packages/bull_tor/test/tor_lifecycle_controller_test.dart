@@ -69,7 +69,8 @@ final class _FakeTorRepository implements TorRepository {
   Future<TorConnectionState> retry() => throw UnimplementedError();
 
   @override
-  Future<TorSession> openSession() => throw UnimplementedError();
+  Future<TorSession> openSession({Duration? connectTimeout}) =>
+      throw UnimplementedError();
 
   @override
   Future<TorConnectionState> setMode(TorTransportMode mode) =>

@@ -100,7 +100,7 @@ final class TorRepositoryImpl implements TorRepository {
   }
 
   @override
-  Future<TorSession> openSession() async {
+  Future<TorSession> openSession({Duration? connectTimeout}) async {
     while (!_closed) {
       final state = await ensureReady();
       if (!identical(state, _current)) continue;
@@ -108,7 +108,9 @@ final class TorRepositoryImpl implements TorRepository {
       if (state is TorReady && _accepts(state.route.transport)) {
         final generation = _generation;
         try {
-          final session = await _embeddedTor.openSession();
+          final session = await _embeddedTor.openSession(
+            connectTimeout: connectTimeout,
+          );
           if (_isCurrent(generation) &&
               _current is TorReady &&
               _accepts(session.transport)) {

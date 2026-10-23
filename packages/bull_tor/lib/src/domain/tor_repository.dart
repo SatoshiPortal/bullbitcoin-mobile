@@ -29,7 +29,8 @@ abstract interface class TorRepository {
   @useResult
   Future<TorConnectionState> setMode(TorTransportMode mode);
 
-  Future<TorSession> openSession();
+  /// [connectTimeout] bounds each connect through the session; null keeps the SDK default.
+  Future<TorSession> openSession({Duration? connectTimeout});
 
   Future<void> setDormant(bool dormant);
 

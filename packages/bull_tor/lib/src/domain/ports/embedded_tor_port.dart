@@ -42,7 +42,8 @@ abstract interface class EmbeddedTorPort {
 
   Future<TorProxyEndpoint> start(TorTransport transport);
 
-  Future<TorSession> openSession();
+  /// Opens an isolated SOCKS session. [connectTimeout] bounds each onion connect through it; null keeps the SDK default of 30 seconds.
+  Future<TorSession> openSession({Duration? connectTimeout});
 
   Future<bool> isAlive();
 
