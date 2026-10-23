@@ -19,8 +19,6 @@ void main() {
   late _MockEnsureRecoverBullTorSession ensureSession;
   late RecoverBullTorRoute route;
   late int closeCount;
-  late List<Duration> waited;
-  late List<int> attempts;
   late ConnectToKeyServerUsecase usecase;
 
   setUp(() {
@@ -37,100 +35,20 @@ void main() {
       () async => closeCount++,
     );
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(route));
-    waited = [];
-    attempts = [];
-    usecase = ConnectToKeyServerUsecase(
-      checkConnection,
-      ensureSession,
-      wait: (duration) async => waited.add(duration),
-    );
+    usecase = ConnectToKeyServerUsecase(checkConnection, ensureSession);
   });
 
-  Future<Result<bool, RecoverBullCoreFailure>> run() =>
-      usecase.execute(onAttempt: attempts.add);
-
-  test('stops at the first answer instead of exhausting the budget', () async {
+  test('succeeds on an answer and closes the route it acquired', () async {
     when(
       () => checkConnection.execute(route: route),
     ).thenAnswer((_) async => const Ok(true));
 
-    expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
-    expect(attempts, [1]);
+    expect(await usecase.execute(), isA<Ok<void, RecoverBullCoreFailure>>());
     verify(() => checkConnection.execute(route: route)).called(1);
-    verify(() => ensureSession.execute()).called(1);
     expect(closeCount, 1);
   });
 
-  test('gives up after the attempt budget', () async {
-    when(
-      () => checkConnection.execute(route: route),
-    ).thenAnswer((_) async => const Ok(false));
-
-    expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
-    expect(attempts, [1, 2, 3]);
-    expect(attempts.length, ConnectToKeyServerUsecase.maxAttempts);
-    verify(
-      () => checkConnection.execute(route: route),
-    ).called(ConnectToKeyServerUsecase.maxAttempts);
-    verify(() => ensureSession.execute()).called(1);
-    expect(closeCount, 1);
-  });
-
-  test(
-    'reports the attempt that is in flight, not the one that failed',
-    () async {
-      var calls = 0;
-      when(() => checkConnection.execute(route: route)).thenAnswer((_) async {
-        // The attempt must already be published when the call runs, otherwise
-        // the screen names the previous one.
-        expect(attempts.last, calls + 1);
-        calls++;
-        return Ok(calls == 2);
-      });
-
-      expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
-      expect(attempts, [1, 2]);
-      verify(() => checkConnection.execute(route: route)).called(2);
-      expect(closeCount, 1);
-    },
-  );
-
-  test('tries immediately, then backs off between retries', () async {
-    when(
-      () => checkConnection.execute(route: route),
-    ).thenAnswer((_) async => const Ok(false));
-
-    await run();
-
-    expect(waited, const [Duration(seconds: 1), Duration(seconds: 2)]);
-    expect(closeCount, 1);
-  });
-
-  test('does not delay a server that answers at once', () async {
-    when(
-      () => checkConnection.execute(route: route),
-    ).thenAnswer((_) async => const Ok(true));
-
-    await run();
-
-    expect(waited, isEmpty);
-    expect(closeCount, 1);
-  });
-
-  test('does not retry an unavailable external proxy', () async {
-    when(
-      () => checkConnection.execute(route: route),
-    ).thenAnswer((_) async => const Err(ExternalTorProxyUnavailableFailure()));
-
-    final result = await usecase.execute(onAttempt: attempts.add);
-
-    expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
-    expect(attempts, [1]);
-    expect(waited, isEmpty);
-    expect(closeCount, 1);
-  });
-
-  test('retries checker failures, then returns the last cause', () async {
+  test('makes a single attempt and returns its cause', () async {
     when(() => checkConnection.execute(route: route)).thenAnswer(
       (_) async => const Err(
         KeyServerUnavailableFailure.because(
@@ -139,70 +57,53 @@ void main() {
       ),
     );
 
-    final result = await run();
+    final result = await usecase.execute();
 
     expect(
-      (result as Err<bool, RecoverBullCoreFailure>).failure,
+      (result as Err<void, RecoverBullCoreFailure>).failure,
       isA<KeyServerUnavailableFailure>().having(
         (f) => f.cause,
         'cause',
         KeyServerUnreachableCause.onionUnreachable,
       ),
     );
-    expect(attempts, [1, 2, 3]);
-    verify(
-      () => checkConnection.execute(route: route),
-    ).called(ConnectToKeyServerUsecase.maxAttempts);
+    verify(() => checkConnection.execute(route: route)).called(1);
     expect(closeCount, 1);
   });
 
-  test(
-    'external session failure stops before checking and does not close',
-    () async {
-      when(() => ensureSession.execute()).thenAnswer(
-        (_) async => const Err(ExternalTorProxyUnavailableFailure()),
-      );
+  test('stops before checking when no session can be opened', () async {
+    when(
+      () => ensureSession.execute(),
+    ).thenAnswer((_) async => const Err(ExternalTorProxyUnavailableFailure()));
 
-      final result = await run();
+    final result = await usecase.execute();
 
-      expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
-      expect(attempts, [1]);
-      verifyNever(() => checkConnection.execute(route: any(named: 'route')));
-      expect(closeCount, 0);
-    },
-  );
+    expect(result, isA<Err<void, RecoverBullCoreFailure>>());
+    verifyNever(() => checkConnection.execute(route: any(named: 'route')));
+    expect(closeCount, 0);
+  });
 
-  test('awaits close and does not let a close error mask success', () async {
-    var closeStarted = false;
-    var releaseClose = false;
-    route = RecoverBullTorRoute(route.route, () async {
-      closeStarted = true;
-      while (!releaseClose) {
-        await Future<void>.delayed(Duration.zero);
-      }
-      throw Exception('close failed');
-    });
+  test('a close error does not mask success', () async {
+    route = RecoverBullTorRoute(
+      route.route,
+      () async => throw Exception('close failed'),
+    );
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(route));
     when(
       () => checkConnection.execute(route: route),
     ).thenAnswer((_) async => const Ok(true));
 
-    final future = run();
-    await Future<void>.delayed(Duration.zero);
-    expect(closeStarted, isTrue);
-    releaseClose = true;
-
-    expect(await future, isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Ok<void, RecoverBullCoreFailure>>());
   });
-  test('borrows a verified route without reacquiring or closing it', () async {
+
+  test('borrows a supplied route without reacquiring or closing it', () async {
     when(
       () => checkConnection.execute(route: route),
     ).thenAnswer((_) async => const Ok(true));
 
-    final result = await usecase.execute(onAttempt: attempts.add, route: route);
+    final result = await usecase.execute(route: route);
 
-    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
-    verify(() => checkConnection.execute(route: route)).called(1);
+    expect(result, isA<Ok<void, RecoverBullCoreFailure>>());
     verifyNever(() => ensureSession.execute());
     expect(closeCount, 0);
   });

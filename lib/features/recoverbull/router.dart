@@ -64,8 +64,8 @@ class RecoverBullRouter {
           checkKeyServerConnectionUsecase:
               locator<CheckServerConnectionUsecase>(),
           // Composed here rather than registered: this feature has no
-          // locator of its own, and the use case is a thin retry policy
-          // over registered core use cases.
+          // locator of its own, and the use case is a thin composition of
+          // registered core use cases.
           connectToKeyServerUsecase: ConnectToKeyServerUsecase(
             locator<CheckServerConnectionUsecase>(),
             locator<EnsureRecoverBullTorSessionUsecase>(),

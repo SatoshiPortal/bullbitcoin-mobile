@@ -287,28 +287,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       // `torStatus` is not emitted here: it is driven by the subscription set
       // up in the constructor. Emitting a snapshot at this point is what made a
       // healthy cold start look like a Tor failure.
-      const retries = ConnectToKeyServerUsecase.maxAttempts;
       emit(
         state.copyWith(
           failure: null,
           keyServerStatus: KeyServerStatus.connecting,
-          keyServerAttempt: 0,
-          keyServerAttempts: retries,
         ),
       );
 
-      final result = await _connectToKeyServerUsecase.execute(
-        route: route,
-        // Published before the call, so the screen shows which attempt is
-        // actually in flight rather than which one already failed. Guarded:
-        // the backoff outlives the screen when the user navigates away.
-        onAttempt: (attempt) {
-          if (isClosed || _closingBloc || generation != _routeGeneration) {
-            return;
-          }
-          emit(state.copyWith(keyServerAttempt: attempt));
-        },
-      );
+      final result = await _connectToKeyServerUsecase.execute(route: route);
       if (isClosed || _closingBloc || generation != _routeGeneration) return;
 
       switch (result) {
@@ -321,23 +307,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
               keyServerStatus: KeyServerStatus.offline,
             ),
           );
-        case Ok(value: false):
-          log.severe(
-            error: 'Recoverbull server is not ready after $retries retries',
-            trace: StackTrace.current,
-          );
-          await _releaseFlowRoute(route);
-          if (isClosed || _closingBloc) return;
-          emit(
-            state.copyWith(
-              failure: const KeyServerConnectionFailure(),
-              keyServerStatus: KeyServerStatus.offline,
-            ),
-          );
-        case Ok(value: true):
-          log.fine(
-            'Recoverbull server ready after ${state.keyServerAttempt} attempts',
-          );
+        case Ok():
           // Tor's status is not forced here. It used to be set to `online` on
           // this path, which asserted Tor's health from the key server's reply;
           // the readiness stream is the only thing that knows, and the screen

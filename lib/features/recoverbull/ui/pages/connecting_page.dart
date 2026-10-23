@@ -449,11 +449,6 @@ class _Body extends StatelessWidget {
           label: context.loc.recoverbullRecoverBullServer,
           phase: _serverPhase,
           elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
-          // Bare "2/3", deliberately unlocalised, like the timer.
-          trailingDetail:
-              _serverPhase == _PhaseState.active && state.keyServerAttempt > 0
-              ? '${state.keyServerAttempt}/${state.keyServerAttempts}'
-              : null,
         ),
         const Gap(24),
         if (_hasFailure)
@@ -507,15 +502,11 @@ class _PhaseCard extends StatelessWidget {
   final String? caption;
   final Duration? elapsed;
 
-  /// An extra language-neutral token for the detail line, such as `2/3`.
-  final String? trailingDetail;
-
   const _PhaseCard({
     required this.label,
     required this.phase,
     this.caption,
     this.elapsed,
-    this.trailingDetail,
   });
 
   Color _color(BuildContext context) => switch (phase) {
@@ -565,7 +556,7 @@ class _PhaseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (caption != null || elapsed != null || trailingDetail != null) ...[
+          if (caption != null || elapsed != null) ...[
             const Gap(8),
             Padding(
               padding: const EdgeInsets.only(left: 32),
@@ -580,16 +571,13 @@ class _PhaseCard extends StatelessWidget {
                       ),
                       maxLines: 2,
                     ),
-                  if (elapsed != null || trailingDetail != null) ...[
+                  if (elapsed case final elapsed?) ...[
                     const Gap(6),
                     BullText(
-                      [
-                        ?trailingDetail,
-                        // A bare timer, deliberately unlocalised: no words to
-                        // translate, and it is the only element that keeps
-                        // moving during the long directory phase.
-                        if (elapsed != null) _formatElapsed(elapsed!),
-                      ].join('  ·  '),
+                      // A bare timer, deliberately unlocalised: no words to
+                      // translate, and it is the only element that keeps
+                      // moving during the long directory phase.
+                      _formatElapsed(elapsed),
                       style: context.font.bodySmall?.copyWith(
                         color: context.appColors.textMuted,
                       ),

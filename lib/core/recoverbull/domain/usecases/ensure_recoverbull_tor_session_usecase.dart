@@ -17,6 +17,11 @@ import 'package:bull_tor/tor.dart';
 /// traverse the tunnel interface, so the proxy hop stays local and only the
 /// configured proxy carries the traffic.
 class EnsureRecoverBullTorSessionUsecase {
+  /// Connect budget for each onion connect through a RecoverBull session.
+  ///
+  /// Measured on cold installs, successful first contacts took up to 34 seconds while failed ones never recovered within the budget, so 40 seconds keeps every observed success and lets the user reach New route quickly.
+  static const connectBudget = Duration(seconds: 40);
+
   final EmbeddedTor _embeddedTor;
   final SettingsRepository _settingsRepository;
   final Tor _tor;
@@ -77,7 +82,9 @@ class EnsureRecoverBullTorSessionUsecase {
   Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>>
   _openSession() async {
     try {
-      final session = await _embeddedTor.sessions.open();
+      final session = await _embeddedTor.sessions.open(
+        connectTimeout: connectBudget,
+      );
       return Ok(
         RecoverBullTorRoute(
           TorRoute(

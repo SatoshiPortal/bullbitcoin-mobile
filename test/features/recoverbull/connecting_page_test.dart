@@ -138,7 +138,6 @@ void main() {
         ),
       ),
       keyServerStatus: KeyServerStatus.connecting,
-      keyServerAttempt: 1,
     );
     final bloc = _MutableBloc(connecting);
     addTearDown(bloc.close);
@@ -465,7 +464,7 @@ void main() {
     bloc.pushState(ready);
     await tester.pump();
     bloc.pushState(
-      ready.copyWith(torConnection: tor.TorReady(route), keyServerAttempt: 2),
+      ready.copyWith(torConnection: tor.TorReady(route), isLoading: true),
     );
     await tester.pump(const Duration(milliseconds: 400));
 

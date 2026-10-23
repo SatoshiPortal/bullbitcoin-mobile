@@ -130,7 +130,6 @@ void main() {
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
       checkConnection,
       ensureRecoverBullTorSession,
-      wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
@@ -1304,9 +1303,7 @@ void main() {
 
         expect(bloc.state.keyServerStatus, KeyServerStatus.online);
         expect(acquisitions, 2);
-        verify(
-          () => checkConnection.execute(route: first),
-        ).called(ConnectToKeyServerUsecase.maxAttempts);
+        verify(() => checkConnection.execute(route: first)).called(1);
         verify(() => checkConnection.execute(route: second)).called(1);
       },
     );
