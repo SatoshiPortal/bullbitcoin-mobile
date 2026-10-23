@@ -361,6 +361,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnNewCircuit event,
     Emitter<RecoverBullState> emit,
   ) async {
+    // A session is already being acquired; the initialization chained below would be dropped by its droppable handler.
+    if (_pendingRoutePreparation != null) return;
     log.fine(
       'Key server: new circuit after ${state.keyServerFailures} failed attempts',
     );

@@ -1352,6 +1352,33 @@ void main() {
       verify(() => checkConnection.execute(route: second)).called(1);
     });
 
+    test('New route waits out a session acquisition in progress', () async {
+      final acquisition =
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) => acquisition.future);
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+      bloc.emit(
+        bloc.state.copyWith(
+          keyServerFailures: 2,
+          failure: const KeyServerConnectionFailure(),
+        ),
+      );
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      bloc.add(const OnNewCircuit());
+      await pumpEventQueue();
+
+      // Nothing was reset for an initialization that the droppable handler would discard.
+      expect(bloc.state.keyServerFailures, 2);
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      acquisition.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+    });
+
     test('Retry reuses the session and counts each failed attempt', () async {
       var closed = 0;
       final route = routeAt(41001, () async => closed++);
