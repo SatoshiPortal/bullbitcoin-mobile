@@ -109,13 +109,14 @@ class RecoverBullRemoteDatasource {
 
   /// Throws [KeyServerProbeException], which keeps the transport reason that `KeyServer` reduces to a message.
   Future<void> checkConnection(TorProxyEndpoint endpoint) async {
+    // Read before the probe: a local settings failure is not a server answer.
+    final url = await _recoverbullSettingsDatasource.fetch();
     TorConnectFailure? connectFailure;
     final client = _torHttpClientFactory.create(
       endpoint,
       onConnectFailure: (failure) => connectFailure = failure,
     );
     try {
-      final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(
         address: url,
         client: client,
