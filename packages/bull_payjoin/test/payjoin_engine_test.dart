@@ -1310,6 +1310,75 @@ void main() {
     );
   });
 
+  test(
+    'a retry keeps watching the superseded payjoin and completes on it',
+    () async {
+      // A retry replaces the stranded row under the same id. If the first
+      //  attempt's payjoin then lands, the payment is made: the retried session
+      //  must complete on it, which also stops its own fallback from
+      //  broadcasting a second payment on possibly different inputs.
+      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final stranded = expiredSender(proposalPsbt: oneInputPsbt);
+      await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
+
+      final walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+      await engine.resumePayjoinsOnStartup();
+
+      final retried = sender().copyWith(originalTxId: 'retried-tx');
+      when(
+        () => pdk.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          amountSat: any(named: 'amountSat'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          persistBeforePost: any(named: 'persistBeforePost'),
+        ),
+      ).thenAnswer((inv) async {
+        final persist =
+            inv.namedArguments[#persistBeforePost]
+                as Future<void> Function(PayjoinSenderModel);
+        await persist(retried);
+        return retried;
+      });
+      await engine.createPayjoinSender(
+        walletId: retried.walletId,
+        isTestnet: true,
+        bip21: retried.id,
+        originalPsbt: retried.originalPsbt,
+        amountSat: retried.amountSat,
+        networkFeesSatPerVb: 1,
+      );
+
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
+      );
+      walletEvents.add(null);
+
+      final deadline = DateTime.now().add(const Duration(seconds: 5));
+      PayjoinSenderModel? row;
+      while (DateTime.now().isBefore(deadline)) {
+        row = await local.fetchSender(retried.id);
+        if (row?.isCompleted == true) break;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      expect(row?.isCompleted, isTrue);
+      expect(row?.txId, payjoinTxId);
+    },
+  );
+
   test('a payjoin broadcast that errors after reaching the network completes '
       'the sender without the original fallback', () async {
     // Only the sender can sign its own inputs, so a payjoin already on the

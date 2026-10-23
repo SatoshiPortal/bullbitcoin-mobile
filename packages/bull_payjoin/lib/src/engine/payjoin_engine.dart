@@ -366,6 +366,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // PollingForProposal instead of stalling on the pre-POST state.
     await _localPayjoinDatasource.updateSenderSessionState(model);
 
+    // On a retry, a broadcast watcher left on the superseded attempt's payjoin
+    // stays armed on purpose: if that payjoin lands, the payment is made, and
+    // completing on it stops this session's fallback from paying a second time.
     _watchForFallback(
       payjoinId: model.id,
       walletId: model.walletId,
