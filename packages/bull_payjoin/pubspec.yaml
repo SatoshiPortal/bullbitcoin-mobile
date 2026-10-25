@@ -12,7 +12,7 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 7f3956c9a648bb19833694ec2e5b0c06bd200eca
+      ref: b06b85e0caeb74ea7b30c3243857352518bbd3c8
       path: packages/bull_sdk
   crypto: ^3.0.7
   dio: ^5.9.0
