@@ -809,7 +809,12 @@ class BdkWalletDatasource {
   ///
   /// A transaction (or prevout) missing from the store is
   /// [TransactionSignatureStatus.unverifiable], not proof of manipulation —
-  /// callers must still refuse to build on it.
+  /// callers must still refuse to build on it. The SDK's Malformed variant
+  /// is never an attacker signal: it only covers caller-side errors
+  /// (undeserializable bytes, empty input list, out-of-bounds index), all
+  /// impossible here since the bytes and indexes come from the stored
+  /// transaction itself; a bad or misencoded signature reports as
+  /// InvalidSignatures.
   Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
     required String txid,
     required WalletModel wallet,

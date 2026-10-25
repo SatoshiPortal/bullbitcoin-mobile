@@ -31,8 +31,9 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
     super.dispose();
   }
 
-  // Sent to the support team, so hardcoded English by convention — support
-  // triages in one canonical language.
+  // Deliberate product choice: drafts sent to the support team stay in
+  // English so support triages in one canonical language. The localized
+  // swap draft (order_swap_under_review_card.dart) predates this decision.
   String _manipulatedTxSupportMessage() =>
       'Manipulated transaction warning (fee bump blocked).\n'
       'The app refused to accelerate a transaction because its signatures '
