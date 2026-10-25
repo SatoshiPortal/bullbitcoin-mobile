@@ -11,6 +11,8 @@ extension ReplaceByFeeFailureL10n on ReplaceByFeeFailure {
     ReplaceByFeeNetworkFeesFailure() => context.loc.oopsSomethingWentWrong,
     ReplaceByFeeManipulatedTransactionFailure() =>
       context.loc.replaceByFeeManipulatedTransaction,
+    ReplaceByFeeUnverifiableTransactionFailure() =>
+      context.loc.replaceByFeeUnverifiableTransaction,
     ReplaceByFeeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

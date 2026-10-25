@@ -25,6 +25,14 @@ final class ReplaceByFeeManipulatedTransactionFailure
   const ReplaceByFeeManipulatedTransactionFailure();
 }
 
+/// The original transaction's signatures could not be verified (transaction
+/// or prevouts missing from the local store, e.g. mid-sync). Not evidence of
+/// manipulation, but the bump is refused all the same.
+final class ReplaceByFeeUnverifiableTransactionFailure
+    extends ReplaceByFeeFailure {
+  const ReplaceByFeeUnverifiableTransactionFailure();
+}
+
 /// Catch-all. [logMessage] is for logs/Sentry ONLY and MUST never reach the UI.
 final class ReplaceByFeeUnexpectedFailure extends ReplaceByFeeFailure {
   const ReplaceByFeeUnexpectedFailure([super.logMessage]);

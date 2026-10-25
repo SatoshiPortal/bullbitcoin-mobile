@@ -5,6 +5,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:meta/meta.dart';
@@ -40,12 +42,17 @@ class BumpFeeUsecase {
     required String txid,
   }) async {
     try {
-      final isAuthentic = await _bitcoinWalletRepository
-          .isTransactionSignatureValid(walletId: walletId, txid: txid);
-      if (!isAuthentic) {
-        return const Err(ReplaceByFeeManipulatedTransactionFailure());
-      }
-      return const Ok(null);
+      final status = await _bitcoinWalletRepository
+          .getTransactionSignatureStatus(walletId: walletId, txid: txid);
+      return switch (status) {
+        TransactionSignatureStatus.valid => const Ok(null),
+        TransactionSignatureStatus.invalid => const Err(
+          ReplaceByFeeManipulatedTransactionFailure(),
+        ),
+        TransactionSignatureStatus.unverifiable => const Err(
+          ReplaceByFeeUnverifiableTransactionFailure(),
+        ),
+      };
     } catch (e, st) {
       log.severe(
         message: 'Failed to verify original transaction for RBF',
@@ -80,6 +87,13 @@ class BumpFeeUsecase {
         trace: st,
       );
       return const Err(ReplaceByFeeManipulatedTransactionFailure());
+    } on UnverifiableTransactionException catch (e, st) {
+      log.warning(
+        'Refused to bump a transaction whose signatures could not be verified',
+        error: e,
+        trace: st,
+      );
+      return const Err(ReplaceByFeeUnverifiableTransactionFailure());
     } on bdk.FeeRateTooLowCreateTxException catch (e) {
       log.warning(
         'BDK rejected replacement fee rate',

@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
@@ -799,14 +800,23 @@ class BdkWalletDatasource {
   /// authenticates the outputs before a replacement is built from them.
   /// Inputs whose prevout is unknown to the wallet (e.g. a payjoin
   /// counterparty's) cannot be judged and are skipped; at least one owned
-  /// input must verify.
-  Future<bool> verifyTransactionInputSignatures({
+  /// input must verify. The SDK verifier requires every signature to be
+  /// ECDSA with SIGHASH_ALL — the only flag this wallet produces — so a
+  /// signature that doesn't commit to the outputs never passes. Sound for
+  /// legacy and segwit v0 only: taproot (BIP341) signatures commit to every
+  /// prevout, so the skip-unresolvable-inputs loop below must be revisited
+  /// before a bip86 script type ships.
+  ///
+  /// A transaction (or prevout) missing from the store is
+  /// [TransactionSignatureStatus.unverifiable], not proof of manipulation —
+  /// callers must still refuse to build on it.
+  Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
     required String txid,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
-    if (canonicalTx == null) return false;
+    if (canonicalTx == null) return TransactionSignatureStatus.unverifiable;
     final tx = canonicalTx.transaction;
     final inputs = tx.input();
     final inputsToVerify = <bull_sdk.TxInputToVerify>[];
@@ -815,7 +825,9 @@ class BdkWalletDatasource {
       final parentTx = bdkWallet.getTx(txid: outpoint.txid);
       if (parentTx == null) continue;
       final parentOutputs = parentTx.transaction.output();
-      if (outpoint.vout >= parentOutputs.length) return false;
+      if (outpoint.vout >= parentOutputs.length) {
+        return TransactionSignatureStatus.unverifiable;
+      }
       final prevout = parentOutputs[outpoint.vout];
       if (!bdkWallet.isMine(script: prevout.scriptPubkey)) continue;
       inputsToVerify.add(
@@ -826,12 +838,19 @@ class BdkWalletDatasource {
         ),
       );
     }
-    if (inputsToVerify.isEmpty) return false;
+    if (inputsToVerify.isEmpty) return TransactionSignatureStatus.unverifiable;
     final verification = await bull_sdk.verifyTxInputSignatures(
       txBytes: tx.serialize(),
       inputs: inputsToVerify,
     );
-    return verification is bull_sdk.TxSignatureVerification_Valid;
+    return switch (verification) {
+      bull_sdk.TxSignatureVerification_Valid() =>
+        TransactionSignatureStatus.valid,
+      bull_sdk.TxSignatureVerification_InvalidSignatures() =>
+        TransactionSignatureStatus.invalid,
+      bull_sdk.TxSignatureVerification_Malformed() =>
+        TransactionSignatureStatus.unverifiable,
+    };
   }
 
   Future<void> delete({required WalletModel wallet}) async {

@@ -7,6 +7,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -139,16 +141,41 @@ void main() {
         );
       },
     );
+
+    test(
+      'returns Err(ReplaceByFeeUnverifiableTransactionFailure) on UnverifiableTransactionException',
+      () async {
+        when(
+          () => walletRepository.bumpFee(
+            walletId: any(named: 'walletId'),
+            txid: any(named: 'txid'),
+            newFeeRate: any(named: 'newFeeRate'),
+          ),
+        ).thenThrow(UnverifiableTransactionException('prevouts missing'));
+
+        final result = await usecase.execute(
+          walletId: 'w1',
+          txid: 'old-txid',
+          newFeeRate: const RelativeFee(1250),
+        );
+
+        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
+        expect(
+          (result as Err).failure,
+          isA<ReplaceByFeeUnverifiableTransactionFailure>(),
+        );
+      },
+    );
   });
 
   group('verifyOriginalTransaction', () {
     test('returns Ok when the stored transaction signatures verify', () async {
       when(
-        () => walletRepository.isTransactionSignatureValid(
+        () => walletRepository.getTransactionSignatureStatus(
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => TransactionSignatureStatus.valid);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -162,11 +189,11 @@ void main() {
       'returns Err(ReplaceByFeeManipulatedTransactionFailure) when verification fails',
       () async {
         when(
-          () => walletRepository.isTransactionSignatureValid(
+          () => walletRepository.getTransactionSignatureStatus(
             walletId: any(named: 'walletId'),
             txid: any(named: 'txid'),
           ),
-        ).thenAnswer((_) async => false);
+        ).thenAnswer((_) async => TransactionSignatureStatus.invalid);
 
         final result = await usecase.verifyOriginalTransaction(
           walletId: 'w1',
@@ -182,10 +209,33 @@ void main() {
     );
 
     test(
+      'returns Err(ReplaceByFeeUnverifiableTransactionFailure) when verification cannot run',
+      () async {
+        when(
+          () => walletRepository.getTransactionSignatureStatus(
+            walletId: any(named: 'walletId'),
+            txid: any(named: 'txid'),
+          ),
+        ).thenAnswer((_) async => TransactionSignatureStatus.unverifiable);
+
+        final result = await usecase.verifyOriginalTransaction(
+          walletId: 'w1',
+          txid: 'old-txid',
+        );
+
+        expect(result, isA<Err<void, ReplaceByFeeFailure>>());
+        expect(
+          (result as Err).failure,
+          isA<ReplaceByFeeUnverifiableTransactionFailure>(),
+        );
+      },
+    );
+
+    test(
       'returns Err(ReplaceByFeeUnexpectedFailure) when verification throws — raw message in logMessage only',
       () async {
         when(
-          () => walletRepository.isTransactionSignatureValid(
+          () => walletRepository.getTransactionSignatureStatus(
             walletId: any(named: 'walletId'),
             txid: any(named: 'txid'),
           ),

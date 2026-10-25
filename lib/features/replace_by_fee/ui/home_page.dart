@@ -57,8 +57,8 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           builder: (context, state) {
             final cubit = context.read<ReplaceByFeeCubit>();
 
-            if (state.failure != null && state.newFeeRate == null) {
-              final failure = state.failure!;
+            final failure = state.failure;
+            if (failure != null && state.newFeeRate == null) {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
