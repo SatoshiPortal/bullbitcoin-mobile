@@ -115,6 +115,7 @@ dependencies:
   async: ^2.11.0
   drift: ^2.29.0
   drift_flutter: ^0.2.7
+  sqlite3: ^2.9.4
   package_info_plus: ^9.0.0
   share_plus: ^12.0.1
   bolt11_decoder:

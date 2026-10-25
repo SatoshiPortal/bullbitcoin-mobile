@@ -27,9 +27,11 @@ import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
 part 'sqlite_database.g.dart';
 
@@ -58,16 +60,43 @@ part 'sqlite_database.g.dart';
 class SqliteDatabase extends _$SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
+  /// The file `driftDatabase(name: name)` opens in the foreground.
+  static Future<File> _databaseFile() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    return File(p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite'));
+  }
+
+  /// Whether the database exists and is already at [currentSchemaVersion].
+  ///
+  /// Only the foreground app may migrate. A background task opening the
+  /// database on its own connection while the app migrates it races the
+  /// migration (#3045), so background tasks skip until this is true.
+  static Future<bool> isAtCurrentSchema() async =>
+      isFileAtCurrentSchema(await _databaseFile());
+
+  /// Reads `user_version` directly, without drift: opening through drift
+  /// would run the migrations this check exists to avoid. Never creates the
+  /// file.
+  @visibleForTesting
+  static bool isFileAtCurrentSchema(File file) {
+    if (!file.existsSync()) return false;
+    final database = sqlite3.open(file.path, mode: OpenMode.readWrite);
+    try {
+      database.execute('PRAGMA busy_timeout = 2000;');
+      return database.userVersion == currentSchemaVersion;
+    } finally {
+      database.dispose();
+    }
+  }
+
   static Future<DriftIsolate> createIsolateWithSpawn() async {
     final token = RootIsolateToken.instance!;
     return await DriftIsolate.spawn(() {
       BackgroundIsolateBinaryMessenger.ensureInitialized(token);
 
       return LazyDatabase(() async {
-        final dbFolder = await getApplicationDocumentsDirectory();
-        final dbPath = p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite');
         return NativeDatabase(
-          File(dbPath),
+          await _databaseFile(),
           setup: (database) {
             // busy_timeout MUST be set FIRST so the subsequent
             // `journal_mode = WAL` switch retries (instead of
