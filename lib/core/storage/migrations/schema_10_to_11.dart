@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -7,94 +8,109 @@ class Schema10To11 {
   static Future<void> migrate(Migrator m, Schema11 schema11) async {
     await m.createTable(schema11.prices);
 
+    // Every data change below runs only while its part of this step is still
+    // missing. A second run would otherwise re-enable auto swap, reset the
+    // theme, re-increment server priorities and overwrite mempool settings.
+    final addThemeMode = !await m.hasColumn('settings', 'theme_mode');
+    final rebuildAutoSwap = !await m.hasColumn('auto_swap', 'show_warning');
+    final addFulcrumServer = !await m.hasTable('mempool_servers');
+    final seedMempoolServers = !await m.hasRows('mempool_servers');
+    final seedMempoolSettings = !await m.hasRows('mempool_settings');
+
     final settings = schema11.settings;
-    await m.addColumn(settings, settings.themeMode);
+    await m.addColumnIfMissing(settings, settings.themeMode);
 
-    await m.alterTable(
-      // ignore: experimental_member_use
-      TableMigration(
-        schema11.autoSwap,
-        columnTransformer: {
-          schema11.autoSwap.id: schema11.autoSwap.id,
-          schema11.autoSwap.enabled: const Constant(true),
-          schema11.autoSwap.balanceThresholdSats:
-              schema11.autoSwap.balanceThresholdSats,
-          schema11.autoSwap.triggerBalanceSats:
-              schema11.autoSwap.balanceThresholdSats * const Constant(2),
-          schema11.autoSwap.feeThresholdPercent:
-              schema11.autoSwap.feeThresholdPercent,
-          schema11.autoSwap.blockTillNextExecution:
-              schema11.autoSwap.blockTillNextExecution,
-          schema11.autoSwap.alwaysBlock: schema11.autoSwap.alwaysBlock,
-          schema11.autoSwap.recipientWalletId:
-              schema11.autoSwap.recipientWalletId,
-          schema11.autoSwap.showWarning: const Constant(true),
-        },
-        newColumns: [
-          schema11.autoSwap.showWarning,
-          schema11.autoSwap.triggerBalanceSats,
-        ],
-      ),
-    );
-
-    final db = m.database as SqliteDatabase;
-    await db.managers.settings.update(
-      (f) => f(themeMode: const Value('system')),
-    );
-
-    final electrumServers = schema11.electrumServers;
-    final fulcrumUrl = ApiServiceConstants.fulcrumElectrumUrl;
-    final fulcrumUrlWithoutProtocol = fulcrumUrl.replaceAll('ssl://', '');
-
-    // Delete any existing custom entries for the fulcrum server
-    await (m.database.delete(electrumServers)..where(
-          (t) =>
-              electrumServers.url.equals(fulcrumUrl) |
-              electrumServers.url.equals(fulcrumUrlWithoutProtocol),
-        ))
-        .go();
-
-    // Get all Bitcoin mainnet servers to update their priority
-    final btcMainnetServers =
-        await (m.database.select(electrumServers)..where(
-              (t) =>
-                  electrumServers.isTestnet.equals(0) &
-                  electrumServers.isLiquid.equals(0),
-            ))
-            .get();
-
-    // Update each server's priority by incrementing it
-    for (final server in btcMainnetServers) {
-      final serverUrl = server.data['url'] as String;
-      final serverIsTestnet = server.data['is_testnet'] as int;
-      final serverIsLiquid = server.data['is_liquid'] as int;
-      final serverPriority = server.data['priority'] as int;
-      final serverIsCustom = server.data['is_custom'] as int;
-
-      await (m.database.update(
-        electrumServers,
-      )..where((t) => electrumServers.url.equals(serverUrl))).write(
-        RawValuesInsertable({
-          'url': Constant<String>(serverUrl),
-          'is_testnet': Constant<int>(serverIsTestnet),
-          'is_liquid': Constant<int>(serverIsLiquid),
-          'priority': Constant<int>(serverPriority + 1),
-          'is_custom': Constant<int>(serverIsCustom),
-        }),
+    if (rebuildAutoSwap) {
+      await m.alterTable(
+        // ignore: experimental_member_use
+        TableMigration(
+          schema11.autoSwap,
+          columnTransformer: {
+            schema11.autoSwap.id: schema11.autoSwap.id,
+            schema11.autoSwap.enabled: const Constant(true),
+            schema11.autoSwap.balanceThresholdSats:
+                schema11.autoSwap.balanceThresholdSats,
+            schema11.autoSwap.triggerBalanceSats:
+                schema11.autoSwap.balanceThresholdSats * const Constant(2),
+            schema11.autoSwap.feeThresholdPercent:
+                schema11.autoSwap.feeThresholdPercent,
+            schema11.autoSwap.blockTillNextExecution:
+                schema11.autoSwap.blockTillNextExecution,
+            schema11.autoSwap.alwaysBlock: schema11.autoSwap.alwaysBlock,
+            schema11.autoSwap.recipientWalletId:
+                schema11.autoSwap.recipientWalletId,
+            schema11.autoSwap.showWarning: const Constant(true),
+          },
+          newColumns: [
+            schema11.autoSwap.showWarning,
+            schema11.autoSwap.triggerBalanceSats,
+          ],
+        ),
       );
     }
 
-    await m.database
-        .into(electrumServers)
-        .insert(
+    final db = m.database as SqliteDatabase;
+    if (addThemeMode) {
+      await db.managers.settings.update(
+        (f) => f(themeMode: const Value('system')),
+      );
+    }
+
+    if (addFulcrumServer) {
+      final electrumServers = schema11.electrumServers;
+      final fulcrumUrl = ApiServiceConstants.fulcrumElectrumUrl;
+      final fulcrumUrlWithoutProtocol = fulcrumUrl.replaceAll('ssl://', '');
+
+      // Delete any existing custom entries for the fulcrum server
+      await (m.database.delete(electrumServers)..where(
+            (t) =>
+                electrumServers.url.equals(fulcrumUrl) |
+                electrumServers.url.equals(fulcrumUrlWithoutProtocol),
+          ))
+          .go();
+
+      // Get all Bitcoin mainnet servers to update their priority
+      final btcMainnetServers =
+          await (m.database.select(electrumServers)..where(
+                (t) =>
+                    electrumServers.isTestnet.equals(0) &
+                    electrumServers.isLiquid.equals(0),
+              ))
+              .get();
+
+      // Update each server's priority by incrementing it
+      for (final server in btcMainnetServers) {
+        final serverUrl = server.data['url'] as String;
+        final serverIsTestnet = server.data['is_testnet'] as int;
+        final serverIsLiquid = server.data['is_liquid'] as int;
+        final serverPriority = server.data['priority'] as int;
+        final serverIsCustom = server.data['is_custom'] as int;
+
+        await (m.database.update(
+          electrumServers,
+        )..where((t) => electrumServers.url.equals(serverUrl))).write(
           RawValuesInsertable({
-            'url': Constant(fulcrumUrl),
-            'is_testnet': const Constant(false),
-            'is_liquid': const Constant(false),
-            'priority': const Constant(0),
-            'is_custom': const Constant(false),
+            'url': Constant<String>(serverUrl),
+            'is_testnet': Constant<int>(serverIsTestnet),
+            'is_liquid': Constant<int>(serverIsLiquid),
+            'priority': Constant<int>(serverPriority + 1),
+            'is_custom': Constant<int>(serverIsCustom),
           }),
         );
+      }
+
+      await m.database
+          .into(electrumServers)
+          .insert(
+            RawValuesInsertable({
+              'url': Constant(fulcrumUrl),
+              'is_testnet': const Constant(false),
+              'is_liquid': const Constant(false),
+              'priority': const Constant(0),
+              'is_custom': const Constant(false),
+            }),
+          );
+    }
 
     // Add mempool tables
     await m.createTable(schema11.mempoolServers);
@@ -128,18 +144,20 @@ class Schema10To11 {
         'isCustom': false,
       },
     ];
-    for (final server in mempoolServersData) {
-      await db
-          .into(mempoolServers)
-          .insert(
-            RawValuesInsertable({
-              'url': Constant(server['url'] as String),
-              'is_testnet': Constant(server['isTestnet'] as bool),
-              'is_liquid': Constant(server['isLiquid'] as bool),
-              'is_custom': Constant(server['isCustom'] as bool),
-            }),
-            mode: InsertMode.insertOrReplace,
-          );
+    if (seedMempoolServers) {
+      for (final server in mempoolServersData) {
+        await db
+            .into(mempoolServers)
+            .insert(
+              RawValuesInsertable({
+                'url': Constant(server['url'] as String),
+                'is_testnet': Constant(server['isTestnet'] as bool),
+                'is_liquid': Constant(server['isLiquid'] as bool),
+                'is_custom': Constant(server['isCustom'] as bool),
+              }),
+              mode: InsertMode.insertOrReplace,
+            );
+      }
     }
 
     // Seed default mempool settings
@@ -150,16 +168,18 @@ class Schema10To11 {
       'liquidMainnet',
       'liquidTestnet',
     ];
-    for (final network in mempoolNetworks) {
-      await db
-          .into(mempoolSettings)
-          .insert(
-            RawValuesInsertable({
-              'network': Constant(network),
-              'use_for_fee_estimation': const Constant(true),
-            }),
-            mode: InsertMode.insertOrReplace,
-          );
+    if (seedMempoolSettings) {
+      for (final network in mempoolNetworks) {
+        await db
+            .into(mempoolSettings)
+            .insert(
+              RawValuesInsertable({
+                'network': Constant(network),
+                'use_for_fee_estimation': const Constant(true),
+              }),
+              mode: InsertMode.insertOrReplace,
+            );
+      }
     }
   }
 }

@@ -1,9 +1,15 @@
+import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:drift/drift.dart';
 
 class Schema6To7 {
   static Future<void> migrate(Migrator m, Schema7 schema7) async {
+    // This step ends by removing is_custom's DEFAULT, and no later step adds
+    // one back. Once it has run, a second run would mark later default servers
+    // (fulcrum, 10→11) custom and rebuild electrum_servers in the v7 shape.
+    if (await m.columnDefault('electrum_servers', 'is_custom') == null) return;
+
     final defaultServerUrls = [
       ApiServiceConstants.bbElectrumUrl,
       ApiServiceConstants.bbLiquidElectrumUrlPath,
