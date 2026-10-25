@@ -47,8 +47,9 @@ void main() {
   // drift does not serialize migrations across connections and writes
   // user_version after each step commits, so when two connections migrate the
   // same file the slower one can write a stale version and re-run steps over a
-  // database that is already further along (#3045). Either connection may
-  // fail; the next launch must reach the current schema intact.
+  // database that is already further along (#3045). One connection may fail
+  // waiting for the other's lock, but the one that commits first must succeed,
+  // and the next launch must reach the current schema intact.
   for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
     for (final background in [false, true]) {
       final mode = background ? 'separate isolates' : 'one isolate';
@@ -65,10 +66,11 @@ void main() {
           await seeded.close();
           _seedLabels(file, version);
 
-          await Future.wait([
-            _openIgnoringFailure(_connection(file, background: background)),
-            _openIgnoringFailure(_connection(file, background: background)),
+          final opened = await Future.wait([
+            _open(_connection(file, background: background)),
+            _open(_connection(file, background: background)),
           ]);
+          expect(opened, contains(true));
 
           final relaunch = SqliteDatabase(_connection(file));
           final userVersion = await relaunch
@@ -97,13 +99,14 @@ QueryExecutor _connection(File file, {bool background = false}) {
       : NativeDatabase(file, setup: setup);
 }
 
-Future<void> _openIgnoringFailure(QueryExecutor connection) async {
+/// Whether the connection opened, running any pending migrations.
+Future<bool> _open(QueryExecutor connection) async {
   final db = SqliteDatabase(connection);
   try {
     await db.customSelect('SELECT 1').get();
+    return true;
   } catch (_) {
-    // A racing connection may fail (database is locked, or a step that the
-    // other connection finished first); only the next launch matters.
+    return false;
   } finally {
     await db.close();
   }
