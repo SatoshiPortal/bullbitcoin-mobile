@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
-import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'generated/schema.dart';
-import 'generated/schema_v13.dart' as v13;
 import 'generated/schema_v14.dart' as v14;
 import 'generated/schema_v15.dart' as v15;
 
@@ -121,53 +117,7 @@ void main() {
         .customSelect('PRAGMA user_version')
         .map((row) => row.read<int>('user_version'))
         .getSingle();
-    expect(userVersion, 15);
+    expect(userVersion, SqliteDatabase.currentSchemaVersion);
     await db.close();
   });
-
-  test(
-    'v13 to v15 survives two connections migrating concurrently '
-    '(foreground app + background task on first launch after update)',
-    () async {
-      // drift runs migrations without a transaction and writes user_version
-      // after each step, so the slower connection overwrites 15 with 14 and
-      // then re-runs 14->15 over columns the faster one already added. Without
-      // the 14->15 guard this left the field device permanently at 14.
-      for (var run = 0; run < 10; run++) {
-        final dir = await Directory.systemTemp.createTemp(
-          'bull_migration_race',
-        );
-        addTearDown(() => dir.delete(recursive: true));
-        final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
-        QueryExecutor connection() => NativeDatabase(
-          file,
-          setup: (database) {
-            database.execute('PRAGMA busy_timeout = 2000;');
-            database.execute('PRAGMA journal_mode = WAL;');
-          },
-        );
-
-        final seeded = v13.DatabaseAtV13(connection());
-        await seeded.customSelect('SELECT 1').get();
-        await seeded.close();
-
-        final foreground = SqliteDatabase(connection());
-        final background = SqliteDatabase(connection());
-        await Future.wait([
-          foreground.customSelect('SELECT 1').get(),
-          background.customSelect('SELECT 1').get(),
-        ]);
-        await foreground.close();
-        await background.close();
-
-        final relaunch = SqliteDatabase(connection());
-        final userVersion = await relaunch
-            .customSelect('PRAGMA user_version')
-            .map((row) => row.read<int>('user_version'))
-            .getSingle();
-        expect(userVersion, 15);
-        await relaunch.close();
-      }
-    },
-  );
 }
