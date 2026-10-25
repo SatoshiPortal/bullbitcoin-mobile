@@ -52,9 +52,8 @@ void main() {
     () async {
       final schema = await verifier.schemaAt(14);
 
-      // Simulate a dev device that received the tor columns from develop's
-      // earlier, broken 13->14 build: add them onto the released v14 settings
-      // table before upgrading.
+      // A partial 14->15 left behind by a second connection (#3045): add the
+      // tor columns onto the released v14 settings table before upgrading.
       final seeded = v14.DatabaseAtV14(schema.newConnection());
       await seeded.customStatement(
         "ALTER TABLE settings ADD COLUMN tor_transport_mode TEXT NOT NULL "
