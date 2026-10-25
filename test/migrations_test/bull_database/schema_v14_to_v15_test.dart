@@ -117,7 +117,7 @@ void main() {
         .customSelect('PRAGMA user_version')
         .map((row) => row.read<int>('user_version'))
         .getSingle();
-    expect(userVersion, 15);
+    expect(userVersion, SqliteDatabase.currentSchemaVersion);
     await db.close();
   });
 }

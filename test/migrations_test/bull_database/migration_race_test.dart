@@ -15,7 +15,9 @@ void main() {
   // run the pending migrations. drift runs them without a transaction and
   // writes user_version after each step, so the slower connection can write a
   // stale version and re-run steps whose DDL is already applied. Every step
-  // must be idempotent or the next launch crashes forever (#3045).
+  // must be idempotent or the next launch crashes forever (#3045). The
+  // fixture holds no rows, so this only proves each step's DDL can be
+  // re-executed; data a step copies or rewrites needs its own re-run test.
   test('two connections migrating concurrently from schema 13 leave the '
       'database at the current schema', () async {
     final dir = await Directory.systemTemp.createTemp('bull_migration_race');
