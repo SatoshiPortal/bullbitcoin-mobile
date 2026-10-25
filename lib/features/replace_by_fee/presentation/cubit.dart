@@ -19,6 +19,19 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
   }
 
   Future<void> init() async {
+    // GHSA-6jp4-8v48-cc5v: a transaction whose signatures don't verify was
+    // planted by the Electrum server — never offer to bump it.
+    switch (await bumpFeeUsecase.verifyOriginalTransaction(
+      walletId: originalTransaction.walletId,
+      txid: originalTransaction.txId,
+    )) {
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+      case Ok():
+        break;
+    }
+
     switch (await bumpFeeUsecase.getNetworkFees()) {
       case Ok(:final value):
         // Mempool fees are already RelativeFee (sat/kwu) by construction;

@@ -15828,5 +15828,17 @@
   "recoverbullTorReady": "Ready",
   "@recoverbullTorReady": {
     "description": "Status of the Tor network row once Tor is bootstrapped; no connection to the server exists yet"
+  },
+  "replaceByFeeManipulatedTransaction": "The signatures on this transaction are invalid. It was most likely replaced by your Electrum server with a manipulated copy designed to redirect your funds if accelerated. Do not accelerate it, and do not trust this server. Please report this to support.",
+  "@replaceByFeeManipulatedTransaction": {
+    "description": "RBF screen warning when the original transaction fails signature verification (likely a malicious Electrum server planted a forged transaction)"
+  },
+  "replaceByFeeReportToSupport": "Report to support",
+  "@replaceByFeeReportToSupport": {
+    "description": "Button on the RBF manipulated-transaction warning that opens the support chat"
+  },
+  "replaceByFeeUnverifiableTransaction": "This transaction could not be verified yet, so acceleration is disabled. Wait for the wallet to finish syncing.",
+  "@replaceByFeeUnverifiableTransaction": {
+    "description": "Shown on the fee-bump screen when the original transaction's signatures could not be verified (not proof of manipulation); the bump is refused."
   }
 }

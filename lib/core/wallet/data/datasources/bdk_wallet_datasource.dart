@@ -17,7 +17,9 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
@@ -788,6 +790,72 @@ class BdkWalletDatasource {
     );
     final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
+  }
+
+  /// Guard for GHSA-6jp4-8v48-cc5v: the Electrum server is trusted for
+  /// mempool transactions, so a malicious one can swallow a broadcast and
+  /// plant a conflicting copy with redirected outputs and forged signatures.
+  /// SIGHASH_ALL signatures commit to the outputs, so verifying the
+  /// wallet-owned inputs' signatures against the transaction as stored
+  /// authenticates the outputs before a replacement is built from them.
+  /// Inputs whose prevout is unknown to the wallet (e.g. a payjoin
+  /// counterparty's) cannot be judged and are skipped; at least one owned
+  /// input must verify. The SDK verifier requires every signature to be
+  /// ECDSA with SIGHASH_ALL — the only flag this wallet produces — so a
+  /// signature that doesn't commit to the outputs never passes. Sound for
+  /// legacy and segwit v0 only: taproot (BIP341) signatures commit to every
+  /// prevout, so the skip-unresolvable-inputs loop below must be revisited
+  /// before a bip86 script type ships.
+  ///
+  /// A transaction (or prevout) missing from the store is
+  /// [TransactionSignatureStatus.unverifiable], not proof of manipulation —
+  /// callers must still refuse to build on it. The SDK's Malformed variant
+  /// is never an attacker signal: it only covers caller-side errors
+  /// (undeserializable bytes, empty input list, out-of-bounds index), all
+  /// impossible here since the bytes and indexes come from the stored
+  /// transaction itself; a bad or misencoded signature reports as
+  /// InvalidSignatures.
+  Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
+    required String txid,
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
+    if (canonicalTx == null) return TransactionSignatureStatus.unverifiable;
+    final tx = canonicalTx.transaction;
+    final inputs = tx.input();
+    final inputsToVerify = <bull_sdk.TxInputToVerify>[];
+    for (var index = 0; index < inputs.length; index++) {
+      final outpoint = inputs[index].previousOutput;
+      final parentTx = bdkWallet.getTx(txid: outpoint.txid);
+      if (parentTx == null) continue;
+      final parentOutputs = parentTx.transaction.output();
+      if (outpoint.vout >= parentOutputs.length) {
+        return TransactionSignatureStatus.unverifiable;
+      }
+      final prevout = parentOutputs[outpoint.vout];
+      if (!bdkWallet.isMine(script: prevout.scriptPubkey)) continue;
+      inputsToVerify.add(
+        bull_sdk.TxInputToVerify(
+          inputIndex: index,
+          prevoutScriptPubkey: prevout.scriptPubkey.toBytes(),
+          prevoutValueSat: BigInt.from(prevout.value.toSat()),
+        ),
+      );
+    }
+    if (inputsToVerify.isEmpty) return TransactionSignatureStatus.unverifiable;
+    final verification = await bull_sdk.verifyTxInputSignatures(
+      txBytes: tx.serialize(),
+      inputs: inputsToVerify,
+    );
+    return switch (verification) {
+      bull_sdk.TxSignatureVerification_Valid() =>
+        TransactionSignatureStatus.valid,
+      bull_sdk.TxSignatureVerification_InvalidSignatures() =>
+        TransactionSignatureStatus.invalid,
+      bull_sdk.TxSignatureVerification_Malformed() =>
+        TransactionSignatureStatus.unverifiable,
+    };
   }
 
   Future<void> delete({required WalletModel wallet}) async {
