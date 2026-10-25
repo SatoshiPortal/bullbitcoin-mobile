@@ -209,13 +209,18 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// rethrow aborts init. Drift migrations run lazily on first query,
   /// so wrapping the step fn (not the constructor) is what actually
   /// catches failures.
+  ///
+  /// drift runs migrations outside a transaction, so each step runs in its
+  /// own: a step that fails or is killed part-way leaves nothing behind.
+  /// drift writes `user_version` after the step commits, so a step can
+  /// still be re-run in full and must stay idempotent.
   static Future<void> Function(Migrator, Schema) _reportingMigration<Schema>(
     String name,
     Future<void> Function(Migrator, Schema) fn,
   ) {
     return (m, schema) async {
       try {
-        await fn(m, schema);
+        await m.database.transaction(() => fn(m, schema));
       } catch (e, s) {
         log.severe(
           message: 'drift migration step $name failed',
