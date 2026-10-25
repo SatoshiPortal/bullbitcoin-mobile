@@ -213,7 +213,10 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// drift runs migrations outside a transaction, so each step runs in its
   /// own: a step that fails or is killed part-way leaves nothing behind.
   /// drift writes `user_version` after the step commits, so a step can
-  /// still be re-run in full and must stay idempotent.
+  /// still be re-run in full and must stay idempotent. Foreign-key
+  /// enforcement must stay off while migrating: `PRAGMA foreign_keys`, which
+  /// `alterTable` uses around its table rebuild, has no effect inside a
+  /// transaction.
   static Future<void> Function(Migrator, Schema) _reportingMigration<Schema>(
     String name,
     Future<void> Function(Migrator, Schema) fn,
