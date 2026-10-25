@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:meta/meta.dart';
@@ -30,6 +31,31 @@ class BumpFeeUsecase {
     }
   }
 
+  /// Pre-flight check for the RBF screen: refuses to offer a bump when the
+  /// original transaction's signatures don't verify (a planted transaction,
+  /// GHSA-6jp4-8v48-cc5v). [execute] re-runs the same check fail-closed.
+  @useResult
+  Future<Result<void, ReplaceByFeeFailure>> verifyOriginalTransaction({
+    required String walletId,
+    required String txid,
+  }) async {
+    try {
+      final isAuthentic = await _bitcoinWalletRepository
+          .isTransactionSignatureValid(walletId: walletId, txid: txid);
+      if (!isAuthentic) {
+        return const Err(ReplaceByFeeManipulatedTransactionFailure());
+      }
+      return const Ok(null);
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to verify original transaction for RBF',
+        error: e,
+        trace: st,
+      );
+      return Err(ReplaceByFeeUnexpectedFailure(e.toString()));
+    }
+  }
+
   @useResult
   Future<Result<String, ReplaceByFeeFailure>> execute({
     required String walletId,
@@ -47,6 +73,13 @@ class BumpFeeUsecase {
         isPsbt: true,
       );
       return Ok(broadcastedTxid);
+    } on ManipulatedTransactionException catch (e, st) {
+      log.severe(
+        message: 'Refused to bump a transaction with invalid signatures',
+        error: e,
+        trace: st,
+      );
+      return const Err(ReplaceByFeeManipulatedTransactionFailure());
     } on bdk.FeeRateTooLowCreateTxException catch (e) {
       log.warning(
         'BDK rejected replacement fee rate',

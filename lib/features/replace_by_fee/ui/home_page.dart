@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
+import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
@@ -29,6 +31,15 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
     super.dispose();
   }
 
+  // Sent to the support team, so hardcoded English by convention — support
+  // triages in one canonical language.
+  String _manipulatedTxSupportMessage() =>
+      'Manipulated transaction warning (fee bump blocked).\n'
+      'The app refused to accelerate a transaction because its signatures '
+      'failed verification. This usually means the Electrum server replaced '
+      'the original transaction (GHSA-6jp4-8v48-cc5v).\n'
+      'Txid: ${widget.tx.txId}';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +58,34 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
             final cubit = context.read<ReplaceByFeeCubit>();
 
             if (state.failure != null && state.newFeeRate == null) {
+              final failure = state.failure!;
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: BullText(
-                    state.failure!.toTranslated(context),
-                    style: context.font.bodyMedium,
-                    color: context.appColors.error,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BullText(
+                        failure.toTranslated(context),
+                        style: context.font.bodyMedium,
+                        color: context.appColors.error,
+                      ),
+                      if (failure
+                          is ReplaceByFeeManipulatedTransactionFailure) ...[
+                        const Gap(24),
+                        BullButton.big(
+                          label: context.loc.replaceByFeeReportToSupport,
+                          onPressed: () => context.pushNamed(
+                            ExchangeSupportChatFacade.routeName,
+                            extra: ExchangeSupportChatDraft(
+                              initialMessage: _manipulatedTxSupportMessage(),
+                            ),
+                          ),
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               );

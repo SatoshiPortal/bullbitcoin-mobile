@@ -9,6 +9,8 @@ extension ReplaceByFeeFailureL10n on ReplaceByFeeFailure {
     ReplaceByFeeFeeRateTooLowFailure() =>
       context.loc.replaceByFeeErrorFeeRateTooLow,
     ReplaceByFeeNetworkFeesFailure() => context.loc.oopsSomethingWentWrong,
+    ReplaceByFeeManipulatedTransactionFailure() =>
+      context.loc.replaceByFeeManipulatedTransaction,
     ReplaceByFeeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

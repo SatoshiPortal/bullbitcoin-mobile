@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
@@ -788,6 +789,49 @@ class BdkWalletDatasource {
     );
     final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
+  }
+
+  /// Guard for GHSA-6jp4-8v48-cc5v: the Electrum server is trusted for
+  /// mempool transactions, so a malicious one can swallow a broadcast and
+  /// plant a conflicting copy with redirected outputs and forged signatures.
+  /// SIGHASH_ALL signatures commit to the outputs, so verifying the
+  /// wallet-owned inputs' signatures against the transaction as stored
+  /// authenticates the outputs before a replacement is built from them.
+  /// Inputs whose prevout is unknown to the wallet (e.g. a payjoin
+  /// counterparty's) cannot be judged and are skipped; at least one owned
+  /// input must verify.
+  Future<bool> verifyTransactionInputSignatures({
+    required String txid,
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
+    if (canonicalTx == null) return false;
+    final tx = canonicalTx.transaction;
+    final inputs = tx.input();
+    final inputsToVerify = <bull_sdk.TxInputToVerify>[];
+    for (var index = 0; index < inputs.length; index++) {
+      final outpoint = inputs[index].previousOutput;
+      final parentTx = bdkWallet.getTx(txid: outpoint.txid);
+      if (parentTx == null) continue;
+      final parentOutputs = parentTx.transaction.output();
+      if (outpoint.vout >= parentOutputs.length) return false;
+      final prevout = parentOutputs[outpoint.vout];
+      if (!bdkWallet.isMine(script: prevout.scriptPubkey)) continue;
+      inputsToVerify.add(
+        bull_sdk.TxInputToVerify(
+          inputIndex: index,
+          prevoutScriptPubkey: prevout.scriptPubkey.toBytes(),
+          prevoutValueSat: BigInt.from(prevout.value.toSat()),
+        ),
+      );
+    }
+    if (inputsToVerify.isEmpty) return false;
+    final verification = await bull_sdk.verifyTxInputSignatures(
+      txBytes: tx.serialize(),
+      inputs: inputsToVerify,
+    );
+    return verification is bull_sdk.TxSignatureVerification_Valid;
   }
 
   Future<void> delete({required WalletModel wallet}) async {
