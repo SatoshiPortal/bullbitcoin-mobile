@@ -67,7 +67,7 @@ class Bull {
     );
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     if (Platform.isAndroid || Platform.isIOS) {
-      await cancelLegacyBackgroundTasks();
+      await registerBackgroundTasks();
     }
 
     // Emits the install/upgrade transition event (no-op on a normal

@@ -4979,5 +4979,8 @@
   "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
   "recoverbullNewRoute": "Autre route",
   "recoverbullTorInitializing": "Initialisation",
-  "recoverbullTorReady": "Prêt"
+  "recoverbullTorReady": "Prêt",
+  "backgroundNotificationBitcoinSingular": "1 transaction Bitcoin reçue",
+  "backgroundNotificationLiquidSingular": "1 transaction Liquid reçue",
+  "backgroundNotificationTransactionsPlural": "{count} transactions reçues"
 }
