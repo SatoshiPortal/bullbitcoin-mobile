@@ -84,23 +84,34 @@ final class NativeOnionClientLauncher implements OnionClientLauncher {
   Future<onion.TorService> startClient(
     OnionClientConfig config,
     onion.SocksPolicy policy,
-  ) => switch (config.transport) {
-    TorTransport.direct => onion.TorService.startWithConnectTimeout(
-      stateDir: config.stateDir,
-      cacheDir: config.cacheDir,
-      socksPort: 0,
-      policy: policy,
-      connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
-    ),
-    TorTransport.snowflake => onion.TorService.startWithSnowflakeConnectTimeout(
-      stateDir: config.stateDir,
-      cacheDir: config.cacheDir,
-      socksPort: 0,
-      snowflakePort: config.snowflakePort!,
-      policy: policy,
-      connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
-    ),
-  };
+  ) {
+    final snowflakePort = config.snowflakePort;
+    if (config.transport == TorTransport.snowflake &&
+        (snowflakePort == null || snowflakePort < 1 || snowflakePort > 65535)) {
+      throw ArgumentError('Snowflake requires a valid local proxy port');
+    }
+    return switch (config.transport) {
+      TorTransport.direct => onion.TorService.startWithConnectTimeout(
+        stateDir: config.stateDir,
+        cacheDir: config.cacheDir,
+        socksPort: 0,
+        policy: policy,
+        connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
+      ),
+      TorTransport.snowflake =>
+        onion.TorService.startWithSnowflakeConnectTimeout(
+          stateDir: config.stateDir,
+          cacheDir: config.cacheDir,
+          socksPort: 0,
+          snowflakePort: switch (snowflakePort) {
+            final int port => port,
+            null => throw StateError('Validated Snowflake port is missing'),
+          },
+          policy: policy,
+          connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
+        ),
+    };
+  }
 
   @override
   Future<int> startSnowflakeProxy() => onion.SnowflakeTransport.start();

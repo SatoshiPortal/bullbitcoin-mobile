@@ -130,6 +130,7 @@ void main() {
         const TorLogger(),
         launcher: launcher,
         directories: (_) async => directories,
+        readinessHold: Duration.zero,
       );
     });
 
@@ -159,15 +160,15 @@ void main() {
 
     // Key-server attempts rely on this timeout alone; see
     // [onionConnectTimeout].
-    test('gives onion connections 60 s on either transport', () async {
+    test('gives onion connections 40 s on either transport', () async {
       final direct = await configFor(TorTransport.direct);
       final snowflake = await configFor(TorTransport.snowflake);
 
-      expect(direct.connectTimeout, const Duration(seconds: 60));
-      expect(snowflake.connectTimeout, const Duration(seconds: 60));
+      expect(direct.connectTimeout, const Duration(seconds: 40));
+      expect(snowflake.connectTimeout, const Duration(seconds: 40));
     });
 
-    test('gives a session\'s onion connections 60 s', () async {
+    test('gives a session\'s onion connections 40 s', () async {
       final service = _FakeTorService();
       launcher.service = service;
 
@@ -175,7 +176,28 @@ void main() {
       final session = await backend.openSession();
 
       expect(session.endpoint.port, _FakeTorService.sessionPort);
-      expect(service.sessionConnectTimeouts, [BigInt.from(60000)]);
+      expect(service.sessionConnectTimeouts, [BigInt.from(40000)]);
+    });
+
+    test('Snowflake cleanup preserves the mapped startup failure', () async {
+      launcher.stopFailure = Exception('fixture teardown failed');
+      await expectLater(
+        backend.start(TorTransport.snowflake),
+        throwsA(
+          isA<TorBackendException>().having(
+            (error) => error.failure.logMessage,
+            'original failure',
+            contains('no native Tor in tests'),
+          ),
+        ),
+      );
+      await backend
+          .start(TorTransport.direct)
+          .then<void>(
+            (_) => fail('Expected fixture startup failure'),
+            onError: (Object error) =>
+                expect(error, isA<TorBackendException>()),
+          );
     });
 
     test('shares the directory cache between transports', () async {
@@ -184,6 +206,23 @@ void main() {
 
       expect(snowflake.cacheDir, direct.cacheDir);
     });
+  });
+
+  test('rejects a missing or invalid Snowflake port before native startup', () {
+    for (final port in [null, 0, 65536]) {
+      expect(
+        () => const NativeOnionClientLauncher().startClient(
+          OnionClientConfig(
+            transport: TorTransport.snowflake,
+            stateDir: '/unused/state',
+            cacheDir: '/unused/cache',
+            snowflakePort: port,
+          ),
+          onion.SocksPolicy.onionOnly,
+        ),
+        throwsArgumentError,
+      );
+    }
   });
 
   // Android may purge an app's cache directory whenever storage runs low,
@@ -269,6 +308,7 @@ final class _RecordingLauncher implements OnionClientLauncher {
 
   /// What a start returns; null fails it.
   onion.TorService? service;
+  Exception? stopFailure;
 
   @override
   Future<onion.TorService> startClient(
@@ -283,7 +323,9 @@ final class _RecordingLauncher implements OnionClientLauncher {
   Future<int> startSnowflakeProxy() async => snowflakePort;
 
   @override
-  Future<void> stopSnowflakeProxy() async {}
+  Future<void> stopSnowflakeProxy() async {
+    if (stopFailure case final failure?) throw failure;
+  }
 }
 
 /// A bootstrapped client whose sessions record their connect timeout.
@@ -302,7 +344,14 @@ final class _FakeTorService implements onion.TorService {
   Future<int> socksPort() async => 41002;
 
   @override
-  Stream<onion.TorStatus> watchStatus() => const Stream.empty();
+  Stream<onion.TorStatus> watchStatus() => Stream.value(
+    onion.TorStatus(
+      fraction: 1,
+      readyForTraffic: true,
+      stage: '',
+      transport: onion.TorTransport.direct,
+    ),
+  );
 
   @override
   Future<void> setDormant({required bool dormant}) async {}

@@ -483,7 +483,15 @@ final class OnionTorBackend implements EmbeddedTorPort {
     } catch (error) {
       _log.warning('Failed to stop the embedded Tor service: $error');
     } finally {
-      if (snowflakeLease) await _launcher.stopSnowflakeProxy();
+      if (snowflakeLease) {
+        try {
+          await _launcher.stopSnowflakeProxy();
+        } catch (error) {
+          _log.warning(
+            'tor_snowflake release_failed type=${error.runtimeType}',
+          );
+        }
+      }
     }
   }
 
