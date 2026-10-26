@@ -32,6 +32,13 @@ test('a federated or platform-interface import of the plugin is flagged', () => 
   assert.deepEqual(rules(result), ['fss-import']);
 });
 
+test('an import split across lines, or conditional, is flagged on its URI', () => {
+  const split = reviewTree([{ path: 'lib/a.dart', text: "import\n    'package:flutter_secure_storage/flutter_secure_storage.dart';\n" }]);
+  assert.deepEqual(split.map((f) => [f.rule, f.line]), [['fss-import', 2]]);
+  const conditional = reviewFiles([file('lib/b.dart', ["+    if (dart.library.io) 'package:secrets/src/data/secret_repository.dart';"])]);
+  assert.deepEqual(rules(conditional), ['secrets-src-import']);
+});
+
 test('an import of package:secrets internals is flagged outside the package', () => {
   const line = "+import 'package:secrets/src/data/secret_repository.dart';";
   assert.deepEqual(rules(reviewFiles([file('lib/core/wallet/x.dart', [line])])), ['secrets-src-import']);

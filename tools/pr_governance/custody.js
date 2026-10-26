@@ -30,13 +30,14 @@ const RULES = [
   {
     id: 'fss-import',
     applies: (path) => isDart(path) && !inSecrets(path) && !FSS_IMPORTERS_ALLOWED.has(path),
-    matches: (text) => /^\s*(import|export)\s+['"]package:flutter_secure_storage/.test(text),
+    // The URI, not the `import` keyword: a directive may be split across lines or conditional.
+    matches: (text) => /['"]package:flutter_secure_storage/.test(text),
     why: 'reaches the OS keystore that holds the seeds from outside packages/secrets',
   },
   {
     id: 'secrets-src-import',
     applies: (path) => isDart(path) && !inSecrets(path),
-    matches: (text) => /^\s*(import|export)\s+['"]package:secrets\/src\//.test(text),
+    matches: (text) => /['"]package:secrets\/src\//.test(text),
     why: 'imports package:secrets internals instead of `package:secrets/secrets.dart`',
   },
   {
