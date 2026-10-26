@@ -56,13 +56,14 @@ final class MnemonicView extends StatefulWidget {
 }
 
 final class _MnemonicViewState extends State<MnemonicView> {
-  late Future<Result<RevealedMnemonic, SecretFailure>> _revealed;
+  /// Held only here: a future handed to a `FutureBuilder` would sit on a public widget field that any host can reach by walking its element tree.
+  Result<RevealedMnemonic, SecretFailure>? _result;
   int _generation = 0;
 
   @override
   void initState() {
     super.initState();
-    _revealed = _reveal();
+    _read();
   }
 
   /// A state can be handed a different secret — a list that reorders without keys does exactly that. Showing the previous secret's words under the new one's fingerprint would be a leak across wallets, so the fingerprint is compared and the read redone. Host lists should still key each view by `secret.id`; this is the seatbelt for when they do not.
@@ -70,21 +71,25 @@ final class _MnemonicViewState extends State<MnemonicView> {
   void didUpdateWidget(MnemonicView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.secret.id != oldWidget.secret.id) {
-      setState(() {
-        _revealed = _reveal();
-      });
+      setState(_read);
     }
   }
 
-  Future<Result<RevealedMnemonic, SecretFailure>> _reveal() =>
-      widget.secret.revealMnemonic(reason: RevealReason.userDisplay);
+  /// Starts a read whose result is kept only if no newer read or secret replaced it by the time it lands.
+  void _read() {
+    _result = null;
+    final generation = ++_generation;
+    widget.secret.revealMnemonic(reason: RevealReason.userDisplay).then((
+      result,
+    ) {
+      if (!mounted || generation != _generation) return;
+      setState(() => _result = result);
+    });
+  }
 
   void _retry() {
     if (!mounted) return;
-    setState(() {
-      _generation++;
-      _revealed = _reveal();
-    });
+    setState(_read);
   }
 
   /// The host's layout, or the joined sentence when it supplied none.
@@ -108,44 +113,42 @@ final class _MnemonicViewState extends State<MnemonicView> {
 
   @override
   Widget build(BuildContext context) {
-    // Keyed by fingerprint and read generation: a `FutureBuilder` keeps its last data while a new future is pending. A new key starts empty when changing secrets or retrying.
-    return FutureBuilder(
+    // Keyed by fingerprint and read generation, so host widgets under it start fresh when changing secrets or retrying.
+    return KeyedSubtree(
       key: ValueKey((widget.secret.id.hex, _generation)),
-      future: _revealed,
-      builder: (context, snapshot) {
-        final result = snapshot.data;
-        if (result == null ||
-            snapshot.connectionState != ConnectionState.done) {
-          return widget.placeholder;
-        }
-        return switch (result) {
-          Err(:final failure) => widget.failureBuilder(
-            context,
-            failure,
-            _retry,
-          ),
-          Ok(:final value) => ExcludeSemantics(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _words(context, value.words),
-                if (value.hasPassphrase) ...[
-                  if (widget.passphraseLabel case final label?)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        label,
-                        style: widget.passphraseLabelStyle ?? widget.style,
-                      ),
-                    ),
-                  PaintedPassphrase(value.passphrase, style: widget.style),
-                ],
-              ],
+      child: Builder(
+        builder: (context) {
+          final result = _result;
+          if (result == null) return widget.placeholder;
+          return switch (result) {
+            Err(:final failure) => widget.failureBuilder(
+              context,
+              failure,
+              _retry,
             ),
-          ),
-        };
-      },
+            Ok(:final value) => ExcludeSemantics(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _words(context, value.words),
+                  if (value.hasPassphrase) ...[
+                    if (widget.passphraseLabel case final label?)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          label,
+                          style: widget.passphraseLabelStyle ?? widget.style,
+                        ),
+                      ),
+                    PaintedPassphrase(value.passphrase, style: widget.style),
+                  ],
+                ],
+              ),
+            ),
+          };
+        },
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -98,7 +100,8 @@ final class MnemonicChallenge extends StatefulWidget {
 }
 
 final class _MnemonicChallengeState extends State<MnemonicChallenge> {
-  late Future<Result<RevealedMnemonic, SecretFailure>> _revealed;
+  /// The read's failure, when it failed. Held here rather than in a future handed to a `FutureBuilder`, whose public field any host could reach by walking its element tree.
+  SecretFailure? _failure;
   int _generation = 0;
   bool _verifying = false;
 
@@ -135,7 +138,8 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
 
   void _startRead() {
     _clear();
-    _revealed = _reveal(++_generation);
+    _failure = null;
+    unawaited(_reveal(++_generation));
   }
 
   void _retry() {
@@ -149,22 +153,24 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   /// — so the result is kept only if it is still that secret's, and the
   /// widget is still mounted. Otherwise it is dropped: a stale read must not
   /// become the answer key for the secret on screen.
-  Future<Result<RevealedMnemonic, SecretFailure>> _reveal(
-    int generation,
-  ) async {
+  Future<void> _reveal(int generation) async {
     final id = widget.secret.id;
     final result = await widget.secret.revealMnemonic(
       reason: RevealReason.physicalBackupCheck,
     );
     if (!mounted || widget.secret.id != id || generation != _generation) {
-      return result;
+      return;
     }
-    if (result case Ok(:final value)) {
-      _answer = value.words;
-      _shuffled = [...value.words]..shuffle();
-      widget.onProgress?.call(0, _answer.length);
-    }
-    return result;
+    setState(() {
+      switch (result) {
+        case Ok(:final value):
+          _answer = value.words;
+          _shuffled = [...value.words]..shuffle();
+        case Err(:final failure):
+          _failure = failure;
+      }
+    });
+    if (_answer.isNotEmpty) widget.onProgress?.call(0, _answer.length);
   }
 
   void _reshuffle() {
@@ -228,7 +234,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
         setState(() {
           _clear();
           _generation++;
-          _revealed = Future.value(Err(failure));
+          _failure = failure;
         });
         widget.onProgress?.call(0, total);
     }
@@ -236,22 +242,16 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    // Keyed by fingerprint and read generation, so host widgets under it start fresh when changing secrets or retrying.
+    return KeyedSubtree(
       key: ValueKey((widget.secret.id.hex, _generation)),
-      future: _revealed,
-      builder: (context, snapshot) {
-        final result = snapshot.data;
-        if (result == null ||
-            snapshot.connectionState != ConnectionState.done) {
-          return widget.placeholder;
-        }
-        return switch (result) {
-          Err(:final failure) => widget.failureBuilder(
-            context,
-            failure,
-            _retry,
-          ),
-          Ok() => ExcludeSemantics(
+      child: Builder(
+        builder: (context) {
+          if (_failure case final failure?) {
+            return widget.failureBuilder(context, failure, _retry);
+          }
+          if (_answer.isEmpty) return widget.placeholder;
+          return ExcludeSemantics(
             child: widget.layoutBuilder(context, [
               for (var i = 0; i < _shuffled.length; i++)
                 widget.tileBuilder(
@@ -268,9 +268,9 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
                   ),
                 ),
             ]),
-          ),
-        };
-      },
+          );
+        },
+      ),
     );
   }
 }
