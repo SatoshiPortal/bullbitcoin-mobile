@@ -8,6 +8,7 @@ enum SocksConnectionFailureCause {
   /// SOCKS reply 0x06: the proxy gave up on the circuit. Unrelated to any
   /// client-side time budget a consumer enforces on top.
   ttlExpired('ttl_expired'),
+  proxyGone('proxy_gone'),
   unknown('unknown');
 
   final String logValue;

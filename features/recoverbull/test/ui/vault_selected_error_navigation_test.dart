@@ -1,18 +1,20 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/provider_cart.dart';
-import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/fetch_vault_key_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/vault_selected_page.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
+import '../support/ui_labels.dart';
+import 'package:bull_ui/testing.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_recoverbull/src/router/flow_type.dart';
+import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:bull_recoverbull/src/presentation/bloc.dart';
+import 'package:bull_recoverbull/src/ui/screens/fetch_vault_key_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_selected_page.dart';
+import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,6 +48,12 @@ class _Bloc extends Fake implements RecoverBullBloc {
           ),
         ),
       );
+
+  @override
+  bool get hasPendingProviderSave => false;
+
+  @override
+  bool get isClosed => _states.isClosed;
 
   @override
   Stream<RecoverBullState> get stream => _states.stream;
@@ -104,16 +112,21 @@ void main() {
             BlocProvider<RecoverBullBloc>.value(
               value: bloc,
               child: MaterialApp(
-                theme: AppTheme.themeData(AppThemeType.light),
+                builder: (context, child) {
+                  if (child == null) return const SizedBox.shrink();
+                  return withTestUiLabels(context, child);
+                },
+                theme: ThemeData(extensions: const [testBullTheme]),
                 navigatorObservers: [observer],
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates:
+                    RecoverBullLocalizations.localizationsDelegates,
+                supportedLocales: RecoverBullLocalizations.supportedLocales,
                 home: const VaultProviderSelectionPage(),
               ),
             ),
           );
           await tester.pumpAndSettle();
-          final loc = AppLocalizations.of(
+          final loc = RecoverBullLocalizations.of(
             tester.element(find.byType(VaultProviderSelectionPage)),
           );
           await tester.tap(
@@ -184,4 +197,43 @@ void main() {
       );
     }
   }
+  testWidgets('finishing recovery clears the retained form input', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final bloc = _Bloc(RecoverBullFlow.recoverVault, _Vault());
+    addTearDown(bloc.disposeStream);
+    await tester.pumpWidget(
+      BlocProvider<RecoverBullBloc>.value(
+        value: bloc,
+        child: MaterialApp(
+          builder: (context, child) {
+            if (child == null) return const SizedBox.shrink();
+            return withTestUiLabels(context, child);
+          },
+          theme: ThemeData(extensions: const [testBullTheme]),
+          localizationsDelegates:
+              RecoverBullLocalizations.localizationsDelegates,
+          supportedLocales: RecoverBullLocalizations.supportedLocales,
+          home: const PasswordInputPage(),
+        ),
+      ),
+    );
+    for (final digit in '975318'.split('')) {
+      await tester.tap(find.text(digit));
+      await tester.pump();
+    }
+    final controller = tester
+        .widget<TextFormField>(find.byType(TextFormField).first)
+        .controller;
+    if (controller == null) fail('Expected the form controller');
+    expect(controller.text.length, 6);
+    bloc.publish(bloc.state.copyWith(isFlowFinished: true));
+    await tester.pump();
+    expect(controller.text, isEmpty);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }

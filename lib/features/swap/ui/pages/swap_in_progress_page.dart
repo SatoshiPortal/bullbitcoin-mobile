@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAssets, BullButton, BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAssets, BullButton, BullInfoCard, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 

@@ -66,3 +66,7 @@ class OnVaultKeyHidden extends RecoverBullEvent {
 class OnClearError extends RecoverBullEvent {
   const OnClearError();
 }
+
+final class OnNewCircuit extends RecoverBullEvent {
+  const OnNewCircuit();
+}

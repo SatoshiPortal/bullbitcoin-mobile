@@ -8,6 +8,7 @@ import '../recoverbull_failure.dart';
 import '../recoverbull_flow_failure.dart';
 import '../recoverbull_lifecycle_port.dart';
 import '../recoverbull_tor_route.dart';
+import '../recoverbull_route_port.dart';
 import 'complete_vault_recovery_usecase.dart';
 import 'decrypt_vault_usecase.dart';
 import 'fetch_vault_key_from_server_usecase.dart';
@@ -46,17 +47,28 @@ final class DecryptAndAcceptVaultUsecase {
     String? password,
     String? vaultKey,
     RecoverBullTorRoute? route,
+    RecoverBullRoutePort? routeOwner,
   }) async {
+    if (cancelled()) return const Err(VaultDecryptionFailure());
     if (vault == null) return const Err(VaultNotSetFailure());
     try {
       var key = vaultKey;
       if (key == null) {
         if (password == null) return const Err(PasswordNotSetFailure());
-        final fetched = await fetch.execute(
-          vault: vault,
-          password: password,
-          route: route,
-        );
+        final suppliedPassword = password;
+        final fetched = routeOwner == null
+            ? await fetch.execute(
+                vault: vault,
+                password: suppliedPassword,
+                route: route,
+              )
+            : await routeOwner.borrowRoute(
+                (selected) => fetch.execute(
+                  vault: vault,
+                  password: suppliedPassword,
+                  route: selected,
+                ),
+              );
         if (cancelled()) return const Err(VaultDecryptionFailure());
         switch (fetched) {
           case Err(:final failure):
@@ -96,6 +108,7 @@ final class DecryptAndAcceptVaultUsecase {
             } on Exception {
               log.warning('recoverbull.lifecycle.mark_verified_failed');
             }
+            if (cancelled()) return const Err(VaultDecryptionFailure());
             return const Ok(AcceptedVault(completed: true));
           }
           if (flow != RecoverBullFlow.recoverVault) {

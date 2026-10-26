@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
 import '../support/ui_labels.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:primitives/primitives.dart';
@@ -245,6 +246,59 @@ void main() {
     expect(find.byType(RecoverBullFlowNavigator), findsNothing);
     expect(find.text('Backup settings'), findsOneWidget);
   });
+  testWidgets('system back retains a pending provider save', (tester) async {
+    final repository = _Repository();
+    when(repository.fetchPermission).thenAnswer((_) async => const Ok(false));
+    when(
+      repository.fetchUrl,
+    ).thenAnswer((_) async => Ok(Uri.parse('http://server.onion')));
+    final states = StreamController<RecoverBullState>.broadcast();
+    addTearDown(states.close);
+    var pending = true;
+    final bloc = _Bloc();
+    const state = RecoverBullState(flow: RecoverBullFlow.secureVault);
+    when(() => bloc.state).thenReturn(state);
+    when(() => bloc.stream).thenAnswer((_) => states.stream);
+    when(() => bloc.hasPendingProviderSave).thenAnswer((_) => pending);
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => withTestUiLabels(context, child!),
+        theme: ThemeData(extensions: const [testBullTheme]),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: _navigator(repository),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final nested = tester.state<NavigatorState>(find.byType(Navigator).last);
+    unawaited(
+      nested.push(
+        MaterialPageRoute<void>(
+          builder: (_) => const VaultProviderSelectionPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(VaultProviderSelectionPage), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    // Once the pending save completes, normal system navigation is restored.
+    pending = false;
+    states.add(state.copyWith(isLoading: false));
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(VaultProviderSelectionPage), findsNothing);
+    expect(find.byType(SettingsPage), findsOneWidget);
+  });
+
   testWidgets('failed permission reads stop the flow until a retry succeeds', (
     tester,
   ) async {

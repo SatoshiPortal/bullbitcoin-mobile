@@ -139,6 +139,67 @@ void main() {
     );
   });
 
+  test('an already cancelled recovery never fetches a key', () async {
+    final vault = fixtureVault();
+    when(
+      () => fetchKey.execute(vault: vault, password: 'password'),
+    ).thenAnswer((_) async => const Ok('key'));
+    final result = await accept().execute(
+      flow: RecoverBullFlow.recoverVault,
+      vault: vault,
+      password: 'password',
+      cancelled: () => true,
+    );
+    expect(result, isA<Err>());
+    verifyNever(() => fetchKey.execute(vault: vault, password: 'password'));
+  });
+
+  test('an already cancelled reveal never decrypts or returns a key', () async {
+    final vault = fixtureVault();
+    when(
+      () => decrypt.execute(vault: vault, vaultKey: 'key'),
+    ).thenReturn(Ok(DecryptedVault()));
+    final result = await accept().execute(
+      flow: RecoverBullFlow.viewVaultKey,
+      vault: vault,
+      vaultKey: 'key',
+      cancelled: () => true,
+    );
+    expect(result, isA<Err>());
+    verifyNever(() => decrypt.execute(vault: vault, vaultKey: 'key'));
+  });
+
+  test('cancellation during test lifecycle never completes the flow', () async {
+    final vault = fixtureVault();
+    final secret = DecryptedVault();
+    final marked = Completer<void>();
+    when(
+      () => decrypt.execute(vault: vault, vaultKey: 'key'),
+    ).thenReturn(Ok(secret));
+    when(() => verifyVault.execute(decryptedVault: secret)).thenAnswer(
+      (_) async => const Ok((
+        result: VaultVerificationResult.match,
+        network: RecoverBullNetwork.mainnet,
+      )),
+    );
+    when(() => lifecycle.markVerified(any())).thenAnswer((_) => marked.future);
+    var cancelled = false;
+    final result = accept().execute(
+      flow: RecoverBullFlow.testVault,
+      vault: vault,
+      vaultKey: 'key',
+      cancelled: () => cancelled,
+    );
+    await pumpEventQueue();
+    verify(() => lifecycle.markVerified(RecoverBullNetwork.mainnet)).called(1);
+    cancelled = true;
+    marked.complete();
+    expect(await result, isA<Err>());
+    verifyNever(
+      () => restore.execute(decryptedVault: any(named: 'decryptedVault')),
+    );
+  });
+
   test('wallet mismatch never restores or updates verified status', () async {
     final vault = fixtureVault();
     final secret = DecryptedVault();

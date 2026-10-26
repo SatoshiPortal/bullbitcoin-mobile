@@ -434,5 +434,155 @@
   },
   "recoverbullConnectingTor": "Tor ke zariye Key Server se connect ho raha hai. Ismein ek minute lag sakta hai.",
   "recoverbullMonitoringServerUnsupported": "Yeh server prayason ki nigrani ka samarthan nahin karta. Aap ab bhi vault ka backup le sakte hain aur unhein punarsthapit kar sakte hain.",
-  "recoverbullTemporaryStorageNotice": "Abhi settings aur backup satyapan saheje nahin ja sakte. Aap ab bhi server ko manzoori dekar vault ko punarsthapit kar sakte hain."
+  "recoverbullTemporaryStorageNotice": "Abhi settings aur backup satyapan saheje nahin ja sakte. Aap ab bhi server ko manzoori dekar vault ko punarsthapit kar sakte hain.",
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault recovery",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorMissingBytes": "Tor response mein bytes missing hain. Phir try karo. Agar problem bani rahe, toh kuch devices mein Tor ke saath yeh problem hoti hai.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorUnexpected": "Anayaas error, logs dekhein",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Anayaas error",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Fail: Vault file ban gayi par key server mein store nahi hui",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Koi error aaya. Phir se try karo.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive se vault select karne mein dikkat aayi",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectRecoverWallet": "Wallet Recover Karo",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectVaultSelected": "Vault Select Ho Gaya",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectCustomLocation": "Custom Location",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullSelectVaultImportSuccess": "Aapka vault kamyabi se import hua",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Backup key manually daalo >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullSelectDecryptVault": "Vault decrypt karo",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullSelectNoBackupsFound": "Koi backup nahi mila",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectErrorPrefix": "Error:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Saare drive backups fetch karne mein dikkat aayi",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "File select nahi ki",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectCustomLocationError": "Custom location se file select karne mein dikkat aayi",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault recovery",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryLoadingMessage": "Balance aur transactions dhoondh rahe hain…",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullRecoveryBalanceLabel": "Balance: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transactions: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "Aage Badho",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Yeh wallet pehle se maujood hai.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Ek alag default wallet pehle se maujood hai. Sirf ek hi default wallet ho sakta hai.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Local backup key derivation fail hua.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "Select ki gayi backup file kharab hai.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Backup file mein derivation path nahi hai.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Key Server ne reject kiya",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service unavailable hai. Apna connection check karo.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  }
 }

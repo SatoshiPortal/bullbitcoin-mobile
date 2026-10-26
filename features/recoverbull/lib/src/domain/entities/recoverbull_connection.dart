@@ -10,6 +10,7 @@ const _unchangedFailure = Object();
 final class RecoverBullConnection {
   final tor.TorConnectionState torConnection;
   final KeyServerStatus keyServerStatus;
+  final int keyServerFailures;
   final int keyServerAttempt;
   final int keyServerAttempts;
   final RecoverBullFailure? failure;
@@ -18,6 +19,7 @@ final class RecoverBullConnection {
   const RecoverBullConnection({
     this.torConnection = const tor.TorUninitialized(),
     this.keyServerStatus = KeyServerStatus.unknown,
+    this.keyServerFailures = 0,
     this.keyServerAttempt = 0,
     this.keyServerAttempts = 0,
     this.failure,
@@ -27,12 +29,14 @@ final class RecoverBullConnection {
   RecoverBullConnection copyWith({
     tor.TorConnectionState? torConnection,
     KeyServerStatus? keyServerStatus,
+    int? keyServerFailures,
     int? keyServerAttempt,
     int? keyServerAttempts,
     Object? failure = _unchangedFailure,
   }) => RecoverBullConnection(
     torConnection: torConnection ?? this.torConnection,
     keyServerStatus: keyServerStatus ?? this.keyServerStatus,
+    keyServerFailures: keyServerFailures ?? this.keyServerFailures,
     keyServerAttempt: keyServerAttempt ?? this.keyServerAttempt,
     keyServerAttempts: keyServerAttempts ?? this.keyServerAttempts,
     failure: identical(failure, _unchangedFailure)

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart' as tor;
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 /// Holds one state and never emits. The page is a pure projection of the
 /// state, so nothing here needs the real bloc's dependency graph.
@@ -46,6 +47,9 @@ class _MutableBloc extends Fake implements RecoverBullBloc {
     _state = state;
     _states.add(state);
   }
+
+  @override
+  bool get hasPendingProviderSave => false;
 
   final events = <RecoverBullEvent>[];
 
@@ -87,6 +91,68 @@ void main() {
     );
     await tester.pump();
   }
+
+  for (final source in tor.TorSource.values) {
+    testWidgets(
+      'new route is offered only for an embedded route: ${source.name}',
+      (tester) async {
+        await pumpPage(
+          tester,
+          RecoverBullState(
+            flow: RecoverBullFlow.recoverVault,
+            keyServerStatus: KeyServerStatus.offline,
+            keyServerFailures: 1,
+            failure: const KeyServerConnectionFailure(),
+            torConnection: tor.TorReady(
+              tor.TorRoute(
+                source: source,
+                endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+                evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+                transport: tor.TorTransport.direct,
+              ),
+            ),
+          ),
+        );
+        final l10n = await RecoverBullLocalizations.delegate.load(
+          const Locale('en'),
+        );
+        expect(
+          find.text(l10n.recoverbullNewRoute),
+          source == tor.TorSource.embedded ? findsOneWidget : findsNothing,
+        );
+      },
+    );
+  }
+
+  testWidgets('retry keeps the technical cause and disables both actions', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        keyServerStatus: KeyServerStatus.connecting,
+        keyServerFailures: 1,
+        failure: const KeyServerConnectionFailure(
+          cause: KeyServerUnreachableCause.onionUnreachable,
+        ),
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+    final buttons = tester
+        .widgetList<BullButton>(find.byType(BullButton))
+        .toList();
+    expect(buttons, hasLength(2));
+    expect(buttons.every((button) => button.disabled), isTrue);
+    expect(find.text('Tor: onion unreachable'), findsOneWidget);
+  });
 
   // The screen the user stares at for the whole Tor bootstrap. It rendered an
   // empty body on device — the title, both phase rows and the reassurance line
@@ -382,7 +448,7 @@ void main() {
     final l10n = await RecoverBullLocalizations.delegate.load(
       const Locale('en'),
     );
-    expect(find.text(l10n.recoverbullConnected), findsOneWidget);
+    expect(find.text(l10n.recoverbullTorReady), findsOneWidget);
     expect(find.textContaining('42%'), findsNothing);
     expect(find.textContaining('direct'), findsNothing);
   });
@@ -684,7 +750,7 @@ void main() {
         const Locale('en'),
       );
       expect(find.textContaining('45%'), findsOneWidget);
-      expect(find.textContaining('1/3'), findsOneWidget);
+      expect(find.textContaining('1/3'), findsNothing);
       expect(find.text(l10n.recoverbullChecking), findsOneWidget);
       expect(find.text(l10n.recoverbullWaitingForTor), findsNothing);
     },
@@ -746,7 +812,7 @@ void main() {
     await bloc.close();
   });
 
-  testWidgets('shows elapsed time once outside the phase cards', (
+  testWidgets('shows elapsed time once on the active phase card', (
     tester,
   ) async {
     var now = DateTime(2026, 1, 1);
@@ -793,7 +859,7 @@ void main() {
         of: elapsed,
         matching: find.byKey(const ValueKey('server-phase-card')),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     await bloc.close();
   });

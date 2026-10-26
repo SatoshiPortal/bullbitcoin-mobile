@@ -38,6 +38,8 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   @override
   void dispose() {
     disableScreenPrivacy();
+    validatedPassword = '';
+    inputController.clear();
     inputController.dispose();
     super.dispose();
   }
@@ -52,7 +54,14 @@ class _PasswordInputPageState extends State<PasswordInputPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RecoverBullBloc, RecoverBullState>(
+    return BlocConsumer<RecoverBullBloc, RecoverBullState>(
+      listenWhen: (previous, current) =>
+          current.isFlowFinished && !previous.isFlowFinished ||
+          current.vaultKey != null && current.vaultKey != previous.vaultKey,
+      listener: (context, state) {
+        validatedPassword = '';
+        inputController.clear();
+      },
       builder: (context, state) {
         final needPasswordConfirmation =
             state.flow == RecoverBullFlow.secureVault;
@@ -99,7 +108,14 @@ class _PasswordInputPageState extends State<PasswordInputPage>
           appBar: BullTopBar.appBar(
             titleStyle: context.bullText.headlineMedium,
             title: title,
-            onBack: () => context.pop(),
+            onBack: () {
+              final navigator = Navigator.of(context);
+              if (navigator.canPop()) {
+                navigator.pop();
+              } else {
+                context.pop();
+              }
+            },
             actions: const [
               Padding(
                 padding: EdgeInsets.only(right: 20),
@@ -311,7 +327,8 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                 input: inputController.text,
                                 inputType: inputType,
                               );
-                              inputController.clear();
+                              // Keep this form available for correction after a rejected request.
+                              // The handoff discards its copy on submission; completion or disposal clears the form.
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => nextPage,

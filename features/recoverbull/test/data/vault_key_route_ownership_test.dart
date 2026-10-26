@@ -1,11 +1,13 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'dart:io';
+import '../support/log_sink.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
+import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
+import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/store_vault_key_into_server_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,6 +40,7 @@ void main() {
         transport: TorTransport.direct,
       ),
       () async => closed++,
+      HttpClient(),
     );
     when(() => ensure.execute()).thenAnswer((_) async => Ok(route));
   });
@@ -45,15 +48,13 @@ void main() {
   for (final borrowed in [false, true]) {
     test('store ${borrowed ? 'borrows' : 'owns'} its route', () async {
       when(
-        () => repository.storeVaultKey(
-          'id',
-          'password',
-          'salt',
-          'key',
-          route.endpoint,
-        ),
+        () => repository.storeVaultKey('id', 'password', 'salt', 'key', route),
       ).thenAnswer((_) async => const Ok(null));
-      final usecase = StoreVaultKeyIntoServerUsecase(repository, ensure);
+      final usecase = StoreVaultKeyIntoServerUsecase(
+        repository: repository,
+        ensureTor: ensure,
+        log: const TestLogSink(),
+      );
 
       final result = await usecase.execute(
         password: 'password',
@@ -62,15 +63,9 @@ void main() {
         route: borrowed ? route : null,
       );
 
-      expect(result, isA<Ok<Null, RecoverBullCoreFailure>>());
+      expect(result, isA<Ok<Null, RecoverBullFailure>>());
       verify(
-        () => repository.storeVaultKey(
-          'id',
-          'password',
-          'salt',
-          'key',
-          route.endpoint,
-        ),
+        () => repository.storeVaultKey('id', 'password', 'salt', 'key', route),
       ).called(1);
       if (borrowed) {
         verifyNever(() => ensure.execute());
@@ -84,14 +79,18 @@ void main() {
       'fetch ${borrowed ? 'borrows' : 'owns'} its route even on failure',
       () async {
         when(
-          () => repository.fetchVaultKey(
+          () => repository.fetchVaultKeyWithStatus(
             'id',
             'password',
             'salt',
-            route.endpoint,
+            route,
           ),
         ).thenAnswer((_) async => const Err(KeyServerUnavailableFailure()));
-        final usecase = FetchVaultKeyFromServerUsecase(repository, ensure);
+        final usecase = FetchVaultKeyFromServerUsecase(
+          repository: repository,
+          ensureTor: ensure,
+          log: const TestLogSink(),
+        );
 
         final result = await usecase.execute(
           password: 'password',
@@ -99,13 +98,13 @@ void main() {
           route: borrowed ? route : null,
         );
 
-        expect(result, isA<Err<String, RecoverBullCoreFailure>>());
+        expect(result, isA<Err<String, RecoverBullFailure>>());
         verify(
-          () => repository.fetchVaultKey(
+          () => repository.fetchVaultKeyWithStatus(
             'id',
             'password',
             'salt',
-            route.endpoint,
+            route,
           ),
         ).called(1);
         if (borrowed) {

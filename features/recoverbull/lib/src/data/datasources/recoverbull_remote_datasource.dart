@@ -1,3 +1,4 @@
+import 'package:bull_tor/tor.dart' show torConnectDeadline;
 import 'dart:async';
 import 'dart:io';
 
@@ -45,10 +46,7 @@ class RecoverBullRemoteDatasource {
   final RecoverBullTiming? timing;
   final Duration operationTimeout;
 
-  /// Tor bounds the onion connect itself (60 seconds), but nothing bounds an
-  /// HTTP exchange that stalls once the stream is open. This deadline only
-  /// catches that stall: it sits above Tor's connect timeout so it never cuts
-  /// a first rendezvous circuit that Tor is still building.
+  /// Expires after Tor's shared connect budget so its classified cause arrives first.
   final Duration healthCheckTimeout;
 
   RecoverBullRemoteDatasource({
@@ -62,8 +60,16 @@ class RecoverBullRemoteDatasource {
     this.trashRequest,
     this.attemptsRequest,
     this.operationTimeout = const Duration(seconds: 75),
-    this.healthCheckTimeout = const Duration(seconds: 75),
-  });
+    Duration? healthCheckTimeout,
+  }) : healthCheckTimeout = healthCheckTimeout ?? torConnectDeadline;
+
+  void _reportTiming(String phase, int elapsedMilliseconds, String outcome) {
+    try {
+      timing?.call(phase, elapsedMilliseconds, outcome);
+    } catch (_) {
+      // Diagnostics must preserve successful writes and the original failure.
+    }
+  }
 
   Future<T> _timed<T>(
     String phase,
@@ -73,13 +79,13 @@ class RecoverBullRemoteDatasource {
     final stopwatch = Stopwatch()..start();
     try {
       final value = await operation().timeout(timeout ?? operationTimeout);
-      timing?.call(phase, stopwatch.elapsedMilliseconds, 'success');
+      _reportTiming(phase, stopwatch.elapsedMilliseconds, 'success');
       return value;
     } on TimeoutException {
-      timing?.call(phase, stopwatch.elapsedMilliseconds, 'timeout');
+      _reportTiming(phase, stopwatch.elapsedMilliseconds, 'timeout');
       rethrow;
     } catch (_) {
-      timing?.call(phase, stopwatch.elapsedMilliseconds, 'failure');
+      _reportTiming(phase, stopwatch.elapsedMilliseconds, 'failure');
       rethrow;
     }
   }
@@ -251,7 +257,7 @@ class RecoverBullRemoteDatasource {
       log.warning('recoverbull.attempts.poll.timeout');
       rethrow;
     } catch (e, st) {
-      if (!operationTimed) timing?.call('attempts_poll', 0, 'failure');
+      if (!operationTimed) _reportTiming('attempts_poll', 0, 'failure');
       log.error(
         'recoverbull.attempts.poll.unexpected error_type=${e.runtimeType}',
         trace: st,

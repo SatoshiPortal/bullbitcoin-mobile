@@ -435,5 +435,143 @@
   "recoverbullConnectingTor": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
   "recoverbullMonitoringDisableCancel": "Отказ",
   "recoverbullMonitoringServerUnsupported": "Този сървър не поддържа наблюдение на опитите. Все още можете да архивирате и възстановявате хранилища.",
-  "recoverbullTemporaryStorageNotice": "Настройките и проверката на архивите не могат да бъдат запазени сега. Все още можете да одобрите сървъра и да възстановите хранилище."
+  "recoverbullTemporaryStorageNotice": "Настройките и проверката на архивите не могат да бъдат запазени сега. Все още можете да одобрите сървъра и да възстановите хранилище.",
+  "recoverbullGoogleDriveErrorDisplay": "Грешка: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Вашият сейф беше успешно импортиран",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "Грешка:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Липсват байтове от отговора на Tor. Опитайте отново, но ако проблемът продължи, това е известен проблем за някои устройства с Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Вече съществува друг портфейл по подразбиране. Можете да имате само един портфейл по подразбиране.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault възстановяване",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Извличането на локалния ключ за резервно копие се провали.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "Файлът не е избран",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectVaultSelected": "Избран сейф",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Въведете ключ за резервно копие ръчно >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "Избраният файл за резервно копие е повреден.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullSelectDriveBackups": "Резервни копия в Google Диск",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullSelectCustomLocationError": "Неуспешно избиране на файл от персонализирано местоположение",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullSelectNoBackupsFound": "Няма намерени резервни копия.",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullRecoveryContinueButton": "Продължи",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullSelectDecryptVault": "Дешифрирайте сейфа",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "Неочаквана грешка",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryLoadingMessage": "Търся баланс и транзакции…",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Възникна грешка. Моля, опитайте отново.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Грешка: файлът на сейфа е създаден, но ключът не е съхранен в сървъра",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Този портфейл вече съществува.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullErrorUnexpected": "Неочаквана грешка, вижте логовете",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Не успях да заредя всички резервни копия от Google Диск",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullRecoveryTransactionsLabel": "Транзакции: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Липсва деривационен път за резервното копие.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullSelectRecoverWallet": "Възстанови портфейла.",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "Персонализирано местоположение",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Неуспешно избиране на хранилище от Google Drive.",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullVaultRecoveryTitle": "Възстановяване на Recoverbull трезор",
+  "recoverbullErrorRejected": "Отхвърлено от ключовия сървър",
+  "recoverbullErrorServiceUnavailable": "Услугата не е достъпна. Моля, проверете връзката си.",
+  "recoverbullErrorInvalidVaultFile": "Невалиден файл на трезора."
 }

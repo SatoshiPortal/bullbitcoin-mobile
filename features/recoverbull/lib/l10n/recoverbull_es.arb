@@ -201,5 +201,59 @@
   "recoverbullConnectingTor": "Conectando al servidor de claves a través de Tor. Esto puede tomar hasta un minuto.",
   "recoverbullMonitoringDisableCancel": "Cancelar",
   "recoverbullMonitoringServerUnsupported": "Este servidor no admite el seguimiento de intentos. Puedes seguir creando copias de seguridad y recuperando bóvedas.",
-  "recoverbullTemporaryStorageNotice": "Ahora no se pueden guardar los ajustes ni la verificación de las copias de seguridad. Puedes aprobar el servidor y recuperar una bóveda."
+  "recoverbullTemporaryStorageNotice": "Ahora no se pueden guardar los ajustes ni la verificación de las copias de seguridad. Puedes aprobar el servidor y recuperar una bóveda.",
+  "recoverbullVaultRecoveryTitle": "Recuperación de bóveda Recoverbull",
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
+  "recoverbullErrorUnexpected": "Error inesperado, ver registros",
+  "recoverbullUnexpectedError": "Error inesperado",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Error: Archivo de bóveda creado pero clave no almacenada en el servidor",
+  "recoverbullGoogleDriveErrorGeneric": "Se produjo un error. Por favor, inténtelo de nuevo.",
+  "recoverbullGoogleDriveErrorSelectFailed": "Error al seleccionar el cofre de Google Drive",
+  "recoverbullSelectRecoverWallet": "Recuperar Billetera",
+  "recoverbullSelectVaultSelected": "Bóveda Seleccionada",
+  "recoverbullSelectCustomLocation": "Ubicación Personalizada",
+  "recoverbullSelectDriveBackups": "Respaldos de Drive",
+  "recoverbullSelectVaultImportSuccess": "Su bóveda se importó exitosamente",
+  "recoverbullSelectEnterBackupKeyManually": "Ingresar clave de respaldo manualmente >>",
+  "recoverbullSelectDecryptVault": "Descifrar bóveda",
+  "recoverbullSelectNoBackupsFound": "No se encontraron respaldos",
+  "recoverbullSelectErrorPrefix": "Error:",
+  "recoverbullSelectFetchDriveFilesError": "Error al obtener todos los respaldos de Drive",
+  "recoverbullSelectFileNotSelectedError": "Archivo no seleccionado",
+  "recoverbullSelectCustomLocationError": "Error al seleccionar archivo desde ubicación personalizada",
+  "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",
+  "recoverbullRecoveryLoadingMessage": "Buscando saldo y transacciones…",
+  "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transacciones: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "Continuar",
+  "recoverbullRecoveryErrorWalletExists": "Esta Billetera ya existe.",
+  "recoverbullRecoveryErrorWalletMismatch": "Ya existe una billetera predeterminada diferente. Solo puede tener una billetera predeterminada.",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Error en la derivación de la clave de respaldo local.",
+  "recoverbullRecoveryErrorVaultCorrupted": "El archivo de respaldo seleccionado está corrupto.",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Ruta de derivación faltante en el archivo de respaldo.",
+  "recoverbullErrorRejected": "Rechazado por el servidor de claves",
+  "recoverbullErrorServiceUnavailable": "Servicio no disponible. Por favor, verifica tu conexión.",
+  "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido."
 }

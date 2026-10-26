@@ -201,5 +201,59 @@
   "recoverbullConnectingTor": "Підключення до Key Server над Tor. Це може прийняти до хвилини.",
   "recoverbullMonitoringDisableCancel": "Скасувати",
   "recoverbullMonitoringServerUnsupported": "Цей сервер не підтримує відстеження спроб. Ви й надалі можете створювати резервні копії та відновлювати сховища.",
-  "recoverbullTemporaryStorageNotice": "Зараз неможливо зберегти налаштування та перевірку резервних копій. Ви можете схвалити сервер і відновити сховище."
+  "recoverbullTemporaryStorageNotice": "Зараз неможливо зберегти налаштування та перевірку резервних копій. Ви можете схвалити сервер і відновити сховище.",
+  "recoverbullGoogleDriveErrorDisplay": "{error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Ви успішно імпортували",
+  "recoverbullSelectErrorPrefix": "Помилка:",
+  "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Пропускання байтів від реагування тор. Ретри, але якщо питання зберігається, це відомий питання для деяких пристроїв з Tor.",
+  "recoverbullRecoveryErrorWalletMismatch": "За замовчуванням гаманець вже існує. Ви можете мати один гаманець за замовчуванням.",
+  "recoverbullRecoveryTitle": "Recoverbull відновлення",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Не вдалося відхилити локальну резервну копію ключа.",
+  "recoverbullSelectFileNotSelectedError": "Файл не вибрано",
+  "recoverbullSelectVaultSelected": "Вибрані",
+  "recoverbullSelectEnterBackupKeyManually": "Введіть ключ Backup вручну >>",
+  "recoverbullRecoveryErrorVaultCorrupted": "Вибраний файл резервного копіювання пошкоджений.",
+  "recoverbullSelectDriveBackups": "Приводні резервні копії",
+  "recoverbullErrorInvalidVaultFile": "Недійсний файл схову.",
+  "recoverbullSelectCustomLocationError": "Вимкнено вибрати файл з індивідуального розташування",
+  "recoverbullSelectNoBackupsFound": "Не знайдено резервних копій",
+  "recoverbullVaultRecoveryTitle": "Recoverbull відновлення",
+  "recoverbullErrorServiceUnavailable": "Сервіс 0 Будь ласка, перевірте підключення.",
+  "recoverbullRecoveryContinueButton": "Продовжити",
+  "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",
+  "recoverbullUnexpectedError": "Несподівана помилка",
+  "recoverbullRecoveryLoadingMessage": "Шукаємо баланс і операції..",
+  "recoverbullGoogleDriveErrorGeneric": "Помилки. Будь ласка, спробуйте знову.",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Переміщений файл Vault створений, але ключ не зберігається в сервері",
+  "recoverbullRecoveryErrorWalletExists": "Цей гаманець вже існує.",
+  "recoverbullErrorUnexpected": "Несподівана помилка, див. журнали",
+  "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
+  "recoverbullRecoveryTransactionsLabel": "{count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Файл резервного копіювання відсутній шлях видалення.",
+  "recoverbullErrorRejected": "Відхилено Key Server",
+  "recoverbullSelectRecoverWallet": "Відновлення гаманця",
+  "recoverbullSelectCustomLocation": "Місцезнаходження",
+  "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску"
 }

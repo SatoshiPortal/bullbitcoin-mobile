@@ -108,7 +108,7 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
           canPop: !_nestedNavigatorCanPop,
           onPopInvokedWithResult: (didPop, _) {
             if (!didPop && _nestedNavigatorCanPop) {
-              _navigatorKey.currentState!.pop();
+              _navigatorKey.currentState?.maybePop();
             }
           },
           child: Navigator(

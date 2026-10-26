@@ -138,13 +138,13 @@ class _ServiceStatusItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            BBText(
+            BullText(
               service.name,
               style: context.font.bodyMedium,
               color: context.appColors.onSurface,
             ),
             const Spacer(),
-            BBText(
+            BullText(
               _getStatusText(context),
               style: context.font.bodySmall,
               color: context.appColors.onSurfaceVariant,
@@ -154,7 +154,7 @@ class _ServiceStatusItem extends StatelessWidget {
         if (_explanation(context) case final explanation?)
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 4),
-            child: BBText(
+            child: BullText(
               explanation,
               style: context.font.bodySmall,
               color: context.appColors.onSurfaceVariant,

@@ -11,12 +11,8 @@ final class RecoverBullState with RecoverBullStateMappable {
   final RecoverBullFailure? failure;
   final KeyServerStatus keyServerStatus;
 
-  /// Which key-server attempt is in flight, and out of how many.
-  ///
-  /// Reaching the server is an onion-service lookup — a descriptor fetch then
-  /// a rendezvous — which routinely needs more than one try just after a cold
-  /// bootstrap. Showing the count is the difference between "it is retrying"
-  /// and "it is frozen".
+  /// Failed checks on the current route; retries are explicitly user-requested.
+  final int keyServerFailures;
   final int keyServerAttempt;
   final int keyServerAttempts;
   final bool isFlowFinished;
@@ -38,6 +34,7 @@ final class RecoverBullState with RecoverBullStateMappable {
     this.failure,
     this.keyServerStatus = KeyServerStatus.unknown,
 
+    this.keyServerFailures = 0,
     this.keyServerAttempt = 0,
     this.keyServerAttempts = 0,
     this.isFlowFinished = false,

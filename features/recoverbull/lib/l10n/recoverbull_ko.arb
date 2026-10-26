@@ -435,5 +435,155 @@
   "recoverbullConnectingTor": "Tor에 키 서버 연결. 1 분까지 걸릴 수 있습니다.",
   "recoverbullMonitoringDisableCancel": "취소",
   "recoverbullMonitoringServerUnsupported": "이 서버는 시도 모니터링을 지원하지 않습니다. 보관함을 계속 백업하고 복구할 수 있습니다.",
-  "recoverbullTemporaryStorageNotice": "지금은 설정 및 백업 확인을 저장할 수 없습니다. 서버를 승인하고 보관함을 복구할 수 있습니다."
+  "recoverbullTemporaryStorageNotice": "지금은 설정 및 백업 확인을 저장할 수 없습니다. 서버를 승인하고 보관함을 복구할 수 있습니다.",
+  "recoverbullGoogleDriveErrorDisplay": "오류: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "당신의 vault는 성공적으로 수입되었습니다",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "오류:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullRecoveryBalanceLabel": "밸런스: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Tor 응답에서 바이트를 밀어. Retry 하지만 문제가 발생하면 Tor와 일부 장치에 대한 알려진 문제입니다.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "다른 기본 지갑은 이미 존재합니다. 하나의 기본 지갑만 가질 수 있습니다.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault 복구",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "로컬 백업 키 derivation 실패.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "선택되지 않음",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectVaultSelected": "Vault 선택",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "백업 키를 수동으로 입력 >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "선택한 백업 파일은 손상됩니다.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullSelectDriveBackups": "드라이브 백업",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorInvalidVaultFile": "잘못된 vault 파일.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullSelectCustomLocationError": "사용자 정의 위치에서 파일을 선택 해제",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullSelectNoBackupsFound": "백업 없음",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault 복구",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorServiceUnavailable": "서비스 제공 자주 묻는 질문.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullRecoveryContinueButton": "계속하기",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullSelectDecryptVault": "암호 해독",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "오류 없음",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryLoadingMessage": "균형과 거래를 찾고..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "오류가 발생했습니다. 다시 시도하십시오.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "실패: 생성된 Vault 파일 그러나 서버에서 저장하지 않는 열쇠",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRecoveryErrorWalletExists": "이 지갑은 이미 존재합니다.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullErrorUnexpected": "오류가 없습니다. 로그",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "모든 드라이브 백업을 fetch로 실패",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullRecoveryTransactionsLabel": "거래 : {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "백업 파일 누락된 derivation 경로.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Key Server에 의해 거부",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSelectRecoverWallet": "지갑 복구",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "주문 위치",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive에서 vault를 선택 해제",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  }
 }

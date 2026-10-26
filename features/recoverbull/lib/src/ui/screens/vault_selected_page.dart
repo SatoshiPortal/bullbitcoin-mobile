@@ -1,3 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_tor/tor.dart' show TorReady;
+import '../../presentation/bloc.dart';
+import 'password_input_page.dart';
 import '../../domain/entities/encrypted_vault.dart';
 import '../../domain/entities/vault_provider.dart';
 import '../../router/recoverbull_router.dart';
@@ -83,10 +87,24 @@ class VaultSelectedPage extends StatelessWidget {
               ),
               child: BullButton.big(
                 label: context.loc.recoverbullDecryptVault,
-                onPressed: () => context.pushNamed(
-                  RecoverBullRoute.recoverbullFlows.name,
-                  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
-                ),
+                onPressed: () {
+                  final state = context.read<RecoverBullBloc>().state;
+                  if (state.flow == flow &&
+                      state.vault == vault &&
+                      state.torConnection is TorReady &&
+                      state.keyServerStatus == KeyServerStatus.online) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const PasswordInputPage(),
+                      ),
+                    );
+                    return;
+                  }
+                  context.pushNamed(
+                    RecoverBullRoute.recoverbullFlows.name,
+                    extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+                  );
+                },
                 bgColor: context.bull.onSurface,
                 textColor: context.bull.surface,
               ),

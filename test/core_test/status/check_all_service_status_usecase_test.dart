@@ -26,7 +26,13 @@ class _MockBitcoinPriceRepository extends Mock
 
 class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
-class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {}
+class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {
+  _MockPayjoinDiagnostics() {
+    when(
+      relayHealth,
+    ).thenAnswer((_) async => const Ok(PayjoinRelayHealth.available));
+  }
+}
 
 class _MockFeesRepository extends Mock implements FeesRepository {}
 
@@ -90,8 +96,6 @@ void main() {
     ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final payjoinDiagnostics = _MockPayjoinDiagnostics();
-    // Tor is not required for this wallet, so neither the Tor nor the
-    // RecoverBull probe is reached — the point of the test is Payjoin.
     when(
       payjoinPolicy.load,
     ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
@@ -105,7 +109,7 @@ void main() {
       electrumConnectivityPort: electrum,
       bitcoinPriceRepository: bitcoinPriceRepository,
       payjoinPolicy: payjoinPolicy,
-      payjoinDiagnostics: _MockPayjoinDiagnostics(),
+      payjoinDiagnostics: payjoinDiagnostics,
       feesRepository: feesRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
       settingsRepository: settingsRepository,
@@ -137,8 +141,7 @@ void main() {
       () => feesRepository.getNetworkFees(network: any(named: 'network')),
     ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
-    final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
@@ -152,9 +155,7 @@ void main() {
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
       feesRepository: feesRepository,
-      walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
       settingsRepository: settingsRepository,
       tor: tor,
     );
@@ -188,10 +189,6 @@ void main() {
       ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       final payjoinDiagnostics = _MockPayjoinDiagnostics();
-      final walletRepository = _MockWalletRepository();
-      // Tor is not required for this wallet, so neither the Tor nor the
-      // RecoverBull probe is reached — the point of the test is Payjoin.
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
@@ -206,9 +203,7 @@ void main() {
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: payjoinDiagnostics,
         feesRepository: feesRepository,
-        walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
         settingsRepository: settingsRepository,
         tor: tor,
       );

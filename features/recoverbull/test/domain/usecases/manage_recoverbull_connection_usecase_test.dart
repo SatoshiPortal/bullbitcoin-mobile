@@ -20,24 +20,6 @@ class _Ensure extends Mock implements EnsureRecoverBullTorSessionUsecase {}
 
 class _Watch extends Mock implements tor.WatchTorConnectionUsecase {}
 
-/// Advances a scheduled callback without spending time or using real timers.
-class _ManualTimer implements Timer {
-  final void Function() callback;
-  bool _active = true;
-  _ManualTimer(this.callback);
-  @override
-  bool get isActive => _active;
-  @override
-  int get tick => _active ? 0 : 1;
-  @override
-  void cancel() => _active = false;
-  void fire() {
-    if (!_active) return;
-    _active = false;
-    callback();
-  }
-}
-
 RecoverBullTorRoute _route({Future<void> Function()? onClose}) =>
     RecoverBullTorRoute(
       tor.TorRoute(
@@ -54,8 +36,6 @@ void main() {
   late _Ensure ensure;
   late _Watch watch;
   late StreamController<tor.TorConnectionState> readiness;
-  late List<_ManualTimer> timers;
-  late DateTime now;
   late ManageRecoverBullConnectionUsecase usecase;
   late RecoverBullTorRoute defaultRoute;
   setUpAll(() {
@@ -66,8 +46,6 @@ void main() {
     ensure = _Ensure();
     watch = _Watch();
     readiness = StreamController<tor.TorConnectionState>.broadcast(sync: true);
-    timers = [];
-    now = DateTime.utc(2026);
     defaultRoute = _route();
     when(watch.execute).thenAnswer((_) => readiness.stream);
     when(
@@ -79,7 +57,8 @@ void main() {
         route: any(named: 'route'),
       ),
     ).thenAnswer((invocation) async {
-      (invocation.namedArguments[#onAttempt] as void Function(int))(1);
+      final callback = invocation.namedArguments[#onAttempt];
+      if (callback is void Function(int)) callback(1);
       return const Ok(true);
     });
     usecase = ManageRecoverBullConnectionUsecase(
@@ -87,12 +66,6 @@ void main() {
       connectToKeyServerUsecase: connect,
       ensureRecoverBullTorSessionUsecase: ensure,
       watchTorConnectionUsecase: watch,
-      now: () => now,
-      scheduleTimer: (_, callback) {
-        final timer = _ManualTimer(callback);
-        timers.add(timer);
-        return timer;
-      },
     );
   });
   tearDown(() async {
@@ -101,41 +74,32 @@ void main() {
     await readiness.close();
   });
 
-  test(
-    'a brief readiness dip stays ready and cancels its grace timer',
-    () async {
-      await usecase.execute(initialize: true);
-      await pumpEventQueue();
-      expect(usecase.state.keyServerStatus, KeyServerStatus.online);
-      final ready = usecase.state.torConnection;
-      readiness.add(const tor.TorConnecting(source: tor.TorSource.embedded));
-      expect(usecase.state.torConnection, same(ready));
-      expect(timers.single.isActive, isTrue);
-      now = now.add(const Duration(seconds: 1));
-      readiness.add(tor.TorReady(defaultRoute.route));
-      expect(timers.single.isActive, isFalse);
-      // Even a callback already dispatched at cancellation cannot publish loss.
-      now = now.add(const Duration(seconds: 5));
-      timers.single.callback();
-      await pumpEventQueue();
-      expect(usecase.state.torConnection, isA<tor.TorReady>());
-    },
-  );
+  test('directory refresh keeps the verified route usable', () async {
+    await usecase.execute(initialize: true);
+    await pumpEventQueue();
+    final route = usecase.route;
+    readiness.add(const tor.TorConnecting(source: tor.TorSource.embedded));
+    await pumpEventQueue();
+    expect(usecase.state.torConnection, isA<tor.TorReady>());
+    expect(usecase.route, same(route));
+  });
 
   test(
-    'durable readiness loss appears after the complete five-second grace',
+    'terminal Tor state retires the route without rechecking the server',
     () async {
       await usecase.execute(initialize: true);
       await pumpEventQueue();
-      readiness.add(const tor.TorConnecting(source: tor.TorSource.embedded));
-      now = now.add(const Duration(seconds: 4));
-      timers.single.fire();
-      expect(usecase.state.torConnection, isA<tor.TorReady>());
-      expect(timers, hasLength(2));
-      now = now.add(const Duration(seconds: 1));
-      timers.last.fire();
+      clearInteractions(connect);
+      readiness.add(const tor.TorStopped(tor.TorSource.embedded));
       await pumpEventQueue();
-      expect(usecase.state.torConnection, isA<tor.TorConnecting>());
+      expect(usecase.route, isNull);
+      expect(usecase.state.keyServerStatus, KeyServerStatus.online);
+      verifyNever(
+        () => connect.execute(
+          onAttempt: any(named: 'onAttempt'),
+          route: any(named: 'route'),
+        ),
+      );
     },
   );
 
@@ -197,9 +161,106 @@ void main() {
     },
   );
 
+  test('closing ignores late server replies', () async {
+    final response = Completer<Result<bool, RecoverBullFailure>>();
+    when(
+      () => connect.execute(
+        onAttempt: any(named: 'onAttempt'),
+        route: any(named: 'route'),
+      ),
+    ).thenAnswer((_) => response.future);
+    final updates = <RecoverBullConnection>[];
+    final subscription = usecase.updates.listen(updates.add);
+    await usecase.execute(initialize: true);
+    await pumpEventQueue();
+    readiness.add(const tor.TorConnecting(source: tor.TorSource.embedded));
+    await usecase.close();
+    final count = updates.length;
+    response.complete(const Ok(true));
+    await pumpEventQueue();
+    expect(updates, hasLength(count));
+    expect(usecase.route, isNull);
+    await subscription.cancel();
+  });
+  test('readiness leaves an unrequested flow idle', () async {
+    readiness.add(tor.TorReady(defaultRoute.route));
+    await pumpEventQueue();
+    expect(usecase.route, isNull);
+    verifyNever(
+      () => ensure.execute(restartEmbedded: any(named: 'restartEmbedded')),
+    );
+    verifyNever(
+      () => connect.execute(
+        onAttempt: any(named: 'onAttempt'),
+        route: any(named: 'route'),
+      ),
+    );
+  });
+
   test(
-    'closing cancels readiness grace and ignores late server replies',
+    'new route waits for an in-flight borrower before closing the old one',
     () async {
+      var firstClosed = 0;
+      final first = _route(onClose: () async => firstClosed++);
+      final replacement = _route();
+      when(
+        () => ensure.execute(restartEmbedded: false),
+      ).thenAnswer((_) async => Ok(first));
+      when(
+        () => ensure.execute(restartEmbedded: false, newRoute: true),
+      ).thenAnswer((_) async => Ok(replacement));
+      await usecase.execute(initialize: true);
+      await pumpEventQueue();
+      final release = Completer<void>();
+      final borrowed = usecase.borrowRoute((route) {
+        expect(route, same(first));
+        return release.future;
+      });
+      await usecase.execute(newCircuit: true);
+      await pumpEventQueue();
+      expect(usecase.route, same(replacement));
+      expect(firstClosed, 0);
+      release.complete();
+      await borrowed;
+      expect(firstClosed, 1);
+      verifyNever(() => ensure.execute(restartEmbedded: true));
+      await replacement.closeQuietly();
+    },
+  );
+
+  test('new route is ignored while acquisition is pending', () async {
+    final pending =
+        Completer<Result<RecoverBullTorRoute, RecoverBullFailure>>();
+    when(
+      () => ensure.execute(restartEmbedded: false),
+    ).thenAnswer((_) => pending.future);
+    final acquisition = usecase.execute(initialize: true);
+    await usecase.execute(newCircuit: true);
+    verify(() => ensure.execute(restartEmbedded: false)).called(1);
+    verifyNever(() => ensure.execute(restartEmbedded: false, newRoute: true));
+    pending.complete(Ok(defaultRoute));
+    await acquisition;
+  });
+
+  test(
+    'same-session retry preserves its failure until the response arrives',
+    () async {
+      when(
+        () => connect.execute(
+          onAttempt: any(named: 'onAttempt'),
+          route: any(named: 'route'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(
+          KeyServerUnavailableFailure.because(
+            KeyServerUnreachableCause.onionUnreachable,
+          ),
+        ),
+      );
+      await usecase.execute(initialize: true);
+      await pumpEventQueue();
+      final failure = usecase.state.failure;
+      expect(usecase.state.keyServerFailures, 1);
       final response = Completer<Result<bool, RecoverBullFailure>>();
       when(
         () => connect.execute(
@@ -207,21 +268,13 @@ void main() {
           route: any(named: 'route'),
         ),
       ).thenAnswer((_) => response.future);
-      final updates = <RecoverBullConnection>[];
-      final subscription = usecase.updates.listen(updates.add);
-      await usecase.execute(initialize: true);
-      await pumpEventQueue();
-      readiness.add(const tor.TorConnecting(source: tor.TorSource.embedded));
-      await usecase.close();
-      final count = updates.length;
-      expect(timers.single.isActive, isFalse);
-      now = now.add(const Duration(seconds: 6));
-      timers.single.callback();
+      final retry = usecase.execute();
+      expect(usecase.state.failure, same(failure));
+      expect(usecase.state.keyServerStatus, KeyServerStatus.connecting);
       response.complete(const Ok(true));
-      await pumpEventQueue();
-      expect(updates, hasLength(count));
-      expect(usecase.route, isNull);
-      await subscription.cancel();
+      await retry;
+      expect(usecase.state.failure, isNull);
+      verify(() => ensure.execute(restartEmbedded: false)).called(1);
     },
   );
 }

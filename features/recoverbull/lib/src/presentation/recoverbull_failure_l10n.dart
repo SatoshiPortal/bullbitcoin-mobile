@@ -10,8 +10,24 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     SelectVaultFailure() => context.loc.recoverbullErrorSelectVault,
     PasswordNotSetFailure() => context.loc.recoverbullErrorPasswordNotSet,
     VaultNotSetFailure() => context.loc.recoverbullErrorVaultNotSet,
-    KeyServerConnectionFailure() =>
-      context.loc.recoverbullErrorConnectionFailed,
+    KeyServerConnectionFailure(:final cause) => switch (cause) {
+      KeyServerUnreachableCause.circuitTimeout =>
+        context.loc.recoverbullServerCircuitTimeout,
+      KeyServerUnreachableCause.torNetworkUnreachable =>
+        context.loc.recoverbullServerTorNetworkUnreachable,
+      KeyServerUnreachableCause.onionUnreachable =>
+        context.loc.recoverbullServerOnionUnreachable,
+      KeyServerUnreachableCause.connectionRefused =>
+        context.loc.recoverbullServerConnectionRefused,
+      KeyServerUnreachableCause.proxyGone =>
+        context.loc.recoverbullServerTorSessionGone,
+      KeyServerUnreachableCause.httpError =>
+        context.loc.recoverbullServerHttpError,
+      KeyServerUnreachableCause.badResponse =>
+        context.loc.recoverbullServerBadResponse,
+      KeyServerUnreachableCause.unknown =>
+        context.loc.recoverbullErrorConnectionFailed,
+    },
     KeyServerTorFailure() => context.loc.recoverbullErrorTorConnection,
     KeyServerOnionUnreachableFailure() =>
       context.loc.recoverbullErrorOnionUnavailable,
@@ -102,4 +118,19 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       secondText,
     );
   }
+}
+
+/// A fixed, untranslated technical label for a key-server connection failure, shown under the message so a report names the exact reason.
+extension KeyServerConnectionFailureDetail on KeyServerConnectionFailure {
+  String get technicalLabel => switch (cause) {
+    KeyServerUnreachableCause.circuitTimeout => 'Tor: connect timeout',
+    KeyServerUnreachableCause.torNetworkUnreachable =>
+      'Tor: network unreachable',
+    KeyServerUnreachableCause.onionUnreachable => 'Tor: onion unreachable',
+    KeyServerUnreachableCause.connectionRefused => 'Tor: connection refused',
+    KeyServerUnreachableCause.proxyGone => 'Tor: session closed',
+    KeyServerUnreachableCause.httpError => 'HTTP ${httpStatus ?? '?'}',
+    KeyServerUnreachableCause.badResponse => 'Server: bad response',
+    KeyServerUnreachableCause.unknown => 'Unknown',
+  };
 }

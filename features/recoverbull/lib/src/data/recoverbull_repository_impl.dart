@@ -342,49 +342,61 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     final attempt = route.connectionFailureRecorder.begin();
     try {
       await attempt.run(() => _remoteDatasource.checkConnection(route));
-      log.fine('recoverbull.health.succeeded');
+      log.info('recoverbull.health.succeeded');
       return const Ok(null);
     } on TimeoutException {
-      log.warning('recoverbull.health.timeout');
-      return const Err(KeyServerHealthCheckTimeoutFailure());
+      return const Err(
+        KeyServerUnavailableFailure.because(
+          KeyServerUnreachableCause.circuitTimeout,
+        ),
+      );
     } on recoverbull.KeyServerException catch (error) {
-      final cause = attempt.take();
       if (error.code == 503) {
-        log.warning('recoverbull.health.temporarily_unavailable code=503');
-      } else if (error.code == null && _isKnownCause(cause)) {
-        log.warning(
-          'recoverbull.health.unavailable code=unknown '
-          'cause=${cause!.logValue}',
-        );
-      } else {
-        log.warning(
-          'recoverbull.health.unavailable code=${error.code ?? 'unknown'}',
+        return Err(
+          RecoverBullTemporarilyUnavailableFailure(retryIn: error.retryAfter),
         );
       }
-      return Err(
-        error.code == 503
-            ? RecoverBullTemporarilyUnavailableFailure(
-                retryIn: error.retryAfter,
-              )
-            : error.code == null && _isKnownCause(cause)
-            ? _mapSocksConnectionFailure(cause!)
-            : const KeyServerUnavailableFailure(),
-      );
-    } on Exception catch (error, trace) {
+      final code = error.code;
+      if (code != null) {
+        return Err(
+          KeyServerUnavailableFailure.because(
+            KeyServerUnreachableCause.httpError,
+            httpStatus: code,
+          ),
+        );
+      }
+      return Err(_healthConnectionFailure(attempt.take()));
+    } on Exception catch (error) {
       final cause = attempt.take();
-      if (cause != null) {
-        log.warning(
-          'recoverbull.health.connection_failed cause=${cause.logValue}',
-        );
-        return Err(_mapSocksConnectionFailure(cause));
-      }
-      log.error(
-        'recoverbull.health.unexpected error_type=${error.runtimeType}',
-        trace: trace,
+      if (cause != null) return Err(_healthConnectionFailure(cause));
+      return Err(
+        KeyServerUnavailableFailure.because(
+          error is SocketException
+              ? KeyServerUnreachableCause.proxyGone
+              : error is FormatException
+              ? KeyServerUnreachableCause.badResponse
+              : KeyServerUnreachableCause.unknown,
+        ),
       );
-      return const Err(KeyServerUnavailableFailure());
     }
   }
+
+  KeyServerUnavailableFailure _healthConnectionFailure(
+    SocksConnectionFailureCause? cause,
+  ) => KeyServerUnavailableFailure.because(switch (cause) {
+    SocksConnectionFailureCause.tor =>
+      KeyServerUnreachableCause.torNetworkUnreachable,
+    SocksConnectionFailureCause.onionServiceUnreachable =>
+      KeyServerUnreachableCause.onionUnreachable,
+    SocksConnectionFailureCause.serviceRefused =>
+      KeyServerUnreachableCause.connectionRefused,
+    SocksConnectionFailureCause.ttlExpired =>
+      KeyServerUnreachableCause.circuitTimeout,
+    SocksConnectionFailureCause.proxyGone =>
+      KeyServerUnreachableCause.proxyGone,
+    SocksConnectionFailureCause.unknown ||
+    null => KeyServerUnreachableCause.unknown,
+  });
 
   RecoverBullFailure _mapSocksConnectionFailure(
     SocksConnectionFailureCause cause,
@@ -396,6 +408,10 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       const KeyServerServiceRefusedFailure(),
     SocksConnectionFailureCause.ttlExpired =>
       const KeyServerConnectionBudgetFailure(),
+    SocksConnectionFailureCause.proxyGone =>
+      const KeyServerUnavailableFailure.because(
+        KeyServerUnreachableCause.proxyGone,
+      ),
     SocksConnectionFailureCause.unknown =>
       const KeyServerConnectionUnknownFailure(),
   };

@@ -202,5 +202,59 @@
   "recoverbullMonitoringDisableCancel": "Abbrechen",
   "recoverbullReconnecting": "Verbindung wird wiederhergestellt",
   "recoverbullMonitoringServerUnsupported": "Dieser Server unterstützt keine Überwachung der Versuche. Tresore können weiterhin gesichert und wiederhergestellt werden.",
-  "recoverbullTemporaryStorageNotice": "Einstellungen und die Überprüfung von Sicherungen können derzeit nicht gespeichert werden. Sie können den Server bestätigen und einen Tresor wiederherstellen."
+  "recoverbullTemporaryStorageNotice": "Einstellungen und die Überprüfung von Sicherungen können derzeit nicht gespeichert werden. Sie können den Server bestätigen und einen Tresor wiederherstellen.",
+  "recoverbullGoogleDriveErrorDisplay": "Fehler: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Ihr Tresor wurde erfolgreich importiert",
+  "recoverbullSelectErrorPrefix": "Fehler:",
+  "recoverbullRecoveryBalanceLabel": "Guthaben: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Fehlende Bytes in der Tor-Antwort. Bitte versuchen Sie es erneut. Sollte das Problem weiterhin bestehen, handelt es sich um ein bekanntes Problem bei einigen Geräten mit Tor.",
+  "recoverbullRecoveryErrorWalletMismatch": "Es existiert bereits eine andere Standard-Wallet. Sie können nur eine Standard-Wallet haben.",
+  "recoverbullRecoveryTitle": "RecoverBull Tresor-Wiederherstellung",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Lokale Sicherungschlüssel-Ableitung fehlgeschlagen.",
+  "recoverbullSelectFileNotSelectedError": "Keine Datei ausgewählt.",
+  "recoverbullSelectVaultSelected": "Tresor ausgewählt",
+  "recoverbullSelectEnterBackupKeyManually": "Sicherungsschlüssel manuell eingeben >>",
+  "recoverbullRecoveryErrorVaultCorrupted": "Die ausgewählte Sicherungsdatei ist beschädigt.",
+  "recoverbullSelectDriveBackups": "Laufwerkssicherungen",
+  "recoverbullErrorInvalidVaultFile": "Ungültige Tresordatei",
+  "recoverbullSelectCustomLocationError": "Datei vom benutzerdefinierten Speicherort konnte nicht ausgewählt werden.",
+  "recoverbullSelectNoBackupsFound": "Keine Sicherungen gefunden",
+  "recoverbullVaultRecoveryTitle": "RecoverBull Tresor-Wiederherstellung",
+  "recoverbullErrorServiceUnavailable": "Service nicht verfügbar. Bitte überprüfen Sie Ihre Verbindung.",
+  "recoverbullRecoveryContinueButton": "Fortfahren",
+  "recoverbullSelectDecryptVault": "Tresor entschlüsseln",
+  "recoverbullUnexpectedError": "Unerwarteter Fehler",
+  "recoverbullRecoveryLoadingMessage": "Suche nach Guthaben und Transaktionen…",
+  "recoverbullGoogleDriveErrorGeneric": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Fehler: Vault-Datei erstellt, aber Schlüssel nicht auf dem Server gespeichert.",
+  "recoverbullRecoveryErrorWalletExists": "Diese Wallet existiert bereits.",
+  "recoverbullErrorUnexpected": "Unerwarteter Fehler, siehe Protokolle.",
+  "recoverbullSelectFetchDriveFilesError": "Es konnten nicht alle Laufwerkssicherungen abgerufen werden.",
+  "recoverbullRecoveryTransactionsLabel": "Transaktionen: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "In der Sicherungsdatei fehlt der Ableitungspfad.",
+  "recoverbullErrorRejected": "Von Key-Server abgelehnt.",
+  "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
+  "recoverbullSelectCustomLocation": "Benutzerdefinierter Ort",
+  "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt."
 }

@@ -201,5 +201,59 @@
   "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu. Tämä voi kestää jopa minuutin.",
   "recoverbullMonitoringDisableCancel": "Peruuta",
   "recoverbullMonitoringServerUnsupported": "Tämä palvelin ei tue yritysten seurantaa. Voit edelleen varmuuskopioida ja palauttaa holveja.",
-  "recoverbullTemporaryStorageNotice": "Asetuksia ja varmuuskopioiden tarkistusta ei voi tallentaa nyt. Voit silti hyväksyä palvelimen ja palauttaa holvin."
+  "recoverbullTemporaryStorageNotice": "Asetuksia ja varmuuskopioiden tarkistusta ei voi tallentaa nyt. Voit silti hyväksyä palvelimen ja palauttaa holvin.",
+  "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
+  "recoverbullGoogleDriveErrorDisplay": "Virhe: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
+  "recoverbullErrorUnexpected": "Odottamaton virhe, katso lokit",
+  "recoverbullUnexpectedError": "Odottamaton virhe",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Epäonnistui: Holvitiedosto luotu mutta avainta ei tallennettu palvelimelle",
+  "recoverbullGoogleDriveErrorGeneric": "Tapahtui virhe. Yritä uudelleen.",
+  "recoverbullGoogleDriveErrorSelectFailed": "Holvin valinta Google Drivesta epäonnistui",
+  "recoverbullSelectRecoverWallet": "Palauta lompakko",
+  "recoverbullSelectVaultSelected": "Holvi valittu",
+  "recoverbullSelectCustomLocation": "Mukautettu sijainti",
+  "recoverbullSelectDriveBackups": "Drive-varmuuskopiot",
+  "recoverbullSelectVaultImportSuccess": "Holvisi tuotiin onnistuneesti",
+  "recoverbullSelectEnterBackupKeyManually": "Syötä varmuuskopioavain manuaalisesti >>",
+  "recoverbullSelectDecryptVault": "Pura holvi",
+  "recoverbullSelectNoBackupsFound": "Varmuuskopioita ei löytynyt",
+  "recoverbullSelectErrorPrefix": "Virhe:",
+  "recoverbullSelectFetchDriveFilesError": "Kaikkien Drive-varmuuskopioiden haku epäonnistui",
+  "recoverbullSelectFileNotSelectedError": "Tiedostoa ei valittu",
+  "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
+  "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
+  "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
+  "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "Jatka",
+  "recoverbullRecoveryErrorWalletExists": "Tämä lompakko on jo olemassa.",
+  "recoverbullRecoveryErrorWalletMismatch": "Toinen oletuslompakko on jo olemassa. Voit asettaa vain yhden oletuslompakon.",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Paikallisen varmuuskopioavaimen johtaminen epäonnistui.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Valittu varmuuskopiotiedosto on vioittunut.",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Varmuuskopiotiedostosta puuttuu derivointipolku.",
+  "recoverbullErrorRejected": "Avainpalvelin hylkäsi pyynnön",
+  "recoverbullErrorServiceUnavailable": "Palvelu ei ole käytettävissä. Tarkista yhteytesi.",
+  "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto."
 }

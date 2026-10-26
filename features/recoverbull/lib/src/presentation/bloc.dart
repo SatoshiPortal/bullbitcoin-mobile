@@ -61,6 +61,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           _connection.execute(initialize: true, restart: event.restart),
       transformer: droppable(),
     );
+    on<OnNewCircuit>(
+      (event, emit) => _connection.execute(newCircuit: true),
+      transformer: droppable(),
+    );
     on<OnClearError>(_onClearError);
     on<OnVaultKeyHidden>((event, emit) {
       emit(state.copyWith(vaultKey: null, vaultPassword: null));
@@ -73,6 +77,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         state.copyWith(
           torConnection: next.torConnection,
           keyServerStatus: next.keyServerStatus,
+          keyServerFailures: next.keyServerFailures,
           keyServerAttempt: next.keyServerAttempt,
           keyServerAttempts: next.keyServerAttempts,
           failure: failureChanged ? next.failure : state.failure,
@@ -114,11 +119,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           emit(state.copyWith(vaultPassword: event.password));
         }
       default:
-        if (state.vault == null) {
+        final vault = state.vault;
+        if (vault == null) {
           emit(state.copyWith(failure: const VaultNotSetFailure()));
           return;
         }
-        await _onFetchVaultKey(state.vault!, event.password, emit);
+        await _onFetchVaultKey(vault, event.password, emit);
     }
   }
 
@@ -189,7 +195,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     final result = await _secureVault.execute(
       provider: provider,
       password: password,
-      route: _connection.route,
+      routeOwner: _connection,
       onKeyStored: () {
         if (!_cancelled && !emit.isDone) {
           emit(state.copyWith(vaultPassword: null));
@@ -228,13 +234,20 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     String? password,
     String? vaultKey,
   }) async {
-    emit(state.copyWith(isLoading: true, vaultKey: null, failure: null));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        isFlowFinished: false,
+        vaultKey: null,
+        failure: null,
+      ),
+    );
     final result = await _acceptVault.execute(
       flow: state.flow,
       vault: state.vault,
       password: password,
       vaultKey: vaultKey,
-      route: _connection.route,
+      routeOwner: _connection,
       cancelled: () => _cancelled,
     );
     if (_cancelled || emit.isDone) return;

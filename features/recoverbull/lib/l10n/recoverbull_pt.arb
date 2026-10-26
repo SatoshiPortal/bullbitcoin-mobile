@@ -201,5 +201,59 @@
   "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor. Isto pode demorar até um minuto.",
   "recoverbullMonitoringDisableCancel": "Cancelar",
   "recoverbullMonitoringServerUnsupported": "Este servidor não suporta o monitoramento de tentativas. Você ainda pode fazer backup e recuperar cofres.",
-  "recoverbullTemporaryStorageNotice": "As configurações e a verificação dos backups não podem ser salvas agora. Você ainda pode aprovar o servidor e recuperar um cofre."
+  "recoverbullTemporaryStorageNotice": "As configurações e a verificação dos backups não podem ser salvas agora. Você ainda pode aprovar o servidor e recuperar um cofre.",
+  "recoverbullGoogleDriveErrorDisplay": "Erro: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Seu cofre foi importado com sucesso",
+  "recoverbullSelectErrorPrefix": "Erro:",
+  "recoverbullRecoveryBalanceLabel": "Equilíbrio: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Perdendo bytes da resposta Tor. Retira mas se o problema persistir, é um problema conhecido para alguns dispositivos com Tor.",
+  "recoverbullRecoveryErrorWalletMismatch": "Uma carteira padrão diferente já existe. Você só pode ter uma carteira padrão.",
+  "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "A derivação da chave de backup local falhou.",
+  "recoverbullSelectFileNotSelectedError": "Arquivo não selecionado",
+  "recoverbullSelectVaultSelected": "Vault selecionado",
+  "recoverbullSelectEnterBackupKeyManually": "Digite a tecla de backup manualmente >>",
+  "recoverbullRecoveryErrorVaultCorrupted": "O arquivo de backup selecionado está corrompido.",
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "recoverbullErrorInvalidVaultFile": "Arquivo de cofre inválido.",
+  "recoverbullSelectCustomLocationError": "Falhado para selecionar o arquivo do local personalizado",
+  "recoverbullSelectNoBackupsFound": "Nenhum backup encontrado",
+  "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
+  "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
+  "recoverbullRecoveryContinueButton": "Continue",
+  "recoverbullSelectDecryptVault": "Descriptografar cofre",
+  "recoverbullUnexpectedError": "Erro inesperado",
+  "recoverbullRecoveryLoadingMessage": "Procurando equilíbrio e transações..",
+  "recoverbullGoogleDriveErrorGeneric": "Um erro ocorreu. Por favor, tente novamente.",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Falhado: arquivo Vault criado mas chave não armazenado no servidor",
+  "recoverbullRecoveryErrorWalletExists": "Esta carteira já existe.",
+  "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
+  "recoverbullSelectFetchDriveFilesError": "Falhado para buscar todos os backups de unidade",
+  "recoverbullRecoveryTransactionsLabel": "Transações: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Arquivo de backup faltando caminho de derivação.",
+  "recoverbullErrorRejected": "Rejeitado pelo servidor chave",
+  "recoverbullSelectRecoverWallet": "Recuperar Carteira",
+  "recoverbullSelectCustomLocation": "Localização personalizada",
+  "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive"
 }

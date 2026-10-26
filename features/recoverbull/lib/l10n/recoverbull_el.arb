@@ -435,5 +435,155 @@
   "recoverbullConnectingTor": "Συνδέοντας με τον Key Server πάνω από το Tor. Αυτό μπορεί να διαρκέσει έως και ένα λεπτό.",
   "recoverbullMonitoringDisableCancel": "Ακύρωση",
   "recoverbullMonitoringServerUnsupported": "Αυτός ο διακομιστής δεν υποστηρίζει την παρακολούθηση προσπαθειών. Μπορείτε ακόμα να δημιουργείτε αντίγραφα ασφαλείας και να ανακτάτε θησαυροφυλάκια.",
-  "recoverbullTemporaryStorageNotice": "Οι ρυθμίσεις και η επαλήθευση αντιγράφων ασφαλείας δεν μπορούν να αποθηκευτούν τώρα. Μπορείτε να εγκρίνετε τον διακομιστή και να ανακτήσετε ένα θησαυροφυλάκιο."
+  "recoverbullTemporaryStorageNotice": "Οι ρυθμίσεις και η επαλήθευση αντιγράφων ασφαλείας δεν μπορούν να αποθηκευτούν τώρα. Μπορείτε να εγκρίνετε τον διακομιστή και να ανακτήσετε ένα θησαυροφυλάκιο.",
+  "recoverbullRecoveryBalanceLabel": "Balance: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Υπάρχει ήδη ένα διαφορετικό προεπιλεγμένο πορτοφόλι. Μπορείτε να έχετε μόνο ένα προεπιλεγμένο πορτοφόλι.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Η τοπική εφεδρική βασική προέλευση απέτυχε.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "Αρχείο που δεν έχει επιλεγεί",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "Το επιλεγμένο αρχείο ασφαλείας διαφθείρεται.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullErrorInvalidVaultFile": "Ακυρωμένο αρχείο.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullSelectCustomLocationError": "Επιθυμήθηκε να επιλέξει αρχείο από την προσαρμοσμένη τοποθεσία",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullErrorServiceUnavailable": "Η υπηρεσία δεν είναι διαθέσιμη. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullRecoveryContinueButton": "Συνεχίστε να συνεχίζετε",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullRecoveryLoadingMessage": "Αναζητώντας ισορροπία και συναλλαγές..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Αυτό το πορτοφόλι υπάρχει ήδη.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullRecoveryTransactionsLabel": "Συναλλαγές: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Backup αρχείο που λείπει μονοπάτι στέρησης.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Απορρίπτεται από τον Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Το θύλακα σας εισήχθη με επιτυχία",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "Σφάλμα:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullErrorMissingBytes": "Αποσπώντας bytes από την απάντηση Tor. Προσπαθήστε αλλά αν το θέμα συνεχιστεί, είναι ένα γνωστό θέμα για ορισμένες συσκευές με Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullSelectVaultSelected": "Vault Selected",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Εισάγετε το Backup key χειροκίνητα >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullSelectNoBackupsFound": "Δεν βρέθηκαν αντίγραφα ασφαλείας",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullVaultRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullSelectDecryptVault": "Decrypt Monkey",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "Ανεπιθύμητο λάθος",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Ένα λάθος συνέβη. Παρακαλώ δοκιμάστε ξανά.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Failed: Το αρχείο Vault δημιουργήθηκε αλλά το κλειδί δεν αποθηκεύεται στο διακομιστή",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullErrorUnexpected": "Ανεπιθύμητο λάθος, δείτε αρχεία καταγραφής",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Επιθυμήθηκε να σπάσει όλα τα αντίγραφα ασφαλείας οδήγησης",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectRecoverWallet": "Ανακαλύψτε το Wallet",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "Προσαρμοσμένη τοποθεσία",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Επιθυμήθηκε να επιλέξει το θύλακα από το Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  }
 }

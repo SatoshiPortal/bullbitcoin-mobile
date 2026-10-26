@@ -435,5 +435,155 @@
   "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor. To může trvat až minutu.",
   "recoverbullMonitoringDisableCancel": "Zrušit",
   "recoverbullMonitoringServerUnsupported": "Tento server nepodporuje sledování pokusů. Trezory můžete nadále zálohovat a obnovovat.",
-  "recoverbullTemporaryStorageNotice": "Nastavení a ověření záloh nyní nelze uložit. Stále můžete schválit server a obnovit trezor."
+  "recoverbullTemporaryStorageNotice": "Nastavení a ověření záloh nyní nelze uložit. Stále můžete schválit server a obnovit trezor.",
+  "recoverbullGoogleDriveErrorDisplay": "Chyba: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "Vaše klenba byla úspěšně dovážena",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "Chyba:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullRecoveryBalanceLabel": "Zůstatek: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Chybí bajtů z Tor odpovědi. Retry, ale pokud problém přetrvává, je známý problém pro některé zařízení s Torem.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Existuje celá výchozí peněženka. Můžete mít pouze jednu výchozí peněženku.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "Obnovení obnovit obnovení klenby",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Místní záložní klíč derivation selhal.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "Soubor není vybrán",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectVaultSelected": "Vault Vybrané",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Zadejte klávesu Backup ručně >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "Vybrané záložní soubor je poškozen.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullSelectDriveBackups": "Zálohování disků",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorInvalidVaultFile": "Neplatný klenba soubor.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullSelectCustomLocationError": "Vypnuto vybrat soubor z vlastní polohy",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullSelectNoBackupsFound": "Žádné zálohy nalezeno",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullVaultRecoveryTitle": "Obnovení obnovit obnovení klenby",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorServiceUnavailable": "Služba není k dispozici. Prosím zkontrolujte, zda je vaše připojení.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullSelectDecryptVault": "Decrypt klenba",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "Neočekávaná chyba",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryLoadingMessage": "Hledáte rovnováhu a transakce..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Došlo k chybě. Prosím, zkuste to znovu.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Vypnuto: Vault soubor vytvořený, ale klíč není uložen v serveru",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Tato peněženka již existuje.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullErrorUnexpected": "Neočekávaná chyba, viz protokoly",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Vypnuto načíst všechny zálohy",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transakce: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Záložní soubor chybějící derivační cestu.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Omlčený Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSelectRecoverWallet": "Obnovit peněženku",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "Vlastní poloha",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Zvolil vybrat klenbu z Disku Google",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullRecoveryContinueButton": "Pokračovat",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  }
 }

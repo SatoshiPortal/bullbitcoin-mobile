@@ -118,6 +118,52 @@ void main() {
     },
   );
 
+  test('repeating a completed test publishes a fresh completion', () async {
+    final vault = fixtureVault();
+    final decrypted = DecryptedVault(mnemonic: const ['abandon']);
+    final secondFetch = Completer<Result<String, core.RecoverBullFailure>>();
+    var fetches = 0;
+    when(() => fetchKey.execute(vault: vault, password: 'pw')).thenAnswer((_) {
+      fetches++;
+      return fetches == 1
+          ? Future.value(const Ok('vault-key'))
+          : secondFetch.future;
+    });
+    when(
+      () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
+    ).thenReturn(Ok(decrypted));
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.testVault,
+      preSelectedVault: vault,
+    );
+    addTearDown(bloc.close);
+    var completionTransitions = 0;
+    var previousCompleted = false;
+    final subscription = bloc.stream.listen((state) {
+      if (state.isFlowFinished && !previousCompleted) completionTransitions++;
+      previousCompleted = state.isFlowFinished;
+    });
+    addTearDown(subscription.cancel);
+
+    bloc.add(const OnVaultPasswordSet(password: 'pw'));
+    await pumpEventQueue();
+    expect(bloc.state.isFlowFinished, isTrue);
+    expect(completionTransitions, 1);
+
+    // System Back can return from the success page to the same form and bloc.
+    bloc.add(const OnVaultPasswordSet(password: 'pw'));
+    await pumpEventQueue();
+    expect(bloc.state.isLoading, isTrue);
+    final completedDuringRetry = bloc.state.isFlowFinished;
+    secondFetch.complete(const Ok('vault-key'));
+    await pumpEventQueue();
+
+    expect(completedDuringRetry, isFalse);
+    expect(bloc.state.isFlowFinished, isTrue);
+    expect(completionTransitions, 2);
+    verify(() => lifecycle.markVerified(RecoverBullNetwork.mainnet)).called(2);
+  });
+
   test('drops concurrent decryption events', () async {
     final verified = Completer<void>();
     final vault = fixtureVault();

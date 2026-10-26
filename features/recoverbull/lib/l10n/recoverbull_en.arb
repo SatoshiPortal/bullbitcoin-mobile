@@ -570,5 +570,195 @@
   "recoverbullTemporaryStorageNotice": "Settings and backup verification cannot be saved right now. You can still approve the server and recover a vault.",
   "@recoverbullTemporaryStorageNotice": {
     "description": "Explains that temporary-session settings and backup verification cannot be persisted while vault recovery remains available"
+  },
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault recovery",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorMissingBytes": "Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorUnexpected": "Unexpected error, see logs",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Unexpected error",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Failed: Vault file created but key not stored in server",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "An error occurred. Please try again.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectRecoverWallet": "Recover Wallet",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectVaultSelected": "Vault Selected",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectCustomLocation": "Custom Location",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullSelectVaultImportSuccess": "Your vault was successfully imported",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Enter Backup key manually >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullSelectDecryptVault": "Decrypt vault",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullSelectNoBackupsFound": "No backups found",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectErrorPrefix": "Error:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Failed to fetch all drive backups",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "File not selected",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectCustomLocationError": "Failed to select file from custom location",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault recovery",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryLoadingMessage": "Looking for balance and transactions…",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullRecoveryBalanceLabel": "Balance: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transactions: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "Continue",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullRecoveryErrorWalletExists": "This wallet already exists.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "A different default wallet already exists. You can only have one default wallet.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Local backup key derivation failed.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "Selected backup file is corrupted.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Backup file missing derivation path.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Rejected by the Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service unavailable. Please check your connection.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullServerCircuitTimeout": "Tor did not reach the backup server in time.",
+  "@recoverbullServerCircuitTimeout": {
+    "description": "Key server connection failed: Tor did not reach the onion service within the time budget"
+  },
+  "recoverbullServerTorNetworkUnreachable": "Tor could not build a path through its network.",
+  "@recoverbullServerTorNetworkUnreachable": {
+    "description": "Key server connection failed: Tor could not build a circuit"
+  },
+  "recoverbullServerOnionUnreachable": "Tor could not find the backup server. It may be offline, or the path to it failed.",
+  "@recoverbullServerOnionUnreachable": {
+    "description": "Key server connection failed: the onion service descriptor or rendezvous failed"
+  },
+  "recoverbullServerConnectionRefused": "The backup server closed the connection.",
+  "@recoverbullServerConnectionRefused": {
+    "description": "Key server connection failed: the server refused or closed the stream"
+  },
+  "recoverbullServerTorSessionGone": "The Tor connection stopped responding.",
+  "@recoverbullServerTorSessionGone": {
+    "description": "Key server connection failed: the local Tor session stopped answering"
+  },
+  "recoverbullServerHttpError": "The backup server answered with an error.",
+  "@recoverbullServerHttpError": {
+    "description": "Key server connection failed: the server returned an HTTP error"
+  },
+  "recoverbullServerBadResponse": "The backup server answered, but the exchange failed.",
+  "@recoverbullServerBadResponse": {
+    "description": "Key server connection failed: the server was reached but the exchange or its answer was invalid"
+  },
+  "recoverbullNewRoute": "New route",
+  "@recoverbullNewRoute": {
+    "description": "Button on the RecoverBull connecting screen that replaces the Tor session so the next attempt takes a new route through Tor"
+  },
+  "recoverbullTorInitializing": "Initializing",
+  "@recoverbullTorInitializing": {
+    "description": "Status of the Tor network row on the RecoverBull connecting screen while Tor bootstraps"
+  },
+  "recoverbullTorReady": "Ready",
+  "@recoverbullTorReady": {
+    "description": "Status of the Tor network row once Tor is bootstrapped; no connection to the server exists yet"
   }
 }

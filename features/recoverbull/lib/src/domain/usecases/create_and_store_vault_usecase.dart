@@ -10,6 +10,7 @@ import '../entities/vault_provider.dart';
 import '../recoverbull_failure.dart';
 import '../recoverbull_flow_failure.dart';
 import '../recoverbull_tor_route.dart';
+import '../recoverbull_route_port.dart';
 import 'check_server_connection_usecase.dart';
 import 'create_encrypted_vault_usecase.dart';
 import 'save_vault_to_provider_usecase.dart';
@@ -48,6 +49,7 @@ final class CreateAndStoreVaultUsecase {
     required VaultProvider provider,
     String? password,
     RecoverBullTorRoute? route,
+    RecoverBullRoutePort? routeOwner,
     void Function()? onKeyStored,
   }) async {
     if (provider == VaultProvider.iCloud) {
@@ -72,22 +74,30 @@ final class CreateAndStoreVaultUsecase {
           case Ok(value: final v):
             value = v;
         }
-        final connection = await check.execute();
-        if (_closed) return const Err(VaultCreationFailure());
-        switch (connection) {
-          case Ok(value: true):
-            break;
-          case Ok():
-            return const Err(KeyServerConnectionFailure());
-          case Err(:final failure):
-            return Err(storeVaultKeyFailure(failure));
+        Future<Result<Null, RecoverBullFailure>> store(
+          RecoverBullTorRoute? selected,
+        ) async {
+          final checked = await check.execute(route: selected);
+          if (_closed) return const Err(VaultCreationFailure());
+          switch (checked) {
+            case Ok(value: true):
+              break;
+            case Ok():
+              return const Err(KeyServerUnavailableFailure());
+            case Err(:final failure):
+              return Err(failure);
+          }
+          return storeKey.execute(
+            password: password,
+            vault: value.vault,
+            vaultKey: value.vaultKey,
+            route: selected,
+          );
         }
-        final stored = await storeKey.execute(
-          password: password,
-          vault: value.vault,
-          vaultKey: value.vaultKey,
-          route: route,
-        );
+
+        final stored = routeOwner == null
+            ? await store(route)
+            : await routeOwner.borrowRoute(store);
         if (stored case Err(:final failure)) {
           return Err(storeVaultKeyFailure(failure));
         }

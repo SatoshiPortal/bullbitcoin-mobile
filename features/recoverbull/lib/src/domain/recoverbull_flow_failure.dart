@@ -21,7 +21,8 @@ RecoverBullFailure fetchVaultKeyFailure(RecoverBullFailure failure) =>
       ),
       RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
         VaultServiceBusyFailure(retryIn: retryIn),
-      KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
+      KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+        KeyServerConnectionFailure(cause: cause, httpStatus: httpStatus),
       KeyServerTorFailure() => const KeyServerTorFailure(),
       KeyServerOnionUnreachableFailure() =>
         const KeyServerOnionUnreachableFailure(),
@@ -53,7 +54,8 @@ RecoverBullFailure storeVaultKeyFailure(RecoverBullFailure failure) =>
       ),
       RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
         VaultServiceBusyFailure(retryIn: retryIn),
-      KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
+      KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+        KeyServerConnectionFailure(cause: cause, httpStatus: httpStatus),
       ExternalTorProxyUnavailableFailure() =>
         const ExternalTorProxyUnavailableFailure(),
       _ => const VaultCreationFailure(),
@@ -64,4 +66,15 @@ RecoverBullFailure torConnectionFailure(RecoverBullFailure failure) =>
       ExternalTorProxyUnavailableFailure() =>
         const ExternalTorProxyUnavailableFailure(),
       _ => const TorNotStartedFailure(),
+    };
+
+/// Reachability retains the cause instead of treating it as a vault fetch error.
+RecoverBullFailure serverCheckFailure(RecoverBullFailure failure) =>
+    switch (failure) {
+      KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+        KeyServerConnectionFailure(cause: cause, httpStatus: httpStatus),
+      KeyServerHealthCheckTimeoutFailure() => const KeyServerConnectionFailure(
+        cause: KeyServerUnreachableCause.circuitTimeout,
+      ),
+      _ => fetchVaultKeyFailure(failure),
     };

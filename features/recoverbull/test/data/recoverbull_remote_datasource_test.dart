@@ -103,6 +103,100 @@ void main() {
     });
   });
 
+  test('a timing callback failure cannot reject a completed store', () async {
+    final settings = _Settings();
+    when(
+      () => settings.fetch(),
+    ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+    var stores = 0;
+    final outcomes = <String>[];
+    final datasource = RecoverBullRemoteDatasource(
+      log: const TestLogSink(),
+      recoverbullSettingsDatasource: settings,
+      storeRequest: (_, _, _, _, _, _) async {
+        stores++;
+      },
+      timing: (_, _, outcome) {
+        outcomes.add(outcome);
+        throw StateError('diagnostic callback failed');
+      },
+    );
+    await datasource.store([1], [2], [3], [4], route: routeFor(_Client()));
+    expect(stores, 1);
+    expect(outcomes, ['success']);
+  });
+
+  test(
+    'a timing callback failure cannot replace the request failure',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final requestFailure = HttpException('request failed');
+      final outcomes = <String>[];
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        infoRequest: (_, _) async => throw requestFailure,
+        timing: (_, _, outcome) {
+          outcomes.add(outcome);
+          throw StateError('diagnostic callback failed');
+        },
+      );
+      await expectLater(
+        datasource.checkConnection(routeFor(_Client())),
+        throwsA(same(requestFailure)),
+      );
+      expect(outcomes, ['failure']);
+    },
+  );
+
+  test(
+    'a timing callback failure cannot replace the request timeout',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final outcomes = <String>[];
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        infoRequest: (_, _) => Completer<void>().future,
+        healthCheckTimeout: Duration.zero,
+        timing: (_, _, outcome) {
+          outcomes.add(outcome);
+          throw StateError('diagnostic callback failed');
+        },
+      );
+      await expectLater(
+        datasource.checkConnection(routeFor(_Client())),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(outcomes, ['timeout']);
+    },
+  );
+
+  test(
+    'a timing callback failure cannot replace invalid configuration',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('https://example.com/invalid'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        timing: (_, _, _) => throw StateError('diagnostic callback failed'),
+      );
+      await expectLater(
+        datasource.attempts(route: routeFor(_Client())),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
   test('info and fetch reuse the route client without closing it', () async {
     final settings = _Settings();
     final client = _Client();
@@ -235,9 +329,9 @@ void main() {
       final datasource = RecoverBullRemoteDatasource(
         log: const TestLogSink(),
         recoverbullSettingsDatasource: settings,
-        // Tor gives up on an onion connect after 60 seconds; an answer that
-        // lands just inside that window must not be cut by the app.
-        infoRequest: (_, _) => Future.delayed(const Duration(seconds: 61)),
+        // Leave Tor's shared budget time to report its classified failure.
+        infoRequest: (_, _) =>
+            Future.delayed(torConnectBudget + const Duration(seconds: 1)),
       );
       when(
         () => settings.fetch(),
@@ -255,9 +349,16 @@ void main() {
       var completed = false;
       datasource
           .checkConnection(route)
-          .then((_) => completed = true, onError: (Object e) => error = e);
+          .then<void>(
+            (_) {
+              completed = true;
+            },
+            onError: (Object e) {
+              error = e;
+            },
+          );
 
-      async.elapse(const Duration(seconds: 62));
+      async.elapse(torConnectDeadline + const Duration(seconds: 1));
 
       expect(error, isNull);
       expect(completed, isTrue);

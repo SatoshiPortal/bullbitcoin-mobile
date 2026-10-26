@@ -25,7 +25,12 @@ final class VaultNotSetFailure extends RecoverBullFailure {
 }
 
 final class KeyServerConnectionFailure extends RecoverBullFailure {
-  const KeyServerConnectionFailure();
+  final KeyServerUnreachableCause cause;
+  final int? httpStatus;
+  const KeyServerConnectionFailure({
+    this.cause = KeyServerUnreachableCause.unknown,
+    this.httpStatus,
+  });
 }
 
 final class KeyServerTorFailure extends RecoverBullFailure {
@@ -136,8 +141,47 @@ final class KeyServerRejectedFailure extends RecoverBullFailure {
   const KeyServerRejectedFailure([super.logMessage]);
 }
 
+enum KeyServerUnreachableCause {
+  /// Tor did not reach the onion service within the connect budget, or the whole attempt ran out of time.
+  circuitTimeout,
+
+  /// Tor could not build a circuit.
+  torNetworkUnreachable,
+
+  /// The onion service could not be reached: the descriptor fetch or the rendezvous failed.
+  onionUnreachable,
+
+  /// The server refused or closed the stream.
+  connectionRefused,
+
+  /// The local Tor session stopped answering.
+  proxyGone,
+
+  /// The server answered with an HTTP error status.
+  httpError,
+
+  /// The server was reached but the exchange failed or its answer was invalid.
+  badResponse,
+
+  /// No specific reason could be determined.
+  unknown,
+}
+
 final class KeyServerUnavailableFailure extends RecoverBullFailure {
-  const KeyServerUnavailableFailure([super.logMessage]);
+  final KeyServerUnreachableCause cause;
+
+  /// The HTTP status when [cause] is [KeyServerUnreachableCause.httpError].
+  final int? httpStatus;
+
+  const KeyServerUnavailableFailure([super.logMessage])
+    : cause = KeyServerUnreachableCause.unknown,
+      httpStatus = null;
+
+  const KeyServerUnavailableFailure.because(
+    this.cause, {
+    this.httpStatus,
+    String? logMessage,
+  }) : super(logMessage);
 }
 
 /// Internal health probe deadline; callers map it to the normal connection UI.

@@ -241,5 +241,69 @@
   "recoverbullErrorConnectionBudget": "Le serveur de clés a mis trop de temps à répondre. Veuillez réessayer.",
   "recoverbullErrorConnectionUnknown": "Le serveur de clés n’a pas pu être joint. Veuillez réessayer.",
   "recoverbullMonitoringServerUnsupported": "Ce serveur ne prend pas en charge le suivi des tentatives. Vous pouvez toujours sauvegarder et restaurer des coffres.",
-  "recoverbullTemporaryStorageNotice": "Les réglages et la vérification des sauvegardes ne peuvent pas être enregistrés pour le moment. Vous pouvez toujours approuver le serveur et restaurer un coffre."
+  "recoverbullTemporaryStorageNotice": "Les réglages et la vérification des sauvegardes ne peuvent pas être enregistrés pour le moment. Vous pouvez toujours approuver le serveur et restaurer un coffre.",
+  "recoverbullVaultRecoveryTitle": "Récupération du coffre-fort Recoverbull",
+  "recoverbullGoogleDriveErrorDisplay": "Erreur : {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "Octets manquants dans la réponse Tor. Réessayez, mais si le problème persiste, il s'agit d'un problème connu pour certains appareils avec Tor.",
+  "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
+  "recoverbullUnexpectedError": "Erreur inattendue",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
+  "recoverbullGoogleDriveErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "recoverbullGoogleDriveErrorSelectFailed": "Échec de la sélection du coffre-fort de Google Drive",
+  "recoverbullSelectRecoverWallet": "Récupérer le portefeuille",
+  "recoverbullSelectVaultSelected": "Coffre-fort sélectionné",
+  "recoverbullSelectCustomLocation": "Emplacement personnalisé",
+  "recoverbullSelectDriveBackups": "Sauvegardes Drive",
+  "recoverbullSelectVaultImportSuccess": "Votre coffre-fort a été importé avec succès",
+  "recoverbullSelectEnterBackupKeyManually": "Entrer la clé de sauvegarde manuellement >>",
+  "recoverbullSelectDecryptVault": "Déchiffrer le coffre-fort",
+  "recoverbullSelectNoBackupsFound": "Aucune sauvegarde trouvée",
+  "recoverbullSelectErrorPrefix": "Erreur :",
+  "recoverbullSelectFetchDriveFilesError": "Échec de la récupération de toutes les sauvegardes Drive",
+  "recoverbullSelectFileNotSelectedError": "Fichier non sélectionné",
+  "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
+  "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",
+  "recoverbullRecoveryLoadingMessage": "Recherche du solde et des transactions…",
+  "recoverbullRecoveryBalanceLabel": "Solde : {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transactions : {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "Continuer",
+  "recoverbullRecoveryErrorWalletExists": "Ce portefeuille existe déjà.",
+  "recoverbullRecoveryErrorWalletMismatch": "Un portefeuille par défaut différent existe déjà. Vous ne pouvez avoir qu'un seul portefeuille par défaut.",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Échec de la dérivation de la clé de sauvegarde locale.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Le fichier de sauvegarde sélectionné est corrompu.",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Chemin de dérivation manquant dans le fichier de sauvegarde.",
+  "recoverbullErrorRejected": "Rejeté par le serveur de clés",
+  "recoverbullErrorServiceUnavailable": "Service indisponible. Veuillez vérifier votre connexion.",
+  "recoverbullErrorInvalidVaultFile": "Fichier de coffre invalide.",
+  "recoverbullServerCircuitTimeout": "Tor n'a pas atteint le serveur de sauvegarde à temps.",
+  "recoverbullServerTorNetworkUnreachable": "Tor n'a pas pu établir de chemin à travers son réseau.",
+  "recoverbullServerOnionUnreachable": "Tor n'a pas trouvé le serveur de sauvegarde. Il est peut-être hors ligne, ou le chemin vers lui a échoué.",
+  "recoverbullServerConnectionRefused": "Le serveur de sauvegarde a fermé la connexion.",
+  "recoverbullServerTorSessionGone": "La connexion Tor ne répond plus.",
+  "recoverbullServerHttpError": "Le serveur de sauvegarde a répondu par une erreur.",
+  "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
+  "recoverbullNewRoute": "Autre route",
+  "recoverbullTorInitializing": "Initialisation",
+  "recoverbullTorReady": "Prêt"
 }

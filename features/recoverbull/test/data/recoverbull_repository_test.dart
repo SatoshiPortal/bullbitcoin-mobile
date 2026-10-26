@@ -89,17 +89,20 @@ void main() {
       repository.fetchVaultKey('00', 'password', '00', route);
 
   test(
-    'maps stable connection causes to distinct safe failures and log fields',
+    'maps stable health causes without duplicating the attempt support log',
     () async {
-      final causes = <SocksConnectionFailureCause, Type>{
-        SocksConnectionFailureCause.tor: KeyServerTorFailure,
+      final causes = <SocksConnectionFailureCause, KeyServerUnreachableCause>{
+        SocksConnectionFailureCause.tor:
+            KeyServerUnreachableCause.torNetworkUnreachable,
         SocksConnectionFailureCause.onionServiceUnreachable:
-            KeyServerOnionUnreachableFailure,
+            KeyServerUnreachableCause.onionUnreachable,
         SocksConnectionFailureCause.serviceRefused:
-            KeyServerServiceRefusedFailure,
+            KeyServerUnreachableCause.connectionRefused,
         SocksConnectionFailureCause.ttlExpired:
-            KeyServerConnectionBudgetFailure,
-        SocksConnectionFailureCause.unknown: KeyServerConnectionUnknownFailure,
+            KeyServerUnreachableCause.circuitTimeout,
+        SocksConnectionFailureCause.proxyGone:
+            KeyServerUnreachableCause.proxyGone,
+        SocksConnectionFailureCause.unknown: KeyServerUnreachableCause.unknown,
       };
 
       for (final entry in causes.entries) {
@@ -118,19 +121,14 @@ void main() {
 
         expect(result, isA<Err<Null, RecoverBullFailure>>());
         expect(
-          (result as Err<Null, RecoverBullFailure>).failure.runtimeType,
-          entry.value,
+          (result as Err<Null, RecoverBullFailure>).failure,
+          isA<KeyServerUnavailableFailure>().having(
+            (failure) => failure.cause,
+            'cause',
+            entry.value,
+          ),
         );
-        final message = logSink.entries.single.message;
-        expect(message, contains('cause='));
-        expect(message, isNot(contains('127.0.0.1')));
-        expect(message, isNot(contains('.onion')));
-        expect(message, isNot(contains('endpoint')));
-        expect(message, isNot(contains('payload')));
-        expect(
-          message,
-          'recoverbull.health.connection_failed cause=${entry.key.logValue}',
-        );
+        expect(logSink.entries, isEmpty);
       }
     },
   );
@@ -201,7 +199,11 @@ void main() {
       expect(result, isA<Err<Null, RecoverBullFailure>>());
       expect(
         (result as Err<Null, RecoverBullFailure>).failure,
-        isA<KeyServerOnionUnreachableFailure>(),
+        isA<KeyServerUnavailableFailure>().having(
+          (failure) => failure.cause,
+          'cause',
+          KeyServerUnreachableCause.onionUnreachable,
+        ),
       );
     },
   );
@@ -1025,7 +1027,7 @@ void main() {
       expect(failure.retryIn, const Duration(seconds: 30));
     });
 
-    test('maps timeout to health check timeout', () async {
+    test('maps the probe deadline to the circuit timeout cause', () async {
       when(
         () => remote.checkConnection(any()),
       ).thenThrow(TimeoutException('health check timed out'));
@@ -1034,9 +1036,13 @@ void main() {
 
       expect(
         (result as Err<Null, RecoverBullFailure>).failure,
-        isA<KeyServerHealthCheckTimeoutFailure>(),
+        isA<KeyServerUnavailableFailure>().having(
+          (failure) => failure.cause,
+          'cause',
+          KeyServerUnreachableCause.circuitTimeout,
+        ),
       );
-      expect(logSink.entries.single.message, 'recoverbull.health.timeout');
+      expect(logSink.entries, isEmpty);
     });
 
     test('maps opaque health failure using the fresh SOCKS cause', () async {
@@ -1051,13 +1057,13 @@ void main() {
 
       expect(
         (result as Err<Null, RecoverBullFailure>).failure,
-        isA<KeyServerOnionUnreachableFailure>(),
+        isA<KeyServerUnavailableFailure>().having(
+          (failure) => failure.cause,
+          'cause',
+          KeyServerUnreachableCause.onionUnreachable,
+        ),
       );
-      expect(
-        logSink.entries.single.message,
-        'recoverbull.health.unavailable code=unknown '
-        'cause=onion_unreachable',
-      );
+      expect(logSink.entries, isEmpty);
     });
 
     test('maps other errors to unavailable', () async {

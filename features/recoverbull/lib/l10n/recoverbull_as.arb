@@ -432,5 +432,152 @@
   "recoverbullConnectingTor": "Tor-ৰ জৰিয়তে Key Server-ত সংযোগ কৰা হৈছে। ইয়াত এক মিনিট পৰ্যন্ত লাগিব পাৰে।",
   "recoverbullMonitoringDisableCancel": "বাতিল কৰক",
   "recoverbullMonitoringServerUnsupported": "এই ছাৰ্ভাৰে প্ৰচেষ্টাৰ নিৰীক্ষণ সমৰ্থন নকৰে। আপুনি এতিয়াও ভল্টৰ বেকআপ ল’ব আৰু পুনৰুদ্ধাৰ কৰিব পাৰে।",
-  "recoverbullTemporaryStorageNotice": "এতিয়া ছেটিংছ আৰু বেকআপৰ যাচাই সংৰক্ষণ কৰিব নোৱাৰি। আপুনি এতিয়াও ছাৰ্ভাৰ অনুমোদন কৰি ভল্ট পুনৰুদ্ধাৰ কৰিব পাৰে।"
+  "recoverbullTemporaryStorageNotice": "এতিয়া ছেটিংছ আৰু বেকআপৰ যাচাই সংৰক্ষণ কৰিব নোৱাৰি। আপুনি এতিয়াও ছাৰ্ভাৰ অনুমোদন কৰি ভল্ট পুনৰুদ্ধাৰ কৰিব পাৰে।",
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
+  "recoverbullGoogleDriveErrorDisplay": "ত্ৰুটি: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorMissingBytes": "Tor সঁহাৰিৰ পৰা bytes হেৰাই গৈছে। পুনৰ চেষ্টা কৰক, কিন্তু যদি সমস্যা অব্যাহত থাকে, Tor-ৰ সৈতে কিছুমান ডিভাইচত এইটো এটা জ্ঞাত সমস্যা।",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি, লগ চাওক",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "অপ্ৰত্যাশিত ত্ৰুটি",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "বিফল হৈছে: Vault ফাইল তৈয়াৰ হৈছে কিন্তু চাৰ্ভাৰত কী সংৰক্ষণ হোৱা নাই",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "এটা ত্ৰুটি হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive-ৰ পৰা vault বাছনি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectRecoverWallet": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectVaultSelected": "Vault বাছনি হৈছে",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectCustomLocation": "কাষ্টম স্থান",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullSelectDriveBackups": "Drive বেকআপসমূহ",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullSelectVaultImportSuccess": "আপোনাৰ vault সফলভাৱে আমদানি হৈছে",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "বেকআপ কী হাতেৰে দিয়ক >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullSelectDecryptVault": "Vault ডিক্ৰিপ্ট কৰক",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullSelectNoBackupsFound": "কোনো বেকআপ পোৱা নগ'ল",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectErrorPrefix": "ত্ৰুটি:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullSelectFetchDriveFilesError": "সকলো drive বেকআপ আনিবলৈ বিফল হৈছে",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "ফাইল বাছনি কৰা হোৱা নাই",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectCustomLocationError": "কাষ্টম স্থানৰ পৰা ফাইল বাছনি কৰিবলৈ বিফল হৈছে",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryLoadingMessage": "বেলেন্স আৰু লেনদেন বিচাৰি আছে…",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullRecoveryBalanceLabel": "বেলেন্স: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryTransactionsLabel": "লেনদেন: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryContinueButton": "অব্যাহত ৰাখক",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullRecoveryErrorWalletExists": "এই wallet ইতিমধ্যে আছে।",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "এটা বেলেগ ডিফল্ট wallet ইতিমধ্যে আছে। আপোনাৰ মাত্ৰ এটাই ডিফল্ট wallet থাকিব পাৰে।",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "স্থানীয় বেকআপ key derivation বিফল হৈছে।",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "বাছনি কৰা বেকআপ ফাইলটো নষ্ট হৈছে।",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "বেকআপ ফাইলত Derivation Path নাই।",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "Key Server-দ্বাৰা প্ৰত্যাখ্যান কৰা হৈছে",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "সেৱা উপলব্ধ নহয়। অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক।",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "অবৈধ vault ফাইল।",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  }
 }

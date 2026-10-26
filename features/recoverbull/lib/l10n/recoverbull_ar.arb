@@ -428,12 +428,162 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-    "recoverbullConnectedTorCheckingServer": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
-    "@recoverbullConnectedTorCheckingServer": {
+  "recoverbullConnectedTorCheckingServer": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullConnectingTor": "(تواصل مع (كي سيرفر على (تور هذا يمكن أن يستغرق حتى دقيقة.",
   "recoverbullMonitoringDisableCancel": "إلغاء",
   "recoverbullMonitoringServerUnsupported": "هذا الخادم لا يدعم مراقبة المحاولات. لا يزال بإمكانك نسخ الخزائن احتياطيًا واستعادتها.",
-  "recoverbullTemporaryStorageNotice": "لا يمكن حفظ الإعدادات والتحقق من النسخ الاحتياطية الآن. لا يزال بإمكانك الموافقة على الخادم واستعادة خزنة."
+  "recoverbullTemporaryStorageNotice": "لا يمكن حفظ الإعدادات والتحقق من النسخ الاحتياطية الآن. لا يزال بإمكانك الموافقة على الخادم واستعادة خزنة.",
+  "recoverbullGoogleDriveErrorDisplay": "الخطأ: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "تم استيراد قبوك بنجاح",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "Error:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullRecoveryBalanceLabel": "الرصيد: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "مفقودة من رد فعل تور Retry but if the issue persists, it is a known issue for some devices with Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "محفظة مختلفة موجودة بالفعل يمكنك الحصول على محفظة واحدة فقط.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "استرداد الخزنة",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "المساندة المحلية فشلت.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "File not selected",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectVaultSelected": "Vault Selected",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "أدخل مفتاح الدعم يدوياً",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "ملف إحتياطي مُنتَقِب فاسد.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullSelectDriveBackups": "الدعم في مجال المركبات",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorInvalidVaultFile": "ملف الخزنة الغير مؤمن.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullSelectCustomLocationError": "فشل في اختيار ملف من موقع العرف",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullSelectNoBackupsFound": "لم يتم العثور على أي دعم",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorServiceUnavailable": "خدمة غير متاحة من فضلك تحقق من اتصالك.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullRecoveryContinueButton": "استمر",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullSelectDecryptVault": "الخزنة المشفرة",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "خطأ غير متوقع",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryLoadingMessage": "أبحث عن التوازن والمعاملات..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "حدث خطأ أرجوك حاول مرة أخرى.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "المختفي: تم إنشاء ملف قبو لكنه لم يخزن في الخادم",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRecoveryErrorWalletExists": "هذه المحفظة موجودة بالفعل.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullErrorUnexpected": "خطأ غير متوقع، انظر السجلات",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "فشل في جلب كل الدعم",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullRecoveryTransactionsLabel": "المعاملات: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "ملف المساندة يفوت مسار التعقيم.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "تم رفضه من قبل خادم المفتاح",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSelectRecoverWallet": "Recover Wallet",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "الموقع العرفي",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullVaultRecoveryTitle": "استرداد الخزنة",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  }
 }

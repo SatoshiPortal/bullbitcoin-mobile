@@ -91,15 +91,13 @@ void main() {
     expect(find.text('content'), findsOneWidget);
     expect(
       tester.widget<Container>(find.byType(Container).last).padding,
-      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
     BullSnackBar.dismiss();
     await tester.pumpAndSettle();
   });
 
-  testWidgets('a short message is centered in the full-width toast', (
-    tester,
-  ) async {
+  testWidgets('a short message is centered in the toast pill', (tester) async {
     await tester.binding.setSurfaceSize(const Size(360, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     late BuildContext context;
@@ -128,7 +126,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('showContent fills the constrained width with 16px margins', (
+  testWidgets('showContent sizes its centered pill to its content', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(360, 600));
@@ -151,7 +149,68 @@ void main() {
     BullSnackBar.showContent(context, const Text('wide'));
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(tester.getSize(find.byType(Container).last).width, 328);
+    final bubble = find.byType(Container).last;
+    final contentWidth = tester.getSize(find.text('wide')).width;
+    // Each side has 16px padding and the canonical 1px border.
+    expect(tester.getSize(bubble).width, contentWidth + 34);
+    expect(tester.getCenter(bubble).dx, 180);
+    expect(tester.getSize(bubble).width, lessThan(328));
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('long custom content respects the 16px screen margins', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(360, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    late BuildContext context;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Builder(
+          builder: (value) {
+            context = value;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    BullSnackBar.showContent(context, Text('A long notification. ' * 20));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final bubble = find.byType(Container).last;
+    expect(tester.getSize(bubble).width, 328);
+    expect(tester.getTopLeft(bubble).dx, 16);
+    expect(tester.getTopRight(bubble).dx, 344);
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('showIn uses the same content-sized pill as show', (
+    tester,
+  ) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Builder(
+          builder: (value) {
+            context = value;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    BullSnackBar.show(context, message: 'Copied');
+    await tester.pump(const Duration(milliseconds: 300));
+    final originalSize = tester.getSize(find.byType(Container).last);
+    BullSnackBar.showIn(
+      Overlay.of(context, rootOverlay: true),
+      message: 'Copied',
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(tester.getSize(find.byType(Container).last), originalSize);
+    expect(tester.takeException(), isNull);
     BullSnackBar.dismiss();
     await tester.pumpAndSettle();
   });

@@ -15,127 +15,145 @@ class VaultProviderSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BullScaffold(
-      appBar: BullTopBar.appBar(
-        title: context.loc.recoverbullSelectVaultProvider,
-        onBack: () {
-          final bloc = context.read<RecoverBullBloc>();
-          if (bloc.hasPendingProviderSave) {
-            BullSnackBar.show(
-              context,
-              message: context.loc.recoverbullProviderSaveFailed,
-            );
-            return;
-          }
-          final navigator = Navigator.of(context);
-          if (navigator.canPop()) {
-            navigator.pop();
-          } else {
-            context.pop();
-          }
-        },
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: KeyServerStatusWidget(),
-          ),
-        ],
-      ),
-      body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
-        listenWhen: (previous, current) =>
-            current.failure != null && previous.failure != current.failure ||
-            current.vault != null && previous.vault == null,
-        listener: (context, state) {
-          if (state.failure != null) {
-            BullSnackBar.show(
-              context,
-              message: state.failure!.toTranslated(context),
-            );
-            return;
-          }
-
-          if (state.vault != null && state.vaultProvider != null) {
-            switch (state.flow) {
-              case RecoverBullFlow.secureVault:
-                BullSnackBar.show(
-                  context,
-                  message: context.loc.recoverbullVaultCreatedSuccess,
-                );
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const VaultCreatedPage(),
-                  ),
-                );
-              default:
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => VaultSelectedPage(
-                      provider: state.vaultProvider!,
-                      vault: state.vault!,
-                      flow: state.flow,
-                    ),
-                  ),
-                );
+    final bloc = context.watch<RecoverBullBloc>();
+    return PopScope(
+      canPop: !bloc.hasPendingProviderSave,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && bloc.hasPendingProviderSave) {
+          BullSnackBar.show(
+            context,
+            message: context.loc.recoverbullProviderSaveFailed,
+          );
+        }
+      },
+      child: BullScaffold(
+        appBar: BullTopBar.appBar(
+          title: context.loc.recoverbullSelectVaultProvider,
+          onBack: () {
+            final bloc = context.read<RecoverBullBloc>();
+            if (bloc.hasPendingProviderSave) {
+              BullSnackBar.show(
+                context,
+                message: context.loc.recoverbullProviderSaveFailed,
+              );
+              return;
             }
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              BullFadingLinearProgress(
-                trigger: state.isLoading,
-                foregroundColor: context.bull.primary,
-                height: 2.0,
-              ),
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+            } else {
+              context.pop();
+            }
+          },
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: KeyServerStatusWidget(),
+            ),
+          ],
+        ),
+        body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
+          listenWhen: (previous, current) =>
+              current.failure != null && previous.failure != current.failure ||
+              current.vault != null && previous.vault == null,
+          listener: (context, state) {
+            if (state.failure case final failure?) {
+              BullSnackBar.show(
+                context,
+                message: failure.toTranslated(context),
+              );
+              return;
+            }
 
-              if (state.flow == RecoverBullFlow.secureVault && state.isLoading)
-                Expanded(
-                  child: Center(
-                    child: BullProgressScreen(
-                      isLoading: true,
-                      title: context.loc.recoverbullCreatingVault,
-                      description:
-                          context.loc.recoverbullConnectedTorCheckingServer,
+            if ((state.vault, state.vaultProvider) case (
+              final vault?,
+              final provider?,
+            )) {
+              switch (state.flow) {
+                case RecoverBullFlow.secureVault:
+                  BullSnackBar.show(
+                    context,
+                    message: context.loc.recoverbullVaultCreatedSuccess,
+                  );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const VaultCreatedPage(),
+                    ),
+                  );
+                default:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => VaultSelectedPage(
+                        provider: provider,
+                        vault: vault,
+                        flow: state.flow,
+                      ),
+                    ),
+                  );
+              }
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                BullFadingLinearProgress(
+                  trigger: state.isLoading,
+                  foregroundColor: context.bull.primary,
+                  height: 2.0,
+                ),
+
+                if (state.flow == RecoverBullFlow.secureVault &&
+                    state.isLoading)
+                  Expanded(
+                    child: Center(
+                      child: BullProgressScreen(
+                        isLoading: true,
+                        title: context.loc.recoverbullCreatingVault,
+                        description:
+                            context.loc.recoverbullConnectedTorCheckingServer,
+                      ),
                     ),
                   ),
-                ),
 
-              if (!state.isLoading) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: RecoverbullVaultProviderSelector(
-                    onProviderSelected: (provider) {
-                      context.read<RecoverBullBloc>().add(
-                        OnVaultProviderSelection(provider: provider),
-                      );
-                    },
+                if (!state.isLoading) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: RecoverbullVaultProviderSelector(
+                      onProviderSelected: (provider) {
+                        context.read<RecoverBullBloc>().add(
+                          OnVaultProviderSelection(provider: provider),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          BullBottomSheet.show(
-                            context: context,
-                            child: const HowToDecideVaultLocation(),
-                          );
-                        },
-                        child: BullText(
-                          context.recoverBullLabels.backupWalletHowToDecide,
-                          style: context.bullText.headlineLarge?.copyWith(
-                            color: context.bull.primary,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              BullBottomSheet.show(
+                                context: context,
+                                child: const HowToDecideVaultLocation(),
+                              );
+                            },
+                            child: BullText(
+                              context.recoverBullLabels.backupWalletHowToDecide,
+                              style: context.bullText.headlineLarge?.copyWith(
+                                color: context.bull.primary,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

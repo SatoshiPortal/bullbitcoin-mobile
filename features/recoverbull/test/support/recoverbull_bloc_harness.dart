@@ -170,7 +170,6 @@ RecoverBullBloc buildBloc({
   TrashVaultKeyUsecase? trashVaultKeyUsecase,
   DateTime Function()? now,
   Timer Function(Duration, void Function())? scheduleTimer,
-  int maxAttempts = ConnectToKeyServerUsecase.maxAttempts,
 }) => RecoverBullBloc(
   log: log ?? const TestLogSink(),
   flow: flow,
@@ -216,12 +215,8 @@ RecoverBullBloc buildBloc({
       check: checkConnection,
       ensureTor: ensureRecoverBullTorSession,
       log: log ?? const TestLogSink(),
-      wait: (_) async {},
-      maxAttempts: maxAttempts,
     ),
     ensureRecoverBullTorSessionUsecase: ensureRecoverBullTorSession,
     watchTorConnectionUsecase: watchTor,
-    now: now,
-    scheduleTimer: scheduleTimer,
   ),
 );

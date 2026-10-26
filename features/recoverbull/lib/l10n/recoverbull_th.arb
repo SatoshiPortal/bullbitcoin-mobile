@@ -428,12 +428,162 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-    "recoverbullConnectedTorCheckingServer": "เชื่อมต่อกับเซิร์ฟเวอร์\nคุณสามารถเพิ่มนาที.",
-    "@recoverbullConnectedTorCheckingServer": {
+  "recoverbullConnectedTorCheckingServer": "เชื่อมต่อกับเซิร์ฟเวอร์\nคุณสามารถเพิ่มนาที.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullConnectingTor": "เชื่อมต่อกับเซิร์ฟเวอร์ คุณสามารถเพิ่มนาที.",
   "recoverbullMonitoringDisableCancel": "ยกเลิก",
   "recoverbullMonitoringServerUnsupported": "เซิร์ฟเวอร์นี้ไม่รองรับการติดตามความพยายาม คุณยังสามารถสำรองและกู้คืนห้องนิรภัยได้",
-  "recoverbullTemporaryStorageNotice": "ขณะนี้ไม่สามารถบันทึกการตั้งค่าและการยืนยันข้อมูลสำรองได้ คุณยังสามารถอนุมัติเซิร์ฟเวอร์และกู้คืนห้องนิรภัยได้"
+  "recoverbullTemporaryStorageNotice": "ขณะนี้ไม่สามารถบันทึกการตั้งค่าและการยืนยันข้อมูลสำรองได้ คุณยังสามารถอนุมัติเซิร์ฟเวอร์และกู้คืนห้องนิรภัยได้",
+  "recoverbullGoogleDriveErrorDisplay": "ข้อผิดพลาด: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectVaultImportSuccess": "การเปิดใช้งานของคุณประสบความสําเร็จ",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullSelectErrorPrefix": "ข้อผิดพลาด:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullRecoveryBalanceLabel": "สมดุล: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorMissingBytes": "วันหมดอายุจาก Tor ผู้สมัคร แต่หากมีปัญหาที่ได้รับการยอมรับว่าเป็นปัญหาบางอย่างสําหรับรถ.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "กระเป๋าเริ่มต้นที่แตกต่างกันที่มีอยู่ คุณสามารถใช้กระเป๋าเงินเริ่มต้น.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullRecoveryTitle": "การกู้คืนข้อผิดพลาด",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "สํารองข้อมูลท้องถิ่น.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectFileNotSelectedError": "ไฟล์ไม่เลือก",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "recoverbullSelectVaultSelected": "ค่าเริ่มต้น",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "ใส่การสํารองข้อมูลด้วยตนเอง >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullRecoveryErrorVaultCorrupted": "ไฟล์ที่เลือกเป็นความเสียหาย.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullSelectDriveBackups": "การสํารองข้อมูล",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorInvalidVaultFile": "ไฟล์ที่ปิดการใช้งาน.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullSelectCustomLocationError": "เลือกไฟล์จากรายการที่กําหนดเอง",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "recoverbullSelectNoBackupsFound": "ไม่มีการสํารองข้อมูล",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullVaultRecoveryTitle": "การกู้คืนข้อผิดพลาด",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullErrorServiceUnavailable": "บริการ โปรดตรวจสอบการเชื่อมต่อของคุณ.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullRecoveryContinueButton": "อ่านต่อ",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullSelectDecryptVault": "ถอดรหัส",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullUnexpectedError": "ความผิดพลาด",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryLoadingMessage": "กําลังมองหายอดคงเหลือและการทําธุรกรรม ..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "ข้อผิดพลาดเกิดขึ้น กรุณาลองอีกครั้ง.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "บ้าน: ไฟล์ Vault สร้างขึ้น แต่คีย์ไม่เก็บไว้ในเซิร์ฟเวอร์",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRecoveryErrorWalletExists": "กระเป๋านี้มีอยู่.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullErrorUnexpected": "ข้อผิดพลาดที่ผิดพลาด, ดูบันทึก",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullSelectFetchDriveFilesError": "ค้นหาการสํารองข้อมูลทั้งหมด",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullRecoveryTransactionsLabel": "การทําธุรกรรม: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "การสํารองข้อมูลไฟล์หายไป.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullErrorRejected": "เปลี่ยนเซิร์ฟเวอร์",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSelectRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullSelectCustomLocation": "รายการที่กําหนดเอง",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "ค้นหาเลือก vault จาก Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  }
 }
