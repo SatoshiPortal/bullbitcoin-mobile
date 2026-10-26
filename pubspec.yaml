@@ -18,6 +18,7 @@ workspace:
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
+  - packages/bull_pricer
   - features/logs
 
 dependencies:
