@@ -1,0 +1,259 @@
+{
+  "@@locale": "it",
+  "recoverbullGoogleDriveNoBackupsFound": "Nessun backup trovato",
+  "recoverbullGoogleDriveScreenTitle": "Casseforti su Google Drive",
+  "recoverbullVaultKeyInput": "Chiave della cassaforte",
+  "recoverbullSwitchToPassword": "Usa una password",
+  "recoverbullLongestStep": "Questo è il passaggio più lungo. Un primo avvio può richiedere più di un minuto.",
+  "recoverbullVaultImportedSuccess": "La tua cassaforte è stata importata con successo",
+  "recoverbullPasswordTooShort": "La password deve essere lunga almeno 6 caratteri",
+  "recoverbullFetchingVaultKey": "Recupero della chiave della cassaforte",
+  "recoverbullSecureBackup": "Proteggi il backup",
+  "backupWalletHowToDecideVaultCloudRecommendationText": "vuoi essere sicuro di non perdere mai l'accesso al file della cassaforte, anche se perdi i tuoi dispositivi.",
+  "recoverbullPassword": "Password",
+  "recoverbullReenterRequired": "Inserisci di nuovo {inputType}",
+  "@recoverbullReenterRequired": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "sei sicuro di non perdere il file della cassaforte e che resterà accessibile anche se perdi il telefono.",
+  "recoverbullSelectGoogleDrive": "Google Drive",
+  "recoverbullEnterInput": "Inserisci {inputType}",
+  "@recoverbullEnterInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "L'URL è obbligatorio",
+  "recoverbullServerUsingCustom": "In uso un server personalizzato",
+  "recoverbullSettingsKeyServerUrl": "URL del server delle chiavi",
+  "recoverbullKeyServer": "Server delle chiavi",
+  "recoverbullGoogleDriveDeleteVaultTitle": "Elimina la cassaforte",
+  "recoverbullGoogleDriveCancelButton": "Annulla",
+  "recoverbullSelectCustomLocationProvider": "Posizione personalizzata",
+  "recoverbullTorNotStarted": "Tor non è avviato",
+  "recoverbullFailed": "Non riuscito",
+  "recoverbullConnectionFailed": "La connessione non è riuscita",
+  "backupWalletHowToDecideVaultCustomRecommendation": "Posizione personalizzata: ",
+  "recoverbullSwitchToPIN": "Scegli un PIN",
+  "recoverbullPleaseWait": "Attendi mentre creiamo una connessione sicura...",
+  "recoverbullPhaseNetworkInfo": "Recupero delle informazioni di rete",
+  "recoverbullReenterConfirm": "Inserisci di nuovo {inputType} per confermare.",
+  "@recoverbullReenterConfirm": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "Le password non corrispondono",
+  "recoverbullErrorDecryptFailed": "Impossibile decifrare la cassaforte",
+  "recoverbullGoogleDriveErrorExportFailed": "Impossibile esportare la cassaforte da Google Drive",
+  "recoverbullTestSuccessDescription": "Sei in grado di recuperare l'accesso a un portafoglio Bitcoin perso",
+  "recoverbullPasswordRequired": "Password obbligatoria",
+  "durationSeconds": "{seconds} secondi",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Impossibile creare la cassaforte. Il problema potrebbe riguardare il file o la chiave.",
+  "recoverbullSelectBackupFileNotValidError": "Recoverbull file di backup non è valido",
+  "recoverbullErrorFetchKeyFailed": "Impossibile recuperare la chiave della cassaforte dal server",
+  "recoverbullEnterToView": "Inserisci il {inputType} per visualizzare la chiave della cassaforte.",
+  "@recoverbullEnterToView": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Veloce e facile",
+  "recoverbullTorClockSkewed": "L'orologio del dispositivo non è corretto, quindi Tor non può verificare i certificati dei relay. Controlla data e ora.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Sei sicuro di voler eliminare questo backup della cassaforte? Questa azione non può essere annullata.",
+  "recoverbullSelectVaultProvider": "Seleziona il provider della cassaforte",
+  "recoverbullContinue": "Continua",
+  "recoverbullSettingsSave": "Salva",
+  "recoverbullEnterToTest": "Inserisci {inputType} per testare la tua cassaforte.",
+  "@recoverbullEnterToTest": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Provider di storage cloud come Google o Apple non avranno accesso al tuo Bitcoin perché la password di crittografia è troppo forte. Possono accedere solo al Bitcoin nell'improbabile evento che colludono con il server chiave (il servizio online che memorizza la password di crittografia). Se il server chiave viene mai hackerato, il Bitcoin potrebbe essere a rischio con Google o Apple cloud.",
+  "recoverbullErrorVaultNotSet": "Cassaforte non impostata",
+  "recoverbullCreatingVault": "Creazione della cassaforte crittografata",
+  "recoverbullTorCantStart": "Tor non è riuscito a connettersi al momento. Riprova.",
+  "recoverbullDecryptVault": "Decifra la cassaforte",
+  "recoverbullErrorSelectVault": "Impossibile selezionare la cassaforte",
+  "recoverbullSettingsUrlMustBeOnion": "L'URL deve terminare con .onion",
+  "recoverbullServerConfirmTitle": "Server di recupero della cassaforte",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Test completato con successo!",
+  "recoverbullGoogleDriveErrorFetchFailed": "Impossibile recuperare le casseforti da Google Drive",
+  "recoverbullSettingsEdit": "Modifica",
+  "recoverbullPIN": "PIN",
+  "recoverbullSettingsUrlInvalid": "L'URL non è valido",
+  "recoverbullCheckingConnection": "Controllo della connessione per RecoverBull",
+  "recoverbullErrorInvalidCredentials": "Password sbagliata per questo file di backup",
+  "recoverbullGoBackEdit": "Torna indietro e modifica",
+  "recoverbullGoogleDriveExportButton": "Esportazione",
+  "recoverbullSeeMoreVaults": "Vedi altre cassaforti",
+  "recoverbullServerCustomWarning": "Stai usando un server Recoverbull personalizzato. Assicurati di fidarti di questo server.",
+  "recoverbullTestRecovery": "Verifica il recupero",
+  "recoverbullServerUrlLabel": "URL del server:",
+  "recoverbullTorNetwork": "Rete",
+  "recoverbullSettingsTitle": "Impostazioni Recoverbull",
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "RecoverBull Server",
+  "recoverbullTorOffline": "Sembra non esserci connessione a internet.",
+  "recoverbullServerUsingDefault": "In uso il server predefinito",
+  "recoverbullTestBackupDescription": "Ora testiamo il backup per assicurarci che tutto sia stato fatto correttamente.",
+  "recoverbullErrorPasswordNotSet": "La password non è impostata",
+  "recoverbullEncryptedVaultCreated": "Cassaforte crittografata creata!",
+  "recoverbullErrorRateLimited": "Troppi tentativi. Riprova tra {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterVaultKeyInstead": "Inserisci invece la chiave della cassaforte",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Scopri di più su Recoverbull",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Impossibile eliminare la cassaforte da Google Drive",
+  "recoverbullVaultCreatedSuccess": "Cassaforte creata con successo",
+  "recoverbullConfirm": "Conferma",
+  "recoverbullWaiting": "In attesa",
+  "backupWalletHowToDecideVaultMoreInfo": "Visita Recoverbull.com per ulteriori informazioni.",
+  "recoverbullVaultSelected": "Cassaforte selezionata",
+  "recoverbullSettingsCancel": "Annulla",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Cloud Google o Apple: ",
+  "durationMinute": "{minutes} minuto",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnected": "Collegato",
+  "recoverbullGoogleDriveDeleteButton": "Elimina",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Chiave della cassaforte",
+  "recoverbullErrorConnectionFailed": "Impossibile connettersi al server delle chiavi. Riprova più tardi.",
+  "recoverbullFetchVaultKey": "Recupera la chiave della cassaforte",
+  "recoverbullSelectTakeYourTime": "Prendi il tuo tempo",
+  "recoverbullConfirmInput": "Conferma {inputType}",
+  "@recoverbullConfirmInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Devi memorizzare questo codice ({inputType}) per recuperare l'accesso al portafoglio. Deve essere di almeno 6 cifre. Se lo perdi, non potrai recuperare il backup.",
+  "@recoverbullMemorizeWarning": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "L'URL deve essere HTTP",
+  "recoverbullGotIt": "Ho capito",
+  "recoverbullPasswordTooCommon": "Questa password è troppo comune. Scegline una diversa",
+  "recoverbullServerTorNotice": "Ci collegheremo a questo server tramite Tor",
+  "backupWalletHowToDecideVaultCustomLocation": "Una posizione personalizzata può essere molto più sicura, a seconda della posizione che si sceglie. È inoltre necessario assicurarsi di non perdere il file di backup o di perdere il dispositivo su cui il file di backup è memorizzato.",
+  "recoverbullEnterToDecrypt": "Inserisci {inputType} per decifrare la cassaforte.",
+  "@recoverbullEnterToDecrypt": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectAppleIcloud": "Apple iCloud",
+  "recoverbullServerUnreachableTorOk": "Tor funziona, ma il server di backup non ha risposto. Subito dopo un primo avvio può volerci un momento.",
+  "durationMinutes": "{minutes} minuti",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Connessione in corso...",
+  "recoverbullRetry": "Riprova",
+  "recoverbullConnectedTorCheckingServer": "Collegamento a Key Server tramite Tor.\nCi vorra' un minuto.",
+  "recoverbullConnectingTor": "Connessione al server delle chiavi tramite Tor in corso...\nPotrebbe volerci fino a un minuto.",
+  "recoverbullMonitoringDisableCancel": "Annulla",
+  "recoverbullMonitoringServerUnsupported": "Questo server non supporta il monitoraggio dei tentativi. Puoi continuare a eseguire il backup e il ripristino dei vault.",
+  "recoverbullTemporaryStorageNotice": "Le impostazioni e la verifica dei backup non possono essere salvate ora. Puoi comunque approvare il server e ripristinare un vault.",
+  "recoverbullRecoveryTitle": "Recupero della cassaforte",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorServiceUnavailable": "Servizio non disponibile. Controlla la connessione.",
+  "recoverbullVaultRecoveryTitle": "Recupero della cassaforte",
+  "recoverbullRecoveryContinueButton": "Continua",
+  "recoverbullSelectDriveBackups": "Backup su Google Drive",
+  "recoverbullErrorMissingBytes": "Mancano i byte della risposta Tor. Riprovare ma se il problema persiste, è un problema noto per alcuni dispositivi con Tor.",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSelectFetchDriveFilesError": "Impossibile recuperare tutti i backup da Google Drive",
+  "recoverbullGoogleDriveErrorDisplay": "Errore: {error}",
+  "recoverbullRecoveryErrorMissingDerivationPath": "File di backup percorso di derivazione mancante.",
+  "recoverbullSelectNoBackupsFound": "Nessun backup trovato",
+  "recoverbullErrorInvalidVaultFile": "File della cassaforte non valido.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Il file di backup selezionato è danneggiato.",
+  "recoverbullSelectErrorPrefix": "Errore:",
+  "recoverbullSelectDecryptVault": "Decifra la cassaforte",
+  "recoverbullSelectEnterBackupKeyManually": "Inserisci la chiave di backup manualmente > >",
+  "recoverbullSelectVaultSelected": "Cassaforte Selezionata",
+  "recoverbullSelectFileNotSelectedError": "File non selezionato",
+  "recoverbullSelectCustomLocation": "Location personalizzata",
+  "recoverbullSelectVaultImportSuccess": "La tua cassaforte è stata importata con successo",
+  "recoverbullUnexpectedError": "Errore inaspettato",
+  "recoverbullGoogleDriveErrorGeneric": "Si è verificato un errore. Per favore riprova.",
+  "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
+  "recoverbullRecoveryLoadingMessage": "Alla ricerca di saldi e transazioni..",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Si è verificato un problema: il file della cassaforte è stato creato, ma la chiave non è stata salvata sul server delle chiavi",
+  "recoverbullRecoveryErrorWalletMismatch": "Esiste già un portafoglio predefinito diverso. Puoi avere solo un portafoglio predefinito.",
+  "recoverbullSelectCustomLocationError": "Impossibile selezionare il file dalla posizione personalizzata",
+  "recoverbullGoogleDriveErrorSelectFailed": "Impossibile selezionare la cassaforte da Google Drive",
+  "recoverbullSelectRecoverWallet": "Recupera portafoglio",
+  "recoverbullErrorRejected": "Richiesta rifiutata dal server delle chiavi",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "La derivazione della chiave di backup locale è fallita.",
+  "recoverbullRecoveryTransactionsLabel": "Transazioni: {count}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoveryErrorWalletExists": "Questo portafoglio esiste già.",
+  "recoverbullErrorUnexpected": "Errore inaspettato, vedi log"
+}

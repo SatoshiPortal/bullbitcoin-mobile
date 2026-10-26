@@ -34,6 +34,7 @@ class TorSettingsLocator {
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         updateTorProxyUsecase: locator<UpdateTorProxyUsecase>(),
         updateTorTransportModeUsecase: locator<UpdateTorTransportModeUsecase>(),
+        retryTorConnectionUsecase: locator<RetryTorConnectionUsecase>(),
         watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
         checkExternalTorConnectionUsecase:
             locator<CheckExternalTorConnectionUsecase>(),

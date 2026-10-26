@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
+import 'package:bull_ui/bull_ui.dart' show BullAssets;
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart' show Autostart, Gif;
 
@@ -17,7 +17,7 @@ class BuyCubesLoader extends StatelessWidget {
         child: MediaQuery.disableAnimationsOf(context)
             ? Icon(Icons.schedule, color: context.appColors.secondary)
             : Gif(
-                image: AssetImage(Assets.animations.cubesLoading.path),
+                image: BullAssets.animations.cubesLoading,
                 autostart: Autostart.loop,
                 width: size,
                 height: size,

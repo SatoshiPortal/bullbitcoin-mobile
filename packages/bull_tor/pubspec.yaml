@@ -13,8 +13,8 @@ dependencies:
     sdk: flutter
   bull_sdk:
     git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      url: https://github.com/ethicnology-agent/bull_sdk
+      ref: 1a72dbf4202c806d69dd665019e517d22737b82d
       path: packages/bull_sdk
   get_it: ^9.1.1
   meta: ^1.17.0
@@ -22,6 +22,7 @@ dependencies:
   socks5_proxy: ^2.1.1
 
 dev_dependencies:
+  fake_async: ^1.3.3
   flutter_test:
     sdk: flutter
   lints: ^6.1.0

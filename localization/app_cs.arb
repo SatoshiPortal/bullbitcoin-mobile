@@ -7,33 +7,6 @@
   "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
   "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
   "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
-  "durationSeconds": "{seconds} vteřin(y)",
-  "@durationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "durationMinute": "{minutes} minuta",
-  "@durationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "durationMinutes": "{minutes} minut(y)",
-  "@durationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsStatusInProgress": "Zpracovávám",
   "@coreSwapsStatusInProgress": {
     "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
@@ -396,15 +369,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "Chyba: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "Vlastní server",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -515,10 +479,6 @@
   "satsSuffix": " čeština",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "Heslo není nastavena",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "sellSendPaymentExchangeRate": "Směnný kurz",
   "@sellSendPaymentExchangeRate": {
@@ -653,15 +613,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "Prosím, znovu zadejte {inputType} pro potvrzení.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "Připojil se do schránky",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -686,29 +637,13 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "Vaše klenba byla úspěšně dovážena",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "Nepoužívejte (aktivní server)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "recoverbullSelectErrorPrefix": "Chyba:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
-  },
   "exchangeLandingRecommendedExchange": "Doporučené Bitcoin burza",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "backupWalletHowToDecideVaultMoreInfo": "Navštivte obnovitbull.com pro více informací.",
-  "@backupWalletHowToDecideVaultMoreInfo": {
-    "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "<< Přejděte zpět a upravte",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "Potvrzení ... ({count}/{required})",
   "@receiveConfirming": {
@@ -787,15 +722,6 @@
   "broadcastSignedTxFee": "Čeština",
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
-  },
-  "recoverbullRecoveryBalanceLabel": "Zůstatek: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "Fond vašeho účtu",
   "@buyFundYourAccount": {
@@ -945,10 +871,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "Tor síť",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "Stav převodu",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1045,10 +967,6 @@
   "exchangeStatisticsTitle": "Statistika",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "Spojení k cílovému serveru. Prosím, zkuste to znovu!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "Digitální kopie",
   "@testBackupDigitalCopy": {
@@ -1257,10 +1175,6 @@
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
   },
-  "recoverbullSwitchToPassword": "Vyberte heslo místo",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "exchangeDcaNetworkBitcoin": "Bitcoin sítě",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -1280,10 +1194,6 @@
   "transactionSwapDescLnSendDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "recoverbullErrorMissingBytes": "Chybí bajtů z Tor odpovědi. Retry, ale pokud problém přetrvává, je známý problém pro některé zařízení s Torem.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "coreScreensReceiveNetworkFeeLabel": "Obdržet Síťový poplatek",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -1687,10 +1597,6 @@
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "googleDriveProvider": "Disk Google",
-  "@googleDriveProvider": {
-    "description": "Name of Google Drive provider"
-  },
   "sellAccountName": "Název účtu",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -1823,15 +1729,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "Zadejte prosím {inputType} pro dešifrování klenby.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "Čeština",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1839,10 +1736,6 @@
   "testBackupSuccessTitle": "Test úspěšně dokončil!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "Udělejte si čas",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "Potvrzení vlastního poplatku",
   "@sendConfirmCustomFee": {
@@ -1971,10 +1864,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Získané k načtení klenby z Disku Google",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "systemLabelExchangeBuy": "Koupit",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -2023,10 +1912,6 @@
   "receivePaymentReceived": "Platba obdržela!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "backupWalletHowToDecideVaultCloudSecurity": "Poskytovatelé cloudových úložišť jako Google nebo Apple nebude mít přístup k vaší Bitcoin, protože šifrovací heslo je příliš silná. Mohou mít přístup k Bitcoinu v nepravděpodobném případě, že srazí s klíčovým serverem (online služba, která ukládá vaše šifrovací heslo). Pokud se klíčovým serverem někdy dostane hacknut, váš Bitcoin by mohl být ohrožen s Google nebo Apple cloud.",
-  "@backupWalletHowToDecideVaultCloudSecurity": {
-    "description": "Explanation of cloud storage security in vault location decision help modal"
   },
   "howToDecideBackupText1": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
   "@howToDecideBackupText1": {
@@ -2094,10 +1979,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "Vault tvorba selhala, může to být soubor nebo klíč",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "sellSendPaymentFeePriority": "Prioritní priority",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -2114,10 +1995,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "Žádné zálohy nalezeno",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "Vyberte síť",
   "@sellSelectNetwork": {
@@ -2183,10 +2060,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "Existuje celá výchozí peněženka. Můžete mít pouze jednu výchozí peněženku.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "Nejsou k dispozici žádné příjemci.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -2194,10 +2067,6 @@
   "payNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "Špatné heslo pro tento záložní soubor",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "Množství",
   "@paySinpeMonto": {
@@ -2315,10 +2184,6 @@
   "@ledgerHelpStep4": {
     "description": "Fourth troubleshooting step for Ledger connection issues"
   },
-  "recoverbullPleaseWait": "Prosím, počkejte, když nastavíme bezpečné spojení...",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "broadcastSignedTxBroadcast": "Čeština",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2358,10 +2223,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Nepodporovaný formát QR kódu",
-  "recoverbullRecoveryTitle": "Obnovení obnovit obnovení klenby",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
-  },
   "broadcastSignedTxScanQR": "Skenujte QR kód z hardwarové peněženky",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
@@ -2409,10 +2270,6 @@
   "exchangeKycLimited": "Čeština",
   "@exchangeKycLimited": {
     "description": "Limited KYC level label"
-  },
-  "backupWalletHowToDecideVaultCustomRecommendationText": "jste přesvědčeni, že neztratíte soubor klenby a bude stále přístupná, pokud ztratíte telefon.",
-  "@backupWalletHowToDecideVaultCustomRecommendationText": {
-    "description": "Recommendation text for when to use custom location"
   },
   "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím swapu: {min} seděly",
   "@swapErrorAmountBelowMinimum": {
@@ -2546,10 +2403,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "Vault vytvořil úspěšně",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "Množství",
   "@payAmount": {
     "description": "Label for amount"
@@ -2656,10 +2509,6 @@
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
   },
-  "vaultSuccessfullyImported": "Vaše klenba byla úspěšně dovážena",
-  "@vaultSuccessfullyImported": {
-    "description": "Message shown when vault is imported successfully"
-  },
   "payAccountNumberHint": "Zadejte číslo účtu",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
@@ -2712,22 +2561,9 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Místní záložní klíč derivation selhal.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "Nedostatečná rovnováha",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "recoverbullErrorRateLimited": "Hodnotit omezený. Prosím, zkuste to znovu {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "Rozšířená veřejnost Čeština",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2756,15 +2592,6 @@
   "networkFeeLabel": "Síťový poplatek",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "Musíte zapamatovat tento {inputType} obnovit přístup k vaší peněžence. Musí být nejméně 6 číslic. Pokud ztratíte tuto {inputType} nemůžete obnovit zálohu.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "Nahrát dokumenty",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2801,10 +2628,6 @@
   "importQrDeviceJadeFirmwareWarning": "Ujistěte se, že vaše zařízení je aktualizována na nejnovější firmware",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "Soubor není vybrán",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "importQrDeviceJadeStep3": "Postupujte podle pokynů zařízení k odemknutí Jade",
   "@importQrDeviceJadeStep3": {
@@ -2854,15 +2677,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "Zadejte prosím {inputType} pro testování klenby.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeHelpBeneficiaryName": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2878,10 +2692,6 @@
   "importQrDeviceSpecterStep10": "Zadejte štítek pro peněženky Specter a klepněte na Import",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
-  },
-  "recoverbullSelectVaultSelected": "Vault Vybrané",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2914,10 +2724,6 @@
   "payLightningInvoice": "Blesková faktura",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "Zadejte klávesu Backup ručně >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "Exportovat...",
   "@exportingVaultButton": {
@@ -3002,10 +2808,6 @@
   "swapYouReceive": "Přijmout",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "Vlastní umístění",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "electrumInvalidRetryError": "Neplatný Retry Počet hodnot: {value}",
   "@electrumInvalidRetryError": {
@@ -3141,10 +2943,6 @@
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
   },
-  "recoverbullRecoveryErrorVaultCorrupted": "Vybrané záložní soubor je poškozen.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
-  },
   "buyVerifyIdentity": "Ověřit identitu",
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
@@ -3274,10 +3072,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "Zálohování disků",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeAuthOk": "ČEŠTINA",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -3313,14 +3107,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "Ověřte spárovací kód na zařízení BitBox...",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "Key Server ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "Toto heslo je příliš časté. Vyberte si jiný",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "Každý s přístupem ke svému 12 slovu zálohování může ukrást vaše bitcoiny. Skrýt to dobře.",
   "@backupInstruction3": {
@@ -3422,10 +3208,6 @@
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
   },
-  "recoverbullSeeMoreVaults": "Zobrazit více klenbami",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "Platit z peněženky",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3506,10 +3288,6 @@
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
   },
-  "recoverbullSelectQuickAndEasy": "Rychlé a jednoduché",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "exchangeFileUploadTitle": "Bezpečné nahrávání souborů",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -3549,10 +3327,6 @@
   "fundExchangeBankTransferSubtitle": "Odeslání bankovního převodu z vašeho bankovního účtu",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
-  },
-  "recoverbullErrorInvalidVaultFile": "Neplatný klenba soubor.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "sellProcessingOrder": "Objednávka zpracování...",
   "@sellProcessingOrder": {
@@ -3617,10 +3391,6 @@
   "sellBitcoinAmount": "Bitcoin částka",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "Test úspěšně dokončil!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "Čeština",
   "@transactionFilterReceive": {
@@ -3714,10 +3484,6 @@
   "fundExchangeWarningConfirmation": "Potvrzuji, že jsem se zeptal koupit Bitcoin někoho jiného.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "Vypnuto vybrat soubor z vlastní polohy",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "Odstranit vlastní server?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3829,10 +3595,6 @@
   "importMnemonicImport": "Čeština",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
-  },
-  "recoverbullPasswordTooShort": "Heslo musí být nejméně 6 znaků dlouhé",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
   },
   "payNetwork": "Čeština",
   "@payNetwork": {
@@ -3950,10 +3712,6 @@
   "payTransitNumberHint": "Zadejte číslo dopravy",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "Vyberte PIN místo",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR kód",
   "@payQrCode": {
@@ -4249,10 +4007,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "recoverbullSelectNoBackupsFound": "Žádné zálohy nalezeno",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "Nested Segwit",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -4325,15 +4079,6 @@
   "importColdcardButtonOpenCamera": "Otevřete kameru",
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "recoverbullReenterRequired": "Znovu zadejte {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "Prioritní priority",
   "@payFeePriority": {
@@ -4415,10 +4160,6 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "recoverbullVaultRecoveryTitle": "Obnovení obnovit obnovení klenby",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "passportStep14": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
   "@passportStep14": {
     "description": "Passport final instruction about broadcasting"
@@ -4466,10 +4207,6 @@
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
-  },
-  "backupWalletHowToDecideVaultCustomRecommendation": "Vlastní umístění: ",
-  "@backupWalletHowToDecideVaultCustomRecommendation": {
-    "description": "Bold label for custom location recommendation"
   },
   "sendSats": "čeština",
   "@sendSats": {
@@ -4556,10 +4293,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "Vaše klenba byla úspěšně dovážena",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "Je kriticky důležité, abyste neuložili záložní klíč na stejném místě, kde uložíte záložní soubor. Vždy je uložíte na samostatných zařízeních nebo samostatných poskytovatelů cloudu.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4621,19 +4354,6 @@
   "systemLabelPayjoin": "Čeština",
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
-  },
-  "keyServerLabel": "Key Server ",
-  "@keyServerLabel": {
-    "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "Zadejte prosím svůj {inputType} pro zobrazení klíče klenby.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "Platba",
   "@payReviewPayment": {
@@ -4758,10 +4478,6 @@
   "failedToDeriveBackupKey": "Vyčerpání záložního klíče",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Zvýšil se exportovat klenbu z Disku Google",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "exchangeKycLevelLight": "Čeština",
   "@exchangeKycLevelLight": {
@@ -5033,17 +4749,9 @@
   "@sellSendPaymentCadBalance": {
     "description": "CAD balance payout method"
   },
-  "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor.\nTo může trvat až minutu.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "V Zeptejte se pokladny pro skenování \"Loadhub\" QR kód",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "Zadejte klíč klenby místo",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "exchangeAccountInfoEmailLabel": "E-mail",
   "@exchangeAccountInfoEmailLabel": {
@@ -5064,10 +4772,6 @@
   "electrumBitcoinServerInfo": "Zadejte adresu serveru ve formátu: hostitel:port (např.:50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
-  },
-  "recoverbullErrorServiceUnavailable": "Služba není k dispozici. Prosím zkontrolujte, zda je vaše připojení.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5196,10 +4900,6 @@
   "payCompletedDescription": "Vaše platba byla dokončena a příjemci obdrželi prostředky.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
-  },
-  "recoverbullConnecting": "Připojení",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "retry": "Hledat",
   "@retry": {
@@ -5338,10 +5038,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "Transakce bude dovážena v peněžence Bull Bitcoin.",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5432,10 +5128,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "Vyberte poskytovatele Vault",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "Původní transakce",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5447,10 +5139,6 @@
   "testBackupTitle": "Zkoumat zálohu vaší peněženky",
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "recoverbullErrorDecryptFailed": "Zlobil se dešifrovat klenbu",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "Kliknutím na tlačítko pro přihlášení do klíče.",
   "@keystoneStep9": {
@@ -5497,10 +5185,6 @@
   "receiveBitcoinConfirmationMessage": "Bitcoin transakce bude trvat, než potvrdíte.",
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "recoverbullDecryptVault": "Decrypt klenba",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "Blokstream Jade",
   "@connectHardwareWalletJade": {
@@ -5592,17 +5276,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "recoverbullFetchingVaultKey": "Čeština Čeština",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "dcaConfirmFrequency": "Čeština",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "Odstranit Vault",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
   },
   "advancedOptionsTitle": "Pokročilé možnosti",
   "@advancedOptionsTitle": {
@@ -5615,10 +5291,6 @@
   "payPriceWillRefreshIn": "Cena bude obnovena v ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Vymazat klenbu z Disku Google",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "broadcastSignedTxTo": "V",
   "@broadcastSignedTxTo": {
@@ -5656,10 +5328,6 @@
   "ledgerSignButton": "Start Registrace",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "recoverbullPassword": "Heslo",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "payFromAnotherWallet": "Platit z jiné Bitcoin peněženky",
   "@payFromAnotherWallet": {
@@ -5854,15 +5522,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "Potvrďte {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "Vaše výměna byla úspěšně dokončena! Finanční prostředky by měly být k dispozici ve vaší peněžence.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -5983,10 +5642,6 @@
   "onboardingRecover": "Čeština",
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
-  },
-  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
   },
   "receiveQRCode": "QR kód",
   "@receiveQRCode": {
@@ -6162,10 +5817,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "Spojení selhalo",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "Payin metoda",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -6201,10 +5852,6 @@
   "sellCopBalance": "Čeština Čeština",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "Vault Vybrané",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "Transfer poplatek",
   "@receiveTransferFee": {
@@ -6438,10 +6085,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "backupWalletHowToDecideVaultCloudRecommendationText": "chcete se ujistit, že nikdy neztratíte přístup k souboru klenby, i když ztratíte zařízení.",
-  "@backupWalletHowToDecideVaultCloudRecommendationText": {
-    "description": "Recommendation text for when to use cloud storage"
-  },
   "backupKeyExampleWarning": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -6510,10 +6153,6 @@
   "payInvoiceCopied": "Faktury zkopírované do schránky",
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
-  },
-  "recoverbullEncryptedVaultCreated": "Šifrovaný Vault vytvořen!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
   },
   "addressViewChangeAddressesComingSoon": "Změna adresy brzy",
   "@addressViewChangeAddressesComingSoon": {
@@ -6753,10 +6392,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "Decrypt klenba",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "Upgrade KYC Úroveň",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -6856,10 +6491,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "recoverbullPasswordMismatch": "Heslo neodpovídají",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
-  },
   "fundExchangeCrIbanUsdTransferCodeWarning": "Při platbě je nutné přidat kód převodu jako \"oddělování\" nebo \"rozpis\" nebo \"description\". Pokud zapomenete zahrnout tento kód, vaše platba může být odmítnuta.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
     "description": "Warning about including transfer code in payment for USD transfers"
@@ -6955,10 +6586,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "Nyní testujte zálohu, abyste se ujistili, že všechno bylo provedeno správně.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "Proveďte vklad pomocí přenosu SPEI (instant).",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -7044,10 +6671,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "Vault není nastaven",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "electrumFormatError": "Použijte hostitel:port formát (např.:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
@@ -7071,10 +6694,6 @@
   "walletDetailsWalletFingerprintLabel": "Peněženka otisků prstů",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "Tor není spuštěn",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "testBackupCreatedAt": "Vytvořeno na:",
   "@testBackupCreatedAt": {
@@ -7128,10 +6747,6 @@
   "payLabelOptional": "Štítky (volitelně)",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "Čeština",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Koupit",
   "@exchangeDcaDeactivateTitle": {
@@ -7315,10 +6930,6 @@
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
   },
-  "recoverbullUnexpectedError": "Neočekávaná chyba",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "transactionFilterSell": "Prodej",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
@@ -7358,10 +6969,6 @@
   "testBackupFetchingFromDevice": "Z vašeho zařízení.",
   "@testBackupFetchingFromDevice": {
     "description": "Progress screen title when fetching from local device"
-  },
-  "backupWalletHowToDecideVaultCustomLocation": "Vlastní umístění může být mnohem bezpečnější, v závislosti na tom, kde si vyberete místo. Musíte se také ujistit, že neztrácejí záložní soubor nebo ztratíte zařízení, na kterém je uložen váš záložní soubor.",
-  "@backupWalletHowToDecideVaultCustomLocation": {
-    "description": "Explanation of custom location benefits and risks"
   },
   "exchangeFileUploadPartialSuccess": "{uploaded} z {total} nahraných souborů",
   "@exchangeFileUploadPartialSuccess": {
@@ -7411,10 +7018,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "Hledáte rovnováhu a transakce..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "Převody on-chain mohou trvat nějakou dobu, než bude dokončeno v důsledku doby potvrzení o blockchainu.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -7430,10 +7033,6 @@
   "sellTitle": "Prodej Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "Vault klíč",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "Dnes",
   "@transactionListToday": {
@@ -7462,10 +7061,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "Vyberte peněženku Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "Došlo k chybě. Prosím, zkuste to znovu.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
   "@sellUnauthenticatedError": {
@@ -7534,10 +7129,6 @@
   "sellCalculating": "Výpočet...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "ČEŠTINA",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "Interní přenos",
   "@swapInternalTransferTitle": {
@@ -7622,10 +7213,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Obnoveníbull záložní soubor není platný",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "Nelze stavět transakci. Stejně jako v důsledku nedostatečných prostředků na pokrytí poplatků a částky.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -7641,10 +7228,6 @@
   "sellSendPaymentPriceRefresh": "Cena bude obnovena v ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "recoverbullPasswordRequired": "Heslo je vyžadováno",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "Poznámka",
   "@receiveNoteLabel": {
@@ -7800,10 +7383,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "Počátky",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "Netestováno",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -7843,10 +7422,6 @@
   "backupSettingsNotTested": "Netestováno",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
-  },
-  "googleDrivePrivacyMessage": "Google vás požádá o sdílení osobních údajů s touto aplikací.",
-  "@googleDrivePrivacyMessage": {
-    "description": "Message about Google requesting personal information"
   },
   "errorGenericTitle": "Oops! Něco šlo špatně",
   "@errorGenericTitle": {
@@ -7901,10 +7476,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "recoverbullErrorVaultCreatedKeyNotStored": "Vypnuto: Vault soubor vytvořený, ale klíč není uložen v serveru",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
   "exchangeSupportChatWalletIssuesInfo": "Tento chat je pouze pro výměnu související problémy s funding/Buy/Sell/Sdraw/Pay.\nPro peněženky související problémy, připojte se ke skupině telegram kliknutím zde.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
@@ -7924,10 +7495,6 @@
   "coreScreensLogsTitle": "Přihlášení",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "Vault klíč",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "Zálohování neodpovídá stávající peněženky",
   "@testBackupErrorWalletMismatch": {
@@ -8132,10 +7699,6 @@
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
   },
-  "recoverbullTestSuccessDescription": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
-  },
   "exchangeAuthLoginFailedTitle": "Přihlášení",
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
@@ -8169,10 +7732,6 @@
   "backupSettingsKeyWarningExample": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč.",
   "@backupSettingsKeyWarningExample": {
     "description": "Example explaining backup key storage separation"
-  },
-  "backupWalletHowToDecideVaultCloudRecommendation": "Google nebo Apple cloud: ",
-  "@backupWalletHowToDecideVaultCloudRecommendation": {
-    "description": "Bold label for cloud storage recommendation"
   },
   "testBackupEncryptedVaultDescription": "Anonymní zálohování se silným šifrováním pomocí cloudu.",
   "@testBackupEncryptedVaultDescription": {
@@ -8353,10 +7912,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "Tato peněženka již existuje.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "Vybrané jméno Biller",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8408,10 +7963,6 @@
   "dcaSetupInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
-  },
-  "recoverbullGotIt": "Chci to",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "Pokročilé možnosti",
   "@sendAdvancedOptions": {
@@ -8539,10 +8090,6 @@
   "importWalletLedger": "Čeština",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "Kontrola spojení pro obnoveníBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -8798,10 +8345,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "Neočekávaná chyba, viz protokoly",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "Submarine Swap",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -8830,10 +8373,6 @@
   "fundExchangeOnlineBillPaymentLabelBillerName": "Vyhledejte seznam účetních bank pro tento název",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "Vypnuto načíst všechny zálohy",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Omezená ověření",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -8969,15 +8508,6 @@
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
   },
-  "recoverbullRecoveryTransactionsLabel": "Transakce: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "buyViewDetails": "Zobrazit podrobnosti",
   "@buyViewDetails": {
     "description": "Button to view order details"
@@ -9087,10 +8617,6 @@
   "backupWalletInstructionLosePhone": "Bez zálohování, pokud ztratíte nebo rozbijete telefon, nebo pokud odinstalovat aplikaci Bull Bitcoin, vaše bitcoiny budou navždy ztraceny.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "Připojeno",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "dcaConfirmLightningAddress": "Blesková adresa",
   "@dcaConfirmLightningAddress": {
@@ -9243,19 +8769,6 @@
   "@electrumInvalidNumberError": {
     "description": "Validation error for non-numeric input"
   },
-  "recoverbullSelectGoogleDrive": "Disk Google",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "Zadejte {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoDismissButton": "Já to, ne ukázat znovu",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -9294,10 +8807,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "Čeština",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "Import nebo export peněženky pomocí standardu BIP329.",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -9313,10 +8822,6 @@
   "autoswapMaxFeeInfoText": "Pokud je celkový převodový poplatek nad stanoveným procentem, bude autopřevod zablokován",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "Hledat",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "Nyní testujte zálohu, abyste se ujistili, že všechno bylo provedeno správně.",
   "@backupWalletSuccessDescription": {
@@ -9430,10 +8935,6 @@
   "importQrDeviceKruxStep6": "To je to!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "Záložní soubor chybějící derivační cestu.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
   "@payUnauthenticatedError": {
@@ -9590,10 +9091,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "Bezpečné zálohování",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "Čeština",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -9642,10 +9139,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "Vypnuto na načtení klíče klenby z serveru",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "Swap je v průběhu. Faktura bude vyplacena během několika sekund.",
   "@sendSwapInProgressInvoice": {
@@ -9703,10 +9196,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "recoverbullRetry": "Hledat",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "Kopírovat fakturu",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -9722,14 +9211,6 @@
   "paySendMax": "Čeština",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "Přejete-li si odstranit tuto zálohu klenby? Tato akce nelze zrušit.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
-  },
-  "googleDriveSignInMessage": "Budete muset zaregistrovat do Disku Google",
-  "@googleDriveSignInMessage": {
-    "description": "Message about needing to sign in to Google Drive"
   },
   "transactionDetailLabelCompletedAt": "Kompletní",
   "@transactionDetailLabelCompletedAt": {
@@ -9808,10 +9289,6 @@
   "payInstitutionCode": "Kód instituce",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "Čeština Čeština",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "coreSwapsActionClaim": "Čeština",
   "@coreSwapsActionClaim": {
@@ -10015,10 +9492,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "Omlčený Key Server",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "Odhadovaný příchod: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -10185,10 +9658,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "recoverbullSelectRecoverWallet": "Obnovit peněženku",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "Aktivace Payjoin",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -10233,10 +9702,6 @@
   "swapAmountLabel": "Množství",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "Vlastní poloha",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "Potvrzení objednávky prodeje",
   "@sellConfirmOrder": {
@@ -10339,10 +9804,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "Vytvoření šifrování Čeština",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "Studená karta Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -10354,10 +9815,6 @@
   "sendReceiveAmount": "Přijmout částku",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "Test zotavení",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "Čistá částka",
   "@sellNetAmount": {
@@ -10423,10 +9880,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "ObnoveníBull Serveru",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "Zobrazovací jednotka v uspokojích",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -10458,10 +9911,6 @@
   "customLocationRecommendation": "Vlastní umístění: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "recoverbullErrorSelectVault": "Vypnuto vybrat klenbu",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "Celková částka",
   "@exchangeStatisticsTotalAmount": {
@@ -10512,10 +9961,6 @@
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
   },
-  "recoverbullGoogleDriveErrorSelectFailed": "Zvolil vybrat klenbu z Disku Google",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
-  },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
@@ -10535,10 +9980,6 @@
   "transactionStatusSwapExpired": "Swap vypršel",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
-  },
-  "recoverbullFailed": "Selhalo",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "dcaWalletSelectionContinueButton": "Pokračovat",
   "@dcaWalletSelectionContinueButton": {
@@ -10649,10 +10090,6 @@
       }
     }
   },
-  "recoverbullRecoveryContinueButton": "Pokračovat",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
-  },
   "confirmButtonLabel": "Potvrdit",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
@@ -10672,10 +10109,6 @@
   "pinButtonRemove": "Odstranit bezpečnostní PIN",
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
-  },
-  "recoverbullContinue": "Pokračovat",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
   },
   "dcaSetupContinue": "Pokračovat",
   "@dcaSetupContinue": {
@@ -10712,10 +10145,6 @@
   "electrumConfirm": "Potvrdit",
   "@electrumConfirm": {
     "description": "Confirm button label in advanced options"
-  },
-  "recoverbullConfirm": "Potvrdit",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "appUnlockScreenTitle": "Ověření",
   "@appUnlockScreenTitle": {
@@ -11063,22 +10492,6 @@
   "mempoolCustomServerNoSsl": "Bez SSL",
   "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
   "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
-  "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
-  "recoverbullServerUsingDefault": "Používá se výchozí server",
-  "recoverbullServerUsingCustom": "Používá se vlastní server",
-  "recoverbullServerUrlLabel": "URL serveru:",
-  "recoverbullServerCustomWarning": "Používáte vlastní server Recoverbull. Ujistěte se, že tomuto serveru důvěřujete.",
-  "recoverbullServerTorNotice": "K tomuto serveru se připojíme přes Tor",
-  "recoverbullLearnMore": "Více informací o Recoverbull",
-  "recoverbullSettingsTitle": "Nastavení Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
-  "recoverbullSettingsEdit": "Upravit",
-  "recoverbullSettingsCancel": "Zrušit",
-  "recoverbullSettingsSave": "Uložit",
-  "recoverbullSettingsUrlRequired": "URL je povinná",
-  "recoverbullSettingsUrlInvalid": "URL není platná",
-  "recoverbullSettingsUrlMustBeHttp": "URL musí být HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL musí končit na .onion",
   "onboardingAdvancedOptionsTitle": "Pokročilé možnosti",
   "onboardingAdvancedOptionsDescription": "Před vytvořením nebo obnovením peněženky nakonfigurujte pokročilá nastavení",
   "onboardingAdvancedOptionsCustomElectrum": "Vlastní server Electrum",
@@ -11538,7 +10951,6 @@
   "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
   "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
   "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",
@@ -11607,12 +11019,6 @@
   "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
   "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
   "torSettingsBootstrapProgress": "Připojování… {percent} %",
-  "recoverbullPhaseNetworkInfo": "Načítání informací o síti",
-  "recoverbullLongestStep": "Toto je nejdelší krok. První spuštění může trvat déle než minutu.",
-  "recoverbullTorOffline": "Zdá se, že není k dispozici připojení k internetu.",
-  "recoverbullTorClockSkewed": "Hodiny zařízení jdou špatně, takže Tor nemůže ověřit certifikáty uzlů. Zkontrolujte nastavení data a času.",
-  "recoverbullTorCantStart": "Tor se nyní nedokázal připojit. Zkuste to prosím znovu.",
-  "recoverbullServerUnreachableTorOk": "Tor funguje, ale zálohovací server neodpověděl. Hned po prvním spuštění to může chvíli trvat.",
   "torSettingsEmbeddedTitle": "Vestavěný Tor",
   "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
   "torSettingsTransportMode": "Způsob připojení",

@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,22 @@ class BullDialog extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(BullSpacing.lg),
-  });
+  }) : _alert = false,
+       title = null,
+       actions = const [];
+
+  /// An accessible platform alert with kit-owned presentation.
+  const BullDialog.alert({
+    super.key,
+    required this.child,
+    this.title,
+    this.actions = const [],
+  }) : _alert = true,
+       padding = EdgeInsets.zero;
+
+  final bool _alert;
+  final Widget? title;
+  final List<Widget> actions;
 
   /// The dialog content.
   final Widget child;
@@ -42,9 +58,34 @@ class BullDialog extends StatelessWidget {
     );
   }
 
+  /// Presents an alert variant; the builder owns localized copy and actions.
+  static Future<T?> showAlert<T>({
+    required BuildContext context,
+    required BullDialog Function(BuildContext) builder,
+    bool isDismissible = true,
+    double blurSigma = 0,
+    Color? barrierColor,
+  }) => showDialog<T>(
+    context: context,
+    barrierDismissible: isDismissible,
+    barrierColor: barrierColor ?? context.bull.text.withValues(alpha: .5),
+    builder: (dialogContext) {
+      final dialog = builder(dialogContext);
+      return blurSigma == 0
+          ? dialog
+          : BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+              child: dialog,
+            );
+    },
+  );
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    if (_alert) {
+      return AlertDialog(title: title, content: child, actions: actions);
+    }
     if (child is AlertDialog || child is SimpleDialog) {
       return child;
     }

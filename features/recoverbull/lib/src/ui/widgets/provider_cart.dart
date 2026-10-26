@@ -1,0 +1,121 @@
+import '../../domain/entities/vault_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:bull_ui/bull_ui.dart';
+import '../../l10n/context_localizations.dart';
+
+class ProviderCard extends StatefulWidget {
+  final VaultProvider provider;
+  final VoidCallback onTap;
+  final bool enabled;
+
+  const ProviderCard({
+    super.key,
+    required this.provider,
+    required this.onTap,
+    this.enabled = true,
+  });
+
+  @override
+  State<ProviderCard> createState() => _ProviderCardState();
+}
+
+class _ProviderCardState extends State<ProviderCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Material(
+        color: context.bull.transparent,
+        child: InkWell(
+          onTapDown: widget.enabled ? (_) => _controller.forward() : null,
+          onTapUp: widget.enabled ? (_) => _controller.reverse() : null,
+          onTapCancel: () => _controller.reverse(),
+          onTap: widget.enabled
+              ? () {
+                  HapticFeedback.lightImpact();
+                  widget.onTap();
+                }
+              : null,
+          borderRadius: BorderRadius.circular(BullRadius.sm),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: context.bull.surface,
+              borderRadius: BorderRadius.circular(BullRadius.sm),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(BullSpacing.md),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Image.asset(
+                      widget.provider.iconPath,
+                      package: 'bull_recoverbull',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const Gap(BullSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        BullText(
+                          _providerName(context),
+                          style: context.bullText.headlineMedium?.copyWith(
+                            color: widget.enabled
+                                ? context.bull.onSurface
+                                : context.bull.textMuted,
+                          ),
+                        ),
+                        const Gap(10),
+                        BullOptionsTag(text: _providerDescription(context)),
+                      ],
+                    ),
+                  ),
+                  const Gap(BullSpacing.xs),
+                  Icon(Icons.arrow_forward, color: context.bull.onSurface),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _providerName(BuildContext context) => switch (widget.provider) {
+    VaultProvider.googleDrive => context.loc.recoverbullSelectGoogleDrive,
+    VaultProvider.iCloud => context.loc.recoverbullSelectAppleIcloud,
+    VaultProvider.customLocation =>
+      context.loc.recoverbullSelectCustomLocationProvider,
+  };
+
+  String _providerDescription(BuildContext context) =>
+      widget.provider == VaultProvider.customLocation
+      ? context.loc.recoverbullSelectTakeYourTime
+      : context.loc.recoverbullSelectQuickAndEasy;
+}

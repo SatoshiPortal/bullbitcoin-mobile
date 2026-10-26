@@ -1,138 +1,398 @@
-import 'dart:async';
+import 'dart:io';
 
 import 'package:bull_sdk/onion.dart' as onion;
+import 'package:bull_tor/src/data/onion_client_launcher.dart';
 import 'package:bull_tor/src/data/onion_tor_backend.dart';
 import 'package:bull_tor/src/data/tor_logger.dart';
-import 'package:bull_tor/src/domain/entities/tor_proxy_endpoint.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
-import 'package:bull_tor/src/domain/tor_failure.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:test/test.dart';
 
 void main() {
-  final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 9050);
+  final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 41001);
 
-  onion.TorStatus status(double fraction, {bool ready = false}) =>
+  onion.TorStatus blocked(onion.BlockageKind kind, String message) =>
       onion.TorStatus(
-        fraction: fraction,
-        readyForTraffic: ready,
+        fraction: 0.4,
+        readyForTraffic: false,
+        blockage: onion.Blockage(kind: kind, message: message),
         stage: '',
         transport: onion.TorTransport.direct,
       );
 
-  test('logs each readiness change once, including regressions', () {
-    final lines = <Object?>[];
-    final backend = OnionTorBackend(
-      TorLogger(fineCallback: (message, {error, trace}) => lines.add(message)),
-    );
+  group('OnionTorBackend.eventFor', () {
+    test('keeps arti\'s blockage message as the bootstrap detail', () {
+      final event = OnionTorBackend.eventFor(
+        blocked(onion.BlockageKind.clockSkewed, 'Clock is skewed by 2 hours'),
+        endpoint,
+      );
 
-    for (final s in [
-      status(0),
-      status(0.001),
-      status(0.85),
-      status(0.85),
-      status(1, ready: true),
-      status(0.45),
-      status(1, ready: true),
-      status(1, ready: true),
-      status(1, ready: true),
-    ]) {
-      backend.handleStatus(s, endpoint);
-    }
-
-    expect(lines, [
-      'Embedded Tor readiness waiting (0%)',
-      'Embedded Tor readiness waiting (85%)',
-      'Embedded Tor readiness ready (100%)',
-      'Embedded Tor readiness waiting (45%)',
-      'Embedded Tor readiness ready (100%)',
-    ]);
-  });
-
-  group('waitForTraffic', () {
-    test('waits past a usable directory until Arti is ready', () async {
-      final backend = OnionTorBackend(const TorLogger());
-      var ready = false;
-      final waiting = backend
-          .waitForTraffic(const Duration(seconds: 5))
-          .then((_) => ready = true);
-
-      backend.handleStatus(status(0.85), endpoint);
-      await Future<void>.delayed(Duration.zero);
-      expect(ready, isFalse);
-
-      backend.handleStatus(status(1, ready: true), endpoint);
-      await waiting;
-      expect(ready, isTrue);
+      expect(event, isA<EmbeddedTorConnecting>());
+      final connecting = event as EmbeddedTorConnecting;
+      expect(connecting.diagnostic, TorDiagnostic.clockSkewed);
+      expect(connecting.detail?.blockage, 'Clock is skewed by 2 hours');
+      expect(connecting.detail?.stage, isNull);
     });
 
-    test('fails as a bootstrap timeout when Arti never gets ready', () {
-      final backend = OnionTorBackend(const TorLogger());
-      backend.handleStatus(status(0.93), endpoint);
+    // `notStarted` is arti describing our own manual bootstrap back to us.
+    test('drops the message of a blockage that is not a fault', () {
+      final event = OnionTorBackend.eventFor(
+        blocked(
+          onion.BlockageKind.notStarted,
+          'Client is waiting to be told to bootstrap',
+        ),
+        endpoint,
+      );
 
+      expect((event as EmbeddedTorConnecting).detail, isNull);
+    });
+
+    test('carries arti\'s bootstrap stage next to the blockage', () {
+      final event = OnionTorBackend.eventFor(
+        const onion.TorStatus(
+          fraction: 0.4,
+          readyForTraffic: false,
+          blockage: onion.Blockage(
+            kind: onion.BlockageKind.clockSkewed,
+            message: 'Clock is skewed by 2 hours',
+          ),
+          stage: 'Stuck at 40%: Clock is skewed by 2 hours',
+          transport: onion.TorTransport.direct,
+        ),
+        endpoint,
+      );
+
+      final detail = (event as EmbeddedTorConnecting).detail;
+      expect(detail?.stage, 'Stuck at 40%: Clock is skewed by 2 hours');
+      expect(detail?.blockage, 'Clock is skewed by 2 hours');
+    });
+
+    test('reports the bootstrap stage when arti reports no blockage', () {
+      final event = OnionTorBackend.eventFor(
+        const onion.TorStatus(
+          fraction: 0.4,
+          readyForTraffic: false,
+          stage: '40%: directory is fetching microdescriptors (120/300)',
+          transport: onion.TorTransport.direct,
+        ),
+        endpoint,
+      );
+
+      final detail = (event as EmbeddedTorConnecting).detail;
       expect(
-        backend.waitForTraffic(const Duration(milliseconds: 10)),
+        detail?.stage,
+        '40%: directory is fetching microdescriptors (120/300)',
+      );
+      expect(detail?.blockage, isNull);
+    });
+
+    test('carries no detail when arti reports no blockage', () {
+      final event = OnionTorBackend.eventFor(
+        const onion.TorStatus(
+          fraction: 0.4,
+          readyForTraffic: false,
+          stage: '',
+          transport: onion.TorTransport.direct,
+        ),
+        endpoint,
+      );
+
+      expect((event as EmbeddedTorConnecting).detail, isNull);
+    });
+  });
+
+  test('a failed bootstrap keeps the last blockage detail', () {
+    final failure = OnionTorBackend.failureFor(
+      const onion.TorFailure(
+        kind: onion.TorFailureKind.bootstrap,
+        logMessage: 'bootstrap failed',
+      ),
+      TorDiagnostic.clockSkewed,
+      const TorBootstrapDetail(blockage: 'Clock is skewed by 2 hours'),
+    );
+
+    expect(failure, isA<TorBootstrapFailure>());
+    final bootstrap = failure as TorBootstrapFailure;
+    expect(bootstrap.diagnostic, TorDiagnostic.clockSkewed);
+    expect(bootstrap.detail?.blockage, 'Clock is skewed by 2 hours');
+  });
+
+  group('OnionTorBackend.start', () {
+    late Directory root;
+    late _RecordingLauncher launcher;
+    late OnionTorBackend backend;
+
+    setUp(() async {
+      root = await Directory.systemTemp.createTemp('bull_tor_backend_');
+      launcher = _RecordingLauncher();
+      final directories = torDirectoriesUnder('${root.path}/support');
+      backend = OnionTorBackend(
+        const TorLogger(),
+        launcher: launcher,
+        directories: (_) async => directories,
+        readinessHold: Duration.zero,
+      );
+    });
+
+    tearDown(() async {
+      await backend.close();
+      await root.delete(recursive: true);
+    });
+
+    Future<OnionClientConfig> configFor(TorTransport transport) async {
+      await expectLater(
+        backend.start(transport),
+        throwsA(isA<TorBackendException>()),
+      );
+      return launcher.configs.last;
+    }
+
+    // Arti refuses bridges to a client without the state-directory lock, and
+    // the client stopped just before may still hold it.
+    test('gives Snowflake a state directory of its own', () async {
+      final direct = await configFor(TorTransport.direct);
+      final snowflake = await configFor(TorTransport.snowflake);
+
+      expect(snowflake.stateDir, isNot(direct.stateDir));
+      expect(snowflake.snowflakePort, _RecordingLauncher.snowflakePort);
+      expect(Directory(snowflake.stateDir).existsSync(), isTrue);
+    });
+
+    // Key-server attempts rely on this timeout alone; see
+    // [torConnectBudget].
+    test('gives both transports the shared connection budget', () async {
+      final direct = await configFor(TorTransport.direct);
+      final snowflake = await configFor(TorTransport.snowflake);
+
+      expect(direct.connectTimeout, torConnectBudget);
+      expect(snowflake.connectTimeout, torConnectBudget);
+    });
+
+    test(
+      'skips speculative exit circuits for both onion-only transports',
+      () async {
+        final direct = await configFor(TorTransport.direct);
+        final snowflake = await configFor(TorTransport.snowflake);
+
+        expect(direct.disablePreemptiveExitCircuits, isTrue);
+        expect(snowflake.disablePreemptiveExitCircuits, isTrue);
+      },
+    );
+
+    test('gives a session the shared connection budget', () async {
+      final service = _FakeTorService();
+      launcher.service = service;
+
+      await backend.start(TorTransport.direct);
+      final session = await backend.openSession();
+
+      expect(session.endpoint.port, _FakeTorService.sessionPort);
+      expect(service.sessionConnectTimeouts, [
+        BigInt.from(torConnectBudget.inMilliseconds),
+      ]);
+    });
+
+    test('Snowflake cleanup preserves the mapped startup failure', () async {
+      launcher.stopFailure = Exception('fixture teardown failed');
+      await expectLater(
+        backend.start(TorTransport.snowflake),
         throwsA(
           isA<TorBackendException>().having(
-            (e) => e.failure,
-            'failure',
-            isA<TorBootstrapTimeoutFailure>(),
+            (error) => error.failure.logMessage,
+            'original failure',
+            contains('no native Tor in tests'),
           ),
         ),
       );
+      await backend
+          .start(TorTransport.direct)
+          .then<void>(
+            (_) => fail('Expected fixture startup failure'),
+            onError: (Object error) =>
+                expect(error, isA<TorBackendException>()),
+          );
     });
 
-    test('stop releases the wait instead of holding it to the timeout', () {
-      final backend = OnionTorBackend(const TorLogger());
-      final waiting = backend.waitForTraffic(const Duration(minutes: 1));
+    test('shares the directory cache between transports', () async {
+      final direct = await configFor(TorTransport.direct);
+      final snowflake = await configFor(TorTransport.snowflake);
 
-      backend.stop();
-
-      expect(waiting, throwsA(isA<TorBackendException>()));
+      expect(snowflake.cacheDir, direct.cacheDir);
     });
   });
 
-  group('readiness hold', () {
-    test(
-      'republishes Arti readiness as full progress until the hold is served',
-      () async {
-        final backend = OnionTorBackend(const TorLogger());
-        final events = <EmbeddedTorEvent>[];
-        backend.watch().listen(events.add);
-
-        backend.handleStatus(status(1, ready: true), endpoint);
-
-        expect(events.single, isA<EmbeddedTorConnecting>());
-        expect((events.single as EmbeddedTorConnecting).progress, 1);
-      },
-    );
-
-    test('waits for the configured hold', () async {
-      final waited = <Duration>[];
-      final backend = OnionTorBackend(
-        const TorLogger(),
-        readinessHold: const Duration(seconds: 15),
-        wait: (duration) async => waited.add(duration),
+  test('rejects a missing or invalid Snowflake port before native startup', () {
+    for (final port in [null, 0, 65536]) {
+      expect(
+        () => const NativeOnionClientLauncher().startClient(
+          OnionClientConfig(
+            transport: TorTransport.snowflake,
+            stateDir: '/unused/state',
+            cacheDir: '/unused/cache',
+            snowflakePort: port,
+          ),
+          onion.SocksPolicy.onionOnly,
+        ),
+        throwsArgumentError,
       );
+    }
+  });
 
-      await backend.holdReadiness();
+  // Android may purge an app's cache directory whenever storage runs low,
+  // and a purged directory costs the next bootstrap its 30 to 45 s download.
+  test('keeps the directory cache next to the Tor state', () {
+    final directories = torDirectoriesUnder('/support');
 
-      expect(waited, [const Duration(seconds: 15)]);
+    expect(directories.cache, '/support/tor_cache');
+    expect({
+      directories.directState,
+      directories.snowflakeState,
+      directories.cache,
+    }, hasLength(3));
+  });
+
+  group('adoptLegacyTorCache', () {
+    late Directory root;
+    late String legacy;
+    late String durable;
+    final warnings = <Object?>[];
+    final log = TorLogger(
+      warningCallback: (message, {error, trace}) => warnings.add(message),
+    );
+
+    setUp(() async {
+      root = await Directory.systemTemp.createTemp('bull_tor_cache_');
+      legacy = '${root.path}/cache/tor';
+      durable = '${root.path}/support/tor_cache';
+      warnings.clear();
     });
 
-    test(
-      'stop ends the hold instead of queueing a restart behind it',
-      () async {
-        final never = Completer<void>();
-        final backend = OnionTorBackend(
-          const TorLogger(),
-          wait: (_) => never.future,
-        );
-        final holding = backend.holdReadiness();
+    tearDown(() => root.delete(recursive: true));
 
-        await backend.stop();
+    Future<void> adopt() =>
+        adoptLegacyTorCache(legacy: legacy, durable: durable, log: log);
 
-        await expectLater(holding, completes);
-      },
-    );
+    test('moves an existing cache to the durable location', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+
+      await adopt();
+
+      expect(File('$durable/dir.sqlite3').existsSync(), isTrue);
+      expect(Directory(legacy).existsSync(), isFalse);
+    });
+
+    test('keeps a durable cache and drops the legacy one', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+      await File('$legacy/dir.sqlite3').writeAsString('legacy', flush: true);
+      await File('$durable/dir.sqlite3').create(recursive: true);
+      await File('$durable/dir.sqlite3').writeAsString('durable', flush: true);
+
+      await adopt();
+
+      expect(File('$durable/dir.sqlite3').readAsStringSync(), 'durable');
+      expect(Directory(legacy).existsSync(), isFalse);
+    });
+
+    test('does nothing without a legacy cache', () async {
+      await adopt();
+
+      expect(Directory(durable).existsSync(), isFalse);
+      expect(warnings, isEmpty);
+    });
+
+    // A cache is only worth a download: losing it must not stop Tor.
+    test('gives up quietly when the move fails', () async {
+      await File('$legacy/dir.sqlite3').create(recursive: true);
+      // The durable location's parent is a file, so nothing can go there.
+      await File('${root.path}/support').create(recursive: true);
+
+      await expectLater(adopt(), completes);
+
+      expect(warnings, isNotEmpty);
+      expect(Directory(durable).existsSync(), isFalse);
+    });
   });
+}
+
+final class _RecordingLauncher implements OnionClientLauncher {
+  static const snowflakePort = 41999;
+
+  final configs = <OnionClientConfig>[];
+
+  /// What a start returns; null fails it.
+  onion.TorService? service;
+  Exception? stopFailure;
+
+  @override
+  Future<onion.TorService> startClient(
+    OnionClientConfig config,
+    onion.SocksPolicy policy,
+  ) async {
+    configs.add(config);
+    return service ?? (throw StateError('no native Tor in tests'));
+  }
+
+  @override
+  Future<int> startSnowflakeProxy() async => snowflakePort;
+
+  @override
+  Future<void> stopSnowflakeProxy() async {
+    if (stopFailure case final failure?) throw failure;
+  }
+}
+
+/// A bootstrapped client whose sessions record their connect timeout.
+final class _FakeTorService implements onion.TorService {
+  static const sessionPort = 41003;
+
+  final sessionConnectTimeouts = <BigInt?>[];
+
+  @override
+  Future<void> bootstrap() async {}
+
+  @override
+  Future<bool> proxyIsAlive() async => true;
+
+  @override
+  Future<int> socksPort() async => 41002;
+
+  @override
+  Stream<onion.TorStatus> watchStatus() => Stream.value(
+    onion.TorStatus(
+      fraction: 1,
+      readyForTraffic: true,
+      stage: '',
+      transport: onion.TorTransport.direct,
+    ),
+  );
+
+  @override
+  Future<void> setDormant({required bool dormant}) async {}
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<onion.TorSession> openSessionWithConnectTimeout({
+    required int socksPort,
+    required onion.SocksPolicy policy,
+    BigInt? connectTimeoutMs,
+  }) async {
+    sessionConnectTimeouts.add(connectTimeoutMs);
+    return _FakeTorSession();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _FakeTorSession implements onion.TorSession {
+  @override
+  Future<int> socksPort() async => _FakeTorService.sessionPort;
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

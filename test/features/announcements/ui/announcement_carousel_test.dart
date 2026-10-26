@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/domain/announcements_failure.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
+import 'package:bb_mobile/features/announcements/domain/entities/recoverbull_announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
@@ -11,7 +12,8 @@ import 'package:bb_mobile/features/announcements/presentation/announcements_cubi
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_ui/bull_ui.dart' show BullIcons, BullInfoCard;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,12 +44,13 @@ Future<void> _pumpCarousel(
   required List<Announcement> announcements,
   Size size = const Size(390, 844),
   double textScale = 1,
+  _MockDismissAnnouncementUsecase? dismissUsecase,
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   final getVisible = _MockGetVisibleAnnouncementsUsecase();
-  final dismiss = _MockDismissAnnouncementUsecase();
+  final dismiss = dismissUsecase ?? _MockDismissAnnouncementUsecase();
   final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
   final updateSignals = StreamController<bool>.broadcast();
   addTearDown(updateSignals.close);
@@ -65,7 +68,10 @@ Future<void> _pumpCarousel(
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        RecoverBullLocalizations.delegate,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: MediaQuery(
@@ -95,6 +101,8 @@ ScrollPosition _carouselScroll(WidgetTester tester) =>
     tester.state<ScrollableState>(find.byType(Scrollable).last).position;
 
 void main() {
+  _refreshesWhenReturningToHome();
+
   testWidgets('shows the update warning on wallet home after HTTP 418', (
     tester,
   ) async {
@@ -201,6 +209,50 @@ void main() {
     });
   }
 
+  testWidgets(
+    'shows separate RecoverBull backup pages with an integrated dismiss button',
+    (tester) async {
+      final backupA = RecoverBullAttemptAlert.targetedLockout(
+        backupReference: 'backup-a',
+        correlationId: 'digest-a',
+      );
+      final backupB = RecoverBullAttemptAlert.targetedLockout(
+        backupReference: 'backup-b',
+        correlationId: 'digest-b',
+      );
+      final announcements = [
+        RecoverBullAnnouncement(primaryAlert: backupA, sourceAlerts: [backupA]),
+        RecoverBullAnnouncement(primaryAlert: backupB, sourceAlerts: [backupB]),
+      ];
+      final dismiss = _MockDismissAnnouncementUsecase();
+      when(
+        () => dismiss.execute(announcements.first),
+      ).thenAnswer((_) async => const Ok<void, AnnouncementsFailure>(null));
+
+      await _pumpCarousel(
+        tester,
+        announcements: announcements,
+        dismissUsecase: dismiss,
+      );
+
+      expect(find.byType(AnnouncementCard), findsNWidgets(2));
+      expect(
+        tester
+            .widgetList<AnnouncementCard>(find.byType(AnnouncementCard))
+            .map((card) => card.announcement.stableKey),
+        containsAll(<String>['recoverbull:digest-a', 'recoverbull:digest-b']),
+      );
+      expect(find.byIcon(BullIcons.close), findsNWidgets(2));
+
+      await tester.tap(find.byIcon(BullIcons.close).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dismiss'));
+      await tester.pumpAndSettle();
+
+      verify(() => dismiss.execute(announcements.first)).called(1);
+    },
+  );
+
   testWidgets('swiping snaps to the next announcement', (tester) async {
     await _pumpCarousel(
       tester,
@@ -304,5 +356,71 @@ void main() {
 
     await gesture.up();
     await tester.pumpAndSettle();
+  });
+}
+
+void _refreshesWhenReturningToHome() {
+  testWidgets('refreshes when a route pushed over home is popped', (
+    tester,
+  ) async {
+    final getVisible = _MockGetVisibleAnnouncementsUsecase();
+    final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
+    when(
+      () => watchUpdate.execute(),
+    ).thenAnswer((_) => const Stream<bool>.empty());
+    var visible = [_announcement(AnnouncementId.appUpdateRequired)];
+    when(() => getVisible.execute()).thenAnswer(
+      (_) async => Ok<List<Announcement>, AnnouncementsFailure>(visible),
+    );
+    final cubit = AnnouncementsCubit(
+      getVisibleAnnouncementsUsecase: getVisible,
+      dismissAnnouncementUsecase: _MockDismissAnnouncementUsecase(),
+      watchAppUpdateAnnouncementUsecase: watchUpdate,
+    );
+    addTearDown(cubit.close);
+    final navigatorKey = GlobalKey<NavigatorState>();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigatorKey,
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          RecoverBullLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: const CustomScrollView(
+              slivers: [SliverToBoxAdapter(child: AnnouncementCarousel())],
+            ),
+          ),
+        ),
+      ),
+    );
+    await cubit.refresh();
+    await tester.pumpAndSettle();
+    expect(find.text('Update BULL'), findsOneWidget);
+
+    // A flow pushed over home, like the encrypted vault flow, clears the
+    // trigger while home is covered.
+    unawaited(
+      navigatorKey.currentState!.push(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    visible = const [];
+    await tester.pumpAndSettle();
+    expect(find.text('Update BULL', skipOffstage: false), findsOneWidget);
+
+    navigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Update BULL'), findsNothing);
+    // Once on mount and once on the return: covering home and rebuilding it
+    // do not reload the announcements.
+    verify(() => getVisible.execute()).called(2);
   });
 }

@@ -82,4 +82,7 @@ final class _FakeTorRepository implements TorRepository {
 
   @override
   Stream<TorConnectionState> watch() => const Stream.empty();
+
+  @override
+  Stream<TorTransportFallback> watchFallbacks() => const Stream.empty();
 }

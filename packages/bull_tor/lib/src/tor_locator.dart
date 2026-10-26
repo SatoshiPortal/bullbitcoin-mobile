@@ -11,6 +11,8 @@ import 'domain/ports/external_tor_port.dart';
 import 'domain/ports/socket_port.dart';
 import 'domain/entities/tor_transport.dart';
 import 'domain/tor_repository.dart';
+import 'domain/tor_route_pool.dart';
+import 'domain/tor_route_pool_invalidator.dart';
 import 'domain/usecases/close_tor_usecase.dart';
 import 'domain/usecases/ensure_tor_ready_usecase.dart';
 import 'domain/usecases/get_tor_connection_usecase.dart';
@@ -21,6 +23,7 @@ import 'domain/usecases/set_tor_dormant_usecase.dart';
 import 'domain/usecases/set_tor_transport_mode_usecase.dart';
 import 'domain/usecases/verify_external_tor_usecase.dart';
 import 'domain/usecases/watch_tor_connection_usecase.dart';
+import 'domain/usecases/watch_tor_transport_fallbacks_usecase.dart';
 import 'tor_lifecycle_controller.dart';
 import 'tor_controller.dart';
 
@@ -33,12 +36,16 @@ final class TorLocator {
   static Future<void> registerDatasources(
     GetIt locator, {
     TorLogger logger = const TorLogger(),
+    bool captureNativeLogs = false,
   }) async {
     await OnionTorBackend.initialize();
     locator.registerSingleton<TorLogger>(logger);
     locator.registerLazySingleton<SocketPort>(DartIoSocketAdapter.new);
     locator.registerLazySingleton<EmbeddedTorPort>(
-      () => OnionTorBackend(locator<TorLogger>()),
+      () => OnionTorBackend(
+        locator<TorLogger>(),
+        captureNativeLogs: captureNativeLogs,
+      ),
     );
     locator.registerLazySingleton<ExternalTorPort>(
       () =>
@@ -47,20 +54,21 @@ final class TorLocator {
     locator.registerLazySingleton<TorHttpClientFactory>(
       TorHttpClientFactory.new,
     );
+    locator.registerLazySingleton<TorRoutePool>(TorRoutePool.new);
   }
 
   static void registerRepositories(
     GetIt locator, {
     TorTransportMode initialMode = TorTransportMode.automatic,
-    TorTransport? lastSuccessfulTransport,
     Future<void> Function(TorTransport)? onSuccessfulTransport,
   }) {
     locator.registerLazySingleton<TorRepository>(
       () => TorRepositoryImpl(
         locator<EmbeddedTorPort>(),
         initialMode: initialMode,
-        lastSuccessfulTransport: lastSuccessfulTransport,
         onSuccessfulTransport: onSuccessfulTransport,
+        onSessionInvalidated: () =>
+            locator<TorRoutePoolTorInvalidator>().invalidateEmbedded(),
       ),
     );
   }
@@ -74,6 +82,9 @@ final class TorLocator {
     );
     locator.registerFactory<WatchTorConnectionUsecase>(
       () => WatchTorConnectionUsecase(locator<TorRepository>()),
+    );
+    locator.registerFactory<WatchTorTransportFallbacksUsecase>(
+      () => WatchTorTransportFallbacksUsecase(locator<TorRepository>()),
     );
     locator.registerFactory<SetTorDormantUsecase>(
       () => SetTorDormantUsecase(locator<TorRepository>()),
@@ -96,6 +107,13 @@ final class TorLocator {
     locator.registerFactory<SetTorTransportModeUsecase>(
       () => SetTorTransportModeUsecase(locator<TorRepository>()),
     );
+    locator.registerLazySingleton<TorRoutePoolTorInvalidator>(
+      () => TorRoutePoolTorInvalidator(
+        locator<TorRepository>().watch(),
+        locator<TorRoutePool>(),
+      ),
+    );
+    locator<TorRoutePoolTorInvalidator>();
     locator.registerLazySingleton<Tor>(
       () => Tor(
         EmbeddedTor(
@@ -105,6 +123,7 @@ final class TorLocator {
           locator<RetryTorConnectionUsecase>(),
           locator<WatchTorConnectionUsecase>(),
           locator<SetTorTransportModeUsecase>(),
+          locator<WatchTorTransportFallbacksUsecase>(),
           TorSessions(locator<OpenTorSessionUsecase>()),
         ),
         ExternalTor(locator<VerifyExternalTorUsecase>()),

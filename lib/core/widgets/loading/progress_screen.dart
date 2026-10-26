@@ -1,8 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
-import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
-import 'package:gif/gif.dart' show Autostart, Gif;
+import 'package:bull_ui/bull_ui.dart';
 
 class ProgressScreen extends StatelessWidget {
   final String? title;
@@ -16,40 +12,9 @@ class ProgressScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        mainAxisAlignment: .center,
-        children: [
-          if (isLoading)
-            Center(
-              child: Gif(
-                autostart: Autostart.loop,
-                width: 200,
-                height: 200,
-                image: AssetImage(Assets.animations.cubesLoading.path),
-              ),
-            ),
-          if (title != null) ...[
-            const Gap(16),
-            BullText(
-              title!,
-              textAlign: .center,
-              style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
-            ),
-          ],
-          if (description != null) ...[
-            const Gap(16),
-            BullText(
-              description!,
-              textAlign: .center,
-              style: context.font.bodySmall,
-              maxLines: 3,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => BullProgressScreen(
+    isLoading: isLoading,
+    title: title,
+    description: description,
+  );
 }

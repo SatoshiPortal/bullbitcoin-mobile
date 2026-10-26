@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 /// Duplicated from `core/widgets/navbar/top_bar.dart` (the `BB*` original is
 /// left untouched). Adds an optional red-dot badge on the trailing action to
 /// flag an active filter.
-class BullTopBar extends StatelessWidget {
+class BullTopBar extends StatelessWidget implements PreferredSizeWidget {
   const BullTopBar({
     super.key,
     required this.title,
@@ -17,7 +17,25 @@ class BullTopBar extends StatelessWidget {
     this.actionBadge = false,
     this.color,
     this.titleWidget,
-  });
+    this.actions = const [],
+  }) : _appBar = false,
+       materialTransparency = false,
+       titleStyle = null;
+
+  /// Standard scaffold app bar, with the same themed title and navigation.
+  const BullTopBar.appBar({
+    super.key,
+    required this.title,
+    this.onBack,
+    this.actions = const [],
+    this.materialTransparency = false,
+    this.titleStyle,
+  }) : onAction = null,
+       actionIcon = null,
+       actionBadge = false,
+       color = null,
+       titleWidget = null,
+       _appBar = true;
 
   /// The centered title text. Ignored when [titleWidget] is supplied.
   final String title;
@@ -42,9 +60,40 @@ class BullTopBar extends StatelessWidget {
   /// than a flag so the asset stays in the app and out of the design system.
   final Widget? titleWidget;
 
+  /// Additional trailing widgets, such as a feature status indicator.
+  final List<Widget> actions;
+  final bool _appBar;
+  final bool materialTransparency;
+  final TextStyle? titleStyle;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    if (_appBar) {
+      return AppBar(
+        backgroundColor: colors.background,
+        foregroundColor: colors.onSurface,
+        surfaceTintColor: colors.background,
+        scrolledUnderElevation: 0,
+        forceMaterialTransparency: materialTransparency,
+        leading: onBack == null
+            ? null
+            : IconButton(
+                onPressed: onBack,
+                icon: const BullIcon(BullIcons.arrowBack),
+              ),
+        title: title.isEmpty
+            ? null
+            : Text(
+                title,
+                style: titleStyle ?? TextStyle(color: colors.onSurface),
+              ),
+        actions: actions,
+      );
+    }
     return Container(
       color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
@@ -101,8 +150,9 @@ class BullTopBar extends StatelessWidget {
                   ),
               ],
             )
-          else if (onBack != null)
+          else if (onBack != null && actions.isEmpty)
             const SizedBox(width: 40),
+          ...actions,
         ],
       ),
     );
