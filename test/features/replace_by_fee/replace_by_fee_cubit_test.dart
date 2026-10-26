@@ -40,6 +40,12 @@ void main() {
   late _MockBumpFeeUsecase bumpFee;
 
   Future<ReplaceByFeeCubit> buildCubit() async {
+    when(
+      () => bumpFee.verifyOriginalTransaction(
+        walletId: any(named: 'walletId'),
+        txid: any(named: 'txid'),
+      ),
+    ).thenAnswer((_) async => const Ok(null));
     when(() => bumpFee.getNetworkFees()).thenAnswer((_) async => Ok(_fees()));
     final cubit = ReplaceByFeeCubit(
       originalTransaction: _tx(),
@@ -52,6 +58,34 @@ void main() {
 
   setUp(() {
     bumpFee = _MockBumpFeeUsecase();
+  });
+
+  group('ReplaceByFeeCubit — manipulated transaction guard', () {
+    test(
+      'failed verification blocks init: failure set, fees never fetched',
+      () async {
+        when(
+          () => bumpFee.verifyOriginalTransaction(
+            walletId: any(named: 'walletId'),
+            txid: any(named: 'txid'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err(ReplaceByFeeManipulatedTransactionFailure()),
+        );
+        final cubit = ReplaceByFeeCubit(
+          originalTransaction: _tx(),
+          bumpFeeUsecase: bumpFee,
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          cubit.state.failure,
+          isA<ReplaceByFeeManipulatedTransactionFailure>(),
+        );
+        expect(cubit.state.newFeeRate, isNull);
+        verifyNever(() => bumpFee.getNetworkFees());
+      },
+    );
   });
 
   group('ReplaceByFeeCubit — prefilled bump rate', () {

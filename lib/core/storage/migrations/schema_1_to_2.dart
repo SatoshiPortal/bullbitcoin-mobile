@@ -25,8 +25,11 @@ class Schema1To2 {
       }),
     ];
 
+    // Ignore rows already seeded by an earlier run of this step.
     for (final value in values) {
-      await m.database.into(schema2.autoSwap).insert(value);
+      await m.database
+          .into(schema2.autoSwap)
+          .insert(value, mode: InsertMode.insertOrIgnore);
     }
   }
 }
