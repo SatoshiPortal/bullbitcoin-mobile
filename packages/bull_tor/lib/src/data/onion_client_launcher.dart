@@ -52,12 +52,17 @@ final class OnionClientConfig {
   /// null keeps the onion default.
   final Duration? connectTimeout;
 
+  /// Skip speculative exit/DNS circuits when this client's entire workload
+  /// uses onion services. This does not change listener destination policy.
+  final bool disablePreemptiveExitCircuits;
+
   const OnionClientConfig({
     required this.transport,
     required this.stateDir,
     required this.cacheDir,
     this.snowflakePort,
     this.connectTimeout,
+    this.disablePreemptiveExitCircuits = false,
   });
 }
 
@@ -90,27 +95,19 @@ final class NativeOnionClientLauncher implements OnionClientLauncher {
         (snowflakePort == null || snowflakePort < 1 || snowflakePort > 65535)) {
       throw ArgumentError('Snowflake requires a valid local proxy port');
     }
-    return switch (config.transport) {
-      TorTransport.direct => onion.TorService.startWithConnectTimeout(
-        stateDir: config.stateDir,
-        cacheDir: config.cacheDir,
-        socksPort: 0,
-        policy: policy,
+    return onion.TorService.startConfigured(
+      stateDir: config.stateDir,
+      cacheDir: config.cacheDir,
+      socksPort: 0,
+      policy: policy,
+      settings: onion.TorStartupSettings(
         connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
+        disablePreemptiveExitCircuits: config.disablePreemptiveExitCircuits,
       ),
-      TorTransport.snowflake =>
-        onion.TorService.startWithSnowflakeConnectTimeout(
-          stateDir: config.stateDir,
-          cacheDir: config.cacheDir,
-          socksPort: 0,
-          snowflakePort: switch (snowflakePort) {
-            final int port => port,
-            null => throw StateError('Validated Snowflake port is missing'),
-          },
-          policy: policy,
-          connectTimeoutMs: connectTimeoutMs(config.connectTimeout),
-        ),
-    };
+      snowflakePort: config.transport == TorTransport.snowflake
+          ? snowflakePort
+          : null,
+    );
   }
 
   @override

@@ -168,6 +168,17 @@ void main() {
       expect(snowflake.connectTimeout, torConnectBudget);
     });
 
+    test(
+      'skips speculative exit circuits for both onion-only transports',
+      () async {
+        final direct = await configFor(TorTransport.direct);
+        final snowflake = await configFor(TorTransport.snowflake);
+
+        expect(direct.disablePreemptiveExitCircuits, isTrue);
+        expect(snowflake.disablePreemptiveExitCircuits, isTrue);
+      },
+    );
+
     test('gives a session the shared connection budget', () async {
       final service = _FakeTorService();
       launcher.service = service;

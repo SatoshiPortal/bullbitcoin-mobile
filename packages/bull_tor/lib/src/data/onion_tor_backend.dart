@@ -153,6 +153,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
             stateDir: stateDir,
             cacheDir: cacheDir,
             connectTimeout: onionConnectTimeout,
+            disablePreemptiveExitCircuits: true,
           ),
           _socksPolicy,
         ),
@@ -567,6 +568,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
         cacheDir: cacheDir,
         snowflakePort: snowflakePort,
         connectTimeout: onionConnectTimeout,
+        disablePreemptiveExitCircuits: true,
       ),
       _socksPolicy,
     );

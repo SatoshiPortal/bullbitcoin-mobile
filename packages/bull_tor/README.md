@@ -17,3 +17,9 @@ Native messages are developer diagnostics, never localized user messages or stab
 `test/tor_log_bridge_test.dart` checks severity routing, namespace matching, duplicate suppression, warning capacity, UTF-8 byte limits, budget renewal and stream cancellation. The root `test/tor_runtime_adapters_test.dart` checks the actual host callback wiring against on-disk logs and a recording reporter. Run the repository's `make checks` for the full workspace verification.
 
 The companion Onion example includes physical-device plugin checks for FFI redaction, isolated connection history and native Snowflake milestones. End-to-end RecoverBull and live Tor recovery require separate device checks; plugin plumbing alone does not establish connection reliability or latency.
+
+## Startup resource policy
+
+BULL sends only onion destinations through the embedded Tor client. Both direct and Snowflake startup explicitly disable Arti's speculative exit/DNS circuit predictor while retaining the onion-service pool, timeout learning and isolated application sessions. The SDK keeps its default prebuilding for other hosts. Listener destination policy remains `SocksPolicy.onionOnly`; disabling prediction alone does not enforce that policy. The standalone Tor release crate uses throughput optimization (`opt-level=3`), with LTO and stripping; debug builds are unaffected.
+
+Startup checks the latest Arti readiness after the five-second hold and after the asynchronous listener check. A regression waits for fresh readiness within the original bounded startup deadline; repeated readiness changes do not renew it. Stopping cancels both waits. These checks establish current client readiness, not guaranteed reachability of a particular onion service; RecoverBull still validates its own server through its isolated route.
