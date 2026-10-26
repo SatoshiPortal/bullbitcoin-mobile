@@ -17,18 +17,21 @@ import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.d
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
+  final WalletSourceOperationCoordinator _coordinator;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
+    required this._coordinator,
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _frozenUtxos = frozenWalletUtxoDatasource;
@@ -106,32 +109,62 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       );
     }
 
-    final psbt = await _bdkWallet.buildPsbt(
-      wallet: wallet,
-      address: address,
-      amountSat: amountSat,
-      networkFee: networkFee,
-      drain: drain,
-      // An empty merged list is equivalent to null for the datasource
-      // (it gates on isNotEmpty), so always pass the merge.
-      unspendable: mergedUnspendable,
-      selected: spendableSelected
-          ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
-          .toList(),
-      // Default to RBF-enabled, matching both the datasource default and
-      // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
-      // RBF for any caller omitting the flag — harmless while
-      // setExactSequence's result was discarded, wrong now that it works.
-      replaceByFee: replaceByFee ?? true,
+    final psbt = await _coordinator.runExclusive(
+      _sourceKey(metadata),
+      (_) => _bdkWallet.buildPsbt(
+        wallet: wallet,
+        address: address,
+        amountSat: amountSat,
+        networkFee: networkFee,
+        drain: drain,
+        // An empty merged list is equivalent to null for the datasource
+        // (it gates on isNotEmpty), so always pass the merge.
+        unspendable: mergedUnspendable,
+        selected: spendableSelected
+            ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
+            .toList(),
+        // Default to RBF-enabled, matching both the datasource default and
+        // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
+        // RBF for any caller omitting the flag — harmless while
+        // setExactSequence's result was discarded, wrong now that it works.
+        replaceByFee: replaceByFee ?? true,
+      ),
     );
 
     return psbt;
   }
 
   Future<String> signPsbt(String psbt, {required String walletId}) async {
-    final wallet = await getPrivateWallet(walletId: walletId);
-    final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
-    return signedPsbt;
+    final metadata = await _bitcoinMetadata(walletId);
+    return _coordinator.runExclusive(
+      _sourceKey(metadata),
+      (_) async => _signPsbtUncoordinated(
+        psbt,
+        wallet: await getPrivateWallet(walletId: walletId),
+      ),
+    );
+  }
+
+  Future<String> _signPsbtUncoordinated(
+    String psbt, {
+    required PrivateBdkWalletModel wallet,
+  }) => _bdkWallet.signPsbt(wallet: wallet, psbt);
+
+  WalletSourceKey _sourceKey(WalletMetadataModel metadata) => WalletSourceKey(
+    metadata.id,
+    'bitcoin',
+    metadata.isTestnet ? 'testnet' : 'mainnet',
+  );
+
+  Future<WalletMetadataModel> _bitcoinMetadata(String walletId) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    return metadata;
   }
 
   Future<bool> isScriptOfWallet({
@@ -157,7 +190,10 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
+    final isFromWallet = await _coordinator.runExclusive(
+      _sourceKey(metadata),
+      (_) => _bdkWallet.isMine(script, wallet: wallet),
+    );
 
     return isFromWallet;
   }
@@ -186,9 +222,9 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isAddressMine(
-      address,
-      wallet: wallet,
+    final isFromWallet = await _coordinator.runExclusive(
+      _sourceKey(metadata),
+      (_) => _bdkWallet.isAddressMine(address, wallet: wallet),
     );
 
     return isFromWallet;
@@ -276,48 +312,51 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String walletId,
     required String txid,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-    final wallet = WalletModel.fromMetadata(metadata);
-    return _bdkWallet.verifyTransactionInputSignatures(
-      txid: txid,
-      wallet: wallet,
+    final metadata = await _bitcoinMetadata(walletId);
+    return _coordinator.runExclusive(
+      _sourceKey(metadata),
+      (_) => _verifyInputSignaturesUncoordinated(metadata, txid),
     );
   }
+
+  Future<TransactionSignatureStatus> _verifyInputSignaturesUncoordinated(
+    WalletMetadataModel metadata,
+    String txid,
+  ) => _bdkWallet.verifyTransactionInputSignatures(
+    txid: txid,
+    wallet: WalletModel.fromMetadata(metadata),
+  );
 
   Future<String> bumpFee({
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
-    final signatureStatus = await getTransactionSignatureStatus(
-      walletId: walletId,
-      txid: txid,
-    );
-    switch (signatureStatus) {
-      case TransactionSignatureStatus.valid:
-        break;
-      case TransactionSignatureStatus.invalid:
-        throw ManipulatedTransactionException(
-          'Input signature verification failed for the stored transaction',
-        );
-      case TransactionSignatureStatus.unverifiable:
-        throw UnverifiableTransactionException(
-          'Input signatures of the stored transaction could not be verified',
-        );
-    }
-    final wallet = await getPrivateWallet(walletId: walletId);
-    final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
-      txid: txid,
-      feeRate: newFeeRate,
-    );
-    final signedPsbt = await signPsbt(psbt, walletId: walletId);
-    return signedPsbt;
+    final metadata = await _bitcoinMetadata(walletId);
+    return _coordinator.runExclusive(_sourceKey(metadata), (_) async {
+      final signatureStatus = await _verifyInputSignaturesUncoordinated(
+        metadata,
+        txid,
+      );
+      switch (signatureStatus) {
+        case TransactionSignatureStatus.valid:
+          break;
+        case TransactionSignatureStatus.invalid:
+          throw ManipulatedTransactionException(
+            'Input signature verification failed for the stored transaction',
+          );
+        case TransactionSignatureStatus.unverifiable:
+          throw UnverifiableTransactionException(
+            'Input signatures of the stored transaction could not be verified',
+          );
+      }
+      final wallet = await getPrivateWallet(walletId: walletId);
+      final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
+        wallet: wallet,
+        txid: txid,
+        feeRate: newFeeRate,
+      );
+      return _signPsbtUncoordinated(psbt, wallet: wallet);
+    });
   }
 }

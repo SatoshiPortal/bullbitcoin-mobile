@@ -25,7 +25,7 @@ class WatchWalletSyncEventsUsecase {
     required this._watchElectrum,
   });
 
-  Stream<Result<Wallet, WalletFailure>> started() =>
+  Stream<Result<String, WalletFailure>> started() =>
       _guard(() => _watchStarted.execute(), 'watch sync started');
 
   Stream<Result<Wallet, WalletFailure>> finished() =>

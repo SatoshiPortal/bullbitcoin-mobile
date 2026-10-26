@@ -270,11 +270,14 @@ class LwkWalletDatasource {
 
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
+    String? txId,
     String? toAddress,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final transactions = await lwkWallet.txs();
+      final transactions = (await lwkWallet.txs()).where(
+        (tx) => txId == null || tx.txid == txId,
+      );
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
       final network = wallet.isTestnet
           ? Network.liquidTestnet
@@ -300,7 +303,6 @@ class LwkWalletDatasource {
               0;
           final isToSelf =
               tx.kind == 'redeposit' || finalBalance.abs() == tx.fee.toInt();
-          int changeAmountInToSelf = 0;
           final (inputs, outputs) = await (
             Future.wait(
               tx.inputs.asMap().entries.map((entry) async {
@@ -323,15 +325,12 @@ class LwkWalletDatasource {
             ),
             Future.wait(
               tx.outputs.asMap().entries.map((entry) async {
-                final vout = entry.key;
+                final vout = entry.value.outpoint.vout;
                 final output = entry.value;
                 final walletOutputAddress =
                     usedAddressesMap[output.address.standard] ??
                     usedAddressesMap[output.address.confidential];
                 final isOwn = isToSelf || walletOutputAddress != null;
-                if (isToSelf && walletOutputAddress == null) {
-                  changeAmountInToSelf += output.unblinded.value.toInt();
-                }
                 return TransactionOutputModel.liquid(
                   txId: tx.txid,
                   vout: vout,
@@ -343,14 +342,15 @@ class LwkWalletDatasource {
               }),
             ),
           ).wait;
-          final sumOutputs = outputs
-              .map((i) => i.value?.toInt() ?? 0)
-              .fold(0, (int a, b) => a + b);
-          final netAmountSat = isToSelf
-              ? sumOutputs - changeAmountInToSelf
-              : isIncoming
-              ? finalBalance
-              : finalBalance.abs() - tx.fee.toInt();
+          final netAmountSat = liquidTransactionAmountSat(
+            isToSelf: isToSelf,
+            isIncoming: isIncoming,
+            finalBalance: finalBalance,
+            feeSat: tx.fee.toInt(),
+            lbtcAssetId: lbtcAssetId,
+            outputs: tx.outputs,
+            externalAddresses: usedAddressesMap.keys.toSet(),
+          );
 
           return WalletTransactionModel(
             txId: tx.txid,
@@ -364,7 +364,9 @@ class LwkWalletDatasource {
             outputs: outputs,
             isLiquid: true,
             isTestnet: wallet.isTestnet,
-            unblindedUrl: tx.unblindedUrl,
+            // The SDK creates this URL in memory; only the exact-detail viewer
+            // receives it. The list and persisted sync snapshots omit it.
+            unblindedUrl: txId == null ? null : tx.unblindedUrl,
             isRbf: false,
           );
         }),
@@ -615,6 +617,29 @@ class LwkWalletDatasource {
     await LwkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} LWK database');
   }
+}
+
+@visibleForTesting
+int liquidTransactionAmountSat({
+  required bool isToSelf,
+  required bool isIncoming,
+  required int finalBalance,
+  required int feeSat,
+  required String lbtcAssetId,
+  required List<lwk.TxOut> outputs,
+  required Set<String> externalAddresses,
+}) {
+  if (isToSelf) {
+    return outputs
+        .where(
+          (output) =>
+              output.unblinded.asset == lbtcAssetId &&
+              (externalAddresses.contains(output.address.standard) ||
+                  externalAddresses.contains(output.address.confidential)),
+        )
+        .fold(0, (sum, output) => sum + output.unblinded.value.toInt());
+  }
+  return isIncoming ? finalBalance : finalBalance.abs() - feeSat;
 }
 
 extension NetworkX on Network {
