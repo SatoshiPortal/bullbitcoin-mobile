@@ -186,6 +186,21 @@ void redactionOfStoredContent() {
     },
   );
 
+  test(
+    'a thrown object that is neither an Exception nor an Error is a failure by type',
+    () async {
+      // bull_sdk's generated BoltzError is a plain class carrying a foreign
+      // message; nothing about it said which branch would catch it.
+      final result = await boundary<void>(
+        () async => throw const _ForeignError('zebra is the sentinel'),
+        orElse: UseSecretFailure.new,
+      );
+      final failure = err(result);
+      expect(failure, isA<UseSecretFailure>());
+      expect(failure.logMessage, '_ForeignError');
+    },
+  );
+
   group('an Error is not a failure, but it is redacted all the same', () {
     // Rule 11: an `Error` is a programmer bug and keeps propagating to the
     // crash report — it must not be swallowed into a SecretFailure. But a
@@ -210,4 +225,11 @@ void redactionOfStoredContent() {
       );
     });
   });
+}
+
+/// Shaped like bull_sdk's generated `BoltzError`: no `Exception`, no `Error`.
+final class _ForeignError {
+  final String message;
+
+  const _ForeignError(this.message);
 }

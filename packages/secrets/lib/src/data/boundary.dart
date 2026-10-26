@@ -54,5 +54,10 @@ Future<Result<T, SecretFailure>> boundary<T>(
     final safe = describeSafely(e);
     log.severe(message: 'secrets: $safe', error: safe, trace: st);
     Error.throwWithStackTrace(StateError('secrets: $safe'), st);
+  } catch (e, st) {
+    // Neither an `Exception` nor an `Error`: a generated binding can throw a plain class (bull_sdk's `BoltzError`) that carries a foreign message. Treated like an unrecognised `Exception`: the caller's category, by type.
+    final safe = describeSafely(e);
+    log.severe(message: 'secrets: operation failed', error: safe, trace: st);
+    return Err(orElse(safe));
   }
 }
