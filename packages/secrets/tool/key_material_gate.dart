@@ -151,6 +151,21 @@ class _KeyMaterialVisitor extends RecursiveAstVisitor<void> {
     super.visitExportDirective(node);
   }
 
+  // The bridge's default handler is the only one that sees call arguments: a
+  // host handler or API would receive the words handed to lwk, boltz and bwk.
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    final element = node.methodName.element;
+    if (element is ExecutableElement &&
+        element.library.uri.toString() == _bridgeLibrary &&
+        element.enclosingElement?.name == 'BullSdk' &&
+        element.name == 'init' &&
+        node.argumentList.arguments.isNotEmpty) {
+      violations.add('$path: $_bridgeLibrary#BullSdk.init with arguments');
+    }
+    super.visitMethodInvocation(node);
+  }
+
   @override
   void visitCommentReference(CommentReference node) {}
 
@@ -189,9 +204,17 @@ const _unresolvedSensitiveMembers = {
   'signedPsetWithExtraDetails',
 };
 
+const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
+
+// A relative URI in an inactive conditional alternative is never resolved, so
+// it is matched on its path.
 bool _isTestingLibrary(String uri) =>
     uri == 'package:secrets/testing.dart' ||
-    uri.startsWith('package:secrets/src/testing/');
+    uri.startsWith('package:secrets/src/testing/') ||
+    (!uri.contains(':') &&
+        RegExp(
+          r'(^|/)secrets/lib/(testing\.dart$|src/testing/)',
+        ).hasMatch(Uri.parse(uri).normalizePath().path));
 
 String? materialSymbol(Element element) {
   final uri = element.library?.uri.toString();
@@ -238,6 +261,10 @@ String? materialSymbol(Element element) {
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/boltz/') =>
       owner == 'SwapMasterKey' &&
           {'new', 'create', 'xprv', 'mnemonic'}.contains(member),
+    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
+      owner == 'SpAccount' &&
+          (member?.startsWith('createFromMnemonic') ?? false),
+    _bridgeLibrary => symbol == 'BullSdk.initMock',
     _ when uri.startsWith('package:recoverbull/') =>
       symbol == 'RecoverBull.restoreBackup' ||
           symbol == 'EncryptionService.decrypt',

@@ -430,4 +430,37 @@ class SwapMasterKeyModel {
       );
     },
   );
+
+  test('Silent Payments accounts built from words are checked', () async {
+    final violations = await inspect('bwk_constructors', '''
+import 'package:bull_sdk/bwk.dart';
+final first = SpAccount.createFromMnemonic;
+final second = SpAccount.createFromMnemonicWithScanRuntime;
+''');
+    expect(violations, hasLength(2));
+  });
+
+  test(
+    'the bridge starts only with its own handler: no tracing handler, no mock',
+    () async {
+      final violations = await inspect('bridge_init', '''
+import 'package:bull_sdk/bull_sdk.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+class Trace extends BaseHandler {}
+Future<void> traced() => BullSdk.init(handler: Trace());
+void mocked(dynamic api) => BullSdk.initMock(api: api);
+Future<void> plain() => BullSdk.init();
+''');
+      expect(violations, hasLength(2));
+      expect(violations.join(), contains('BullSdk.init'));
+      expect(violations.join(), contains('BullSdk.initMock'));
+    },
+  );
+
+  test('an inactive relative alternative to test support is checked', () async {
+    final violations = await inspect('conditional_relative', '''
+import 'dart:core' if (dart.library.html) '../../secrets/lib/testing.dart';
+''');
+    expect(violations, isNotEmpty);
+  });
 }
