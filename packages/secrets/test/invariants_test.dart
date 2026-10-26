@@ -307,7 +307,13 @@ void main() {
     );
     expect(challenge, isNot(contains('final String word')));
     // And the widget itself exposes nothing: private fields, no getter.
-    expect(sealed, contains('final String _text;'));
+    expect(sealed, contains('final List<String> _cells;'));
+    expect(sealed, contains('final String _plain;'));
+    expect(
+      RegExp(r'final (String|List<String>) [a-zA-Z]').hasMatch(sealed),
+      isFalse,
+      reason: 'no public field may hold the text',
+    );
     expect(RegExp(r'String get \w+').hasMatch(sealed), isFalse);
     // Not part of the surface — it is the seal, not an API.
     expect(read('lib/secrets.dart'), isNot(contains('painted_text')));

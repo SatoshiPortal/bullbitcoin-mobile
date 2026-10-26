@@ -85,11 +85,10 @@ keeps the string in library-private fields. What leaves the widgets is
 pixels. The host's capture protection blocks a screenshot; it cannot stop
 code inside the app reading a rendered image back
 (`RenderRepaintBoundary.toImage`), which only review can rule out. Layout
-leaks too: a painted word's size follows its text, so host code that
-measures each word (`RenderBox.size`, intrinsic widths) in a few known fonts
-can narrow it to a handful of BIP39 candidates and settle them with
-`verify.mnemonic`. Like `toImage`, that takes code written to do it, and
-only review rules it out. The
+does not leak the words: every painted cell takes the size of the widest
+BIP39 word, or of the widest printable ASCII character for a passphrase, in
+the style, so what a host can measure (`RenderBox.size`, intrinsic sizes)
+follows the word count and the passphrase length, never their content. The
 package's own tests read the painted text
 through `debugPaintedTextOf`, `@internal` and reachable only from `src/`.
 To *compare* words, `verify.mnemonic` answers without exposing anything.

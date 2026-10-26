@@ -33,7 +33,7 @@ final class MnemonicView extends StatefulWidget {
   final Widget Function(BuildContext context, int number, Widget word)?
   wordBuilder;
 
-  /// Arranges the rendered words. Receives **widgets**, not words, so a grid or a two-column layout costs the host nothing in exposure. Default with [wordBuilder]: a `Wrap`; without either: the words joined into one line, as before.
+  /// Arranges the rendered words. Receives **widgets**, not words, so a grid or a two-column layout costs the host nothing in exposure. Default with [wordBuilder]: a `Wrap`; without either: the words in a grid of equal cells.
   final Widget Function(BuildContext context, List<Widget> words)?
   layoutBuilder;
 
@@ -92,7 +92,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
     setState(_read);
   }
 
-  /// The host's layout, or the joined sentence when it supplied none.
+  /// The host's layout, or a grid of equal cells when it supplied none.
   Widget _words(BuildContext context, List<String> words) {
     final builder = widget.wordBuilder;
     final layout = widget.layoutBuilder;
