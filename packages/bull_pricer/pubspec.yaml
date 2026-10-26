@@ -1,0 +1,22 @@
+name: bull_pricer
+description: Cached Bitcoin price in a supported fiat currency for Bull Bitcoin.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  clock: ^1.1.2
+  dio: ^5.9.0
+  drift: ^2.29.0
+  meta: ^1.17.0
+  primitives:
+
+dev_dependencies:
+  build_runner: ^2.7.1
+  drift_dev: ^2.29.0
+  lints: ^6.0.0
+  test: ^1.26.3
