@@ -329,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      resolved-ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1489,11 +1489,11 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      resolved-ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
-    version: "0.1.0"
+    version: "0.2.0"
   package_config:
     dependency: transitive
     description:
@@ -1795,9 +1795,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      resolved-ref: "1a72dbf4202c806d69dd665019e517d22737b82d"
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
