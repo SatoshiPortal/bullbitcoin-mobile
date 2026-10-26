@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart';
 
@@ -22,52 +23,54 @@ class Schema11To12 {
   static Future<void> migrate(Migrator m, Schema12 schema12) async {
     final schema11 = Schema11(database: m.database);
 
-    // For structural changes involving a new autoincrement primary key,
-    // we need to manually recreate the table:
-    // 1. Fetch all existing data from the old table (if it exists)
-    // 2. Delete the old table (if it exists)
-    // 3. Create new table with correct schema
-    // 4. Insert the data back
+    // Rebuild labels only while it still has the v11 shape. Once rebuilt,
+    // a second run would read no `ref` column, drop the table and lose every
+    // label, and would show the auto swap warning again.
+    if (!await m.hasColumn('labels', 'reference')) {
+      // For structural changes involving a new autoincrement primary key,
+      // we need to manually recreate the table:
+      // 1. Fetch all existing data from the old table (if it exists)
+      // 2. Delete the old table (if it exists)
+      // 3. Create new table with correct schema
+      // 4. Insert the data back
 
-    // Step 1: Try to fetch all existing labels data
-    // Wrap in try-catch to handle case where table doesn't exist
-    List<QueryRow> existingLabels = [];
-    try {
-      existingLabels = await m.database.select(schema11.labels).get();
-    } catch (e) {
-      // Table doesn't exist, which is fine - we'll create it fresh
-    }
+      // Step 1: Try to fetch all existing labels data
+      // Wrap in try-catch to handle case where table doesn't exist
+      List<QueryRow> existingLabels = [];
+      // Any other failure must abort the step: the table is dropped next.
+      try {
+        existingLabels = await m.database.select(schema11.labels).get();
+      } catch (e) {
+        if (!e.toString().contains('no such table')) rethrow;
+      }
 
-    // Step 2: Delete old labels table if it exists
-    try {
+      // Step 2: Delete old labels table if it exists
       await m.deleteTable(schema11.labels.actualTableName);
-    } catch (e) {
-      // Table doesn't exist, which is fine
-    }
 
-    // Step 3: Create new labels table with new schema
-    await m.createTable(schema12.labels);
+      // Step 3: Create new labels table with new schema
+      await m.createTable(schema12.labels);
 
-    // Step 4: Insert existing data into new table (if any)
-    // id will be auto-generated, ref -> reference, spendable is dropped
-    for (final row in existingLabels) {
-      final origin = row.readNullable<String>('origin');
+      // Step 4: Insert existing data into new table (if any)
+      // id will be auto-generated, ref -> reference, spendable is dropped
+      for (final row in existingLabels) {
+        final origin = row.readNullable<String>('origin');
+        await m.database
+            .into(schema12.labels)
+            .insert(
+              RawValuesInsertable({
+                'label': Variable<String>(row.read<String>('label')),
+                'reference': Variable<String>(row.read<String>('ref')),
+                'type': Variable<String>(row.read<String>('type')),
+                if (origin != null) 'origin': Variable<String>(origin),
+              }),
+            );
+      }
+
+      // Reset showWarning to true for all users so they see the warning
       await m.database
-          .into(schema12.labels)
-          .insert(
-            RawValuesInsertable({
-              'label': Variable<String>(row.read<String>('label')),
-              'reference': Variable<String>(row.read<String>('ref')),
-              'type': Variable<String>(row.read<String>('type')),
-              if (origin != null) 'origin': Variable<String>(origin),
-            }),
-          );
+          .update(schema12.autoSwap)
+          .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
     }
-
-    // Reset showWarning to true for all users so they see the warning
-    await m.database
-        .update(schema12.autoSwap)
-        .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
 
     // MempoolServers table: add enableSsl column (idempotent)
     try {

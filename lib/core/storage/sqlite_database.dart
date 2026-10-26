@@ -27,9 +27,11 @@ import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
 part 'sqlite_database.g.dart';
 
@@ -58,16 +60,43 @@ part 'sqlite_database.g.dart';
 class SqliteDatabase extends _$SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
+  /// The file `driftDatabase(name: name)` opens in the foreground.
+  static Future<File> _databaseFile() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    return File(p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite'));
+  }
+
+  /// Whether the database exists and is already at [currentSchemaVersion].
+  ///
+  /// Only the foreground app may migrate. A background task opening the
+  /// database on its own connection while the app migrates it races the
+  /// migration (#3045), so background tasks skip until this is true.
+  static Future<bool> isAtCurrentSchema() async =>
+      isFileAtCurrentSchema(await _databaseFile());
+
+  /// Reads `user_version` directly, without drift: opening through drift
+  /// would run the migrations this check exists to avoid. Never creates the
+  /// file.
+  @visibleForTesting
+  static bool isFileAtCurrentSchema(File file) {
+    if (!file.existsSync()) return false;
+    final database = sqlite3.open(file.path, mode: OpenMode.readWrite);
+    try {
+      database.execute('PRAGMA busy_timeout = 2000;');
+      return database.userVersion == currentSchemaVersion;
+    } finally {
+      database.dispose();
+    }
+  }
+
   static Future<DriftIsolate> createIsolateWithSpawn() async {
     final token = RootIsolateToken.instance!;
     return await DriftIsolate.spawn(() {
       BackgroundIsolateBinaryMessenger.ensureInitialized(token);
 
       return LazyDatabase(() async {
-        final dbFolder = await getApplicationDocumentsDirectory();
-        final dbPath = p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite');
         return NativeDatabase(
-          File(dbPath),
+          await _databaseFile(),
           setup: (database) {
             // busy_timeout MUST be set FIRST so the subsequent
             // `journal_mode = WAL` switch retries (instead of
@@ -180,13 +209,21 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// rethrow aborts init. Drift migrations run lazily on first query,
   /// so wrapping the step fn (not the constructor) is what actually
   /// catches failures.
+  ///
+  /// drift runs migrations outside a transaction, so each step runs in its
+  /// own: a step that fails or is killed part-way leaves nothing behind.
+  /// drift writes `user_version` after the step commits, so a step can
+  /// still be re-run in full and must stay idempotent. Foreign-key
+  /// enforcement must stay off while migrating: `PRAGMA foreign_keys`, which
+  /// `alterTable` uses around its table rebuild, has no effect inside a
+  /// transaction.
   static Future<void> Function(Migrator, Schema) _reportingMigration<Schema>(
     String name,
     Future<void> Function(Migrator, Schema) fn,
   ) {
     return (m, schema) async {
       try {
-        await fn(m, schema);
+        await m.database.transaction(() => fn(m, schema));
       } catch (e, s) {
         log.severe(
           message: 'drift migration step $name failed',

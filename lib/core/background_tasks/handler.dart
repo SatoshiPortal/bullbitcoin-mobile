@@ -34,6 +34,15 @@ Future<bool> tasksHandler(String task) async {
   await Bull.initFlutterRustBridgeDependencies();
 
   try {
+    // A schedule left by an older release can fire while the updated app is
+    // starting. Opening the database here would run the pending migrations
+    // on a second connection, concurrently with the app's (#3045). Only the
+    // app migrates.
+    if (!await SqliteDatabase.isAtCurrentSchema()) {
+      log.fine('Background task $task skipped: database not migrated yet');
+      return true;
+    }
+
     final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
     final sqlite = SqliteDatabase(
       await driftIsolate.connect(singleClientMode: true),
