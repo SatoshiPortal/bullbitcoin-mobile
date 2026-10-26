@@ -16,7 +16,7 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 class _MockLogger extends Mock implements Logger {}
 

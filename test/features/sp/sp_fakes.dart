@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
@@ -28,6 +26,8 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 /// Shared mocktail doubles + builders for the SP domain use case tests. The use
 /// case tests need `verify()` on collaborator calls, so they mock these two
@@ -41,13 +41,18 @@ class MockSpAccountRepository extends Mock
         SpScanControlPort,
         SpPaymentsPort {}
 
-class MockGetDefaultSeedUsecase extends Mock implements GetDefaultSeedUsecase {}
+class MockGetSpSecretUsecase extends Mock implements GetSpSecretUsecase {}
 
-MnemonicSeed spMnemonicSeed() => MnemonicSeed(
-  mnemonicWords: List.filled(12, 'abandon'),
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
+/// A real handle over an in-memory keystore: `Secret` is final, so it cannot
+/// be mocked, and a handle carries no words anyway.
+Future<Secret> spSecret() async {
+  FakeSecureStoragePlatform().install();
+  final secrets = Secrets(scratchDirectory: () async => '/tmp');
+  final imported = await secrets.import(
+    words: [...List.filled(11, 'abandon'), 'about'],
+  );
+  return (imported as Ok<Secret, SecretFailure>).value;
+}
 
 SpBackendConfig spBackendConfig({
   BitcoinNetwork network = BitcoinNetwork.regtest,
@@ -145,9 +150,9 @@ class FakeSpAccountRepository
   }
 
   @override
-  Future<Result<void, SpFailure>> createFromMnemonic({
+  Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
-    required String mnemonic,
+    required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -439,9 +444,6 @@ class InMemoryKeyValueStorage implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) async => _store.remove(key);
-
-  @override
-  Future<void> deleteAll() async => _store.clear();
 }
 
 /// Stands in for a locked keystore: every storage call throws.
@@ -464,9 +466,6 @@ class ThrowingKeyValueStorage implements KeyValueStorageDatasource<String> {
   @override
   Future<void> deleteValue(String key) async =>
       throw Exception('keystore locked');
-
-  @override
-  Future<void> deleteAll() async => throw Exception('keystore locked');
 }
 
 /// In-memory fake of [SpAutoScanRepository]; the choice is not persisted in

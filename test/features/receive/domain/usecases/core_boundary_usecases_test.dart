@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_u
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide ScriptType;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 

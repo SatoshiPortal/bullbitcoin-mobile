@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/widgets/screen_privacy_gate.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -119,18 +122,22 @@ class _Bip85HomePageView extends StatelessWidget {
 }
 
 class _Bip85HomePageState extends State<Bip85HomePage> with PrivacyScreen {
-  @override
-  void initState() {
-    super.initState();
-    enableScreenPrivacy();
-  }
+  // The page shows BIP85 children: nothing draws before capture blocking is
+  // confirmed, and they stay hidden if the platform refused it.
+  late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override
-  Widget build(BuildContext context) => const _Bip85HomePageView();
+  Widget build(BuildContext context) => ScreenPrivacyGate(
+    protection: _privacyFuture,
+    onRetry: () => setState(() {
+      _privacyFuture = enableScreenPrivacy();
+    }),
+    builder: (context) => const _Bip85HomePageView(),
+  );
 
   @override
   void dispose() {
-    disableScreenPrivacy();
+    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 }
