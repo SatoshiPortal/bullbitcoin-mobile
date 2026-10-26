@@ -4,7 +4,7 @@ The package owns backup creation, recovery, verification, provider selection and
 
 ## Tor connection policy
 
-Opening a flow does not probe the key server until the connection screen requests it. A connection request performs one health check, with a deadline derived from `torConnectBudget` plus ten percent headroom (currently 44 seconds). Fetch and store retain their separate operation deadline. Connection failure details remain visible while a retry is running.
+Opening a flow does not probe the key server until the connection screen requests it. A connection request performs one health check, with a deadline derived from `torConnectBudget` plus ten percent headroom (currently 66 seconds). Fetch and store retain their separate operation deadline. Connection failure details remain visible while a retry is running.
 
 Retry reuses the flow's current route. New route is available after a failed embedded-Tor check and acquires a separate isolated session; it does not restart the shared Tor client. An external proxy is managed by the user, so the screen offers no new-route operation for it. Concurrent requests during session acquisition are ignored, and stale acquisition results cannot replace the current route.
 

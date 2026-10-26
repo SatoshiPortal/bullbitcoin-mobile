@@ -159,16 +159,16 @@ void main() {
     });
 
     // Key-server attempts rely on this timeout alone; see
-    // [onionConnectTimeout].
-    test('gives onion connections 40 s on either transport', () async {
+    // [torConnectBudget].
+    test('gives both transports the shared connection budget', () async {
       final direct = await configFor(TorTransport.direct);
       final snowflake = await configFor(TorTransport.snowflake);
 
-      expect(direct.connectTimeout, const Duration(seconds: 40));
-      expect(snowflake.connectTimeout, const Duration(seconds: 40));
+      expect(direct.connectTimeout, torConnectBudget);
+      expect(snowflake.connectTimeout, torConnectBudget);
     });
 
-    test('gives a session\'s onion connections 40 s', () async {
+    test('gives a session the shared connection budget', () async {
       final service = _FakeTorService();
       launcher.service = service;
 
@@ -176,7 +176,9 @@ void main() {
       final session = await backend.openSession();
 
       expect(session.endpoint.port, _FakeTorService.sessionPort);
-      expect(service.sessionConnectTimeouts, [BigInt.from(40000)]);
+      expect(service.sessionConnectTimeouts, [
+        BigInt.from(torConnectBudget.inMilliseconds),
+      ]);
     });
 
     test('Snowflake cleanup preserves the mapped startup failure', () async {
