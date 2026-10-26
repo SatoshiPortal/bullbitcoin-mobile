@@ -319,10 +319,156 @@ void main() {
       },
     );
   });
+
+  group('adopting an existing client', () {
+    late Directory root;
+    late _ReadinessService service;
+    late _ReadinessLauncher launcher;
+    late OnionTorBackend backend;
+    late List<EmbeddedTorEvent> events;
+    late int holdCalls;
+
+    setUp(() async {
+      root = await Directory.systemTemp.createTemp('tor_adoption_');
+      service = _ReadinessService();
+      launcher = _ReadinessLauncher(service);
+      holdCalls = 0;
+      backend = OnionTorBackend(
+        const TorLogger(),
+        launcher: launcher,
+        directories: (_) async => torDirectoriesUnder(root.path),
+        trafficReadyTimeout: const Duration(milliseconds: 50),
+        wait: (_) async {
+          holdCalls++;
+        },
+      );
+      events = [];
+      backend.watch().listen(events.add);
+    });
+
+    tearDown(() async {
+      await backend.close();
+      await service.statuses.close();
+      await root.delete(recursive: true);
+    });
+
+    test(
+      'waits for current readiness without restarting or another hold',
+      () async {
+        final endpoint = await backend.start(TorTransport.direct);
+        service.statuses.add(status(0.45));
+        events.clear();
+        var completed = false;
+        final adopting = backend.start(TorTransport.direct).then((value) {
+          completed = true;
+          return value;
+        });
+        await Future<void>.delayed(Duration.zero);
+
+        expect(completed, isFalse);
+        expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+        service.statuses.add(status(1, ready: true));
+        expect(await adopting, endpoint);
+        expect(launcher.startCalls, 1);
+        expect(service.bootstrapCalls, 1);
+        expect(service.stopCalls, 0);
+        expect(holdCalls, 1);
+      },
+    );
+
+    test('rechecks readiness after the adoption listener check', () async {
+      final endpoint = await backend.start(TorTransport.direct);
+      final checking = Completer<void>();
+      final listenerResult = Completer<bool>();
+      service.checkListener = () {
+        if (!checking.isCompleted) checking.complete();
+        return listenerResult.future;
+      };
+      var completed = false;
+      final adopting = backend.start(TorTransport.direct).then((value) {
+        completed = true;
+        return value;
+      });
+      await checking.future;
+      service.statuses.add(status(0.45));
+      events.clear();
+      listenerResult.complete(true);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(completed, isFalse);
+      expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+      service.statuses.add(status(1, ready: true));
+      expect(await adopting, endpoint);
+      expect(launcher.startCalls, 1);
+      expect(service.bootstrapCalls, 1);
+      expect(holdCalls, 1);
+    });
+
+    test('stop cancels adoption while readiness is regressed', () async {
+      await backend.start(TorTransport.direct);
+      service.statuses.add(status(0.45));
+      final adopting = backend.start(TorTransport.direct);
+      final cancelled = expectLater(
+        adopting,
+        throwsA(isA<TorBackendException>()),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await backend.stop();
+      await cancelled;
+      expect(service.bootstrapCalls, 1);
+    });
+
+    test('stop interrupts the first adoption listener check', () async {
+      await backend.start(TorTransport.direct);
+      final checking = Completer<void>();
+      final listenerResult = Completer<bool>();
+      service.checkListener = () {
+        if (!checking.isCompleted) checking.complete();
+        return listenerResult.future;
+      };
+      final adopting = backend.start(TorTransport.direct);
+      final cancelled = expectLater(
+        adopting,
+        throwsA(isA<TorBackendException>()),
+      );
+      await checking.future;
+      var stopped = false;
+      final stopping = backend.stop().then((_) => stopped = true);
+      try {
+        await Future<void>.delayed(Duration.zero);
+        expect(stopped, isTrue);
+      } finally {
+        listenerResult.complete(true);
+        await stopping;
+        await cancelled;
+      }
+    });
+
+    test(
+      'adoption readiness has a deadline without another hold budget',
+      () async {
+        await backend.start(TorTransport.direct);
+        service.statuses.add(status(0.45));
+        await expectLater(
+          backend.start(TorTransport.direct),
+          throwsA(
+            isA<TorBackendException>().having(
+              (error) => error.failure,
+              'adoption deadline',
+              isA<TorBootstrapTimeoutFailure>(),
+            ),
+          ),
+        );
+        expect(holdCalls, 1);
+        expect(service.bootstrapCalls, 1);
+      },
+    );
+  });
 }
 
 final class _ReadinessLauncher implements OnionClientLauncher {
   final onion.TorService service;
+  int startCalls = 0;
 
   _ReadinessLauncher(this.service);
 
@@ -330,7 +476,10 @@ final class _ReadinessLauncher implements OnionClientLauncher {
   Future<onion.TorService> startClient(
     OnionClientConfig config,
     onion.SocksPolicy policy,
-  ) async => service;
+  ) async {
+    startCalls++;
+    return service;
+  }
 
   @override
   Future<int> startSnowflakeProxy() async => throw UnimplementedError();
@@ -342,9 +491,12 @@ final class _ReadinessLauncher implements OnionClientLauncher {
 final class _ReadinessService implements onion.TorService {
   final statuses = StreamController<onion.TorStatus>.broadcast(sync: true);
   Future<bool> Function()? checkListener;
+  int bootstrapCalls = 0;
+  int stopCalls = 0;
 
   @override
   Future<void> bootstrap() async {
+    bootstrapCalls++;
     statuses.add(
       onion.TorStatus(
         fraction: 1,
@@ -368,7 +520,9 @@ final class _ReadinessService implements onion.TorService {
   Future<void> setDormant({required bool dormant}) async {}
 
   @override
-  Future<void> stop() async {}
+  Future<void> stop() async {
+    stopCalls++;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

@@ -123,10 +123,24 @@ final class OnionTorBackend implements EmbeddedTorPort {
     final existingEndpoint = _endpoint;
     if (existingService != null &&
         existingEndpoint != null &&
-        _transport == transport &&
-        await existingService.proxyIsAlive()) {
-      if (generation != _generation) throw _cancelled();
-      return existingEndpoint;
+        _transport == transport) {
+      final readinessElapsed = Stopwatch()..start();
+      if (await _listenerIsAlive(
+        existingService,
+        generation,
+        _trafficReadyTimeout,
+      )) {
+        await _confirmCurrentReadiness(
+          existingService,
+          generation,
+          readinessElapsed,
+          existingEndpoint,
+          transport,
+          timeout: _trafficReadyTimeout,
+        );
+        if (generation != _generation) throw _cancelled();
+        return existingEndpoint;
+      }
     }
 
     await _cleanup();
@@ -254,16 +268,38 @@ final class OnionTorBackend implements EmbeddedTorPort {
     return Future.any([_wait(_readinessHold), release.future]);
   }
 
+  /// A listener check must not block cancellation or renew a readiness budget.
+  Future<bool> _listenerIsAlive(
+    onion.TorService service,
+    int generation,
+    Duration timeout,
+  ) async {
+    if (generation != _generation) throw _cancelled();
+    final alive =
+        await Future.any<bool>([
+          service.proxyIsAlive(),
+          _holdRelease.future.then((_) => throw _cancelled()),
+        ]).timeout(
+          timeout,
+          onTimeout: () => throw TorBackendException(
+            TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
+          ),
+        );
+    if (generation != _generation) throw _cancelled();
+    return alive;
+  }
+
   /// Status may regress during the hold or an asynchronous listener check.
-  /// Keep the original startup budget: repeated changes never renew it.
+  /// Keep one budget; adopting a client does not serve its hold again.
   Future<void> _confirmCurrentReadiness(
     onion.TorService service,
     int generation,
     Stopwatch elapsed,
     TorProxyEndpoint endpoint,
-    TorTransport transport,
-  ) async {
-    final budget = _trafficReadyTimeout + _readinessHold;
+    TorTransport transport, {
+    Duration? timeout,
+  }) async {
+    final budget = timeout ?? _trafficReadyTimeout + _readinessHold;
     Duration remaining() {
       final value = budget - elapsed.elapsed;
       if (value <= Duration.zero) {
@@ -278,16 +314,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       if (generation != _generation) throw _cancelled();
       await waitForTraffic(remaining());
       if (generation != _generation) throw _cancelled();
-      final alive =
-          await Future.any<bool>([
-            service.proxyIsAlive(),
-            _holdRelease.future.then((_) => throw _cancelled()),
-          ]).timeout(
-            remaining(),
-            onTimeout: () => throw TorBackendException(
-              TorBootstrapTimeoutFailure('Not ready for traffic after $budget'),
-            ),
-          );
+      final alive = await _listenerIsAlive(service, generation, remaining());
       if (generation != _generation) throw _cancelled();
       remaining();
       if (!alive) {
