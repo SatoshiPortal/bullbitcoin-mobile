@@ -15,6 +15,7 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     WALLET_TRANSACTION_SYNC[Wallet Transaction Sync Package<br/>Local-source-first snapshots, freshness, source coordination]
+    NOTIFICATIONS[Notifications Package<br/>Durable outbox and deferred destinations]
     BULL_SDK[Bull SDK External Dependency<br/>BDK/LWK native adapters]
 
     %% Feature modules
@@ -81,6 +82,8 @@ graph TB
     CORE --> WALLET_TRANSACTION_SYNC
     WALLET_TRANSACTION_SYNC --> PRIMITIVES
     WALLET_TRANSACTION_SYNC --> BULL_SDK
+    CORE --> NOTIFICATIONS
+    NOTIFICATIONS --> PRIMITIVES
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -199,7 +202,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_UI,BULL_PAYJOIN,WALLET_TRANSACTION_SYNC,BULL_SDK,TOR packageStyle
+    class PRIMITIVES,BULL_UI,BULL_PAYJOIN,WALLET_TRANSACTION_SYNC,NOTIFICATIONS,BULL_SDK,TOR packageStyle
     class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
@@ -261,6 +264,7 @@ graph TB
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallet Transaction Sync**: `packages/wallet_transaction_sync` — local-source-first Bitcoin/Liquid synchronization contracts, immutable process snapshots, freshness/evidence, and the shared per-wallet SDK-state coordinator. Core currently consumes the coordinator while production transaction UI remains on legacy repositories; see the migration status in [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Notifications**: `packages/notifications` — local-notification gateway, durable collision-safe outbox, silent topic baselines, and deferred post-unlock destinations
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price

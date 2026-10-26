@@ -1,0 +1,22 @@
+name: notifications
+description: Generic local notification outbox and deferred destination delivery.
+publish_to: "none"
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  primitives:
+  crypto: ^3.0.7
+  sqlite3: ^2.9.4
+  flutter_local_notifications: ^22.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
