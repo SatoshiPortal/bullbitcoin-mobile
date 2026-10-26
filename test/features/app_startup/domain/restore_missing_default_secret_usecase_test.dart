@@ -98,6 +98,29 @@ void main() {
     expect(storage.entries, isEmpty);
   });
 
+  test(
+    "refuses another wallet's words without writing, so no cleanup can fail",
+    () async {
+      // A write would succeed and its undo would fail: only a check made
+      // before the write keeps the refused words out of the keystore.
+      storage = FakeSecureStoragePlatform(
+        scriptedWrites: [null, FakeSecureStoragePlatform.lockedError],
+      )..install();
+
+      final result = await usecase.execute(
+        expectedFingerprint: _missingFingerprint,
+        words: _other,
+      );
+
+      expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
+      expect(storage.entries, isEmpty);
+      expect(
+        await secrets.import(words: _other),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
+    },
+  );
+
   test("keeps another wallet's words when a wallet uses them", () async {
     final other =
         (await secrets.import(words: _other)) as Ok<Secret, SecretFailure>;
