@@ -1,3 +1,4 @@
+import 'package:bb_mobile/tor_runtime_adapters.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/core/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
@@ -26,14 +27,14 @@ class CoreLocator {
     locator.registerLazySingleton<SqliteDatabase>(() => database);
   }
 
-  static Future<void> registerDatasources(GetIt locator) async {
+  static Future<void> registerDatasources(
+    GetIt locator, {
+    bool captureNativeTorLogs = true,
+  }) async {
     await bull_tor.TorLocator.registerDatasources(
       locator,
-      logger: bull_tor.TorLogger(
-        configCallback: log.config,
-        fineCallback: log.fine,
-        warningCallback: log.warning,
-      ),
+      logger: createTorLogger(log),
+      captureNativeLogs: captureNativeTorLogs,
     );
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);

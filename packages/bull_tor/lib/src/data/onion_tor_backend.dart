@@ -14,6 +14,7 @@ import '../domain/tor_connect_budget.dart';
 import '../domain/tor_failure.dart';
 import 'onion_client_launcher.dart';
 import 'tor_logger.dart';
+import 'tor_log_bridge.dart';
 
 /// What Bull lets its embedded Tor listener relay.
 ///
@@ -51,6 +52,8 @@ final class OnionTorBackend implements EmbeddedTorPort {
   final TorLogger _log;
   final OnionClientLauncher _launcher;
   final Future<TorDirectories> Function(TorLogger log) _directories;
+  final TorLogBridge? _nativeLogBridge;
+  onion.OnionLogs? _nativeCapture;
   onion.TorService? _service;
   StreamSubscription<onion.TorStatus>? _statusSubscription;
   final StreamController<EmbeddedTorEvent> _events =
@@ -74,12 +77,15 @@ final class OnionTorBackend implements EmbeddedTorPort {
   bool _snowflakeLease = false;
 
   OnionTorBackend(
-    this._log, {
+    TorLogger log, {
+    bool captureNativeLogs = false,
     this._launcher = const NativeOnionClientLauncher(),
     this._directories = appTorDirectories,
     this._readinessHold = defaultReadinessHold,
     Future<void> Function(Duration)? wait,
-  }) : _wait = wait ?? Future<void>.delayed;
+  }) : _log = log,
+       _nativeLogBridge = captureNativeLogs ? TorLogBridge(log) : null,
+       _wait = wait ?? Future<void>.delayed;
 
   static Future<void> initialize() => onion.OnionCore.init();
 
@@ -122,6 +128,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
 
     await _cleanup();
     if (generation != _generation) throw _cancelled();
+    _startNativeLogs();
     _publish(const EmbeddedTorStopped());
     _publish(EmbeddedTorConnecting(progress: 0, transport: transport));
     _lastDiagnostic = null;
@@ -413,7 +420,22 @@ final class OnionTorBackend implements EmbeddedTorPort {
   @override
   Future<void> close() async {
     await stop();
+    await _nativeLogBridge?.close();
+    _nativeCapture?.close();
+    _nativeCapture = null;
     await _events.close();
+  }
+
+  void _startNativeLogs() {
+    final bridge = _nativeLogBridge;
+    if (bridge == null || _nativeCapture != null) return;
+    try {
+      final capture = onion.OnionLogs.start();
+      _nativeCapture = capture;
+      bridge.start(capture.records);
+    } on Exception catch (error) {
+      _log.warning('tor_native capture_unavailable type=${error.runtimeType}');
+    }
   }
 
   Future<T> _serialize<T>(Future<T> Function() operation) {

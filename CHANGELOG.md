@@ -6,6 +6,10 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Tor diagnostics**: include bounded, redacted native Tor milestones and warnings in exported support logs, with duplicate suppression and volume limits. These diagnostic lines use local logging routes without automatic error reporting.
+
 ---
 
 ## [6.15.0] - 2026-10-22

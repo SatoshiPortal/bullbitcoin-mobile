@@ -36,12 +36,16 @@ final class TorLocator {
   static Future<void> registerDatasources(
     GetIt locator, {
     TorLogger logger = const TorLogger(),
+    bool captureNativeLogs = false,
   }) async {
     await OnionTorBackend.initialize();
     locator.registerSingleton<TorLogger>(logger);
     locator.registerLazySingleton<SocketPort>(DartIoSocketAdapter.new);
     locator.registerLazySingleton<EmbeddedTorPort>(
-      () => OnionTorBackend(locator<TorLogger>()),
+      () => OnionTorBackend(
+        locator<TorLogger>(),
+        captureNativeLogs: captureNativeLogs,
+      ),
     );
     locator.registerLazySingleton<ExternalTorPort>(
       () =>
