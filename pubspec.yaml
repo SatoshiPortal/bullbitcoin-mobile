@@ -60,7 +60,7 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/ethicnology-agent/bull_sdk
-      ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
+      ref: 47aff5944fb3b75593536d47c3cad6b666e1e55f
       path: packages/bull_sdk
   boltz_stream:
     git:
@@ -150,7 +150,7 @@ dependency_overrides:
   bull_sdk:
     git:
       url: https://github.com/ethicnology-agent/bull_sdk
-      ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
+      ref: 47aff5944fb3b75593536d47c3cad6b666e1e55f
       path: packages/bull_sdk
 
 dev_dependencies:

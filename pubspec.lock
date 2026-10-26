@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
-      resolved-ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
+      ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
+      resolved-ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1489,8 +1489,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
-      resolved-ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
+      ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
+      resolved-ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.2.0"
@@ -1795,8 +1795,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
-      resolved-ref: dd622524e81ecbf1519e9c5aeba87578bc0d263b
+      ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
+      resolved-ref: "47aff5944fb3b75593536d47c3cad6b666e1e55f"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
