@@ -1031,7 +1031,9 @@ Future<void> _performSync(_SyncParams params) async {
       retry: params.electrumRetry,
       validateDomain: params.electrumValidateDomain,
     );
+    final cache = await BdkFacade.openElectrumCache(params.walletHexId);
     try {
+      cache?.prefill(blockchain, bdkWallet);
       late final bdk.Update update;
       switch (mode) {
         case BdkSyncMode.fullScan:
@@ -1073,6 +1075,7 @@ Future<void> _performSync(_SyncParams params) async {
       } finally {
         update.dispose();
       }
+      cache?.rememberParents(blockchain, bdkWallet);
     } catch (e, st) {
       log.warning(
         'sync failed for wallet ${params.walletId}',
@@ -1082,6 +1085,7 @@ Future<void> _performSync(_SyncParams params) async {
       rethrow;
     } finally {
       blockchain.dispose();
+      cache?.close();
     }
     await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
   });

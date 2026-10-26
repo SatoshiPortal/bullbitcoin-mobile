@@ -11,6 +11,7 @@ import '../../domain/wallet_network_key.dart';
 import '../../domain/wallet_source_registration.dart';
 import '../../domain/wallet_transaction_sync_failure.dart';
 import '../../wallet_source_session.dart';
+import 'bdk_electrum_cache.dart';
 import 'bdk_wallet_transaction_mapper.dart';
 
 final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
@@ -68,6 +69,8 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     try {
       final open = await _open(registration, configuration, file, create: true);
       final wallet = open.wallet;
+      final cache = BdkElectrumCache.open(configuration.databaseFilePath);
+      bdk.ElectrumClient? syncedClient;
       try {
         final baselineTxids = mapBdkTransactions(
           wallet,
@@ -88,6 +91,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               retry: configuration.retry,
               validateDomain: configuration.validateDomain,
             );
+            cache?.prefill(client, wallet);
             if (discover) {
               final requestBuilder = wallet.startFullScan();
               try {
@@ -122,6 +126,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
                 requestBuilder.dispose();
               }
             }
+            // Kept open: its cache holds the parents to remember below.
+            syncedClient = client;
+            client = null;
             break;
           } catch (_) {
             // Connection-level failure: try the next configured server.
@@ -141,6 +148,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
           // (false simply means nothing was staged); persistence FAILURES
           // throw and are mapped below.
           wallet.persist(persister: open.persister);
+          if (syncedClient != null) {
+            cache?.rememberParents(syncedClient, wallet);
+          }
           return Ok(
             WalletSourceSyncObservation(
               observation: mapBdkObservation(
@@ -162,6 +172,8 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
           update.dispose();
         }
       } finally {
+        syncedClient?.dispose();
+        cache?.close();
         open.dispose();
       }
     } catch (error) {
@@ -183,6 +195,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     if (configuration == null) {
       return const Err(WalletSourceStateMissingFailure());
     }
+    BdkElectrumCache.delete(configuration.databaseFilePath);
     final file = File(configuration.databaseFilePath);
     if (!await file.exists()) return const Ok(null);
     try {

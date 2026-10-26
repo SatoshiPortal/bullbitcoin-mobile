@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:wallet_transaction_sync/bdk_electrum_cache.dart';
 
 class BdkFacade {
   // Standard lookahead value for address discovery
@@ -252,6 +253,11 @@ class BdkFacade {
     }
   }
 
+  /// Opens the Electrum cache kept next to the wallet database.
+  static Future<BdkElectrumCache?> openElectrumCache(
+    String walletIdHex,
+  ) async => BdkElectrumCache.open(await _getDbPath(walletIdHex));
+
   static Future<String> _getDbPath(String walletIdHex) async {
     final dir = await getApplicationDocumentsDirectory();
     // Add since bdk_dart might not migrate old bdk_flutter db we suffix the db name with `_bdk_dart` to avoid conflicts
@@ -260,6 +266,7 @@ class BdkFacade {
 
   static Future<void> delete(WalletModel walletModel) async {
     final dbPath = await _getDbPath(walletModel.hexId);
+    BdkElectrumCache.delete(dbPath);
     final dbFile = File(dbPath);
 
     if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);

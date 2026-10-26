@@ -17,6 +17,7 @@ The package owns:
 - shared serialization of access to persisted wallet-source state;
 - BDK and LWK source adapters.
 - the package-owned durable SQLite metadata adapter, storing hashed keys and non-sensitive synchronization state only; its database path is injected by the production shell.
+- the BDK Electrum download cache: a `<wallet database>.parents.sqlite` sidecar holding the public parent transactions of the wallet's transactions, never read as transaction history.
 
 The package does not own:
 
@@ -41,7 +42,7 @@ WalletTransactionSyncFacade
 
 The public library is `lib/wallet_transaction_sync.dart`. Domain entities, requests, failures, states, ports, the coordinator, and the facade are public. Repository implementations, the snapshot store, SDK mappers, and SDK source adapters remain under `lib/src/`.
 
-SDK types are confined to `src/data/bdk/` and `src/data/lwk/`; they never cross the repository or facade boundary.
+SDK types are confined to `src/data/bdk/` and `src/data/lwk/`; they never cross the repository or facade boundary. The separate `lib/bdk_electrum_cache.dart` library exposes `BdkElectrumCache` to the application's legacy BDK sync until that sync runs behind the facade; it takes SDK types by design and is not part of the facade contract.
 
 ## Public operations
 
@@ -128,6 +129,8 @@ The BDK source adapter:
 - uses the explicitly configured SQLite path;
 - distinguishes local reconstruction, routine revealed-script sync, and full discovery;
 - tries Electrum endpoints before source mutation, then applies and persists one selected update;
+- prefills each fresh Electrum client with the wallet's transactions, their direct confirmation anchors and the cached parent transactions, then stores the parents the scan fetched; the server still answers every script history and header request, an anchor that no longer matches its block header is verified again with a Merkle proof, and a cache failure only costs the downloads;
+- deletes the cache sidecar with the wallet;
 - owns a short-lived wallet/persister pair and disposes the wallet before the persister;
 - maps canonical transaction position, including block identity when the installed SDK exposes it;
 - never silently deletes authoritative BDK state after a generic load error.

@@ -103,6 +103,9 @@ void main() {
       contains('final requestBuilder = bdkWallet.startSyncWithRevealedSpks()'),
     );
     expect(scan, contains('update = blockchain.sync_('));
+    expect(scan, contains('cache?.prefill(blockchain, bdkWallet)'));
+    expect(scan, contains('cache?.rememberParents(blockchain, bdkWallet)'));
+    expect(scan, contains('cache?.close()'));
     expect(RegExp(r'applyUpdate\(').allMatches(scan), hasLength(1));
     expect(RegExp(r'BdkFacade\.saveWallet\(').allMatches(scan), hasLength(1));
     expect(scan, contains('await BdkFacade.withWallet(wallet'));
