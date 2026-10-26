@@ -292,8 +292,8 @@ void main() {
     },
   );
 
-  // Cancelling while the SOCKS tunnel is still being negotiated must not let
-  // the raw socket go on to a TLS handshake once the tunnel opens.
+  // Cancelling while the SOCKS tunnel is still being negotiated must close
+  // immediately, without waiting for a reply or going on to a TLS handshake.
   test('cancelling before the tunnel opens never starts TLS', () async {
     final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     addTearDown(proxy.close);
@@ -330,11 +330,8 @@ void main() {
       TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
     );
     task.socket.ignore();
-    final tunnel = await connectRequested.future.timeout(
-      const Duration(seconds: 1),
-    );
+    await connectRequested.future.timeout(const Duration(seconds: 1));
     task.cancel();
-    tunnel.add([0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0, 443]);
 
     await proxyClosed.future.timeout(
       const Duration(seconds: 1),

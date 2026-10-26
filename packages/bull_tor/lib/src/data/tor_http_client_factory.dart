@@ -23,6 +23,12 @@ Future<void> cancelSocket(FutureOr<void> Function() destroy) async {
 
 /// Builds an HTTP client for an already-selected Tor route.
 ///
+/// Cancellation closes the TCP dial and a pending SOCKS negotiation. Once
+/// `SecureSocket.secure` detaches that TCP handle, its public API exposes no
+/// cancellation handle until the TLS handshake finishes. A cancelled TLS
+/// result is destroyed on completion; this does not promise immediate
+/// interruption of a silent peer after its ClientHello.
+///
 /// [endpoint] is deliberately non-nullable. Accepting null meant "return a
 /// plain, unproxied client", and the only consumer is the RecoverBull key
 /// server — an onion address. A caller that passed null would have shipped its
@@ -94,16 +100,80 @@ final class TorHttpClientFactory {
           endpoint.port,
           password: null,
         );
-    final socket = SocksTCPClient.connect(
-      [settings],
-      InternetAddress(uri.host, type: InternetAddressType.unix),
-      uri.port,
+    Socket? underlying;
+    ConnectionTask<Socket>? connecting;
+    var cancelled = false;
+    final parentZone = Zone.current;
+    // The package owns SOCKS framing and its typed failures, but exposes the
+    // socket only after negotiation. Capture just its TCP dial in a local
+    // zone so cancellation can close a silent proxy before negotiation ends.
+    final socket = IOOverrides.runZoned(
+      () => SocksTCPClient.connect(
+        [settings],
+        InternetAddress(uri.host, type: InternetAddressType.unix),
+        uri.port,
+      ),
+      socketConnect:
+          (host, port, {sourceAddress, sourcePort = 0, timeout}) async {
+            if (cancelled) {
+              throw const SocketException('SOCKS connection cancelled');
+            }
+            // Dial outside our override, preserving the caller's IO context
+            // without recursively intercepting this connection.
+            final task = await parentZone.run(
+              () => Socket.startConnect(
+                host,
+                port,
+                sourceAddress: sourceAddress,
+                sourcePort: sourcePort,
+              ),
+            );
+            connecting = task;
+            // Cancellation may win before startConnect returns its handle.
+            // Observe the dial future even when we never await it below.
+            task.socket.ignore();
+            if (cancelled) {
+              task.cancel();
+              throw const SocketException('SOCKS connection cancelled');
+            }
+            final raw = timeout == null
+                ? await task.socket
+                : await task.socket.timeout(
+                    timeout,
+                    onTimeout: () {
+                      task.cancel();
+                      throw const SocketException(
+                        'SOCKS proxy connection timed out',
+                      );
+                    },
+                  );
+            underlying = raw;
+            if (cancelled) {
+              raw.destroy();
+              throw const SocketException('SOCKS connection cancelled');
+            }
+            return raw;
+          },
+    );
+    Future<void> cancel() async {
+      cancelled = true;
+      // Destroy synchronously before yielding: TLS may otherwise detach the
+      // raw socket during this turn and make its old handle ineffective.
+      await cancelSocket(() => underlying?.destroy());
+      await cancelSocket(() => connecting?.cancel());
+    }
+
+    // Observe failures even when cancellation has detached the HTTP request;
+    // a failed handshake must not retain the TCP socket or escape its zone.
+    unawaited(
+      socket.then<void>(
+        (_) {},
+        onError: (Object error, StackTrace trace) =>
+            cancelSocket(() => underlying?.destroy()),
+      ),
     );
     if (uri.scheme == 'https') {
-      Socket? underlying;
-      var cancelled = false;
-      final secureSocket = socket.then((raw) {
-        underlying = raw;
+      final secureSocket = socket.then((raw) async {
         // Cancelled while the tunnel was still opening: there is no handshake
         // left to wait for, so the raw socket goes now rather than after TLS.
         if (cancelled) {
@@ -111,24 +181,24 @@ final class TorHttpClientFactory {
           throw const SocketException('Connection cancelled before TLS');
         }
         onUnderlyingReady?.call();
-        return raw.secure(uri.host);
+        final secure = await raw.secure(uri.host);
+        underlying = secure;
+        if (cancelled) {
+          secure.destroy();
+          throw const SocketException('Connection cancelled during TLS');
+        }
+        return secure;
       });
       unawaited(
         secureSocket.then<void>(
           (_) {},
-          onError: (Object error, StackTrace trace) => underlying?.destroy(),
+          onError: (Object error, StackTrace trace) =>
+              cancelSocket(() => underlying?.destroy()),
         ),
       );
-      return ConnectionTask.fromSocket(secureSocket, () async {
-        cancelled = true;
-        await cancelSocket(() => underlying?.destroy());
-        await cancelSocket(() async => (await secureSocket).destroy());
-      });
+      return ConnectionTask.fromSocket(secureSocket, cancel);
     }
-    return ConnectionTask.fromSocket(
-      socket,
-      () => cancelSocket(() async => (await socket).destroy()),
-    );
+    return ConnectionTask.fromSocket(socket, cancel);
   }
 
   /// Maps a connection error to the reason it carries.
