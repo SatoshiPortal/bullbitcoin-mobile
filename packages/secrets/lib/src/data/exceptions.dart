@@ -54,9 +54,9 @@ class FingerprintConflictException implements Exception {
   String toString() => 'FingerprintConflictException: $message';
 }
 
-/// The value under a key derives to a different fingerprint than the key names.
+/// The value under a key derives to a different fingerprint than the key names, or imported words to one the caller did not accept.
 ///
-/// Serving it would hand one wallet's keys under another wallet's fingerprint, so a read refuses. Translated to `FingerprintMismatchFailure`; the entry is left as it is.
+/// Serving it would hand one wallet's keys under another wallet's fingerprint, so a read refuses and an import writes nothing. Translated to `FingerprintMismatchFailure`; an existing entry is left as it is.
 class FingerprintMismatchException implements Exception {
   final String message;
   @internal

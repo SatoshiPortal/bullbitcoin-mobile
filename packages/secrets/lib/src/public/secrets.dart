@@ -73,14 +73,18 @@ final class Secrets {
   )).map(_handle);
 
   /// Imports user-supplied words and returns a newly stored secret. The caller must release its input afterwards. Invalid words return [InvalidMnemonicFailure]; an existing secret returns [SecretAlreadyExistsFailure] without changing storage.
+  ///
+  /// With [acceptOnly], words that derive to any other fingerprint return [FingerprintMismatchFailure] and nothing is written.
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
     String? passphrase,
+    Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
     words: words,
     passphrase: passphrase,
     rejectExisting: true,
+    acceptOnly: acceptOnly,
   )).map(_handle);
 
   // ----------------------------------------------------------------- queries

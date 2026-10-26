@@ -13,7 +13,7 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 ```text
 Secrets
 |-- generate([wordCount: MnemonicWordCount.words12]) -> Secret
-|-- import(words:, [passphrase:]) -> Secret
+|-- import(words:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
 |-- trash(id) -> void

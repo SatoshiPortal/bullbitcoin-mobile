@@ -79,9 +79,9 @@ final class InvalidVaultFailure extends SecretFailure {
   const InvalidVaultFailure([super.logMessage]);
 }
 
-/// The stored value does not derive to the fingerprint it is filed under, so it was not served.
+/// The stored value does not derive to the fingerprint it is filed under, so it was not served; or imported words derive to a fingerprint the caller did not accept, so they were not stored.
 ///
-/// Distinct from an unreadable or absent entry: the stored value is kept, and the caller must resolve which wallet it belongs to.
+/// Distinct from an unreadable or absent entry: a stored value is kept, and the caller must resolve which wallet it belongs to.
 final class FingerprintMismatchFailure extends SecretFailure {
   const FingerprintMismatchFailure([super.logMessage]);
 }

@@ -122,6 +122,7 @@ class SecretRepository {
     required List<String> words,
     String? passphrase,
     bool rejectExisting = false,
+    Set<Fingerprint>? acceptOnly,
   }) => boundary(() async {
     // Validated as words first — count, wordlist, checksum — so a bad count reads as "invalid mnemonic" like a bad checksum, not as the model's FormatException. Cheap: no seed yet.
     Deriver.fingerprint.check(words);
@@ -134,6 +135,12 @@ class SecretRepository {
           : passphrase,
     );
     final id = await Isolate.run(() => _identify(model));
+    // Checked before the write, so a refusal never depends on undoing one.
+    if (acceptOnly != null && !acceptOnly.contains(id)) {
+      throw const FingerprintMismatchException(
+        'the words do not derive to an accepted fingerprint',
+      );
+    }
     await _source.storeSecret(
       id: id,
       secret: model,

@@ -727,6 +727,35 @@ void main() {
     );
   });
 
+  group('import with acceptOnly checks the fingerprint before writing', () {
+    test(
+      'words of another fingerprint are refused and nothing is stored',
+      () async {
+        final storage = FakeSecureStoragePlatform();
+        final secrets = secretsWith(storage);
+        final result = await secrets.import(
+          words: words,
+          acceptOnly: {Fingerprint('00000000')},
+        );
+        expect(err(result), isA<FingerprintMismatchFailure>());
+        expect(storage.entries, isEmpty);
+      },
+    );
+
+    test('words of an accepted fingerprint are stored', () async {
+      final storage = FakeSecureStoragePlatform();
+      final secrets = secretsWith(storage);
+      final secret = ok(
+        await secrets.import(
+          words: words,
+          acceptOnly: {Fingerprint('00000000'), id},
+        ),
+      );
+      expect(secret.id, id);
+      expect(storage.entries, hasLength(1));
+    });
+  });
+
   group('an invalid word count is classified at its origin', () {
     // Before: a count BIP39 does not define reached the boundary as the storage model's `FormatException`, and read as "the keystore refused" whether the words came from the user or from a vault. Two origins, two remedies, one wrong answer. Each origin now decides for itself.
     test('from an import, it is an invalid mnemonic', () async {
