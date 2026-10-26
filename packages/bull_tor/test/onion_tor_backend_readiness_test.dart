@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bull_sdk/onion.dart' as onion;
 import 'package:bull_tor/src/data/onion_tor_backend.dart';
+import 'package:bull_tor/src/data/onion_client_launcher.dart';
 import 'package:bull_tor/src/data/tor_logger.dart';
 import 'package:bull_tor/src/domain/entities/tor_proxy_endpoint.dart';
+import 'package:bull_tor/src/domain/entities/tor_transport.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/src/domain/tor_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -135,4 +138,238 @@ void main() {
       },
     );
   });
+
+  group('startup readiness regressions', () {
+    late Directory root;
+    late _ReadinessService service;
+    late Completer<void> holding;
+    late Completer<void> releaseHold;
+    late OnionTorBackend backend;
+    late List<EmbeddedTorEvent> events;
+
+    setUp(() async {
+      root = await Directory.systemTemp.createTemp('tor_readiness_');
+      service = _ReadinessService();
+      holding = Completer<void>();
+      releaseHold = Completer<void>();
+      backend = OnionTorBackend(
+        const TorLogger(),
+        launcher: _ReadinessLauncher(service),
+        directories: (_) async => torDirectoriesUnder(root.path),
+        wait: (_) {
+          holding.complete();
+          return releaseHold.future;
+        },
+      );
+      events = [];
+      backend.watch().listen(events.add);
+    });
+
+    tearDown(() async {
+      await backend.close();
+      await service.statuses.close();
+      await root.delete(recursive: true);
+    });
+
+    test(
+      'waits for fresh readiness after a regression during the hold',
+      () async {
+        var completed = false;
+        final starting = backend.start(TorTransport.direct).then((value) {
+          completed = true;
+          return value;
+        });
+        await holding.future;
+        service.statuses.add(status(0.45));
+        releaseHold.complete();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(completed, isFalse);
+        expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+
+        service.statuses.add(status(1, ready: true));
+        await starting;
+        expect(events.whereType<EmbeddedTorReady>(), hasLength(1));
+      },
+    );
+
+    test('rechecks readiness after the awaited listener check', () async {
+      final checking = Completer<void>();
+      final listenerResult = Completer<bool>();
+      service.checkListener = () {
+        if (!checking.isCompleted) checking.complete();
+        return listenerResult.future;
+      };
+      var completed = false;
+      final starting = backend.start(TorTransport.direct).then((value) {
+        completed = true;
+        return value;
+      });
+      await holding.future;
+      releaseHold.complete();
+      await checking.future;
+      service.statuses.add(status(0.45));
+      listenerResult.complete(true);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(completed, isFalse);
+      expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+      service.statuses.add(status(1, ready: true));
+      await starting;
+      expect(events.whereType<EmbeddedTorReady>(), hasLength(1));
+    });
+
+    test(
+      'stop cancels a regressed startup without announcing readiness',
+      () async {
+        final starting = backend.start(TorTransport.direct);
+        final cancelled = expectLater(
+          starting,
+          throwsA(isA<TorBackendException>()),
+        );
+        await holding.future;
+        service.statuses.add(status(0.45));
+        releaseHold.complete();
+        await Future<void>.delayed(Duration.zero);
+        await backend.stop();
+        await cancelled;
+        expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+      },
+    );
+
+    test('stop interrupts a pending listener check', () async {
+      final checking = Completer<void>();
+      final listenerResult = Completer<bool>();
+      service.checkListener = () {
+        if (!checking.isCompleted) checking.complete();
+        return listenerResult.future;
+      };
+      final starting = backend.start(TorTransport.direct);
+      final cancelled = expectLater(
+        starting,
+        throwsA(isA<TorBackendException>()),
+      );
+      await holding.future;
+      releaseHold.complete();
+      await checking.future;
+      await backend.stop();
+      await cancelled;
+      listenerResult.complete(true);
+      await Future<void>.delayed(Duration.zero);
+      expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+    });
+
+    test('a regression cannot extend the startup readiness budget', () async {
+      await backend.close();
+      backend = OnionTorBackend(
+        const TorLogger(),
+        launcher: _ReadinessLauncher(service),
+        directories: (_) async => torDirectoriesUnder(root.path),
+        readinessHold: Duration.zero,
+        trafficReadyTimeout: const Duration(milliseconds: 30),
+        wait: (_) async {
+          service.statuses.add(status(0.45));
+        },
+      );
+      events = [];
+      backend.watch().listen(events.add);
+      await expectLater(
+        backend.start(TorTransport.direct),
+        throwsA(
+          isA<TorBackendException>().having(
+            (error) => error.failure,
+            'readiness deadline',
+            isA<TorBootstrapTimeoutFailure>(),
+          ),
+        ),
+      );
+      service.statuses.add(status(1, ready: true));
+      await Future<void>.delayed(Duration.zero);
+      expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+    });
+
+    test(
+      'a listener check cannot outlive the startup readiness budget',
+      () async {
+        await backend.close();
+        final listenerResult = Completer<bool>();
+        service.checkListener = () => listenerResult.future;
+        backend = OnionTorBackend(
+          const TorLogger(),
+          launcher: _ReadinessLauncher(service),
+          directories: (_) async => torDirectoriesUnder(root.path),
+          readinessHold: Duration.zero,
+          trafficReadyTimeout: const Duration(milliseconds: 30),
+        );
+        events = [];
+        backend.watch().listen(events.add);
+        await expectLater(
+          backend.start(TorTransport.direct),
+          throwsA(
+            isA<TorBackendException>().having(
+              (error) => error.failure,
+              'listener readiness deadline',
+              isA<TorBootstrapTimeoutFailure>(),
+            ),
+          ),
+        );
+        listenerResult.complete(true);
+        await Future<void>.delayed(Duration.zero);
+        expect(events.whereType<EmbeddedTorReady>(), isEmpty);
+      },
+    );
+  });
+}
+
+final class _ReadinessLauncher implements OnionClientLauncher {
+  final onion.TorService service;
+
+  _ReadinessLauncher(this.service);
+
+  @override
+  Future<onion.TorService> startClient(
+    OnionClientConfig config,
+    onion.SocksPolicy policy,
+  ) async => service;
+
+  @override
+  Future<int> startSnowflakeProxy() async => throw UnimplementedError();
+
+  @override
+  Future<void> stopSnowflakeProxy() async {}
+}
+
+final class _ReadinessService implements onion.TorService {
+  final statuses = StreamController<onion.TorStatus>.broadcast(sync: true);
+  Future<bool> Function()? checkListener;
+
+  @override
+  Future<void> bootstrap() async {
+    statuses.add(
+      onion.TorStatus(
+        fraction: 1,
+        readyForTraffic: true,
+        stage: '',
+        transport: onion.TorTransport.direct,
+      ),
+    );
+  }
+
+  @override
+  Future<bool> proxyIsAlive() async => await checkListener?.call() ?? true;
+
+  @override
+  Future<int> socksPort() async => 9050;
+
+  @override
+  Stream<onion.TorStatus> watchStatus() => statuses.stream;
+
+  @override
+  Future<void> setDormant({required bool dormant}) async {}
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
