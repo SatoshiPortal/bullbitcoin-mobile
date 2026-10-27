@@ -466,6 +466,7 @@ final class _DurableActor {
         killWorkerBeforeReady,
         locks.request,
         locks.addresses,
+        locks.exitPort.sendPort,
       ]);
     } catch (_) {
       responses.close();
@@ -556,7 +557,6 @@ final class _DurableActor {
     Object? error;
     try {
       await _command('release');
-      _locks.requestCleaned();
     } catch (caught) {
       error = caught;
     }
@@ -625,8 +625,14 @@ final class _LockOwner {
   bool _operationEnded = false;
   bool _closed = false;
 
+  /// The worker reports the removal of its request on [exitPort], which also
+  /// receives its exit: one port keeps the report ahead of the exit.
   _LockOwner(this._databasePath, this._busy, this.request, this.addresses) {
-    exitPort.listen((_) {
+    exitPort.listen((message) {
+      if (message == 'cleaned') {
+        _requestCleaned = true;
+        return;
+      }
       exitPort.close();
       if (!_exited.isCompleted) _exited.complete();
       _closeWhenSettled();
@@ -642,9 +648,6 @@ final class _LockOwner {
     _operationEnded = true;
     _closeWhenSettled();
   }
-
-  /// The worker removed its own request during a normal release.
-  void requestCleaned() => _requestCleaned = true;
 
   /// For a worker that never started: nothing else will close the locks.
   void abandon() {
@@ -669,27 +672,40 @@ final class _LockOwner {
       _settled.complete();
       return;
     }
-    // A request left by a dead worker would head the shared queue and hold
-    // back every wallet until its heartbeat expires. Removed off this
-    // isolate, which may be the UI's, and never recreating a deleted database.
-    final path = _databasePath;
-    final busy = _busy;
-    final token = request;
-    Isolate.run(() {
-          final db = sqlite3.open(path, mode: OpenMode.readWrite);
-          try {
-            db.execute('PRAGMA busy_timeout = $busy');
-            db.execute('DELETE FROM requests WHERE request_token=?', [token]);
-          } finally {
-            db.dispose();
-          }
-        })
-        .catchError((Object _) {
-          // The heartbeat timeout removes it later.
-        })
+    // A request left by the worker would head the shared queue and hold back
+    // every wallet until its heartbeat expires. Removed off this isolate,
+    // which may be the UI's, retrying through contention, and never
+    // recreating a deleted database; the caller waits for it one second at
+    // most.
+    _removeRequestAside(_databasePath, _busy, request)
+        .timeout(const Duration(seconds: 1), onTimeout: () {})
         .whenComplete(_settled.complete);
   }
 }
+
+/// Removes a request row in its own isolate, retrying for up to 30 s while
+/// the coordination database is busy.
+Future<void> _removeRequestAside(String path, int busy, String token) =>
+    Isolate.run(() {
+      final deadline = DateTime.now().add(const Duration(seconds: 30));
+      while (true) {
+        final db = sqlite3.open(path, mode: OpenMode.readWrite);
+        try {
+          db.execute('PRAGMA busy_timeout = $busy');
+          db.execute('DELETE FROM requests WHERE request_token=?', [token]);
+          return;
+        } catch (error) {
+          if (!_isRetryable(error) || DateTime.now().isAfter(deadline)) {
+            return;
+          }
+        } finally {
+          db.dispose();
+        }
+        sleep(const Duration(milliseconds: 100));
+      }
+    }).catchError((Object _) {
+      // The database is gone; nothing is left to remove.
+    });
 
 /// Runs [_openLockConnections] in its own isolate; a separate function so the
 /// closure captures only these values.
@@ -765,6 +781,7 @@ Future<void> _workerMain(List<Object?> args) async {
   final killWorkerAfterReady = args[14] as bool;
   final killWorkerBeforeReady = args[15] as bool;
   final request = args[16] as String;
+  final lockOwner = args[18] as SendPort;
   // Owned and closed by the caller; kept referenced so no finalizer closes
   // them before this isolate exits.
   final lockConnections = [
@@ -787,7 +804,9 @@ Future<void> _workerMain(List<Object?> args) async {
   void closeLocks() {
     if (cleanedUp) return;
     cleanedUp = true;
-    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+    if (_bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot)) {
+      lockOwner.send('cleaned');
+    }
     mutex = null;
     slot = null;
   }
@@ -919,7 +938,9 @@ Future<void> _workerMain(List<Object?> args) async {
 /// no finalizer closes them before this worker isolate exits.
 final List<Database> _handedOverLocks = [];
 
-void _bestEffortCleanup(
+/// Returns whether the request row was removed, so a failed removal can be
+/// left to the caller.
+bool _bestEffortCleanup(
   String dbPath,
   int busy,
   String hash,
@@ -940,6 +961,7 @@ void _bestEffortCleanup(
       );
     }
   } catch (_) {}
+  var requestRemoved = false;
   try {
     _central(
       dbPath,
@@ -947,6 +969,7 @@ void _bestEffortCleanup(
       (db) =>
           db.execute('DELETE FROM requests WHERE request_token=?', [request]),
     );
+    requestRemoved = true;
   } catch (_) {}
   if (slot != null) {
     try {
@@ -958,6 +981,7 @@ void _bestEffortCleanup(
       mutex.execute('ROLLBACK');
     } catch (_) {}
   }
+  return requestRemoved;
 }
 
 String _category(Object error) {

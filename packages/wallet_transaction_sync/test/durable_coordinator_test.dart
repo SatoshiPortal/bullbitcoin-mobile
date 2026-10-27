@@ -1278,6 +1278,42 @@ void main() {
     }
   });
 
+  test(
+    'a request the worker could not remove is removed by the caller',
+    () async {
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      await coordinator.runExclusive(
+        const WalletSourceKey('warm-up', 'bitcoin', 'testnet'),
+        (_) async {},
+      );
+      final blocker = sqlite3.open(path);
+      final unlocked = Completer<void>();
+
+      // Longer than the worker's cleanup retries, shorter than the test.
+      await coordinator.runExclusive(
+        const WalletSourceKey('stranded', 'bitcoin', 'testnet'),
+        (_) async {
+          blocker.execute('BEGIN EXCLUSIVE');
+          Timer(const Duration(seconds: 7), () {
+            blocker.execute('COMMIT');
+            unlocked.complete();
+          });
+        },
+        timeout: null,
+        kind: WalletOperationKind.synchronize,
+      );
+      await unlocked.future;
+      await Future<void>.delayed(const Duration(seconds: 1));
+
+      final rows = blocker.select('SELECT COUNT(*) AS n FROM requests');
+      blocker.dispose();
+      expect(rows.single['n'], 0);
+    },
+    timeout: const Timeout(Duration(seconds: 60)),
+  );
+
   test('dead workers release their locks and close their sessions', () async {
     final dying = DurableWalletSourceOperationCoordinator(
       databasePath: path,
