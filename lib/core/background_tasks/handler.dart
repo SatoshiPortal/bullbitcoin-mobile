@@ -25,7 +25,10 @@ import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-const _backgroundWalletSyncConcurrency = 2;
+// The coordinator keeps one synchronization slot for the foreground, which
+// leaves background scans one slot across both tasks: a second worker would
+// only wait for it.
+const _backgroundWalletSyncConcurrency = 1;
 
 /// Schedules the periodic background tasks and removes the obsolete swap task.
 Future<void> registerBackgroundTasks() async {
