@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/bloc_observer.dart';
@@ -9,11 +8,11 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/tor_diagnostic_context.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/native_libraries.dart';
 import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
+import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:bb_mobile/startup_wizard.dart';
-import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bull_sdk.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -27,7 +26,13 @@ class Bull {
       payjoinDatabaseFilename,
     );
 
-    await initLogs(logDirectory: bullDirectory);
+    await initializeLogging(
+      directory: bullDirectory,
+      reporter: const ReportLoggerAdapter(),
+      diagnosticContextSource: PlatformDiagnosticContextSource(
+        runtime: _diagnosticRuntime,
+      ),
+    );
     // The pre-init wizard writes consent to prefs via the bloc's
     // `SavePendingWizardChoicesUsecase` right before this runs. Pull
     // it so Sentry initializes with the user's freshest answer rather
@@ -69,75 +74,10 @@ class Bull {
       await Report.commitVersion();
     }
   }
-
-  static Future<void> initFlutterRustBridgeDependencies() async {
-    final initTasks = [
-      BullSdk.init(),
-      if (Platform.isAndroid) BitBoxApi.initialize(),
-    ];
-
-    await Future.wait(initTasks);
-  }
-
-  /// Uses separate files for foreground and background isolates to avoid concurrent writes to the same log.
-  static Future<void> initLogs({
-    required Directory logDirectory,
-    bool background = false,
-  }) async {
-    final diagnosticContextProvider = background
-        ? null
-        : DiagnosticContextProvider(
-            PlatformDiagnosticContextSource(runtime: _diagnosticRuntime),
-          );
-    log = Logger.replace(
-      directory: logDirectory,
-      background: background,
-      diagnosticContextLoader: diagnosticContextProvider?.load,
-      reporter: const _ReportLoggerReporter(),
-    );
-    // Create files now; bootstrap collects platform diagnostics after the first frame.
-    await log.ensureLogsExist(writeDiagnosticContext: false);
-    if (!background) {
-      // Pruning is per isolate; only prune the foreground file here.
-      unawaited(log.prune());
-    }
-  }
 }
 
 final _diagnosticRuntime = DiagnosticRuntimeContext();
 
 void configureLogTorContext(Future<DiagnosticTorContext> Function() loader) {
   _diagnosticRuntime.setTorLoader(loader);
-}
-
-final class _ReportLoggerReporter implements LoggerReporter {
-  const _ReportLoggerReporter();
-
-  @override
-  void reportError({
-    String? message,
-    required Object exception,
-    required StackTrace stackTrace,
-    required ReportCategory category,
-  }) {
-    Report.error(
-      message: message,
-      exception: exception,
-      stackTrace: stackTrace,
-      category: category,
-    );
-  }
-
-  @override
-  Future<void> reportShout({
-    required String message,
-    Object? exception,
-    StackTrace? stackTrace,
-    ReportCategory? category,
-  }) => Report.shout(
-    message: message,
-    exception: exception,
-    stackTrace: stackTrace,
-    category: category,
-  );
 }
