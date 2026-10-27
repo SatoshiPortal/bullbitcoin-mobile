@@ -8,9 +8,11 @@ class SyncWalletUsecase {
   SyncWalletUsecase({required WalletRepository walletRepository})
     : _wallet = walletRepository;
 
-  Future<void> execute(Wallet wallet) async {
+  /// [discoverHistory] also scans addresses the wallet has not revealed, up
+  /// to the stop gap; only explicit user refreshes ask for it.
+  Future<void> execute(Wallet wallet, {bool discoverHistory = false}) async {
     try {
-      await _wallet.sync(wallet);
+      await _wallet.sync(wallet, discoverHistory: discoverHistory);
     } catch (e) {
       throw SyncWalletException('$e');
     }

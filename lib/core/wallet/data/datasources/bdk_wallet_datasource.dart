@@ -85,13 +85,16 @@ class BdkWalletDatasource {
   Future<void> sync({
     required WalletModel wallet,
     required ElectrumConnection electrumServer,
+    bool discoverHistory = false,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
     //  all others await the same Future.
     // TODO: if needed, add these debugPrint to a filterable logger.debug
     // TODO: to avoid spamming the terminal with recurring prints
     // debugPrint('Sync requested for wallet: ${wallet.id}');
-    return _activeSyncs.putIfAbsent(wallet.id, () async {
+    // A discovery never joins a routine sync: it must scan the stop gap.
+    final activeKey = discoverHistory ? '${wallet.id}:discover' : wallet.id;
+    return _activeSyncs.putIfAbsent(activeKey, () async {
       try {
         // debugPrint('New sync started for wallet: ${wallet.id}');
         // Notify that the wallet is syncing through a stream for other
@@ -116,6 +119,7 @@ class BdkWalletDatasource {
             electrumRetry: electrumServer.retry,
             electrumValidateDomain: electrumServer.validateDomain,
             walletHexId: wallet.hexId,
+            discoverHistory: discoverHistory,
             rootIsolateToken: ServicesBinding.rootIsolateToken!,
           ),
         );
@@ -941,9 +945,16 @@ void _disposeBdkDescriptor(bdk.Descriptor? descriptor) => descriptor?.dispose();
 
 enum BdkSyncMode { fullScan, sync }
 
+/// A wallet without a synced chain (created, imported, recovered) and an
+/// explicit discovery scan the stop gap; routine syncs refresh revealed
+/// addresses only.
 @visibleForTesting
-BdkSyncMode bdkSyncModeForCheckpointHeight(int height) =>
-    height <= 0 ? BdkSyncMode.fullScan : BdkSyncMode.sync;
+BdkSyncMode bdkSyncModeFor({
+  required int checkpointHeight,
+  required bool discoverHistory,
+}) => discoverHistory || checkpointHeight <= 0
+    ? BdkSyncMode.fullScan
+    : BdkSyncMode.sync;
 
 final class _ActiveSignerScope {
   bool _active = true;
@@ -988,6 +999,7 @@ class _SyncParams {
   final int electrumRetry;
   final bool electrumValidateDomain;
   final String walletHexId;
+  final bool discoverHistory;
   final RootIsolateToken rootIsolateToken;
 
   _SyncParams({
@@ -1002,6 +1014,7 @@ class _SyncParams {
     required this.electrumRetry,
     required this.electrumValidateDomain,
     required this.walletHexId,
+    required this.discoverHistory,
     required this.rootIsolateToken,
   });
 }
@@ -1021,8 +1034,9 @@ Future<void> _performSync(_SyncParams params) async {
   );
 
   await BdkFacade.withWallet(wallet, (bdkWallet) async {
-    final mode = bdkSyncModeForCheckpointHeight(
-      bdkWallet.latestCheckpoint().height,
+    final mode = bdkSyncModeFor(
+      checkpointHeight: bdkWallet.latestCheckpoint().height,
+      discoverHistory: params.discoverHistory,
     );
     final blockchain = _createElectrumClient(
       url: params.electrumUrl,

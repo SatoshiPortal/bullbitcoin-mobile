@@ -422,9 +422,13 @@ void main() {
     expect(missingTransactions, isEmpty);
   });
 
-  test('selects discovery only for an unsynchronized persisted chain', () {
-    expect(bdkSyncModeForCheckpointHeight(0), BdkSyncMode.fullScan);
-    expect(bdkSyncModeForCheckpointHeight(1), BdkSyncMode.sync);
-    expect(bdkSyncModeForCheckpointHeight(849999), BdkSyncMode.sync);
+  test('scans the stop gap for a new chain or an explicit discovery', () {
+    BdkSyncMode mode(int height, {bool discover = false}) =>
+        bdkSyncModeFor(checkpointHeight: height, discoverHistory: discover);
+
+    expect(mode(0), BdkSyncMode.fullScan);
+    expect(mode(1), BdkSyncMode.sync);
+    expect(mode(849999), BdkSyncMode.sync);
+    expect(mode(849999, discover: true), BdkSyncMode.fullScan);
   });
 }

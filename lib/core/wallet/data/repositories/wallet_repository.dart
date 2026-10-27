@@ -630,7 +630,7 @@ class WalletRepository {
     return balance;
   }
 
-  Future<void> sync(Wallet wallet) async {
+  Future<void> sync(Wallet wallet, {bool discoverHistory = false}) async {
     final walletModel = WalletModel.fromMetadata(
       WalletMetadataModel(
         id: wallet.id,
@@ -646,19 +646,25 @@ class WalletRepository {
         signer: Signer.fromEntity(wallet.signer),
       ),
     );
-    await _syncWallet(walletModel);
+    await _syncWallet(walletModel, discoverHistory: discoverHistory);
   }
 
-  Future<void> _syncWallet(WalletModel wallet) async {
+  Future<void> _syncWallet(
+    WalletModel wallet, {
+    bool discoverHistory = false,
+  }) async {
     await _coordinator.runExclusive<void>(
       _sourceKey(wallet),
-      (_) => _syncWalletUncoordinated(wallet),
+      (_) => _syncWalletUncoordinated(wallet, discoverHistory: discoverHistory),
       kind: WalletOperationKind.synchronize,
       timeout: null,
     );
   }
 
-  Future<void> _syncWalletUncoordinated(WalletModel wallet) async {
+  Future<void> _syncWalletUncoordinated(
+    WalletModel wallet, {
+    bool discoverHistory = false,
+  }) async {
     final isLiquid = wallet is PublicLwkWalletModel;
     final network = ElectrumServerNetwork.fromEnvironment(
       isTestnet: wallet.isTestnet,
@@ -677,7 +683,11 @@ class WalletRepository {
         await _serversPort.runWithFallback<void>(
           network: network,
           operation: (connection) async {
-            await _bdkWallet.sync(wallet: wallet, electrumServer: connection);
+            await _bdkWallet.sync(
+              wallet: wallet,
+              electrumServer: connection,
+              discoverHistory: discoverHistory,
+            );
           },
         );
       }
