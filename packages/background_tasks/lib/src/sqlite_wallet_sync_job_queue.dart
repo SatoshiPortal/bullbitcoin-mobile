@@ -227,7 +227,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
             AND unseen.permanent_failed = 0
             AND unseen.next_attempt_at <= ?
             AND (unseen.lease_expires_at IS NULL OR unseen.lease_expires_at <= ?)
-            AND unseen.last_successful_at IS NULL))''';
+            AND unseen.last_successful_at IS NULL AND unseen.attempts = 0))''';
       final eligibleCount =
           _database.select(
                 'SELECT COUNT(*) AS eligible_count FROM wallet_sync_jobs WHERE $eligibility',
@@ -235,7 +235,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
               ).single['eligible_count']
               as int;
       final rows = _database.select(
-        '''SELECT job_id FROM wallet_sync_jobs
+        '''SELECT job_id, attempts FROM wallet_sync_jobs
         WHERE $eligibility
         ORDER BY CASE WHEN last_successful_at IS NULL THEN 0 ELSE 1 END,
           last_successful_at, inserted_at, job_id LIMIT ?''',
@@ -245,9 +245,19 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       for (final row in rows) {
         final jobId = row['job_id'] as String;
         final token = _token();
+        // A claim counts as an attempt and schedules its own backoff, so a
+        // worker killed before completing still backs its wallet off.
+        final attempts = (row['attempts'] as int) + 1;
         _database.execute(
-          'UPDATE wallet_sync_jobs SET lease_token = ?, lease_expires_at = ? WHERE job_id = ? AND (lease_expires_at IS NULL OR lease_expires_at <= ?)',
-          [token, timestamp + leaseDuration.inMicroseconds, jobId, timestamp],
+          'UPDATE wallet_sync_jobs SET lease_token = ?, lease_expires_at = ?, attempts = ?, next_attempt_at = ? WHERE job_id = ? AND (lease_expires_at IS NULL OR lease_expires_at <= ?)',
+          [
+            token,
+            timestamp + leaseDuration.inMicroseconds,
+            attempts,
+            timestamp + _backoff(attempts).inMicroseconds,
+            jobId,
+            timestamp,
+          ],
         );
         if (_database.updatedRows == 1) {
           final key = byId[jobId];
@@ -314,19 +324,9 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
         _rollback();
         return false;
       }
-      final attempts = (rows.single['attempts'] as int) + 1;
-      var delayMicroseconds = retryBase.inMicroseconds;
-      for (
-        var retry = 1;
-        retry < attempts && delayMicroseconds < retryMaximum.inMicroseconds;
-        retry++
-      ) {
-        delayMicroseconds = min(
-          retryMaximum.inMicroseconds,
-          delayMicroseconds * 2,
-        );
-      }
-      final delay = Duration(microseconds: delayMicroseconds);
+      // Counted by the claim; a failure only keeps the backoff.
+      final attempts = max(1, rows.single['attempts'] as int);
+      final delay = _backoff(attempts);
       _database.execute(
         'UPDATE wallet_sync_jobs SET attempts = ?, permanent_failed = ?, next_attempt_at = ?, lease_token = NULL, lease_expires_at = NULL WHERE job_id = ? AND lease_token = ?',
         [
@@ -350,6 +350,22 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       _rollback();
       rethrow;
     }
+  }
+
+  /// Doubles from [retryBase] per attempt, up to [retryMaximum].
+  Duration _backoff(int attempts) {
+    var delayMicroseconds = retryBase.inMicroseconds;
+    for (
+      var retry = 1;
+      retry < attempts && delayMicroseconds < retryMaximum.inMicroseconds;
+      retry++
+    ) {
+      delayMicroseconds = min(
+        retryMaximum.inMicroseconds,
+        delayMicroseconds * 2,
+      );
+    }
+    return Duration(microseconds: delayMicroseconds);
   }
 
   Future<bool> _mutate(String sql, List<Object?> args) async {

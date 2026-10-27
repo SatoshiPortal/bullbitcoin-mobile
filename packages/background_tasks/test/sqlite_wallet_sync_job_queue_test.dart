@@ -116,14 +116,48 @@ void main() {
       expect(await current.completeSuccess(duringBackoff.single), isTrue);
       clock.advance(const Duration(minutes: 1));
 
+      // An attempted wallet no longer keeps the synced ones out of the run;
+      // it still goes first.
       final retry = await current.reconcileAndClaim([
         _registration(0),
         _registration(1),
       ], chain: 'bitcoin');
-      expect(retry.map((claim) => claim.key.walletId), ['wallet-1']);
+      expect(retry.map((claim) => claim.key.walletId), [
+        'wallet-1',
+        'wallet-0',
+      ]);
       await current.close();
     },
   );
+
+  test('a wallet whose worker never completes stops starving others', () async {
+    final current = queue();
+    Future<List<String>> claim() async => (await current.reconcileAndClaim([
+      _registration(0),
+      _registration(1),
+    ], chain: 'bitcoin')).map((claim) => claim.key.walletId).toList();
+    final synced = (await current.reconcileAndClaim([
+      _registration(0),
+    ], chain: 'bitcoin')).single;
+    expect(await current.completeSuccess(synced), isTrue);
+    clock.advance(const Duration(minutes: 1));
+
+    // The never-synced wallet is claimed alone; its worker dies without
+    // completing, so only the lease expiry frees it.
+    expect(await claim(), ['wallet-1']);
+    clock.advance(const Duration(minutes: 11));
+    expect(await claim(), ['wallet-1', 'wallet-0']);
+
+    // Every dead claim backs the wallet off further, until it waits longer
+    // than a lease and the other wallet runs alone.
+    for (var round = 0; round < 3; round++) {
+      clock.advance(const Duration(minutes: 11));
+      await claim();
+    }
+    clock.advance(const Duration(minutes: 11));
+    expect(await claim(), ['wallet-0']);
+    await current.close();
+  });
 
   test(
     'permanent failure remains disabled until its revision changes',
