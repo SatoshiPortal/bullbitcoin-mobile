@@ -204,9 +204,14 @@ class SyncCoordinator {
       }
     }
     final discover = _discovers(kind, trigger);
-    if (discover) _discoveryRequested.add(kind);
-    if (_enqueued.contains(kind)) return 'pending';
+    // The request is recorded only for a pass that will consume it, never
+    // for one already running, which would leak into the next routine sync.
+    if (_enqueued.contains(kind)) {
+      if (discover) _discoveryRequested.add(kind);
+      return 'pending';
+    }
     if (_running == kind && (!discover || _runningDiscovery)) return 'pending';
+    if (discover) _discoveryRequested.add(kind);
     _enqueued.add(kind);
     _queue.add(kind);
     return null;

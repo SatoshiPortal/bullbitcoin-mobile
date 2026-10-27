@@ -470,6 +470,30 @@ void main() {
       expect(userDone, isTrue);
     });
 
+    test('a user sync that joins a discovery leaves the next automatic '
+        'sync routine', () async {
+      final first = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      final second = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      await pumpEventQueue();
+      await releaseAll();
+      await Future.wait([first, second]);
+
+      // Past the automatic throttle, so the next pass actually runs.
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
+      final automatic = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      await releaseAll();
+      await automatic;
+
+      expect(passes, [true, false]);
+    });
+
     test('a user sync during a discovering pass joins it', () async {
       final first = coordinator.sync(
         only: {SyncKind.bitcoin},
