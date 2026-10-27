@@ -9,17 +9,25 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/tor_diagnostic_context.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/startup_wizard.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bull_sdk.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class Bull {
-  static Future<void> init({String? payjoinDatabasePath}) async {
-    await initLogs();
+  static Future<void> init() async {
+    final bullDirectory = await getApplicationDocumentsDirectory();
+    final payjoinDatabasePath = p.join(
+      bullDirectory.path,
+      payjoinDatabaseFilename,
+    );
+
+    await initLogs(logDirectory: bullDirectory);
     // The pre-init wizard writes consent to prefs via the bloc's
     // `SavePendingWizardChoicesUsecase` right before this runs. Pull
     // it so Sentry initializes with the user's freshest answer rather
@@ -72,8 +80,10 @@ class Bull {
   }
 
   /// Uses separate files for foreground and background isolates to avoid concurrent writes to the same log.
-  static Future<void> initLogs({bool background = false}) async {
-    final logDirectory = await getApplicationDocumentsDirectory();
+  static Future<void> initLogs({
+    required Directory logDirectory,
+    bool background = false,
+  }) async {
     final diagnosticContextProvider = background
         ? null
         : DiagnosticContextProvider(

@@ -13,20 +13,18 @@ void main() {
         final sqlite = File(
           'lib/core/storage/sqlite_database.dart',
         ).readAsStringSync();
-        final payjoin = File('lib/payjoin_setup.dart').readAsStringSync();
+        final initialization = File('lib/init.dart').readAsStringSync();
         final bdk = File(
           'lib/core/wallet/data/datasources/bdk_facade.dart',
         ).readAsStringSync();
         final lwk = File(
           'lib/core/wallet/data/datasources/lwk_facade.dart',
         ).readAsStringSync();
-        final initialization = File('lib/init.dart').readAsStringSync();
 
         expect(sqlite, contains('getApplicationDocumentsDirectory'));
-        expect(payjoin, contains('getApplicationDocumentsDirectory'));
+        expect(initialization, contains('getApplicationDocumentsDirectory'));
         expect(bdk, contains('getApplicationDocumentsDirectory'));
         expect(lwk, contains('getApplicationDocumentsDirectory'));
-        expect(initialization, contains('getApplicationDocumentsDirectory'));
 
         final nativeAndDart = <String>[];
         for (final root in [Directory('lib'), Directory('ios')]) {

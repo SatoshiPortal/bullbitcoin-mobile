@@ -1,4 +1,4 @@
-import 'dart:io' show Directory, Platform;
+import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
@@ -22,14 +22,8 @@ import 'package:primitives/primitives.dart' hide ScriptType;
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  Directory? payjoinDirectory;
   if (!isInitialized) {
-    payjoinDirectory = await Directory.systemTemp.createTemp(
-      'payjoin-integration-',
-    );
-    await Bull.init(
-      payjoinDatabasePath: '${payjoinDirectory.path}/payjoin.sqlite',
-    );
+    await Bull.init();
   }
 
   final walletRepository = locator<WalletRepository>();
@@ -118,14 +112,12 @@ Future<void> main({bool isInitialized = false}) async {
 
   // Belongs to this file's own Bull.init above, not to the fixtures, so it
   // stays at the root scope and runs even when the funded group is skipped.
-  // A no-op under all_test.dart, which calls main(isInitialized: true) and
-  // therefore leaves payjoinDirectory null.
+  // all_test.dart owns the lifecycle when it calls main(isInitialized: true).
   tearDownAll(() async {
-    if (payjoinDirectory == null) return;
+    if (isInitialized) return;
     if (locator.isRegistered<PayjoinLifecycle>()) {
       await locator<PayjoinLifecycle>().dispose();
     }
-    await payjoinDirectory.delete(recursive: true);
   });
 
   test(

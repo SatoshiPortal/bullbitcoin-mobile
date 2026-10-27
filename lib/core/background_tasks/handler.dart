@@ -5,7 +5,10 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
 import 'package:get_it/get_it.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
@@ -25,8 +28,9 @@ void backgroundTasksHandler() {
 
 Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
+  final bullDirectory = await getApplicationDocumentsDirectory();
 
-  await Bull.initLogs(background: true);
+  await Bull.initLogs(logDirectory: bullDirectory, background: true);
   // Note: `Report.init` is intentionally NOT called here. The BG isolate
   // has its own Dart-side Sentry hub but the native plugin (Sentry
   // Android / iOS) is a process-level singleton. Calling
@@ -63,6 +67,7 @@ Future<bool> tasksHandler(String task) async {
     await AppLocator.setup(
       locator,
       sqlite,
+      payjoinDatabasePath: p.join(bullDirectory.path, payjoinDatabaseFilename),
       startPayjoinRecovery: false,
       // No order-swap polling either: the watcher is lifecycle-gated to the
       // foreground app, and this isolate runs on a ~30s iOS background budget.
