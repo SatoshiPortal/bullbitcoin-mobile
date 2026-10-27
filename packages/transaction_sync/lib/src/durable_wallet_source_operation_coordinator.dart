@@ -309,13 +309,20 @@ final class _DurableSession implements WalletSourceClaimedSession {
   @override
   void retire() {
     ensureOpen();
-    _commands.add(_actor.setRetired(true));
+    _queueCommand(_actor.setRetired(true));
   }
 
   @override
   void reactivate() {
     ensureOpen();
-    _commands.add(_actor.setRetired(false));
+    _queueCommand(_actor.setRetired(false));
+  }
+
+  /// Awaited by [close]; a worker dying first fails it earlier, which must
+  /// not surface as an unhandled error.
+  void _queueCommand(Future<void> command) {
+    unawaited(command.then<void>((_) {}, onError: (Object _) {}));
+    _commands.add(command);
   }
 
   /// Ends the session's use by the operation. The source stays exclusive

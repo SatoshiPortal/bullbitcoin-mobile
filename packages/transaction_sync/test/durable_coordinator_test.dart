@@ -921,6 +921,27 @@ void main() {
     expect(rows, 0);
   });
 
+  test(
+    'a retired session of a dead worker raises no unhandled error',
+    () async {
+      final dying = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        killWorkerAfterReady: true,
+      );
+      final result = await dying.runExclusive(
+        const WalletSourceKey('dead-retire', 'bitcoin', 'testnet'),
+        (session) async {
+          session.retire();
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+          return 4;
+        },
+        timeout: null,
+        kind: WalletOperationKind.synchronize,
+      );
+      expect(result, 4);
+    },
+  );
+
   test('claim cleanup failure still releases the mutex', () async {
     var fail = true;
     final first = DurableWalletSourceOperationCoordinator(
