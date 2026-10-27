@@ -92,11 +92,11 @@ Future<void> _initForegroundNotifications(
   try {
     final storedSettings = await settings.fetch();
     outbox = SqliteNotificationOutbox(
-      databasePath: p.join(bullDirectory.path, 'notification_outbox.sqlite'),
+      databasePath: p.join(bullDirectory.path, notificationOutboxFilename),
     );
     final facade = NotificationsFacade(
       gateway: FlutterLocalNotificationGateway(
-        channelId: 'bull_wallet_payments',
+        channelId: paymentNotificationChannelId,
         channelName: (await AppLocalizations.delegate.load(
           storedSettings.language?.locale ?? const Locale('en'),
         )).receivePaymentReceived,

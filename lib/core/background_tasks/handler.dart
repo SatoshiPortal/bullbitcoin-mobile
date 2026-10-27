@@ -94,7 +94,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final coordination = headless<WalletSourceOperationCoordinator>();
   final syncMetadata = headless<WalletSyncMetadataPort>();
   final outbox = SqliteNotificationOutbox(
-    databasePath: p.join(bullDirectory.path, 'notification_outbox.sqlite'),
+    databasePath: p.join(bullDirectory.path, notificationOutboxFilename),
   );
   final syncQueue = SqliteWalletSyncJobQueue(
     databasePath: p.join(
@@ -105,7 +105,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final localized = await _notificationLocalization(headless);
   final notifications = NotificationsFacade(
     gateway: FlutterLocalNotificationGateway(
-      channelId: 'bull_wallet_payments',
+      channelId: paymentNotificationChannelId,
       channelName: localized.receivePaymentReceived,
       androidIconResource: androidNotificationIconResource,
     ),
