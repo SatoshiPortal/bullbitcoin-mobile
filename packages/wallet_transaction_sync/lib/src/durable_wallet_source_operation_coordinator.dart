@@ -941,7 +941,6 @@ bool _admit(
             SELECT 1 FROM requests AS earlier
             WHERE earlier.key_hash=candidate.key_hash
               AND earlier.status='pending'
-              AND earlier.kind IN ('synchronize', 'discover')
               AND (CASE earlier.priority WHEN 'foreground' THEN 0 ELSE 1 END,
                    earlier.requested_at, earlier.rowid) <
                   (CASE candidate.priority WHEN 'foreground' THEN 0 ELSE 1 END,
@@ -958,7 +957,7 @@ bool _admit(
         // A claim left by a dead worker must not make its key permanently
         // ineligible. The physical key mutex below is the liveness check.
         final staleClaimHead = db.select(
-          "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' AND kind IN ('synchronize', 'discover') ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
+          "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
           [hash],
         );
         admitted =
@@ -989,11 +988,13 @@ WalletSourceClaim _activate(
   _central(path, busy, (db) {
     db.execute('BEGIN IMMEDIATE');
     try {
-      final head = db.select(
-        "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
-        [hash],
+      // The key mutex is held: a request queued since then waits for this
+      // one even if it sorts first. Only a request removed meanwhile fails.
+      final own = db.select(
+        "SELECT 1 FROM requests WHERE request_token=? AND status='pending'",
+        [request],
       );
-      if (head.isEmpty || head.single['request_token'] != request) {
+      if (own.isEmpty) {
         throw StateError('coordinator request superseded');
       }
       final retired = db.select(

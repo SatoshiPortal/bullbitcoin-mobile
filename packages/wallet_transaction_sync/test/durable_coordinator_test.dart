@@ -45,6 +45,50 @@ void main() {
     },
   );
 
+  test(
+    'a foreground read and sync queued behind a background sync both run',
+    () async {
+      const key = WalletSourceKey('wallet', 'liquid', 'mainnet');
+      final foreground = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      for (var round = 0; round < 12; round++) {
+        final databasePath = path;
+        final background = Isolate.run(() async {
+          await DurableWalletSourceOperationCoordinator(
+            databasePath: databasePath,
+          ).runExclusive(
+            key,
+            (_) => Future<void>.delayed(const Duration(milliseconds: 300)),
+            kind: WalletOperationKind.synchronize,
+            priority: WalletOperationPriority.background,
+            timeout: null,
+          );
+        });
+        await _waitForPendingOrClaimed(path);
+        final read = foreground.runExclusive(
+          key,
+          (_) async {},
+          kind: WalletOperationKind.refresh,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        final sync = foreground.runExclusive(
+          key,
+          (_) async {},
+          kind: WalletOperationKind.synchronize,
+          timeout: null,
+        );
+
+        await expectLater(
+          Future.wait([background, read, sync]),
+          completes,
+          reason: 'round $round',
+        );
+      }
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
   test('durable claims have monotone generations and survive reopen', () async {
     final key = const WalletSourceKey('wallet', 'bitcoin', 'testnet');
     final first = DurableWalletSourceOperationCoordinator(databasePath: path);
@@ -1062,4 +1106,23 @@ Future<void> _holdInIsolate(List<Object> args) async {
     timeout: null,
   );
   commands.close();
+}
+
+/// Waits until the other isolate's operation holds or queues for the source.
+Future<void> _waitForPendingOrClaimed(String path) async {
+  for (var attempt = 0; attempt < 200; attempt++) {
+    if (File(path).existsSync()) {
+      final db = sqlite3.open(path);
+      try {
+        final claims = db.select('SELECT COUNT(*) AS n FROM claims');
+        if ((claims.single['n'] as int) > 0) return;
+      } on SqliteException {
+        // Schema not created yet.
+      } finally {
+        db.dispose();
+      }
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
+  throw StateError('background operation never claimed the source');
 }
