@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:transaction_sync/bdk_electrum_cache.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -105,29 +106,43 @@ class BdkWalletDatasource {
         // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
 
-        await compute(
-          _performSync,
-          _SyncParams(
-            walletId: wallet.id,
-            externalDescriptor:
-                (wallet as PublicBdkWalletModel).externalDescriptor,
-            internalDescriptor: wallet.internalDescriptor,
-            isTestnet: wallet.isTestnet,
-            electrumUrl: electrumServer.url,
-            electrumSocks5: electrumServer.socks5,
-            electrumStopGap: electrumServer.stopGap,
-            electrumTimeout: electrumServer.effectiveTimeout,
-            electrumRetry: electrumServer.retry,
-            electrumValidateDomain: electrumServer.validateDomain,
-            walletHexId: wallet.hexId,
-            discoverHistory: discoverHistory,
-            rootIsolateToken: ServicesBinding.rootIsolateToken!,
-          ),
+        final stopwatch = Stopwatch()..start();
+        final _BdkSyncReport report;
+        try {
+          report = await compute(
+            _performSync,
+            _SyncParams(
+              walletId: wallet.id,
+              externalDescriptor:
+                  (wallet as PublicBdkWalletModel).externalDescriptor,
+              internalDescriptor: wallet.internalDescriptor,
+              isTestnet: wallet.isTestnet,
+              electrumUrl: electrumServer.url,
+              electrumSocks5: electrumServer.socks5,
+              electrumStopGap: electrumServer.stopGap,
+              electrumTimeout: electrumServer.effectiveTimeout,
+              electrumRetry: electrumServer.retry,
+              electrumValidateDomain: electrumServer.validateDomain,
+              walletHexId: wallet.hexId,
+              discoverHistory: discoverHistory,
+              rootIsolateToken: ServicesBinding.rootIsolateToken!,
+            ),
+          );
+        } catch (error) {
+          // The isolate's own logger does not reach the support log: report
+          // from here, with the error type only.
+          log.warning(
+            'BDK sync failed discover=$discoverHistory '
+            'error=${error.runtimeType} '
+            'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+          );
+          rethrow;
+        }
+        log.fine(
+          'BDK sync mode=${report.fullScan ? 'full_scan' : 'revealed'} '
+          'reason=${report.reason} ${report.cache} '
+          'elapsed_ms=${stopwatch.elapsedMilliseconds}',
         );
-        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
-      } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
-        rethrow;
       } finally {
         // Notify that the wallet has been synced through a stream for other
         // parts of the app to listen to
@@ -1003,6 +1018,9 @@ List<T> selectTransactionAndPrevouts<T>(
   return transactions;
 }
 
+/// What a background-isolate sync did, for the support log.
+typedef _BdkSyncReport = ({bool fullScan, String reason, String cache});
+
 // Top-level function for isolate execution
 class _SyncParams {
   final String walletId;
@@ -1036,7 +1054,7 @@ class _SyncParams {
   });
 }
 
-Future<void> _performSync(_SyncParams params) async {
+Future<_BdkSyncReport> _performSync(_SyncParams params) async {
   // Initialize the binary messenger for platform channel access in isolate
   // Needed for things like getting the database path from BdkFacade which
   // uses path_provider under the hood
@@ -1050,11 +1068,17 @@ Future<void> _performSync(_SyncParams params) async {
     isTestnet: params.isTestnet,
   );
 
-  await BdkFacade.withWallet(wallet, (bdkWallet) async {
+  return BdkFacade.withWallet(wallet, (bdkWallet) async {
+    final checkpointHeight = bdkWallet.latestCheckpoint().height;
     final mode = bdkSyncModeFor(
-      checkpointHeight: bdkWallet.latestCheckpoint().height,
+      checkpointHeight: checkpointHeight,
       discoverHistory: params.discoverHistory,
     );
+    final reason = params.discoverHistory
+        ? 'discovery'
+        : checkpointHeight <= 0
+        ? 'first_sync'
+        : 'routine';
     final blockchain = _createElectrumClient(
       url: params.electrumUrl,
       socks5: params.electrumSocks5,
@@ -1063,8 +1087,9 @@ Future<void> _performSync(_SyncParams params) async {
       validateDomain: params.electrumValidateDomain,
     );
     final cache = await BdkFacade.openElectrumCache(params.walletHexId);
+    final String cacheReport;
     try {
-      cache?.prefill(blockchain, bdkWallet);
+      final prefill = cache?.prefill(blockchain, bdkWallet);
       late final bdk.Update update;
       switch (mode) {
         case BdkSyncMode.fullScan:
@@ -1106,19 +1131,22 @@ Future<void> _performSync(_SyncParams params) async {
       } finally {
         update.dispose();
       }
-      cache?.rememberParents(blockchain, bdkWallet);
-    } catch (e, st) {
-      log.warning(
-        'sync failed for wallet ${params.walletId}',
-        error: e,
-        trace: st,
+      cacheReport = BdkElectrumCache.describe(
+        opened: cache != null,
+        rebuilt: cache?.rebuilt ?? false,
+        prefill: prefill,
+        parents: cache?.rememberParents(blockchain, bdkWallet),
       );
-      rethrow;
     } finally {
       blockchain.dispose();
       cache?.close();
     }
     await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
+    return (
+      fullScan: mode == BdkSyncMode.fullScan,
+      reason: reason,
+      cache: cacheReport,
+    );
   });
 }
 
