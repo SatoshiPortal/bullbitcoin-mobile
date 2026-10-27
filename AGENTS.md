@@ -8,7 +8,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 **Repo doc map:** [README.md](README.md) = product · [ARCHITECTURE.md](ARCHITECTURE.md) = layer model & design rules · **AGENTS.md** (this file) = toolchain, conventions, commit/test rules · [FEATURES.md](FEATURES.md) = cross-feature dependency graph.
 
-**Composition root** (where to wire a new feature): `lib/main.dart` (`Bull.init()` → `initLocator()` → `runApp`) → `lib/locator.dart` (get_it; `AppLocator.setup` registers core, then every `<Feature>Locator.setup`) → `lib/router.dart` (GoRouter; `AppRouter.router` spreads each `<Feature>Router`'s routes). A new feature is added in those last two files.
+**Composition root** (where to wire a new feature): `lib/main.dart` → `lib/bootstrap.dart` (`startApp()` → startup wizard → `Bull.init()` → `runApp`) + `lib/init.dart` (service initialization) + `lib/app.dart` (root widget) → `lib/locator.dart` (get_it; `AppLocator.setup` registers core, then every `<Feature>Locator.setup`) → `lib/router.dart` (GoRouter; `AppRouter.router` spreads each `<Feature>Router`'s routes). A new feature is added in those last two files.
 
 ## Toolchain — non-negotiable
 
@@ -255,7 +255,7 @@ Use `package:bull_logger/bull_logger.dart` and its `log` API. **Our levels delib
 - **Payjoin uses the same vocabulary.** `AppPayjoinLogAdapter` maps `info`, `fine`, `warning` and `severe` directly to the homonymous wallet methods, without code-based remapping or a package-only debug level. Routine traces use `info`; persisted milestones use `fine`. Both require an explicit code. Remove context-free routine calls rather than emitting indistinguishable lifecycle noise. `PayjoinLogger` accepts structured fields only, without free-text message arguments; the host renders `PayjoinLogCode.description`. Structured session references retain 16 hex characters; the adapter displays their first 7 characters after the role, without a `ref=` label. Preserve fixed codes, roles and safe session references; never forward a raw foreign exception message.
 - **Verify routing when changing logging.** Extend the contract tests in `packages/bull_logger/test/logger_reporter_test.dart` and the affected adapter tests. Check both what reaches the shared log and what invokes the reporter; a console line alone does not prove that support or Sentry will receive it.
 
-Sources of truth: [`logger.dart`](packages/bull_logger/lib/src/logger.dart), [`report.dart`](lib/core/utils/report.dart), reporter wiring in [`main.dart`](lib/main.dart), background bootstrap in [`handler.dart`](lib/core/background_tasks/handler.dart), and [`AppPayjoinLogAdapter`](lib/payjoin_runtime_adapters.dart).
+Sources of truth: [`logger.dart`](packages/bull_logger/lib/src/logger.dart), [`report.dart`](lib/core/utils/report.dart), reporter wiring in [`init.dart`](lib/init.dart), background bootstrap in [`handler.dart`](lib/core/background_tasks/handler.dart), and [`AppPayjoinLogAdapter`](lib/payjoin_runtime_adapters.dart).
 
 ## Security (self-custodial wallet — treat as load-bearing)
 

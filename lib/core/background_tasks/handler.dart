@@ -1,14 +1,20 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/init.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/main.dart';
 import 'package:get_it/get_it.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+
+/// Removes schedules persisted by releases that enabled background execution.
+Future<void> cancelLegacyBackgroundTasks() async {
+  await Workmanager().initialize(backgroundTasksHandler);
+  await Workmanager().cancelAll();
+}
 
 @pragma('vm:entry-point')
 void backgroundTasksHandler() {
