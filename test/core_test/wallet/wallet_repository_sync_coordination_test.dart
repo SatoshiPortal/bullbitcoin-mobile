@@ -17,7 +17,9 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_payment_observation_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +41,28 @@ class _MockWalletMetadataDatasource extends Mock
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _RecordingPaymentObservation implements WalletPaymentObservationPort {
+  final List<(WalletNetworkKey, List<String>)> seen = [];
+
+  @override
+  Future<void> recordSeen(WalletNetworkKey key, List<String> txids) async {
+    seen.add((key, txids));
+  }
+}
+
+WalletTransactionModel _transactionModel(String txId) => WalletTransactionModel(
+  txId: txId,
+  isIncoming: true,
+  amountSat: 1,
+  feeSat: 0,
+  vsize: 1,
+  inputs: const [],
+  outputs: const [],
+  isLiquid: false,
+  isTestnet: true,
+  isRbf: false,
+);
 
 class _MockWalletSyncMetadataPort extends Mock
     implements WalletSyncMetadataPort {}
@@ -173,6 +197,70 @@ void main() {
     await holder;
     release.complete();
     await sync;
+  });
+
+  test('a synced wallet records what the user can see as seen', () async {
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final observation = _RecordingPaymentObservation();
+    when(() => bdk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+    when(() => bdk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    when(
+      () => bdk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => bdk.getTransactions(wallet: any(named: 'wallet')),
+    ).thenAnswer((_) async => [_transactionModel('a'), _transactionModel('b')]);
+    final repository = WalletRepository(
+      walletMetadataDatasource: _MockWalletMetadataDatasource(),
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: _metadataPort(),
+      paymentObservation: observation,
+    );
+
+    await repository.sync(_wallet(_walletId));
+
+    expect(observation.seen, hasLength(1));
+    final (key, txids) = observation.seen.single;
+    expect(key, const WalletNetworkKey(_walletId, 'bitcoin', 'testnet'));
+    expect(txids, ['a', 'b']);
+  });
+
+  test('a failed sync records nothing as seen', () async {
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final observation = _RecordingPaymentObservation();
+    when(() => bdk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+    when(() => bdk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    when(
+      () => bdk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(StateError('offline'));
+    final repository = WalletRepository(
+      walletMetadataDatasource: _MockWalletMetadataDatasource(),
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: _metadataPort(),
+      paymentObservation: observation,
+    );
+
+    await expectLater(repository.sync(_wallet(_walletId)), throwsStateError);
+
+    expect(observation.seen, isEmpty);
   });
 
   test('delivers a start ID while the same source key is held', () async {

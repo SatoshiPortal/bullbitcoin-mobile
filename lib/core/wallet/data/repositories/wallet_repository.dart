@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_payment_observation_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
@@ -39,6 +40,7 @@ class WalletRepository {
   final ElectrumServersPort _serversPort;
   final WalletSourceOperationCoordinator _coordinator;
   final WalletSyncMetadataPort _syncMetadata;
+  final WalletPaymentObservationPort? _paymentObservation;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -50,6 +52,7 @@ class WalletRepository {
     required this._serversPort,
     required WalletSourceOperationCoordinator coordinator,
     required this._syncMetadata,
+    this._paymentObservation,
   }) : _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
        // ignore: prefer_initializing_formals
@@ -700,6 +703,7 @@ class WalletRepository {
       _electrumSyncResultController.add(
         ElectrumSyncResult(isLiquid: isLiquid, success: true),
       );
+      await _recordPaymentsSeen(wallet, isLiquid: isLiquid);
       try {
         await _syncMetadata.recordLegacyForegroundSuccess(
           _networkKey(wallet),
@@ -719,6 +723,26 @@ class WalletRepository {
         ElectrumSyncResult(isLiquid: isLiquid, success: false),
       );
       rethrow;
+    }
+  }
+
+  /// Still under the source lock: what the user can see now is the baseline
+  /// a background run announces new payments against.
+  Future<void> _recordPaymentsSeen(
+    WalletModel wallet, {
+    required bool isLiquid,
+  }) async {
+    final observation = _paymentObservation;
+    if (observation == null) return;
+    try {
+      final transactions = isLiquid
+          ? await _lwkWallet.getTransactions(wallet: wallet)
+          : await _bdkWallet.getTransactions(wallet: wallet);
+      await observation.recordSeen(_networkKey(wallet), [
+        for (final transaction in transactions) transaction.txId,
+      ]);
+    } catch (_) {
+      log.warning('Unable to record the payments seen in the foreground');
     }
   }
 

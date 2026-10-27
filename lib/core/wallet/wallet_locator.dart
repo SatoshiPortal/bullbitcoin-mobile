@@ -39,7 +39,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/background_tasks/wallet_payment_observation_adapter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:notifications/notifications.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:transaction_sync/transaction_sync.dart'
@@ -112,6 +114,11 @@ class WalletLocator {
         serversPort: locator<ElectrumServersPort>(),
         coordinator: locator<WalletSourceOperationCoordinator>(),
         syncMetadata: locator<WalletSyncMetadataPort>(),
+        paymentObservation: WalletPaymentObservationAdapter(
+          () => locator.isRegistered<NotificationsFacade>()
+              ? locator<NotificationsFacade>()
+              : null,
+        ),
       ),
     );
 
