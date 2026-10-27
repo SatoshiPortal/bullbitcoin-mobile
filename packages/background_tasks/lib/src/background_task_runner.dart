@@ -94,20 +94,17 @@ final class BackgroundTaskRunner {
       );
     }
 
-    var cleanupFailed = false;
+    // A failed flush or dispose does not undo what the task did: the next run
+    // opens everything again, so the task's own result stands.
     try {
       await logger.flush();
     } catch (_) {
-      cleanupFailed = true;
+      _warning('Background task log flush failed');
     }
     try {
       await onFinished?.call();
     } catch (_) {
-      cleanupFailed = true;
-    }
-
-    if (cleanupFailed && !result.shouldRetry) {
-      return const BackgroundTaskExecutionResult.retry();
+      _warning('Background task cleanup failed');
     }
     return result;
   }

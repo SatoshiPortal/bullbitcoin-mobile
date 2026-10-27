@@ -138,24 +138,27 @@ void main() {
     expect(logger.messages, isNot(contains(contains('test-only'))));
   });
 
-  test('flush failure does not prevent cleanup and returns retry', () async {
-    final logger = _Logger()..throwOnFlush = true;
-    var finishes = 0;
-    final result = await BackgroundTaskRunner(
-      logger: logger,
-      onFinished: () async => finishes++,
-      handlers: {
-        BackgroundTask.bitcoinSync: () async =>
-            const BackgroundTaskExecutionResult.success(),
-      },
-    ).run('bitcoin-sync');
+  test(
+    'flush failure does not prevent cleanup nor change the result',
+    () async {
+      final logger = _Logger()..throwOnFlush = true;
+      var finishes = 0;
+      final result = await BackgroundTaskRunner(
+        logger: logger,
+        onFinished: () async => finishes++,
+        handlers: {
+          BackgroundTask.bitcoinSync: () async =>
+              const BackgroundTaskExecutionResult.success(),
+        },
+      ).run('bitcoin-sync');
 
-    expect(result.status, BackgroundTaskExecutionStatus.retry);
-    expect(logger.flushes, 1);
-    expect(finishes, 1);
-  });
+      expect(result.status, BackgroundTaskExecutionStatus.success);
+      expect(logger.flushes, 1);
+      expect(finishes, 1);
+    },
+  );
 
-  test('cleanup failure returns retry without throwing', () async {
+  test('cleanup failure is logged and keeps the result', () async {
     final logger = _Logger();
     final result = await BackgroundTaskRunner(
       logger: logger,
@@ -166,8 +169,9 @@ void main() {
       },
     ).run('liquid-sync');
 
-    expect(result.status, BackgroundTaskExecutionStatus.retry);
+    expect(result.status, BackgroundTaskExecutionStatus.permanentFailure);
     expect(logger.flushes, 1);
+    expect(logger.messages, contains('Background task cleanup failed'));
   });
 
   test('unknown tasks are permanently acknowledged and cannot loop', () async {
@@ -230,7 +234,7 @@ void main() {
             },
           ),
         ),
-        isFalse,
+        isTrue,
       );
     },
   );
