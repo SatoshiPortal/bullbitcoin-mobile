@@ -1111,6 +1111,7 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   final global =
       kind == WalletOperationKind.synchronize.name ||
       kind == WalletOperationKind.discover.name;
+  final background = priority == WalletOperationPriority.background.name;
   final row = (
     hash: hash,
     kind: kind,
@@ -1143,7 +1144,7 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
         key.execute('BEGIN IMMEDIATE');
         if (_admit(central, busy, row, request, stale, global)) {
           if (!global) return (key: key, slot: null);
-          slot = _tryAcquireSlot(slots);
+          slot = _tryAcquireSlot(slots, background: background);
           if (slot != null &&
               _admit(central, busy, row, request, stale, global)) {
             return (key: key, slot: slot);
@@ -1159,8 +1160,11 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   }
 }
 
-Database? _tryAcquireSlot(List<Database> slots) {
-  for (final db in slots) {
+/// With two slots or more, the first is kept for foreground work: background
+/// scans can never hold every slot while the user waits. A single slot is
+/// shared, ordered foreground first by admission.
+Database? _tryAcquireSlot(List<Database> slots, {required bool background}) {
+  for (final db in background && slots.length > 1 ? slots.skip(1) : slots) {
     try {
       db.execute('BEGIN IMMEDIATE');
       return db;

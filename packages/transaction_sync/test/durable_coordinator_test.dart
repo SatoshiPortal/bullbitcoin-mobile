@@ -966,6 +966,58 @@ void main() {
     expect(await Future.wait(waiters), [0, 1, 2]);
   });
 
+  test(
+    'a foreground sync is admitted while background syncs hold the slots',
+    () async {
+      // The second background sync waits for the only background slot for as
+      // long as the test runs.
+      final patient = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: null,
+      );
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: const Duration(seconds: 5),
+      );
+      final release = Completer<void>();
+      final entered = <Completer<void>>[Completer(), Completer()];
+      final background = [
+        for (var index = 0; index < 2; index++)
+          patient.runExclusive(
+            WalletSourceKey('background-$index', 'bitcoin', 'testnet'),
+            (_) async {
+              entered[index].complete();
+              await release.future;
+            },
+            kind: WalletOperationKind.synchronize,
+            priority: WalletOperationPriority.background,
+            timeout: null,
+          ),
+      ];
+      // Either background sync may register first; the other one waits for
+      // the single background slot, leaving the reserved slot free.
+      final running = await Future.any([
+        for (var index = 0; index < 2; index++)
+          entered[index].future.then((_) => index),
+      ]);
+      final waiting = entered[1 - running];
+      expect(waiting.isCompleted, isFalse);
+
+      expect(
+        await coordinator.runExclusive(
+          const WalletSourceKey('foreground', 'bitcoin', 'testnet'),
+          (_) async => 'admitted',
+          kind: WalletOperationKind.synchronize,
+          timeout: null,
+        ),
+        'admitted',
+      );
+      expect(waiting.isCompleted, isFalse);
+      release.complete();
+      await Future.wait(background);
+    },
+  );
+
   test('claim cleanup failure still releases the mutex', () async {
     var fail = true;
     final first = DurableWalletSourceOperationCoordinator(
