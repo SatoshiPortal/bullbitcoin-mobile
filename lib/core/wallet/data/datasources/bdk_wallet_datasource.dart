@@ -1079,66 +1079,71 @@ Future<_BdkSyncReport> _performSync(_SyncParams params) async {
         : checkpointHeight <= 0
         ? 'first_sync'
         : 'routine';
-    final blockchain = _createElectrumClient(
-      url: params.electrumUrl,
-      socks5: params.electrumSocks5,
-      timeout: params.electrumTimeout,
-      retry: params.electrumRetry,
-      validateDomain: params.electrumValidateDomain,
-    );
+    // The cache opens before the client connects: nothing awaited runs while
+    // a client could be leaked.
     final cache = await BdkFacade.openElectrumCache(params.walletHexId);
     final String cacheReport;
     try {
-      final prefill = cache?.prefill(blockchain, bdkWallet);
-      late final bdk.Update update;
-      switch (mode) {
-        case BdkSyncMode.fullScan:
-          final requestBuilder = bdkWallet.startFullScan();
-          try {
-            final request = requestBuilder.build();
-            try {
-              update = blockchain.fullScan(
-                request: request,
-                stopGap: params.electrumStopGap,
-                batchSize: _batchSizeFor(params.electrumStopGap),
-                fetchPrevTxouts: true,
-              );
-            } finally {
-              request.dispose();
-            }
-          } finally {
-            requestBuilder.dispose();
-          }
-        case BdkSyncMode.sync:
-          final requestBuilder = bdkWallet.startSyncWithRevealedSpks();
-          try {
-            final request = requestBuilder.build();
-            try {
-              update = blockchain.sync_(
-                request: request,
-                batchSize: _batchSizeFor(params.electrumStopGap),
-                fetchPrevTxouts: true,
-              );
-            } finally {
-              request.dispose();
-            }
-          } finally {
-            requestBuilder.dispose();
-          }
-      }
-      try {
-        bdkWallet.applyUpdate(update: update);
-      } finally {
-        update.dispose();
-      }
-      cacheReport = BdkElectrumCache.describe(
-        opened: cache != null,
-        rebuilt: cache?.rebuilt ?? false,
-        prefill: prefill,
-        parents: cache?.rememberParents(blockchain, bdkWallet),
+      final blockchain = _createElectrumClient(
+        url: params.electrumUrl,
+        socks5: params.electrumSocks5,
+        timeout: params.electrumTimeout,
+        retry: params.electrumRetry,
+        validateDomain: params.electrumValidateDomain,
       );
+      try {
+        final prefill = cache?.prefill(blockchain, bdkWallet);
+        late final bdk.Update update;
+        switch (mode) {
+          case BdkSyncMode.fullScan:
+            final requestBuilder = bdkWallet.startFullScan();
+            try {
+              final request = requestBuilder.build();
+              try {
+                update = blockchain.fullScan(
+                  request: request,
+                  stopGap: params.electrumStopGap,
+                  batchSize: _batchSizeFor(params.electrumStopGap),
+                  fetchPrevTxouts: true,
+                );
+              } finally {
+                request.dispose();
+              }
+            } finally {
+              requestBuilder.dispose();
+            }
+          case BdkSyncMode.sync:
+            final requestBuilder = bdkWallet.startSyncWithRevealedSpks();
+            try {
+              final request = requestBuilder.build();
+              try {
+                update = blockchain.sync_(
+                  request: request,
+                  batchSize: _batchSizeFor(params.electrumStopGap),
+                  fetchPrevTxouts: true,
+                );
+              } finally {
+                request.dispose();
+              }
+            } finally {
+              requestBuilder.dispose();
+            }
+        }
+        try {
+          bdkWallet.applyUpdate(update: update);
+        } finally {
+          update.dispose();
+        }
+        cacheReport = BdkElectrumCache.describe(
+          opened: cache != null,
+          rebuilt: cache?.rebuilt ?? false,
+          prefill: prefill,
+          parents: cache?.rememberParents(blockchain, bdkWallet),
+        );
+      } finally {
+        blockchain.dispose();
+      }
     } finally {
-      blockchain.dispose();
       cache?.close();
     }
     await BdkFacade.saveWallet(bdkWallet, params.walletHexId);

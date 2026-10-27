@@ -93,7 +93,7 @@ void main() {
       scan,
       contains(
         'case BdkSyncMode.fullScan:\n'
-        '          final requestBuilder = bdkWallet.startFullScan()',
+        '            final requestBuilder = bdkWallet.startFullScan()',
       ),
     );
     expect(scan, contains('final request = requestBuilder.build()'));
@@ -103,6 +103,12 @@ void main() {
       contains('final requestBuilder = bdkWallet.startSyncWithRevealedSpks()'),
     );
     expect(scan, contains('update = blockchain.sync_('));
+    // The parent cache opens first, and the client only inside its scope:
+    // an open failure must not leak a connected client.
+    expect(
+      scan.indexOf('BdkFacade.openElectrumCache('),
+      lessThan(scan.indexOf('_createElectrumClient(')),
+    );
     expect(scan, contains('cache?.prefill(blockchain, bdkWallet)'));
     expect(scan, contains('cache?.rememberParents(blockchain, bdkWallet)'));
     expect(scan, contains('cache?.close()'));
