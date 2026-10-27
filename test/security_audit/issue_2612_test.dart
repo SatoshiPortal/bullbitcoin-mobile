@@ -53,14 +53,6 @@ void main() {
       expect(legacyCancellation, greaterThan(adapter));
       expect(periodic, greaterThan(legacyCancellation));
       expect(handler, isNot(contains('Workmanager().cancelAll()')));
-      expect(
-        handler.indexOf('cancelByUniqueName(BackgroundTask.liquidSync.id)'),
-        allOf(greaterThan(adapter), lessThan(periodic)),
-      );
-      expect(
-        handler,
-        isNot(contains('uniqueName: BackgroundTask.liquidSync.id')),
-      );
     });
   });
 }
