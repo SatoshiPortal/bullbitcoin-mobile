@@ -65,11 +65,17 @@ final class FlutterLocalNotificationGateway
       final bool? enabled;
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
-          enabled = await _plugin
+          final android = _plugin
               .resolvePlatformSpecificImplementation<
                 AndroidFlutterLocalNotificationsPlugin
-              >()
-              ?.areNotificationsEnabled();
+              >();
+          // The user can block the payment channel alone while the app
+          // itself stays allowed; a show on it is then a silent no-op.
+          final channels = await android?.getNotificationChannels() ?? [];
+          final blocked = channels.any(
+            (c) => c.id == channelId && c.importance == Importance.none,
+          );
+          enabled = blocked ? false : await android?.areNotificationsEnabled();
         case TargetPlatform.iOS:
           enabled =
               (await _plugin
