@@ -12,6 +12,12 @@ final class NotificationsGatewayFailure extends NotificationsFailure {
   const NotificationsGatewayFailure();
 }
 
+/// The OS will not show notifications for the app, so pending ones are kept
+/// for a later run instead of being marked delivered.
+final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
+  const NotificationsPermissionDeniedFailure();
+}
+
 final class NotificationsClaimLostFailure extends NotificationsFailure {
   const NotificationsClaimLostFailure();
 }

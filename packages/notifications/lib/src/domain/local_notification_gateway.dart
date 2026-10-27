@@ -8,6 +8,9 @@ typedef NotificationResponseCallback =
 abstract interface class LocalNotificationGateway {
   Future<Result<bool, NotificationsFailure>> requestPermission();
 
+  /// Whether the OS currently shows the app's notifications.
+  Future<Result<bool, NotificationsFailure>> isEnabled();
+
   Future<Result<void, NotificationsFailure>> initialize(
     NotificationResponseCallback onResponse,
   );

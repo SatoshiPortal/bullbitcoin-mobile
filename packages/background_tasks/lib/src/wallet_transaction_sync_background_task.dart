@@ -362,5 +362,8 @@ final class WalletTransactionSyncBackgroundTask {
     NotificationsStorageFailure() ||
     NotificationsGatewayFailure() ||
     NotificationsClaimLostFailure() => onRetry(),
+    // Nothing to retry: the pending notifications wait for a later run, once
+    // the user has granted the permission.
+    NotificationsPermissionDeniedFailure() => null,
   };
 }

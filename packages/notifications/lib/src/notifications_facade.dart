@@ -66,6 +66,16 @@ final class NotificationsFacade {
   );
 
   Future<Result<void, NotificationsFailure>> deliverPending() async {
+    // A show on a disabled channel is a silent no-op; claiming then would
+    // mark the notification delivered although nobody saw it.
+    switch (await gateway.isEnabled()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: false):
+        return const Err(NotificationsPermissionDeniedFailure());
+      case Ok():
+        break;
+    }
     final claimed = await outbox.claimPending();
     switch (claimed) {
       case Err(:final failure):

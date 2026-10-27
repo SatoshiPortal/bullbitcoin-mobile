@@ -7,6 +7,7 @@ import 'package:primitives/primitives.dart';
 final class FakeGateway implements LocalNotificationGateway {
   final List<int> shownIds = [];
   bool fail = false;
+  bool enabled = true;
   Result<bool, NotificationsFailure> permissionResult = const Ok(true);
   int permissionRequestCount = 0;
   NotificationResponseCallback? responseCallback;
@@ -17,6 +18,9 @@ final class FakeGateway implements LocalNotificationGateway {
     permissionRequestCount++;
     return permissionResult;
   }
+
+  @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(enabled);
 
   @override
   Future<Result<void, NotificationsFailure>> initialize(
@@ -376,6 +380,24 @@ void main() {
       );
     },
   );
+
+  test('disabled notifications stay pending instead of delivered', () async {
+    final gateway = FakeGateway()..enabled = false;
+    final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+    await facade.enqueue(event('silent'));
+
+    final result = await facade.deliverPending();
+
+    expect(result, isA<Err>());
+    expect(
+      (result as Err).failure,
+      isA<NotificationsPermissionDeniedFailure>(),
+    );
+    expect(gateway.shownIds, isEmpty);
+    gateway.enabled = true;
+    expect(await facade.deliverPending(), isA<Ok>());
+    expect(gateway.shownIds, hasLength(1));
+  });
 
   test('gateway failure returns typed failure and remains retryable', () async {
     final gateway = FakeGateway()..fail = true;

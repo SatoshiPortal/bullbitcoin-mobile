@@ -60,6 +60,44 @@ final class FlutterLocalNotificationGateway
   }
 
   @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async {
+    try {
+      final bool? enabled;
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          enabled = await _plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.areNotificationsEnabled();
+        case TargetPlatform.iOS:
+          enabled =
+              (await _plugin
+                      .resolvePlatformSpecificImplementation<
+                        IOSFlutterLocalNotificationsPlugin
+                      >()
+                      ?.checkPermissions())
+                  ?.isEnabled;
+        case TargetPlatform.macOS:
+          enabled =
+              (await _plugin
+                      .resolvePlatformSpecificImplementation<
+                        MacOSFlutterLocalNotificationsPlugin
+                      >()
+                      ?.checkPermissions())
+                  ?.isEnabled;
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+          enabled = true;
+      }
+      return Ok(enabled ?? true);
+    } catch (_) {
+      return const Err(NotificationsGatewayFailure());
+    }
+  }
+
+  @override
   Future<Result<void, NotificationsFailure>> initialize(
     NotificationResponseCallback onResponse,
   ) async {

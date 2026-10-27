@@ -9,10 +9,14 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 final class _Gateway implements LocalNotificationGateway {
   final shown = <LocalNotification>[];
+  bool enabled = true;
 
   @override
   Future<Result<bool, NotificationsFailure>> requestPermission() async =>
       const Ok(true);
+
+  @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(enabled);
 
   @override
   Future<Result<void, NotificationsFailure>> initialize(
@@ -609,6 +613,63 @@ void main() {
       );
     },
   );
+
+  test('disabled notifications do not fail or retry the task', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final gateway = _Gateway()..enabled = false;
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final messages = <String>[];
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final key = const WalletNetworkKey('wallet', 'bitcoin', 'testnet');
+    var incoming = <WalletTransaction>[];
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: key,
+          synchronize: () async => Ok(_outcome(key, incoming)),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: _Sink(messages),
+    );
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    incoming = [_transaction('paid', TransactionDirection.incoming)];
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(gateway.shown, isEmpty);
+    expect(
+      messages,
+      contains(
+        'Wallet sync notification failure stage=deliver '
+        'category=NotificationsPermissionDeniedFailure',
+      ),
+    );
+
+    // Granted later: the pending notification is delivered by the next run.
+    gateway.enabled = true;
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(gateway.shown, hasLength(1));
+  });
 
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
