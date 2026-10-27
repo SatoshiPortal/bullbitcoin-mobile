@@ -7,14 +7,18 @@ final class _Logger implements BackgroundTaskLogger {
   bool throwOnFlush = false;
 
   @override
-  void info(String message) => messages.add(message);
+  void fine(String message) => messages.add(message);
 
   @override
   void warning(String message) => messages.add(message);
 
+  /// How many messages were logged when the last flush started.
+  int? flushedAfter;
+
   @override
   Future<void> flush() async {
     flushes++;
+    flushedAfter = messages.length;
     if (throwOnFlush) throw StateError('flush failure');
   }
 }
@@ -92,6 +96,30 @@ void main() {
       expect(finishes, 1);
     });
   }
+
+  test('logs the start and outcome of a task before flushing', () async {
+    final logger = _Logger();
+    final runner = BackgroundTaskRunner(
+      logger: logger,
+      handlers: {
+        BackgroundTask.bitcoinSync: () async =>
+            const BackgroundTaskExecutionResult.retry(),
+      },
+    );
+
+    await runner.run('com.bullbitcoin.mobile.bitcoin-sync-id');
+
+    expect(logger.messages.first, 'Background task bitcoin-sync started');
+    expect(
+      logger.messages.last,
+      matches(
+        RegExp(
+          r'^Background task bitcoin-sync finished status=retry elapsed_ms=\d+$',
+        ),
+      ),
+    );
+    expect(logger.flushedAfter, logger.messages.length);
+  });
 
   test('flushes and finishes once when the handler throws', () async {
     final logger = _Logger();

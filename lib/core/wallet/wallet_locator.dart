@@ -81,7 +81,7 @@ class WalletLocator {
     locator.registerLazySingleton<WalletSourceOperationCoordinator>(
       () => DurableWalletSourceOperationCoordinator(
         databasePath: coordinationDatabasePath(documentsDirectory.path),
-        logSink: _logWalletCoordination,
+        logSink: logWalletCoordination,
       ),
     );
 
@@ -268,7 +268,8 @@ class WalletLocator {
   }
 }
 
-void _logWalletCoordination(WalletCoordinationLogEvent event) {
+/// Persists wallet coordination and source events in the support log.
+void logWalletCoordination(WalletCoordinationLogEvent event) {
   switch (event.level) {
     case WalletCoordinationLogLevel.config:
       log.config(event.message);

@@ -4,7 +4,7 @@ import 'background_task.dart';
 import 'background_task_execution_result.dart';
 
 abstract interface class BackgroundTaskLogger {
-  void info(String message);
+  void fine(String message);
   void warning(String message);
   Future<void> flush();
 }
@@ -14,7 +14,7 @@ final class LoggerBackgroundTaskLogger implements BackgroundTaskLogger {
   const LoggerBackgroundTaskLogger(this.logger);
 
   @override
-  void info(String message) => logger.info(message);
+  void fine(String message) => logger.fine(message);
 
   @override
   void warning(String message) => logger.warning(message);
@@ -62,12 +62,15 @@ final class BackgroundTaskRunner {
 
   Future<BackgroundTaskExecutionResult> run(String taskName) async {
     late BackgroundTaskExecutionResult result;
+    final stopwatch = Stopwatch()..start();
+    BackgroundTask? task;
     try {
-      final task = BackgroundTask.resolve(taskName);
+      task = BackgroundTask.resolve(taskName);
       if (task == null) {
         _warning('Unknown background task');
         result = const BackgroundTaskExecutionResult.permanentFailure();
       } else {
+        _fine('Background task ${task.name} started');
         final handler = handlers[task];
         if (handler == null) {
           result = const BackgroundTaskExecutionResult.success();
@@ -81,6 +84,14 @@ final class BackgroundTaskRunner {
     } catch (_) {
       _warning('Background task failed unexpectedly');
       result = const BackgroundTaskExecutionResult.retry();
+    }
+    if (task != null) {
+      // Before the flush, so the line reaches disk before the OS reclaims the
+      // isolate.
+      _fine(
+        'Background task ${task.name} finished status=${result.status.name} '
+        'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+      );
     }
 
     var cleanupFailed = false;
@@ -99,6 +110,12 @@ final class BackgroundTaskRunner {
       return const BackgroundTaskExecutionResult.retry();
     }
     return result;
+  }
+
+  void _fine(String message) {
+    try {
+      logger.fine(message);
+    } catch (_) {}
   }
 
   void _warning(String message) {

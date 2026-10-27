@@ -77,8 +77,10 @@ final class WalletTransactionSyncBackgroundTask {
     if (chain != 'bitcoin' && chain != 'liquid') {
       return const BackgroundTaskExecutionResult.permanentFailure();
     }
+    final stopwatch = Stopwatch()..start();
     var retry = false;
     var permanent = false;
+    var newIncoming = 0;
     var succeeded = 0;
     var retried = 0;
     var permanentlyFailed = 0;
@@ -162,16 +164,16 @@ final class WalletTransactionSyncBackgroundTask {
               if (renewalFailed || !completed) {
                 retry = true;
               }
-              if (_isPermanent(failure)) {
-                _safeLog(
-                  WalletSyncLogLevel.warning,
-                  'Wallet sync permanent failure',
-                );
-              }
+              _safeLog(
+                WalletSyncLogLevel.warning,
+                'Wallet sync ${_isPermanent(failure) ? 'permanent' : 'retryable'} '
+                'failure chain=$chain category=${_category(failure)}',
+              );
             case Ok(:final value):
               final completed = await queue.completeSuccess(claim);
               if (completed) {
                 succeeded++;
+                newIncoming += value.newIncomingTransactions.length;
                 observations[index] = _observationFor(job, value);
               }
               if (renewalFailed || !completed) {
@@ -208,7 +210,8 @@ final class WalletTransactionSyncBackgroundTask {
     _safeLog(
       WalletSyncLogLevel.fine,
       'Wallet sync queue completion: chain=$chain claimed=${claims.length} '
-      'succeeded=$succeeded retried=$retried permanent=$permanentlyFailed',
+      'succeeded=$succeeded retried=$retried permanent=$permanentlyFailed '
+      'new_incoming=$newIncoming elapsed_ms=${stopwatch.elapsedMilliseconds}',
     );
 
     final completedObservations = observations
@@ -235,6 +238,11 @@ final class WalletTransactionSyncBackgroundTask {
         },
       );
       if (reconciled case Err(:final failure)) {
+        _safeLog(
+          WalletSyncLogLevel.warning,
+          'Wallet sync notification failure stage=reconcile '
+          'category=${failure.runtimeType}',
+        );
         _classifyNotification(
           failure,
           onRetry: () => retry = true,
@@ -245,6 +253,11 @@ final class WalletTransactionSyncBackgroundTask {
     try {
       final delivered = await notifications.deliverPending();
       if (delivered case Err(:final failure)) {
+        _safeLog(
+          WalletSyncLogLevel.warning,
+          'Wallet sync notification failure stage=deliver '
+          'category=${failure.runtimeType}',
+        );
         _classifyNotification(
           failure,
           onRetry: () => retry = true,
@@ -252,6 +265,10 @@ final class WalletTransactionSyncBackgroundTask {
         );
       }
     } catch (_) {
+      _safeLog(
+        WalletSyncLogLevel.warning,
+        'Wallet sync notification failure stage=deliver category=exception',
+      );
       retry = true;
     }
     if (retry) return const BackgroundTaskExecutionResult.retry();
@@ -266,6 +283,13 @@ final class WalletTransactionSyncBackgroundTask {
       _sink.write(level, message);
     } catch (_) {}
   }
+
+  /// A fixed label: the failure type, plus the reason of a source failure.
+  static String _category(WalletTransactionSyncFailure failure) =>
+      switch (failure) {
+        SourceFailure(:final reason) => 'SourceFailure.${reason.name}',
+        _ => failure.runtimeType.toString(),
+      };
 
   static bool _isPermanent(WalletTransactionSyncFailure failure) {
     var permanent = false;

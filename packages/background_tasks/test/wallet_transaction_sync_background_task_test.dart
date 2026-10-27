@@ -553,6 +553,63 @@ void main() {
     expect(logs, isNot(contains(failureText)));
   });
 
+  test(
+    'logs a retryable failure with its category and the batch timing',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background_tasks',
+      );
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      final messages = <String>[];
+      final sink = _Sink(messages);
+      final queue = SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+        logSink: sink,
+      );
+      addTearDown(() async {
+        await queue.close();
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        queue: queue,
+        jobs: [
+          WalletTransactionSyncBackgroundJob(
+            key: const WalletNetworkKey('wallet', 'bitcoin', 'testnet'),
+            synchronize: () async =>
+                const Err(SourceFailure(SourceFailureReason.unavailable)),
+          ),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        logSink: sink,
+      );
+
+      expect(
+        (await task.execute(chain: 'bitcoin')).status,
+        BackgroundTaskExecutionStatus.retry,
+      );
+      expect(
+        messages,
+        contains(
+          'Wallet sync retryable failure chain=bitcoin '
+          'category=SourceFailure.unavailable',
+        ),
+      );
+      expect(
+        messages.last,
+        matches(
+          RegExp(
+            r'^Wallet sync queue completion: chain=bitcoin claimed=1 '
+            r'succeeded=0 retried=1 permanent=0 new_incoming=0 elapsed_ms=\d+$',
+          ),
+        ),
+      );
+    },
+  );
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

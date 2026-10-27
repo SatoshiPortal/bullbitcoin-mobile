@@ -8,6 +8,8 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/wallet_locator.dart'
+    show logWalletCoordination;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -112,10 +114,12 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final bdk = WalletTransactionSyncFacade.bdkElectrum(
     metadata: syncMetadata,
     coordinator: coordination,
+    logSink: logWalletCoordination,
   );
   final lwk = WalletTransactionSyncFacade.lwkElectrum(
     metadata: syncMetadata,
     coordinator: coordination,
+    logSink: logWalletCoordination,
   );
   NotificationCopy copy(int count, String chain) => (
     title: localized.receivePaymentReceived,
