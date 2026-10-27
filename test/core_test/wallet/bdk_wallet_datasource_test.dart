@@ -387,6 +387,63 @@ void main() {
     },
   );
 
+  // `addUtxos` makes a coin required, not exclusive: without
+  // `manuallySelectedOnly`, BDK tops a short selection up with a coin the user
+  // left unselected, linking it on-chain.
+  test(
+    'buildPsbt does not top up a short manual selection with an unselected coin',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          amountSat: utxoSmallAmountSat,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+          selected: [
+            WalletUtxoModel.bitcoin(
+              txId: utxoLargeTxId,
+              vout: utxoSmallVout,
+              amountSat: BigInt.from(utxoSmallAmountSat),
+              scriptPubkey: Uint8List(0),
+              address: '',
+              isExternalKeyChain: true,
+            ),
+          ],
+        ),
+        throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  // MAX with coin control drains only the picked coins.
+  test('buildPsbt drains only the manually selected coin', () async {
+    final datasource = BdkWalletDatasource();
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      address: _externalTestnetAddress,
+      networkFee: const NetworkFee.relativeSatPerKwu(1000),
+      drain: true,
+      selected: [
+        WalletUtxoModel.bitcoin(
+          txId: utxoLargeTxId,
+          vout: utxoSmallVout,
+          amountSat: BigInt.from(utxoSmallAmountSat),
+          scriptPubkey: Uint8List(0),
+          address: '',
+          isExternalKeyChain: true,
+        ),
+      ],
+    );
+
+    final inputs = bdk.Psbt(psbtBase64: psbt).extractTx().input();
+    expect(inputs, hasLength(1));
+    expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+    expect(inputs.single.previousOutput.vout, utxoSmallVout);
+  });
+
   test('selectTransactionAndPrevouts performs only targeted lookups', () {
     final transactionsById = {
       'unrelated': (txId: 'unrelated', previousTxIds: <String>[]),

@@ -303,6 +303,7 @@ class BdkWalletDatasource {
         // return value (as this call did before) silently drops the manual
         // UTXO selection and leaves BDK to pick inputs automatically.
         txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
+        txBuilder = txBuilder.manuallySelectedOnly();
       }
 
       // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
