@@ -20,6 +20,7 @@ dependencies:
   sqlite3: ^2.9.4
 
 dev_dependencies:
+  plugin_platform_interface: ^2.1.8
   flutter_test:
     sdk: flutter
   lints: ^6.0.0

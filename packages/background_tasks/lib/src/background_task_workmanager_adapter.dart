@@ -42,7 +42,9 @@ final class _WorkmanagerScheduler implements BackgroundTaskScheduler {
     constraints: requiresNetwork
         ? Constraints(networkType: NetworkType.connected)
         : null,
-    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
+    // UPDATE applies a new interval to work already scheduled on the device;
+    // KEEP would leave it on the interval it was first registered with.
+    existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
   );
 }
 
