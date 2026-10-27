@@ -131,7 +131,7 @@ ios-release:
 # must specify a --flavor option". Drop the key for the duration of the build and
 # restore it whatever happens. The only visible effect is `appFlavor` being null
 # instead of 'production', which the app reads in exactly one place, to draw the
-# beta banner (lib/main.dart).
+# beta banner (lib/app.dart).
 	@backup="$$(mktemp)"; cp pubspec.yaml "$$backup" \
 	  && trap 'cp "$$backup" pubspec.yaml; rm -f "$$backup"' EXIT INT TERM \
 	  && grep -v '^[[:space:]]*default-flavor:' "$$backup" > pubspec.yaml \
