@@ -27,7 +27,11 @@ import 'package:transaction_sync/transaction_sync.dart'
         InMemoryWalletSourceOperationCoordinator,
         WalletNetworkKey,
         WalletSourceKey,
-        WalletSyncMetadataPort;
+        WalletSyncMetadataPort,
+        WalletOperationKind,
+        WalletOperationPriority,
+        WalletSourceOperationCoordinator,
+        WalletSourceSession;
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -899,6 +903,104 @@ void main() {
       await repository.sync(_wallet(_walletId));
     },
   );
+
+  test('a synced wallet read runs as long as its sync', () async {
+    final metadata = _MockWalletMetadataDatasource();
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final coordinator = _RecordingCoordinator();
+    _stubSyncStreams(bdk, lwk);
+    when(() => metadata.fetch(_walletId)).thenAnswer((_) async => _metadata);
+    when(
+      () => bdk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenAnswer((_) async {});
+    when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
+      (_) async => BalanceModel(
+        confirmedSat: BigInt.zero,
+        immatureSat: BigInt.zero,
+        trustedPendingSat: BigInt.zero,
+        untrustedPendingSat: BigInt.zero,
+        spendableSat: BigInt.zero,
+        totalSat: BigInt.zero,
+      ),
+    );
+    final repository = WalletRepository(
+      walletMetadataDatasource: metadata,
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: coordinator,
+      syncMetadata: _metadataPort(),
+    );
+
+    expect(await repository.getWallet(_walletId, sync: true), isA<Ok>());
+    expect(await repository.getWallet(_walletId), isA<Ok>());
+
+    expect(coordinator.timeouts[WalletOperationKind.synchronize], isNull);
+    expect(
+      coordinator.timeouts[WalletOperationKind.refresh],
+      const Duration(seconds: 30),
+    );
+  });
+
+  test('a sync cut off by the coordinator is a sync failure', () async {
+    final metadata = _MockWalletMetadataDatasource();
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final coordinator = _RecordingCoordinator()..timeOutSynchronizations = true;
+    _stubSyncStreams(bdk, lwk);
+    when(() => metadata.fetch(_walletId)).thenAnswer((_) async => _metadata);
+    final repository = WalletRepository(
+      walletMetadataDatasource: metadata,
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: coordinator,
+      syncMetadata: _metadataPort(),
+    );
+
+    final result = await repository.getWallet(_walletId, sync: true);
+
+    expect(result, isA<Err<Wallet, WalletFailure>>());
+    expect(
+      (result as Err<Wallet, WalletFailure>).failure,
+      isA<WalletSyncFailure>(),
+    );
+  });
+}
+
+/// Records the caller timeout of every operation and can refuse syncs the way
+/// the durable coordinator does when its caller timeout elapses.
+final class _RecordingCoordinator implements WalletSourceOperationCoordinator {
+  final _inner = InMemoryWalletSourceOperationCoordinator();
+  final timeouts = <WalletOperationKind, Duration?>{};
+  bool timeOutSynchronizations = false;
+
+  @override
+  Future<T> runExclusive<T>(
+    WalletSourceKey key,
+    Future<T> Function(WalletSourceSession session) operation, {
+    Duration? timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
+  }) {
+    timeouts[kind] = timeout;
+    if (timeOutSynchronizations && kind == WalletOperationKind.synchronize) {
+      throw TimeoutException('Wallet source operation timed out');
+    }
+    return _inner.runExclusive(
+      key,
+      operation,
+      timeout: timeout,
+      allowRetired: allowRetired,
+      kind: kind,
+      priority: priority,
+    );
+  }
 }
 
 void _stubSyncStreams(BdkWalletDatasource bdk, LwkWalletDatasource lwk) {

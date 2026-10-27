@@ -346,7 +346,7 @@ class WalletRepository {
         e.toString().contains('UpdateOnDifferentStatus')) {
       return WalletLwkStatusConflictFailure('$operation: lwk status conflict');
     }
-    if (e is ElectrumFallbackException) {
+    if (e is ElectrumFallbackException || e is TimeoutException) {
       return WalletSyncFailure('$operation: ${e.runtimeType}');
     }
     return WalletStorageFailure('$operation failed: ${e.runtimeType}');
@@ -590,6 +590,9 @@ class WalletRepository {
         kind: sync
             ? WalletOperationKind.synchronize
             : WalletOperationKind.refresh,
+        // A sync runs as long as it needs, like _syncWallet; only a read is
+        // capped.
+        timeout: sync ? null : const Duration(seconds: 30),
       );
     } else {
       final wallet = WalletModel.publicBdk(
@@ -624,6 +627,9 @@ class WalletRepository {
         kind: sync
             ? WalletOperationKind.synchronize
             : WalletOperationKind.refresh,
+        // A sync runs as long as it needs, like _syncWallet; only a read is
+        // capped.
+        timeout: sync ? null : const Duration(seconds: 30),
       );
     }
 
