@@ -174,6 +174,9 @@ class BdkWalletDatasource {
   }) async {
     // The scripts BDK indexes, revealed ones plus the lookahead, which is what
     // `Wallet.isMine` answers from: a fresh receiving address has no output yet.
+    // A routine sync only queries revealed scripts, so an output paid to a
+    // lookahead script is owned here but invisible until a full scan; the
+    // receive flow reveals its address first, which keeps that window closed.
     final owned = await _withWallet(wallet, (bdkWallet) {
       final scripts = <String>{};
       for (final keychain in bdk.KeychainKind.values) {
