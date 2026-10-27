@@ -487,7 +487,7 @@ final class _DurableActor {
       _command('retire', retired).then((_) {});
   Future<void> release() async {
     if (_closed) {
-      if (_terminalError != null) throw _terminalError!;
+      if (_terminalError case final error?) throw error;
       return;
     }
     Object? error;
