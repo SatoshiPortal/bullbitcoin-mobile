@@ -38,9 +38,12 @@ This split maps almost 1:1 onto the melos target (see Monorepo Migration): `lib/
 
 ## 🚪 Entry points & code tour
 
-New to the code? Start at these three files — together they are the app's **composition root**:
+New to the code? Start at these files — together they are the app's **composition root**:
 
-- **`lib/main.dart`** — process entry. `Bull.init()` runs before `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `initLocator()` → wizard flush. Then `runApp()` provides the always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
+- **`lib/main.dart`** — process entry, delegates to `startApp()` in `lib/bootstrap.dart`.
+- **`lib/bootstrap.dart`** — Flutter binding, secure-storage prewarm, startup wizard, application rendering and startup/global error handling. `lib/startup_wizard.dart` owns the pre-locator wizard flow and pending consent read.
+- **`lib/init.dart`** — ordered service initialization. `Bull.init()` runs before the wallet app's `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `AppLocator.setup()` → wizard flush. `bull_logger.initializeLogging()` owns log setup; `lib/report_logger_adapter.dart` connects its reporting contract to the app's consent-gated `Report`. Native-library initialization lives in `lib/native_libraries.dart`, Tor diagnostic collection in `lib/tor_diagnostic_context.dart`, and background-task cancellation in `lib/core/background_tasks/handler.dart`. The foreground and background composition roots share these helpers without importing one another.
+- **`lib/app.dart`** — root widget, lifecycle handling and always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
 - **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` registers **core first** (`CoreLocator` — datasources, ports, repositories, services, use-cases, facades), then calls **every feature's `<Feature>Locator.setup(locator)`**. This file is the single list of what's wired into the app.
 - **`lib/router.dart`** — navigation (`GoRouter`). `AppRouter.router` starts at `WalletRoute.walletHome`, wraps the app in a root `ShellRoute`, and **spreads each feature's routes** (`...ExchangeRouter.routes`, `...BuyRouter.routes`, …) into the tree.
 

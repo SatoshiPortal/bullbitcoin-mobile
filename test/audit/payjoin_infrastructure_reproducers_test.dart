@@ -4,16 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'Payjoin setup lets integration tests inject an isolated database path',
+    'Payjoin setup accepts the database path chosen by the composition root',
     () {
       final source = File('lib/payjoin_setup.dart').readAsStringSync();
 
       expect(
         source,
-        contains('String? databasePath'),
-        reason:
-            'without path injection the funded integration test reuses persisted '
-            'sessions from previous runs',
+        contains('String databasePath'),
+        reason: 'the composition root must choose the database path explicitly',
       );
     },
   );

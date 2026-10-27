@@ -24,9 +24,9 @@ abstract interface class LoggerReporter {
 }
 
 // The top-level holder is eagerly seeded with a placeholder anchored at
-// `Directory.current` so that any log line emitted before `Bull.initLogs`
+// `Directory.current` so that any log line emitted before `initializeLogging`
 // runs (e.g. from a thrown exception during early `WidgetsFlutterBinding`
-// init) doesn't hit a `LateInitializationError`. `Bull.initLogs` then
+// init) doesn't hit a `LateInitializationError`. `initializeLogging` then
 // calls [Logger.replace] which cancels this placeholder's
 // `dep.Logger.root.onRecord` subscription before attaching a new one —
 // preventing the duplicate-listener leak that occurred when both
@@ -55,7 +55,7 @@ class Logger {
   /// Tracks the currently-active Logger so [replace] can cancel its
   /// `dep.Logger.root.onRecord` subscription before installing the
   /// next one. Per-isolate (Dart isolates do not share static state),
-  /// so background-task isolates that call `Bull.initLogs` get their
+  /// so background-task isolates that call `initializeLogging` get their
   /// own single-listener lifecycle.
   static Logger? _current;
 
@@ -106,7 +106,7 @@ class Logger {
   /// instance (if any) by cancelling its `dep.Logger.root.onRecord`
   /// subscription. Idempotent: safe to call when no prior instance
   /// exists. Callers must reassign the top-level [log] holder to the
-  /// returned instance — `Bull.initLogs` is the canonical caller.
+  /// returned instance — `initializeLogging` is the canonical caller.
   static Logger replace({
     String name = 'Logger',
     required Directory directory,
@@ -190,7 +190,7 @@ class Logger {
   /// destroys the most recent (and most diagnostically useful) BG
   /// lines — the exact lines a user would share to support after a
   /// crash. Each isolate must therefore prune its own file; foreground
-  /// cold-start pruning is triggered by `Bull.initLogs`.
+  /// cold-start pruning is triggered by `initializeLogging`.
   Future<void> prune() => _enqueue(() async {
     final sizeInKb = (await logsFile.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;

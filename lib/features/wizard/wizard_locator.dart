@@ -5,9 +5,9 @@ import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.da
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:get_it/get_it.dart';
 
-/// The wizard runs pre-locator (in `main()`) for the gating check and
+/// The wizard runs pre-locator (during startup) for the gating check and
 /// the bloc itself, so most of its dependencies are wired manually
-/// from `lib/main.dart` and `WizardApp`. The locator only exposes the
+/// from `lib/startup_wizard.dart` and `WizardApp`. The locator only exposes the
 /// post-init flush usecase that `Bull.init` calls once the SQLite
 /// settings repository is available.
 class WizardLocator {
