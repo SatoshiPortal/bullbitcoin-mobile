@@ -614,7 +614,7 @@ void main() {
     },
   );
 
-  test('disabled notifications do not fail or retry the task', () async {
+  test('disabled notifications neither fail the task nor replay', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final gateway = _Gateway()..enabled = false;
     final outbox = SqliteNotificationOutbox(
@@ -662,13 +662,13 @@ void main() {
       ),
     );
 
-    // Granted later: the pending notification is delivered by the next run.
+    // Granted later: the payment seen while hidden is not replayed.
     gateway.enabled = true;
     expect(
       (await task.execute(chain: 'bitcoin')).status,
       BackgroundTaskExecutionStatus.success,
     );
-    expect(gateway.shown, hasLength(1));
+    expect(gateway.shown, isEmpty);
   });
 
   test('logging sink failure cannot alter a successful batch', () async {

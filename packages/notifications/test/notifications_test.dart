@@ -381,7 +381,7 @@ void main() {
     },
   );
 
-  test('disabled notifications stay pending instead of delivered', () async {
+  test('notifications hidden by the OS are dropped, not replayed', () async {
     final gateway = FakeGateway()..enabled = false;
     final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
     await facade.enqueue(event('silent'));
@@ -395,6 +395,10 @@ void main() {
     );
     expect(gateway.shownIds, isEmpty);
     gateway.enabled = true;
+    expect(await facade.deliverPending(), isA<Ok>());
+    expect(gateway.shownIds, isEmpty);
+
+    await facade.enqueue(event('after-grant'));
     expect(await facade.deliverPending(), isA<Ok>());
     expect(gateway.shownIds, hasLength(1));
   });

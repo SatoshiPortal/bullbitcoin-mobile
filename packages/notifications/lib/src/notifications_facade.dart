@@ -66,16 +66,24 @@ final class NotificationsFacade {
   );
 
   Future<Result<void, NotificationsFailure>> deliverPending() async {
-    // A show on a disabled channel is a silent no-op; claiming then would
-    // mark the notification delivered although nobody saw it.
     switch (await gateway.isEnabled()) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: false):
+        // A show would be a silent no-op. Settle without showing: granting
+        // the permission later announces only payments seen from then on,
+        // never a backlog of old ones.
+        final dropped = await _settlePending(show: false);
+        if (dropped case Err(:final failure)) return Err(failure);
         return const Err(NotificationsPermissionDeniedFailure());
       case Ok():
-        break;
+        return _settlePending(show: true);
     }
+  }
+
+  Future<Result<void, NotificationsFailure>> _settlePending({
+    required bool show,
+  }) async {
     final claimed = await outbox.claimPending();
     switch (claimed) {
       case Err(:final failure):
@@ -83,13 +91,15 @@ final class NotificationsFacade {
       case Ok(:final value):
         for (final claimed in value) {
           final event = claimed.notification;
-          final shown = await gateway.show(
-            event,
-            platformId: claimed.platformId,
-          );
-          if (shown case Err(:final failure)) {
-            await outbox.release(event.eventId, claimed.claimToken);
-            return Err(failure);
+          if (show) {
+            final shown = await gateway.show(
+              event,
+              platformId: claimed.platformId,
+            );
+            if (shown case Err(:final failure)) {
+              await outbox.release(event.eventId, claimed.claimToken);
+              return Err(failure);
+            }
           }
           final marked = await outbox.markDelivered(
             event.eventId,
