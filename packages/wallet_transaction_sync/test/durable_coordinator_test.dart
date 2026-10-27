@@ -1055,6 +1055,47 @@ void main() {
     );
   });
 
+  test('dead workers release their locks and close their sessions', () async {
+    final dying = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      killWorkerAfterReady: true,
+    );
+    final sessionStates = <bool>[];
+    Future<void> holdUntilDead(String wallet) => dying
+        .runExclusive(
+          WalletSourceKey(wallet, 'bitcoin', 'testnet'),
+          (session) async {
+            await Future<void>.delayed(const Duration(milliseconds: 200));
+            try {
+              session.ensureOpen();
+              sessionStates.add(true);
+            } on StateError {
+              sessionStates.add(false);
+            }
+          },
+          timeout: null,
+          kind: WalletOperationKind.synchronize,
+        )
+        .catchError((Object _) {});
+    // Both synchronization slots end up with a dead holder.
+    await Future.wait([holdUntilDead('first'), holdUntilDead('second')]);
+
+    final healthy = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      acquisitionTimeout: const Duration(seconds: 3),
+    );
+    await expectLater(
+      healthy.runExclusive(
+        const WalletSourceKey('third', 'bitcoin', 'testnet'),
+        (_) async {},
+        timeout: null,
+        kind: WalletOperationKind.synchronize,
+      ),
+      completes,
+    );
+    expect(sessionStates, [false, false]);
+  });
+
   test(
     'a non-retryable lock path fails instead of leaving a pending future',
     () async {

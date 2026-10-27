@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:io';
 import 'dart:math';
@@ -292,7 +293,9 @@ final class _DurableSession implements WalletSourceClaimedSession {
   bool get isClosed => _closed;
   @override
   void ensureOpen() {
-    if (_closed) throw StateError('source session is closed');
+    if (_closed || _actor.isTerminal) {
+      throw StateError('source session is closed');
+    }
     // The actor holds the per-key BEGIN IMMEDIATE connection for this session.
     // Consequently this claim cannot be replaced until release is requested.
   }
@@ -341,6 +344,12 @@ final class _DurableActor {
   bool _closed = false;
   Object? _terminalError;
 
+  /// Native addresses of the worker's key and slot connections. A worker
+  /// killed before it closed them leaves their SQLite locks held for the whole
+  /// process, so the caller closes them when the worker exits.
+  final List<int> _lockHandles;
+  bool _workerClosedLocks = false;
+
   _DurableActor(
     this._port,
     this._responses,
@@ -348,8 +357,13 @@ final class _DurableActor {
     this._isolate,
     this._exitPort,
     this.claim,
+    this._lockHandles,
   ) {
     _responses.listen((message) {
+      if (message is List && message.length == 1 && message[0] == 'closing') {
+        _workerClosedLocks = true;
+        return;
+      }
       if (message is! List || message.length < 3) return;
       final completer = _pending.remove(message[0] as int);
       if (completer == null) return;
@@ -360,8 +374,24 @@ final class _DurableActor {
       }
     });
     _exitPort.listen((_) {
+      _closeLeakedLocks();
       _markTerminal(StateError('Wallet source coordination worker exited'));
     });
+  }
+
+  bool get isTerminal => _closed;
+
+  void _closeLeakedLocks() {
+    if (_workerClosedLocks) return;
+    _workerClosedLocks = true;
+    for (final address in _lockHandles) {
+      try {
+        // Closing rolls back the held transaction, which releases the lock.
+        sqlite3.fromPointer(Pointer<Void>.fromAddress(address)).dispose();
+      } catch (_) {
+        // The process keeps the lock until it exits, as before.
+      }
+    }
   }
 
   static Future<_DurableActor> start({
@@ -466,6 +496,7 @@ final class _DurableActor {
           kind: kind,
           priority: priority,
         ),
+        (data[4] as List).cast<int>(),
       );
       await handshakeExitSubscription.cancel();
       handshakeExit.close();
@@ -588,6 +619,15 @@ Future<void> _workerMain(List<Object?> args) async {
   var readySent = false;
   String? failedAdmissionCategory;
   var awaitingTermination = false;
+  // Tells the caller these connections are closed here, before closing them:
+  // a kill in between leaks them, which beats closing them twice.
+  void closeLocks() {
+    if (readySent && (mutex != null || slot != null)) out.send(['closing']);
+    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+    mutex = null;
+    slot = null;
+  }
+
   try {
     final reply = ReceivePort();
     registrationReply = reply;
@@ -623,8 +663,10 @@ Future<void> _workerMain(List<Object?> args) async {
       maxActiveSynchronizations,
       args[8] as String,
     );
-    mutex = acquired.key;
-    slot = acquired.slot;
+    final keyLock = acquired.key;
+    final slotLock = acquired.slot;
+    mutex = keyLock;
+    slot = slotLock;
     claim = _activate(
       dbPath,
       busy,
@@ -634,7 +676,13 @@ Future<void> _workerMain(List<Object?> args) async {
       args[9] as String,
       args[10] as bool,
     );
-    out.send(['ready', commands.sendPort, claim.generation, claim.ownerToken]);
+    out.send([
+      'ready',
+      commands.sendPort,
+      claim.generation,
+      claim.ownerToken,
+      [keyLock.handle.address, ?slotLock?.handle.address],
+    ]);
     readySent = true;
     if (killWorkerAfterReady) {
       Isolate.current.kill(priority: Isolate.immediate);
@@ -657,7 +705,7 @@ Future<void> _workerMain(List<Object?> args) async {
             if (failReleaseCleanup) {
               throw StateError('injected release cleanup failure');
             }
-            _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+            closeLocks();
             claim = null;
             mutex = null;
             slot = null;
@@ -675,7 +723,7 @@ Future<void> _workerMain(List<Object?> args) async {
         }
       } catch (error) {
         if (message[1] == 'release') {
-          _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+          closeLocks();
           claim = null;
           mutex = null;
           slot = null;
@@ -692,7 +740,7 @@ Future<void> _workerMain(List<Object?> args) async {
       failedAdmissionCategory = _category(error);
     }
   } finally {
-    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+    closeLocks();
     registrationReply?.close();
     commands.close();
     // The caller terminates a failed startup worker as soon as it receives
