@@ -73,10 +73,12 @@ class AppStartupListener extends StatelessWidget {
           listenWhen: (previous, current) =>
               current is AppStartupSuccess && previous != current,
           listener: (context, state) async {
-            if (state is AppStartupSuccess && state.isPinCodeSet) {
-              AppRouter.router.go(AppUnlockRoute.appUnlock.path);
-            } else if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+            // Onboarding wins over the PIN, as before this listener awaited
+            // the post-unlock routing.
+            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
               AppRouter.router.go(OnboardingRoute.onboarding.path);
+            } else if (state is AppStartupSuccess && state.isPinCodeSet) {
+              AppRouter.router.go(AppUnlockRoute.appUnlock.path);
             } else if (state is AppStartupSuccess) {
               await AppRouter.routeAfterUnlock();
             }
