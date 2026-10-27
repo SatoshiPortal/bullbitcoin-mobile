@@ -16,7 +16,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   final String databasePath;
   late final Database _database;
   final Duration claimLease;
-  static const _schemaVersion = 1;
+  static const _schemaVersion = 2;
   static const _maxPlatformId = 0x7fffffff;
 
   SqliteNotificationOutbox({
@@ -57,6 +57,24 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         topic_id TEXT PRIMARY KEY, initialized_at INTEGER NOT NULL
       )
     ''');
+      // Version 2: which payments an aggregate announces, and when the
+      // foreground saw a payment. Guarded so a rerun changes nothing.
+      final columns = _database
+          .select('PRAGMA table_info(notification_outbox)')
+          .map((row) => row['name'] as String)
+          .toSet();
+      if (!columns.contains('seen_at')) {
+        _database.execute(
+          'ALTER TABLE notification_outbox ADD COLUMN seen_at INTEGER',
+        );
+      }
+      _database.execute('''
+      CREATE TABLE IF NOT EXISTS notification_aggregate_members (
+        aggregate_event_id TEXT NOT NULL, member_event_id TEXT NOT NULL,
+        PRIMARY KEY (aggregate_event_id, member_event_id)
+      )
+    ''');
+      _database.execute('PRAGMA user_version = $_schemaVersion');
     } catch (_) {
       database.dispose();
       rethrow;
@@ -104,10 +122,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   reconcileTopic(String topicId, List<LocalNotification> observedEvents) async {
     try {
       _database.execute('BEGIN IMMEDIATE');
-      final initialized = _database.select(
-        'SELECT topic_id FROM notification_topics WHERE topic_id=?',
-        [topicId],
-      ).isNotEmpty;
+      if (!_isInitialized(topicId)) {
+        _database.execute('COMMIT');
+        return const Ok(
+          NotificationReconcileResult(pendingCount: 0, skippedTopicCount: 1),
+        );
+      }
       var pendingCount = 0;
       final observedIds = <String>{};
       for (final event in observedEvents) {
@@ -128,18 +148,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
             event.body,
             event.destination.wireValue,
             event.createdAt.toUtc().millisecondsSinceEpoch,
-            initialized ? 'pending' : 'delivered',
+            'pending',
             platformId,
             topicId,
           ],
         );
-        if (initialized) pendingCount++;
-      }
-      if (!initialized) {
-        _database.execute(
-          'INSERT INTO notification_topics(topic_id,initialized_at) VALUES (?,?)',
-          [topicId, DateTime.now().toUtc().millisecondsSinceEpoch],
-        );
+        pendingCount++;
       }
       _database.execute('COMMIT');
       return Ok(NotificationReconcileResult(pendingCount: pendingCount));
@@ -161,11 +175,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     try {
       _database.execute('BEGIN IMMEDIATE');
       final newlyObserved = <LocalNotification>[];
+      var skippedTopicCount = 0;
       for (final observation in observations) {
-        final initialized = _database.select(
-          'SELECT topic_id FROM notification_topics WHERE topic_id=?',
-          [observation.topicId],
-        ).isNotEmpty;
+        if (!_isInitialized(observation.topicId)) {
+          skippedTopicCount++;
+          continue;
+        }
         final observedIds = <String>{};
         for (final event in observation.observedEvents) {
           if (!observedIds.add(event.eventId)) continue;
@@ -189,16 +204,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
               observation.topicId,
             ],
           );
-          if (initialized) newlyObserved.add(event);
-        }
-        if (!initialized) {
-          _database.execute(
-            'INSERT INTO notification_topics(topic_id,initialized_at) VALUES (?,?)',
-            [
-              observation.topicId,
-              DateTime.now().toUtc().millisecondsSinceEpoch,
-            ],
-          );
+          newlyObserved.add(event);
         }
       }
       if (newlyObserved.isNotEmpty) {
@@ -222,14 +228,114 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
               platformId,
             ],
           );
+          for (final member in newlyObserved) {
+            _database.execute(
+              '''INSERT OR IGNORE INTO notification_aggregate_members
+              (aggregate_event_id, member_event_id) VALUES (?,?)''',
+              [event.eventId, member.eventId],
+            );
+          }
         }
       }
       _database.execute('COMMIT');
       return Ok(
         NotificationReconcileResult(
           pendingCount: newlyObserved.isNotEmpty ? 1 : 0,
+          skippedTopicCount: skippedTopicCount,
         ),
       );
+    } catch (_) {
+      try {
+        _database.execute('ROLLBACK');
+      } catch (_) {}
+      return const Err(NotificationsStorageFailure());
+    }
+  }
+
+  bool _isInitialized(String topicId) => _database.select(
+    'SELECT topic_id FROM notification_topics WHERE topic_id=?',
+    [topicId],
+  ).isNotEmpty;
+
+  @override
+  Future<Result<bool, NotificationsFailure>> isTopicInitialized(
+    String topicId,
+  ) async {
+    try {
+      return Ok(_isInitialized(topicId));
+    } catch (_) {
+      return const Err(NotificationsStorageFailure());
+    }
+  }
+
+  @override
+  Future<Result<void, NotificationsFailure>> recordObserved(
+    String topicId,
+    List<LocalNotification> observedEvents,
+  ) async {
+    try {
+      _database.execute('BEGIN IMMEDIATE');
+      final now = DateTime.now().toUtc().millisecondsSinceEpoch;
+      final observedIds = <String>{};
+      for (final event in observedEvents) {
+        if (!observedIds.add(event.eventId)) continue;
+        final existing = _database.select(
+          'SELECT event_id FROM notification_outbox WHERE event_id=?',
+          [event.eventId],
+        );
+        if (existing.isNotEmpty) {
+          _database.execute(
+            'UPDATE notification_outbox SET seen_at=? WHERE event_id=? AND seen_at IS NULL',
+            [now, event.eventId],
+          );
+          continue;
+        }
+        _database.execute(
+          '''INSERT INTO notification_outbox
+          (event_id,title,body,destination,created_at,status,platform_id,topic_id,seen_at)
+          VALUES (?,?,?,?,?,'delivered',?,?,?)''',
+          [
+            event.eventId,
+            event.title,
+            event.body,
+            event.destination.wireValue,
+            event.createdAt.toUtc().millisecondsSinceEpoch,
+            _allocatePlatformId(event.eventId),
+            topicId,
+            now,
+          ],
+        );
+      }
+      if (!_isInitialized(topicId)) {
+        _database.execute(
+          'INSERT INTO notification_topics(topic_id,initialized_at) VALUES (?,?)',
+          [topicId, now],
+        );
+      }
+      // A pending aggregate announces nothing new once every payment in it
+      // has been seen.
+      final stale = _database.select('''
+        SELECT o.event_id FROM notification_outbox o
+        WHERE o.status='pending'
+          AND EXISTS (SELECT 1 FROM notification_aggregate_members m
+                      WHERE m.aggregate_event_id=o.event_id)
+          AND NOT EXISTS (
+            SELECT 1 FROM notification_aggregate_members m
+            JOIN notification_outbox e ON e.event_id=m.member_event_id
+            WHERE m.aggregate_event_id=o.event_id AND e.seen_at IS NULL)
+      ''');
+      for (final row in stale) {
+        final id = row['event_id'] as String;
+        _database.execute(
+          'DELETE FROM notification_aggregate_members WHERE aggregate_event_id=?',
+          [id],
+        );
+        _database.execute('DELETE FROM notification_outbox WHERE event_id=?', [
+          id,
+        ]);
+      }
+      _database.execute('COMMIT');
+      return const Ok(null);
     } catch (_) {
       try {
         _database.execute('ROLLBACK');

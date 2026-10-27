@@ -48,6 +48,17 @@ final class NotificationsFacade {
   Future<Result<void, NotificationsFailure>> enqueue(LocalNotification event) =>
       outbox.enqueue(event);
 
+  Future<Result<bool, NotificationsFailure>> isTopicInitialized(
+    String topicId,
+  ) => outbox.isTopicInitialized(topicId);
+
+  /// What the user can see now, recorded by the foreground: the baseline of
+  /// a topic, and the payments that must never be announced later.
+  Future<Result<void, NotificationsFailure>> recordObserved(
+    String topicId,
+    List<LocalNotification> observedEvents,
+  ) => outbox.recordObserved(topicId, List.unmodifiable(observedEvents));
+
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopic(String topicId, List<LocalNotification> observedEvents) =>
       outbox.reconcileTopic(topicId, List.unmodifiable(observedEvents));

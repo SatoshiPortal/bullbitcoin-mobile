@@ -28,6 +28,17 @@ final class ClaimedNotification {
 abstract interface class NotificationOutboxPort {
   Future<Result<void, NotificationsFailure>> enqueue(LocalNotification event);
 
+  /// Whether the foreground has recorded this topic: only then do later
+  /// reconciliations enqueue what is new.
+  Future<Result<bool, NotificationsFailure>> isTopicInitialized(String topicId);
+
+  /// Records what the user can see: the events are known from now on, and a
+  /// pending aggregate whose events have all been seen is dropped.
+  Future<Result<void, NotificationsFailure>> recordObserved(
+    String topicId,
+    List<LocalNotification> observedEvents,
+  );
+
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopic(String topicId, List<LocalNotification> observedEvents);
 

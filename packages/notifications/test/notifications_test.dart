@@ -55,6 +55,15 @@ final class FailingResponseOutbox implements NotificationOutboxPort {
     LocalNotification event,
   ) async => const Ok(null);
   @override
+  Future<Result<bool, NotificationsFailure>> isTopicInitialized(
+    String topicId,
+  ) async => const Ok(true);
+  @override
+  Future<Result<void, NotificationsFailure>> recordObserved(
+    String topicId,
+    List<LocalNotification> observedEvents,
+  ) async => const Ok(null);
+  @override
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopic(
     String topicId,
@@ -125,17 +134,35 @@ void main() {
   });
 
   test(
-    'first topic reconciliation is silent, later observations create pending events',
+    'an unobserved topic is skipped until the foreground records it',
     () async {
       final facade = NotificationsFacade(
         gateway: FakeGateway(),
         outbox: outbox,
       );
-      final initial = await facade.reconcileTopic('transactions', [
-        event('old'),
-      ]);
-      expect((initial as Ok).value.pendingCount, 0);
+      final skipped =
+          await facade.reconcileTopic('transactions', [event('old')]) as Ok;
+      expect(skipped.value.pendingCount, 0);
+      expect(skipped.value.skippedTopicCount, 1);
+      expect(
+        (await facade.isTopicInitialized('transactions') as Ok).value,
+        isFalse,
+      );
       expect((await outbox.claimPending() as Ok).value, isEmpty);
+
+      // Still not observed: the same old payment stays unknown, never a
+      // silent baseline taken behind the user's back.
+      final again = await facade.reconcileTopic('transactions', [event('old')]);
+      expect((again as Ok).value.skippedTopicCount, 1);
+
+      expect(
+        await facade.recordObserved('transactions', [event('old')]),
+        isA<Ok>(),
+      );
+      expect(
+        (await facade.isTopicInitialized('transactions') as Ok).value,
+        isTrue,
+      );
 
       final later = await facade.reconcileTopic('transactions', [
         event('old'),
@@ -147,8 +174,54 @@ void main() {
     },
   );
 
+  test('a payment seen in the foreground is never notified later', () async {
+    final facade = NotificationsFacade(gateway: FakeGateway(), outbox: outbox);
+    await facade.recordObserved('transactions', []);
+
+    await facade.recordObserved('transactions', [event('seen-in-app')]);
+    final later = await facade.reconcileTopic('transactions', [
+      event('seen-in-app'),
+    ]);
+
+    expect((later as Ok).value.pendingCount, 0);
+    expect((await outbox.claimPending() as Ok).value, isEmpty);
+  });
+
+  test(
+    'a pending aggregate is dropped once all its payments were seen',
+    () async {
+      final facade = NotificationsFacade(
+        gateway: FakeGateway(),
+        outbox: outbox,
+      );
+      await facade.recordObserved('a', []);
+      await facade.recordObserved('b', []);
+      LocalNotification aggregate(List<LocalNotification> events) =>
+          event('aggregate-${events.length}');
+      expect(
+        ((await facade.reconcileTopicsAndEnqueue([
+                  NotificationTopicObservation('a', [event('a1')]),
+                  NotificationTopicObservation('b', [event('b1')]),
+                ], aggregate)
+                as Ok)
+            .value
+            .pendingCount),
+        1,
+      );
+
+      // The user opened wallet a: its payment is seen, b's is not.
+      await facade.recordObserved('a', [event('a1')]);
+      final stillPending = (await outbox.claimPending() as Ok).value;
+      expect(stillPending, hasLength(1));
+      await outbox.release('aggregate-2', stillPending.single.claimToken);
+
+      await facade.recordObserved('b', [event('b1')]);
+      expect((await outbox.claimPending() as Ok).value, isEmpty);
+    },
+  );
+
   test('reconciliation is idempotent and pending survives reopen', () async {
-    await outbox.reconcileTopic('topic', [event('stable')]);
+    await outbox.recordObserved('topic', [event('stable')]);
     final repeated = await outbox.reconcileTopic('topic', [event('stable')]);
     expect((repeated as Ok).value.pendingCount, 0);
     await outbox.reconcileTopic('topic', [event('stable'), event('pending')]);
@@ -164,6 +237,8 @@ void main() {
     'atomically reconciles topics and enqueues one aggregate event',
     () async {
       final aggregate = <List<LocalNotification>>[];
+      await outbox.recordObserved('one', [event('one')]);
+      await outbox.recordObserved('two', [event('two')]);
       final result = await outbox.reconcileTopicsAndEnqueue(
         [
           NotificationTopicObservation('one', [event('one')]),
@@ -220,7 +295,7 @@ void main() {
       );
       addTearDown(second.dispose);
       final observed = [event('collision-55045'), event('collision-70885')];
-      await outbox.reconcileTopic('concurrent', const []);
+      await outbox.recordObserved('concurrent', const []);
       final results = await Future.wait([
         outbox.reconcileTopic('concurrent', observed),
         second.reconcileTopic('concurrent', observed.reversed.toList()),
