@@ -711,18 +711,6 @@
   "@exchangeRecipientsComingSoon": {
     "description": "Message indicating that the recipients feature is coming soon"
   },
-  "exchangeLogoutComingSoon": "Log Out - Jald Aane Wala Hai",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
-  },
-  "exchangeLegacyTransactionsTitle": "Legacy Transactions",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
-  "exchangeLegacyTransactionsComingSoon": "Legacy Transactions - Jald Aane Wala Hai",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "exchangeFileUploadTitle": "Secure File Upload",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -742,18 +730,6 @@
   "exchangeFileUploadSuccess": "File safaltapurvak upload ho gayi",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
-  "exchangeAccountSettingsTitle": "Exchange Account Settings",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
-  "exchangeAccountComingSoon": "Yeh feature jald aane wala hai.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "exchangeBitcoinWalletsTitle": "Default Bitcoin Wallets",
   "@exchangeBitcoinWalletsTitle": {
