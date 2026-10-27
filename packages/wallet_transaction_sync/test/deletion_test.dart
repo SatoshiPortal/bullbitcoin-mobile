@@ -1,11 +1,37 @@
 import 'dart:async';
 
+import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
 
 import 'support/fakes.dart';
 
 void main() {
+  test('a deletion during a sync is not undone by its publication', () async {
+    final source = RecordingSource();
+    final metadata = _PausingMetadata();
+    final facade = buildFacade(source, metadata);
+
+    final sync = facade.synchronizeWallet(
+      const SynchronizeWalletRequest(testRegistration),
+    );
+    await metadata.entered.future;
+    final deletion = facade.deleteWallet(testKey);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    metadata.release.complete();
+    await sync;
+    okValue(await deletion);
+
+    final lookup = await facade.lookupLocal(
+      const LookupLocalTransactionRequest(testKey, 'a'),
+    );
+    expect(switch (lookup) {
+      Ok(:final value) => value,
+      Err() => null,
+    }, isNull);
+    expect(metadata.receipts[testKey], isNull);
+  });
+
   test(
     'failed source delete leaves the marker and resumes on next call',
     () async {
@@ -378,4 +404,17 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(done, isTrue);
   });
+}
+
+/// Holds the sync inside its receipt write until [release] completes.
+final class _PausingMetadata extends RecordingMetadata {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<void> writeSuccessfulObservation(WalletSyncReceipt receipt) async {
+    if (!entered.isCompleted) entered.complete();
+    await release.future;
+    await super.writeSuccessfulObservation(receipt);
+  }
 }
