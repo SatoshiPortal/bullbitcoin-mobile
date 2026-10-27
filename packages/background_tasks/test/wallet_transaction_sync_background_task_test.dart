@@ -304,6 +304,35 @@ void main() {
     },
   );
 
+  test('a storage failure is retried, not abandoned', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    addTearDown(() => directory.delete(recursive: true));
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(
+        gateway: _Gateway(),
+        outbox: SqliteNotificationOutbox(
+          databasePath: '${directory.path}/n.sqlite',
+        ),
+      ),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: const WalletNetworkKey('wallet', 'bitcoin', 'testnet'),
+          synchronize: () async => const Err(SourceStorageFailure()),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+    );
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.retry,
+    );
+  });
+
   test('does not execute jobs from the other requested chain', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

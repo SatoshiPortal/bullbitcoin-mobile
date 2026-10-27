@@ -313,6 +313,7 @@ final class WalletTransactionSyncBackgroundTask {
   }) => switch (failure) {
     SourceFailure(reason: SourceFailureReason.unavailable) ||
     SourceFailure(reason: SourceFailureReason.unknown) ||
+    SourceStorageFailure() ||
     CoordinationTimeoutFailure() ||
     SnapshotExpiredFailure() => onRetry(),
     SnapshotNotInitializedFailure() ||

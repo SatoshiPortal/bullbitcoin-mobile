@@ -365,6 +365,27 @@ void main() {
       },
     );
 
+    test('a sync that cannot persist reports a storage failure', () async {
+      await fixture.load('S5-incoming-older-revealed', 0);
+      okValue(
+        await facade.discoverWalletHistory(
+          DiscoverWalletHistoryRequest(registration),
+        ),
+      );
+      await fixture.load('S5-incoming-older-revealed', 1);
+      final database = File(path);
+      await Process.run('chmod', ['0444', database.path]);
+      addTearDown(() => Process.run('chmod', ['0644', database.path]));
+
+      final failure = errFailure(
+        await facade.discoverWalletHistory(
+          DiscoverWalletHistoryRequest(registration),
+        ),
+      );
+
+      expect(failure, isA<SourceStorageFailure>());
+    });
+
     test('deleting the wallet removes its cache', () async {
       await fixture.load('S10-no-change', 0);
       okValue(

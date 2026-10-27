@@ -146,11 +146,17 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
         // Fatal phase: apply/persist/mapping errors must surface, never be
         // retried against another server or reported as unavailability.
         try {
-          wallet.applyUpdate(update: update);
-          // `Wallet.persist` returns whether staged changes were written
-          // (false simply means nothing was staged); persistence FAILURES
-          // throw and are mapped below.
-          wallet.persist(persister: open.persister);
+          try {
+            wallet.applyUpdate(update: update);
+            // `Wallet.persist` returns whether staged changes were written
+            // (false simply means nothing was staged); persistence FAILURES
+            // throw.
+            wallet.persist(persister: open.persister);
+          } catch (_) {
+            // Local storage refused the update; nothing is wrong with the
+            // source, so a later attempt can succeed.
+            return const Err(SourceStorageFailure());
+          }
           if (syncedClient != null) {
             cache?.rememberParents(syncedClient, wallet);
           }
@@ -167,9 +173,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
           );
         } catch (_) {
           return const Err(
-            ExtractionFailure(
-              safeMessage: 'applying or persisting the source update failed',
-            ),
+            ExtractionFailure(safeMessage: 'mapping the source state failed'),
           );
         } finally {
           update.dispose();

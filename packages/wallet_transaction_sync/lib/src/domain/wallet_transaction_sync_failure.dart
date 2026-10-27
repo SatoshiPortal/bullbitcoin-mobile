@@ -36,6 +36,12 @@ final class SourceFailure extends WalletTransactionSyncFailure {
   const SourceFailure(this.reason, {this.safeMessage});
 }
 
+/// The wallet's local storage could not apply or persist an update. Retryable:
+/// the source itself answered.
+final class SourceStorageFailure extends WalletTransactionSyncFailure {
+  const SourceStorageFailure();
+}
+
 final class SourceObservationMismatchFailure
     extends WalletTransactionSyncFailure {
   const SourceObservationMismatchFailure();
