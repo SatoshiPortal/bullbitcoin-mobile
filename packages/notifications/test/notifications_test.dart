@@ -10,6 +10,7 @@ final class FakeGateway implements LocalNotificationGateway {
   bool enabled = true;
   Result<bool, NotificationsFailure> permissionResult = const Ok(true);
   int permissionRequestCount = 0;
+  int settingsOpenCount = 0;
   NotificationResponseCallback? responseCallback;
   bool invokeLaunch = false;
 
@@ -21,6 +22,12 @@ final class FakeGateway implements LocalNotificationGateway {
 
   @override
   Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(enabled);
+
+  @override
+  Future<Result<void, NotificationsFailure>> openSystemSettings() async {
+    settingsOpenCount++;
+    return const Ok(null);
+  }
 
   @override
   Future<Result<void, NotificationsFailure>> initialize(
@@ -401,6 +408,19 @@ void main() {
     await facade.enqueue(event('after-grant'));
     expect(await facade.deliverPending(), isA<Ok>());
     expect(gateway.shownIds, hasLength(1));
+  });
+
+  test('the permissions facade needs no outbox', () async {
+    final gateway = FakeGateway()
+      ..enabled = false
+      ..permissionResult = const Ok(false);
+    final permissions = NotificationPermissionsFacade(gateway: gateway);
+
+    expect((await permissions.isEnabled() as Ok).value, isFalse);
+    expect((await permissions.request() as Ok).value, isFalse);
+    expect(await permissions.openSystemSettings(), isA<Ok>());
+    expect(gateway.permissionRequestCount, 1);
+    expect(gateway.settingsOpenCount, 1);
   });
 
   test('gateway failure returns typed failure and remains retryable', () async {

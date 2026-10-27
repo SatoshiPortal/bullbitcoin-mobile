@@ -19,6 +19,10 @@ final class _Gateway implements LocalNotificationGateway {
   Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(enabled);
 
   @override
+  Future<Result<void, NotificationsFailure>> openSystemSettings() async =>
+      const Ok(null);
+
+  @override
   Future<Result<void, NotificationsFailure>> initialize(
     NotificationResponseCallback onResponse,
   ) async => const Ok(null);

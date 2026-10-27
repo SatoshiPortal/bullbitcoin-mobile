@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:primitives/primitives.dart';
 
@@ -6,10 +5,12 @@ import '../domain/local_notification.dart';
 import '../domain/local_notification_gateway.dart';
 import '../domain/notifications_failure.dart';
 import '../domain/notification_payload_codec.dart';
+import 'flutter_notification_permission_gateway.dart';
 
 final class FlutterLocalNotificationGateway
     implements LocalNotificationGateway {
   final FlutterLocalNotificationsPlugin _plugin;
+  final FlutterNotificationPermissionGateway _permissions;
 
   final String channelId;
   final String channelName;
@@ -23,85 +24,22 @@ final class FlutterLocalNotificationGateway
     required this.androidIconResource,
     this.channelDescription,
     this._codec = const NotificationPayloadCodec(),
-  }) : _plugin = FlutterLocalNotificationsPlugin();
+  }) : _plugin = FlutterLocalNotificationsPlugin(),
+       _permissions = FlutterNotificationPermissionGateway(
+         channelId: channelId,
+       );
 
   @override
-  Future<Result<bool, NotificationsFailure>> requestPermission() async {
-    try {
-      final bool? granted;
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.android:
-          granted = await _plugin
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >()
-              ?.requestNotificationsPermission();
-        case TargetPlatform.iOS:
-          granted = await _plugin
-              .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin
-              >()
-              ?.requestPermissions(alert: true, badge: true, sound: true);
-        case TargetPlatform.macOS:
-          granted = await _plugin
-              .resolvePlatformSpecificImplementation<
-                MacOSFlutterLocalNotificationsPlugin
-              >()
-              ?.requestPermissions(alert: true, badge: true, sound: true);
-        case TargetPlatform.fuchsia:
-        case TargetPlatform.linux:
-        case TargetPlatform.windows:
-          granted = true;
-      }
-      return Ok(granted ?? true);
-    } catch (_) {
-      return const Err(NotificationsGatewayFailure());
-    }
-  }
+  Future<Result<bool, NotificationsFailure>> requestPermission() =>
+      _permissions.requestPermission();
 
   @override
-  Future<Result<bool, NotificationsFailure>> isEnabled() async {
-    try {
-      final bool? enabled;
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.android:
-          final android = _plugin
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >();
-          // The user can block the payment channel alone while the app
-          // itself stays allowed; a show on it is then a silent no-op.
-          final channels = await android?.getNotificationChannels() ?? [];
-          final blocked = channels.any(
-            (c) => c.id == channelId && c.importance == Importance.none,
-          );
-          enabled = blocked ? false : await android?.areNotificationsEnabled();
-        case TargetPlatform.iOS:
-          enabled =
-              (await _plugin
-                      .resolvePlatformSpecificImplementation<
-                        IOSFlutterLocalNotificationsPlugin
-                      >()
-                      ?.checkPermissions())
-                  ?.isEnabled;
-        case TargetPlatform.macOS:
-          enabled =
-              (await _plugin
-                      .resolvePlatformSpecificImplementation<
-                        MacOSFlutterLocalNotificationsPlugin
-                      >()
-                      ?.checkPermissions())
-                  ?.isEnabled;
-        case TargetPlatform.fuchsia:
-        case TargetPlatform.linux:
-        case TargetPlatform.windows:
-          enabled = true;
-      }
-      return Ok(enabled ?? true);
-    } catch (_) {
-      return const Err(NotificationsGatewayFailure());
-    }
-  }
+  Future<Result<bool, NotificationsFailure>> isEnabled() =>
+      _permissions.isEnabled();
+
+  @override
+  Future<Result<void, NotificationsFailure>> openSystemSettings() =>
+      _permissions.openSystemSettings();
 
   @override
   Future<Result<void, NotificationsFailure>> initialize(
