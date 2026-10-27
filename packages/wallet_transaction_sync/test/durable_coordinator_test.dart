@@ -1055,6 +1055,41 @@ void main() {
     );
   });
 
+  test(
+    'a dead worker keeps its source exclusive until its operation ends',
+    () async {
+      const key = WalletSourceKey('exclusive', 'bitcoin', 'testnet');
+      final events = <String>[];
+      final dying = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        killWorkerAfterReady: true,
+      );
+      final first = dying
+          .runExclusive(
+            key,
+            (_) async {
+              events.add('first start');
+              await Future<void>.delayed(const Duration(milliseconds: 400));
+              events.add('first end');
+            },
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          )
+          .catchError((Object _) {});
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      final second = DurableWalletSourceOperationCoordinator(databasePath: path)
+          .runExclusive(
+            key,
+            (_) async => events.add('second start'),
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          );
+
+      await Future.wait([first, second]);
+      expect(events, ['first start', 'first end', 'second start']);
+    },
+  );
+
   test('dead workers release their locks and close their sessions', () async {
     final dying = DurableWalletSourceOperationCoordinator(
       databasePath: path,

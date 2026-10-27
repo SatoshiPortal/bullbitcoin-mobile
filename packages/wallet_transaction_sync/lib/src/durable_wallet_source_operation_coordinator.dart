@@ -344,11 +344,14 @@ final class _DurableActor {
   bool _closed = false;
   Object? _terminalError;
 
-  /// Native addresses of the worker's key and slot connections. A worker
-  /// killed before it closed them leaves their SQLite locks held for the whole
-  /// process, so the caller closes them when the worker exits.
+  /// Native addresses of the worker's key and slot connections. The caller
+  /// alone closes them, once the worker has exited and the operation has
+  /// ended: a worker killed mid-operation must not free the source early, and
+  /// one killed before closing them must not leave them locked forever.
   final List<int> _lockHandles;
-  bool _workerClosedLocks = false;
+  bool _workerExited = false;
+  bool _operationEnded = false;
+  bool _locksClosed = false;
 
   _DurableActor(
     this._port,
@@ -360,10 +363,6 @@ final class _DurableActor {
     this._lockHandles,
   ) {
     _responses.listen((message) {
-      if (message is List && message.length == 1 && message[0] == 'closing') {
-        _workerClosedLocks = true;
-        return;
-      }
       if (message is! List || message.length < 3) return;
       final completer = _pending.remove(message[0] as int);
       if (completer == null) return;
@@ -374,16 +373,18 @@ final class _DurableActor {
       }
     });
     _exitPort.listen((_) {
-      _closeLeakedLocks();
+      _workerExited = true;
+      _exitPort.close();
       _markTerminal(StateError('Wallet source coordination worker exited'));
+      _closeLocksWhenSettled();
     });
   }
 
   bool get isTerminal => _closed;
 
-  void _closeLeakedLocks() {
-    if (_workerClosedLocks) return;
-    _workerClosedLocks = true;
+  void _closeLocksWhenSettled() {
+    if (_locksClosed || !_workerExited || !_operationEnded) return;
+    _locksClosed = true;
     for (final address in _lockHandles) {
       try {
         // Closing rolls back the held transaction, which releases the lock.
@@ -522,6 +523,8 @@ final class _DurableActor {
   Future<void> setRetired(bool retired) =>
       _command('retire', retired).then((_) {});
   Future<void> release() async {
+    _operationEnded = true;
+    _closeLocksWhenSettled();
     if (_closed) {
       if (_terminalError case final error?) throw error;
       return;
@@ -569,7 +572,6 @@ final class _DurableActor {
     _terminalError = error;
     _failPending(error ?? StateError('Wallet source actor closed'));
     _receivePort.close();
-    _exitPort.close();
   }
 }
 
@@ -619,11 +621,22 @@ Future<void> _workerMain(List<Object?> args) async {
   var readySent = false;
   String? failedAdmissionCategory;
   var awaitingTermination = false;
-  // Tells the caller these connections are closed here, before closing them:
-  // a kill in between leaks them, which beats closing them twice.
+  // Once the caller knows these connections it owns their closing: here they
+  // are only rolled back, which frees the locks, and kept referenced so no
+  // finalizer closes them before this isolate exits.
   void closeLocks() {
-    if (readySent && (mutex != null || slot != null)) out.send(['closing']);
-    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
+    final handedOver = readySent;
+    _bestEffortCleanup(
+      dbPath,
+      busy,
+      hash,
+      request,
+      claim,
+      mutex,
+      slot,
+      close: !handedOver,
+    );
+    if (handedOver) _handedOverLocks.addAll([?mutex, ?slot]);
     mutex = null;
     slot = null;
   }
@@ -752,6 +765,10 @@ Future<void> _workerMain(List<Object?> args) async {
   }
 }
 
+/// Connections whose closing belongs to the caller, kept alive until this
+/// worker isolate exits.
+final List<Database> _handedOverLocks = [];
+
 void _bestEffortCleanup(
   String dbPath,
   int busy,
@@ -759,8 +776,9 @@ void _bestEffortCleanup(
   String request,
   WalletSourceClaim? claim,
   Database? mutex,
-  Database? slot,
-) {
+  Database? slot, {
+  required bool close,
+}) {
   try {
     if (claim != null) {
       _central(
@@ -785,17 +803,21 @@ void _bestEffortCleanup(
     try {
       slot.execute('ROLLBACK');
     } catch (_) {}
-    try {
-      slot.dispose();
-    } catch (_) {}
+    if (close) {
+      try {
+        slot.dispose();
+      } catch (_) {}
+    }
   }
   if (mutex != null) {
     try {
       mutex.execute('ROLLBACK');
     } catch (_) {}
-    try {
-      mutex.dispose();
-    } catch (_) {}
+    if (close) {
+      try {
+        mutex.dispose();
+      } catch (_) {}
+    }
   }
 }
 
