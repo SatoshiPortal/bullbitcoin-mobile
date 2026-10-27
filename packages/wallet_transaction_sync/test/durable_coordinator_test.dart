@@ -45,6 +45,32 @@ void main() {
     },
   );
 
+  test('a refused admission keeps its reason', () async {
+    const key = WalletSourceKey('wallet', 'bitcoin', 'testnet');
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+    );
+    await coordinator.runExclusive(key, (session) async {
+      session.retire();
+    }, kind: WalletOperationKind.delete);
+
+    await expectLater(
+      coordinator.runExclusive(
+        key,
+        (_) async {},
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          contains('retired'),
+        ),
+      ),
+    );
+  });
+
   test(
     'a foreground read and sync queued behind a background sync both run',
     () async {

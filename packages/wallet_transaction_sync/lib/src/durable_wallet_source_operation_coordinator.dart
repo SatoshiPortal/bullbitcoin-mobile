@@ -268,6 +268,11 @@ String _errorCategory(Object error) => switch (error) {
   TimeoutException() => 'timeout',
   SqliteException() => 'sqlite',
   FileSystemException() => 'filesystem',
+  StateError(:final message) when message.contains('retired') => 'retired',
+  StateError(:final message) when message.contains('superseded') =>
+    'superseded',
+  StateError(:final message) when message.contains('Unsupported') =>
+    'unsupported-schema',
   StateError() => 'state',
   ArgumentError() => 'argument',
   _ => 'unexpected',
@@ -758,11 +763,13 @@ String _category(Object error) {
   if (error is FileSystemException) return 'filesystem';
   if (error is TypeError) return 'type';
   if (error is ArgumentError) return 'argument';
-  if (error is StateError) return 'state';
+  // The specific refusals are StateErrors too: test them first so the caller
+  // learns which one happened.
   final text = error.toString();
   if (text.contains('retired')) return 'retired';
   if (text.contains('superseded')) return 'superseded';
   if (text.contains('Unsupported')) return 'unsupported-schema';
+  if (error is StateError) return 'state';
   return 'coordination';
 }
 
