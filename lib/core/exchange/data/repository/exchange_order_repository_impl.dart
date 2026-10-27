@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dar
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;

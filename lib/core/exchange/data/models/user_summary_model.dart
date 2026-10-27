@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_summary_model.freezed.dart';

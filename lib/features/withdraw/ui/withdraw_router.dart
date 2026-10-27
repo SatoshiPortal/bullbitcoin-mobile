@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
