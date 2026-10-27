@@ -15857,5 +15857,53 @@
         "type": "int"
       }
     }
+  },
+  "settingsPermissionsTitle": "Permissions",
+  "@settingsPermissionsTitle": {
+    "description": "Title of the settings page and entry listing the optional OS permissions"
+  },
+  "settingsSearchPermissionsKeywords": "permissions, notifications, alerts, allow",
+  "@settingsSearchPermissionsKeywords": {
+    "description": "Comma-separated search keywords for the Permissions settings entry"
+  },
+  "permissionsIntro": "Optional permissions. Bull works without them.",
+  "@permissionsIntro": {
+    "description": "Introduction at the top of the Permissions page"
+  },
+  "permissionsNotificationsTitle": "Payment notifications",
+  "@permissionsNotificationsTitle": {
+    "description": "Name of the payment notifications permission"
+  },
+  "permissionsNotificationsDescription": "Get notified about incoming payments while Bull is closed. Notifications may be delayed and can appear on your lock screen. They never show amounts or addresses.",
+  "@permissionsNotificationsDescription": {
+    "description": "What payment notifications do; must not promise instant delivery"
+  },
+  "permissionsStatusAllowed": "Allowed",
+  "@permissionsStatusAllowed": {
+    "description": "Status shown when the OS allows the permission"
+  },
+  "permissionsStatusOff": "Off",
+  "@permissionsStatusOff": {
+    "description": "Status shown when the OS does not allow the permission"
+  },
+  "permissionsStatusUnavailable": "Status unavailable",
+  "@permissionsStatusUnavailable": {
+    "description": "Status shown when the permission state could not be read"
+  },
+  "permissionsAllowNotifications": "Allow notifications",
+  "@permissionsAllowNotifications": {
+    "description": "Button that shows the OS notification prompt"
+  },
+  "permissionsOpenSystemSettings": "Open system settings",
+  "@permissionsOpenSystemSettings": {
+    "description": "Button that opens the app page in the system settings"
+  },
+  "permissionsNotNow": "Not now",
+  "@permissionsNotNow": {
+    "description": "Button that skips an optional permission"
+  },
+  "permissionsNotificationsOffHint": "Notifications are off. You can still receive payments. To turn them on, open the system settings.",
+  "@permissionsNotificationsOffHint": {
+    "description": "Shown when notifications stay off after the OS prompt"
   }
 }

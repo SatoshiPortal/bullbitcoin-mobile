@@ -4982,5 +4982,17 @@
   "recoverbullTorReady": "Prêt",
   "backgroundNotificationBitcoinSingular": "1 transaction Bitcoin reçue",
   "backgroundNotificationLiquidSingular": "1 transaction Liquid reçue",
-  "backgroundNotificationTransactionsPlural": "{count} transactions reçues"
+  "backgroundNotificationTransactionsPlural": "{count} transactions reçues",
+  "settingsPermissionsTitle": "Autorisations",
+  "settingsSearchPermissionsKeywords": "autorisations, permissions, notifications, alertes, autoriser",
+  "permissionsIntro": "Autorisations facultatives. Bull fonctionne sans elles.",
+  "permissionsNotificationsTitle": "Notifications de paiement",
+  "permissionsNotificationsDescription": "Soyez prévenu des paiements reçus pendant que Bull est fermé. Les notifications peuvent être différées et apparaître sur l’écran verrouillé. Elles n’affichent jamais de montant ni d’adresse.",
+  "permissionsStatusAllowed": "Autorisées",
+  "permissionsStatusOff": "Désactivées",
+  "permissionsStatusUnavailable": "État indisponible",
+  "permissionsAllowNotifications": "Autoriser les notifications",
+  "permissionsOpenSystemSettings": "Ouvrir les réglages système",
+  "permissionsNotNow": "Pas maintenant",
+  "permissionsNotificationsOffHint": "Les notifications sont désactivées. Vous pouvez toujours recevoir des paiements. Pour les activer, ouvrez les réglages système."
 }
