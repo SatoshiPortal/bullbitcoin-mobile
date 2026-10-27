@@ -423,6 +423,40 @@ void main() {
     expect(missingTransactions, isEmpty);
   });
 
+  test('isMine accepts a fresh receiving address, like BDK', () async {
+    late Uint8List fresh;
+    late Uint8List lookahead;
+    late bool bdkSaysFreshIsMine;
+    await BdkFacade.withWallet(walletModel, (wallet) async {
+      fresh = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.external_)
+          .address
+          .scriptPubkey()
+          .toBytes();
+      lookahead = wallet
+          .peekAddress(keychain: bdk.KeychainKind.internal, index: 10)
+          .address
+          .scriptPubkey()
+          .toBytes();
+      bdkSaysFreshIsMine = wallet.isMine(
+        script: bdk.Script(rawOutputScript: fresh),
+      );
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    });
+
+    final isMine = await BdkWalletDatasource().createIsMineChecker(
+      wallet: walletModel,
+    );
+
+    expect(bdkSaysFreshIsMine, isTrue);
+    expect(isMine(fresh), isTrue);
+    expect(isMine(lookahead), isTrue);
+    expect(
+      isMine(Uint8List.fromList([0x00, 0x14, ...List.filled(20, 7)])),
+      isFalse,
+    );
+  });
+
   test('a finished discovery does not satisfy the next one', () async {
     final datasource = BdkWalletDatasource();
     const unreachable = ElectrumConnection(

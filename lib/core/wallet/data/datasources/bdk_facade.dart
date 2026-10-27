@@ -11,7 +11,7 @@ import 'package:wallet_transaction_sync/bdk_electrum_cache.dart';
 
 class BdkFacade {
   // Standard lookahead value for address discovery
-  static const int _lookahead = 25;
+  static const int lookahead = 25;
   static final Expando<_WalletPersistence> _persisters = Expando(
     'bdk wallet persister',
   );
@@ -99,14 +99,14 @@ class BdkFacade {
                 descriptor: external,
                 changeDescriptor: internal,
                 persister: dbPersister,
-                lookahead: _lookahead,
+                lookahead: lookahead,
               )
             : bdk.Wallet(
                 descriptor: external,
                 changeDescriptor: internal,
                 network: network,
                 persister: dbPersister,
-                lookahead: _lookahead,
+                lookahead: lookahead,
               );
 
         _persisters[wallet] = _WalletPersistence(
@@ -198,14 +198,14 @@ class BdkFacade {
                   descriptor: external,
                   changeDescriptor: internal,
                   persister: dbPersister,
-                  lookahead: _lookahead,
+                  lookahead: lookahead,
                 )
               : bdk.Wallet(
                   descriptor: external,
                   changeDescriptor: internal,
                   network: network,
                   persister: dbPersister,
-                  lookahead: _lookahead,
+                  lookahead: lookahead,
                 );
 
           _persisters[wallet] = _WalletPersistence(

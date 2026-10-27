@@ -157,13 +157,26 @@ class BdkWalletDatasource {
   Future<bool Function(Uint8List)> createIsMineChecker({
     required WalletModel wallet,
   }) async {
-    final owned = await _withWallet(
-      wallet,
-      (bdkWallet) => {
-        for (final output in bdkWallet.listOutput())
-          _scriptKey(output.txout.scriptPubkey.toBytes()),
-      },
-    );
+    // The scripts BDK indexes, revealed ones plus the lookahead, which is what
+    // `Wallet.isMine` answers from: a fresh receiving address has no output yet.
+    final owned = await _withWallet(wallet, (bdkWallet) {
+      final scripts = <String>{};
+      for (final keychain in bdk.KeychainKind.values) {
+        final last = bdkWallet.derivationIndex(keychain: keychain) ?? -1;
+        for (var index = 0; index <= last + BdkFacade.lookahead; index++) {
+          scripts.add(
+            _scriptKey(
+              bdkWallet
+                  .peekAddress(keychain: keychain, index: index)
+                  .address
+                  .scriptPubkey()
+                  .toBytes(),
+            ),
+          );
+        }
+      }
+      return scripts;
+    });
     return (scriptBytes) => owned.contains(_scriptKey(scriptBytes));
   }
 
