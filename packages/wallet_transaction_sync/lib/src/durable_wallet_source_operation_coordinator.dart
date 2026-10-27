@@ -416,6 +416,17 @@ final class _DurableActor {
     late final Future<void> registrationTail;
     registrationTail = registered.future.whenComplete(() {});
     _registrationTails[registrationKey] = registrationTail;
+    // A start that fails before registering gives its place up only once its
+    // predecessor has registered, so a later start cannot overtake that one.
+    void giveUpRegistration() {
+      previousRegistration.whenComplete(() {
+        if (!registered.isCompleted) registered.complete();
+        if (identical(_registrationTails[registrationKey], registrationTail)) {
+          _registrationTails.remove(registrationKey);
+        }
+      });
+    }
+
     late final _LockOwner locks;
     try {
       final addresses = await _openLockConnectionsAside(
@@ -426,10 +437,7 @@ final class _DurableActor {
       );
       locks = _LockOwner(databasePath, busy, _token(), addresses);
     } catch (_) {
-      registered.complete();
-      if (identical(_registrationTails[registrationKey], registrationTail)) {
-        _registrationTails.remove(registrationKey);
-      }
+      giveUpRegistration();
       rethrow;
     }
     final responses = ReceivePort();
@@ -464,10 +472,7 @@ final class _DurableActor {
       exitPort.close();
       handshakeExit.close();
       locks.abandon();
-      if (!registered.isCompleted) registered.complete();
-      if (identical(_registrationTails[registrationKey], registrationTail)) {
-        _registrationTails.remove(registrationKey);
-      }
+      giveUpRegistration();
       rethrow;
     }
     isolate.addOnExitListener(exitPort.sendPort);
@@ -480,7 +485,7 @@ final class _DurableActor {
           StateError('Wallet source coordination worker exited'),
         );
       }
-      if (!registered.isCompleted) registered.complete();
+      giveUpRegistration();
     });
     subscription = responseStream.listen((message) {
       if (message is List && message.isNotEmpty && message[0] == 'register') {
@@ -531,10 +536,7 @@ final class _DurableActor {
       responses.close();
       exitPort.close();
       handshakeExit.close();
-      if (!registered.isCompleted) registered.complete();
-      if (identical(_registrationTails[registrationKey], registrationTail)) {
-        _registrationTails.remove(registrationKey);
-      }
+      giveUpRegistration();
       // No operation ran: the locks go as soon as the worker is gone.
       locks.endOperation();
       isolate.kill(priority: Isolate.immediate);
@@ -779,8 +781,12 @@ Future<void> _workerMain(List<Object?> args) async {
   String? failedAdmissionCategory;
   var awaitingTermination = false;
   // The caller closes the lock connections; here they are only rolled back,
-  // which frees the locks.
+  // which frees the locks. Done once: a repeat after release could outlast
+  // the caller's wait under contention.
+  var cleanedUp = false;
   void closeLocks() {
+    if (cleanedUp) return;
+    cleanedUp = true;
     _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
     mutex = null;
     slot = null;

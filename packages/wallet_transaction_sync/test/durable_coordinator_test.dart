@@ -1219,6 +1219,65 @@ void main() {
     skip: Directory('/proc/self/fd').existsSync() ? false : 'needs procfs',
   );
 
+  test(
+    'a contended release does not leak descriptors',
+    () async {
+      int openDescriptors() => Directory('/proc/self/fd').listSync().length;
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      Future<void> operation(String wallet, [Future<void> Function()? body]) =>
+          coordinator.runExclusive(
+            WalletSourceKey(wallet, 'bitcoin', 'testnet'),
+            (_) async => body?.call(),
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          );
+      await operation('warm-up');
+      final before = openDescriptors();
+      final blocker = sqlite3.open(path);
+      final unlocked = Completer<void>();
+
+      // The coordination database stays write-locked for 3 s while the
+      // operation releases.
+      await operation('contended', () async {
+        blocker.execute('BEGIN EXCLUSIVE');
+        Timer(const Duration(seconds: 3), () {
+          blocker.execute('COMMIT');
+          unlocked.complete();
+        });
+      });
+      await unlocked.future;
+      blocker.dispose();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      expect(openDescriptors() - before, lessThan(2));
+    },
+    skip: Directory('/proc/self/fd').existsSync() ? false : 'needs procfs',
+  );
+
+  test('a start that fails to open keeps the registration order', () async {
+    const key = WalletSourceKey('ordered', 'bitcoin', 'testnet');
+    final file = File('${directory.path}/not-a-directory')
+      ..writeAsStringSync('x');
+    for (var round = 0; round < 10; round++) {
+      final order = <String>[];
+      Future<void> run(String name, {String? locks}) =>
+          DurableWalletSourceOperationCoordinator(
+                databasePath: path,
+                lockDirectoryPath: locks,
+              )
+              .runExclusive(key, (_) async => order.add(name))
+              .catchError((Object _) {});
+      await Future.wait([
+        run('first'),
+        run('broken', locks: '${file.path}/child'),
+        run('third'),
+      ]);
+      expect(order, ['first', 'third'], reason: 'round $round');
+    }
+  });
+
   test('dead workers release their locks and close their sessions', () async {
     final dying = DurableWalletSourceOperationCoordinator(
       databasePath: path,
