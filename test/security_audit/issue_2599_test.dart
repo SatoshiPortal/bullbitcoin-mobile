@@ -49,5 +49,30 @@ void main() {
         );
       },
     );
+
+    for (final (role, path) in [
+      ('foreground', 'lib/init.dart'),
+      ('background', 'lib/core/background_tasks/handler.dart'),
+    ]) {
+      test('$role Payjoin storage uses the Documents directory', () {
+        final source = File(path).readAsStringSync();
+        expect(
+          source,
+          matches(
+            RegExp(
+              r'final\s+bullDirectory\s*=\s*await\s+getApplicationDocumentsDirectory\(\)',
+            ),
+          ),
+        );
+        expect(
+          source,
+          matches(
+            RegExp(
+              r'p\.join\(\s*bullDirectory\.path,\s*payjoinDatabaseFilename,?\s*\)',
+            ),
+          ),
+        );
+      });
+    }
   });
 }
