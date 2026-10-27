@@ -19,9 +19,6 @@ final class NotificationsFacade {
 
   NotificationsFacade({required this.gateway, required this.outbox});
 
-  Future<Result<bool, NotificationsFailure>> requestPermission() =>
-      gateway.requestPermission();
-
   Future<Result<void, NotificationsFailure>> initialize() =>
       gateway.initialize((payload) {
         final persisted = outbox.persistResponse(payload);

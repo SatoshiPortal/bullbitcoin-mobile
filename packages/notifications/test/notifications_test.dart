@@ -264,21 +264,21 @@ void main() {
     'permission request delegates success and refusal to the gateway',
     () async {
       final gateway = FakeGateway();
-      final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+      final permissions = NotificationPermissionsFacade(gateway: gateway);
 
-      expect((await facade.requestPermission() as Ok).value, isTrue);
+      expect((await permissions.request() as Ok).value, isTrue);
 
       gateway.permissionResult = const Ok(false);
-      expect((await facade.requestPermission() as Ok).value, isFalse);
+      expect((await permissions.request() as Ok).value, isFalse);
     },
   );
 
   test('permission request delegates gateway failures', () async {
     final gateway = FakeGateway()
       ..permissionResult = const Err(NotificationsGatewayFailure());
-    final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+    final permissions = NotificationPermissionsFacade(gateway: gateway);
 
-    expect(await facade.requestPermission(), isA<Err>());
+    expect(await permissions.request(), isA<Err>());
   });
 
   test('initialize does not request permission implicitly', () async {

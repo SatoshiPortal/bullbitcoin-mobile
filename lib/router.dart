@@ -248,14 +248,6 @@ class AppRouter {
       final notifications = locator<NotificationsFacade>();
 
       try {
-        if (await notifications.requestPermission() case Err()) {
-          log.warning('Notification permission request failed');
-        }
-      } catch (_) {
-        log.warning('Notification permission request failed');
-      }
-
-      try {
         if (await notifications.retryUnpersistedResponses() case Err()) {
           log.warning('Notification response retry failed');
         }
