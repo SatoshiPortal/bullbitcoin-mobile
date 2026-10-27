@@ -244,18 +244,33 @@ class SyncCoordinator {
         _running = kind;
         final discover = _discoveryRequested.remove(kind);
         _runningDiscovery = discover;
+        final started = DateTime.now();
+        String elapsed() =>
+            '${DateTime.now().difference(started).inMilliseconds}ms';
         try {
           // A wallet read failure fails the round without being thrown: it is
           // settled as the error and, like a throw, never stamps
           // _lastSuccessAt.
           final failure = await _runTask(kind, discover: discover);
           if (failure != null) {
+            log.warning(
+              '[SyncCoordinator] ${kind.name} failed discover=$discover '
+              '(${failure.runtimeType}) in ${elapsed()}',
+            );
             _settle(kind, failure, discovered: discover);
             continue;
           }
+          log.fine(
+            '[SyncCoordinator] ${kind.name} ok discover=$discover '
+            'in ${elapsed()}',
+          );
           _lastSuccessAt[kind] = DateTime.now();
           _settle(kind, null, discovered: discover);
         } catch (e) {
+          log.warning(
+            '[SyncCoordinator] ${kind.name} failed discover=$discover '
+            '(${e.runtimeType}) in ${elapsed()}',
+          );
           // Delivered to any sync() awaiting this kind; the single sanitized
           // summary is logged by sync().
           _settle(kind, e, discovered: discover);

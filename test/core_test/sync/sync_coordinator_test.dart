@@ -380,6 +380,44 @@ void main() {
       );
       expect(reporter.errors, hasLength(1));
     });
+
+    test('each kind is timed in the support log with its scan mode', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true)).thenAnswer(
+        (_) async =>
+            Err<List<Wallet>, WalletFailure>(const WalletStorageFailure()),
+      );
+
+      await expectLater(
+        coordinator.sync(trigger: SyncTrigger.user),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+
+      final lines = await log.readLogs();
+      expect(
+        lines,
+        contains(
+          matches(
+            RegExp(
+              r'\tFINE\t\[SyncCoordinator\] bitcoin ok discover=true in \d+ms',
+            ),
+          ),
+        ),
+      );
+      expect(
+        lines,
+        contains(
+          matches(
+            RegExp(
+              r'\tWARNING\t\[SyncCoordinator\] liquid failed discover=false '
+              r'\(WalletStorageFailure\) in \d+ms',
+            ),
+          ),
+        ),
+      );
+    });
   });
 
   group('bitcoin discovery', () {
