@@ -30,14 +30,12 @@ Future<void> registerBackgroundTasks() async {
   final adapter = BackgroundTaskWorkmanagerAdapter();
   await adapter.initialize(backgroundTasksHandler);
   await adapter.cancelByUniqueName(BackgroundTask.swapsSync.id);
+  // Liquid background sync stays off until its foreground handoff is fixed:
+  // resuming the app during it failed the foreground liquid sync.
+  await adapter.cancelByUniqueName(BackgroundTask.liquidSync.id);
   await adapter.registerPeriodicTask(
     uniqueName: BackgroundTask.bitcoinSync.id,
     taskName: BackgroundTask.bitcoinSync.name,
-    requiresNetwork: true,
-  );
-  await adapter.registerPeriodicTask(
-    uniqueName: BackgroundTask.liquidSync.id,
-    taskName: BackgroundTask.liquidSync.name,
     requiresNetwork: true,
   );
   await adapter.registerPeriodicTask(
@@ -155,13 +153,9 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
     ).execute(chain: 'bitcoin'),
-    liquidSync: () => WalletTransactionSyncBackgroundTask(
-      notifications: notifications,
-      jobs: jobs,
-      queue: syncQueue,
-      copy: copy,
-      maxConcurrentJobs: _backgroundWalletSyncConcurrency,
-    ).execute(chain: 'liquid'),
+    // Not registered any more (see initWorkmanager); a run still scheduled by
+    // an earlier launch is a no-op.
+    liquidSync: () async => const BackgroundTaskExecutionResult.success(),
     pruneLogs: log.prune,
     onFinished: () => _runAllCleanups([
       bdk.dispose,
