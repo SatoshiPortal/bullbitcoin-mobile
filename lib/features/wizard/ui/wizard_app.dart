@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/answer_permissions_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
@@ -35,9 +36,7 @@ class WizardApp extends StatelessWidget {
   /// Built by the startup composition root: the OS prompt needs no locator.
   final NotificationPermissionsFacade permissions;
 
-  WizardBloc _createBloc() {
-    final datasource = WizardLocalDatasourceImpl();
-    final repository = WizardRepositoryImpl(datasource);
+  WizardBloc _createBloc(WizardRepository repository) {
     return WizardBloc(
       savePending: SavePendingWizardChoicesUsecase(repository: repository),
       markComplete: MarkWizardCompleteUsecase(repository: repository),
@@ -46,12 +45,16 @@ class WizardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final repository = WizardRepositoryImpl(WizardLocalDatasourceImpl());
     return MultiBlocProvider(
       providers: [
-        BlocProvider<WizardBloc>(create: (_) => _createBloc()),
+        BlocProvider<WizardBloc>(create: (_) => _createBloc(repository)),
         BlocProvider<PermissionsCubit>(
           create: (_) => PermissionsCubit(
-            answer: AnswerPermissionsUsecase(permissions: permissions),
+            answer: AnswerPermissionsUsecase(
+              permissions: permissions,
+              repository: repository,
+            ),
           ),
         ),
       ],

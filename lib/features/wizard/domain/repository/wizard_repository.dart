@@ -11,4 +11,9 @@ abstract class WizardRepository {
   Future<void> savePending(WizardChoices choices);
   Future<WizardChoices?> readPending();
   Future<void> clearPending();
+
+  /// Whether the optional permissions were already offered, in the wizard or
+  /// once after unlock; they are never offered twice.
+  Future<bool> arePermissionsIntroduced();
+  Future<void> markPermissionsIntroduced();
 }

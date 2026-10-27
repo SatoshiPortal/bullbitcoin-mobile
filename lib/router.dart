@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/take_permissions_intro_usecase.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_router.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
@@ -239,11 +242,29 @@ class AppRouter {
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
+      WizardRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
 
   static Future<void> routeAfterUnlock() async {
+    await _routeToNotificationDestination();
+    await _offerPermissionsOnce();
+  }
+
+  /// Users who installed before the wizard had a Permissions page see it
+  /// once, on top of the destination.
+  static Future<void> _offerPermissionsOnce() async {
+    try {
+      if (await locator<TakePermissionsIntroUsecase>().execute()) {
+        unawaited(router.pushNamed(WizardRoute.permissionsIntro.name));
+      }
+    } catch (_) {
+      log.warning('Permissions intro check failed');
+    }
+  }
+
+  static Future<void> _routeToNotificationDestination() async {
     if (locator.isRegistered<NotificationsFacade>()) {
       final notifications = locator<NotificationsFacade>();
 

@@ -24,6 +24,9 @@ abstract class WizardLocalDatasource {
   Future<void> writePendingErrorReporting(bool enabled);
 
   Future<void> clearAllPending();
+
+  Future<bool> readPermissionsIntroduced();
+  Future<void> writePermissionsIntroduced();
 }
 
 class WizardLocalDatasourceImpl implements WizardLocalDatasource {
@@ -33,6 +36,8 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   static const _pendingThemeKey = 'wizard_pending_theme_mode';
   static const _pendingCurrencyKey = 'wizard_pending_currency';
   static const _pendingErrorReportingKey = 'wizard_pending_error_reporting';
+  // Not a pending choice: survives `clearAllPending` and wizard versions.
+  static const _permissionsIntroducedKey = 'permissions_introduced';
 
   @override
   Future<int?> readCompletedVersion() async {
@@ -114,5 +119,17 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
     await prefs.remove(_pendingThemeKey);
     await prefs.remove(_pendingCurrencyKey);
     await prefs.remove(_pendingErrorReportingKey);
+  }
+
+  @override
+  Future<bool> readPermissionsIntroduced() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_permissionsIntroducedKey) ?? false;
+  }
+
+  @override
+  Future<void> writePermissionsIntroduced() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_permissionsIntroducedKey, true);
   }
 }
