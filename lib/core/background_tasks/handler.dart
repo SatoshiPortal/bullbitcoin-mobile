@@ -19,7 +19,7 @@ import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' show initializeLogging, log;
 import 'package:get_it/get_it.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
@@ -55,9 +55,9 @@ void backgroundTasksHandler() {
 }
 
 Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
-  final documents = await getApplicationDocumentsDirectory();
+  final bullDirectory = await getApplicationDocumentsDirectory();
   await initializeLogging(
-    directory: documents,
+    directory: bullDirectory,
     background: true,
     reporter: const ReportLoggerAdapter(),
   );
@@ -83,7 +83,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   await AppLocator.setup(
     headless,
     sqlite,
-    payjoinDatabasePath: path.join(documents.path, payjoinDatabaseFilename),
+    payjoinDatabasePath: p.join(bullDirectory.path, payjoinDatabaseFilename),
     startPayjoinRecovery: false,
     startOrderSwapWatcher: false,
   );
@@ -92,11 +92,11 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final coordination = headless<WalletSourceOperationCoordinator>();
   final syncMetadata = headless<WalletSyncMetadataPort>();
   final outbox = SqliteNotificationOutbox(
-    databasePath: path.join(documents.path, 'notification_outbox.sqlite'),
+    databasePath: p.join(bullDirectory.path, 'notification_outbox.sqlite'),
   );
   final syncQueue = SqliteWalletSyncJobQueue(
-    databasePath: path.join(
-      documents.path,
+    databasePath: p.join(
+      bullDirectory.path,
       'wallet_transaction_sync_queue.sqlite',
     ),
   );
@@ -202,7 +202,7 @@ _synchronize({
                 electrumUrls: [connection.url],
                 stopGap: connection.stopGap,
                 validateDomain: connection.validateDomain,
-                databaseFilePath: path.join(
+                databaseFilePath: p.join(
                   (await getApplicationDocumentsDirectory()).path,
                   '${model.hexId}_bdk_dart',
                 ),
@@ -216,7 +216,7 @@ _synchronize({
                 isTestnet: model.isTestnet,
                 electrumUrls: [connection.url],
                 validateDomain: connection.validateDomain,
-                databaseRootPath: path.join(
+                databaseRootPath: p.join(
                   (await getApplicationDocumentsDirectory()).path,
                   model.hexId,
                 ),
