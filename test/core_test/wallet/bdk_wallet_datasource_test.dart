@@ -30,6 +30,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -420,6 +421,31 @@ void main() {
     ]);
     expect(lookups, ['requested', 'prevout', 'missing', 'unknown']);
     expect(missingTransactions, isEmpty);
+  });
+
+  test('a finished discovery does not satisfy the next one', () async {
+    final datasource = BdkWalletDatasource();
+    const unreachable = ElectrumConnection(
+      url: 'tcp://127.0.0.1:1',
+      retry: 0,
+      timeout: 1,
+      stopGap: 20,
+      validateDomain: false,
+      isCustom: true,
+    );
+    Future<void> discover() => datasource
+        .sync(
+          wallet: walletModel,
+          electrumServer: unreachable,
+          discoverHistory: true,
+        )
+        .catchError((Object _) {});
+
+    await discover();
+    await discover();
+
+    expect(datasource.syncExecutions[walletModel.id], 2);
+    expect(datasource.isWalletSyncing(), isFalse);
   });
 
   test('scans the stop gap for a new chain or an explicit discovery', () {

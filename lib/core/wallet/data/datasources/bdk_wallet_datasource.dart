@@ -66,7 +66,8 @@ class BdkWalletDatasource {
 
   bool isWalletSyncing({String? walletId}) => walletId == null
       ? _activeSyncs.isNotEmpty
-      : _activeSyncs.containsKey(walletId);
+      : _activeSyncs.containsKey(walletId) ||
+            _activeSyncs.containsKey(_discoveryKey(walletId));
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     return _withWallet(wallet, (bdkWallet) {
@@ -93,7 +94,7 @@ class BdkWalletDatasource {
     // TODO: to avoid spamming the terminal with recurring prints
     // debugPrint('Sync requested for wallet: ${wallet.id}');
     // A discovery never joins a routine sync: it must scan the stop gap.
-    final activeKey = discoverHistory ? '${wallet.id}:discover' : wallet.id;
+    final activeKey = discoverHistory ? _discoveryKey(wallet.id) : wallet.id;
     return _activeSyncs.putIfAbsent(activeKey, () async {
       try {
         // debugPrint('New sync started for wallet: ${wallet.id}');
@@ -135,7 +136,7 @@ class BdkWalletDatasource {
         // Do not await this, as it is not necessary and can cause deadlocks
         // since it returns the Future from the map.
         // ignore: unawaited_futures
-        _activeSyncs.remove(wallet.id);
+        _activeSyncs.remove(activeKey);
       }
     });
   }
@@ -940,6 +941,8 @@ class BdkWalletDatasource {
 }
 
 String _scriptKey(List<int> bytes) => bytes.join(',');
+
+String _discoveryKey(String walletId) => '$walletId:discover';
 
 void _disposeBdkDescriptor(bdk.Descriptor? descriptor) => descriptor?.dispose();
 
