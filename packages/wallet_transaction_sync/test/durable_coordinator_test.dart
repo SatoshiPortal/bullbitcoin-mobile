@@ -1160,6 +1160,65 @@ void main() {
     },
   );
 
+  test('closing its session early keeps the source exclusive', () async {
+    const key = WalletSourceKey('live-early-close', 'bitcoin', 'testnet');
+    final events = <String>[];
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+    );
+    final first = coordinator.runExclusive(
+      key,
+      (session) async {
+        events.add('first start');
+        await session.close();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        events.add('first end');
+      },
+      timeout: null,
+      kind: WalletOperationKind.synchronize,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    final second = DurableWalletSourceOperationCoordinator(databasePath: path)
+        .runExclusive(
+          key,
+          (_) async => events.add('second start'),
+          timeout: null,
+          kind: WalletOperationKind.synchronize,
+        );
+
+    await Future.wait([first, second]);
+    expect(events, ['first start', 'first end', 'second start']);
+  });
+
+  test(
+    'repeated operations do not leak file descriptors',
+    () async {
+      int openDescriptors() => Directory('/proc/self/fd').listSync().length;
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      Future<void> operation(int index) => coordinator.runExclusive(
+        WalletSourceKey('fd-$index', 'bitcoin', 'testnet'),
+        (_) async {},
+        timeout: null,
+        kind: index.isEven
+            ? WalletOperationKind.synchronize
+            : WalletOperationKind.refresh,
+      );
+      for (var index = 0; index < 4; index++) {
+        await operation(index);
+      }
+      final before = openDescriptors();
+
+      for (var index = 0; index < 60; index++) {
+        await operation(index);
+      }
+
+      expect(openDescriptors() - before, lessThan(5));
+    },
+    skip: Directory('/proc/self/fd').existsSync() ? false : 'needs procfs',
+  );
+
   test('dead workers release their locks and close their sessions', () async {
     final dying = DurableWalletSourceOperationCoordinator(
       databasePath: path,
