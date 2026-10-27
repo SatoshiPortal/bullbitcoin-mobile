@@ -90,12 +90,7 @@ final class WalletTransactionSyncBackgroundTask {
       chain: chain,
       maxJobs: maxJobsPerRun,
     );
-    final jobsById = {
-      for (final job in eligibleJobs)
-        _hash(
-          '${job.key.walletId}\u0000${job.key.chain.trim().toLowerCase()}\u0000${job.key.network.trim().toLowerCase()}',
-        ): job,
-    };
+    final jobsByKey = {for (final job in eligibleJobs) job.key: job};
     final observations = List<NotificationTopicObservation?>.filled(
       claims.length,
       null,
@@ -106,7 +101,7 @@ final class WalletTransactionSyncBackgroundTask {
       while (nextJob < claims.length) {
         final index = nextJob++;
         final claim = claims[index];
-        final job = jobsById[claim.jobId];
+        final job = jobsByKey[claim.key];
         if (job == null) {
           retry = true;
           try {
