@@ -221,10 +221,10 @@ final class DurableWalletSourceOperationCoordinator
           'Wallet source operation completed $context caller_timeout=$callerTimedOut elapsed_ms=${stopwatch.elapsedMilliseconds}',
         );
       }
+      // The operation's outcome stands: a cleanup failure is logged above, and
+      // the operation may already have published its result.
       if (finished && !result.isCompleted) {
-        if (cleanupError != null) {
-          result.completeError(cleanupError);
-        } else if (operationError != null) {
+        if (operationError != null) {
           result.completeError(operationError, operationStack);
         } else {
           result.complete(value);

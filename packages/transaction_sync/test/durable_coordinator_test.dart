@@ -852,6 +852,38 @@ void main() {
     },
   );
 
+  test('a cleanup failure does not discard a finished operation', () async {
+    final events = <WalletCoordinationLogEvent>[];
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      logSink: events.add,
+      failReleaseCleanup: true,
+    );
+
+    expect(
+      await coordinator.runExclusive(
+        const WalletSourceKey('kept-result', 'bitcoin', 'testnet'),
+        (_) async => 2,
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      2,
+    );
+    await expectLater(
+      coordinator.runExclusive<void>(
+        const WalletSourceKey('kept-error', 'bitcoin', 'testnet'),
+        (_) => throw const FormatException('operation'),
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      throwsFormatException,
+    );
+    expect(
+      events.where((event) => event.message.contains('cleanup failed')),
+      hasLength(2),
+    );
+  });
+
   test('claim cleanup failure still releases the mutex', () async {
     var fail = true;
     final first = DurableWalletSourceOperationCoordinator(
@@ -864,7 +896,7 @@ void main() {
       },
     );
     const key = WalletSourceKey('cleanup', 'bitcoin', 'testnet');
-    await expectLater(first.runExclusive(key, (_) async {}), throwsStateError);
+    expect(await first.runExclusive(key, (_) async => 1), 1);
     final second = DurableWalletSourceOperationCoordinator(databasePath: path);
     expect(await second.runExclusive(key, (_) async => 2), 2);
   });
@@ -876,10 +908,7 @@ void main() {
       failReleaseCleanup: true,
     );
 
-    await expectLater(
-      failing.runExclusive(key, (_) async {}),
-      throwsStateError,
-    );
+    expect(await failing.runExclusive(key, (_) async => 1), 1);
 
     final later = DurableWalletSourceOperationCoordinator(
       databasePath: path,
@@ -962,11 +991,11 @@ void main() {
     await expectLater(
       coordinator.runExclusive<void>(
         const WalletSourceKey('double-failure', 'bitcoin', 'testnet'),
-        (_) => throw Exception('operation-secret'),
+        (_) => throw const FormatException('operation-secret'),
         kind: WalletOperationKind.synchronize,
         timeout: null,
       ),
-      throwsStateError,
+      throwsFormatException,
     );
 
     final warnings = events
@@ -1029,7 +1058,7 @@ void main() {
     },
   );
 
-  test('an actor exit fails the operation without hanging release', () async {
+  test('an actor exit keeps a finished operation without hanging', () async {
     final coordinator = DurableWalletSourceOperationCoordinator(
       databasePath: path,
       killWorkerAfterReady: true,
@@ -1038,20 +1067,21 @@ void main() {
       const WalletSourceKey('dead-worker', 'bitcoin', 'testnet'),
       (_) async {
         await Future<void>.delayed(const Duration(milliseconds: 20));
+        return 3;
       },
       timeout: null,
       kind: WalletOperationKind.synchronize,
     );
 
-    await expectLater(
-      Future.any<void>([
+    expect(
+      await Future.any<int>([
         operation,
-        Future<void>.delayed(
+        Future<int>.delayed(
           const Duration(seconds: 2),
           () => throw TimeoutException('dead actor did not settle'),
         ),
       ]),
-      throwsA(isA<StateError>()),
+      3,
     );
   });
 
