@@ -811,7 +811,9 @@ Future<void> _workerMain(List<Object?> args) async {
   final request = args[16] as String;
   final lockOwner = args[18] as SendPort;
   // Owned and closed by the caller; kept referenced so no finalizer closes
-  // them before this isolate exits.
+  // them before this isolate exits. sqlite3's dispose finalizer is a Dart
+  // `Finalizer`, which runs only in the isolate that attached it, never after
+  // that isolate has exited: the caller's close is the only close.
   final lockConnections = [
     for (final address in (args[17] as List).cast<int>())
       sqlite3.fromPointer(Pointer<Void>.fromAddress(address)),
