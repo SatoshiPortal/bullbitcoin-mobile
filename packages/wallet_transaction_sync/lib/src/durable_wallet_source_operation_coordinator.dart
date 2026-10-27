@@ -41,6 +41,8 @@ final class DurableWalletSourceOperationCoordinator
   final bool failReleaseCleanup;
   @visibleForTesting
   final bool killWorkerAfterReady;
+  @visibleForTesting
+  final bool killWorkerBeforeReady;
 
   DurableWalletSourceOperationCoordinator({
     required this.databasePath,
@@ -54,6 +56,7 @@ final class DurableWalletSourceOperationCoordinator
     @visibleForTesting this.workerInitializationDelay = Duration.zero,
     @visibleForTesting this.failReleaseCleanup = false,
     @visibleForTesting this.killWorkerAfterReady = false,
+    @visibleForTesting this.killWorkerBeforeReady = false,
   }) : lockDirectoryPath =
            lockDirectoryPath ??
            '${File(databasePath).parent.path}/wallet-source-locks' {
@@ -136,6 +139,7 @@ final class DurableWalletSourceOperationCoordinator
         workerInitializationDelay: workerInitializationDelay,
         failReleaseCleanup: failReleaseCleanup,
         killWorkerAfterReady: killWorkerAfterReady,
+        killWorkerBeforeReady: killWorkerBeforeReady,
       );
     } catch (error) {
       _emitLog(
@@ -187,6 +191,8 @@ final class DurableWalletSourceOperationCoordinator
       finished = true;
     } finally {
       timer?.cancel();
+      // Only now has the callback settled: a dead worker's locks may go.
+      actor.endOperation();
       Object? cleanupError;
       try {
         beforeClaimRelease?.call();
@@ -344,14 +350,7 @@ final class _DurableActor {
   bool _closed = false;
   Object? _terminalError;
 
-  /// Native addresses of the worker's key and slot connections. The caller
-  /// alone closes them, once the worker has exited and the operation has
-  /// ended: a worker killed mid-operation must not free the source early, and
-  /// one killed before closing them must not leave them locked forever.
-  final List<int> _lockHandles;
-  bool _workerExited = false;
-  bool _operationEnded = false;
-  bool _locksClosed = false;
+  final _LockOwner _locks;
 
   _DurableActor(
     this._port,
@@ -360,7 +359,7 @@ final class _DurableActor {
     this._isolate,
     this._exitPort,
     this.claim,
-    this._lockHandles,
+    this._locks,
   ) {
     _responses.listen((message) {
       if (message is! List || message.length < 3) return;
@@ -373,27 +372,14 @@ final class _DurableActor {
       }
     });
     _exitPort.listen((_) {
-      _workerExited = true;
-      _exitPort.close();
       _markTerminal(StateError('Wallet source coordination worker exited'));
-      _closeLocksWhenSettled();
     });
   }
 
   bool get isTerminal => _closed;
 
-  void _closeLocksWhenSettled() {
-    if (_locksClosed || !_workerExited || !_operationEnded) return;
-    _locksClosed = true;
-    for (final address in _lockHandles) {
-      try {
-        // Closing rolls back the held transaction, which releases the lock.
-        sqlite3.fromPointer(Pointer<Void>.fromAddress(address)).dispose();
-      } catch (_) {
-        // The process keeps the lock until it exits, as before.
-      }
-    }
-  }
+  /// Called by the coordinator once the operation callback has settled.
+  void endOperation() => _locks.endOperation();
 
   static Future<_DurableActor> start({
     required String databasePath,
@@ -409,6 +395,7 @@ final class _DurableActor {
     required Duration workerInitializationDelay,
     required bool failReleaseCleanup,
     required bool killWorkerAfterReady,
+    required bool killWorkerBeforeReady,
   }) async {
     final registrationKey = '$databasePath\u0000$keyHash';
     final previousRegistration =
@@ -420,6 +407,7 @@ final class _DurableActor {
     final responses = ReceivePort();
     final exitPort = ReceivePort();
     final handshakeExit = ReceivePort();
+    final locks = _LockOwner(databasePath, busyTimeout.inMilliseconds);
     final responseStream = responses.asBroadcastStream();
     final ready = Completer<List<Object?>>();
     late final Isolate isolate;
@@ -440,11 +428,14 @@ final class _DurableActor {
         failReleaseCleanup,
         responses.sendPort,
         killWorkerAfterReady,
+        killWorkerBeforeReady,
+        locks.exitPort.sendPort,
       ]);
     } catch (_) {
       responses.close();
       exitPort.close();
       handshakeExit.close();
+      locks.exitPort.close();
       if (!registered.isCompleted) registered.complete();
       if (identical(_registrationTails[registrationKey], registrationTail)) {
         _registrationTails.remove(registrationKey);
@@ -453,6 +444,7 @@ final class _DurableActor {
     }
     isolate.addOnExitListener(exitPort.sendPort);
     isolate.addOnExitListener(handshakeExit.sendPort);
+    isolate.addOnExitListener(locks.exitPort.sendPort);
     late StreamSubscription<Object?> subscription;
     final handshakeExitSubscription = handshakeExit.listen((_) {
       if (!ready.isCompleted) {
@@ -497,7 +489,7 @@ final class _DurableActor {
           kind: kind,
           priority: priority,
         ),
-        (data[4] as List).cast<int>(),
+        locks,
       );
       await handshakeExitSubscription.cancel();
       handshakeExit.close();
@@ -515,6 +507,8 @@ final class _DurableActor {
       if (identical(_registrationTails[registrationKey], registrationTail)) {
         _registrationTails.remove(registrationKey);
       }
+      // No operation ran: the locks go as soon as the worker is gone.
+      locks.endOperation();
       isolate.kill(priority: Isolate.immediate);
       rethrow;
     }
@@ -523,8 +517,6 @@ final class _DurableActor {
   Future<void> setRetired(bool retired) =>
       _command('retire', retired).then((_) {});
   Future<void> release() async {
-    _operationEnded = true;
-    _closeLocksWhenSettled();
     if (_closed) {
       if (_terminalError case final error?) throw error;
       return;
@@ -532,6 +524,7 @@ final class _DurableActor {
     Object? error;
     try {
       await _command('release');
+      _locks.requestCleaned();
     } catch (caught) {
       error = caught;
     }
@@ -572,6 +565,82 @@ final class _DurableActor {
     _terminalError = error;
     _failPending(error ?? StateError('Wallet source actor closed'));
     _receivePort.close();
+    _exitPort.close();
+  }
+}
+
+/// Owns the closing of a worker's lock connections. The worker announces each
+/// one before it can hold a lock and never closes them; they are closed once
+/// the worker has exited and the operation has settled, so a dead worker can
+/// neither keep the locks forever nor free them while its operation runs.
+final class _LockOwner {
+  final String _databasePath;
+  final int _busy;
+  final List<int> addresses = [];
+  final ReceivePort exitPort = ReceivePort();
+  String? _request;
+  bool _requestCleaned = false;
+  bool _workerExited = false;
+  bool _operationEnded = false;
+  bool _closed = false;
+
+  /// The worker announces its connections on this port, which also receives
+  /// its exit: one port keeps every announcement ahead of the exit.
+  _LockOwner(this._databasePath, this._busy) {
+    exitPort.listen((message) {
+      if (message is List && message.length == 2 && message[0] == 'lock') {
+        addresses.add(message[1] as int);
+        return;
+      }
+      if (message is List && message.length == 2 && message[0] == 'request') {
+        _request = message[1] as String;
+        return;
+      }
+      _workerExited = true;
+      exitPort.close();
+      _closeWhenSettled();
+    });
+  }
+
+  void endOperation() {
+    _operationEnded = true;
+    _closeWhenSettled();
+  }
+
+  /// The worker removed its own request during a normal release.
+  void requestCleaned() => _requestCleaned = true;
+
+  void _closeWhenSettled() {
+    if (_closed || !_workerExited || !_operationEnded) return;
+    _closed = true;
+    // A request left pending by a dead worker would head the shared queue and
+    // hold back every wallet until its heartbeat expires. Removed off this
+    // isolate, which may be the UI's, and never recreating a deleted database.
+    if (_request case final request? when !_requestCleaned) {
+      final path = _databasePath;
+      final busy = _busy;
+      unawaited(
+        Isolate.run(() {
+          final db = sqlite3.open(path, mode: OpenMode.readWrite);
+          try {
+            db.execute('PRAGMA busy_timeout = $busy');
+            db.execute('DELETE FROM requests WHERE request_token=?', [request]);
+          } finally {
+            db.dispose();
+          }
+        }).catchError((Object _) {
+          // The heartbeat timeout removes it later.
+        }),
+      );
+    }
+    for (final address in addresses) {
+      try {
+        // Closing rolls back a held transaction, which releases the lock.
+        sqlite3.fromPointer(Pointer<Void>.fromAddress(address)).dispose();
+      } catch (_) {
+        // The process keeps the lock until it exits, as before.
+      }
+    }
   }
 }
 
@@ -612,6 +681,8 @@ Future<void> _workerMain(List<Object?> args) async {
   final initializationDelay = args[11] as int;
   final failReleaseCleanup = args[12] as bool;
   final killWorkerAfterReady = args[14] as bool;
+  final killWorkerBeforeReady = args[15] as bool;
+  final lockOwner = args[16] as SendPort;
   final request = _token();
   final commands = ReceivePort();
   ReceivePort? registrationReply;
@@ -621,22 +692,10 @@ Future<void> _workerMain(List<Object?> args) async {
   var readySent = false;
   String? failedAdmissionCategory;
   var awaitingTermination = false;
-  // Once the caller knows these connections it owns their closing: here they
-  // are only rolled back, which frees the locks, and kept referenced so no
-  // finalizer closes them before this isolate exits.
+  // The caller closes the lock connections; here they are only rolled back,
+  // which frees the locks.
   void closeLocks() {
-    final handedOver = readySent;
-    _bestEffortCleanup(
-      dbPath,
-      busy,
-      hash,
-      request,
-      claim,
-      mutex,
-      slot,
-      close: !handedOver,
-    );
-    if (handedOver) _handedOverLocks.addAll([?mutex, ?slot]);
+    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
     mutex = null;
     slot = null;
   }
@@ -661,6 +720,7 @@ Future<void> _workerMain(List<Object?> args) async {
         [request, hash, args[8], args[9], 'pending', _now(), _now()],
       ),
     );
+    lockOwner.send(['request', request]);
     out.send(['registered']);
     if (initializationDelay > 0) {
       sleep(Duration(milliseconds: initializationDelay));
@@ -675,11 +735,19 @@ Future<void> _workerMain(List<Object?> args) async {
       acquisition,
       maxActiveSynchronizations,
       args[8] as String,
+      announce: (db) {
+        _handedOverLocks.add(db);
+        lockOwner.send(['lock', db.handle.address]);
+      },
     );
     final keyLock = acquired.key;
     final slotLock = acquired.slot;
     mutex = keyLock;
     slot = slotLock;
+    if (killWorkerBeforeReady) {
+      Isolate.current.kill(priority: Isolate.immediate);
+      return;
+    }
     claim = _activate(
       dbPath,
       busy,
@@ -689,13 +757,7 @@ Future<void> _workerMain(List<Object?> args) async {
       args[9] as String,
       args[10] as bool,
     );
-    out.send([
-      'ready',
-      commands.sendPort,
-      claim.generation,
-      claim.ownerToken,
-      [keyLock.handle.address, ?slotLock?.handle.address],
-    ]);
+    out.send(['ready', commands.sendPort, claim.generation, claim.ownerToken]);
     readySent = true;
     if (killWorkerAfterReady) {
       Isolate.current.kill(priority: Isolate.immediate);
@@ -765,8 +827,8 @@ Future<void> _workerMain(List<Object?> args) async {
   }
 }
 
-/// Connections whose closing belongs to the caller, kept alive until this
-/// worker isolate exits.
+/// Lock connections whose closing belongs to the caller, kept referenced so
+/// no finalizer closes them before this worker isolate exits.
 final List<Database> _handedOverLocks = [];
 
 void _bestEffortCleanup(
@@ -776,9 +838,8 @@ void _bestEffortCleanup(
   String request,
   WalletSourceClaim? claim,
   Database? mutex,
-  Database? slot, {
-  required bool close,
-}) {
+  Database? slot,
+) {
   try {
     if (claim != null) {
       _central(
@@ -803,21 +864,11 @@ void _bestEffortCleanup(
     try {
       slot.execute('ROLLBACK');
     } catch (_) {}
-    if (close) {
-      try {
-        slot.dispose();
-      } catch (_) {}
-    }
   }
   if (mutex != null) {
     try {
       mutex.execute('ROLLBACK');
     } catch (_) {}
-    if (close) {
-      try {
-        mutex.dispose();
-      } catch (_) {}
-    }
   }
 }
 
@@ -905,14 +956,36 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   int stale,
   int? timeout,
   int capacity,
-  String kind,
-) {
+  String kind, {
+  required void Function(Database) announce,
+}) {
   final deadline = timeout == null
       ? null
       : DateTime.now().add(Duration(milliseconds: timeout));
   final global =
       kind == WalletOperationKind.synchronize.name ||
       kind == WalletOperationKind.discover.name;
+  // Each lock connection is opened once and announced before it can hold a
+  // lock; attempts reuse it with BEGIN IMMEDIATE and ROLLBACK.
+  Database open(String file) {
+    final db = sqlite3.open(file);
+    announce(db);
+    db.execute('PRAGMA busy_timeout = $busy');
+    return db;
+  }
+
+  final key = open('$locks/$hash.sqlite');
+  final slots = [
+    if (global)
+      for (var index = 0; index < capacity; index++)
+        open('$locks/synchronization-slot-$index.sqlite'),
+  ];
+  void rollback(Database db) {
+    try {
+      db.execute('ROLLBACK');
+    } catch (_) {}
+  }
+
   while (true) {
     if (deadline != null && !DateTime.now().isBefore(deadline)) {
       _central(
@@ -925,57 +998,34 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
       );
       throw TimeoutException('Wallet source admission timed out');
     }
-    final admitted = _admit(central, busy, hash, request, stale, global);
-    if (admitted) {
-      final db = sqlite3.open('$locks/$hash.sqlite');
-      db.execute('PRAGMA busy_timeout = $busy');
+    if (_admit(central, busy, hash, request, stale, global)) {
+      Database? slot;
       try {
-        db.execute('BEGIN IMMEDIATE');
-        if (!_admit(central, busy, hash, request, stale, global)) {
-          db.execute('ROLLBACK');
-          db.dispose();
-          continue;
-        }
-        if (kind == WalletOperationKind.synchronize.name ||
-            kind == WalletOperationKind.discover.name) {
-          final slot = _tryAcquireSlot(locks, busy, capacity);
-          if (slot == null) {
-            db.execute('ROLLBACK');
-            db.dispose();
-            continue;
+        key.execute('BEGIN IMMEDIATE');
+        if (_admit(central, busy, hash, request, stale, global)) {
+          if (!global) return (key: key, slot: null);
+          slot = _tryAcquireSlot(slots);
+          if (slot != null &&
+              _admit(central, busy, hash, request, stale, global)) {
+            return (key: key, slot: slot);
           }
-          if (!_admit(central, busy, hash, request, stale, global)) {
-            slot.execute('ROLLBACK');
-            slot.dispose();
-            db.execute('ROLLBACK');
-            db.dispose();
-            continue;
-          }
-          return (key: db, slot: slot);
         }
-        return (key: db, slot: null);
       } catch (error) {
-        db.dispose();
-        if (error is! SqliteException ||
-            (error.resultCode != SqlError.SQLITE_BUSY &&
-                error.resultCode != SqlError.SQLITE_LOCKED)) {
-          rethrow;
-        }
+        if (!_isRetryable(error)) rethrow;
       }
+      if (slot != null) rollback(slot);
+      rollback(key);
     }
     sleep(const Duration(milliseconds: 20));
   }
 }
 
-Database? _tryAcquireSlot(String locks, int busy, int capacity) {
-  for (var index = 0; index < capacity; index++) {
-    final db = sqlite3.open('$locks/synchronization-slot-$index.sqlite');
-    db.execute('PRAGMA busy_timeout = $busy');
+Database? _tryAcquireSlot(List<Database> slots) {
+  for (final db in slots) {
     try {
       db.execute('BEGIN IMMEDIATE');
       return db;
     } catch (error) {
-      db.dispose();
       if (!_isRetryable(error)) rethrow;
     }
   }

@@ -1090,6 +1090,76 @@ void main() {
     },
   );
 
+  test(
+    'workers killed while holding locks before ready release them',
+    () async {
+      final dying = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        killWorkerBeforeReady: true,
+      );
+      Future<void> admitAndDie(String wallet) => dying
+          .runExclusive(
+            WalletSourceKey(wallet, 'bitcoin', 'testnet'),
+            (_) async {},
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          )
+          .catchError((Object _) {});
+      await Future.wait([admitAndDie('first'), admitAndDie('second')]);
+
+      await expectLater(
+        DurableWalletSourceOperationCoordinator(
+          databasePath: path,
+          acquisitionTimeout: const Duration(seconds: 3),
+        ).runExclusive(
+          // Another wallet: both synchronization slots must be free again.
+          const WalletSourceKey('third', 'bitcoin', 'testnet'),
+          (_) async {},
+          timeout: null,
+          kind: WalletOperationKind.synchronize,
+        ),
+        completes,
+      );
+    },
+  );
+
+  test(
+    'closing its session early does not free a dead worker source',
+    () async {
+      const key = WalletSourceKey('early-close', 'bitcoin', 'testnet');
+      final events = <String>[];
+      final dying = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        killWorkerAfterReady: true,
+      );
+      final first = dying
+          .runExclusive(
+            key,
+            (session) async {
+              events.add('first start');
+              await Future<void>.delayed(const Duration(milliseconds: 100));
+              await session.close().catchError((Object _) {});
+              await Future<void>.delayed(const Duration(milliseconds: 300));
+              events.add('first end');
+            },
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          )
+          .catchError((Object _) {});
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      final second = DurableWalletSourceOperationCoordinator(databasePath: path)
+          .runExclusive(
+            key,
+            (_) async => events.add('second start'),
+            timeout: null,
+            kind: WalletOperationKind.synchronize,
+          );
+
+      await Future.wait([first, second]);
+      expect(events, ['first start', 'first end', 'second start']);
+    },
+  );
+
   test('dead workers release their locks and close their sessions', () async {
     final dying = DurableWalletSourceOperationCoordinator(
       databasePath: path,
