@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   workmanager: ^0.10.9
-  wallet_transaction_sync:
+  transaction_sync:
   notifications:
   bull_logger:
   crypto: ^3.0.7

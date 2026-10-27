@@ -24,7 +24,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show
         WalletNetworkKey,
         WalletOperationKind,

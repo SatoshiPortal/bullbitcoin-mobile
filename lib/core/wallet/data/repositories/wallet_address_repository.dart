@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletAddressRepository {

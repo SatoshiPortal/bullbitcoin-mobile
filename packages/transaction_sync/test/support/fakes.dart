@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 const testKey = WalletNetworkKey('w', 'bitcoin', 'testnet');
 

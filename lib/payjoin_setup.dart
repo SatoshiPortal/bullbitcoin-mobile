@@ -16,7 +16,7 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:bb_mobile/recoverable_payjoin.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show WalletSourceOperationCoordinator;
 
 const payjoinDatabaseFilename = 'payjoin.sqlite';

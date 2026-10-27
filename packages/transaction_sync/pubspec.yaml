@@ -1,4 +1,4 @@
-name: wallet_transaction_sync
+name: transaction_sync
 description: Local-source-first wallet transaction synchronization contracts.
 publish_to: "none"
 version: 0.1.0

@@ -19,7 +19,7 @@ const _metadataGate = WalletSourceKey(
   'sqlite',
   'v2',
 );
-const _metadataTestZoneKey = 'wallet_transaction_sync.metadata_test_config';
+const _metadataTestZoneKey = 'transaction_sync.metadata_test_config';
 
 /// Durable metadata storage. Its SQLite connection never exists in the caller isolate.
 final class SqliteWalletSyncMetadataStore implements WalletSyncMetadataPort {

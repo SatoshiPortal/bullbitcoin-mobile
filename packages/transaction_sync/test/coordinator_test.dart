@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
   test(

@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {

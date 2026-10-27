@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:test/test.dart';
-import 'package:wallet_transaction_sync/src/data/lwk/lwk_wallet_transaction_mapper.dart';
-import 'package:wallet_transaction_sync/src/data/lwk/lwk_wallet_transaction_source.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/src/data/lwk/lwk_wallet_transaction_mapper.dart';
+import 'package:transaction_sync/src/data/lwk/lwk_wallet_transaction_source.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 class _PublicValue implements lwk.TxOutSecrets {
   @override

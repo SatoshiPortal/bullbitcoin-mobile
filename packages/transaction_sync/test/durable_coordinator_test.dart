@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'package:crypto/crypto.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
   late Directory directory;

@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 import 'support/fakes.dart';
 

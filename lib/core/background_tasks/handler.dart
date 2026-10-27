@@ -21,7 +21,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 const _backgroundWalletSyncConcurrency = 2;
 

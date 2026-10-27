@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:wallet_transaction_sync/bdk_electrum_cache.dart';
+import 'package:transaction_sync/bdk_electrum_cache.dart';
 
 class BdkFacade {
   // Standard lookahead value for address discovery

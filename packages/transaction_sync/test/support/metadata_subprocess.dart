@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
-import 'package:wallet_transaction_sync/src/testing/sqlite_wallet_sync_metadata_store_test_support.dart';
+import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/src/testing/sqlite_wallet_sync_metadata_store_test_support.dart';
 
 Future<void> main(List<String> args) async {
   final path = args[0];

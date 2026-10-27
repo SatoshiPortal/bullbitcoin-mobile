@@ -22,7 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show
         InMemoryWalletSourceOperationCoordinator,
         WalletNetworkKey,

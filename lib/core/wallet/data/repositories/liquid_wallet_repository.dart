@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 class LiquidWalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;

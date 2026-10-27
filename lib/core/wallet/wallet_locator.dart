@@ -42,7 +42,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show
         DurableWalletSourceOperationCoordinator,
         SqliteWalletSyncMetadataStore,

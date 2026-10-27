@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_i
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show InMemoryWalletSourceOperationCoordinator, WalletSourceKey;
 
 class _MockWalletMetadataDatasource extends Mock

@@ -1,6 +1,6 @@
 # Wallet Transaction Sync
 
-`wallet_transaction_sync` is the application-internal boundary for Bitcoin and Liquid transaction synchronization, source-local reconstruction, freshness evidence, and immutable process-local transaction snapshots.
+`transaction_sync` is the application-internal boundary for Bitcoin and Liquid transaction synchronization, source-local reconstruction, freshness evidence, and immutable process-local transaction snapshots.
 
 ## Ownership
 
@@ -40,7 +40,7 @@ WalletTransactionSyncFacade
   -> authoritative persisted SDK state
 ```
 
-The public library is `lib/wallet_transaction_sync.dart`. Domain entities, requests, failures, states, ports, the coordinator, and the facade are public. Repository implementations, the snapshot store, SDK mappers, and SDK source adapters remain under `lib/src/`.
+The public library is `lib/transaction_sync.dart`. Domain entities, requests, failures, states, ports, the coordinator, and the facade are public. Repository implementations, the snapshot store, SDK mappers, and SDK source adapters remain under `lib/src/`.
 
 SDK types are confined to `src/data/bdk/` and `src/data/lwk/`; they never cross the repository or facade boundary. The separate `lib/bdk_electrum_cache.dart` library exposes `BdkElectrumCache` to the application's legacy BDK sync until that sync runs behind the facade; it takes SDK types by design and is not part of the facade contract.
 

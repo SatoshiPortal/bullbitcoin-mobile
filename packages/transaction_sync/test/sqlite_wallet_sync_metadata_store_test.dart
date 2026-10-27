@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
-import 'package:wallet_transaction_sync/src/testing/sqlite_wallet_sync_metadata_store_test_support.dart';
+import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/src/testing/sqlite_wallet_sync_metadata_store_test_support.dart';
 
 void main() {
   late Directory directory;
@@ -474,10 +474,9 @@ void main() {
       'wts-process-barrier-',
     );
     final packageConfig = _packageConfigPath();
-    final packageRoot =
-        Directory.current.path.endsWith('wallet_transaction_sync')
+    final packageRoot = Directory.current.path.endsWith('transaction_sync')
         ? Directory.current.path
-        : '${Directory.current.path}/packages/wallet_transaction_sync';
+        : '${Directory.current.path}/packages/transaction_sync';
     final script = '$packageRoot/test/support/metadata_subprocess.dart';
     try {
       final processes = await Future.wait([

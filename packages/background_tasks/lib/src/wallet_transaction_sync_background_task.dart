@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 import 'background_task_execution_result.dart';
 import 'sqlite_wallet_sync_job_queue.dart';

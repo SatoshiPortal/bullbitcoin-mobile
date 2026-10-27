@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show WalletOperationKind, WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
