@@ -11,6 +11,8 @@ import 'domain/wallet_transaction_sync_state.dart';
 import 'domain/ports/wallet_transaction_source_port.dart';
 import 'domain/ports/wallet_sync_metadata_port.dart';
 import 'wallet_source_operation_coordinator.dart';
+import 'durable_wallet_source_operation_coordinator.dart'
+    show WalletCoordinationLogSink;
 import 'domain/usecases/synchronize_wallet_usecase.dart';
 import 'domain/usecases/discover_wallet_history_usecase.dart';
 import 'domain/usecases/refresh_local_snapshot_usecase.dart';
@@ -58,8 +60,9 @@ class WalletTransactionSyncFacade {
     required WalletSyncMetadataPort metadata,
     required WalletSourceOperationCoordinator coordinator,
     DateTime Function()? now,
+    WalletCoordinationLogSink? logSink,
   }) => WalletTransactionSyncFacade(
-    source: BdkWalletTransactionSource(),
+    source: BdkWalletTransactionSource(logSink: logSink),
     metadata: metadata,
     coordinator: coordinator,
     now: now,
@@ -69,8 +72,9 @@ class WalletTransactionSyncFacade {
     required WalletSyncMetadataPort metadata,
     required WalletSourceOperationCoordinator coordinator,
     DateTime Function()? now,
+    WalletCoordinationLogSink? logSink,
   }) => WalletTransactionSyncFacade(
-    source: LwkWalletTransactionSource(),
+    source: LwkWalletTransactionSource(logSink: logSink),
     metadata: metadata,
     coordinator: coordinator,
     now: now,

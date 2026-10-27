@@ -10,12 +10,22 @@ import '../../domain/wallet_source_configuration.dart';
 import '../../domain/wallet_network_key.dart';
 import '../../domain/wallet_source_registration.dart';
 import '../../domain/wallet_transaction_sync_failure.dart';
+import '../../durable_wallet_source_operation_coordinator.dart'
+    show
+        WalletCoordinationLogEvent,
+        WalletCoordinationLogLevel,
+        WalletCoordinationLogSink;
 import '../../wallet_source_session.dart';
 import 'bdk_electrum_cache.dart';
 import 'bdk_wallet_transaction_mapper.dart';
 
 final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
   final Map<WalletNetworkKey, BdkElectrumConfiguration> _configurations = {};
+
+  /// Receives one line per scan and per failed server, without identifiers.
+  final WalletCoordinationLogSink? _logSink;
+
+  BdkWalletTransactionSource({this._logSink});
 
   @override
   Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
@@ -66,6 +76,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     _configurations[registration.key] = configuration;
     final file = File(configuration.databaseFilePath);
     await file.parent.create(recursive: true);
+    final stopwatch = Stopwatch()..start();
     try {
       final open = await _open(registration, configuration, file, create: true);
       final wallet = open.wallet;
@@ -74,7 +85,15 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
       try {
         // A wallet that never synced has revealed nothing yet: only a full
         // scan finds its history, like the app's first sync.
-        final fullScan = discover || wallet.latestCheckpoint().height <= 0;
+        final firstSync = wallet.latestCheckpoint().height <= 0;
+        final fullScan = discover || firstSync;
+        final reason = discover
+            ? 'discovery'
+            : firstSync
+            ? 'first_sync'
+            : 'routine';
+        BdkElectrumCachePrefill? prefill;
+        var attempt = 0;
         final baselineTxids = mapBdkTransactions(
           wallet,
         ).map((transaction) => transaction.txid).toSet();
@@ -82,6 +101,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
         // to the next URL. Nothing has been applied to the wallet yet.
         bdk.Update? update;
         for (final url in configuration.electrumUrls) {
+          attempt++;
           bdk.ElectrumClient? client;
           try {
             // The constructor itself opens the connection; it must sit
@@ -94,7 +114,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               retry: configuration.retry,
               validateDomain: configuration.validateDomain,
             );
-            cache?.prefill(client, wallet);
+            prefill = cache?.prefill(client, wallet);
             if (fullScan) {
               final requestBuilder = wallet.startFullScan();
               try {
@@ -133,13 +153,24 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
             syncedClient = client;
             client = null;
             break;
-          } catch (_) {
+          } catch (error) {
             // Connection-level failure: try the next configured server.
+            _log(
+              WalletCoordinationLogLevel.warning,
+              'BDK source server failed attempt=$attempt/'
+              '${configuration.electrumUrls.length} '
+              'error=${error.runtimeType} elapsed_ms=${stopwatch.elapsedMilliseconds}',
+            );
           } finally {
             client?.dispose();
           }
         }
         if (update == null) {
+          _log(
+            WalletCoordinationLogLevel.warning,
+            'BDK source unavailable servers=${configuration.electrumUrls.length} '
+            'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+          );
           return const Err(SourceFailure(SourceFailureReason.unavailable));
         }
 
@@ -152,14 +183,25 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
             // (false simply means nothing was staged); persistence FAILURES
             // throw.
             wallet.persist(persister: open.persister);
-          } catch (_) {
+          } catch (error) {
             // Local storage refused the update; nothing is wrong with the
             // source, so a later attempt can succeed.
+            _log(
+              WalletCoordinationLogLevel.warning,
+              'BDK source storage failed error=${error.runtimeType}',
+            );
             return const Err(SourceStorageFailure());
           }
-          if (syncedClient != null) {
-            cache?.rememberParents(syncedClient, wallet);
-          }
+          final remembered = syncedClient == null
+              ? null
+              : cache?.rememberParents(syncedClient, wallet);
+          _log(
+            WalletCoordinationLogLevel.fine,
+            'BDK source sync mode=${fullScan ? 'full_scan' : 'revealed'} '
+            'reason=$reason server_attempt=$attempt '
+            '${BdkElectrumCache.describe(opened: cache != null, rebuilt: cache?.rebuilt ?? false, prefill: prefill, parents: remembered)} '
+            'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+          );
           return Ok(
             WalletSourceSyncObservation(
               observation: mapBdkObservation(
@@ -171,7 +213,11 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               baselineTxids: baselineTxids,
             ),
           );
-        } catch (_) {
+        } catch (error) {
+          _log(
+            WalletCoordinationLogLevel.warning,
+            'BDK source mapping failed error=${error.runtimeType}',
+          );
           return const Err(
             ExtractionFailure(safeMessage: 'mapping the source state failed'),
           );
@@ -184,6 +230,10 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
         open.dispose();
       }
     } catch (error) {
+      _log(
+        WalletCoordinationLogLevel.warning,
+        'BDK source load failed error=${error.runtimeType}',
+      );
       return Err(_loadFailure(file, error));
     }
   }
@@ -271,6 +321,14 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     } finally {
       internal?.dispose();
       external?.dispose();
+    }
+  }
+
+  void _log(WalletCoordinationLogLevel level, String message) {
+    try {
+      _logSink?.call(WalletCoordinationLogEvent(level, message));
+    } catch (_) {
+      // Logging never changes a sync result.
     }
   }
 

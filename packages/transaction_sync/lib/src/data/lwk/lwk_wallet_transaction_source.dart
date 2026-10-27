@@ -13,11 +13,21 @@ import '../../domain/wallet_network_key.dart';
 import '../../domain/wallet_source_configuration.dart';
 import '../../domain/wallet_source_registration.dart';
 import '../../domain/wallet_transaction_sync_failure.dart';
+import '../../durable_wallet_source_operation_coordinator.dart'
+    show
+        WalletCoordinationLogEvent,
+        WalletCoordinationLogLevel,
+        WalletCoordinationLogSink;
 import '../../wallet_source_session.dart';
 import 'lwk_wallet_transaction_mapper.dart';
 
 final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
   final Map<WalletNetworkKey, LwkElectrumConfiguration> _configurations = {};
+
+  /// Receives one line per scan and per failed server, without identifiers.
+  final WalletCoordinationLogSink? _logSink;
+
+  LwkWalletTransactionSource({this._logSink});
 
   @override
   Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
@@ -63,6 +73,7 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
     session.ensureOpen();
     final configuration = _configuration(registration);
     _configurations[registration.key] = configuration;
+    final stopwatch = Stopwatch()..start();
     try {
       await Directory(configuration.databaseRootPath).create(recursive: true);
       final wallet = await _open(configuration);
@@ -71,7 +82,9 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
             .map((transaction) => transaction.txid)
             .toSet();
         var synced = false;
+        var attempt = 0;
         for (final url in configuration.electrumUrls) {
+          attempt++;
           try {
             // LWK exposes one scan mode. Discovery deliberately requests that
             // same capability rather than inventing a second SDK operation.
@@ -85,21 +98,46 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
             break;
           } catch (error) {
             final incompatible = lwkStateIncompatibleFailure(error);
-            if (incompatible != null) return Err(incompatible);
+            if (incompatible != null) {
+              _log(
+                WalletCoordinationLogLevel.warning,
+                'LWK source state incompatible error=${error.runtimeType}',
+              );
+              return Err(incompatible);
+            }
             // Connection-level failure: try the next configured endpoint.
+            _log(
+              WalletCoordinationLogLevel.warning,
+              'LWK source server failed attempt=$attempt/'
+              '${configuration.electrumUrls.length} '
+              'error=${error.runtimeType} elapsed_ms=${stopwatch.elapsedMilliseconds}',
+            );
           }
         }
         if (!synced) {
+          _log(
+            WalletCoordinationLogLevel.warning,
+            'LWK source unavailable servers=${configuration.electrumUrls.length} '
+            'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+          );
           return const Err(SourceFailure(SourceFailureReason.unavailable));
         }
+        final observation = await _observation(
+          wallet,
+          registration,
+          networkOperation: true,
+          discover: discover,
+        );
+        _log(
+          WalletCoordinationLogLevel.fine,
+          'LWK source sync reason=${discover ? 'discovery' : 'routine'} '
+          'server_attempt=$attempt txs=${baselineTxids.length}->'
+          '${observation.transactions.length} '
+          'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+        );
         return Ok(
           WalletSourceSyncObservation(
-            observation: await _observation(
-              wallet,
-              registration,
-              networkOperation: true,
-              discover: discover,
-            ),
+            observation: observation,
             baselineTxids: baselineTxids,
           ),
         );
@@ -107,11 +145,24 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
         wallet.dispose();
       }
     } catch (error) {
+      _log(
+        WalletCoordinationLogLevel.warning,
+        'LWK source sync failed error=${error.runtimeType} '
+        'elapsed_ms=${stopwatch.elapsedMilliseconds}',
+      );
       final incompatible = lwkStateIncompatibleFailure(error);
       if (incompatible != null) return Err(incompatible);
       return const Err(
         ExtractionFailure(safeMessage: 'LWK wallet operation failed'),
       );
+    }
+  }
+
+  void _log(WalletCoordinationLogLevel level, String message) {
+    try {
+      _logSink?.call(WalletCoordinationLogEvent(level, message));
+    } catch (_) {
+      // Logging never changes a sync result.
     }
   }
 

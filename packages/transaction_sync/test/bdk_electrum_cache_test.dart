@@ -278,7 +278,61 @@ void main() {
       addTearDown(() => cache?.close());
 
       expect(cache, isNotNull);
+      expect(cache?.rebuilt, isTrue);
       expect(storedTxids(), isEmpty);
+    });
+
+    test('a readable sidecar is not reported as rebuilt', () {
+      final cache = BdkElectrumCache.open(path);
+      addTearDown(() => cache?.close());
+
+      expect(cache?.rebuilt, isFalse);
+    });
+
+    test('describe reports the cache state with counts only', () {
+      const prefill = (
+        transactions: 3,
+        parents: 2,
+        anchors: 1,
+        droppedParents: 0,
+        failed: false,
+      );
+      expect(
+        BdkElectrumCache.describe(
+          opened: true,
+          rebuilt: false,
+          prefill: prefill,
+          parents: (stored: 4, failed: false),
+        ),
+        'cache=ok prefilled_txs=3 prefilled_parents=2 anchors=1 '
+        'dropped_parents=0 stored_parents=4',
+      );
+      expect(
+        BdkElectrumCache.describe(opened: false, rebuilt: false),
+        startsWith('cache=unavailable '),
+      );
+      expect(
+        BdkElectrumCache.describe(
+          opened: true,
+          rebuilt: true,
+          prefill: prefill,
+        ),
+        startsWith('cache=rebuilt '),
+      );
+      expect(
+        BdkElectrumCache.describe(
+          opened: true,
+          rebuilt: false,
+          prefill: (
+            transactions: 0,
+            parents: 0,
+            anchors: 0,
+            droppedParents: 0,
+            failed: true,
+          ),
+        ),
+        startsWith('cache=degraded '),
+      );
     });
 
     test('delete removes the sidecar', () async {
@@ -325,6 +379,105 @@ void main() {
       );
     });
     tearDown(() => dir.deleteSync(recursive: true));
+
+    test('each scan is reported to the log sink without identifiers', () async {
+      final phase = await fixture.load('S10-no-change', 0);
+      final events = <WalletCoordinationLogEvent>[];
+      final logged = WalletTransactionSyncFacade.bdkElectrum(
+        metadata: RecordingMetadata(),
+        coordinator: InMemoryWalletSourceOperationCoordinator(),
+        logSink: events.add,
+      );
+
+      okValue(
+        await logged.synchronizeWallet(SynchronizeWalletRequest(registration)),
+      );
+      okValue(
+        await logged.synchronizeWallet(SynchronizeWalletRequest(registration)),
+      );
+
+      final scans = events
+          .where((event) => event.message.startsWith('BDK source sync '))
+          .toList();
+      expect(scans, hasLength(2));
+      expect(scans.map((event) => event.level), [
+        WalletCoordinationLogLevel.fine,
+        WalletCoordinationLogLevel.fine,
+      ]);
+      expect(
+        scans.first.message,
+        allOf(
+          contains('mode=full_scan reason=first_sync server_attempt=1'),
+          contains('cache=ok prefilled_txs=0'),
+          contains('elapsed_ms='),
+        ),
+      );
+      expect(
+        scans.last.message,
+        allOf(
+          contains('mode=revealed reason=routine'),
+          contains('prefilled_txs=1'),
+        ),
+      );
+      for (final event in events) {
+        expect(event.message, isNot(contains(path)));
+        expect(event.message, isNot(contains(fixture.url)));
+        for (final txid in phase.ids.values) {
+          expect(event.message, isNot(contains(txid)));
+        }
+      }
+    });
+
+    test('an unreachable server is reported per attempt', () async {
+      final events = <WalletCoordinationLogEvent>[];
+      final (external, internal) = _descriptors();
+      final unreachable = WalletSourceRegistration.withFingerprint(
+        key: key,
+        sourceKind: 'bdk_electrum',
+        configuration: BdkElectrumConfiguration(
+          externalPublicDescriptor: external,
+          internalPublicDescriptor: internal,
+          isTestnet: true,
+          electrumUrls: const ['tcp://127.0.0.1:1'],
+          stopGap: 20,
+          validateDomain: false,
+          databaseFilePath: path,
+          socks5: null,
+          timeout: 1,
+          retry: 0,
+        ),
+      );
+      final logged = WalletTransactionSyncFacade.bdkElectrum(
+        metadata: RecordingMetadata(),
+        coordinator: InMemoryWalletSourceOperationCoordinator(),
+        logSink: events.add,
+      );
+
+      final result = await logged.synchronizeWallet(
+        SynchronizeWalletRequest(unreachable),
+      );
+
+      expect(errFailure(result), isA<SourceFailure>());
+      expect(
+        events.map(
+          (event) => (event.level, event.message.split(' error=').first),
+        ),
+        containsAllInOrder([
+          (
+            WalletCoordinationLogLevel.warning,
+            'BDK source server failed attempt=1/1',
+          ),
+        ]),
+      );
+      expect(
+        events.last.message,
+        startsWith('BDK source unavailable servers=1 elapsed_ms='),
+      );
+      expect(
+        events.map((event) => event.message).join('\n'),
+        isNot(contains('127.0.0.1')),
+      );
+    });
 
     test('a second discovery downloads no known transaction', () async {
       await fixture.load('S10-no-change', 0);
