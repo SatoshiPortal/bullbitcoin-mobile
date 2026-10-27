@@ -27,7 +27,9 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     final database = sqlite3.open(databasePath);
     try {
       _database = database;
-      _database.execute('PRAGMA busy_timeout = 250');
+      // The foreground keeps its outbox open for the process lifetime while
+      // a background run writes to the same file.
+      _database.execute('PRAGMA busy_timeout = 5000');
       final version =
           (_database.select('PRAGMA user_version').single['user_version']
               as int);
