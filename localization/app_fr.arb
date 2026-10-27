@@ -4994,5 +4994,6 @@
   "permissionsAllowNotifications": "Autoriser les notifications",
   "permissionsOpenSystemSettings": "Ouvrir les réglages système",
   "permissionsNotNow": "Pas maintenant",
-  "permissionsNotificationsOffHint": "Les notifications sont désactivées. Vous pouvez toujours recevoir des paiements. Pour les activer, ouvrez les réglages système."
+  "permissionsNotificationsOffHint": "Les notifications sont désactivées. Vous pouvez toujours recevoir des paiements. Pour les activer, ouvrez les réglages système.",
+  "wizardPermissionsSettingsHint": "Vous pouvez changer cela à tout moment dans les paramètres de l’application, rubrique Autorisations."
 }

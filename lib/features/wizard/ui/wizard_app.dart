@@ -4,13 +4,16 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/answer_permissions_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
+import 'package:bb_mobile/features/wizard/presentation/permissions_cubit.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notifications/notifications.dart';
 
 /// Standalone app shown before `Bull.init` runs to every user whose
 /// stored wizard version is below `kCurrentWizardVersion`. Intentionally
@@ -25,9 +28,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// while on page 1 (so consent collection can't be skipped before
 /// migrations / Sentry init run).
 class WizardApp extends StatelessWidget {
-  const WizardApp({super.key, required this.onDone});
+  const WizardApp({super.key, required this.onDone, required this.permissions});
 
   final ValueChanged<WizardChoices> onDone;
+
+  /// Built by the startup composition root: the OS prompt needs no locator.
+  final NotificationPermissionsFacade permissions;
 
   WizardBloc _createBloc() {
     final datasource = WizardLocalDatasourceImpl();
@@ -40,8 +46,15 @@ class WizardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<WizardBloc>(
-      create: (_) => _createBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<WizardBloc>(create: (_) => _createBloc()),
+        BlocProvider<PermissionsCubit>(
+          create: (_) => PermissionsCubit(
+            answer: AnswerPermissionsUsecase(permissions: permissions),
+          ),
+        ),
+      ],
       child: _WizardAppView(onDone: onDone),
     );
   }

@@ -4,11 +4,14 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
+import 'package:bb_mobile/features/wizard/presentation/permissions_cubit.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/permissions_choice_row.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/permissions_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
@@ -17,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar;
 
-/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// 5-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -83,6 +86,16 @@ class _WizardScreenState extends State<WizardScreen> {
     _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
+  /// Permissions step Allow / Not now → answer, then advance to the
+  /// journey step whatever the OS prompt returned.
+  Future<void> _answerPermissions(bool allowNotifications) async {
+    final handled = await context.read<PermissionsCubit>().answer(
+      allowNotifications: allowNotifications,
+    );
+    if (!handled || !mounted) return;
+    await _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
+  }
+
   void _tryFinish(WizardChoices choices) {
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
@@ -103,6 +116,7 @@ class _WizardScreenState extends State<WizardScreen> {
 
     final isWelcome = _page == WizardPage.welcome;
     final isMission = _page == WizardPage.mission;
+    final isPermissions = _page == WizardPage.permissions;
     final isLast = _page.isLast;
     return PopScope(
       // Block the actual app pop. The handler below intercepts the
@@ -166,6 +180,9 @@ class _WizardScreenState extends State<WizardScreen> {
                                   ),
                                 ),
                                 const MissionStep(),
+                                const PermissionsStep(
+                                  page: WizardPage.permissions,
+                                ),
                                 const JourneyStep(),
                               ],
                             ),
@@ -210,6 +227,16 @@ class _WizardScreenState extends State<WizardScreen> {
                                   consent: c.reportingConsent,
                                   onYes: () => _pickConsent(true),
                                   onNo: () => _pickConsent(false),
+                                )
+                              else if (isPermissions)
+                                BlocBuilder<PermissionsCubit, bool>(
+                                  builder: (context, busy) =>
+                                      PermissionsChoiceRow(
+                                        busy: busy,
+                                        onAllow: () => _answerPermissions(true),
+                                        onNotNow: () =>
+                                            _answerPermissions(false),
+                                      ),
                                 )
                               else
                                 SizedBox(

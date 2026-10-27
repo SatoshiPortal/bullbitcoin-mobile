@@ -15905,5 +15905,9 @@
   "permissionsNotificationsOffHint": "Notifications are off. You can still receive payments. To turn them on, open the system settings.",
   "@permissionsNotificationsOffHint": {
     "description": "Shown when notifications stay off after the OS prompt"
+  },
+  "wizardPermissionsSettingsHint": "You can change this at any time in the app settings, under Permissions.",
+  "@wizardPermissionsSettingsHint": {
+    "description": "Tells the user where to change optional permissions later"
   }
 }
