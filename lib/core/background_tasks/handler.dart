@@ -86,6 +86,8 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     payjoinDatabasePath: p.join(bullDirectory.path, payjoinDatabaseFilename),
     startPayjoinRecovery: false,
     startOrderSwapWatcher: false,
+    // The watcher would run an unattended swap signed with the seed.
+    startAutoswapWatcher: false,
   );
 
   final metadata = headless<WalletMetadataDatasource>();
