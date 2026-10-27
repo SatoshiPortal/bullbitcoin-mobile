@@ -81,7 +81,7 @@ void main() {
     final source = File(
       'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
     ).readAsStringSync();
-    final scanStart = source.indexOf('Future<void> _performSync');
+    final scanStart = source.indexOf('Future<_BdkSyncReport> _performSync');
     final scanEnd = source.indexOf(
       'class FailedToSignPsbtException',
       scanStart,
@@ -108,7 +108,7 @@ void main() {
     expect(scan, contains('cache?.close()'));
     expect(RegExp(r'applyUpdate\(').allMatches(scan), hasLength(1));
     expect(RegExp(r'BdkFacade\.saveWallet\(').allMatches(scan), hasLength(1));
-    expect(scan, contains('await BdkFacade.withWallet(wallet'));
+    expect(scan, contains('return BdkFacade.withWallet(wallet'));
     final syncStart = scan.indexOf('case BdkSyncMode.sync:');
     final syncPath = scan.substring(syncStart);
     _expectFinallyDisposes(syncPath, 'request');
