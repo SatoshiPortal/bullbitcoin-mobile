@@ -197,12 +197,14 @@ class RecordingMetadata implements WalletSyncMetadataPort {
     WalletNetworkKey key,
     WalletDeletionPhase phase,
   ) async {
+    // Like the SQLite store, which only updates an existing row.
     final old = values[key];
+    if (old == null) throw StateError('no metadata row to mark');
     values[key] = WalletSyncMetadata(
-      registration: old?.registration ?? testRegistration,
-      lastAttemptedSyncAt: old?.lastAttemptedSyncAt,
-      lastSuccessfulSyncAt: old?.lastSuccessfulSyncAt,
-      contentFingerprint: old?.contentFingerprint,
+      registration: old.registration,
+      lastAttemptedSyncAt: old.lastAttemptedSyncAt,
+      lastSuccessfulSyncAt: old.lastSuccessfulSyncAt,
+      contentFingerprint: old.contentFingerprint,
       deletionPending: true,
       deletionPhase: phase,
     );

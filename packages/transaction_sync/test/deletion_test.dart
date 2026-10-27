@@ -348,6 +348,39 @@ void main() {
     },
   );
 
+  test('a sync queued behind a deletion reports the deleted wallet', () async {
+    final source = RecordingSource();
+    final metadata = _PausingDeletionMetadata();
+    final facade = buildFacade(source, metadata);
+    okValue(
+      await facade.refreshLocalSnapshot(
+        const RefreshLocalSnapshotRequest(testRegistration),
+      ),
+    );
+
+    final deletion = facade.deleteWallet(testKey);
+    await metadata.entered.future;
+    final sync = facade.synchronizeWallet(
+      const SynchronizeWalletRequest(testRegistration),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    metadata.release.complete();
+    okValue(await deletion);
+
+    expect(errFailure(await sync), isA<DeletedWalletFailure>());
+    expect(metadata.values[testKey], isNull);
+    expect(
+      errFailure(
+        await facade.synchronizeWallet(
+          const SynchronizeWalletRequest(testRegistration),
+        ),
+      ),
+      isA<DeletedWalletFailure>(),
+    );
+    expect(metadata.values[testKey], isNull);
+    expect(source.syncCalls, 0);
+  });
+
   test('second delete after completion is an idempotent success', () async {
     final source = RecordingSource();
     final facade = buildFacade(source, RecordingMetadata());
@@ -407,6 +440,25 @@ void main() {
 }
 
 /// Holds the sync inside its receipt write until [release] completes.
+/// Pauses the first deletion marker write: the deletion holds the source
+/// claim while a sync can still read metadata that shows no deletion.
+final class _PausingDeletionMetadata extends RecordingMetadata {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<void> writeDeletionMarker(
+    WalletNetworkKey key,
+    WalletDeletionPhase phase,
+  ) async {
+    if (!entered.isCompleted) {
+      entered.complete();
+      await release.future;
+    }
+    await super.writeDeletionMarker(key, phase);
+  }
+}
+
 final class _PausingMetadata extends RecordingMetadata {
   final entered = Completer<void>();
   final release = Completer<void>();

@@ -174,6 +174,11 @@ final class WalletTransactionRepositoryImpl
   }) async {
     final key = registration.key;
     try {
+      // Checked before any write: a deleted wallet is never re-registered by
+      // a sync, only revived by an explicit discovery.
+      if (!discover && _state(key) is WalletStateDeleted) {
+        return Err(const DeletedWalletFailure());
+      }
       var existing = await metadata.read(key);
       if (existing == null) {
         await metadata.writeRegistration(registration);
@@ -209,6 +214,10 @@ final class WalletTransactionRepositoryImpl
       >(
         sourceKey,
         (session) async {
+          // A deletion admitted first has retired the source meanwhile.
+          if (!discover && _state(key) is WalletStateDeleted) {
+            return Err(const DeletedWalletFailure());
+          }
           if (local) {
             final result = await source.refreshLocal(registration, session);
             switch (result) {
@@ -256,6 +265,11 @@ final class WalletTransactionRepositoryImpl
         timeout: local ? const Duration(seconds: 30) : null,
       );
     } catch (error) {
+      // The coordinator refuses a retired source: the wallet was deleted while
+      // this sync waited, which is not a failure of the deleted state.
+      if (!discover && _state(key) is WalletStateDeleted) {
+        return Err(const DeletedWalletFailure());
+      }
       final failure = _map(error);
       _emit(
         key,
