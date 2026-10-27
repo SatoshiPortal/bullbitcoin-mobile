@@ -848,6 +848,7 @@ Future<void> _workerMain(List<Object?> args) async {
     registrationReply = null;
     Directory(File(dbPath).parent.path).createSync(recursive: true);
     _initialize(dbPath, busy, maxActiveSynchronizations);
+    final requestedAt = _now();
     _central(
       dbPath,
       busy,
@@ -855,7 +856,7 @@ Future<void> _workerMain(List<Object?> args) async {
         '''INSERT INTO requests
         (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
         VALUES (?,?,?,?,?,?,?)''',
-        [request, hash, args[8], args[9], 'pending', _now(), _now()],
+        [request, hash, args[8], args[9], 'pending', requestedAt, _now()],
       ),
     );
     out.send(['registered']);
@@ -872,6 +873,8 @@ Future<void> _workerMain(List<Object?> args) async {
       acquisition,
       maxActiveSynchronizations,
       args[8] as String,
+      args[9] as String,
+      requestedAt,
       key: lockConnections.first,
       slots: lockConnections.skip(1).toList(),
     );
@@ -1096,7 +1099,9 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   int stale,
   int? timeout,
   int capacity,
-  String kind, {
+  String kind,
+  String priority,
+  int requestedAt, {
   required Database key,
   required List<Database> slots,
 }) {
@@ -1106,6 +1111,12 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   final global =
       kind == WalletOperationKind.synchronize.name ||
       kind == WalletOperationKind.discover.name;
+  final row = (
+    hash: hash,
+    kind: kind,
+    priority: priority,
+    requestedAt: requestedAt,
+  );
   // Attempts reuse the caller-owned connections with BEGIN IMMEDIATE and
   // ROLLBACK; they are never closed here.
   void rollback(Database db) {
@@ -1126,15 +1137,15 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
       );
       throw TimeoutException('Wallet source admission timed out');
     }
-    if (_admit(central, busy, hash, request, stale, global)) {
+    if (_admit(central, busy, row, request, stale, global)) {
       Database? slot;
       try {
         key.execute('BEGIN IMMEDIATE');
-        if (_admit(central, busy, hash, request, stale, global)) {
+        if (_admit(central, busy, row, request, stale, global)) {
           if (!global) return (key: key, slot: null);
           slot = _tryAcquireSlot(slots);
           if (slot != null &&
-              _admit(central, busy, hash, request, stale, global)) {
+              _admit(central, busy, row, request, stale, global)) {
             return (key: key, slot: slot);
           }
         }
@@ -1160,14 +1171,45 @@ Database? _tryAcquireSlot(List<Database> slots) {
   return null;
 }
 
+typedef _RequestRow = ({
+  String hash,
+  String kind,
+  String priority,
+  int requestedAt,
+});
+
+/// Re-creates this live request's row after another worker purged it as
+/// stale, as happens when the device was suspended longer than the heartbeat
+/// timeout; the original order is kept.
+void _restoreRequest(Database db, _RequestRow row, String request) {
+  db.execute(
+    '''INSERT OR IGNORE INTO requests
+    (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+    VALUES (?,?,?,?,?,?,?)''',
+    [
+      request,
+      row.hash,
+      row.kind,
+      row.priority,
+      'pending',
+      row.requestedAt,
+      _now(),
+    ],
+  );
+  if (db.updatedRows != 1) {
+    throw StateError('coordinator request superseded');
+  }
+}
+
 bool _admit(
   String path,
   int busy,
-  String hash,
+  _RequestRow row,
   String request,
   int stale,
   bool global,
 ) {
+  final hash = row.hash;
   var admitted = false;
   _central(path, busy, (db) {
     db.execute('BEGIN IMMEDIATE');
@@ -1176,9 +1218,7 @@ bool _admit(
         "UPDATE requests SET heartbeat_at=? WHERE request_token=? AND status='pending'",
         [_now(), request],
       );
-      if (db.updatedRows != 1) {
-        throw StateError('coordinator request superseded');
-      }
+      if (db.updatedRows != 1) _restoreRequest(db, row, request);
       db.execute(
         "DELETE FROM requests WHERE status='pending' AND heartbeat_at < ? AND request_token <> ?",
         [_now() - stale, request],
@@ -1250,7 +1290,12 @@ WalletSourceClaim _activate(
         [request],
       );
       if (own.isEmpty) {
-        throw StateError('coordinator request superseded');
+        _restoreRequest(db, (
+          hash: hash,
+          kind: kind,
+          priority: priority,
+          requestedAt: _now(),
+        ), request);
       }
       final retired = db.select(
         'SELECT retired FROM source_state WHERE key_hash=?',

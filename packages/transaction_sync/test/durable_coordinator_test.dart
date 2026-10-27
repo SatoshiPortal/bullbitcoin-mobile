@@ -942,6 +942,30 @@ void main() {
     },
   );
 
+  test('live requests survive a stale purge after a suspend', () async {
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      pendingHeartbeatTimeout: const Duration(milliseconds: 1),
+    );
+    const key = WalletSourceKey('suspended', 'bitcoin', 'testnet');
+    final release = Completer<void>();
+    final entered = Completer<void>();
+    final owner = coordinator.runExclusive(key, (_) async {
+      entered.complete();
+      await release.future;
+    }, timeout: null);
+    await entered.future;
+    final waiters = [
+      for (var index = 0; index < 3; index++)
+        coordinator.runExclusive(key, (_) async => index, timeout: null),
+    ];
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    release.complete();
+    await owner;
+
+    expect(await Future.wait(waiters), [0, 1, 2]);
+  });
+
   test('claim cleanup failure still releases the mutex', () async {
     var fail = true;
     final first = DurableWalletSourceOperationCoordinator(
