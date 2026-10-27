@@ -72,6 +72,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
       final cache = BdkElectrumCache.open(configuration.databaseFilePath);
       bdk.ElectrumClient? syncedClient;
       try {
+        // A wallet that never synced has revealed nothing yet: only a full
+        // scan finds its history, like the app's first sync.
+        final fullScan = discover || wallet.latestCheckpoint().height <= 0;
         final baselineTxids = mapBdkTransactions(
           wallet,
         ).map((transaction) => transaction.txid).toSet();
@@ -92,7 +95,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               validateDomain: configuration.validateDomain,
             );
             cache?.prefill(client, wallet);
-            if (discover) {
+            if (fullScan) {
               final requestBuilder = wallet.startFullScan();
               try {
                 final request = requestBuilder.build();
@@ -157,7 +160,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
                 wallet,
                 registration: registration,
                 networkOperation: true,
-                discover: discover,
+                discover: fullScan,
               ),
               baselineTxids: baselineTxids,
             ),

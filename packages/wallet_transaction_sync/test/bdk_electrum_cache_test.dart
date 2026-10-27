@@ -347,6 +347,24 @@ void main() {
       expect(requests.counts['blockchain.transaction.get_merkle'], isNull);
     });
 
+    test(
+      'a routine sync of a never synced wallet discovers its history',
+      () async {
+        final phase = await fixture.load('S10-no-change', 0);
+
+        final outcome = okValue(
+          await facade.synchronizeWallet(
+            SynchronizeWalletRequest(registration),
+          ),
+        );
+
+        expect(
+          outcome.snapshot.transactions.map((transaction) => transaction.txid),
+          contains(phase.ids['T1']),
+        );
+      },
+    );
+
     test('deleting the wallet removes its cache', () async {
       await fixture.load('S10-no-change', 0);
       okValue(
