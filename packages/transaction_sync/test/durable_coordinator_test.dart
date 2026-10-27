@@ -884,6 +884,43 @@ void main() {
     );
   });
 
+  test('a dead worker leaves neither its request nor its claim', () async {
+    const key = WalletSourceKey('dead-claim', 'bitcoin', 'testnet');
+    final hash = sha256
+        .convert('dead-claim\u0000bitcoin\u0000testnet'.codeUnits)
+        .toString();
+    final dying = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      killWorkerAfterReady: true,
+    );
+    await dying
+        .runExclusive(
+          key,
+          (_) async {},
+          timeout: null,
+          kind: WalletOperationKind.synchronize,
+        )
+        .catchError((Object _) {});
+
+    var rows = -1;
+    for (var attempt = 0; attempt < 300 && rows != 0; attempt++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      final db = sqlite3.open(path);
+      db.execute('PRAGMA busy_timeout = 5000');
+      rows =
+          (db.select('SELECT COUNT(*) AS n FROM claims WHERE key_hash=?', [
+                hash,
+              ]).single['n']
+              as int) +
+          (db.select('SELECT COUNT(*) AS n FROM requests WHERE key_hash=?', [
+                hash,
+              ]).single['n']
+              as int);
+      db.dispose();
+    }
+    expect(rows, 0);
+  });
+
   test('claim cleanup failure still releases the mutex', () async {
     var fail = true;
     final first = DurableWalletSourceOperationCoordinator(

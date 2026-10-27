@@ -510,6 +510,7 @@ final class _DurableActor {
     });
     try {
       final data = await ready.future;
+      locks.adoptClaim(keyHash, data[2] as int, data[3] as String);
       final actor = _DurableActor(
         data[1] as SendPort,
         responseStream,
@@ -624,6 +625,7 @@ final class _LockOwner {
   bool _requestCleaned = false;
   bool _operationEnded = false;
   bool _closed = false;
+  _ClaimRow? _claim;
 
   /// The worker reports the removal of its request on [exitPort], which also
   /// receives its exit: one port keeps the report ahead of the exit.
@@ -647,6 +649,12 @@ final class _LockOwner {
   void endOperation() {
     _operationEnded = true;
     _closeWhenSettled();
+  }
+
+  /// The claim the worker activated; removed with the request if the worker
+  /// dies, since a leftover claim keeps its key out of global admission.
+  void adoptClaim(String keyHash, int generation, String ownerToken) {
+    _claim = (keyHash: keyHash, generation: generation, ownerToken: ownerToken);
   }
 
   /// For a worker that never started: nothing else will close the locks.
@@ -673,19 +681,26 @@ final class _LockOwner {
       return;
     }
     // A request left by the worker would head the shared queue and hold back
-    // every wallet until its heartbeat expires. Removed off this isolate,
-    // which may be the UI's, retrying through contention, and never
-    // recreating a deleted database; the caller waits for it one second at
-    // most.
-    _removeRequestAside(_databasePath, _busy, request)
+    // every wallet until its heartbeat expires, and its claim would keep the
+    // key out of global admission. Removed off this isolate, which may be the
+    // UI's, retrying through contention, and never recreating a deleted
+    // database; the caller waits for it one second at most.
+    _removeRequestAside(_databasePath, _busy, request, _claim)
         .timeout(const Duration(seconds: 1), onTimeout: () {})
         .whenComplete(_settled.complete);
   }
 }
 
-/// Removes a request row in its own isolate, retrying for up to 30 s while
-/// the coordination database is busy.
-Future<void> _removeRequestAside(String path, int busy, String token) =>
+typedef _ClaimRow = ({String keyHash, int generation, String ownerToken});
+
+/// Removes a request row and its claim in its own isolate, retrying for up to
+/// 30 s while the coordination database is busy.
+Future<void> _removeRequestAside(
+  String path,
+  int busy,
+  String token,
+  _ClaimRow? claim,
+) =>
     Isolate.run(() {
       final deadline = DateTime.now().add(const Duration(seconds: 30));
       while (true) {
@@ -693,6 +708,12 @@ Future<void> _removeRequestAside(String path, int busy, String token) =>
         try {
           db.execute('PRAGMA busy_timeout = $busy');
           db.execute('DELETE FROM requests WHERE request_token=?', [token]);
+          if (claim != null) {
+            db.execute(
+              'DELETE FROM claims WHERE key_hash=? AND generation=? AND owner_token=?',
+              [claim.keyHash, claim.generation, claim.ownerToken],
+            );
+          }
           return;
         } catch (error) {
           if (!_isRetryable(error) || DateTime.now().isAfter(deadline)) {
