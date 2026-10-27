@@ -8,6 +8,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 import 'background_task_execution_result.dart';
 import 'sqlite_wallet_sync_job_queue.dart';
+import 'wallet_payment_notification_identity.dart';
 
 typedef SyncJobOperation =
     Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
@@ -220,9 +221,13 @@ final class WalletTransactionSyncBackgroundTask {
             ..sort();
           final text = copy(newEvents.length, chain);
           return LocalNotification(
-            eventId: _hash(
-              'background-notifications-v2|$chain|${eventIds.join('|')}',
-            ),
+            eventId: sha256
+                .convert(
+                  utf8.encode(
+                    'background-notifications-v2|$chain|${eventIds.join('|')}',
+                  ),
+                )
+                .toString(),
             title: text.title,
             body: text.body,
             destination: NotificationDestination.walletHome,
@@ -232,17 +237,28 @@ final class WalletTransactionSyncBackgroundTask {
           );
         },
       );
-      if (reconciled case Err(:final failure)) {
-        _safeLog(
-          WalletSyncLogLevel.warning,
-          'Wallet sync notification failure stage=reconcile '
-          'category=${failure.runtimeType}',
-        );
-        _classifyNotification(
-          failure,
-          onRetry: () => retry = true,
-          onPermanent: () => permanent = true,
-        );
+      switch (reconciled) {
+        case Err(:final failure):
+          _safeLog(
+            WalletSyncLogLevel.warning,
+            'Wallet sync notification failure stage=reconcile '
+            'category=${failure.runtimeType}',
+          );
+          _classifyNotification(
+            failure,
+            onRetry: () => retry = true,
+            onPermanent: () => permanent = true,
+          );
+        case Ok(:final value) when value.skippedTopicCount > 0:
+          // Announced only once the foreground has recorded what the user
+          // sees; until then a wallet's history would read as new payments.
+          _safeLog(
+            WalletSyncLogLevel.fine,
+            'Wallet sync notifications skipped: chain=$chain '
+            'wallets_without_baseline=${value.skippedTopicCount}',
+          );
+        case Ok():
+          break;
       }
     }
     try {
@@ -296,10 +312,6 @@ final class WalletTransactionSyncBackgroundTask {
     WalletTransactionSyncBackgroundJob job,
     WalletTransactionSyncOutcome outcome,
   ) {
-    final topic = _hash(
-      'background-notifications-v1|${job.key.walletId}|'
-      '${job.key.chain}|${job.key.network}',
-    );
     final events = outcome.snapshot.transactions
         .where(
           (transaction) =>
@@ -307,23 +319,18 @@ final class WalletTransactionSyncBackgroundTask {
               transaction.selfTransfer != true,
         )
         .map(
-          (transaction) => LocalNotification(
-            eventId: _hash(
-              'background-notifications-v1|${job.key.walletId}|'
-              '${job.key.chain}|${job.key.network}|${transaction.txid}',
-            ),
-            title: '',
-            body: '',
-            destination: NotificationDestination.walletHome,
-            createdAt: outcome.snapshot.observedAt,
+          (transaction) => WalletPaymentNotificationIdentity.event(
+            job.key,
+            transaction.txid,
+            observedAt: outcome.snapshot.observedAt,
           ),
         )
         .toList();
-    return NotificationTopicObservation(topic, events);
+    return NotificationTopicObservation(
+      WalletPaymentNotificationIdentity.topicId(job.key),
+      events,
+    );
   }
-
-  static String _hash(String value) =>
-      sha256.convert(utf8.encode(value)).toString();
 
   static void _classifySync(
     WalletTransactionSyncFailure failure, {

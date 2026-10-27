@@ -68,6 +68,24 @@ WalletTransactionSyncOutcome _outcome(
   ),
 );
 
+/// What the foreground recorded for [key]: the wallet's baseline.
+Future<void> _baseline(
+  SqliteNotificationOutbox outbox,
+  WalletNetworkKey key, [
+  List<String> txids = const [],
+]) async {
+  final result = await outbox
+      .recordObserved(WalletPaymentNotificationIdentity.topicId(key), [
+        for (final txid in txids)
+          WalletPaymentNotificationIdentity.event(
+            key,
+            txid,
+            observedAt: DateTime.utc(2026, 1, 1),
+          ),
+      ]);
+  expect(result, isA<Ok>());
+}
+
 void main() {
   test(
     'reconciles the complete snapshot, filters precisely, and is idempotent',
@@ -87,6 +105,7 @@ void main() {
         _transaction('outgoing', TransactionDirection.outgoing),
         _transaction('unknown', null),
       ];
+      await _baseline(outbox, key, ['incoming', 'self', 'outgoing', 'unknown']);
       final job = WalletTransactionSyncBackgroundJob(
         key: key,
         synchronize: () async => Ok(_outcome(key, all)),
@@ -249,6 +268,16 @@ void main() {
         );
       }
 
+      await _baseline(
+        outbox,
+        const WalletNetworkKey('one', 'liquid', 'testnet'),
+        ['one'],
+      );
+      await _baseline(
+        outbox,
+        const WalletNetworkKey('two', 'liquid', 'testnet'),
+        ['two'],
+      );
       final task = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
         queue: SqliteWalletSyncJobQueue(
@@ -634,6 +663,7 @@ void main() {
       await directory.delete(recursive: true);
     });
     final key = const WalletNetworkKey('wallet', 'bitcoin', 'testnet');
+    await _baseline(outbox, key);
     var incoming = <WalletTransaction>[];
     final task = WalletTransactionSyncBackgroundTask(
       notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
@@ -674,6 +704,94 @@ void main() {
     );
     expect(gateway.shown, isEmpty);
   });
+
+  test(
+    'a wallet without a foreground baseline is synced, not announced',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background_tasks',
+      );
+      final gateway = _Gateway();
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      final queue = SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+      );
+      final messages = <String>[];
+      addTearDown(() async {
+        await queue.close();
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      final key = const WalletNetworkKey('restored', 'bitcoin', 'mainnet');
+      var synced = 0;
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: queue,
+        jobs: [
+          WalletTransactionSyncBackgroundJob(
+            key: key,
+            synchronize: () async {
+              synced++;
+              return Ok(
+                _outcome(key, [
+                  _transaction('history', TransactionDirection.incoming),
+                ]),
+              );
+            },
+          ),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        logSink: _Sink(messages),
+      );
+
+      // Twice: the history is never taken as a silent baseline either.
+      for (var i = 0; i < 2; i++) {
+        expect(
+          (await task.execute(chain: 'bitcoin')).status,
+          BackgroundTaskExecutionStatus.success,
+        );
+      }
+      expect(synced, 2);
+      expect(gateway.shown, isEmpty);
+      expect(
+        messages,
+        contains(
+          'Wallet sync notifications skipped: chain=bitcoin '
+          'wallets_without_baseline=1',
+        ),
+      );
+
+      // The foreground records the history, then a payment arrives.
+      await _baseline(outbox, key, ['history']);
+      final later = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: queue,
+        jobs: [
+          WalletTransactionSyncBackgroundJob(
+            key: key,
+            synchronize: () async => Ok(
+              _outcome(key, [
+                _transaction('history', TransactionDirection.incoming),
+                _transaction(
+                  'paid-while-closed',
+                  TransactionDirection.incoming,
+                ),
+              ]),
+            ),
+          ),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        logSink: _Sink(messages),
+      );
+      expect(
+        (await later.execute(chain: 'bitcoin')).status,
+        BackgroundTaskExecutionStatus.success,
+      );
+      expect(gateway.shown, hasLength(1));
+    },
+  );
 
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
