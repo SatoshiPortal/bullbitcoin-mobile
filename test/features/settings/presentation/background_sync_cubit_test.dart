@@ -1,0 +1,91 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:bb_mobile/features/settings/data/background_sync_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_background_sync_interval_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_background_sync_interval_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_sync_cubit.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _Store implements BackgroundSyncIntervalStore {
+  BackgroundSyncInterval value = BackgroundSyncInterval.hour1;
+  bool failWrite = false;
+
+  @override
+  Future<BackgroundSyncInterval> read() async => value;
+
+  @override
+  Future<void> write(BackgroundSyncInterval interval) async {
+    if (failWrite) throw StateError('disk full');
+    value = interval;
+  }
+}
+
+void main() {
+  late _Store store;
+  late int reschedules;
+  late bool failReschedule;
+
+  BackgroundSyncCubit cubit() {
+    final repository = BackgroundSyncRepositoryImpl(
+      store: store,
+      reschedule: () async {
+        reschedules++;
+        if (failReschedule) throw StateError('workmanager');
+      },
+    );
+    return BackgroundSyncCubit(
+      getBackgroundSyncIntervalUsecase: GetBackgroundSyncIntervalUsecase(
+        repository: repository,
+      ),
+      setBackgroundSyncIntervalUsecase: SetBackgroundSyncIntervalUsecase(
+        repository: repository,
+      ),
+    );
+  }
+
+  setUp(() {
+    store = _Store();
+    reschedules = 0;
+    failReschedule = false;
+  });
+
+  test('a choice is saved and applied to the schedule', () async {
+    final subject = cubit();
+    addTearDown(subject.close);
+    await subject.load();
+    expect(subject.state.interval, BackgroundSyncInterval.hour1);
+
+    await subject.choose(BackgroundSyncInterval.minutes15);
+
+    expect(store.value, BackgroundSyncInterval.minutes15);
+    expect(reschedules, 1);
+    expect(subject.state.interval, BackgroundSyncInterval.minutes15);
+    expect(subject.state.failure, isNull);
+  });
+
+  test('an unsaved choice shows the previous interval', () async {
+    store.failWrite = true;
+    final subject = cubit();
+    addTearDown(subject.close);
+    await subject.load();
+
+    await subject.choose(BackgroundSyncInterval.off);
+
+    expect(subject.state.interval, BackgroundSyncInterval.hour1);
+    expect(subject.state.failure, isA<SettingsStorageFailure>());
+    expect(reschedules, 0);
+  });
+
+  test('a saved choice stays shown when rescheduling fails', () async {
+    failReschedule = true;
+    final subject = cubit();
+    addTearDown(subject.close);
+    await subject.load();
+
+    await subject.choose(BackgroundSyncInterval.minutes30);
+
+    expect(store.value, BackgroundSyncInterval.minutes30);
+    expect(subject.state.interval, BackgroundSyncInterval.minutes30);
+    expect(subject.state.failure, isNotNull);
+  });
+}

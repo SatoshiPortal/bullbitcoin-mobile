@@ -55,6 +55,7 @@ enum SettingsItemId {
   tor,
   screenPrivacy,
   permissions,
+  backgroundSync,
   devMode,
   testnetCredentials,
   errorReporting,
@@ -612,6 +613,22 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsSearchPermissionsKeywords,
         english.settingsSearchPermissionsKeywords,
         [english.settingsPermissionsTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.backgroundSync,
+      section: SettingsItemSection.app,
+      title: localization.settingsBackgroundSyncTitle,
+      path: path(
+        SettingsItemSection.app,
+        localization.settingsBackgroundSyncTitle,
+      ),
+      icon: Icons.sync,
+      open: (context) => context.pushNamed(SettingsRoute.backgroundSync.name),
+      keywords: _keywords(
+        localization.settingsSearchBackgroundSyncKeywords,
+        english.settingsSearchBackgroundSyncKeywords,
+        [english.settingsBackgroundSyncTitle],
       ),
     ),
     SettingsItem(

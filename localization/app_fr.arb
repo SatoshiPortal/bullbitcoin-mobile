@@ -4995,5 +4995,16 @@
   "permissionsOpenSystemSettings": "Ouvrir les réglages système",
   "permissionsNotNow": "Pas maintenant",
   "permissionsNotificationsOffHint": "Les notifications sont désactivées. Vous pouvez toujours recevoir des paiements. Pour les activer, ouvrez les réglages système.",
-  "wizardPermissionsSettingsHint": "Vous pouvez changer cela à tout moment dans les paramètres de l’application, rubrique Autorisations."
+  "wizardPermissionsSettingsHint": "Vous pouvez changer cela à tout moment dans les paramètres de l’application, rubrique Autorisations.",
+  "settingsBackgroundSyncTitle": "Vérifications en arrière-plan",
+  "settingsSearchBackgroundSyncKeywords": "arrière-plan, synchronisation, intervalle, batterie, notifications, fréquence",
+  "backgroundSyncDescription": "Bull vérifie les paiements reçus pendant qu’il est fermé, pour pouvoir vous prévenir. Des vérifications plus fréquentes consomment plus de batterie. C’est l’intervalle demandé au système, qui peut retarder ou sauter des vérifications.",
+  "backgroundSyncEvery15Minutes": "Toutes les 15 minutes",
+  "backgroundSyncEvery30Minutes": "Toutes les 30 minutes",
+  "backgroundSyncEveryHour": "Toutes les heures",
+  "backgroundSyncEvery6Hours": "Toutes les 6 heures",
+  "backgroundSyncEveryDay": "Une fois par jour",
+  "backgroundSyncOff": "Désactivées",
+  "backgroundSyncOffHint": "Aucune vérification en arrière-plan : Bull ne voit les paiements qu’à l’ouverture et ne peut pas vous prévenir.",
+  "backgroundSyncSaveFailed": "L’intervalle n’a pas pu être appliqué maintenant. Il le sera au prochain démarrage de Bull."
 }

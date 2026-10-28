@@ -15909,5 +15909,49 @@
   "wizardPermissionsSettingsHint": "You can change this at any time in the app settings, under Permissions.",
   "@wizardPermissionsSettingsHint": {
     "description": "Tells the user where to change optional permissions later"
+  },
+  "settingsBackgroundSyncTitle": "Background checks",
+  "@settingsBackgroundSyncTitle": {
+    "description": "Settings entry and screen title for how often payments are checked in the background"
+  },
+  "settingsSearchBackgroundSyncKeywords": "background, sync, interval, battery, notifications, frequency",
+  "@settingsSearchBackgroundSyncKeywords": {
+    "description": "Search keywords for the background checks setting"
+  },
+  "backgroundSyncDescription": "Bull checks for incoming payments while it is closed, so it can notify you. Checking more often uses more battery. This is the interval requested from the system, which may delay or skip checks.",
+  "@backgroundSyncDescription": {
+    "description": "Explains background checks; mention battery only, never promise timing"
+  },
+  "backgroundSyncEvery15Minutes": "Every 15 minutes",
+  "@backgroundSyncEvery15Minutes": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEvery30Minutes": "Every 30 minutes",
+  "@backgroundSyncEvery30Minutes": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEveryHour": "Every hour",
+  "@backgroundSyncEveryHour": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEvery6Hours": "Every 6 hours",
+  "@backgroundSyncEvery6Hours": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEveryDay": "Once a day",
+  "@backgroundSyncEveryDay": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {
+    "description": "Background check interval option that disables background checks"
+  },
+  "backgroundSyncOffHint": "No background checks: Bull only learns of payments when you open it, and cannot notify you.",
+  "@backgroundSyncOffHint": {
+    "description": "Shown when background checks are off"
+  },
+  "backgroundSyncSaveFailed": "The interval could not be applied now. It will apply the next time Bull starts.",
+  "@backgroundSyncSaveFailed": {
+    "description": "Shown when the chosen background check interval could not be applied"
   }
 }

@@ -23,6 +23,7 @@ enum SettingsRoute {
   appSettings('app-settings'),
   theme('theme'),
   permissions('permissions'),
+  backgroundSync('background-sync'),
   swapRestore('swap-restore'),
   swapRescue('swap-rescue'),
   btcMap('btc-map');
