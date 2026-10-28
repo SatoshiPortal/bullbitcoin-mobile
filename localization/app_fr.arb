@@ -5006,5 +5006,11 @@
   "backgroundSyncEveryDay": "Une fois par jour",
   "backgroundSyncOff": "Désactivées",
   "backgroundSyncOffHint": "Aucune vérification en arrière-plan : Bull ne voit les paiements qu’à l’ouverture et ne peut pas vous prévenir.",
-  "backgroundSyncSaveFailed": "L’intervalle n’a pas pu être appliqué maintenant. Il le sera au prochain démarrage de Bull."
+  "backgroundSyncSaveFailed": "L’intervalle n’a pas pu être appliqué maintenant. Il le sera au prochain démarrage de Bull.",
+  "permissionsBackgroundTitle": "Activité en arrière-plan",
+  "permissionsBackgroundDescription": "Pour économiser la batterie, Android peut empêcher Bull de vérifier les paiements pendant qu’il est fermé. Autorisez une utilisation de la batterie sans restriction pour que les notifications puissent arriver.",
+  "permissionsBackgroundHint": "Dans les réglages de Bull, ouvrez Batterie et choisissez Non restreinte.",
+  "permissionsStatusUnrestricted": "Sans restriction",
+  "permissionsStatusRestricted": "Restreinte",
+  "permissionsOpenBatterySettings": "Ouvrir les réglages de batterie"
 }

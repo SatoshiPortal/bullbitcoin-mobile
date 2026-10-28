@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_activity_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/notification_permission_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
@@ -13,8 +14,15 @@ class PermissionsScreen extends StatelessWidget {
   const PermissionsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<NotificationPermissionCubit>()..refresh(),
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (_) => locator<NotificationPermissionCubit>()..refresh(),
+      ),
+      BlocProvider(
+        create: (_) => locator<BackgroundActivityCubit>()..refresh(),
+      ),
+    ],
     child: Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsPermissionsTitle)),
       body: SafeArea(
@@ -29,6 +37,7 @@ class PermissionsScreen extends StatelessWidget {
             ),
             const Gap(24),
             const _NotificationPermissionSection(),
+            const _BackgroundActivitySection(),
           ],
         ),
       ),
@@ -53,7 +62,10 @@ class _NotificationPermissionSectionState
     super.initState();
     // Back from the system settings: show what the user changed there.
     _lifecycle = AppLifecycleListener(
-      onResume: () => context.read<NotificationPermissionCubit>().refresh(),
+      onResume: () {
+        context.read<NotificationPermissionCubit>().refresh();
+        context.read<BackgroundActivityCubit>().refresh();
+      },
     );
   }
 
@@ -132,6 +144,77 @@ class _NotificationPermissionSectionState
             textColor: context.appColors.secondary,
           ),
       ],
+    );
+  }
+}
+
+/// Android only: some vendors stop periodic work entirely until the user
+/// allows unrestricted battery use, so notifications would never arrive.
+class _BackgroundActivitySection extends StatelessWidget {
+  const _BackgroundActivitySection();
+
+  @override
+  Widget build(BuildContext context) {
+    final status = context.watch<BackgroundActivityCubit>().state;
+    if (status == BackgroundActivityStatus.unknown ||
+        status == BackgroundActivityStatus.notApplicable) {
+      return const SizedBox.shrink();
+    }
+    final loc = context.loc;
+    final unrestricted = status == BackgroundActivityStatus.unrestricted;
+    return Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  loc.permissionsBackgroundTitle,
+                  style: context.font.titleMedium,
+                ),
+              ),
+              Text(
+                unrestricted
+                    ? loc.permissionsStatusUnrestricted
+                    : loc.permissionsStatusRestricted,
+                style: context.font.bodyMedium?.copyWith(
+                  color: unrestricted
+                      ? context.appColors.success
+                      : context.appColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+          const Gap(8),
+          Text(
+            loc.permissionsBackgroundDescription,
+            style: context.font.bodyMedium,
+          ),
+          if (!unrestricted) ...[
+            const Gap(8),
+            Text(
+              loc.permissionsBackgroundHint,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
+          ],
+          const Gap(16),
+          BullButton.big(
+            label: loc.permissionsOpenBatterySettings,
+            onPressed: context.read<BackgroundActivityCubit>().openSettings,
+            outlined: unrestricted,
+            bgColor: unrestricted
+                ? Colors.transparent
+                : context.appColors.primary,
+            textColor: unrestricted
+                ? context.appColors.secondary
+                : context.appColors.onPrimary,
+          ),
+        ],
+      ),
     );
   }
 }

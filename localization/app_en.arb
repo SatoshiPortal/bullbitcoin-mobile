@@ -15953,5 +15953,29 @@
   "backgroundSyncSaveFailed": "The interval could not be applied now. It will apply the next time Bull starts.",
   "@backgroundSyncSaveFailed": {
     "description": "Shown when the chosen background check interval could not be applied"
+  },
+  "permissionsBackgroundTitle": "Background activity",
+  "@permissionsBackgroundTitle": {
+    "description": "Name of the background activity (battery) permission"
+  },
+  "permissionsBackgroundDescription": "To save battery, Android can stop Bull from checking for payments while it is closed. Allow unrestricted battery use so that notifications can arrive.",
+  "@permissionsBackgroundDescription": {
+    "description": "Why unrestricted battery use matters for payment notifications"
+  },
+  "permissionsBackgroundHint": "In Bull’s settings, open Battery and choose Unrestricted.",
+  "@permissionsBackgroundHint": {
+    "description": "Where to find the setting once the app settings page is open"
+  },
+  "permissionsStatusUnrestricted": "Unrestricted",
+  "@permissionsStatusUnrestricted": {
+    "description": "Status when the app may run in the background"
+  },
+  "permissionsStatusRestricted": "Restricted",
+  "@permissionsStatusRestricted": {
+    "description": "Status when Android restricts the app in the background"
+  },
+  "permissionsOpenBatterySettings": "Open battery settings",
+  "@permissionsOpenBatterySettings": {
+    "description": "Button that opens the app settings to change battery use"
   }
 }

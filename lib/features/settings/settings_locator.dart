@@ -5,7 +5,10 @@ import 'package:bb_mobile/features/settings/data/background_sync_repository_impl
 import 'package:bb_mobile/features/settings/domain/repositories/background_sync_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_background_sync_interval_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_background_sync_interval_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_activity_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/background_sync_cubit.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_background_activity_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/open_background_activity_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
@@ -124,6 +127,17 @@ class SettingsLocator {
             locator<GetBackgroundSyncIntervalUsecase>(),
         setBackgroundSyncIntervalUsecase:
             locator<SetBackgroundSyncIntervalUsecase>(),
+      ),
+    );
+    locator.registerFactory<BackgroundActivityCubit>(
+      () => BackgroundActivityCubit(
+        getBackgroundActivityUsecase: const GetBackgroundActivityUsecase(
+          gateway: PermissionHandlerBackgroundActivityGateway(),
+        ),
+        openBackgroundActivitySettingsUsecase:
+            const OpenBackgroundActivitySettingsUsecase(
+              gateway: PermissionHandlerBackgroundActivityGateway(),
+            ),
       ),
     );
     locator.registerFactory<GetNotificationPermissionUsecase>(
