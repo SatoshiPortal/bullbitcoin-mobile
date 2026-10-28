@@ -140,7 +140,13 @@ final class DurableWalletSourceOperationCoordinator
         lockDirectoryPath: lockDirectoryPath,
         busyTimeout: busyTimeout,
         pendingHeartbeatTimeout: pendingHeartbeatTimeout,
-        acquisitionTimeout: acquisitionTimeout,
+        // A foreground read waits for the operation in front of it, which
+        // the user sees progress: failing it would only show an error.
+        acquisitionTimeout:
+            kind == WalletOperationKind.refresh &&
+                priority == WalletOperationPriority.foreground
+            ? null
+            : acquisitionTimeout,
         maxActiveSynchronizations: maxActiveSynchronizations,
         keyHash: keyHash,
         kind: kind,

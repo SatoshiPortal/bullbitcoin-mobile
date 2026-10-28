@@ -598,7 +598,13 @@ void main() {
         pendingHeartbeatTimeout: const Duration(milliseconds: 1),
         acquisitionTimeout: const Duration(milliseconds: 30),
       );
-      final blocked = blockedCoordinator.runExclusive(key, (_) async => 2);
+      // Foreground reads wait for the owner; a background one keeps the
+      // deadline under test.
+      final blocked = blockedCoordinator.runExclusive(
+        key,
+        (_) async => 2,
+        priority: WalletOperationPriority.background,
+      );
       await expectLater(blocked, throwsA(isA<TimeoutException>()));
       release.complete();
       await owner;
@@ -869,7 +875,11 @@ void main() {
         acquisitionTimeout: const Duration(milliseconds: 30),
       );
       await expectLater(
-        contender.runExclusive(key, (_) async {}),
+        contender.runExclusive(
+          key,
+          (_) async {},
+          priority: WalletOperationPriority.background,
+        ),
         throwsA(isA<TimeoutException>()),
       );
       final hash = sha256
@@ -951,7 +961,11 @@ void main() {
         DurableWalletSourceOperationCoordinator(
           databasePath: path,
           acquisitionTimeout: const Duration(seconds: 1),
-        ).runExclusive(key, (_) async => 42),
+        ).runExclusive(
+          key,
+          (_) async => 42,
+          priority: WalletOperationPriority.background,
+        ),
         throwsA(isA<TimeoutException>()),
       );
 
@@ -961,6 +975,41 @@ void main() {
       );
       expect(await next.runExclusive(key, (_) async => 42), 42);
       expect(killedAt.elapsed, greaterThanOrEqualTo(grace));
+    },
+  );
+
+  test(
+    'a foreground read waits for a sync longer than the admission timeout',
+    () async {
+      // The user sees the sync progress; a read must wait for it rather than
+      // fail. A background read keeps the deadline: its run has a budget.
+      const key = WalletSourceKey('long-sync', 'bitcoin', 'testnet');
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: const Duration(seconds: 1),
+      );
+      final held = Completer<void>();
+      final syncing = coordinator.runExclusive(
+        key,
+        (_) async {
+          held.complete();
+          await Future<void>.delayed(const Duration(milliseconds: 2500));
+        },
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await held.future;
+
+      final backgroundRead = coordinator.runExclusive(
+        key,
+        (_) async => 0,
+        priority: WalletOperationPriority.background,
+      );
+      final foregroundRead = coordinator.runExclusive(key, (_) async => 42);
+
+      await expectLater(backgroundRead, throwsA(isA<TimeoutException>()));
+      expect(await foregroundRead, 42);
+      await syncing;
     },
   );
 
