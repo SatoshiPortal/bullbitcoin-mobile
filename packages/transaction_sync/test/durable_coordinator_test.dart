@@ -1014,6 +1014,46 @@ void main() {
   );
 
   test(
+    'a caller killed while waiting leaves the queue before admission',
+    () async {
+      const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
+      final hash = sha256
+          .convert('killed-caller\u0000bitcoin\u0000testnet'.codeUnits)
+          .toString();
+      final holder = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      final release = Completer<void>();
+      final held = Completer<void>();
+      final holding = holder.runExclusive(key, (_) async {
+        held.complete();
+        await release.future;
+      }, timeout: null);
+      await held.future;
+
+      final exited = ReceivePort();
+      final caller = await Isolate.spawn(_waitForSource, [
+        path,
+      ], onExit: exited.sendPort);
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      caller.kill(priority: Isolate.immediate);
+      await exited.first;
+      exited.close();
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final db = sqlite3.open(path);
+      final pending = db.select(
+        "SELECT * FROM requests WHERE key_hash=? AND status='pending'",
+        [hash],
+      );
+      db.dispose();
+      release.complete();
+      await holding;
+      expect(pending, isEmpty);
+    },
+  );
+
+  test(
     'a caller killed while waiting for admission releases the source',
     () async {
       const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');

@@ -900,7 +900,7 @@ Future<void> _workerMain(List<Object?> args) async {
     if (initializationDelay > 0) {
       sleep(Duration(milliseconds: initializationDelay));
     }
-    final acquired = _acquire(
+    final acquired = await _acquire(
       dbPath,
       lockPath,
       hash,
@@ -914,6 +914,7 @@ Future<void> _workerMain(List<Object?> args) async {
       requestedAt,
       key: lockConnections.first,
       slots: lockConnections.skip(1).toList(),
+      callerExited: () => callerExited,
     );
     final keyLock = acquired.key;
     final slotLock = acquired.slot;
@@ -1146,7 +1147,7 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   }
 });
 
-({Database key, Database? slot}) _acquire(
+Future<({Database key, Database? slot})> _acquire(
   String central,
   String locks,
   String hash,
@@ -1160,7 +1161,8 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
   int requestedAt, {
   required Database key,
   required List<Database> slots,
-}) {
+  required bool Function() callerExited,
+}) async {
   final deadline = timeout == null
       ? null
       : DateTime.now().add(Duration(milliseconds: timeout));
@@ -1182,17 +1184,25 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
     } catch (_) {}
   }
 
+  void leaveQueue() => _central(
+    central,
+    busy,
+    (db) => db.execute(
+      "DELETE FROM requests WHERE request_token=? AND status='pending'",
+      [request],
+    ),
+  );
+
   while (true) {
     if (deadline != null && !DateTime.now().isBefore(deadline)) {
-      _central(
-        central,
-        busy,
-        (db) => db.execute(
-          "DELETE FROM requests WHERE request_token=? AND status='pending'",
-          [request],
-        ),
-      );
+      leaveQueue();
       throw TimeoutException('Wallet source admission timed out');
+    }
+    // A caller that died while waiting would otherwise keep its place, and
+    // its heartbeat, until admitted.
+    if (callerExited()) {
+      leaveQueue();
+      throw StateError('caller exited while waiting');
     }
     if (_admit(central, busy, row, request, stale, global)) {
       Database? slot;
@@ -1212,7 +1222,7 @@ void _initialize(String path, int busy, int capacity) => _central(path, busy, (
       if (slot != null) rollback(slot);
       rollback(key);
     }
-    sleep(const Duration(milliseconds: 20));
+    await Future<void>.delayed(const Duration(milliseconds: 20));
   }
 }
 
