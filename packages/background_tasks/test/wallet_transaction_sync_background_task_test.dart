@@ -938,6 +938,46 @@ void main() {
     expect(result.status, BackgroundTaskExecutionStatus.retry);
   });
 
+  test('a long failure name is logged as a short fixed label', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    final messages = <String>[];
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: const WalletNetworkKey('w', 'bitcoin', 'mainnet'),
+          synchronize: () async =>
+              const Err(WalletSourceStateIncompatibleFailure()),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: _Sink(messages),
+    );
+
+    await task.execute(chain: 'bitcoin');
+
+    // The support log redacts runs of 32 or more letters as secrets.
+    expect(
+      messages,
+      contains(
+        'Wallet sync permanent failure chain=bitcoin '
+        'category=source_state_incompatible',
+      ),
+    );
+  });
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

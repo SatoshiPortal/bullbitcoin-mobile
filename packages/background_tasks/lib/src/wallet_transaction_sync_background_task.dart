@@ -350,11 +350,24 @@ final class WalletTransactionSyncBackgroundTask {
         InvalidNotificationPayloadFailure() => 'invalid_payload',
       };
 
-  /// A fixed label: the failure type, plus the reason of a source failure.
+  /// A short fixed label: the support log redacts runs of 32 or more letters,
+  /// which some failure class names are.
   static String _category(WalletTransactionSyncFailure failure) =>
       switch (failure) {
         SourceFailure(:final reason) => 'SourceFailure.${reason.name}',
-        _ => failure.runtimeType.toString(),
+        SnapshotNotInitializedFailure() => 'snapshot_not_initialized',
+        WalletRegistrationMismatchFailure() => 'registration_mismatch',
+        WalletSourceStateMissingFailure() => 'source_state_missing',
+        WalletSourceStateIncompatibleFailure() => 'source_state_incompatible',
+        DeletedWalletFailure() => 'deleted_wallet',
+        SourceStorageFailure() => 'source_storage',
+        SourceObservationMismatchFailure() => 'observation_mismatch',
+        ExtractionFailure() => 'extraction',
+        CoordinationTimeoutFailure() => 'coordination_timeout',
+        DeletionFailure() => 'deletion',
+        SnapshotExpiredFailure() => 'snapshot_expired',
+        InvalidPaginationFailure() => 'invalid_pagination',
+        InitialScanRequiredFailure() => 'initial_scan_required',
       };
 
   static bool _isPermanent(WalletTransactionSyncFailure failure) {
