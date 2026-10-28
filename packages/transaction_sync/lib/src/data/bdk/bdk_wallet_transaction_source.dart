@@ -70,6 +70,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     WalletSourceRegistration registration,
     WalletSourceSession session, {
     required bool discover,
+    bool allowInitialScan = true,
   }) async {
     session.ensureOpen();
     final configuration = _configuration(registration);
@@ -86,6 +87,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
         // A wallet that never synced has revealed nothing yet: only a full
         // scan finds its history, like the app's first sync.
         final firstSync = wallet.latestCheckpoint().height <= 0;
+        if (firstSync && !discover && !allowInitialScan) {
+          return const Err(InitialScanRequiredFailure());
+        }
         final fullScan = discover || firstSync;
         final reason = discover
             ? 'discovery'

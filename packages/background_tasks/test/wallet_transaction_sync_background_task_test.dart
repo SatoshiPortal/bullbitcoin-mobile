@@ -793,6 +793,46 @@ void main() {
     },
   );
 
+  test('a wallet awaiting its first scan is skipped, not retried', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    final messages = <String>[];
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
+          synchronize: () async => const Err(InitialScanRequiredFailure()),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: _Sink(messages),
+    );
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(
+      messages,
+      contains(
+        'Wallet sync skipped: chain=bitcoin '
+        'reason=initial_scan_in_foreground',
+      ),
+    );
+  });
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

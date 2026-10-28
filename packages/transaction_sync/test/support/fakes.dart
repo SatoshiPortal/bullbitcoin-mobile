@@ -101,6 +101,7 @@ class RecordingSource implements WalletTransactionSourcePort {
     WalletSourceRegistration registration,
     WalletSourceSession session, {
     required bool discover,
+    bool allowInitialScan = true,
   }) async {
     session.ensureOpen();
     syncCalls++;

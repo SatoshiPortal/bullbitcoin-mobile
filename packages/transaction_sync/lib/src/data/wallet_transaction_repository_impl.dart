@@ -158,6 +158,7 @@ final class WalletTransactionRepositoryImpl
     local: false,
     discover: false,
     priority: request.priority,
+    allowInitialScan: request.allowInitialScan,
   );
 
   @override
@@ -171,6 +172,7 @@ final class WalletTransactionRepositoryImpl
     required bool local,
     required bool discover,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
+    bool allowInitialScan = true,
   }) async {
     final key = registration.key;
     try {
@@ -238,6 +240,7 @@ final class WalletTransactionRepositoryImpl
             registration,
             session,
             discover: discover,
+            allowInitialScan: allowInitialScan,
           );
           switch (result) {
             case Ok(:final value):

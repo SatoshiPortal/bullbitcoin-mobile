@@ -239,6 +239,7 @@ _synchronize({
           SynchronizeWalletRequest(
             registration,
             priority: WalletOperationPriority.background,
+            allowInitialScan: false,
           ),
         );
         if (result case Err(:final failure)

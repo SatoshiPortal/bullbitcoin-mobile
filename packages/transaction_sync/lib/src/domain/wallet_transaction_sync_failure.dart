@@ -70,3 +70,9 @@ final class SnapshotExpiredFailure extends WalletTransactionSyncFailure {
 final class InvalidPaginationFailure extends WalletTransactionSyncFailure {
   const InvalidPaginationFailure();
 }
+
+/// The wallet has never been scanned and the request refused to run its first
+/// scan: a stop-gap scan of a whole history belongs to the foreground.
+final class InitialScanRequiredFailure extends WalletTransactionSyncFailure {
+  const InitialScanRequiredFailure();
+}

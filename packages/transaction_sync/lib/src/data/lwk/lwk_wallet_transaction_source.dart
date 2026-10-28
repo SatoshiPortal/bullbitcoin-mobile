@@ -69,6 +69,7 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
     WalletSourceRegistration registration,
     WalletSourceSession session, {
     required bool discover,
+    bool allowInitialScan = true,
   }) async {
     session.ensureOpen();
     final configuration = _configuration(registration);

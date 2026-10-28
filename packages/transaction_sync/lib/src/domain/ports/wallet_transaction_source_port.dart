@@ -20,6 +20,7 @@ abstract interface class WalletTransactionSourcePort {
     WalletSourceRegistration registration,
     WalletSourceSession session, {
     required bool discover,
+    bool allowInitialScan = true,
   });
 
   /// Deletes the persisted source state for [key]. [registration] is provided

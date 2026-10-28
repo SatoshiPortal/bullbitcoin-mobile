@@ -142,6 +142,19 @@ final class WalletTransactionSyncBackgroundTask {
           final sync = await job.synchronize();
           await stopRenewal();
           switch (sync) {
+            case Err(failure: InitialScanRequiredFailure()):
+              // A whole-history scan does not fit a background run: the
+              // foreground does it, then this wallet is synced here again.
+              final completed = await queue.completeFailure(
+                claim,
+                permanent: false,
+              );
+              if (renewalFailed || !completed) retry = true;
+              _safeLog(
+                WalletSyncLogLevel.fine,
+                'Wallet sync skipped: chain=$chain '
+                'reason=initial_scan_in_foreground',
+              );
             case Err(:final failure):
               _classifySync(
                 failure,
@@ -364,6 +377,8 @@ final class WalletTransactionSyncBackgroundTask {
     ExtractionFailure() ||
     DeletionFailure() ||
     InvalidPaginationFailure() => onPermanent(),
+    // Neither: the foreground scans it, then background runs resume.
+    InitialScanRequiredFailure() => null,
   };
 
   static void _classifyNotification(

@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import 'support/fakes.dart';
@@ -227,6 +228,19 @@ void main() {
       expect(second.snapshot.revision, first.snapshot.revision);
     },
   );
+
+  test('a headless sync refuses a first scan instead of running it', () async {
+    final facade = buildBdkFacade(RecordingMetadata());
+
+    final result = await facade.synchronizeWallet(
+      SynchronizeWalletRequest(registration, allowInitialScan: false),
+    );
+
+    // Refused before any connection: the unreachable server would otherwise
+    // surface as an unavailable source.
+    expect(result, isA<Err>());
+    expect((result as Err).failure, isA<InitialScanRequiredFailure>());
+  });
 
   test('deleteWallet removes the persister file idempotently', () async {
     final facade = buildBdkFacade(RecordingMetadata());

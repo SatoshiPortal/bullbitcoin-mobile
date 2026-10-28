@@ -54,6 +54,7 @@ class FakeSource implements WalletTransactionSourcePort {
     WalletSourceRegistration r,
     WalletSourceSession session, {
     required bool discover,
+    bool allowInitialScan = true,
   }) async {
     syncCalls++;
     final pause = this.pause;
