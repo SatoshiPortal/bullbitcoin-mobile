@@ -25,6 +25,7 @@ dependencies:
   flutter:
     sdk: flutter
   bull_payjoin:
+  bull_pricer:
   bull_ui:
   primitives:
   bull_tor:

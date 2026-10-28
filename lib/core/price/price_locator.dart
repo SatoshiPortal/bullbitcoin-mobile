@@ -14,37 +14,24 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:primitives/primitives.dart';
 
 class PriceLocator {
+  static const _historyTimeout = Duration(seconds: 10);
+
   static void registerDatasources(GetIt locator) {
+    // Price history (the home chart). Current prices come from the pricer.
     locator.registerLazySingleton<BullbitcoinPriceDatasource>(
       () => BullbitcoinPriceDatasource(
         bullbitcoinApiHttpClient: Dio(
           BaseOptions(
             baseUrl: ApiServiceConstants.bbApiUrl,
-            // Matches the repository's limit, so a read that gives up also
-            // ends its request rather than leaving it running under a retry.
-            connectTimeout: BitcoinPriceRepositoryImpl.priceTimeout,
-            receiveTimeout: BitcoinPriceRepositoryImpl.priceTimeout,
+            connectTimeout: _historyTimeout,
+            receiveTimeout: _historyTimeout,
           ),
         ),
       ),
       instanceName: 'mainnetBullbitcoinPriceDatasource',
-    );
-
-    locator.registerLazySingleton<BullbitcoinPriceDatasource>(
-      () => BullbitcoinPriceDatasource(
-        bullbitcoinApiHttpClient: Dio(
-          BaseOptions(
-            baseUrl: ApiServiceConstants.bbApiTestUrl,
-            // Matches the repository's limit, so a read that gives up also
-            // ends its request rather than leaving it running under a retry.
-            connectTimeout: BitcoinPriceRepositoryImpl.priceTimeout,
-            receiveTimeout: BitcoinPriceRepositoryImpl.priceTimeout,
-          ),
-        ),
-      ),
-      instanceName: 'testnetBullbitcoinPriceDatasource',
     );
 
     locator.registerLazySingleton<LocalPriceHistoryDatasource>(
@@ -54,20 +41,12 @@ class PriceLocator {
 
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinPriceRepository>(
-      () => BitcoinPriceRepositoryImpl(
-        bullbitcoinPriceDatasource: locator<BullbitcoinPriceDatasource>(
-          instanceName: 'mainnetBullbitcoinPriceDatasource',
-        ),
-      ),
+      () => BitcoinPriceRepositoryImpl(network: BitcoinNetwork.mainnet),
       instanceName: 'mainnetBitcoinPriceRepository',
     );
 
     locator.registerLazySingleton<BitcoinPriceRepository>(
-      () => BitcoinPriceRepositoryImpl(
-        bullbitcoinPriceDatasource: locator<BullbitcoinPriceDatasource>(
-          instanceName: 'testnetBullbitcoinPriceDatasource',
-        ),
-      ),
+      () => BitcoinPriceRepositoryImpl(network: BitcoinNetwork.testnet),
       instanceName: 'testnetBitcoinPriceRepository',
     );
 
