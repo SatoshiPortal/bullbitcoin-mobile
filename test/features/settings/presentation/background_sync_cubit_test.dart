@@ -123,4 +123,50 @@ void main() {
       expect(subject.state.failure, isNull);
     },
   );
+
+  test('overlapping failed writes fall back to the saved interval', () async {
+    final writes = <Completer<void>>[];
+    final repository = BackgroundSyncRepositoryImpl(
+      store: _GatedStore(store, writes),
+      reschedule: () async {},
+    );
+    final subject = BackgroundSyncCubit(
+      getBackgroundSyncIntervalUsecase: GetBackgroundSyncIntervalUsecase(
+        repository: repository,
+      ),
+      setBackgroundSyncIntervalUsecase: SetBackgroundSyncIntervalUsecase(
+        repository: repository,
+      ),
+    );
+    addTearDown(subject.close);
+    await subject.load();
+
+    final first = subject.choose(BackgroundSyncInterval.minutes15);
+    final second = subject.choose(BackgroundSyncInterval.off);
+    await pumpEventQueue();
+    for (final write in writes) {
+      write.completeError(StateError('disk full'));
+    }
+    await Future.wait([first, second]);
+
+    expect(subject.state.interval, BackgroundSyncInterval.hour1);
+    expect(store.value, BackgroundSyncInterval.hour1);
+  });
+}
+
+class _GatedStore implements BackgroundSyncIntervalStore {
+  final _Store inner;
+  final List<Completer<void>> writes;
+
+  _GatedStore(this.inner, this.writes);
+
+  @override
+  Future<BackgroundSyncInterval> read() => inner.read();
+
+  @override
+  Future<void> write(BackgroundSyncInterval interval) {
+    final gate = Completer<void>();
+    writes.add(gate);
+    return gate.future;
+  }
 }
