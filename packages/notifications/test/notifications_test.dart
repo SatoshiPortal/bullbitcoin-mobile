@@ -254,6 +254,26 @@ void main() {
     },
   );
 
+  test(
+    'an outbox left at version 0 by an interrupted open gains its column',
+    () async {
+      outbox.dispose();
+      final path = '${directory.path}/v0.sqlite';
+      final legacy = sqlite3.open(path);
+      legacy.execute('''CREATE TABLE notification_outbox (
+      event_id TEXT PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL,
+      destination TEXT NOT NULL, created_at INTEGER NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('pending','delivering','delivered')),
+      claim_token TEXT, lease_until INTEGER, platform_id INTEGER NOT NULL UNIQUE,
+      topic_id TEXT)''');
+      legacy.dispose();
+
+      outbox = SqliteNotificationOutbox(databasePath: path);
+
+      expect(await outbox.recordObserved('t', [event('x')]), isA<Ok>());
+    },
+  );
+
   test('upgrading schema 1 forgets its silent baselines', () async {
     outbox.dispose();
     final path = '${directory.path}/v1.sqlite';

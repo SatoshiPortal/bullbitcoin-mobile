@@ -78,16 +78,18 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         PRIMARY KEY (aggregate_event_id, member_event_id)
       )
     ''');
+    // Checked whatever the version: an older open interrupted after creating
+    // the table could leave it without the column at version 0.
+    final columns = _database
+        .select('PRAGMA table_info(notification_outbox)')
+        .map((row) => row['name'] as String)
+        .toSet();
+    if (!columns.contains('seen_at')) {
+      _database.execute(
+        'ALTER TABLE notification_outbox ADD COLUMN seen_at INTEGER',
+      );
+    }
     if (version == 1) {
-      final columns = _database
-          .select('PRAGMA table_info(notification_outbox)')
-          .map((row) => row['name'] as String)
-          .toSet();
-      if (!columns.contains('seen_at')) {
-        _database.execute(
-          'ALTER TABLE notification_outbox ADD COLUMN seen_at INTEGER',
-        );
-      }
       // Version 1 initialized a topic with a silent background baseline and
       // kept no aggregate members: neither can be trusted any more, so the
       // foreground records topics again and old aggregates are settled.
