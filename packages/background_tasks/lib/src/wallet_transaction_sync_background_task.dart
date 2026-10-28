@@ -242,7 +242,7 @@ final class WalletTransactionSyncBackgroundTask {
           _safeLog(
             WalletSyncLogLevel.warning,
             'Wallet sync notification failure stage=reconcile '
-            'category=${failure.runtimeType}',
+            'category=${_notificationCategory(failure)}',
           );
           _classifyNotification(
             failure,
@@ -267,7 +267,7 @@ final class WalletTransactionSyncBackgroundTask {
         _safeLog(
           WalletSyncLogLevel.warning,
           'Wallet sync notification failure stage=deliver '
-          'category=${failure.runtimeType}',
+          'category=${_notificationCategory(failure)}',
         );
         _classifyNotification(
           failure,
@@ -294,6 +294,18 @@ final class WalletTransactionSyncBackgroundTask {
       _sink.write(level, message);
     } catch (_) {}
   }
+
+  /// A short fixed label. Class names are not used: the support log redacts
+  /// any run of 32 or more letters, which some of them are.
+  static String _notificationCategory(NotificationsFailure failure) =>
+      switch (failure) {
+        NotificationsStorageFailure() => 'storage',
+        NotificationsGatewayFailure() => 'gateway',
+        NotificationsPermissionDeniedFailure() => 'permission_denied',
+        NotificationsClaimLostFailure() => 'claim_lost',
+        UnknownNotificationDestinationFailure() => 'unknown_destination',
+        InvalidNotificationPayloadFailure() => 'invalid_payload',
+      };
 
   /// A fixed label: the failure type, plus the reason of a source failure.
   static String _category(WalletTransactionSyncFailure failure) =>

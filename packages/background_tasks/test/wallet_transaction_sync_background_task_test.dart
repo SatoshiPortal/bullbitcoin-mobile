@@ -692,7 +692,7 @@ void main() {
       messages,
       contains(
         'Wallet sync notification failure stage=deliver '
-        'category=NotificationsPermissionDeniedFailure',
+        'category=permission_denied',
       ),
     );
 
