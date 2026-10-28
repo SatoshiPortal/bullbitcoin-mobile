@@ -695,6 +695,26 @@ class BdkWalletDatasource {
     return (index: lastRevealedAddressIndex, address: address);
   }
 
+  /// Reveals and persists every address up to [index]: routine syncs only
+  /// query revealed scripts.
+  Future<void> revealAddressesTo(
+    int index, {
+    required WalletModel wallet,
+    bool isChange = false,
+  }) async {
+    return _withWallet(wallet, (bdkWallet) async {
+      final revealed = bdkWallet.revealAddressesTo(
+        keychain: isChange
+            ? bdk.KeychainKind.internal
+            : bdk.KeychainKind.external_,
+        index: index,
+      );
+      if (revealed.isNotEmpty) {
+        await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
+      }
+    });
+  }
+
   // This can return -1 if no address has been revealed yet.
   // This should be handled accordingly by the caller.
   Future<int> getLastRevealedAddressIndex({

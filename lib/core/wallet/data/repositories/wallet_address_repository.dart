@@ -55,11 +55,16 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
 
+      final firstIndex = index;
       var labels = await _labelsFacade.fetchByReference(address);
       while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
         index++;
         address = await _addressAtIndex(index, walletModel);
         labels = await _labelsFacade.fetchByReference(address);
+      }
+      // A skipped-to address is only peeked; routine syncs would miss it.
+      if (index != firstIndex && walletModel is PublicBdkWalletModel) {
+        await _bdkWallet.revealAddressesTo(index, wallet: walletModel);
       }
 
       return WalletAddressMapper.toEntity(
@@ -104,11 +109,16 @@ class WalletAddressRepository {
         address = addressInfo.confidential;
       }
 
+      final firstIndex = index;
       var labels = await _labelsFacade.fetchByReference(address);
       while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
         index++;
         address = await _addressAtIndex(index, walletModel);
         labels = await _labelsFacade.fetchByReference(address);
+      }
+      // A skipped-to address is only peeked; routine syncs would miss it.
+      if (index != firstIndex && walletModel is PublicBdkWalletModel) {
+        await _bdkWallet.revealAddressesTo(index, wallet: walletModel);
       }
 
       return WalletAddressMapper.toEntity(
