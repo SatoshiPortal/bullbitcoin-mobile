@@ -86,8 +86,17 @@ final class WalletTransactionSyncBackgroundTask {
     final clock = Stopwatch()..start();
     var retry = false;
     var permanent = false;
+    final budget = runBudget;
     for (final chain in const ['bitcoin', 'liquid']) {
-      final result = await execute(chain: chain, clock: clock);
+      // Bitcoin stops starting wallets at half the budget so Liquid always
+      // gets its turn; Liquid may use whatever is left.
+      final result = await execute(
+        chain: chain,
+        clock: clock,
+        admissionLimit: chain == 'bitcoin' && budget != null
+            ? budget ~/ 2
+            : null,
+      );
       switch (result.status) {
         case BackgroundTaskExecutionStatus.retry:
           retry = true;
@@ -104,10 +113,12 @@ final class WalletTransactionSyncBackgroundTask {
     return const BackgroundTaskExecutionResult.success();
   }
 
-  /// [clock] carries the elapsed budget across chains of one run.
+  /// [clock] carries the elapsed budget across chains of one run;
+  /// [admissionLimit] stops starting wallets earlier than [runBudget].
   Future<BackgroundTaskExecutionResult> execute({
     required String chain,
     Stopwatch? clock,
+    Duration? admissionLimit,
   }) async {
     if (chain != 'bitcoin' && chain != 'liquid') {
       return const BackgroundTaskExecutionResult.permanentFailure();
@@ -133,7 +144,7 @@ final class WalletTransactionSyncBackgroundTask {
     var nextJob = 0;
 
     bool budgetSpent() {
-      final budget = runBudget;
+      final budget = admissionLimit ?? runBudget;
       return budget != null && stopwatch.elapsed >= budget;
     }
 

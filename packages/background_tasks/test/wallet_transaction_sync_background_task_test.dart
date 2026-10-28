@@ -994,6 +994,47 @@ void main() {
     expect(synced, isEmpty);
   });
 
+  test('bitcoin leaves liquid half of the budget', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final synced = <String>[];
+    WalletTransactionSyncBackgroundJob job(String id, String chain) {
+      final key = WalletNetworkKey(id, chain, 'testnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          synced.add(id);
+          await Future<void>.delayed(const Duration(milliseconds: 150));
+          return Ok(_outcome(key, const []));
+        },
+      );
+    }
+
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [job('b1', 'bitcoin'), job('b2', 'bitcoin'), job('l1', 'liquid')],
+      maxConcurrentJobs: 1,
+      runBudget: const Duration(milliseconds: 250),
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+    );
+
+    await task.executeAll();
+
+    // Without the split, the second bitcoin wallet would take the rest.
+    expect(synced, ['b1', 'l1']);
+  });
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(
