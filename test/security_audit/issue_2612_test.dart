@@ -44,7 +44,7 @@ void main() {
       expect(setup, greaterThanOrEqualTo(0));
       expect(registration, greaterThan(setup));
 
-      final adapter = handler.indexOf('BackgroundTaskWorkmanagerAdapter()');
+      final adapter = handler.indexOf('BackgroundTaskWorkmanagerAdapter(');
       final legacyCancellation = handler.indexOf(
         'cancelByUniqueName(BackgroundTask.swapsSync.id)',
       );
