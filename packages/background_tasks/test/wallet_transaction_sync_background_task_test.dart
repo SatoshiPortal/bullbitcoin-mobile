@@ -831,6 +831,17 @@ void main() {
         'reason=initial_scan_in_foreground',
       ),
     );
+
+    // No backoff: once the app has scanned it, the very next run syncs it.
+    expect(
+      await queue.reconcileAndClaim([
+        (
+          key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
+          revision: 'legacy-electrum-v1',
+        ),
+      ], chain: 'bitcoin'),
+      hasLength(1),
+    );
   });
 
   test('a run stops starting wallets once its budget is spent', () async {
