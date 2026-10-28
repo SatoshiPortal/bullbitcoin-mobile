@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   workmanager: ^0.10.10
+  shared_preferences: ^2.3.0
   transaction_sync:
   notifications:
   bull_logger:

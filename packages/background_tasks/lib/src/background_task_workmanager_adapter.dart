@@ -13,6 +13,7 @@ abstract interface class BackgroundTaskScheduler {
     required String taskName,
     required Duration frequency,
     required bool requiresNetwork,
+    Duration? initialDelay,
   });
 }
 
@@ -35,10 +36,12 @@ final class _WorkmanagerScheduler implements BackgroundTaskScheduler {
     required String taskName,
     required Duration frequency,
     required bool requiresNetwork,
+    Duration? initialDelay,
   }) => _workmanager.registerPeriodicTask(
     uniqueName,
     taskName,
     frequency: frequency,
+    initialDelay: initialDelay,
     constraints: requiresNetwork
         ? Constraints(networkType: NetworkType.connected)
         : null,
@@ -91,10 +94,12 @@ final class BackgroundTaskWorkmanagerAdapter {
     required String taskName,
     Duration frequency = const Duration(hours: 1),
     bool requiresNetwork = false,
+    Duration? initialDelay,
   }) => scheduler.registerPeriodic(
     uniqueName: uniqueName,
     taskName: taskName,
     frequency: frequency,
     requiresNetwork: requiresNetwork,
+    initialDelay: initialDelay,
   );
 }

@@ -66,9 +66,7 @@ class Bull {
       () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    if (Platform.isAndroid || Platform.isIOS) {
-      await registerBackgroundTasks();
-    }
+    await registerBackgroundTasks();
 
     // Emits the install/upgrade transition event (no-op on a normal
     // launch) and advances the persisted version marker. The shout is

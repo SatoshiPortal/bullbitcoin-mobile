@@ -44,6 +44,7 @@ final class _Scheduler implements BackgroundTaskScheduler {
     required String taskName,
     required Duration frequency,
     required bool requiresNetwork,
+    Duration? initialDelay,
   }) async => registrations.add((
     name: uniqueName,
     task: taskName,

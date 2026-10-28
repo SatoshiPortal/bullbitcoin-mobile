@@ -15,6 +15,8 @@ import 'package:bb_mobile/core/wallet/wallet_locator.dart'
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
@@ -38,27 +40,53 @@ final _backgroundRunBudget = Platform.isIOS
     ? const Duration(seconds: 20)
     : const Duration(minutes: 8);
 
-/// Schedules the periodic background tasks and removes the obsolete swap task.
+/// Schedules the periodic background tasks at the interval the user chose,
+/// and removes the obsolete swap task. Called at startup and whenever the
+/// interval changes; UPDATE keeps an unchanged schedule's timing.
 Future<void> registerBackgroundTasks() async {
-  final adapter = BackgroundTaskWorkmanagerAdapter();
+  final mobile = Platform.isAndroid || Platform.isIOS;
+  final adapter = BackgroundTaskWorkmanagerAdapter(
+    scheduler: mobile ? null : _desktopScheduler,
+  );
+  final interval = await const SharedPreferencesBackgroundSyncIntervalStore()
+      .read();
   await adapter.initialize(backgroundTasksHandler);
   await adapter.cancelByUniqueName(BackgroundTask.swapsSync.id);
-  await adapter.registerPeriodicTask(
-    uniqueName: BackgroundTask.bitcoinSync.id,
-    taskName: BackgroundTask.bitcoinSync.name,
-    requiresNetwork: true,
-  );
-  await adapter.registerPeriodicTask(
-    uniqueName: BackgroundTask.liquidSync.id,
-    taskName: BackgroundTask.liquidSync.name,
-    requiresNetwork: true,
-  );
-  await adapter.registerPeriodicTask(
-    uniqueName: BackgroundTask.logsPrune.id,
-    taskName: BackgroundTask.logsPrune.name,
-    frequency: const Duration(days: 1),
-  );
+  final frequency = interval.frequency;
+  for (final task in [BackgroundTask.bitcoinSync, BackgroundTask.liquidSync]) {
+    if (frequency == null) {
+      await adapter.cancelByUniqueName(task.id);
+      continue;
+    }
+    await adapter.registerPeriodicTask(
+      uniqueName: task.id,
+      taskName: task.name,
+      requiresNetwork: true,
+      frequency: frequency,
+      // iOS ignores the frequency: the delay is its "not before" hint.
+      initialDelay: Platform.isIOS ? frequency : null,
+    );
+  }
+  if (mobile) {
+    await adapter.registerPeriodicTask(
+      uniqueName: BackgroundTask.logsPrune.id,
+      taskName: BackgroundTask.logsPrune.name,
+      frequency: const Duration(days: 1),
+    );
+  }
+  log.config('Background sync interval applied=${interval.name}');
 }
+
+/// Desktop has no headless engine: while the app runs, the chosen interval
+/// drives the app's own sync of that chain.
+final _desktopScheduler = TimerBackgroundTaskScheduler(
+  onTick: (taskName) async {
+    final kind = taskName == BackgroundTask.liquidSync.name
+        ? SyncKind.liquid
+        : SyncKind.bitcoin;
+    await locator<SyncCoordinator>().sync(only: {kind});
+  },
+);
 
 @pragma('vm:entry-point')
 void backgroundTasksHandler() {
