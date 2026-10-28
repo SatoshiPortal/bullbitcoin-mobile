@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
-import 'package:background_tasks/background_tasks.dart';
+import 'package:bb_mobile/core/background_tasks/background_activity_channel_gateway.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/answer_permissions_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/open_battery_settings_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/read_background_activity_usecase.dart';
@@ -56,10 +56,10 @@ class WizardApp extends StatelessWidget {
         BlocProvider<BackgroundActivityCubit>(
           create: (_) => BackgroundActivityCubit(
             read: ReadBackgroundActivityUsecase(
-              gateway: const PermissionHandlerBackgroundActivityGateway(),
+              gateway: const ChannelBackgroundActivityGateway(),
             ),
             open: OpenBatterySettingsUsecase(
-              gateway: const PermissionHandlerBackgroundActivityGateway(),
+              gateway: const ChannelBackgroundActivityGateway(),
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:background_tasks/background_tasks.dart';
+import 'package:bb_mobile/core/background_tasks/background_activity_channel_gateway.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/settings/data/background_sync_repository_impl.dart';
@@ -132,11 +133,11 @@ class SettingsLocator {
     locator.registerFactory<BackgroundActivityCubit>(
       () => BackgroundActivityCubit(
         getBackgroundActivityUsecase: const GetBackgroundActivityUsecase(
-          gateway: PermissionHandlerBackgroundActivityGateway(),
+          gateway: ChannelBackgroundActivityGateway(),
         ),
         openBackgroundActivitySettingsUsecase:
             const OpenBackgroundActivitySettingsUsecase(
-              gateway: PermissionHandlerBackgroundActivityGateway(),
+              gateway: ChannelBackgroundActivityGateway(),
             ),
       ),
     );
