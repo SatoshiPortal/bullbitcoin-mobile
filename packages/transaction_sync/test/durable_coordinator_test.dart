@@ -925,6 +925,64 @@ void main() {
     );
   });
 
+  test('a caller isolate killed mid-operation releases the source', () async {
+    // As when Android stops a WorkManager job and its engine is destroyed
+    // while an operation holds the source.
+    const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
+    final ready = ReceivePort();
+    final exited = ReceivePort();
+    final caller = await Isolate.spawn(_holdUntilKilled, [
+      path,
+      ready.sendPort,
+    ], onExit: exited.sendPort);
+    await ready.first;
+    caller.kill(priority: Isolate.immediate);
+    await exited.first;
+    ready.close();
+    exited.close();
+
+    final next = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      acquisitionTimeout: const Duration(seconds: 2),
+    );
+    expect(await next.runExclusive(key, (_) async => 42), 42);
+  });
+
+  test(
+    'a caller killed while waiting for admission releases the source',
+    () async {
+      const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
+      final holder = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      final release = Completer<void>();
+      final held = Completer<void>();
+      final holding = holder.runExclusive(key, (_) async {
+        held.complete();
+        await release.future;
+      }, timeout: null);
+      await held.future;
+
+      final exited = ReceivePort();
+      final caller = await Isolate.spawn(_waitForSource, [
+        path,
+      ], onExit: exited.sendPort);
+      // Let the caller's request queue behind the holder before killing it.
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      caller.kill(priority: Isolate.immediate);
+      await exited.first;
+      exited.close();
+      release.complete();
+      await holding;
+
+      final next = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: const Duration(seconds: 2),
+      );
+      expect(await next.runExclusive(key, (_) async => 42), 42);
+    },
+  );
+
   test('a dead worker leaves neither its request nor its claim', () async {
     const key = WalletSourceKey('dead-claim', 'bitcoin', 'testnet');
     final hash = sha256
@@ -1656,4 +1714,31 @@ Future<void> _waitForPendingOrClaimed(String path) async {
     await Future<void>.delayed(const Duration(milliseconds: 10));
   }
   throw StateError('background operation never claimed the source');
+}
+
+/// Holds the source until this isolate is killed.
+Future<void> _holdUntilKilled(List<Object> args) async {
+  final never = ReceivePort();
+  await DurableWalletSourceOperationCoordinator(
+    databasePath: args[0] as String,
+  ).runExclusive<void>(
+    const WalletSourceKey('killed-caller', 'bitcoin', 'testnet'),
+    (_) async {
+      (args[1] as SendPort).send(null);
+      await never.first;
+    },
+    timeout: null,
+  );
+}
+
+/// Queues for the source held by the test and would hold it once admitted.
+Future<void> _waitForSource(List<Object> args) async {
+  final never = ReceivePort();
+  await DurableWalletSourceOperationCoordinator(
+    databasePath: args[0] as String,
+  ).runExclusive<void>(
+    const WalletSourceKey('killed-caller', 'bitcoin', 'testnet'),
+    (_) => never.first,
+    timeout: null,
+  );
 }

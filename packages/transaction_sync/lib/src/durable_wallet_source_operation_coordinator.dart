@@ -478,6 +478,8 @@ final class _DurableActor {
         locks.request,
         locks.addresses,
         locks.exitPort.sendPort,
+        // Without capabilities: the worker may only watch the caller exit.
+        Isolate(Isolate.current.controlPort),
       ]);
     } catch (_) {
       responses.close();
@@ -817,13 +819,20 @@ Future<void> _workerMain(List<Object?> args) async {
   // Owned and closed by the caller; kept referenced so no finalizer closes
   // them before this isolate exits. sqlite3's dispose finalizer is a Dart
   // `Finalizer`, which runs only in the isolate that attached it, never after
-  // that isolate has exited: the caller's close is the only close.
+  // that isolate has exited: the caller's close is the only close, unless
+  // the caller exits first.
   final lockConnections = [
     for (final address in (args[17] as List).cast<int>())
       sqlite3.fromPointer(Pointer<Void>.fromAddress(address)),
   ];
   _handedOverLocks.addAll(lockConnections);
   final commands = ReceivePort();
+  // A caller destroyed with its engine, as when Android stops a background
+  // job, never closes these connections, so their locks would outlive it
+  // until the process dies. The worker then releases and closes them itself.
+  final caller = args[19] as Isolate;
+  caller.addOnExitListener(commands.sendPort, response: _callerExited);
+  var callerExited = false;
   ReceivePort? registrationReply;
   Database? mutex;
   Database? slot;
@@ -908,6 +917,10 @@ Future<void> _workerMain(List<Object?> args) async {
       return;
     }
     await for (final message in commands) {
+      if (message == _callerExited) {
+        callerExited = true;
+        break;
+      }
       final reply = message[0] as int;
       try {
         switch (message[1] as String) {
@@ -960,6 +973,12 @@ Future<void> _workerMain(List<Object?> args) async {
     }
   } finally {
     closeLocks();
+    caller.removeOnExitListener(commands.sendPort);
+    if (callerExited) {
+      for (final connection in lockConnections) {
+        connection.dispose();
+      }
+    }
     registrationReply?.close();
     commands.close();
     // The caller terminates a failed startup worker as soon as it receives
@@ -970,6 +989,8 @@ Future<void> _workerMain(List<Object?> args) async {
     }
   }
 }
+
+const _callerExited = 'caller-exited';
 
 /// Lock connections whose closing belongs to the caller, kept referenced so
 /// no finalizer closes them before this worker isolate exits.
