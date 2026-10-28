@@ -106,8 +106,30 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     background: true,
     reporter: const ReportLoggerAdapter(),
   );
+  // The dispatcher turns a bootstrap exception into a retry without a trace,
+  // so the failing stage is logged here before it propagates.
+  final clock = Stopwatch()..start();
+  var stage = 'native';
+  try {
+    return await _buildBackgroundRunner(bullDirectory, (next) => stage = next);
+  } catch (error) {
+    log.warning(
+      'Background task bootstrap failed stage=$stage '
+      'error=${error.runtimeType} elapsed_ms=${clock.elapsedMilliseconds}',
+    );
+    // The engine is torn down as soon as the task returns.
+    await log.flush();
+    rethrow;
+  }
+}
+
+Future<BackgroundTaskRunner> _buildBackgroundRunner(
+  Directory bullDirectory,
+  void Function(String) enter,
+) async {
   await initFlutterRustBridgeDependencies();
 
+  enter('schema');
   // A schedule left by an older release can fire while the updated app is
   // starting. Opening the database here would run the pending migrations on a
   // second connection, concurrently with the app's (#3045). Only the app
@@ -120,11 +142,13 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     );
   }
 
+  enter('database');
   final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
   final sqlite = SqliteDatabase(
     await driftIsolate.connect(singleClientMode: true),
   );
   final headless = GetIt.asNewInstance();
+  enter('locator');
   await AppLocator.setup(
     headless,
     sqlite,
@@ -138,15 +162,18 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final metadata = headless<WalletMetadataDatasource>();
   final coordination = headless<WalletSourceOperationCoordinator>();
   final syncMetadata = headless<WalletSyncMetadataPort>();
+  enter('outbox');
   final outbox = SqliteNotificationOutbox(
     databasePath: p.join(bullDirectory.path, notificationOutboxFilename),
   );
+  enter('queue');
   final syncQueue = SqliteWalletSyncJobQueue(
     databasePath: p.join(
       bullDirectory.path,
       'wallet_transaction_sync_queue.sqlite',
     ),
   );
+  enter('localization');
   final localized = await _notificationLocalization(headless);
   final notifications = NotificationsFacade(
     gateway: FlutterLocalNotificationGateway(
@@ -156,6 +183,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     ),
     outbox: outbox,
   );
+  enter('notifications');
   await _initializeNotifications(notifications);
 
   final bdk = WalletTransactionSyncFacade.bdkElectrum(
@@ -176,6 +204,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
               : localized.backgroundNotificationBitcoinSingular
         : localized.backgroundNotificationTransactionsPlural(count),
   );
+  enter('wallets');
   final wallets = await metadata.fetchAll();
   final jobs = <WalletTransactionSyncBackgroundJob>[];
   for (final wallet in wallets) {
