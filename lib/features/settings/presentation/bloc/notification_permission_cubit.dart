@@ -35,7 +35,11 @@ class NotificationPermissionCubit extends Cubit<NotificationPermissionState> {
   Future<void> request() async {
     if (state.busy) return;
     emit(state.copyWith(busy: true));
-    final result = await _request.execute();
+    final requested = await _request.execute();
+    if (isClosed) return;
+    // The prompt reports the app-level grant only; the effective state also
+    // needs the payment channel, which the user may have blocked.
+    final result = requested is Ok ? await _get.execute() : requested;
     if (isClosed) return;
     final status = _statusOf(result);
     if (result case Ok()) {

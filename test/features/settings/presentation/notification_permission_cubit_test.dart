@@ -11,6 +11,9 @@ import 'package:notifications/notifications.dart';
 class _Gateway implements NotificationPermissionGateway {
   Result<bool, NotificationsFailure> enabled = const Ok(false);
   bool grantOnRequest = false;
+
+  /// The app is granted while its payment channel stays blocked.
+  bool grantAppOnly = false;
   Completer<void>? pendingPrompt;
   int requests = 0;
   int settingsOpened = 0;
@@ -23,6 +26,7 @@ class _Gateway implements NotificationPermissionGateway {
     requests++;
     await pendingPrompt?.future;
     if (grantOnRequest) enabled = const Ok(true);
+    if (grantAppOnly) return const Ok(true);
     return enabled;
   }
 
@@ -49,6 +53,18 @@ NotificationPermissionCubit _cubit(_Gateway gateway) {
 }
 
 void main() {
+  test('a granted prompt with the channel blocked still shows off', () async {
+    final gateway = _Gateway()..grantAppOnly = true;
+    final cubit = _cubit(gateway);
+    addTearDown(cubit.close);
+    await cubit.refresh();
+
+    await cubit.request();
+
+    expect(cubit.state.status, NotificationPermissionStatus.off);
+    expect(cubit.state.promptDeclined, isTrue);
+  });
+
   test('refresh reports the OS state', () async {
     final gateway = _Gateway();
     final cubit = _cubit(gateway);
